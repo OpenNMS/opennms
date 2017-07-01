@@ -61,6 +61,7 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -231,7 +232,10 @@ public class AgentConfigurationResource implements InitializingBean {
                 if (sysObjectId != null) {
                     parameters.put("sysObjectId", sysObjectId);
                 }
-                final SnmpAgentConfig config = m_agentConfigFactory.getAgentConfig(ipAddress);
+                OnmsMonitoringLocation location = (node == null) ? null : node.getLocation();
+                String locationName = (location == null) ? null : location.getLocationName();
+
+                final SnmpAgentConfig config = m_agentConfigFactory.getAgentConfig(ipAddress, locationName);
                 if (config != null) {
                     port = config.getPort();
                 }

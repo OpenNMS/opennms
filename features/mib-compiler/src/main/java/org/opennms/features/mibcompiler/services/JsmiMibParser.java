@@ -51,8 +51,8 @@ import org.jsmiparser.smi.SmiNamedNumber;
 import org.jsmiparser.smi.SmiNotificationType;
 import org.jsmiparser.smi.SmiPrimitiveType;
 import org.jsmiparser.smi.SmiRow;
-import org.jsmiparser.smi.SmiType;
 import org.jsmiparser.smi.SmiTrapType;
+import org.jsmiparser.smi.SmiType;
 import org.jsmiparser.smi.SmiVariable;
 import org.opennms.features.mibcompiler.api.MibParser;
 import org.opennms.features.namecutter.NameCutter;
@@ -68,6 +68,7 @@ import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
@@ -526,7 +527,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         evt.setDescr(getTrapEventDescr(trap));
         List<Varbindsdecode> decode = getTrapVarbindsDecode(trap);
         if (!decode.isEmpty()) {
-            evt.setVarbindsdecode(decode);
+            evt.setVarbindsdecodes(decode);
         }
         evt.setMask(new Mask());
         // The "ID" mask element (trap enterprise)
@@ -576,7 +577,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
     protected Logmsg getTrapEventLogmsg(Notification trap) {
         Logmsg msg = new Logmsg();
-        msg.setDest("logndisplay");
+        msg.setDest(LogDestType.LOGNDISPLAY);
         final StringBuffer dbuf = new StringBuffer();
         dbuf.append("<p>");
         dbuf.append("\n");
@@ -756,7 +757,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
     private void addMaskElement(Event event, String name, String value) {
         if (event.getMask() == null) {
-            throw new IllegalStateException("Event mask is null, must have been set before this method was called");
+            throw new IllegalStateException("Event mask is not present, must have been set before this method was called");
         }
         Maskelement me = new Maskelement();
         me.setMename(name);

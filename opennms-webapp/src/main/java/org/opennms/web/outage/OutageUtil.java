@@ -40,6 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.outage.filter.LocationFilter;
+import org.opennms.web.outage.filter.NegativeLocationFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.AssetFilter;
 import org.opennms.web.outage.filter.ForeignSourceFilter;
@@ -121,6 +123,10 @@ public abstract class OutageUtil extends Object {
             filter = new RegainedServiceDateAfterFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.startsWith(AssetFilter.TYPE)) {
             filter = new AssetFilter(type, value);
+        } else if (type.startsWith(LocationFilter.TYPE)) {
+            filter = new LocationFilter(value);
+        } else if (type.startsWith(NegativeLocationFilter.TYPE)) {
+            filter = new NegativeLocationFilter(value);
         }
 
         return filter;

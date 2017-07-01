@@ -55,7 +55,7 @@
           </documentation>
         </annotation>
       </attribute>
-      <attribute name="username" type="string" use="required">
+      <attribute name="username" type="string" use="optional">
         <annotation>
           <documentation>
             Default AMI username (Name in brackets in Asterisk's manager.conf).

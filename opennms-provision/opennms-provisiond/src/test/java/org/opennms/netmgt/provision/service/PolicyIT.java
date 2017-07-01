@@ -47,6 +47,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
@@ -122,10 +123,10 @@ public class PolicyIT {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.7.15.240", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
-            @JUnitSnmpAgent(host="10.7.15.241", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
-            @JUnitSnmpAgent(host="10.102.251.200", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
-            @JUnitSnmpAgent(host="10.211.140.149", port=161, resource="classpath:snmpwalk-NMS-5414.properties")
+            @JUnitSnmpAgent(host="10.7.15.240", port=161, resource="classpath:/snmpwalk-NMS-5414.properties"),
+            @JUnitSnmpAgent(host="10.7.15.241", port=161, resource="classpath:/snmpwalk-NMS-5414.properties"),
+            @JUnitSnmpAgent(host="10.102.251.200", port=161, resource="classpath:/snmpwalk-NMS-5414.properties"),
+            @JUnitSnmpAgent(host="10.211.140.149", port=161, resource="classpath:/snmpwalk-NMS-5414.properties")
     })
     //@Repeat()
     //@Transactional Do not use transactional because it freezes the database and makes it impossible to check for 
@@ -140,7 +141,7 @@ public class PolicyIT {
             int nodeId = getNodeId();
             eventRecieved.await();
 
-            final NodeScan scan = m_provisioner.createNodeScan(nodeId, getForeignSource(nodeId), getForeignId(nodeId));
+            final NodeScan scan = m_provisioner.createNodeScan(nodeId, getForeignSource(nodeId), getForeignId(nodeId), new OnmsMonitoringLocation());
             runScan(scan);
 
 

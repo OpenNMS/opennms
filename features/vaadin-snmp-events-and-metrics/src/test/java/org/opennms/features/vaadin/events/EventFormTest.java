@@ -36,12 +36,13 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.springframework.core.io.FileSystemResource;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
-import com.vaadin.data.fieldgroup.FieldGroup;
 
 /**
  * The Test Class for EventForm.
@@ -78,7 +79,7 @@ public class EventFormTest {
         Field<?> logMsgDest = group.getField("logmsg.dest");
         Assert.assertNotNull(logMsgDest);
         Assert.assertTrue(logMsgDest instanceof ComboBox);
-        Assert.assertEquals("logndisplay", logMsgDest.getValue());
+        Assert.assertEquals(LogDestType.LOGNDISPLAY, logMsgDest.getValue());
 
         String eventUei = "uei.opennms.org/ietf/mplsTeStdMib/traps/mplsTunnelUp";
         Event event = dao.findByUei(eventUei);

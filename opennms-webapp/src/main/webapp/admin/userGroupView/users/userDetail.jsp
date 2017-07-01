@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -72,7 +72,7 @@
   <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h2 class="panel-title">Details for User: <%=user.getUserId()%> <%= user.isReadOnly()? "(Read Only)":"" %></h2>
+        <h2 class="panel-title">Details for User: <%=user.getUserId()%></h2>
       </div>
       <table class="table table-condensed">
         <tr>
@@ -80,16 +80,23 @@
             Full Name:
           </th>
           <td width="75%">
-            <%=user.getFullName()%>
+            <%=user.getFullName().orElse("")%>
           </td>
         </tr>
-
+        <tr>
+          <th>
+            Security Roles:
+          </th>
+          <td width="75%">
+            <%=org.apache.commons.lang.StringUtils.join(user.getRoles().toArray(new String[user.getRoles().size()]), "<br/>")%>
+          </td>
+        </tr>
         <tr>
           <th>
             Comments:
           </th>
           <td width="75%">
-            <%=user.getUserComments()%>
+            <%=user.getUserComments().orElse("")%>
           </td>
         </tr>
       </table>
@@ -219,7 +226,7 @@
           </tr>
         </thead>
 
-			<% Collection<String> dutySchedules = user.getDutyScheduleCollection(); %>
+			<% Collection<String> dutySchedules = user.getDutySchedules(); %>
                         <%
                                 for (String dutySchedule : dutySchedules) {
                                         DutySchedule tmp = new DutySchedule(dutySchedule);

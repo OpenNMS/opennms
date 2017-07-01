@@ -37,6 +37,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -121,12 +122,12 @@ public class SnmpConfigRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{ipAddr}")
-    public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr) {
+    public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr, @QueryParam("location")String location) {
         final InetAddress addr = InetAddressUtils.addr(ipAddr);
         if (addr == null) {
             throw getException(Status.BAD_REQUEST, "Malformed IP Address: {}.", ipAddr);
         }
-        final SnmpAgentConfig config = m_accessService.getAgentConfig(addr);
+        final SnmpAgentConfig config = m_accessService.getAgentConfig(addr, location);
         return new SnmpInfo(config);
     }
 

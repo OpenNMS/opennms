@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
+
 @SuppressWarnings("serial")
 public class NodeTable extends SelectionAwareTable {
 

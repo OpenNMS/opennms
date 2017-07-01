@@ -174,6 +174,39 @@
 		document.snmpConfigForm.action = "admin/index.jsp";
 		document.snmpConfigForm.submit();
 	}
+
+  $(document).ready(function() {
+      // function to update all locatoin input fields
+      var updateLocations = function(locations) {
+          if (!locations) return;
+          // ensure that they are sorted by priority
+          locations.sort(function(a,b) {
+              return b.priority - a.priority;
+          });
+
+          // update input fields
+          var locationSelectors = ["#location", "#lookup_location"]
+          for (var i = 0; i < locationSelectors.length; i++) {
+              var selector = locationSelectors[i];
+              $.each(locations, function(index, location) {
+                  var locationName = location['location-name'];
+                  $(selector).append($("<option/>").val(locationName).text(locationName));
+              });
+          }
+      };
+
+      // Get all available locations
+      $.get('api/v2/monitoringLocations', function(locationList) {
+          if (locationList && locationList.location && locationList.location.length > 0) {
+              updateLocations(locationList.location);
+          }
+          var selectedLocation = '<%= getValue(request.getAttribute("location")) %>';
+          if (!selectedLocation) {
+              selectedLocation = 'Default';
+          }
+          $("#location").val(selectedLocation);
+      });
+  });
 </script>
 
 <%!// does Null Pointer handling
@@ -250,6 +283,15 @@ if (request.getAttribute("success") != null) {
             </div>
           </div>
           <div class="form-group">
+            <label for="lookup_location" class="control-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the location for which you want to lookup the SNMP configuration.">
+            Location
+            </label>
+            <div class="col-sm-9">
+              <select id="lookup_location" name="location" class="form-control">
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
             <div class="col-sm-9 col-sm-offset-2">
               <button type="submit" class="btn btn-default" name="getConfig">Look up</button>
             </div>
@@ -267,9 +309,9 @@ if (request.getAttribute("success") != null) {
       <div class="panel-body">
 		<p>
 			<b>SNMP Config Lookup:</b> You can look up the actual SNMP
-			configuration for a specific IP. To do so enter the IP Address in the
-			SNMP Config Lookup box and press "Look up". The configuration will
-			then be shown in the "Updateing SNMP Community Names" area.
+			configuration for a specific IP and location. To do so enter the IP Address 
+			and location in the SNMP Config Lookup box and press "Look up". 
+			The configuration will then be shown in the "Updateing SNMP Community Names" area.
 		</p>
 
 		<p>
@@ -335,6 +377,16 @@ if (request.getAttribute("success") != null) {
             </label>
             <div class="col-sm-9">
               <input id="lastIPAddress" name="lastIPAddress" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="location" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="Specify the location at which SNMP Config needs to be updated">
+            Location:
+            </label>
+            <div class="col-sm-9">
+              <select id="location" name="location" class="form-control">
+              </select>
             </div>
           </div>
 

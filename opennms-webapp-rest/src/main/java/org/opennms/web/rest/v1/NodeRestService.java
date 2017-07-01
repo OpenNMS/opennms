@@ -29,7 +29,10 @@
 package org.opennms.web.rest.v1;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -54,16 +57,21 @@ import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,9 +94,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NodeRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
-    
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
+
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private FilterDao m_filterDao;
 
     @Autowired
     private CategoryDao m_categoryDao;
@@ -113,16 +127,24 @@ public class NodeRestService extends OnmsRestService {
 
         if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
             // we've been specifically asked for a list of nodes by ID
-
             final List<Integer> nodeIds = new ArrayList<Integer>();
             for (final String id : params.getFirst("nodeId").split(",")) {
                 nodeIds.add(Integer.valueOf(id));
             }
-            builder.ne("type", "D");
-            builder.in("id", nodeIds);
-            builder.distinct();
+            crit = filterForNodeIds(builder, nodeIds).toCriteria();
+        } else if (params.getFirst("filterRule") != null) {
+            final Set<Integer> filteredNodeIds = m_filterDao.getNodeMap(params.getFirst("filterRule")).keySet();
+            if (filteredNodeIds.size() < 1) {
+                // The "in" criteria fails if the list of node ids is empty
+                final OnmsNodeList coll = new OnmsNodeList(Collections.emptyList());
+                coll.setTotalCount(0);
+                return coll;
+            }
 
-            crit = builder.toCriteria();
+            // Apply the criteria without the filter rule
+            params.remove("filterRule");
+            final CriteriaBuilder filterRuleCriteriaBuilder = getCriteriaBuilder(params);
+            crit = filterForNodeIds(filterRuleCriteriaBuilder, filteredNodeIds).toCriteria();
         } else {
             applyQueryFilters(params, builder);
             builder.orderBy("label").asc();
@@ -145,6 +167,12 @@ public class NodeRestService extends OnmsRestService {
         coll.setTotalCount(m_nodeDao.countMatching(crit));
 
         return coll;
+    }
+
+    private static CriteriaBuilder filterForNodeIds(CriteriaBuilder builder, Collection<Integer> nodeIds) {
+        return builder.ne("type", "D")
+                .in("id", nodeIds)
+                .distinct();
     }
 
     /**
@@ -176,6 +204,17 @@ public class NodeRestService extends OnmsRestService {
         writeLock();
         
         try {
+            if (node.getLocation() == null) {
+                OnmsMonitoringLocation location = m_locationDao.getDefaultLocation();
+                LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
+                node.setLocation(location);
+            }
+
+            // see NMS-8019
+            if (node.getType() == null) {
+                throw getException(Status.BAD_REQUEST, "Node type must be set.");
+            }
+
             LOG.debug("addNode: Adding node {}", node);
             m_nodeDao.save(node);
             sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
@@ -244,8 +283,10 @@ public class NodeRestService extends OnmsRestService {
             if (node == null) throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
     
             LOG.debug("deleteNode: deleting node {}", nodeCriteria);
-            m_nodeDao.delete(node);
-            sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId(), node.getLabel());
+
+            Event e = EventUtils.createDeleteNodeEvent("OpenNMS.REST", node.getId(), -1L);
+            sendEvent(e);
+
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -422,6 +463,14 @@ public class NodeRestService extends OnmsRestService {
         return null;
     }
 
+    private void sendEvent(Event event) {
+        try {
+            m_eventProxy.send(event);
+        } catch (final EventProxyException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
+        }
+    }
+
     private void sendEvent(final String uei, final int nodeId, String nodeLabel) {
         try {
             final EventBuilder bldr = new EventBuilder(uei, "ReST");
@@ -439,6 +488,7 @@ public class NodeRestService extends OnmsRestService {
         builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("categories", "category", JoinType.LEFT_JOIN);
         builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("location", "location", JoinType.LEFT_JOIN);
         builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
 
         applyQueryFilters(params, builder);

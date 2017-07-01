@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,37 +28,43 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.drools.compiler.compiler.DroolsParserException;
-import org.drools.compiler.compiler.PackageBuilder;
-import org.drools.compiler.compiler.PackageBuilderConfiguration;
-import org.drools.core.RuleBase;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
-import org.drools.core.RuleBaseFactory;
-import org.drools.core.StatefulSession;
-import org.drools.core.WorkingMemory;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message.Level;
 import org.kie.api.conf.EventProcessingOption;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kie.api.marshalling.KieMarshallers;
+import org.kie.api.marshalling.Marshaller;
+import org.kie.api.marshalling.ObjectMarshallingStrategy;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.io.ByteStreams;
 
 /**
  * <p>DroolsCorrelationEngine class.</p>
@@ -69,20 +75,21 @@ import com.codahale.metrics.MetricRegistry;
 public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsCorrelationEngine.class);
 
-    private StatefulSession m_workingMemory;
+    private KieBase m_kieBase;
+    private KieSession m_kieSession;
     private List<String> m_interestingEvents;
     private List<Resource> m_rules;
     private Map<String, Object> m_globals = new HashMap<>();
     private String m_name;
     private String m_assertBehaviour;
     private String m_eventProcessingMode;
-
-    private final Meter m_eventsMeter;
     private boolean m_isStreaming = false;
+    private final Meter m_eventsMeter;
+    private Boolean m_persistState;
     
     public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry) {
         this.m_name = name;
-        final Gauge<Long> factCount = () -> { return getWorkingMemory().getFactCount(); };
+        final Gauge<Long> factCount = () -> { return getKieSession().getFactCount(); };
         metricRegistry.register(MetricRegistry.name(name, "fact-count"), factCount);
         final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
         metricRegistry.register(MetricRegistry.name(name, "pending-tasks-count"), pendingTasksCount);
@@ -93,8 +100,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     @Override
     public synchronized void correlate(final Event e) {
         LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
-        m_workingMemory.insert(e);
-        if (!m_isStreaming) m_workingMemory.fireAllRules();
+        m_kieSession.insert(e);
+        if (!m_isStreaming) m_kieSession.fireAllRules();
         m_eventsMeter.mark();
         LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
     }
@@ -102,10 +109,10 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     /** {@inheritDoc} */
     @Override
     protected synchronized void timerExpired(final Integer timerId) {
-	LOG.info("Begin correlation for Timer {}", timerId);
+        LOG.info("Begin correlation for Timer {}", timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
-        m_workingMemory.insert(expiration);
-        if (!m_isStreaming) m_workingMemory.fireAllRules();
+        m_kieSession.insert(expiration);
+        if (!m_isStreaming) m_kieSession.fireAllRules();
         LOG.debug("Begin correlation for Timer {}", timerId);
     }
 
@@ -148,92 +155,115 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      * @throws java.lang.Exception if any.
      */
     public void initialize() throws Exception {
-    	final Properties props = new Properties();
-        
-        props.setProperty("drools.dialect.java.compiler.lnglevel", "1.6");
+        KieServices ks = KieServices.Factory.get();
+        KieFileSystem kFileSystem = ks.newKieFileSystem();
+        loadRules(kFileSystem);
 
-        final PackageBuilderConfiguration packageBuilderConfig = new PackageBuilderConfiguration(props);
-        final PackageBuilder builder = new PackageBuilder( packageBuilderConfig );
-        
-        loadRules(builder);
-        
+        KieBuilder kbuilder = ks.newKieBuilder( kFileSystem );
+        kbuilder.buildAll();
+        if (kbuilder.getResults().hasMessages(org.kie.api.builder.Message.Level.ERROR)) {
+            LOG.warn("Unable to initialize Drools engine: {}", kbuilder.getResults().getMessages(Level.ERROR));
+            throw new IllegalStateException("Unable to initialize Drools engine: " + kbuilder.getResults().getMessages(Level.ERROR));
+        }
+        KieContainer kContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
+
         AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_assertBehaviour);
         RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
         ruleBaseConfig.setAssertBehaviour(behaviour);
-        
+
         EventProcessingOption eventProcessingOption = EventProcessingOption.CLOUD;
         if (m_eventProcessingMode != null && m_eventProcessingMode.toLowerCase().equals("stream")) {
             eventProcessingOption = EventProcessingOption.STREAM;
             m_isStreaming = true;
         }
         ruleBaseConfig.setEventProcessingMode(eventProcessingOption);
-        
-        final RuleBase ruleBase = RuleBaseFactory.newRuleBase( ruleBaseConfig );
 
-        if (builder.hasErrors()) {
-            LOG.warn("Unable to initialize Drools engine: {}", builder.getErrors());
-            throw new IllegalStateException("Unable to initialize Drools engine: " + builder.getErrors());
+        m_kieBase = kContainer.newKieBase(ruleBaseConfig);
+        m_kieSession = m_kieBase.newKieSession();
+        m_kieSession.setGlobal("engine", this);
+
+        for (final Map.Entry<String, Object> entry : m_globals.entrySet()) {
+            m_kieSession.setGlobal(entry.getKey(), entry.getValue());
         }
 
-        ruleBase.addPackage( builder.getPackage() );
-
-        m_workingMemory = ruleBase.newStatefulSession();
-        m_workingMemory.setGlobal("engine", this);
-        
-        for (final Map.Entry<String, Object> entry : m_globals.entrySet()) {
-            m_workingMemory.setGlobal(entry.getKey(), entry.getValue());
+        if (m_persistState != null && m_persistState) {
+            unmarshallStateFromDisk(true);
         }
 
         if (m_isStreaming) {
             new Thread(() -> {
                 Logging.putPrefix(getClass().getSimpleName() + '-' + getName());
-                m_workingMemory.fireUntilHalt();
+                m_kieSession.fireUntilHalt();
             }, "FireTask").start();
         }
     }
 
-    private void loadRules(final PackageBuilder builder) throws DroolsParserException, IOException {
-        
+    private void loadRules(final KieFileSystem kfs) throws DroolsParserException, IOException {
+        int k = 0;
         for (final Resource rulesFile : m_rules) {
-            Reader rdr = null;
-            try {
+            try (InputStream is = rulesFile.getInputStream()) {
                 LOG.debug("Loading rules file: {}", rulesFile);
-                rdr = new InputStreamReader( rulesFile.getInputStream(), "UTF-8" );
-                builder.addPackageFromDrl( rdr );
-            } finally {
-                IOUtils.closeQuietly(rdr);
+                kfs.write(String.format("src/main/resources/" + rulesFile.getFilename(), ++k), ByteStreams.toByteArray(is));
             }
         }
     }
-    
-    /**
-     * <p>getMemorySize</p>
-     *
-     * @return a int.
-     */
-    public int getMemorySize() {
-        int count = 0;
-        for(final Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); it.next()) {
-            count++;
+
+    @Override
+    public void tearDown() {
+        if (m_persistState != null && m_persistState) {
+            if (getPendingTasksCount() > 0) {
+                LOG.error("Cannot marshall state because there are pending time based tasks running.");
+            } else {
+                marshallStateToDisk(true);
+            }
         }
-    	return count;
     }
-    
-    /**
-     * <p>getMemoryObjects</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<Object> getMemoryObjects() {
-    	final List<Object> objects = new LinkedList<>();
-        for(Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); ) {
-        	objects.add(it.next());
+
+    private Path getPathToState() {
+        return Paths.get(System.getProperty("java.io.tmpdir"), "opennms.drools." + m_name + ".state");
+    }
+
+    private void marshallStateToDisk(boolean serialize) {
+        final File stateFile = getPathToState().toFile();
+        LOG.debug("Saving state for engine {} in {} ...", m_name, stateFile);
+        final KieMarshallers kMarshallers = KieServices.Factory.get().getMarshallers();
+        final ObjectMarshallingStrategy oms = serialize ?
+                kMarshallers.newSerializeMarshallingStrategy() : kMarshallers.newIdentityMarshallingStrategy();
+        final Marshaller marshaller = kMarshallers.newMarshaller( m_kieBase, new ObjectMarshallingStrategy[]{ oms } );
+        try (FileOutputStream fos = new FileOutputStream(stateFile)) {
+            m_kieSession.halt();
+            marshaller.marshall( fos, m_kieSession );
+            m_kieSession.dispose();
+            m_kieSession.destroy();
+            LOG.info("Sucessfully save state for engine {} in {}.", m_name, stateFile);
+        } catch (IOException e) {
+            LOG.error("Failed to save state for engine {} in {}.", m_name, stateFile, e);
         }
-        return objects;
     }
-    
-    public WorkingMemory getWorkingMemory() {
-    	return m_workingMemory;
+
+    private void unmarshallStateFromDisk(boolean serialize) {
+        final File stateFile = getPathToState().toFile();
+        LOG.debug("Restoring state for engine {} from {} ...", m_name, stateFile);
+        final KieMarshallers kMarshallers = KieServices.Factory.get().getMarshallers();
+        final ObjectMarshallingStrategy oms = serialize ?
+                kMarshallers.newSerializeMarshallingStrategy() : kMarshallers.newIdentityMarshallingStrategy();
+        final Marshaller marshaller = kMarshallers.newMarshaller( m_kieBase, new ObjectMarshallingStrategy[]{ oms } );
+
+        try (FileInputStream fin = new FileInputStream(stateFile)) {
+            marshaller.unmarshall( fin, m_kieSession );
+            stateFile.delete();
+            LOG.info("Sucessfully restored state for engine {} from {}.", m_name, stateFile);
+        } catch (IOException | ClassNotFoundException e) {
+            LOG.error("Failed to restore state for engine {} from {}.", m_name, stateFile, e);
+        }
+    }
+
+    public Collection<? extends Object> getKieSessionObjects() {
+        return m_kieSession.getObjects();
+    }
+
+    public KieSession getKieSession() {
+        return m_kieSession;
     }
 
     /**
@@ -253,11 +283,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      * @param value a {@link java.lang.Object} object.
      */
     public void setGlobal(final String name, final Object value) {
-        m_workingMemory.setGlobal(name, value);
+        m_kieSession.setGlobal(name, value);
     }
 
     public void setAssertBehaviour(String assertBehaviour) {
-            m_assertBehaviour = assertBehaviour;
+        m_assertBehaviour = assertBehaviour;
     }
 
     public String getEventProcessingMode() {
@@ -267,4 +297,18 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     public void setEventProcessingMode(String eventProcessingMode) {
         this.m_eventProcessingMode = eventProcessingMode;
     }
+
+    public void setPersistState(Boolean persistState) {
+        m_persistState = persistState;
+    }
+
+    public Boolean getPersistState() {
+        return m_persistState;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DroolsCorrelationEngine[%s]", m_name);
+    }
+
 }

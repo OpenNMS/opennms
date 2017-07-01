@@ -47,7 +47,7 @@ public class TticketTest extends XmlTestNoCastor<Tticket> {
 		tticket0.setContent("This is a test");
 		Tticket tticket1 = new Tticket();
 		tticket1.setContent("This is a test");
-		tticket1.setState("on");
+		tticket1.setState(StateType.ON);
 		return Arrays.asList(new Object[][] {
 				{tticket0,
 				"<tticket>This is a test</tticket>",

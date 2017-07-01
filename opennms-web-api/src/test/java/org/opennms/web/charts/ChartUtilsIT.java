@@ -40,10 +40,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.JFreeChart;
 import org.junit.After;
 import org.junit.Before;
@@ -155,14 +154,14 @@ public class ChartUtilsIT {
     }
 
     @Test
-    public void testGetBarChartConfig() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public void testGetBarChartConfig() throws FileNotFoundException, IOException {
 
         assertNotNull(ChartUtils.getBarChartConfigByName("sample-bar-chart"));
         assertTrue(ChartUtils.getBarChartConfigByName("sample-bar-chart").getClass() == BarChart.class);
     }
 
     @Test
-    public void testGetBarChart() throws MarshalException, ValidationException, IOException, SQLException {
+    public void testGetBarChart() throws IOException, SQLException {
         JFreeChart barChart = ChartUtils.getBarChart("sample-bar-chart");
         assertNotNull(barChart);
         //SubTitle count includes "LegendTitle"
@@ -170,7 +169,7 @@ public class ChartUtilsIT {
     }
 
     @Test
-    public void testGetChartWithInvalidChartName() throws MarshalException, ValidationException, IOException, SQLException {
+    public void testGetChartWithInvalidChartName() throws IOException, SQLException {
 
         JFreeChart chart = null;
         try {
@@ -182,7 +181,7 @@ public class ChartUtilsIT {
     }
 
     @Test
-    public void testGetChartAsFileOutputStream() throws FileNotFoundException, IOException, SQLException, ValidationException, MarshalException {
+    public void testGetChartAsFileOutputStream() throws FileNotFoundException, IOException, SQLException {
         final File tempFile = File.createTempFile("sample-bar-chart", "png");
         OutputStream stream = new FileOutputStream(tempFile);
         ChartUtils.getBarChart("sample-bar-chart", stream);
@@ -190,14 +189,14 @@ public class ChartUtilsIT {
     }
 
     @Test
-    public void testGetChartAsBufferedImage() throws MarshalException, ValidationException, IOException, SQLException {
+    public void testGetChartAsBufferedImage() throws IOException, SQLException {
         BufferedImage bi = ChartUtils.getChartAsBufferedImage("sample-bar-chart");
         assertEquals(300, bi.getHeight());
     }
 
-    private static void initalizeChartFactory() throws MarshalException, ValidationException, IOException {
+    private static void initalizeChartFactory() throws IOException {
         ChartConfigFactory.setInstance(new ChartConfigFactory());
-        ByteArrayInputStream rdr = new ByteArrayInputStream(CHART_CONFIG.getBytes("UTF-8"));
+        ByteArrayInputStream rdr = new ByteArrayInputStream(CHART_CONFIG.getBytes(StandardCharsets.UTF_8));
         ChartConfigFactory.parseXml(rdr);
         rdr.close();        
         //        m_config = ChartConfigFactory.getInstance().getConfiguration();

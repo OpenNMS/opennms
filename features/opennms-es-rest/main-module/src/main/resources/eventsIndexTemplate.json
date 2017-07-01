@@ -57,7 +57,37 @@
                },
                "hour":{
                   "type":"long"
+               },
+               "p_alarmseverity":{
+                  "type":"long"
+               },
+               "p_oldseverity":{
+                  "type":"long"
+               },              
+               "p_initialseverity":{
+                  "type":"long"
+               }, 
+               "alarmackduration":{
+                  "type":"long"
+               },           
+               "alarmclearduration":{
+                  "type":"long"
+               },
+               "initialseverity":{
+                  "type":"long"
+               },              
+               "severity":{
+                  "type":"long"
+               },
+               "logmsg":{
+                  "index":"analyzed",
+                  "type":"string"
+               },
+               "description":{
+                  "index":"analyzed",
+                  "type":"string"
                }
+               
             },
             "_all":{
                "enabled":true

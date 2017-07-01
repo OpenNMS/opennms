@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,7 +135,7 @@ public class MarshallTest {
 		byte[] utf8 = marshallToUTF8(notification);
 		
 		
-		String result = new String(utf8, "UTF-8");
+		String result = new String(utf8, StandardCharsets.UTF_8);
 		assertEquals(expectedXML, result);
 		
 		System.err.println(result);

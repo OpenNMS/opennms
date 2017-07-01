@@ -185,7 +185,7 @@ public class CriteriaBuilder {
         return this;
     }
 
-    private boolean addRestriction(final Restriction restriction) {
+    protected boolean addRestriction(final Restriction restriction) {
         if (m_negateNext) {
             m_negateNext = false;
             return m_restrictions.add(Restrictions.not(restriction));

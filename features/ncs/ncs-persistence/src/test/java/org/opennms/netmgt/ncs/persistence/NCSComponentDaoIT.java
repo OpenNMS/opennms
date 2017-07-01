@@ -39,10 +39,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.ncs.NCSBuilder;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponent.DependencyRequirements;
@@ -54,10 +53,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:META-INF/opennms/applicationContext-soa.xml",
-		"classpath:META-INF/opennms/applicationContext-datasource.xml",
-		"classpath*:/META-INF/opennms/applicationContext-daemon.xml",
-		"classpath:META-INF/opennms/applicationContext-testDao.xml",
+		"classpath:/META-INF/opennms/applicationContext-soa.xml",
+		"classpath:/META-INF/opennms/applicationContext-datasource.xml",
+		"classpath:/META-INF/opennms/applicationContext-testDao.xml",
 		"file:target/classes/META-INF/opennms/component-dao.xml"
 })
 @Transactional
@@ -70,6 +68,9 @@ public class NCSComponentDaoIT {
 	DistPollerDao m_distPollerDao;
 	
 	@Autowired
+	MonitoringLocationDao m_locationDao;
+	
+	@Autowired
 	NodeDao m_nodeDao;
 	
 	int m_pe1NodeId;
@@ -80,6 +81,9 @@ public class NCSComponentDaoIT {
 	public void setUp() {
 		
 		NetworkBuilder bldr = new NetworkBuilder();
+		// Make sure that the default OnmsMonitoringLocation is saved
+		m_locationDao.saveOrUpdate(bldr.getLocation());
+		
 		bldr.addNode("PE1").setForeignSource("space").setForeignId("1111-PE1");
 		
 		m_nodeDao.save(bldr.getCurrentNode());

@@ -226,7 +226,7 @@ public class CdpCacheTableTracker extends TableTracker {
 			return getValue(CDP_CACHE_PLATFORM).toDisplayString();
 		}
 
-		public CdpLink getLink(CdpInterfacePortNameGetter cdpInterfacePortNameGetter) {
+		public CdpLink getLink() {
             LOG.info("processCdpCacheRow: row index: cdpCacheIfindex: {} cdpCacheDeviceIndex: {}",  
                      getCdpCacheIfIndex(), getCdpCacheDeviceIndex());
             CdpLink link = new CdpLink();
@@ -239,7 +239,7 @@ public class CdpCacheTableTracker extends TableTracker {
             link.setCdpCacheDeviceId(getCdpCacheDeviceId());
             link.setCdpCacheDevicePort(getCdpCacheDevicePort());
             link.setCdpCacheDevicePlatform(getCdpCachePlatform());
-            return cdpInterfacePortNameGetter.get(link);
+            return link;
 	    }
 
     }

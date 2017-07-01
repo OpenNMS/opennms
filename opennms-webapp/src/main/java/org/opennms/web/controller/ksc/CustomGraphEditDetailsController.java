@@ -114,7 +114,7 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         modelAndView.addObject("timeSpan", sample_graph.getTimespan());
         
         int graph_index = editor.getWorkingGraphIndex(); 
-        int max_graphs = report.getGraphCount();
+        int max_graphs = report.getGraphs().size();
         if (graph_index == -1) {
             graph_index = max_graphs++;
         }

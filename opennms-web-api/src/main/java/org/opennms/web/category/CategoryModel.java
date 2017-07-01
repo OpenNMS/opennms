@@ -41,8 +41,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CategoryFactory;
@@ -72,10 +70,8 @@ public class CategoryModel extends Object {
      *
      * @return a {@link org.opennms.web.category.CategoryModel} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized CategoryModel getInstance() throws IOException, MarshalException, ValidationException {
+    public static synchronized CategoryModel getInstance() throws IOException {
         if (CategoryModel.m_instance == null) {
             CategoryModel.m_instance = new CategoryModel();
         }
@@ -92,7 +88,7 @@ public class CategoryModel extends Object {
     /**
      * Create the instance of the CategoryModel.
      */
-    private CategoryModel() throws IOException, MarshalException, ValidationException {
+    private CategoryModel() throws IOException {
         CategoryFactory.init();
         m_factory = CategoryFactory.getInstance();
 
@@ -170,7 +166,7 @@ public class CategoryModel extends Object {
             org.opennms.netmgt.config.categories.Category category = m_factory.getCategory(categoryName);
     
             if (category != null) {
-                comment = category.getComment();
+                comment = category.getComment().orElse(null);
             }
         } finally {
             m_factory.getReadLock().unlock();

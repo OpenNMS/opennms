@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.detector.simple.request;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p>LineOrientedRequest class.</p>
@@ -62,7 +63,7 @@ public class LineOrientedRequest {
      * @param out a {@link java.io.OutputStream} object.
      */
     public void send(final OutputStream out) throws IOException {
-        out.write(String.format("%s\r\n", m_command).getBytes("UTF-8"));
+        out.write(String.format("%s\r\n", m_command).getBytes(StandardCharsets.UTF_8));
     }
     
     /**

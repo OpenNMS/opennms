@@ -436,7 +436,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
 
         sendRequest(PUT, "/requisitions/test/import", 202);
 
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
     }
 
     @Test
@@ -447,8 +447,8 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
 
         sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 202);
 
-        assertEquals(1, anticipator.unanticipatedEvents().size());
-        final Event event = anticipator.unanticipatedEvents().iterator().next();
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
+        final Event event = anticipator.getUnanticipatedEvents().iterator().next();
         final List<Parm> parms = event.getParmCollection();
         assertEquals(2, parms.size());
         assertEquals("false", parms.get(1).getValue().getContent());

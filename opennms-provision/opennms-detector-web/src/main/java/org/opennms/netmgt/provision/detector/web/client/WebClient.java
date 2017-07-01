@@ -30,7 +30,7 @@ package org.opennms.netmgt.provision.detector.web.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -85,7 +85,7 @@ public class WebClient implements Client<WebRequest, WebResponse> {
         ub.setPort(port);
         ub.setPath(m_path);
         if (m_queryString != null && m_queryString.trim().length() > 0) {
-            final List<NameValuePair> params = URLEncodedUtils.parse(m_queryString, Charset.forName("UTF-8"));
+            final List<NameValuePair> params = URLEncodedUtils.parse(m_queryString, StandardCharsets.UTF_8);
             if (!params.isEmpty()) {
                 ub.setParameters(params);
             }

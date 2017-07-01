@@ -29,42 +29,36 @@
 package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.WrappedVertexHopCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class RemoveFocusVerticesOperation implements Constants, Operation {
 
 	@Override
-	public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
-		if (targets == null || targets.isEmpty()) return null;
-
-		final GraphContainer graphContainer = operationContext.getGraphContainer();
-
-		FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-
-		if (criteria == null) {
-			// Don't do anything... there is no existing VertexHopCriteria
-		} else {
-			for (VertexRef target : targets) {
-				criteria.remove(target);
-			}
-
-			// If there are no remaining focus vertices in the criteria, then
-			// just remove it completely.
-			if (criteria.isEmpty()) {
-				graphContainer.removeCriteria(criteria);
-			}
-
-			graphContainer.redoLayout();
+	public void execute(List<VertexRef> targets, final OperationContext operationContext) {
+		if (targets == null || targets.isEmpty()) {
+			return;
 		}
 
-		return null;
+		final GraphContainer graphContainer = operationContext.getGraphContainer();
+		final Set<VertexHopCriteria> criteriaForGraphContainer = Criteria.getCriteriaForGraphContainer(graphContainer, VertexHopCriteria.class);
+		for (VertexHopCriteria eachCriteria : criteriaForGraphContainer) {
+			for (VertexRef eachTarget : targets) {
+				if (eachCriteria.getVertices().contains(eachTarget)) {
+					graphContainer.removeCriteria(eachCriteria);
+				}
+			}
+		}
+		graphContainer.redoLayout();
 	}
 
 	@Override
@@ -74,22 +68,20 @@ public class RemoveFocusVerticesOperation implements Constants, Operation {
 
 	@Override
 	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-		if (targets == null || targets.isEmpty()) return false;
-
-		final GraphContainer graphContainer = operationContext.getGraphContainer();
-
-		FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-		if (criteria == null) {
+		if (targets == null || targets.isEmpty()) {
 			return false;
-		} else {
-			for (VertexRef target : targets) {
-				// If any of the vertices are currently in the criteria, return true
-				if (criteria.contains(target)) {
-					return true;
-				}
+		}
+		final GraphContainer graphContainer = operationContext.getGraphContainer();
+		final WrappedVertexHopCriteria wrappedVertexHopCriteria = VertexHopGraphProvider.getWrappedVertexHopCriteria(graphContainer);
+		if (wrappedVertexHopCriteria.isEmpty()) {
+			return false;
+		}
+		for (VertexRef target : targets) {
+			// If any of the vertices are currently in the criteria, return true
+			if (wrappedVertexHopCriteria.contains(target)) {
+				return true;
 			}
 		}
-
 		return false;
 	}
 

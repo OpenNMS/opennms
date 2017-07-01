@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,7 +52,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -180,7 +180,7 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public void readTables() throws Exception {
-        readTables(new InputStreamReader(new FileInputStream(m_createSqlLocation), "UTF-8"));
+        readTables(new InputStreamReader(new FileInputStream(m_createSqlLocation), StandardCharsets.UTF_8));
     }
 
     /**
@@ -547,7 +547,7 @@ public class InstallerDb {
         		throw new Exception(message);
         	}
         	
-        	final BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, "UTF-8"));
+        	final BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, StandardCharsets.UTF_8));
         	final StringBuffer createFunction = new StringBuffer();
         	String line;
         	while ((line = in.readLine()) != null) {
@@ -612,7 +612,7 @@ public class InstallerDb {
 
             m_out.print("\n  - " + element.getName() + "... ");
 
-            final BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(element), "UTF-8"));
+            final BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(element), StandardCharsets.UTF_8));
             while ((line = r.readLine()) != null) {
                 line = line.trim();
 
@@ -907,6 +907,14 @@ public class InstallerDb {
                     if (constraint.getType() != Constraint.CHECK) {
                         Assert.state(constraintColumns.size() > 0, "constraint '" + constraint.getName() + "' has no constrained columns");
 
+                        // If the constraint is a foreign key constraint, make sure that the number
+                        // of local and foreign columns matches
+                        Assert.state(
+                            constraint.getType() != Constraint.FOREIGN_KEY ||
+                            constraint.getColumns().size() == constraint.getForeignColumns().size(),
+                            "number of foreign key constraint columns doesn't match number of foreign columns"
+                        );
+
                     	for (final String constrainedName : constraintColumns) {
                     		final Column constrained = findColumn(columns, constrainedName);
                     		if (constrained == null) {
@@ -1184,6 +1192,8 @@ public class InstallerDb {
                 constraint = new Constraint(tableName.toLowerCase(), name, columns, ftable, fcolumns, foreignUpdType, foreignDelType);
             } else if ("c".equals(type)) {
             	constraint = new Constraint(tableName.toLowerCase(), name, checkExpression);
+            } else if ("u".equals(type)) {
+                continue; // Ignored....
             } else {
                 throw new Exception("Do not support constraint type \"" + type + "\" in constraint \"" + name + "\"");
             }
@@ -1716,30 +1726,32 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public void insertData() throws Exception {
-
-        for (final Entry<String,List<Insert>> entry : getInserts().entrySet()) {
-            final String table = entry.getKey();
-            final List<Insert> inserts = entry.getValue();
-            Status status = Status.OK;
-
-            m_out.print("- inserting initial table data for \"" + table + "\"... ");
-
-            // XXX: criteria are checked for all inserts before
-            // any of them are done so inserts don't interfere with
-            // other inserts criteria
-            final List<Insert> toBeInserted = new LinkedList<Insert>();
-            for (final Insert insert : inserts) {
-                if (insert.isCriteriaMet()) {
-                    toBeInserted.add(insert);
-                }
-            }
-            
-            for(final Insert insert : toBeInserted) {
-                status = status.combine(insert.doInsert());
-            }
-
-            m_out.println(status);
+        for (final String table : getInserts().keySet()) {
+            insertData(table);
         }
+    }
+
+    public void insertData(String table) throws Exception {
+        final List<Insert> inserts = getInserts().get(table);
+        Status status = Status.OK;
+
+        m_out.print("- inserting initial table data for \"" + table + "\"... ");
+
+        // XXX: criteria are checked for all inserts before
+        // any of them are done so inserts don't interfere with
+        // other inserts criteria
+        final List<Insert> toBeInserted = new LinkedList<Insert>();
+        for (final Insert insert : inserts) {
+            if (insert.isCriteriaMet()) {
+                toBeInserted.add(insert);
+            }
+        }
+        
+        for(final Insert insert : toBeInserted) {
+            status = status.combine(insert.doInsert());
+        }
+
+        m_out.println(status);
     }
 
     /**

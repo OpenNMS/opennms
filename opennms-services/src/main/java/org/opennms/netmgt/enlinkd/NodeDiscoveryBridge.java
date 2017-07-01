@@ -1,18 +1,29 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R). Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc. OpenNMS(R) is
- * a registered trademark of The OpenNMS Group, Inc. OpenNMS(R) is free
- * software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version. OpenNMS(R) is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
- * License for more details. You should have received a copy of the GNU Affero
- * General Public License along with OpenNMS(R). If not, see:
- * http://www.gnu.org/licenses/ For more information contact: OpenNMS(R)
- * Licensing <license@opennms.org> http://www.opennms.org/
- * http://www.opennms.com/
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.enlinkd;
@@ -22,11 +33,13 @@ import static org.opennms.core.utils.InetAddressUtils.isValidStpBridgeId;
 import static org.opennms.core.utils.InetAddressUtils.getBridgeAddressFromStpBridgeId;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpTracker;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker;
@@ -41,8 +54,6 @@ import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,66 +83,76 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
     }
 
     protected void runCollection() {
-        LOG.info("run: start discovery operations for node: [{}]",
-                 getNodeId());
         final Date now = new Date();
 
-        Map<Integer, String> vlanmap = getVtpVlanMap(getPeer());
-        if (vlanmap.isEmpty())
-            vlanmap.put(null, null);
-
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+        String community = peer.getReadCommunity();
+        Map<Integer, String> vlanmap = getVtpVlanMap(peer);
+        Map<Integer,SnmpAgentConfig> vlanSnmpAgentConfigMap = new HashMap<Integer, SnmpAgentConfig>();
+        for (Integer vlanId: vlanmap.keySet()) {
+            LOG.debug("run: node [{}], support cisco vtp: setting peer community for vlan: {}, vlanname: {}",
+           		 getNodeId(),vlanId,vlanmap.get(vlanId));
+            
+            SnmpAgentConfig vlanpeer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+        	if (vlanpeer.isVersion3()) {
+        		vlanpeer.setContextName("vlan-"+vlanId);
+        	} else {
+                vlanpeer.setReadCommunity(community + "@" + vlanId);
+        	}
+        	vlanSnmpAgentConfigMap.put(vlanId, vlanpeer);        	
+        }
+        
+        if (vlanmap.isEmpty()) {
+        	vlanSnmpAgentConfigMap.put(null, peer);
+        	vlanmap.put(null, null);
+        }
+        
         List<BridgeMacLink> bft = new ArrayList<BridgeMacLink>();
         Map<Integer, Integer> bridgeifindex = new HashMap<Integer, Integer>();
 
-        String community = getPeer().getReadCommunity();
-        for (Entry<Integer, String> entry : vlanmap.entrySet()) {
-            LOG.debug("run: node [{}] cisco vtp: setting peer community for VLAN {}",
-            		 getNodeId(),
-                      entry.getValue());
-            SnmpAgentConfig peer = getPeer();
-            if (entry.getKey() != null)
-                peer.setReadCommunity(community + "@" + entry.getKey());
-            LOG.debug("run: walking dot1d basedata on node [{}}, vlan [{}], vlanname {}.",
-                      getNodeId(), entry.getKey(), entry.getValue());
+        for (Entry<Integer, SnmpAgentConfig> entry : vlanSnmpAgentConfigMap.entrySet()) {
+            Map<Integer,Integer> vlanbridgetoifindex = walkDot1dBasePortTable(entry.getValue());
+            LOG.debug("run: node: [{}], vlan: {}, bridge ifindex map {}",
+                      getNodeId(), vlanmap.get(entry.getKey()), vlanbridgetoifindex);
+            bridgeifindex.putAll(vlanbridgetoifindex);
+        }
 
-            BridgeElement bridge = getDot1dBridgeBase(peer);
+        for (Entry<Integer, String> entry : vlanmap.entrySet()) {
+            
+            BridgeElement bridge = getDot1dBridgeBase(vlanSnmpAgentConfigMap.get(entry.getKey()));
             if (bridge != null) {
                 bridge.setVlan(entry.getKey());
-                bridge.setVlanname(entry.getValue());
+                bridge.setVlanname(vlanmap.get(entry.getKey()));
                 m_linkd.getQueryManager().store(getNodeId(), bridge);
             } else {
-                LOG.debug("run: no dot1d data found on node [{}], vlan [{}], vlanname {}. skipping other operations",
-                          getNodeId(), entry.getKey(), entry.getValue());
+                LOG.debug("run: node: [{}], vlan {}. no dot1d bridge data found. skipping other operations",
+                          getNodeId(), entry.getValue());
                 continue;
             }
 
-            Map<Integer,Integer> vlanbridgetoifindex = walkDot1dBasePortTable(peer);
-            LOG.debug("run: found on node: [{}] vlan: [{}], bridge ifindex map {}",
-                      getNodeId(), entry.getValue(), vlanbridgetoifindex);
             if (!isValidStpBridgeId(bridge.getStpDesignatedRoot())) {
-                LOG.info("run: node [{}]: invalid designated root: spanning tree not supported.",
-                         getNodeId());
+                LOG.info("run: node: [{}], vlan {}. invalid designated root: spanning tree not supported.",
+                         getNodeId(),entry.getValue());
             } else if (bridge.getBaseBridgeAddress().equals(getBridgeAddressFromStpBridgeId(bridge.getStpDesignatedRoot()))) {
-                LOG.info("run: node [{}]: designated root {} is itself. Skipping store.",
+                LOG.info("run: node [{}]: vlan {}. designated root {} is itself. Skipping store.",
                 		 getNodeId(),
+                		 entry.getValue(),
                          bridge.getStpDesignatedRoot());
             } else {
-                for (BridgeStpLink stplink: walkSpanningTree(peer,
+                for (BridgeStpLink stplink: walkSpanningTree(vlanSnmpAgentConfigMap.get(entry.getKey()),
                                  bridge.getBaseBridgeAddress())) {
                     stplink.setVlan(entry.getKey());
-                    stplink.setStpPortIfIndex(vlanbridgetoifindex.get(stplink.getStpPort()));
+                    stplink.setStpPortIfIndex(bridgeifindex.get(stplink.getStpPort()));
                     m_linkd.getQueryManager().store(getNodeId(), stplink);
 
                 }
             }
-
-            bridgeifindex.putAll(vlanbridgetoifindex);
-            bft = walkDot1dTpFdp(entry.getKey(), bridgeifindex, bft, peer);
+            bft = walkDot1dTpFdp(entry.getValue(),entry.getKey(), bridgeifindex, bft, vlanSnmpAgentConfigMap.get(entry.getKey()));
         }
 		
         LOG.debug("run: node [{}]: bridge ifindex map {}",
                   getNodeId(), bridgeifindex);
-        bft = walkDot1qTpFdb(getPeer(),bridgeifindex, bft);
+        bft = walkDot1qTpFdb(peer,bridgeifindex, bft);
         LOG.debug("run: node [{}]: bft size:{}", getNodeId(), bft.size());
 
         if (bft.size() > 0) {
@@ -142,28 +163,16 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         LOG.debug("run: node [{}]: deleting older the time {}", getNodeId(), now);
         m_linkd.collectedBft(getNodeId());
         m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
-        LOG.info("run: end: node discovery operations for bridge: '{}'",
-                 getNodeId());
     }
 
     private BridgeElement getDot1dBridgeBase(SnmpAgentConfig peer) {
-        String trackerName = "dot1dbase";
         final Dot1dBaseTracker dot1dbase = new Dot1dBaseTracker();
-        SnmpWalker walker = SnmpUtils.createWalker(peer, trackerName,
-                                                   dot1dbase);
-        walker.start();
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
-                         trackerName);
-                return null;
-            } else if (walker.failed()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
-                         trackerName, walker.getErrorMessage());
-                return null;
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer, dot1dbase).withDescription("dot1dbase").withLocation(getLocation()).execute().get();
+        } catch (ExecutionException e) {
+            LOG.info("run: Agent error while scanning the dot1dbase table", e);
+            return null; 
         } catch (final InterruptedException e) {
             LOG.error("run: Bridge Linkd node collection interrupted, exiting",
                       e);
@@ -183,8 +192,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             return null;
         }
 
-        if (bridge.getBaseNumPorts() == null
-                || bridge.getBaseNumPorts().intValue() == 0) {
+        if (bridge.getBaseNumPorts() == null) {
             LOG.info("run: node [{}]: base bridge address {}: has 0 port active. BRIDGE_MIB not supported",
             		getNodeId(),dot1dbase.getBridgeAddress());
             return null;
@@ -205,28 +213,22 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
     private Map<Integer, String> getVtpVlanMap(SnmpAgentConfig peer) {
 
         final Map<Integer, String> vlanmap = new HashMap<Integer, String>();
-        String trackerName = "vtpVersion";
         final CiscoVtpTracker vtpStatus = new CiscoVtpTracker();
-        SnmpWalker walker = SnmpUtils.createWalker(peer, trackerName,
-                                                   vtpStatus);
-        walker.start();
-
+        
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
-                         trackerName);
-                return vlanmap;
-            } else if (walker.failed()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
-                         trackerName, walker.getErrorMessage());
-                return vlanmap;
-            }
-        } catch (final InterruptedException e) {
-            LOG.error("run: Bridge Linkd node collection interrupted, exiting",
-                      e);
-            return vlanmap;
-        }
+            m_linkd.getLocationAwareSnmpClient().walk(peer, vtpStatus).
+            withDescription("vtpVersion").
+            withLocation(getLocation()).
+            execute().
+            get();
+       } catch (ExecutionException e) {
+           LOG.info("run: Agent error while scanning the vtpVersion table", e);
+           return vlanmap;
+       } catch (final InterruptedException e) {
+           LOG.info("run: Bridge Linkd node collection interrupted, exiting",
+                     e);
+           return vlanmap;
+       }
 
         if (vtpStatus.getVtpVersion() == null) {
             LOG.info("run: node [{}]: cisco vtp mib not supported.", getNodeId());
@@ -236,7 +238,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         LOG.info("run: node [{}]: cisco vtp mib supported.", getNodeId());
         LOG.debug("run: node [{}]: walking cisco vtp.", getNodeId());
 
-        trackerName = "ciscoVtpVlan";
         final CiscoVtpVlanTableTracker ciscoVtpVlanTableTracker = new CiscoVtpVlanTableTracker() {
             @Override
             public void processCiscoVtpVlanRow(final CiscoVtpVlanRow row) {
@@ -245,19 +246,14 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 }
             }
         };
-        walker = SnmpUtils.createWalker(peer, trackerName,
-                                        ciscoVtpVlanTableTracker);
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
-                         trackerName);
-            } else if (walker.failed()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
-                         trackerName, walker.getErrorMessage());
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer, ciscoVtpVlanTableTracker).
+            withDescription("ciscoVtpVlan").
+            withLocation(getLocation()).
+            execute().
+            get();
+        } catch (ExecutionException e) {
+            LOG.error("run: collection execution failed, exiting",e);
         } catch (final InterruptedException e) {
             LOG.error("run: Bridge Linkd node collection interrupted, exiting",
                       e);
@@ -267,28 +263,22 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
     private Map<Integer, Integer> walkDot1dBasePortTable(SnmpAgentConfig peer) {
         final Map<Integer, Integer> bridgetoifindex = new HashMap<Integer, Integer>();
-        String trackerName = "dot1dBasePortTable";
         Dot1dBasePortTableTracker dot1dBasePortTableTracker = new Dot1dBasePortTableTracker() {
-            @Override
-            public void processDot1dBasePortRow(final Dot1dBasePortRow row) {
-                bridgetoifindex.put(row.getBaseBridgePort(),
-                                    row.getBaseBridgePortIfindex());
-            }
-        };
-
-        SnmpWalker walker = SnmpUtils.createWalker(peer, trackerName,
-                                                   dot1dBasePortTableTracker);
-        walker.start();
-
+                @Override
+                public void processDot1dBasePortRow(final Dot1dBasePortRow row) {
+                    bridgetoifindex.put(row.getBaseBridgePort(),
+                                        row.getBaseBridgePortIfindex());
+                }
+            };
+    
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
-                         trackerName);
-            } else if (walker.failed()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
-                         trackerName, walker.getErrorMessage());
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer, dot1dBasePortTableTracker).
+            withDescription("dot1dBasePortTable").
+            withLocation(getLocation()).
+            execute().
+            get();
+        } catch (ExecutionException e) {
+            LOG.error("run: collection execution failed, exiting",e);
         } catch (final InterruptedException e) {
             LOG.error("run: Bridge Linkd node collection interrupted, exiting",
                       e);
@@ -296,12 +286,11 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         return bridgetoifindex;
     }
 
-    private List<BridgeMacLink> walkDot1dTpFdp(final Integer vlan,
+    private List<BridgeMacLink> walkDot1dTpFdp(final String vlan,final Integer vlanId,
             final Map<Integer, Integer> bridgeifindex,
             List<BridgeMacLink> bft, SnmpAgentConfig peer) {
-        String trackerName = "dot1dTbFdbPortTable";
 
-        Dot1dTpFdbTableTracker stpPortTableTracker = new Dot1dTpFdbTableTracker() {
+        Dot1dTpFdbTableTracker dot1dTpFdbTableTracker = new Dot1dTpFdbTableTracker() {
 
         	
             @Override
@@ -332,17 +321,16 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                              link.getBridgeDot1qTpFdbStatus());
                     return;
                 }
-                link.setVlan(vlan);
+                link.setVlan(vlanId);
 
                 if (!bridgeifindex.containsKey(link.getBridgePort())
                         && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
-                    LOG.warn("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row has invalid bridge port. no ifindex found. ",
+                    LOG.warn("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} status {}. no ifindex found. ",
                     		getNodeId(),
                              row.getDot1dTpFdbAddress(), vlan,
                              row.getDot1dTpFdbPort(),
-                             link.getBridgePortIfIndex(),
                              link.getBridgeDot1qTpFdbStatus());
-                    return;
+                    fixCiscoBridgeMibPort(link.getBridgePort(), bridgeifindex);
                 }
                 link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
                 LOG.debug("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row processed.",
@@ -353,34 +341,58 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 bft.add(link);
             }
         };
-        SnmpWalker walker = SnmpUtils.createWalker(peer, trackerName,
-                                                   stpPortTableTracker);
-        walker.start();
-
+        
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
-                         trackerName);
-                return bft;
-            } else if (walker.failed()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
-                         trackerName, walker.getErrorMessage());
-                return bft;
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
+                                                      dot1dTpFdbTableTracker).withDescription("dot1dTbFdbPortTable").withLocation(getLocation()).execute().get();
+        } catch (ExecutionException e) {
+            LOG.error("run: collection execution failed, exiting", e);
         } catch (final InterruptedException e) {
             LOG.error("run: Bridge Linkd node collection interrupted, exiting",
                       e);
-            return bft;
         }
         return bft;
     }
 
+    private void fixCiscoBridgeMibPort(Integer bridgeport,Map<Integer,Integer> bridgeifindex) {
+        List<Integer> sortedPort = new ArrayList<Integer>(bridgeifindex.keySet());
+        Collections.sort(sortedPort);
+        Integer beforePort=null;
+        Integer afterPort=null;
+        for (Integer port: sortedPort) {
+        	if (port < bridgeport)
+        		beforePort = port;
+        	if (port > bridgeport) {
+        		afterPort = port;
+        		break;
+        	}
+        }
+        if (afterPort==null && beforePort == null) {
+    		bridgeifindex.put(bridgeport, bridgeport);        	
+        } else if (afterPort == null && bridgeifindex.get(beforePort) == 0) {
+    		bridgeifindex.put(bridgeport, bridgeport);
+        } else if (afterPort == null && bridgeifindex.get(beforePort) == 0) {
+    		bridgeifindex.put(bridgeport, bridgeport+bridgeifindex.get(beforePort)-beforePort);
+        } else if (beforePort == null) {
+    		bridgeifindex.put(bridgeport, bridgeport+bridgeifindex.get(afterPort)-afterPort);
+        } else {
+        	int diffbefore = bridgeifindex.get(beforePort)-beforePort;
+        	int diffafter  = bridgeifindex.get(afterPort)-afterPort;
+        	if (diffafter == diffbefore) {
+        		bridgeifindex.put(bridgeport, bridgeport+diffafter);
+        	} else if ((bridgeport-beforePort) > (afterPort-bridgeport) ) {
+            	bridgeifindex.put(bridgeport, diffafter+bridgeport);
+        	} else {
+            	bridgeifindex.put(bridgeport, diffbefore+bridgeport);
+        	}
+        }
+        LOG.debug("fixCiscoBridgeMibPort: node [{}]: port {} ifindex {}.",
+        		bridgeport,bridgeifindex.get(bridgeport));
+    }
+    
     private List<BridgeMacLink> walkDot1qTpFdb(SnmpAgentConfig peer,
             final Map<Integer, Integer> bridgeifindex,
             final List<BridgeMacLink> bft) {
-
-        String trackerName = "dot1qTbFdbPortTable";
 
         Dot1qTpFdbTableTracker dot1qTpFdbTableTracker = new Dot1qTpFdbTableTracker() {
 
@@ -434,30 +446,20 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             }
 
         };
-        SnmpWalker walker = SnmpUtils.createWalker(peer, trackerName,
-                                                   dot1qTpFdbTableTracker);
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
-                         trackerName);
-            } else if (walker.failed()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
-                         trackerName, walker.getErrorMessage());
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
+                                                      dot1qTpFdbTableTracker).withDescription("dot1qTbFdbPortTable").withLocation(getLocation()).execute().get();
+        } catch (ExecutionException e) {
+            LOG.error("run: collection execution failed, exiting", e);
         } catch (final InterruptedException e) {
             LOG.error("run: Bridge Linkd node collection interrupted, exiting",
                       e);
-            return bft;
         }
         return bft;
     }
 
-    private List<BridgeStpLink> walkSpanningTree(SnmpAgentConfig peer, final String baseBridgeAddress) {
-
-        String trackerName = "dot1dStpPortTable";
+    private List<BridgeStpLink> walkSpanningTree(SnmpAgentConfig peer,
+            final String baseBridgeAddress) {
 
         final List<BridgeStpLink> stplinks = new ArrayList<BridgeStpLink>();
         Dot1dStpPortTableTracker stpPortTableTracker = new Dot1dStpPortTableTracker() {
@@ -487,19 +489,11 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             }
         };
 
-        SnmpWalker walker = SnmpUtils.createWalker(peer, trackerName,
-                                                   stpPortTableTracker);
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
-                         trackerName);
-            } else if (walker.failed()) {
-                LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
-                         trackerName, walker.getErrorMessage());
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
+                                                      stpPortTableTracker).withDescription("dot1dStpPortTable").withLocation(getLocation()).execute().get();
+        } catch (ExecutionException e) {
+            LOG.error("run: collection execution failed, exiting", e);
         } catch (final InterruptedException e) {
             LOG.error("run: Bridge Linkd node collection interrupted, exiting",
                       e);

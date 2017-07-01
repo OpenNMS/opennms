@@ -71,7 +71,15 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      * @return A String representing the provisioned label for the node.  Returns null if not found.
      */
     String getLabelForId(Integer id);
-    
+
+    /**
+     * Light weight call to simply get the node location without loading the entire node.
+     *
+     * @param id
+     * @return A String representing the provisioned label for the node.  Returns null if not found.
+     */
+    String getLocationForId(Integer id);
+
     /**
      * <p>findByLabel</p>
      *

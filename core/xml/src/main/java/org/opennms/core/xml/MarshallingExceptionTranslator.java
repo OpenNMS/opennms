@@ -30,7 +30,6 @@ package org.opennms.core.xml;
 
 import java.io.IOException;
 
-import org.exolab.castor.xml.ValidationException;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -49,17 +48,6 @@ public class MarshallingExceptionTranslator {
      */
     public DataAccessException translate(final String task, final IOException e) {
         return new MarshallingResourceFailureException("Failed to perform IO while " + task + ": " + e, e);
-    }
-
-    /**
-     * <p>translate</p>
-     *
-     * @param task a {@link java.lang.String} object.
-     * @param e a {@link org.exolab.castor.xml.ValidationException} object.
-     * @return a {@link org.springframework.dao.DataAccessException} object.
-     */
-    public DataAccessException translate(final String task, final ValidationException e) {
-        return new MarshallingResourceFailureException("Failed to validate XML file while " + task + ": " + e, e);
     }
 
     /**

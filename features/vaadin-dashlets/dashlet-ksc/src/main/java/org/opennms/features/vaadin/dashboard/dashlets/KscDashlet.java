@@ -28,11 +28,13 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
@@ -48,11 +50,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This dashlet class is used to display the reports of a Ksc report.
@@ -132,19 +139,15 @@ public class KscDashlet extends AbstractDashlet {
 
                     Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
 
-                    columns = kscReport.getGraphs_per_line();
+                    columns = kscReport.getGraphsPerLine().orElse(1);
 
-                    if (columns == 0) {
-                        columns = 1;
-                    }
-
-                    rows = kscReport.getGraphCount() / columns;
+                    rows = kscReport.getGraphs().size() / columns;
 
                     if (rows == 0) {
                         rows = 1;
                     }
 
-                    if (kscReport.getGraphCount() % columns > 0) {
+                    if (kscReport.getGraphs().size() % columns > 0) {
                         rows++;
                     }
 
@@ -167,10 +170,11 @@ public class KscDashlet extends AbstractDashlet {
                     for (int y = 0; y < m_gridLayout.getRows(); y++) {
                         for (int x = 0; x < m_gridLayout.getColumns(); x++) {
 
-                            if (i < kscReport.getGraphCount()) {
-                                Graph graph = kscReport.getGraph(i);
+                            if (i < kscReport.getGraphs().size()) {
+                                final int index = i;
+                                Graph graph = kscReport.getGraphs().get(index);
 
-                                Map<String, String> data = getDataForResourceId(graph.getNodeId(), graph.getResourceId());
+                                Map<String, String> data = getDataForResourceId(graph.getNodeId().orElse(null), graph.getResourceId().orElse(null));
 
                                 Calendar beginTime = Calendar.getInstance();
                                 Calendar endTime = Calendar.getInstance();
@@ -201,10 +205,10 @@ public class KscDashlet extends AbstractDashlet {
 
                                 labelTitle.addStyleName("text");
 
-                                Label labelFrom = new Label("From: " + beginTime.getTime().toString());
+                                Label labelFrom = new Label("From: " + StringUtils.toStringEfficiently(beginTime.getTime()));
                                 labelFrom.addStyleName("text");
 
-                                Label labelTo = new Label("To: " + endTime.getTime().toString());
+                                Label labelTo = new Label("To: " + StringUtils.toStringEfficiently(endTime.getTime()));
                                 labelTo.addStyleName("text");
 
                                 Label labelNodeLabel = new Label(data.get("nodeLabel"));
@@ -304,8 +308,8 @@ public class KscDashlet extends AbstractDashlet {
                     accordion.setSizeFull();
                     m_verticalLayout.addComponent(accordion);
 
-                    for (Graph graph : kscReport.getGraph()) {
-                        Map<String, String> data = getDataForResourceId(graph.getNodeId(), graph.getResourceId());
+                    for (Graph graph : kscReport.getGraphs()) {
+                        Map<String, String> data = getDataForResourceId(graph.getNodeId().orElse(null), graph.getResourceId().orElse(null));
 
                         Calendar beginTime = Calendar.getInstance();
                         Calendar endTime = Calendar.getInstance();
@@ -336,10 +340,10 @@ public class KscDashlet extends AbstractDashlet {
 
                         labelTitle.addStyleName("text");
 
-                        Label labelFrom = new Label("From: " + beginTime.getTime().toString());
+                        Label labelFrom = new Label("From: " + StringUtils.toStringEfficiently(beginTime.getTime()));
                         labelFrom.addStyleName("text");
 
-                        Label labelTo = new Label("To: " + endTime.getTime().toString());
+                        Label labelTo = new Label("To: " + StringUtils.toStringEfficiently(endTime.getTime()));
                         labelTo.addStyleName("text");
 
                         Label labelNodeLabel = new Label(data.get("nodeLabel"));
@@ -426,7 +430,7 @@ public class KscDashlet extends AbstractDashlet {
     }
 
     private static GraphContainer getGraphContainer(Graph graph, Date start, Date end) {
-        GraphContainer graphContainer = new GraphContainer(graph.getGraphtype(), graph.getResourceId());
+        GraphContainer graphContainer = new GraphContainer(graph.getGraphtype(), graph.getResourceId().orElse(null));
         graphContainer.setTitle(graph.getTitle());
         // Setup the time span
         graphContainer.setStart(start);

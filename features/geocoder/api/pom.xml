@@ -3,46 +3,20 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.geocoder</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.geocoder</groupId>
   <artifactId>org.opennms.features.geocoder.api</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Geocoder API</name>
-
+  <name>OpenNMS :: Features :: Geocoder :: API</name>
   <description>API for doing a geocoder lookup (turning an address into coordinates)</description>
   <properties>
     <bundle.symbolicName>org.opennms.features.geocoder.api</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.geocoder</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
-  <dependencies>
-    <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>gwt-dependencies</artifactId>
-        <type>pom</type>
-    </dependency>
-    <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-user</artifactId>
-        <scope>provided</scope>
-    </dependency>
-  </dependencies>    
-
   <build>
-
-    <resources>
-      <resource>
-        <directory>src/main/java</directory>
-        <includes>
-          <include>**/*.gwt.xml</include>
-          <include>**/*.java</include>
-        </includes>
-      </resource>
-    </resources>
-
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -60,21 +34,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
-
 </project>

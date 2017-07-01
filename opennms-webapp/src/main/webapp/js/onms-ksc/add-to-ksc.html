@@ -1,0 +1,38 @@
+<ng-form name="kscForm">
+  <div class="modal-header">
+    <h3 class="modal-title">Add {{ graphTitle }} to KSC</h3>
+  </div>
+  <div class="modal-body">
+    <div class="form-group" ng-class="{ 'has-error' : kscForm.graphTitle.$invalid }">
+      <label class="control-label" for="resourceLabel">Resource</label>
+      <input ng-disabled="true" class="form-control" type="text" id="resourceLabel" name="resourceLabel" ng-model="resourceLabel"/>
+    </div>
+    <div class="form-group" ng-class="{ 'has-error' : kscForm.graphTitle.$invalid }">
+      <label class="control-label" for="graphTitle">Graph Title</label>
+      <input required class="form-control" type="text" id="graphTitle" name="graphTitle" ng-model="graphTitle" placeholder="Graph Title"/>
+      <p ng-show="kscForm.graphTitle.$invalid" class="help-block">Graph title is required.</p>
+    </div>
+    <div class="form-group" ng-class="{ 'has-error' : kscForm.timespan.$invalid }">
+      <label class="control-label" for="timespan">Time Range</label>
+      <input required class="form-control" type="text" id="timespan" name="timespan" ng-model="timespan"
+        placeholder="Choose the target time range here..."
+        uib-typeahead="timespan as timespan for timespan in timespans | filter:$viewValue"
+        typeahead-editable="false"
+        typeahead-min-length="0"/>
+      <p ng-show="kscForm.timespan.$invalid" class="help-block">Time range is required.</p>
+    </div>
+    <div class="form-group" ng-class="{ 'has-error' : kscForm.kscReport.$invalid }">
+      <label class="control-label" for="kscReport">Target KSC Report</label>
+      <input required class="form-control" type="text" id="kscReport" name="kscReport" ng-model="kscReport" 
+        placeholder="Choose the target KSC Report by typing the name here..."
+        uib-typeahead="ksc as ksc.label for ksc in kscReports | filter:$viewValue"
+        typeahead-editable="false"
+        typeahead-min-length="0"/>
+      <p ng-show="kscForm.kscReport.$invalid" class="help-block">Target KSC Report is required.</p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="kscForm.$invalid">Add <span class="glyphicon glyphicon-save"/></button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+  </div>
+</ng-form>

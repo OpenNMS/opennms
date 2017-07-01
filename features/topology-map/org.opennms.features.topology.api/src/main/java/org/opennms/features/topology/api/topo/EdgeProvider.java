@@ -40,7 +40,7 @@ public interface EdgeProvider {
 	 * such as letters digits and underscore (no colons, periods, commans etc.)
 	 * 
 	 */
-	public String getEdgeNamespace();
+	String getEdgeNamespace();
 	
 	/**
 	 * This boolean returns true if the edges in this provider are intended
@@ -50,25 +50,25 @@ public interface EdgeProvider {
 	 * @return true if this provider contributes the the given namespace, false other.  Should 
 	 * return false for passing its own namepace. A provider doesn't contribute to itself    
 	 */
-	public boolean contributesTo(String namespace);
+	boolean contributesTo(String namespace);
 
-	public Edge getEdge(String namespace, String id);
+	Edge getEdge(String namespace, String id);
 	
-	public Edge getEdge(EdgeRef reference);
+	Edge getEdge(EdgeRef reference);
 	
 	/**
 	 * Return an immutable list of edges that match the criteria.
 	 */
-	public List<Edge> getEdges(Criteria... criteria);
+	List<Edge> getEdges(Criteria... criteria);
 	
 	/**
 	 * Return an immutable list of all edges that match this set of references.
 	 */
-	public List<Edge> getEdges(Collection<? extends EdgeRef> references);
+	List<Edge> getEdges(Collection<? extends EdgeRef> references);
 	
-	public void addEdgeListener(EdgeListener listener);
+	void addEdgeListener(EdgeListener listener);
 	
-	public void removeEdgeListener(EdgeListener listener);
+	void removeEdgeListener(EdgeListener listener);
 
 	void clearEdges();
 

@@ -31,6 +31,7 @@ package org.opennms.netmgt.config;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -43,7 +44,8 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
  */
 public class SnmpConfigManager {
 
-	private SnmpConfig m_config;
+    private static final String DEFAULT_LOCATION = "Default";
+    private SnmpConfig m_config;
 	private List<MergeableDefinition> m_definitions = new ArrayList<MergeableDefinition>();
 
 	/**
@@ -134,6 +136,7 @@ public class SnmpConfigManager {
 		removeDefaults(eventDef); 
 		MergeableDefinition eventToMerge = new MergeableDefinition(eventDef);
 
+        removeDefinitionsthatDontMatchLocation(eventDef);
 		// remove pass
 		purgeRangesFromDefinitions(eventToMerge);
 
@@ -149,7 +152,28 @@ public class SnmpConfigManager {
 
 	}
 
-	/**
+    private void removeDefinitionsthatDontMatchLocation(Definition eventToDef) {
+
+        for (Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {
+            MergeableDefinition def = iter.next();
+            String location = def.getConfigDef().getLocation();
+            String locationFromEvent = eventToDef.getLocation();
+            if (DEFAULT_LOCATION.equals(location)) {
+                location = null;
+                def.getConfigDef().setLocation(location);
+            }
+            if (DEFAULT_LOCATION.equals(locationFromEvent)) {
+                locationFromEvent = null;
+                eventToDef.setLocation(locationFromEvent);
+            }
+            if (!Objects.equals(location, locationFromEvent)) {
+                iter.remove();
+            }
+        }
+
+    }
+
+    /**
 	 * This method purges specifics and ranges from definitions that don't match
 	 * the attributes specified in the event (the updateDef)
 	 * 

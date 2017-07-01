@@ -5,7 +5,7 @@
   http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
 
   <!-- TEST FILE FOR LOADING ALARMCHANGE NOTIFIER WITH DATABASE INFORMATION -->
-  <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory"
+  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
     idleTimeout="600"
     loginTimeout="3"
     minPool="50"

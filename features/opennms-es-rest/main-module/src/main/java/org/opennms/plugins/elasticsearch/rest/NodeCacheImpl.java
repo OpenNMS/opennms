@@ -28,23 +28,26 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import org.opennms.netmgt.config.categories.Category;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * Created:
@@ -52,7 +55,7 @@ import java.util.concurrent.TimeUnit;
  * Date: 11:21 AM 6/27/15
  */
 public class NodeCacheImpl implements NodeCache {
-	private static final Logger LOG = LoggerFactory.getLogger(NodeCacheImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NodeCacheImpl.class);
 
     private long MAX_SIZE = 10000;
     private long MAX_TTL  = 5; // Minutes
@@ -60,13 +63,16 @@ public class NodeCacheImpl implements NodeCache {
     private volatile NodeDao nodeDao;
     private volatile TransactionOperations transactionOperations;
 
-    private LoadingCache<Long, Map> cache=null;
+    private static boolean archiveAssetData =true;
+
+    private LoadingCache<Long, Map<String,String>> cache = null;
 
     public NodeCacheImpl() {}
 
     public void init() {
         if(cache==null) {
-            LOG.info("initializing node data cache (TTL="+MAX_TTL+"m, MAX_SIZE="+MAX_SIZE+")");
+            LOG.info("initializing node data cache (archiveAssetData="+archiveAssetData
+                    + ", TTL="+MAX_TTL+"m, MAX_SIZE="+MAX_SIZE+")");
             CacheBuilder cacheBuilder = CacheBuilder.newBuilder();
             if(MAX_TTL>0) {
                 cacheBuilder.expireAfterWrite(MAX_TTL, TimeUnit.MINUTES);
@@ -75,9 +81,9 @@ public class NodeCacheImpl implements NodeCache {
                 cacheBuilder.maximumSize(MAX_SIZE);
             }
 
-            cache=cacheBuilder.build(new CacheLoader<Long, Map>() {
+            cache=cacheBuilder.build(new CacheLoader<Long, Map<String,String>>() {
                                              @Override
-                                             public Map load(Long key) throws Exception {
+                                             public Map<String,String> load(Long key) throws Exception {
                                                  return getNodeAndCategoryInfo(key);
                                              }
                                          }
@@ -85,7 +91,7 @@ public class NodeCacheImpl implements NodeCache {
         }
     }
 
-    public Map getEntry(Long key) {
+    public Map<String,String> getEntry(Long key) {
         return cache.getUnchecked(key);
     }
 
@@ -94,8 +100,8 @@ public class NodeCacheImpl implements NodeCache {
         cache.refresh(key);
     }
 
-    private Map getNodeAndCategoryInfo(Long nodeId) {
-        final Map result=new HashMap();
+    private Map<String,String> getNodeAndCategoryInfo(Long nodeId) {
+        final Map<String,String> result=new HashMap<>();
 
         // safety check
         if(nodeId!=null) {
@@ -122,7 +128,7 @@ public class NodeCacheImpl implements NodeCache {
      * @param body the map
      * @param node the node object
      */
-    private void populateBodyWithNodeInfo(Map body, OnmsNode node) {
+    private static void populateBodyWithNodeInfo(Map<String,String> body, OnmsNode node) {
         body.put("nodelabel", node.getLabel());
         body.put("nodesysname", node.getSysName());
         body.put("nodesyslocation", node.getSysLocation());
@@ -130,13 +136,57 @@ public class NodeCacheImpl implements NodeCache {
         body.put("foreignid", node.getForeignId());
         body.put("operatingsystem", node.getOperatingSystem());
         StringBuilder categories=new StringBuilder();
-        for (Iterator i=node.getCategories().iterator();i.hasNext();) {
+        for (Iterator<OnmsCategory> i=node.getCategories().iterator();i.hasNext();) {
             categories.append(((OnmsCategory)i.next()).getName());
             if(i.hasNext()) {
                 categories.append(",");
             }
         }
         body.put("categories", categories.toString());
+
+        if(archiveAssetData){
+
+            // parent information
+            OnmsNode parent = node.getParent();
+            if (parent!=null){
+                if (parent.getLabel()!=null)body.put("parent-nodelabel", parent.getLabel());
+                if (parent.getNodeId() !=null)body.put("parent-nodeid", parent.getNodeId());
+                if (parent.getForeignSource() !=null)body.put("parent-foreignsource", parent.getForeignSource());
+                if (parent.getForeignId() !=null)body.put("parent-foreignid", parent.getForeignId());
+            }
+
+            //assetRecord.
+            OnmsAssetRecord assetRecord= node.getAssetRecord() ;
+            if(assetRecord!=null){
+
+                //geolocation
+                OnmsGeolocation gl = assetRecord.getGeolocation();
+                if (gl !=null){
+                        if (gl.getLatitude() !=null)body.put("asset-latitude",  gl.getLatitude().toString());
+                        if (gl.getLongitude()!=null)body.put("asset-longitude", gl.getLongitude().toString());
+                }
+
+                //assetRecord
+                if (assetRecord.getRegion() !=null && ! "".equals(assetRecord.getRegion())) body.put("asset-region", assetRecord.getRegion());
+                if (assetRecord.getBuilding() !=null && ! "".equals(assetRecord.getBuilding())) body.put("asset-building", assetRecord.getBuilding());
+                if (assetRecord.getFloor() !=null && ! "".equals(assetRecord.getFloor())) body.put("asset-floor",  assetRecord.getFloor());
+                if (assetRecord.getRoom() !=null && ! "".equals(assetRecord.getRoom())) body.put("asset-room",   assetRecord.getRoom());
+                if (assetRecord.getRack() !=null && ! "".equals(assetRecord.getRack())) body.put("asset-rack",  assetRecord.getRack());
+                if (assetRecord.getSlot() !=null && ! "".equals(assetRecord.getSlot())) body.put("asset-slot",  assetRecord.getSlot());
+                if (assetRecord.getPort() !=null && ! "".equals(assetRecord.getPort())) body.put("asset-port",  assetRecord.getPort());
+                if (assetRecord.getCategory() !=null && ! "".equals(assetRecord.getCategory())) body.put("asset-category",  assetRecord.getCategory());
+                if (assetRecord.getDisplayCategory() !=null && ! "".equals(assetRecord.getDisplayCategory())) body.put("asset-displaycategory",  assetRecord.getDisplayCategory());
+                if (assetRecord.getNotifyCategory() !=null && ! "".equals(assetRecord.getNotifyCategory())) body.put("asset-notifycategory",  assetRecord.getNotifyCategory());
+                if (assetRecord.getPollerCategory() !=null && ! "".equals(assetRecord.getPollerCategory())) body.put("asset-pollercategory",   assetRecord.getPollerCategory());
+                if (assetRecord.getThresholdCategory() !=null && ! "".equals(assetRecord.getThresholdCategory())) body.put("asset-thresholdcategory",   assetRecord.getThresholdCategory());
+                if (assetRecord.getManagedObjectType() !=null && ! "".equals(assetRecord.getManagedObjectType())) body.put("asset-managedobjecttype",   assetRecord.getManagedObjectType());
+                if (assetRecord.getManagedObjectInstance() !=null && ! "".equals(assetRecord.getManagedObjectInstance())) body.put("asset-managedobjectinstance", assetRecord.getManagedObjectInstance());
+                if (assetRecord.getManufacturer() !=null && ! "".equals(assetRecord.getManufacturer())) body.put("asset-manufacturer", assetRecord.getManufacturer());
+                if (assetRecord.getVendor() !=null && ! "".equals(assetRecord.getVendor())) body.put("asset-vendor", assetRecord.getVendor());
+                if (assetRecord.getModelNumber() !=null && ! "".equals(assetRecord.getModelNumber())) body.put("asset-modelnumber", assetRecord.getModelNumber());
+            }
+        }
+
     }
 
     /* getters and setters */
@@ -170,5 +220,13 @@ public class NodeCacheImpl implements NodeCache {
 
     public void setMAX_TTL(long MAX_TTL) {
         this.MAX_TTL = MAX_TTL;
+    }
+
+    public boolean getArchiveAssetData() {
+        return archiveAssetData;
+    }
+
+    public void setArchiveAssetData(boolean archiveAssetData) {
+        NodeCacheImpl.archiveAssetData = archiveAssetData;
     }
 }

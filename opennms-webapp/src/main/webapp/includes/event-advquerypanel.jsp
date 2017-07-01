@@ -35,6 +35,8 @@
     org.opennms.netmgt.model.OnmsSeverity
   "
 %>
+<%@ page import="org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation" %>
+<%@ page import="org.opennms.netmgt.model.OnmsMonitoringSystem" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
@@ -43,6 +45,8 @@
     Map<String, Integer> serviceNameMap = new TreeMap<String, Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
     Set<String> serviceNameSet = serviceNameMap.keySet();
 
+	List<OnmsMonitoringLocation> monitoringLocations = NetworkElementFactory.getInstance(getServletContext()).getMonitoringLocations();
+	List<OnmsMonitoringSystem> monitoringSystems = NetworkElementFactory.getInstance(getServletContext()).getMonitoringSystems();
 %>
 
 <jsp:useBean id="now" class="java.util.Date" />
@@ -86,6 +90,31 @@
 		<label for="iplike">TCP/IP Address Like:</label>
 		<input class="form-control" type="text" name="iplike" value="" />
 	</div>
+	</div>
+
+	<div class="row">
+		<div class="form-group col-sm-6">
+			<label for="nodelocation">Node Location:</label>
+			<select class="form-control" name="nodelocation">
+				<option selected="selected">Any</option>
+				<% for (OnmsMonitoringLocation onmsMonitoringLocation : monitoringLocations ) { %>
+				<option value="<%= onmsMonitoringLocation.getLocationName() %>">
+					<%= onmsMonitoringLocation.getLocationName() %>
+				</option>
+				<% } %>
+			</select>
+		</div>
+		<div class="form-group col-sm-6">
+			<label for="systemId">System-ID:</label>
+			<select class="form-control" name="systemId">
+				<option selected>Any</option>
+				<% for (OnmsMonitoringSystem onmsMonitoringSystem : monitoringSystems ) { %>
+				<option value="<%= onmsMonitoringSystem.getId() %>">
+					<%= onmsMonitoringSystem.getId() %>
+				</option>
+				<% } %>
+			</select>
+		</div>
 	</div>
 
 	<div class="row">

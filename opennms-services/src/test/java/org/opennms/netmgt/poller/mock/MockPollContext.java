@@ -118,7 +118,6 @@ public class MockPollContext implements PollContext, EventListener {
     @Override
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
         EventBuilder e = MockEventUtil.createEventBuilder("Test", uei, nodeId, (address == null ? null : InetAddressUtils.str(address)), svcName, reason);
-        e.setCreationTime(date);
         e.setTime(date);
         return e.getEvent();
     }

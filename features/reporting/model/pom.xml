@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.reporting</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.reporting</groupId>
   <artifactId>org.opennms.features.reporting.model</artifactId>
-  <name>OpenNMS Features Reporting Model</name>
+  <name>OpenNMS :: Features :: Reporting :: Model</name>
   <url>http://www.opennms.org/</url>
   <packaging>bundle</packaging>
   <build>
@@ -32,6 +32,30 @@
           </instructions>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/xsds.xml</descriptor>
+          </descriptors>
+          <tarLongFileMode>posix</tarLongFileMode>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.xml</artifactId>
+    </dependency>
+  </dependencies>
 </project>

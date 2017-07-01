@@ -47,8 +47,10 @@ import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -91,6 +93,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * Event handler
      */
     private volatile EventForwarder m_eventForwarder;
+
+    @Autowired
+    private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
     private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<Integer>();
     /**
@@ -228,7 +233,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      */
     protected synchronized void onStop() {
 
-        // Stop the scheduler
+        LOG.info("stop: persisting forwarders");
+        m_queryMgr.persistForwarders();
+        LOG.info("stop: persisted forwarders");
+              // Stop the scheduler
         LOG.info("stop: Stopping enhanced linkd scheduler");
         m_scheduler.stop();
         m_scheduler = null;
@@ -585,18 +593,21 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 	public String getSource() {
 		return "enlinkd";
 	}
-	
-    public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr) {
-    	return SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
+
+    public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr, String location) {
+    	return SnmpPeerFactory.getInstance().getAgentConfig(ipaddr, location);
     }
-    
-    
+
     public long getInitialSleepTime() {
     	return m_linkdConfig.getInitialSleepTime();
     }
 
     public long getRescanInterval() {
             return m_linkdConfig.getRescanInterval(); 
+    }
+
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return m_locationAwareSnmpClient;
     }
     
     public int getMaxbft() {

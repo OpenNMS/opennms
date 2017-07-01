@@ -31,8 +31,7 @@ package org.opennms.report.configuration;
 import java.io.IOException;
 import java.util.Date;
 
-
-
+import org.opennms.core.utils.StringUtils;
 import org.opennms.report.ReportMailer;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
@@ -212,7 +211,7 @@ public class ConfigurationReportRunner implements Runnable {
     @Override
     public void run() {
 
-        LOG.debug("run: getting configuration report on Date [{}]. Requested by User: {}on Date {}", theDate, user,  reportRequestDate.toString());
+        LOG.debug("run: getting configuration report on Date [{}]. Requested by User: {}on Date {}", theDate, user, StringUtils.toStringEfficiently(reportRequestDate));
 
         ReportRenderer renderer;
         calculator.setReportRequestDate(reportRequestDate);

@@ -116,6 +116,9 @@ public class Poller extends AbstractServiceDaemon {
     @Autowired
     private ResourceStorageDao m_resourceStorageDao;
 
+    @Autowired
+    private LocationAwarePollerClient m_locationAwarePollerClient;
+
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
     }
@@ -276,6 +279,10 @@ public class Poller extends AbstractServiceDaemon {
         m_scheduler = scheduler;
     }
 
+    public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
+        m_locationAwarePollerClient = locationAwarePollerClient;
+    }
+
     /**
      * <p>onInit</p>
      */
@@ -369,12 +376,7 @@ public class Poller extends AbstractServiceDaemon {
             getEventProcessor().close();
         }
 
-        releaseServiceMonitors();
         setScheduler(null);
-    }
-
-    private void releaseServiceMonitors() {
-        getPollerConfig().releaseAllServiceMonitors();
     }
 
     /**
@@ -422,10 +424,11 @@ public class Poller extends AbstractServiceDaemon {
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @param ipAddr a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void scheduleService(final int nodeId, final String nodeLabel, final String ipAddr, final String svcName) {
+    public void scheduleService(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName) {
         final String normalizedAddress = InetAddressUtils.normalize(ipAddr);
         try {
             /*
@@ -436,7 +439,7 @@ public class Poller extends AbstractServiceDaemon {
             synchronized (getNetwork()) {
                 node = getNetwork().getNode(nodeId);
                 if (node == null) {
-                    node = getNetwork().createNode(nodeId, nodeLabel);
+                    node = getNetwork().createNode(nodeId, nodeLabel, nodeLocation);
                 }
             }
 
@@ -526,9 +529,9 @@ public class Poller extends AbstractServiceDaemon {
             return false;
         }
 
-        PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), addr, serviceName);
+        PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
-                getScheduler(), m_persisterFactory, m_resourceStorageDao);
+                getScheduler(), m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

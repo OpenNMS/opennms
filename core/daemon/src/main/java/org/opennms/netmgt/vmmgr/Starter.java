@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,24 +28,16 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.TreeMap;
 
 import javax.management.MBeanServer;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.ServiceConfigFactory;
+import org.opennms.netmgt.config.service.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
-import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,11 +86,8 @@ public class Starter {
      */
     public void startDaemon() {
         try {
-            configureLog4j();
 
             setLogPrefix();
-
-            loadGlobalProperties();
 
             setDefaultProperties();
 
@@ -108,13 +97,13 @@ public class Starter {
         }
     }
 
-
-    private void configureLog4j() {
-
-    }
-
     private void setDefaultProperties() {
         setupFileResourceProperty("opennms.library.jicmp", System.mapLibraryName("jicmp"), "Initialization of ICMP socket will likely fail.");
+        try {
+            setupFileResourceProperty("opennms.library.jicmp6", System.mapLibraryName("jicmp6"), "Initialization of ICMPv6 socket will likely fail.");
+        } catch (Throwable e) {
+            LOG.warn("Could not resolve library path for jicmp6: " + e.getMessage(), e);
+        }
         setupFileResourceProperty("opennms.library.jrrd", System.mapLibraryName("jrrd"), "Initialization of RRD code will likely fail if the JniRrdStrategy is used.");
         setupFileResourceProperty("jcifs.properties", "jcifs.properties", "Initialization of JCIFS will likely fail or may be improperly configured.");
     }
@@ -134,57 +123,6 @@ public class Starter {
         }
     }
 
-    private void loadGlobalProperties() {
-        // Log system properties, sorted by property name
-        TreeMap<Object, Object> sortedProps = new TreeMap<Object, Object>(System.getProperties());
-        for (Entry<Object, Object> entry : sortedProps.entrySet()) {
-            LOG.debug("System property '{}' already set to value '{}'.", entry.getKey(), entry.getValue());
-        }
-
-        File propertiesFile = getPropertiesFile();
-        if (!propertiesFile.exists()) {
-            // don't require the file
-            return;
-        }
-
-        Properties props = new Properties();
-        InputStream in = null;
-        try {
-            in = new FileInputStream(propertiesFile);
-            props.load(in);
-        } catch (IOException e) {
-            die("Error trying to read properties file '" + propertiesFile + "': " + e, e);
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
-
-        for (Entry<Object, Object> entry : props.entrySet()) {
-            String systemValue = System.getProperty(entry.getKey().toString());
-            if (systemValue != null) {
-                LOG.debug("Property '{}' from {} already exists as a system property (with value '{}').  Not overridding existing system property.", entry.getKey(), propertiesFile, systemValue);
-            } else {
-                LOG.debug("Setting system property '{}' to '{}' from {}.", entry.getKey(), entry.getValue(), propertiesFile);
-                System.setProperty(entry.getKey().toString(), entry.getValue().toString());
-            }
-        }
-
-        if (props.containsKey("networkaddress.cache.ttl")) {
-            java.security.Security.setProperty("networkaddress.cache.ttl", props.getProperty("networkaddress.cache.ttl"));
-        } else {
-            java.security.Security.setProperty("networkaddress.cache.ttl", "120");
-        }
-
-        // NMS-9261: Make org.opennms.newts.nan_on_counter_wrap=true by default
-        // without requiring any changes to opennms.properties
-        // This will code block will be reverted in foundation-2017, and
-        // the relevant entry will be placed in opennms.properties instead
-        final String newtsNaNOnCounterWrapSysProp = "org.opennms.newts.nan_on_counter_wrap";
-        if (System.getProperty(newtsNaNOnCounterWrapSysProp) == null) {
-            // The property was not set by the user
-            System.setProperty(newtsNaNOnCounterWrapSysProp, Boolean.TRUE.toString());
-        }
-    }
-
     /**
      * Print out a message and stack trace and then exit.
      * This method does not return.
@@ -199,12 +137,6 @@ public class Starter {
 
     public void die(String message) {
         die(message, null);
-    }
-
-    private File getPropertiesFile() {
-        String homeDir = System.getProperty("opennms.home");
-        File etcDir = new File(homeDir, "etc");
-        return new File(etcDir, "opennms.properties");
     }
 
     private void start() {

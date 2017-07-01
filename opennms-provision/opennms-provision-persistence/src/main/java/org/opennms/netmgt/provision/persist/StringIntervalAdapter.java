@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,16 +31,9 @@ package org.opennms.netmgt.provision.persist;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.joda.time.Duration;
-import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
-/**
- * <p>StringIntervalAdapter class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class StringIntervalAdapter extends XmlAdapter<String, Duration> {
     /** Constant <code>DEFAULT_PERIOD_FORMATTER</code> */
     public static final PeriodFormatter DEFAULT_PERIOD_FORMATTER = new PeriodFormatterBuilder()
@@ -54,14 +47,19 @@ public class StringIntervalAdapter extends XmlAdapter<String, Duration> {
     
     /** {@inheritDoc} */
     @Override
-    public String marshal(Duration v) {
-        Period p = v.toPeriod().normalizedStandard();
-        return DEFAULT_PERIOD_FORMATTER.print(p);
+    public String marshal(final Duration v) {
+        if (v.equals(Duration.ZERO)) {
+            return "0";
+        }
+        return DEFAULT_PERIOD_FORMATTER.print(v.toPeriod().normalizedStandard());
     }
 
     /** {@inheritDoc} */
     @Override
-    public Duration unmarshal(String v) {
+    public Duration unmarshal(final String v) {
+        if ("0".equals(v)) {
+            return Duration.ZERO;
+        }
         return DEFAULT_PERIOD_FORMATTER.parsePeriod(v).toStandardDuration();
     }
 

@@ -229,11 +229,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testMagicUsers() {
-        testConfigFile("magic-users.properties");
-    }
-
-    @Test
     /**
      * FIXME: Database access.
      */
@@ -244,11 +239,6 @@ public class ConfigTesterTest {
     @Test
     public void testMicroblogConfiguration() {
         testConfigFile("microblog-configuration.xml");
-    }
-
-    @Test
-    public void testModelImporter() {
-        testConfigFile("model-importer.properties");
     }
 
     @Test
@@ -288,6 +278,14 @@ public class ConfigTesterTest {
         testConfigFile("nsclient-datacollection-config.xml");
     }
 
+    /**
+     * Used by the ActiveMQ broker embedded inside applicationContext-daemon.xml.
+     */
+    @Test
+    public void testOpennmsActivemq() {
+        ignoreConfigFile("opennms-activemq.xml");
+    }
+
     @Test
     public void testOpennmsDatasources() {
         testConfigFile("opennms-datasources.xml");
@@ -317,11 +315,6 @@ public class ConfigTesterTest {
     @Test
     public void testPollOutages() {
         testConfigFile("poll-outages.xml");
-    }
-
-    @Test
-    public void testPollerConfig() {
-        testConfigFile("poller-config.properties");
     }
 
     @Test
@@ -471,6 +464,11 @@ public class ConfigTesterTest {
     @Test
     public void testTrapdConfiguration() {
         testConfigFile("trapd-configuration.xml");
+    }
+
+    @Test
+    public void testTrendConfiguration() {
+        ignoreConfigFile("trend-configuration.xml");
     }
 
     @Test

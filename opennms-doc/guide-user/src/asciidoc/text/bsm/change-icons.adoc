@@ -1,0 +1,17 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-bsm-change-iconset]]
+=== Change Icons
+
+Each element in the _Business Service View_ has an icon which is assigned to a _BS_ or an _Edge_.
+To be able to customize the _Business Service View_ the icons for each element can be changed.
+Select the element in the _Business Service View_ and choose _Change Icon_ from the _Context Menu_.
+As shown in figure <<gu-bsm-change-icon, Change Icon for Business Service or Edges>> select the the new icon for the selected element and click _Ok_ to permanently assign the new icon to the element.
+
+[[gu-bsm-change-icon]]
+.Change Icon for Business Service or Edges
+image:bsm/09_bsm-change-icon.png[]
+
+It is also possible create custom _Icon Sets_ which is described in the _Business Service Monitoring_ section of the _Developer Guide_.

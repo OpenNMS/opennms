@@ -35,7 +35,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.geocoder.Coordinates;
 public class SimpleNodeMarker implements NodeMarker {
 
     private Integer m_nodeId;

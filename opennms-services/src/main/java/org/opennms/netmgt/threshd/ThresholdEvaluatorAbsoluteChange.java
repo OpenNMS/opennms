@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ import org.springframework.util.Assert;
  */
 public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdEvaluatorAbsoluteChange.class);
-    private static final String TYPE = "absoluteChange";
+    private static final ThresholdType TYPE = ThresholdType.ABSOLUTE_CHANGE;
 
     /** {@inheritDoc} */
     @Override
@@ -57,7 +58,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
 
     /** {@inheritDoc} */
     @Override
-    public boolean supportsType(String type) {
+    public boolean supportsType(ThresholdType type) {
         return TYPE.equals(type);
     }
     
@@ -136,10 +137,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         @Override
         public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
             if (status == Status.TRIGGERED) {
-                String uei=getThresholdConfig().getTriggeredUEI();
-                if(uei==null || "".equals(uei)) {
-                    uei=EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI;
-                }
+                final String uei=getThresholdConfig().getTriggeredUEI().orElse(EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI);
                 return createBasicEvent(uei, date, dsValue, resource);
             } else {
                 return null;

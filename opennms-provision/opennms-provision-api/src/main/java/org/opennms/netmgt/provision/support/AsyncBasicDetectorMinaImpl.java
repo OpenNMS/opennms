@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.support;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
@@ -49,7 +50,7 @@ import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
+import org.opennms.core.utils.RelaxedX509ExtendedTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
     
     private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<Request, Response>();
     private IoFilterAdapter m_filterLogging = null;
-    private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(CHARSET_UTF8));
+    private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(StandardCharsets.UTF_8));
     
     private final ConnectionFactory m_connectionFactory;
 
@@ -188,7 +189,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @throws KeyManagementException 
      */
     private static final SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
-        final TrustManager[] tm = { new RelaxedX509TrustManager() };
+        final TrustManager[] tm = { new RelaxedX509ExtendedTrustManager() };
         final SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
         return sslContext;

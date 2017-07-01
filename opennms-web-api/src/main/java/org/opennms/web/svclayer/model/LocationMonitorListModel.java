@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.springframework.validation.Errors;
 
@@ -133,7 +133,7 @@ public class LocationMonitorListModel {
          * @param monitor the location monitor
          * @param def the monitoring location definition for the location monitor (if any; can be null)
          */
-        public LocationMonitorModel(OnmsLocationMonitor monitor, LocationDef def) {
+        public LocationMonitorModel(OnmsLocationMonitor monitor, OnmsMonitoringLocation def) {
             if (monitor == null) {
                 throw new IllegalArgumentException("monitor argument cannot be null");
             }

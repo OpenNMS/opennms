@@ -49,7 +49,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
-import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -64,6 +63,7 @@ import org.opennms.web.svclayer.model.AggregateStatus;
 import org.opennms.web.svclayer.model.NodeListCommand;
 import org.opennms.web.svclayer.model.NodeListModel;
 import org.opennms.web.svclayer.model.NodeListModel.NodeModel;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -96,10 +96,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
          * All search queries can be done solely with
          * criteria, so we build a common criteria object with common
          * restrictions and sort options.  Each specific search query
-         * adds its own crtieria restrictions (if any).
+         * adds its own criteria restrictions (if any).
          * 
          * A set of booleans is maintained for aliases that might be
-         * added in muliple places to ensure we don't add the same alias
+         * added in multiple places to ensure we don't add the same alias
          * multiple times.
          */
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");
@@ -147,15 +147,21 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             addCriteriaForCategories(criteria, command.getCategory1());
         } else if (command.hasStatusViewName() && command.hasStatusSite() && command.hasStatusRowLabel()) {
             addCriteriaForSiteStatusView(criteria, command.getStatusViewName(), command.getStatusSite(), command.getStatusRowLabel());
-        }else if(command.hasForeignSource()) {
+        } else if(command.hasForeignSource()) {
             addCriteriaForForeignSource(criteria, command.getForeignSource());
-        }else {
+        } else if(command.hasMonitoringLocation()) {
+            addCriteriaForMonitoringLocation(criteria, command.getMonitoringLocation());
+        } else {
             // Do nothing.... don't add any restrictions other than the default ones
         }
 
         if (command.getNodesWithOutages()) {
             addCriteriaForCurrentOutages(criteria);
         }
+    }
+
+    private void addCriteriaForMonitoringLocation(OnmsCriteria criteria, String monitoringLocation) {
+        criteria.add(Restrictions.eq("node.location.locationName", monitoringLocation));
     }
 
     private static void addCriteriaForMib2Parm(OnmsCriteria criteria, String mib2Parm, String mib2ParmValue, String mib2ParmMatchType) {
@@ -205,8 +211,18 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.add(Restrictions.ilike("node.label", nodeName, MatchMode.ANYWHERE));
     }
     
-    private static void addCriteriaForNodeId(OnmsCriteria criteria, int nodeId) {
+    private static void addCriteriaForNodeId(OnmsCriteria criteria, String nodeIdString) {
+        int nodeId = parseNodeId(nodeIdString);
         criteria.add(Restrictions.idEq(nodeId));
+    }
+
+    private static int parseNodeId(String nodeIdString) {
+        try {
+            return Integer.parseInt(nodeIdString);
+        } catch (NumberFormatException nfe) {
+            LoggerFactory.getLogger(DefaultNodeListService.class).warn("{} is not a valid node id, falling back to -1.", nodeIdString);
+            return -1;
+        }
     }
     
     private static void addCriteriaForForeignSource(OnmsCriteria criteria, String foreignSource) {
@@ -294,10 +310,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
     
 
-    private static RowDef getRowDef(View view, String rowLabel) {
-        Rows rows = view.getRows();
-        Collection<RowDef> rowDefs = rows.getRowDefCollection();
-        for (RowDef rowDef : rowDefs) {
+    private static RowDef getRowDef(final View view, final String rowLabel) {
+        for (final RowDef rowDef : view.getRows()) {
             if (rowDef.getLabel().equals(rowLabel)) {
                 return rowDef;
             }
@@ -309,7 +323,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private static Set<String> getCategoryNamesForRowDef(RowDef rowDef) {
         Set<String> categories = new LinkedHashSet<String>();
         
-        List<Category> cats = rowDef.getCategoryCollection();
+        List<Category> cats = rowDef.getCategories();
         for (Category cat : cats) {
             categories.add(cat.getName());
         }

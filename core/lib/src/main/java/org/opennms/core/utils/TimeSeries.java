@@ -1,3 +1,30 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 package org.opennms.core.utils;
 
 public abstract class TimeSeries {
@@ -16,19 +43,28 @@ public abstract class TimeSeries {
     private static final String TCP_TIME_SERIES_STRATEGY_NAME = "tcp";
 
     public static enum Strategy {
-        RRD(RRD_TIME_SERIES_STRATEGY_NAME),
-        NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME),
-        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME),
-        TCP(TCP_TIME_SERIES_STRATEGY_NAME);
+        RRD(RRD_TIME_SERIES_STRATEGY_NAME, "RRDTool or JRobin"),
+        NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME, "Newts"),
+        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)"),
+        TCP(TCP_TIME_SERIES_STRATEGY_NAME, "TCP (protobuf)");
 
         private final String m_name;
+        private final String m_descr;
 
+        Strategy(String name, String descr) {
+        	m_name = name;
+        	m_descr = descr;
+        }
         Strategy(String name) {
-            m_name = name;
+            this(name, name);
         }
 
         public String getName() {
             return m_name;
+        }
+
+        public String getDescr() {
+        	return m_descr;
         }
     }
 

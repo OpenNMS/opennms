@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.events;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 
@@ -188,9 +189,9 @@ public class EventForm extends CustomComponent {
         eventEditor.bind(alarmDataReductionKey, "alarmData.reductionKey");
         eventEditor.bind(alarmDataClearKey, "alarmData.clearKey");
         eventEditor.bind(eventOperInstruct, "operinstruct");
-        eventEditor.bind(maskElements, "mask.maskelementCollection");
-        eventEditor.bind(maskVarbinds, "mask.varbindCollection");
-        eventEditor.bind(varbindsDecodes, "varbindsdecodeCollection");
+        eventEditor.bind(maskElements, "mask.maskelements");
+        eventEditor.bind(maskVarbinds, "mask.varbinds");
+        eventEditor.bind(varbindsDecodes, "varbindsdecodes");
 
         setCompositionRoot(eventLayout);
     }
@@ -232,7 +233,7 @@ public class EventForm extends CustomComponent {
         e.setDescr("New Event Description");
         e.setLogmsg(new Logmsg());
         e.getLogmsg().setContent("New Event Log Message");
-        e.getLogmsg().setDest("logndisplay");
+        e.getLogmsg().setDest(LogDestType.LOGNDISPLAY);
         e.setSeverity("Indeterminate");
         e.setMask(new Mask());
         e.setAlarmData(new AlarmData());

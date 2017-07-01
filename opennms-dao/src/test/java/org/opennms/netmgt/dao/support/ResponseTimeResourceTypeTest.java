@@ -47,6 +47,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -54,8 +55,11 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class ResponseTimeResourceTypeTest {
+
+    private static final String NON_DEFAULT_LOCATION_NAME = "!" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -85,12 +89,17 @@ public class ResponseTimeResourceTypeTest {
         File http = new File(ifResponseFolder, "http.rrd");
         http.createNewFile();
 
+        ifResponseFolder = tempFolder.newFolder(ResourceTypeUtils.RESPONSE_DIRECTORY, ResourcePath.sanitize(NON_DEFAULT_LOCATION_NAME), "127.0.0.1");
+        http = new File(ifResponseFolder, "http.rrd");
+        http.createNewFile();
+
         ipInterfaces.add(ipInterface);
     }
 
     @Test
     public void canGetResourcesForNode() throws IOException {
         expect(node.getIpInterfaces()).andReturn(ipInterfaces);
+        expect(node.getLocation()).andReturn(null);
         expect(ipInterface.getIpAddress()).andReturn(InetAddress.getByName("127.0.0.1")).atLeastOnce();
 
         replay(node, ipInterface);
@@ -98,6 +107,27 @@ public class ResponseTimeResourceTypeTest {
         OnmsResource nodeResource = new OnmsResource("1", "Node", nodeResourceType, Collections.emptySet(), ResourcePath.get("foo"));
         nodeResource.setEntity(node);
         
+        List<OnmsResource> resources = responseTimeResourceType.getResourcesForParent(nodeResource);
+        verify(node, ipInterface);
+
+        assertEquals(1, resources.size());
+        assertEquals("127.0.0.1", resources.get(0).getName());
+    }
+
+    @Test
+    public void canGetResourcesForNodeAtLocation() throws IOException {
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+        location.setLocationName(NON_DEFAULT_LOCATION_NAME);
+
+        expect(node.getIpInterfaces()).andReturn(ipInterfaces);
+        expect(node.getLocation()).andReturn(location).atLeastOnce();
+        expect(ipInterface.getIpAddress()).andReturn(InetAddress.getByName("127.0.0.1")).atLeastOnce();
+
+        replay(node, ipInterface);
+        NodeResourceType nodeResourceType = new NodeResourceType(resourceDao, nodeDao);
+        OnmsResource nodeResource = new OnmsResource("1", "Node", nodeResourceType, Collections.emptySet(), ResourcePath.get("foo"));
+        nodeResource.setEntity(node);
+
         List<OnmsResource> resources = responseTimeResourceType.getResourcesForParent(nodeResource);
         verify(node, ipInterface);
 

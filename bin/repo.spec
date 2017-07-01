@@ -7,7 +7,7 @@ Version: %{_version}
 Release: %{_release}
 License: AGPL
 Group: Development/Tools
-URL: http://yum.opennms.org/
+URL: https://yum.opennms.org/
 
 #Source0: opennms-%{_tree}-common.repo
 Source1: opennms-%{_tree}-%{_osname}.repo

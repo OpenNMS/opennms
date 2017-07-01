@@ -61,9 +61,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.VmwareConfigDao;
@@ -153,11 +152,9 @@ public class VmwareViJavaAccess {
      * are available in the Vmware config file.
      *
      * @param hostname the vCenter's hostname
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException
      */
-    public VmwareViJavaAccess(String hostname) throws MarshalException, ValidationException, IOException {
+    public VmwareViJavaAccess(String hostname) throws IOException {
         if (m_vmwareConfigDao == null) {
             m_vmwareConfigDao = BeanUtils.getBean("daoContext", "vmwareConfigDao", VmwareConfigDao.class);
         }
@@ -253,19 +250,7 @@ public class VmwareViJavaAccess {
      */
     protected void relax() {
 
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            public X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-                return;
-            }
-
-            public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-                return;
-            }
-        }};
+        TrustManager[] trustAllCerts = new TrustManager[]{new AnyServerX509TrustManager()};
 
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision;
 
-import java.net.InetAddress;
-
 /**
  * <p>AsyncServiceDetector interface.</p>
  *
@@ -39,12 +37,12 @@ import java.net.InetAddress;
 public interface AsyncServiceDetector extends ServiceDetector {
     
     /**
-     * <p>isServiceDetected</p>
+     * <p>detect</p>
      *
-     * @param address a {@link java.net.InetAddress} object.
+     * @param request a {@link DetectRequest} object.
      * @return a {@link org.opennms.netmgt.provision.DetectFuture} object.
      * @throws java.lang.Exception if any.
      */
-    public DetectFuture isServiceDetected(InetAddress address);
+    public DetectFuture detect(DetectRequest request);
     
 }

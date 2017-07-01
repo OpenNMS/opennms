@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <graph namespace="nodes">
 	<vertex>
-		<iconKey>linkd:system</iconKey>
+		<iconKey>linkd.system</iconKey>
 		<id>3</id>
 		<ipAddr>192.168.3.1</ipAddr>
 		<label>node3</label>
@@ -13,7 +13,7 @@
 		<parent>g2</parent>
 	</vertex>
 	<vertex>
-		<iconKey>linkd:system</iconKey>
+		<iconKey>linkd.system</iconKey>
 		<id>1</id>
 		<ipAddr>192.168.1.1</ipAddr>
 		<label>node1</label>
@@ -25,7 +25,7 @@
 		<parent>g2</parent>
 	</vertex>
 	<vertex>
-		<iconKey>linkd:system</iconKey>
+		<iconKey>linkd.system</iconKey>
 		<id>4</id>
 		<ipAddr>192.168.4.1</ipAddr>
 		<label>node4</label>
@@ -36,7 +36,7 @@
 		<selected>true</selected>
 	</vertex>
 	<vertex>
-		<iconKey>linkd:system</iconKey>
+		<iconKey>linkd.system</iconKey>
 		<id>2</id>
 		<ipAddr>192.168.2.1</ipAddr>
 		<label>node2</label>

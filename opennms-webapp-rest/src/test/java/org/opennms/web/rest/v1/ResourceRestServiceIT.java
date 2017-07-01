@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -122,12 +123,12 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
         System.err.println(xml);
 
         // By ID
-        url = "/resources/" + URLEncoder.encode("node[1].nodeSnmp[]", "UTF-8");
+        url = "/resources/" + URLEncoder.encode("node[1].nodeSnmp[]", StandardCharsets.UTF_8.name());
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("Node-level Performance Data"));
 
         // 404 on invalid resource
-        url = "/resources/" + URLEncoder.encode("node[99].nodeSnmp[]", "UTF-8");
+        url = "/resources/" + URLEncoder.encode("node[99].nodeSnmp[]", StandardCharsets.UTF_8.name());
         sendRequest(GET, url, 404);
 
         // By Node ID

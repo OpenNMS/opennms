@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.notifications</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>org.opennms.features.notifications.sms-strategy</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features Notification SMS Strategy</name>
+  <name>OpenNMS :: Features :: Notifications :: SMS</name>
   <build>
     <plugins>
       <plugin>

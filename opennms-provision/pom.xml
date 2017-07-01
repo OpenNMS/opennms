@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provision</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Provision</name>
+  <name>OpenNMS :: Provisioning</name>
   <modules>
     <module>opennms-provision-api</module>
     <module>opennms-mock-simpleserver</module>
@@ -16,7 +16,10 @@
     <module>opennms-detector-simple</module>
     <module>opennms-snmp-scanners</module>
     <module>opennms-provisiond</module>
+    <module>opennms-provision-geolocation</module>
     <module>opennms-provision-persistence</module>
+    <module>opennms-provision-shell</module>
+    <module>opennms-detector-registry</module>
     <module>opennms-detector-datagram</module>
     <module>opennms-detector-jmx</module>
     <module>opennms-detector-jdbc</module>
@@ -24,6 +27,7 @@
     <module>opennms-detector-generic</module>
     <module>opennms-detector-web</module>
     <module>opennms-detector-bsf</module>
+    <module>opennms-detectorclient-rpc</module>
   </modules>
   <dependencyManagement>
     <dependencies>
@@ -64,7 +68,17 @@
             </dependency>
             <dependency>
                 <groupId>org.opennms</groupId>
+                <artifactId>opennms-detector-bsf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
                 <artifactId>opennms-detector-datagram</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>opennms-detector-generic</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -85,6 +99,16 @@
             <dependency>
                 <groupId>org.opennms</groupId>
                 <artifactId>opennms-detector-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>opennms-detectorclient-rpc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>opennms-provision-command</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

@@ -48,7 +48,10 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
+import org.quartz.Trigger;
 
 public class PollerTest {
 
@@ -93,10 +96,10 @@ public class PollerTest {
 		expect(pollerFrontEnd.getPolledServices()).andReturn(polledServices);
         expect(pollerFrontEnd.isStarted()).andReturn(true);
         
-        expect(scheduler.deleteJob(polledService.toString(), PollJobDetail.GROUP)).andReturn(reschedule);
+        expect(scheduler.deleteJob(new JobKey(polledService.toString(), PollJobDetail.GROUP))).andReturn(reschedule);
         
 		pollerFrontEnd.setInitialPollTime(eq(svc.getId()), isA(Date.class));
-		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(PolledServiceTrigger.class))).andReturn(new Date());
+		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(Trigger.class))).andReturn(new Date());
 		
 		replay(scheduler, pollService, pollerFrontEnd);
 		
@@ -111,7 +114,10 @@ public class PollerTest {
 	
 	private OnmsMonitoredService getMonitoredService() {
 		OnmsNode node = new OnmsNode();
+		OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+		location.setLocationName("MINION");
 		node.setId(1);
+		node.setLocation(location);
 		OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
 		OnmsServiceType svcType = new OnmsServiceType("HTTP");
 		OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
@@ -120,7 +126,10 @@ public class PollerTest {
 
     private OnmsMonitoredService getIPv6MonitoredService() {
         OnmsNode node = new OnmsNode();
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+        location.setLocationName("MINION");
         node.setId(1);
+        node.setLocation(location);
         OnmsIpInterface iface = new OnmsIpInterface("::1", node);
         // Make sure that the address is being converted into fully-qualified format
         assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", str(iface.getIpAddress()));

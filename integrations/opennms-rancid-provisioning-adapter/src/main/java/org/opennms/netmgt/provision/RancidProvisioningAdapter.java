@@ -277,6 +277,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         LOG.debug("doUpdate: updating nodeid: {}", nodeId);
             
         RancidNode rLocalNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
+        Assert.notNull(rLocalNode, "doUpdate: failed to get local node for given nodeId:"+nodeId);
         LOG.debug("doUpdate: found local map Node: {}", rLocalNode);
         
         final OnmsNode node = m_nodeDao.get(nodeId);
@@ -442,7 +443,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private void updateConfiguration(int nodeid, RancidNode rNode,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
-        LOG.debug("updateConfiguration: Updating Rancid Router.db configuration for node: {} type: {} group: {}", rNode.getGroup(), rNode.getDeviceName(), rNode.getDeviceType());
+        LOG.debug("updateConfiguration: Updating Rancid Router.db configuration for node: {} type: {} group: {}", rNode.getDeviceName(), rNode.getDeviceType(),rNode.getGroup());
         try {
                 RWSClientApi.updateRWSRancidNode(cp, rNode);
         } catch (Throwable e) {
@@ -852,7 +853,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
     
     private boolean isAdapterConfigured() {
-        if ("http://rws-not-configured".equals(m_rwsConfig.getBaseUrl().getServer_url())) {
+        if ("http://rws-not-configured".equals(m_rwsConfig.getBaseUrl().getServerUrl())) {
             LOG.debug("Not taking any action because server_url is set to http://rws-not-configured");
             return false;
         }

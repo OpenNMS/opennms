@@ -59,15 +59,6 @@ import com.google.gwt.junit.GWTMockUtilities;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.impl.HistoryImpl;
 
-/**
- * WARNING: Powermock has a bug that prevents this test from running properly on 
- * JDK version 1.7u65 or higher. We need to either update Powermock when the bug
- * is fixed or see if the regression in the JDK is fixed so that the test runs.
- * 
- * @see https://code.google.com/p/powermock/issues/detail?id=504
- * @see http://hg.openjdk.java.net/jdk9/hs-rt/hotspot/rev/4986ca806899
- * @see http://www.takipiblog.com/oracles-latest-java-8-update-broke-your-tools-how-did-it-happen/
- */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
     NativeEvent.class,
@@ -98,6 +89,7 @@ public class SearchStateTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         GWTMockUtilities.disarm();
+
         final SchedulerImpl scheduler = new TestSchedulerImpl();
         Whitebox.setInternalState(SchedulerImpl.class, "INSTANCE", scheduler);
     }
@@ -380,16 +372,6 @@ public class SearchStateTest {
         @Override public String getValue() { return m_value; }
         @Override public void setValue(final String value) { m_value = value; }
         @Override public String toString() { return "TestValueItem [value=" + m_value + "]"; }
-    }
-
-    private static final class TestSchedulerImpl extends SchedulerImpl {
-        @Override public void scheduleDeferred(final ScheduledCommand cmd) {
-            cmd.execute();
-        }
-
-        @Override public void scheduleIncremental(final RepeatingCommand cmd) {
-            while (cmd.execute()) {}
-        }
     }
 
     private static class MockSearchStateManager extends SearchStateManager {

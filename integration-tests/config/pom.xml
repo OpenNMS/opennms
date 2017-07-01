@@ -3,15 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>integration-tests</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.integration-tests.config</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS :: Integration Tests :: Config</name>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
   <build>
     <plugins>
       <plugin>
@@ -51,21 +48,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin> 
         <artifactId>maven-clean-plugin</artifactId> 
         <executions> 
@@ -90,6 +72,11 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.lib</artifactId>
+    </dependency>
+
     <!-- Contains beans for ServiceConfigurationPublicConstructorTest -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -112,7 +99,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -169,11 +156,6 @@
     </dependency>
     -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.model</artifactId>
       <scope>test</scope>
@@ -205,7 +187,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

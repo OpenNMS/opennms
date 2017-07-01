@@ -54,11 +54,12 @@ The following information are shown in:
 .Information displayed in the _Alarms_ component
 image::dashboard/03_dashboard-alarms.png[]
 
-1. _Node_: Node label of the node the _Alarm_ is associated.
-2. _Log Msg_: The log message from the _Event_ which is the source for this _Alarm_. It is specified in the event configuration file in `<logmsg />`
-3. _Count_: Number of _Alarms_ deduplicated by the reduction key of the _Alarm_.
-4. _First Time_: Time for the first occurrence of the _Alarm_.
-5. _Last Time_: Time for the last occurrence of the _Alarm_.
+1. _Node_: Node label of the node the _Alarm_ is associated
+2. _Severity_: Severity of the _Alarm_
+3. _UEI_: Shows the _UEI_ of the _Alarm_
+4. _Count_: Number of _Alarms_ deduplicated by the reduction key of the _Alarm_
+5. _Last Time_: Time for the last occurrence of the _Alarm_
+6. _Log Msg_: The log message from the _Event_ which is the source for this _Alarm_. It is specified in the event configuration file in `<logmsg />`
 
 The _Alarms_ component shows the most recent _Alarms_ and allows the user to scroll through the last 100 _Alarms_.
 
@@ -72,11 +73,12 @@ The _Dashboard_ should show outstanding notifications in the _NOC_ to provide an
 .Information displayed in the _Notifications_ component
 image::dashboard/04_dashboard-notifications.png[]
 
-1. _Node_: Label of the monitored node the notification is associated with.
-2. _Service_: Name of the service the notification is associated with.
-3. _Message_: Message of the notification.
-4. _Responder_: User name who acknowledged the notification
-5. _Response Time_: Time when the user acknowledged the notification
+1. _Node_: Label of the monitored node the notification is associated with
+2. _Service_: Name of the service the notification is associated with
+3. _Message_: Message of the notification
+4. _Sent Time_: Time when the notification was sent
+5. _Responder_: User name who acknowledged the notification
+6. _Response Time_: Time when the user acknowledged the notification
 
 The _Notifications_ component shows the most recent unacknowledged notifications and allows the user to scroll through the last 100 _Notifications_.
 
@@ -129,13 +131,20 @@ The following example assigns a Dashboard to the user "drv4doe" (a router and sw
 .Creating the user `drv4doe` using the {opennms-product-name} WebUI
 image::dashboard/07_dashboard-add-user.png[]
 
-===== Step 2: Change magic-users.properties
-Now, edit the magic-users.properties file in the `/opt/opennms/etc` directory and set `drv4doe` as a dashboard user.
+===== Step 2: Change Security Roles
+Now, add the `ROLE_PROVISION` role to the user through the WebUI or by manually editing the `users.xml` file in the `/opt/opennms/etc` directory for the user `drv4doe`.
+
+.Adding dashboard role to the user `drv4doe` using the {opennms-product-name} WebUI
+image::dashboard/08_dashboard-user-roles.png[]
+
 [source, properties]
 ----
-role.dashboard.name=OpenNMS Dashboard User
-role.dashboard.users=drv4doe
-role.dashboard.notInDefaultGroup=true
+<user>
+    <user-id>drv4doe</user-id>
+    <full-name>Dashboard User</full-name>
+    <password salt="true">6FOip6hgZsUwDhdzdPUVV5UhkSxdbZTlq8M5LXWG5586eDPa7BFizirjXEfV/srK</password>
+    <role>ROLE_DASHBOARD</role>
+</user>
 ----
 
 ===== Step 3: Define Surveillance View

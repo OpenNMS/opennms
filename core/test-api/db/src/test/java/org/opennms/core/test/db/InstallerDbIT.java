@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1613,17 +1614,22 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         getInstallerDb().updatePlPgsql();
         getInstallerDb().addStoredProcedures();
 
+        addTableFromSQL("monitoringlocations");
         addTableFromSQL("monitoringsystems");
         addTableFromSQL("node");
-        
+
+        // Insert the default monitoring location
+        getInstallerDb().insertData("monitoringlocations");
+
         // Add snmpinterface table with an arbitrary change so it gets upgraded
         addTableFromSQLWithReplacements("snmpinterface", new String[][] {
                 new String[] {
                         "snmpIfAlias\\s+varchar\\(\\d+\\),", ""
                 } });
 
-        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
-                   + "VALUES ( 1, now() )");
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        executeSQL("INSERT INTO node ( location, nodeId, nodeCreateTime ) "
+                   + "VALUES ( 'Default', 1, now() )");
         executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
                    + "VALUES ( 1, 1 )");
         
@@ -1795,7 +1801,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
     private void assertNoTablesHaveChanged() throws IOException {
         ByteArrayInputStream in = new ByteArrayInputStream(m_outputStream.toByteArray());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
         String line;
         List<String> unanticipatedOutput = new ArrayList<String>();

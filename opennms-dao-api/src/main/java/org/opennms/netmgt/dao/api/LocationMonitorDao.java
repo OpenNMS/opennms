@@ -30,14 +30,13 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
  * <p>LocationMonitorDao interface.</p>
@@ -50,10 +49,10 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, String>
     /**
      * <p>findByLocationDefinition</p>
      *
-     * @param locationDefinition a {@link org.opennms.netmgt.config.monitoringLocations.LocationDef} object.
+     * @param locationDefinition a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsLocationMonitor> findByLocationDefinition(final LocationDef locationDefinition);
+    Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocation locationDefinition);
     
     /**
      * <p>findByApplication</p>

@@ -35,8 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.common.io.ByteStreams;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +46,6 @@ import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.dao.api.JasperReportConfigDao;
 import org.opennms.reporting.jasperreports.filter.ParameterFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,13 +54,18 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import com.google.common.io.ByteStreams;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
-@ContextConfiguration(locations = { "classpath:org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml" })
+@ContextConfiguration(locations = { "classpath:/org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml" })
 public class JasperReportServiceTest implements InitializingBean {
 
-    @Autowired
-    JasperReportConfigDao m_configDao;
     @Autowired
     JasperReportService m_reportService;
 
@@ -168,5 +170,14 @@ public class JasperReportServiceTest implements InitializingBean {
             }
         }
         Assert.assertEquals("Expected a default parameter filter", Boolean.TRUE, success);
+    }
+
+    @Test
+    public void testEvaluateToString() throws JRException {
+        final JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/etc/report-templates/subreport-expression-visitor-test.jrxml"));
+
+        Assert.assertEquals("/home/ulf/opennms-reports", JasperReportService.evaluateToString(report, new JRDesignExpression("$P{ONMS_REPORT_DIR}")));
+        Assert.assertEquals("/home/ulf/opennms-reports/subreports/", JasperReportService.evaluateToString(report, new JRDesignExpression("$P{SUBREPORT_DIR}")));
+        Assert.assertEquals("This is a test with number 10", JasperReportService.evaluateToString(report, new JRDesignExpression("$P{COMPLEX}")));
     }
 }

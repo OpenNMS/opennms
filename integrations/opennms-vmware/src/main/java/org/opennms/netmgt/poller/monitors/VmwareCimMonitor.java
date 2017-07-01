@@ -38,11 +38,13 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import com.vmware.vim25.HostRuntimeInfo;
-import com.vmware.vim25.HostSystemPowerState;
-import com.vmware.vim25.mo.HostSystem;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -51,17 +53,15 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.vmware.vim25.HostRuntimeInfo;
+import com.vmware.vim25.HostSystemPowerState;
+import com.vmware.vim25.mo.HostSystem;
 
 /**
  * The Class VmwareCimMonitor
@@ -151,12 +151,6 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
 
             try {
                 vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer);
-            } catch (MarshalException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
-                return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");
-            } catch (ValidationException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
-                return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");
             } catch (IOException e) {
                 logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
                 return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");

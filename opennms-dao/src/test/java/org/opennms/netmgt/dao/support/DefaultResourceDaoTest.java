@@ -46,8 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -141,7 +139,7 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tearDown();
     }
     
-    private void setUpCollectdConfigFactory() throws MarshalException, ValidationException, IOException {
+    private void setUpCollectdConfigFactory() throws IOException {
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
         m_collectdConfig = new CollectdConfigFactory(stream, "localhost", false);
         stream.close();

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/reporting"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/reporting"
+	elementFormDefault="qualified">
+
+    <element name="parameters"> 
+    <complexType>
+      <sequence>
+        <element name="string-parm" maxOccurs="unbounded" minOccurs="0"
+          type="this:string-parm" />
+        <element name="date-parm" maxOccurs="unbounded" minOccurs="0"
+          type="this:date-parm" />
+        <element name="int-parm" maxOccurs="unbounded" minOccurs="0"
+          type="this:int-parm" />
+      </sequence>
+    </complexType>
+    </element>
+    
+    <complexType name="date-parm">
+  
+      <annotation>
+        <documentation>
+          An offset period used as a base to determine a real
+          date when running the report
+        </documentation>
+      </annotation>
+  
+  
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="default-interval" type="this:date-interval" />
+        <element maxOccurs="1" minOccurs="1" name="default-count" type="int" />
+        <element maxOccurs="1" minOccurs="0" name="default-time" type="this:time" />
+      </sequence>
+  
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>the name of this parameter as passed to the report
+            engine</documentation>
+        </annotation>
+      </attribute>
+  
+      <attribute name="display-name" type="string" use="required">
+        <annotation>
+          <documentation>the name of this parameter as displayed in the
+            webui</documentation>
+        </annotation>
+      </attribute>
+      
+      <attribute name="use-absolute-date" type="boolean" use="optional">
+        <annotation>
+          <documentation>flag to use absolute date if possible</documentation>
+        </annotation>
+      </attribute>
+  
+    </complexType>
+  
+  
+    <complexType name="string-parm">
+  
+      <annotation>
+        <documentation>
+          A string parameter passed to the report engine
+        </documentation>
+      </annotation>
+  
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" name="default" type="string">
+          <annotation>
+            <documentation>value</documentation>
+          </annotation>
+        </element>
+      </sequence>
+  
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>the name of this parameter as passed to the report
+            engine</documentation>
+        </annotation>
+      </attribute>
+  
+      <attribute name="display-name" type="string" use="required">
+        <annotation>
+          <documentation>the name of this parameter as displayed in the
+            webui</documentation>
+        </annotation>
+      </attribute>
+  
+      <attribute name="input-type" use="required">
+        <annotation>
+          <documentation>the type of input field used. Allows the webUI to use pre-filled 
+          drop-down boxes (reportCategorySelector) or freeText</documentation>
+        </annotation>
+  
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(reportCategorySelector|freeText)" />
+          </restriction>
+        </simpleType>
+      </attribute>
+  
+    </complexType>
+  
+    
+    <complexType name="int-parm">
+  
+      <annotation>
+        <documentation>
+          A string parameter passed to the report engine
+        </documentation>
+      </annotation>
+      
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" name="default" type="int">
+          <annotation>
+            <documentation>value</documentation>
+          </annotation>
+        </element>
+      </sequence>
+  
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>the name of this parameter as passed to the report
+            engine</documentation>
+        </annotation>
+      </attribute>
+  
+      <attribute name="display-name" type="string" use="required">
+        <annotation>
+          <documentation>the name of this parameter as displayed in the
+            webui</documentation>
+        </annotation>
+      </attribute>
+  
+      <attribute name="input-type" use="required">
+        <annotation>
+          <documentation>the type of input field used. Currently freeText onlly</documentation>
+        </annotation>
+  
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(freeText)" />
+          </restriction>
+        </simpleType>
+      </attribute>
+  
+    </complexType>
+  
+    <simpleType name="date-interval">
+      <annotation>
+        <documentation>
+          Parameters taken by this report
+        </documentation>
+      </annotation>
+      <restriction base="string">
+        <pattern value="(day|month|year)" />
+      </restriction>
+    </simpleType>
+    
+    <complexType name="time">
+      <annotation>
+        <documentation>
+          24 hour clock time
+        </documentation>
+      </annotation>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="hours" type="this:hour">
+          <annotation>
+            <documentation>hours</documentation>
+          </annotation>
+        </element>
+        <element maxOccurs="1" minOccurs="1" name="minutes" type="this:minute">
+          <annotation>
+            <documentation>minutes</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+    
+    <simpleType name='hour'>
+        <restriction base='int'>
+          <maxInclusive value='24'/>
+          <minInclusive value="0" />
+        </restriction>
+    </simpleType>
+    
+    <simpleType name='minute'>
+        <restriction base='int'>
+          <maxInclusive value='59'/>
+          <minInclusive value="0" />
+        </restriction>
+    </simpleType>
+
+	<element name="opennms-reports">
+		<annotation>
+			<documentation>
+				Report Configuration for OpenNMS reports including availability
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:report">
+					<annotation>
+						<documentation>report definition for legacy opennms availability reports</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="report">
+		<complexType>
+			<all>
+				<element minOccurs="0" maxOccurs="1" ref="this:parameters" />
+				<element name="pdf-template" minOccurs="0" maxOccurs="1" type="string">
+					<annotation>
+            			<documentation>template to convert to display the report
+            			in PDF format</documentation>
+          			</annotation>
+				</element>
+				<element name="svg-template" minOccurs="0" maxOccurs="1" type="string">
+					<annotation>
+            			<documentation>template to convert to display the report
+            			in PDF format with embedded SVG</documentation>
+          			</annotation>
+				</element>
+				<element name="html-template" minOccurs="0" maxOccurs="1" type="string">
+					<annotation>
+            			<documentation>template to convert to display the report
+            			in HTML format</documentation>
+          			</annotation>
+				</element>
+				<element name="logo" minOccurs="1" maxOccurs="1" type="string">
+					<annotation>
+            			<documentation>path to the logo file</documentation>
+          			</annotation>
+				</element>
+			</all>
+			<attribute name="id" type="string" use="required">
+				<annotation>
+					<documentation>the name of this report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="type" type="string" use="required">
+				<annotation>
+					<documentation>type of this report (calendar/classic)</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+</schema>

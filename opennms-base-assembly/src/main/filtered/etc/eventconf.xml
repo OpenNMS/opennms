@@ -15,6 +15,7 @@
   
   <event-file>events/Rancid.events.xml</event-file>
   <event-file>events/AlarmChangeNotifierEvents.xml</event-file>
+  <event-file>events/GraphMLAssetPluginEvents.xml</event-file>
   
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>
@@ -148,6 +149,7 @@
   <event-file>events/IPV6.events.xml</event-file>
   <event-file>events/Juniper.mcast.events.xml</event-file>
   <event-file>events/Juniper.events.xml</event-file>
+  <event-file>events/Juniper.ive.events.xml</event-file>
   <event-file>events/Juniper.screen.events.xml</event-file>
   <event-file>events/Junos.events.xml</event-file>
   <event-file>events/JunosV1.events.xml</event-file>
@@ -172,6 +174,8 @@
   <event-file>events/NetApp.events.xml</event-file>
   <event-file>events/Netbotz.events.xml</event-file>
   <event-file>events/Netgear.events.xml</event-file>
+  <event-file>events/NetgearProsafeSmartSwitch.events.xml</event-file>
+  <event-file>events/NetgearProsafeSmartSwitch.syslog.events.xml</event-file>
   <event-file>events/Netscreen.events.xml</event-file>
   <event-file>events/NetSNMP.events.xml</event-file>
   <event-file>events/Nokia.events.xml</event-file>
@@ -179,6 +183,7 @@
   <event-file>events/Novell.events.xml</event-file>
   <event-file>events/OpenNMSMIB.events.xml</event-file>
   <event-file>events/OpenSSH.syslog.events.xml</event-file>
+  <event-file>events/OpenWrt.syslog.events.xml</event-file>
   <event-file>events/Oracle.events.xml</event-file>
   <event-file>events/OSPF.events.xml</event-file>
   <event-file>events/Overland.events.xml</event-file>

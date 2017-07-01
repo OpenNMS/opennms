@@ -6,26 +6,26 @@
 
     <parent>
         <groupId>org.opennms</groupId>
-        <artifactId>container</artifactId>
-        <version>17.0.1-SNAPSHOT</version>
+        <artifactId>org.opennms.container</artifactId>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
-    <artifactId>karaf</artifactId>
+    <artifactId>org.opennms.container.karaf</artifactId>
     <packaging>pom</packaging>
-    <name>OpenNMS OSGi Container - Embedded Karaf</name>
+    <name>OpenNMS :: OSGi Container :: Embedded Karaf</name>
 
     <dependencies>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>standalone</artifactId>
+            <artifactId>org.opennms.container.standalone</artifactId>
             <version>${project.version}</version>
             <type>tar.gz</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>branding</artifactId>
+            <artifactId>org.opennms.container.branding</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -90,7 +90,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>target/filtered-resources</outputDirectory>
+                            <outputDirectory>${project.build.directory}/filtered-resources</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/filtered-resources</directory>
@@ -100,6 +100,30 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.nicoulaj.maven.plugins</groupId>
+                <artifactId>checksum-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals><goal>files</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <algorithms><algorithm>SHA-1</algorithm></algorithms>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}/filtered-resources</directory>
+                            <includes>
+                                <include>**/*.jar</include>
+                                <include>**/*.pom</include>
+                                <include>**/*.war</include>
+                                <include>**/*.xml</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -134,7 +158,7 @@
                 <configuration>
                   <artifacts>
                     <artifact>
-                      <file>target/filtered-resources/features/features.xml</file>
+                      <file>${project.build.directory}/filtered-resources/features/features.xml</file>
                       <type>xml</type>
                       <classifier>features</classifier>
                     </artifact>

@@ -34,17 +34,14 @@ import org.opennms.netmgt.provision.detector.generic.response.GpResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>GpDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
     
     private static String DEFAULT_HOPTION = "--hostname";
@@ -60,7 +57,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
     /**
      * <p>Constructor for GpDetector.</p>
      */
-    protected GpDetector() {
+    public GpDetector() {
         super("GP", 0);
     }
 

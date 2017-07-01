@@ -61,8 +61,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:upsertTest-context.xml",
+        "classpath:/upsertTest-context.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
@@ -115,9 +114,8 @@ public class UpsertIT implements InitializingBean {
         assertEquals(1, countIfs(m_populator.getNode1().getId(), 1001, newIfName));
     }
     
-    @SuppressWarnings("deprecation")
-	private int countIfs(int nodeId, int ifIndex, String ifName) {
-        return m_jdbcTemplate.queryForInt("select count(*) from snmpInterface where nodeid=? and snmpifindex=? and snmpifname=?", nodeId, ifIndex, ifName);
+    private int countIfs(int nodeId, int ifIndex, String ifName) {
+        return m_jdbcTemplate.queryForObject("select count(*) from snmpInterface where nodeid=? and snmpifindex=? and snmpifname=?", new Object[] { nodeId, ifIndex, ifName }, Integer.class);
     }
     
     @Test

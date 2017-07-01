@@ -81,4 +81,9 @@ public class TestEngine extends AbstractCorrelationEngine {
         return "TestEngine";
     }
 
+    @Override
+    public void tearDown() {
+        // pass
+    }
+
 }

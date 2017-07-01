@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -145,6 +145,29 @@
           </webResources>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>cleanup-after-integration-tests</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <directory>${project.build.directory}/dependency</directory>
+                </fileset>
+                <fileset>
+                  <directory>${project.build.directory}/${project.build.finalName}</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -159,6 +182,15 @@
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>opennms-remote-poller-windows</artifactId>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Make sure that remote-poller-jnlp.tar.gz builds before this assembly -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+      <version>${project.version}</version>
+      <classifier>jnlp</classifier>
+      <type>tar.gz</type>
       <scope>provided</scope>
     </dependency>
 
@@ -216,16 +248,11 @@
     -->
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-jsp</artifactId>
+      <artifactId>apache-jsp</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <!-- test dependencies -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
@@ -266,6 +293,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jna</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-best</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

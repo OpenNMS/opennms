@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="ranger" id="18.0.0-add-scanreports-tables">
+    <createTable tableName="scanreports">
+      <column name="id" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="scanreports_pkey" />
+      </column>
+      <column name="location" type="TEXT">
+        <constraints nullable="false" foreignKeyName="scanreports_monitoringlocations_fkey" references="monitoringlocations(id)" deleteCascade="true"/>
+      </column>
+      <column name="locale" type="TEXT"/>
+      <column name="timestamp" type="DATETIME"/>
+    </createTable>
+
+    <sql>
+      CREATE UNIQUE INDEX scanreports_id_idx on scanreports(id);
+    </sql>
+
+    <createTable tableName="scanreportproperties">
+      <column name="scanreportid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="scanreportproperties_fkey" references="scanreports(id)" deleteCascade="true"/>
+      </column>
+      <column name="property" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="propertyvalue" type="TEXT"/>
+    </createTable>
+
+    <sql>
+      CREATE INDEX scanreportproperties_id_idx on scanreportproperties(scanreportid);
+      CREATE UNIQUE INDEX scanreportproperties_id_property_idx on scanreportproperties(scanreportid, property);
+    </sql>
+
+    <createTable tableName="scanreportpollresults">
+      <column name="id" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="scanreportpollresults_pkey" />
+      </column>
+      <column name="scanreportid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="scanreportpollresults_fkey" references="scanreports(id)" deleteCascade="true"/>
+      </column>
+      <column name="servicename" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="serviceid" type="INTEGER">
+        <constraints nullable="false" />
+      </column>
+      <column name="nodelabel" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="nodeid" type="INTEGER">
+        <constraints nullable="false" />
+      </column>
+      <column name="ipaddress" type="TEXT" />
+      <column name="statusreason" type="TEXT" />
+      <column name="responsetime" type="DOUBLE PRECISION" />
+      <column name="statuscode" type="INTEGER">
+        <constraints nullable="false" />
+      </column>
+      <column name="statustime" type="DATETIME"/>
+    </createTable>
+
+    <sql>
+      CREATE UNIQUE INDEX scanreportpollresults_id_idx on scanreportpollresults(id);
+      CREATE UNIQUE INDEX scanreportpollresults_id_scanreportid_idx on scanreportpollresults(id, scanreportid);
+    </sql>
+  </changeSet>
+
+  <changeSet author="ranger" id="18.0.0-add-scanreportlogs-table">
+    <createTable tableName="scanreportlogs">
+      <column name="scanreportid" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="scanreportlogs_pkey" />
+      </column>
+      <column name="logtext" type="TEXT" />
+    </createTable>
+
+    <addForeignKeyConstraint constraintName="scanreportlogs_scanreports_fkey" onDelete="CASCADE" baseTableName="scanreportlogs" baseColumnNames="scanreportid" referencedTableName="scanreports" referencedColumnNames="id" />
+
+    <sql>
+      CREATE UNIQUE INDEX scanreportlogs_scanReportId_idx on scanreportlogs(scanReportId);
+    </sql>
+
+  </changeSet>
+
+    <changeSet author="bsm-team" id="18.0.0-bsm-initialize">
+        <createTable tableName="bsm_service">
+            <column name="id" type="integer">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="bsm_services_pkey" />
+            </column>
+            <column name="bsm_reduce_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="text" />
+        </createTable>
+        <createTable tableName="bsm_service_attributes" >
+            <column name="bsm_service_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="key" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="bsm_service_attributes" columnNames="bsm_service_id, key" constraintName="bsm_service_attributes_pkey" />
+        <addForeignKeyConstraint constraintName="fk_bsm_service_attributes_service_id"
+                                 baseTableName="bsm_service_attributes" baseColumnNames="bsm_service_id"
+                                 referencedTableName="bsm_service" referencedColumnNames="id" />
+        <createTable tableName="bsm_reduce" >
+            <column name="id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="threshold" type="float" />
+        </createTable>
+        <addPrimaryKey tableName="bsm_reduce" columnNames="id" constraintName="bsm_reduce_pkey" />
+        <createTable tableName="bsm_map" >
+            <column name="id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="severity" type="integer" />
+        </createTable>
+        <addPrimaryKey tableName="bsm_map" columnNames="id" constraintName="bsm_map_pkey" />
+        <addForeignKeyConstraint constraintName="fk_bsm_service_reduce_id"
+                                 baseTableName="bsm_service" baseColumnNames="bsm_reduce_id"
+                                 referencedTableName="bsm_reduce" referencedColumnNames="id"/>
+        <createTable tableName="bsm_service_edge" >
+            <column name="id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weight" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bsm_map_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bsm_service_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="bsm_service_edge" columnNames="id" constraintName="bsm_service_edge_pkey" />
+        <addForeignKeyConstraint constraintName="fk_bsm_service_edge_map_id"
+                                 baseTableName="bsm_service_edge" baseColumnNames="bsm_map_id"
+                                 referencedTableName="bsm_map" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="fk_bsm_service_edge_service_id"
+                                 baseTableName="bsm_service_edge" baseColumnNames="bsm_service_id"
+                                 referencedTableName="bsm_service" referencedColumnNames="id"/>
+        <createTable tableName="bsm_service_ifservices" >
+            <column name="id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ifserviceid" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="bsm_service_ifservices" columnNames="id" constraintName="bsm_service_ifservices_pkey" />
+        <addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_edge_id"
+                                 baseTableName="bsm_service_ifservices" baseColumnNames="id"
+                                 referencedTableName="bsm_service_edge" referencedColumnNames="id" onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_ifserviceid"
+                                 baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
+                                 referencedTableName="ifservices" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createTable tableName="bsm_service_reductionkeys">
+            <column name="id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reductionkey" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="bsm_service_reductionkeys" columnNames="id" constraintName="bsm_service_reductionkeys_pkey" />
+        <addForeignKeyConstraint constraintName="fk_bsm_service_reductionkeys_edge_id"
+                                 baseTableName="bsm_service_reductionkeys" baseColumnNames="id"
+                                 referencedTableName="bsm_service_edge" referencedColumnNames="id"/>
+        <createTable tableName="bsm_service_children" >
+            <column name="id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bsm_service_child_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="bsm_service_children" columnNames="id" constraintName="bsm_service_children_pkey" />
+        <addForeignKeyConstraint constraintName="fk_bsm_service_children_edge_id"
+                                 baseTableName="bsm_service_children" baseColumnNames="id"
+                                 referencedTableName="bsm_service_edge" referencedColumnNames="id"
+                                 onDelete="CASCADE" />
+        <addForeignKeyConstraint constraintName="fk_bsm_service_child_service_id"
+                                 baseTableName="bsm_service_children" baseColumnNames="bsm_service_child_id"
+                                 referencedTableName="bsm_service" referencedColumnNames="id"
+                                 onDelete="CASCADE" />
+    </changeSet>
+    <changeSet author="mvrueden" id="18.0.0-bsm-highest-severity-above">
+        <addColumn tableName="bsm_reduce">
+            <column name="threshold_severity" type="integer"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="fooker" id="18.0.0-bsm-most-critical-to-highest-severity">
+        <update tableName="bsm_reduce">
+            <column name="type"
+                    type="varchar(32)"
+                    value="highest-severity"/>
+            <where>type = 'most-critical'</where>
+        </update>
+    </changeSet>
+    <changeSet author="cpape" id="18.0.0-bsm-friendlynames">
+        <addColumn tableName="bsm_service_reductionkeys">
+            <column name="friendlyname" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="bsm_service_ifservices">
+            <column name="friendlyname" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mvrueden" id="18.0.0-bsm-map-reduce-cleanup">
+        <delete tableName="bsm_reduce">
+            <where>id not in(select distinct bsm_reduce_id from bsm_service)</where>
+        </delete>
+        <delete tableName="bsm_map">
+            <where>id not in(select distinct bsm_map_id from bsm_service_edge)</where>
+        </delete>
+    </changeSet>
+    <changeSet author="fooker" id="18.0.0-bsm-unique-names">
+        <modifyDataType tableName="bsm_service"
+                        columnName="name"
+                        newDataType="character varying(255)" />
+        <addUniqueConstraint tableName="bsm_service"
+                             columnNames="name" />
+    </changeSet>
+</databaseChangeLog>

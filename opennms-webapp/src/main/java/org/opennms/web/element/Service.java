@@ -29,6 +29,7 @@
 package org.opennms.web.element;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 public class Service {
@@ -58,10 +59,10 @@ public class Service {
         setServiceId(monSvc.getServiceId());
         setServiceName(monSvc.getServiceName());
         if(monSvc.getLastGood() != null) {
-           setLastGood(monSvc.getLastGood().toString());
+           setLastGood(StringUtils.toStringEfficiently(monSvc.getLastGood()));
         }
         if(monSvc.getLastFail() != null) {
-            setLastFail(monSvc.getLastFail().toString());
+            setLastFail(StringUtils.toStringEfficiently(monSvc.getLastFail()));
         }
         setNotify(monSvc.getNotify());
         if(monSvc.getStatus() != null) {

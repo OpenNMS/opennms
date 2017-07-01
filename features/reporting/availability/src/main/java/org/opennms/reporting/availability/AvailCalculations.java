@@ -71,7 +71,7 @@ public class AvailCalculations extends Object {
     private static final String LOG4J_CATEGORY = "reports";
 
     /**
-     * Castor object that holds all the information required for the generating
+     * Object that holds all the information required for the generating
      * xml to be translated to the pdf.
      */
     private static Report m_report = null;
@@ -134,7 +134,7 @@ public class AvailCalculations extends Object {
      * @param monitoredServices
      *            Monitored services belonging to the category.
      * @param report
-     *            Castor Report class.
+     *            Report class.
      * @param offenders
      *            Map of all offenders -- percent/(list of node) pairs
      * @param format
@@ -434,7 +434,7 @@ public class AvailCalculations extends Object {
      * Last Months Top N Service Outages.
      * 
      * @param catSections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -541,7 +541,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param sections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -562,7 +562,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param sections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -582,7 +582,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param catSections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -600,7 +600,7 @@ public class AvailCalculations extends Object {
      * @param offenders
      *            Top Offenders
      * @param catSections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -675,7 +675,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param sections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -695,7 +695,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param sections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -716,7 +716,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param catSections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -795,7 +795,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param catSections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -882,7 +882,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param catSections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -952,7 +952,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param catSections
-     *            Castors sections
+     *            sections
      * @param label
      *            Section name in the xml
      * @param descr
@@ -1107,7 +1107,7 @@ public class AvailCalculations extends Object {
      * @param endTime
      *            End time
      * @param catSections
-     *            Castors sections
+     *            Sections
      * @param label
      *            Section name in the xml
      * @param descr

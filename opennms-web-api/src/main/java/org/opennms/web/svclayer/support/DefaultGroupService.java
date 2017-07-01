@@ -35,8 +35,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.GroupManager;
@@ -175,16 +173,12 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         Group group = getGroup(groupName);
         OnmsUserList userCollection = new OnmsUserList();
         if (group != null) {
-            for (String eachUser : group.getUserCollection()) {
+            for (String eachUser : group.getUsers()) {
                 OnmsUser onmsUser;
                 try {
                     onmsUser = m_userDao.getOnmsUser(eachUser);
                     if (onmsUser == null) continue;
                     userCollection.add(onmsUser);
-                } catch (MarshalException e) {
-                    Log.error("could not load user", e); //ignore
-                } catch (ValidationException e) {
-                    Log.error("could not load user", e); //ignore
                 } catch (IOException e) {
                     Log.error("could not load user", e); //ignore
                 }
@@ -196,13 +190,9 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     @Override
     public OnmsUser getUserForGroup(String groupName, String userName) {
         Group group = getGroup(groupName);
-        if (group != null && group.getUserCollection().contains(userName)) {
+        if (group != null && group.getUsers().contains(userName)) {
             try {
                 return m_userDao.getOnmsUser(userName);
-            } catch (MarshalException e) {
-                Log.error("could not load user", e); //ignore
-            } catch (ValidationException e) {
-                Log.error("could not load user", e); //ignore
             } catch (IOException e) {
                 Log.error("could not load user", e); //ignore
             }
@@ -234,10 +224,6 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         if (userName != null) {
             try {
                 return m_userDao.hasUser(userName);
-            } catch (MarshalException e) {
-                Log.error("could not load user", e); //ignore
-            } catch (ValidationException e) {
-                Log.error("could not load user", e); //ignore
             } catch (IOException e) {
                 Log.error("could not load user", e); //ignore
             }

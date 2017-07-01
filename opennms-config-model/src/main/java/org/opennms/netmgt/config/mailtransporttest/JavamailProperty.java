@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.config.mailtransporttest;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
-import org.xml.sax.ContentHandler;
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Use these name value pairs to configure freeform properties from
@@ -63,169 +46,55 @@ import org.xml.sax.ContentHandler;
 
 @XmlRootElement(name="javamail-property")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class JavamailProperty implements Serializable {
-    private static final long serialVersionUID = -3716889757544640520L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field m_name.
-     */
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
     private String m_name;
 
-    /**
-     * Field m_value.
-     */
-    @XmlAttribute(name="value")
+    @XmlAttribute(name="value", required=true)
     private String m_value;
 
     public JavamailProperty() {
-        super();
     }
 
     public JavamailProperty(final String name, final String value) {
-        m_name = name;
-        m_value = value;
+        setName(name);
+        setValue(value);
     }
 
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
     public String getName() {
         return m_name;
     }
 
-    /**
-     * Returns the value of field 'value'.
-     * 
-     * @return the value of field 'Value'.
-     */
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
     public String getValue() {
         return m_value;
     }
 
-    /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws IOException if an IOException occurs during
-     * marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-
-    /**
-     * Sets the value of field 'value'.
-     * 
-     * @param value the value of field 'value'.
-     */
     public void setValue(final String value) {
-        m_value = value;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * JavamailProperty
-     */
-    public static JavamailProperty unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (JavamailProperty) Unmarshaller.unmarshal(JavamailProperty.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
+        m_value = ConfigUtils.assertNotEmpty(value, "value");
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-        result = prime * result + ((m_value == null) ? 0 : m_value.hashCode());
-        return result;
+        return Objects.hash(m_name, m_value);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
+        if (this == obj) return true;
+
+        if (obj instanceof JavamailProperty) {
+            final JavamailProperty that = (JavamailProperty) obj;
+            return Objects.equals(this.m_name, that.m_name) &&
+                    Objects.equals(this.m_value, that.m_value);
         }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof JavamailProperty)) {
-            return false;
-        }
-        final JavamailProperty other = (JavamailProperty) obj;
-        if (m_name == null) {
-            if (other.m_name != null) {
-                return false;
-            }
-        } else if (!m_name.equals(other.m_name)) {
-            return false;
-        }
-        if (m_value == null) {
-            if (other.m_value != null) {
-                return false;
-            }
-        } else if (!m_value.equals(other.m_value)) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
 }

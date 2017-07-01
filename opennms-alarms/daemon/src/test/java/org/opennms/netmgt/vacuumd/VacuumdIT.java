@@ -64,8 +64,8 @@ import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
 import org.opennms.netmgt.eventd.EventExpander;
@@ -83,6 +83,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * Tests Vacuumd's execution of statements and automations
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
@@ -93,7 +95,7 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -103,7 +105,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class) // XXX should be false? 
-@Ignore
+@Ignore // TODO Figure out how to make this test more reliable before enabling it
 public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
 
@@ -111,6 +113,9 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
 
     @Autowired
     private Alarmd m_alarmd;
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -147,7 +152,7 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
         }
 
         m_eventdIpcMgr.setEventWriter(m_database);
-        EventExpander expander = new EventExpander();
+        EventExpander expander = new EventExpander(new MetricRegistry());
         expander.setEventConfDao(new EmptyEventConfDao());
         m_eventdIpcMgr.setEventExpander(expander);
 
@@ -157,14 +162,12 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
         m_vacuumd.init();
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "default-1");
         node.setId(1);
-        node.setLabel("default-1");
         m_nodeDao.save(node);
 
-        node = new OnmsNode();
+        node = new OnmsNode(m_locationDao.getDefaultLocation(), "default-2");
         node.setId(2);
-        node.setLabel("default-2");
         m_nodeDao.save(node);
         m_nodeDao.flush();
 
@@ -281,20 +284,18 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
         m_vacuumd.start();
 
         // Setup our event anticipator
-        EventAnticipator eventAnticipator = new EventAnticipator();
-        eventAnticipator.setDiscardUnanticipated(true);
-        m_eventdIpcMgr.setEventAnticipator(eventAnticipator);
+        m_eventdIpcMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Build and anticipate the request reload event
         EventBuilder builder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
         builder.addParam(EventConstants.PARM_DAEMON_NAME, m_vacuumd.getName());
         Event requestReloadEvent = builder.getEvent();
-        eventAnticipator.anticipateEvent(requestReloadEvent);
+        m_eventdIpcMgr.getEventAnticipator().anticipateEvent(requestReloadEvent);
 
         // Build and anticipate the reload confirmation event
         builder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, m_vacuumd.getName());
         Event reloadSuccesfulEvent = builder.getEvent();
-        eventAnticipator.anticipateEvent(reloadSuccesfulEvent);
+        m_eventdIpcMgr.getEventAnticipator().anticipateEvent(reloadSuccesfulEvent);
 
         // Send the reload event
         m_eventdIpcMgr.sendNow(requestReloadEvent);
@@ -303,7 +304,7 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
         // Stop the daemon and verify that the configuration reload was confirmed
         m_vacuumd.stop();
         m_eventdIpcMgr.setEventAnticipator(null);
-        eventAnticipator.verifyAnticipated();
+        m_eventdIpcMgr.getEventAnticipator().verifyAnticipated();
     }
 
     /**
@@ -363,11 +364,11 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
     @Test
     public final void testGetTrigger() {
         assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("selectAll"));
-        assertEquals(1, VacuumdConfigFactory.getInstance().getTrigger("selectAll").getRowCount());
+        assertEquals(1, VacuumdConfigFactory.getInstance().getTrigger("selectAll").getRowCount().intValue());
         assertEquals(">=", VacuumdConfigFactory.getInstance().getTrigger("selectAll").getOperator());
         assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter"));
         assertNull(VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter").getOperator());
-        assertEquals(0,VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter").getRowCount());
+        assertEquals(0,VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter").getRowCount().intValue());
     }
     
     /**

@@ -54,6 +54,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -86,6 +88,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
@@ -553,6 +556,22 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         // see http://issues.opennms.org/browse/NMS-7367
         value = properties.get("swFCPortWwn");
         assertEquals("1100334455667788", value);
+    }
+
+    @Test(expected=CollectionTimedOut.class)
+    @Transactional
+    @JUnitCollector(
+                    datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml",
+                    datacollectionType = "snmp"
+            )
+    public void collectionTimedOutExceptionOnAgentTimeout() throws CollectionInitializationException, CollectionException {
+        // Initialize the agent and perform the collection
+        m_collectionSpecification.initialize(m_collectionAgent);
+        m_collectionSpecification.collect(m_collectionAgent);
+
+        // There is no @JUnitSnmpAgent annotation on this method, so
+        // we don't actually start the SNMP agent, which should
+        // generate a CollectionTimedOut exception
     }
 
     private String rrd(String file) {

@@ -38,12 +38,10 @@ package org.opennms.features.vaadin.jmxconfiggenerator.data;
 public interface MetaConfigModel {
 
 	String SERVICE_NAME = "serviceName";
-	String JMXMP = "jmxmp";
-	String HOST = "host";
 	String PASSWORD = "password";
-	String PORT = "port";
 	String AUTHENTICATE = "authenticate";
 	String USER = "user";
 	String SKIP_DEFAULT_VM = "skipDefaultVM";
 	String SKIP_NON_NUMBER = "skipNonNumber";
+	String CONNECTION = "connection";
 }

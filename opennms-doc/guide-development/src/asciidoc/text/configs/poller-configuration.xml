@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<?castor class-name="org.opennms.netmgt.poller.PollerConfiguration"?>
 <poller-configuration threads="30"
                       serviceUnresponsiveEnabled="false">
   <node-outage status="on">

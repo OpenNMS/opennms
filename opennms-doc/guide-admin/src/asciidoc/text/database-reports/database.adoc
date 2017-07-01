@@ -30,6 +30,18 @@ The _{opennms-product-name} Report Engine_ passes a _JDBC_ Connection to the _{o
 For more details on how _JasperReports_ works, please have a look at the link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation] of _Jaspersoft Studio_.
 
 [[ga-database-report-add-custom-report]]
+
+=== Modify existing reports
+
+All default reports of _{opennms-product-name}_ are located in `$OPENNMS_HOME/etc/report-templates`.
+Each `.jrxml` file located there can be modified and the changes are applied the next time a report is created by _{opennms-product-name}_.
+
+When a subreport has been modified _{opennms-product-name}_ will detect a change based on the report's `lastModified` time and will recompile the report.
+A compiled version of the report is represented by a `.jasper` file with the same name as the `.jrxml` file.
+Subreports are located in `$OPENNMS_HOME/etc/report-templates/subreports`.
+
+TIP: If unsure, simply delete all `.jasper` files and _{opennms-product-name}_ will automatically compile the subreports if needed.
+
 === Add a custom report
 
 To add a new _JasperReport_ report to the _Local {opennms-product-name} Report Repository_, the following steps are required.
@@ -66,8 +78,8 @@ In addition a new entry in the file `$OPENNMS_HOME/etc/jasper-reports.xml` must 
 <2> The name of the template. The template must be located in `$OPENNMS_HOME/etc/report-templates`.
 <3> The engine to use. It is either `jdbc` or `null`.
 
-[[ga-database-reports-overview]]
-=== Use of Jaspersoft Studio
+[[ga-database-reports-usage-jaspersoft-studio]]
+=== Usage of Jaspersoft Studio
 
 When developing new reports it is recommended to use the _Jaspersoft Studio_ application.
 It can be downloaded link:http://community.jaspersoft.com/project/jaspersoft-studio[here].
