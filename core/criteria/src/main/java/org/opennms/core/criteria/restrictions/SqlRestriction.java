@@ -28,10 +28,49 @@
 
 package org.opennms.core.criteria.restrictions;
 
+
 public class SqlRestriction extends AttributeRestriction {
 
+    public enum Type {
+        FLOAT,
+        INTEGER,
+        LONG,
+        STRING,
+        TIMESTAMP
+    }
+
+    final Object[] parameters;
+    final Type[] types;
+
     public SqlRestriction(final String attribute) {
+        this(attribute, new Object[0], new Type[0]);
+    }
+
+    public SqlRestriction(final String attribute, Object parameter, Type type) {
+        this(attribute, new Object[] { parameter }, new Type[] { type });
+    }
+
+    public SqlRestriction(final String attribute, Object[] parameters, Type[] types) {
         super(RestrictionType.SQL, attribute);
+        if (parameters == null) {
+            if (types == null) {
+                this.parameters = new Object[0];
+                this.types = new Type[0];
+            } else {
+                throw new IllegalArgumentException("Cannot have non-null types with null parameters");
+            }
+        } else {
+            if (types == null) {
+                throw new IllegalArgumentException("Cannot have null types with non-null parameters");
+            } else {
+                if (parameters.length == types.length) {
+                    this.parameters = parameters;
+                    this.types = types;
+                } else {
+                    throw new IllegalArgumentException("Parameter and type lists are different lengths");
+                }
+            }
+        }
     }
 
     @Override
@@ -44,4 +83,11 @@ public class SqlRestriction extends AttributeRestriction {
         return "SqlRestriction [attribute=" + getAttribute() + "]";
     }
 
+    public Object[] getParameters() {
+        return parameters;
+    }
+
+    public Type[] getTypes() {
+        return types;
+    }
 }

@@ -204,6 +204,10 @@
       <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
     </feature>
 
+    <feature name="commons-lang3" description="Apache :: commons-lang3" version="${commonsLang3Version}">
+      <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
+    </feature>
+
     <feature name="commons-net" description="Apache :: commons-net" version="3.3">
       <bundle>mvn:commons-net/commons-net/3.3</bundle>
     </feature>
@@ -633,7 +637,7 @@
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
       <feature version="[4.1,4.2)">spring</feature>
 
-      <feature>commons-lang</feature>
+      <feature>commons-lang3</feature>
       <feature>jaxb</feature>
 
       <feature>opennms-core</feature>
