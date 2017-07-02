@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The script information for this event - describes a
  *  script to be executed whenever the event occurs.
@@ -130,9 +128,6 @@ public class Script implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("content", _content)
-    		.append("language", _language)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }

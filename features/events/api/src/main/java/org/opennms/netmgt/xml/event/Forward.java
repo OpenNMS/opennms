@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The forwarding information for this event - state
  *  determines if event is forwarded, mechanism determines how
@@ -160,10 +158,6 @@ public class Forward implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("content", _content)
-    		.append("state", _state)
-    		.append("mechanism", _mechanism)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }

@@ -39,8 +39,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * Class Log.
  * 
@@ -146,10 +144,7 @@ public class Log implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-        .append("header", _header)
-        .append("events", _events)
-        .toString();
+        return new OnmsStringBuilder(this).toString();
     }
 
 }

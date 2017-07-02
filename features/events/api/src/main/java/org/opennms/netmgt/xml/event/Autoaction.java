@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The automatic action to occur when this event occurs with
  *  state controlling if action takes place
@@ -131,9 +129,6 @@ public class Autoaction implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("content", _content)
-    		.append("state", _state)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }
