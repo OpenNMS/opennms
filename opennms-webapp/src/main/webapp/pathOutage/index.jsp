@@ -92,7 +92,7 @@
 						.focus(pthData[1])
 						.szl(0)
 						.layout(Layout.HIERARCHY)
-						.provider(TopologyProvider.PATHOUTAGE)
+						.provider(TopologyProvider.PATH_OUTAGE)
 						.getLink();
 			%>
 			<td><a href="<%= topologyLink%>"><i class="fa fa-external-link-square"></i>View in Topology</a></td>

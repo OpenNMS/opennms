@@ -28,6 +28,8 @@
 
 package org.opennms.smoketest;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -293,6 +295,35 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
         }
+    }
+
+    /**
+     * The information of the Topology
+     */
+    public static class TopologyInfo {
+        private final OpenNMSSeleniumTestCase testCase;
+
+        public TopologyInfo(OpenNMSSeleniumTestCase testCase) {
+           this.testCase = Objects.requireNonNull(testCase);
+       }
+
+       public String getTitle() {
+           try {
+               testCase.setImplicitWait(1, TimeUnit.SECONDS);
+               return testCase.findElementByXpath("//*[@id='topologyInfo']/*[1]").getText();
+           } finally {
+               testCase.setImplicitWait();
+           }
+       }
+
+       public String getDescription() {
+           try {
+               testCase.setImplicitWait(1, TimeUnit.SECONDS);
+               return testCase.findElementByXpath("//*[@id='topologyInfo']/*[2]").getText();
+           } finally {
+               testCase.setImplicitWait();
+           }
+       }
     }
 
     /**
@@ -594,6 +625,10 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
         }
+
+        public TopologyInfo getTopologyInfo() {
+            return new TopologyInfo(testCase);
+        }
     }
 
     public static class SaveLayoutButton {
@@ -771,7 +806,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         createRequisition(REQUISITION_NAME, requisitionXML, 5);
         new TopologyReloadEvent(this).send();
 
-        topologyUiPage.selectTopologyProvider(() -> "Path Outage");
+        topologyUiPage.selectTopologyProvider(TopologyProvider.PATH_OUTAGE);
         topologyUiPage.clearFocus();
         topologyUiPage.setSzl(1);
         topologyUiPage.search("Node-3").selectItemThatContains("Node-3");
@@ -779,6 +814,13 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         topologyUiPage.setSzl(2);
         int numFocusVertices_szl2 = topologyUiPage.getVisibleVertices().size();
         Assert.assertNotEquals(numFocusVertices_szl1, numFocusVertices_szl2);
+    }
+
+    @Test
+    public void verifyPathOutageTopologyInfo() {
+        topologyUiPage.selectTopologyProvider(TopologyProvider.PATH_OUTAGE);
+        Assert.assertThat(topologyUiPage.getTopologyInfo().getTitle(), not(containsString("Undefined")));
+        Assert.assertThat(topologyUiPage.getTopologyInfo().getDescription(), not(containsString("No description available")));
     }
 
     /**

@@ -8,6 +8,7 @@
     <bean id="pathOutageProvider" class="org.opennms.features.topology.plugins.topo.pathoutage.PathOutageProvider">
         <argument ref="nodeDao"></argument>
         <argument ref="pathOutageStatusProvider"></argument>
+        <property name="topologyProviderInfo" ref="pathoutageTopologyProviderInfo" />
     </bean>
     <bean id="pathOutageHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
         <argument ref="pathOutageProvider"/>
