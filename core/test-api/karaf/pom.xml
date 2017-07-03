@@ -451,10 +451,5 @@
        <id>vaadin-addons</id>
        <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
     </repository>
-    <repository>
-      <id>sonatype-public-repo</id>
-      <name>Sonatype Public Maven Repository</name>
-      <url>http://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
-    </repository>
   </repositories>
 </project>

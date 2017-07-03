@@ -43,33 +43,7 @@
     </dependencies>
   </dependencyManagement>
 
-<!--
-  <repositories>
-    <repository>
-      <id>servicemix</id>
-      <name>Apache ServiceMix Repository</name>
-      <url>http://maven.opennms.org/content/repositories/servicemix/</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
-    </repository>
-    <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
-    </repository>
-  </repositories>
--->
-
   <pluginRepositories>
-    <pluginRepository>
-      <id>servicemix</id>
-      <name>Apache ServiceMix Repository</name>
-      <url>http://maven.opennms.org/content/repositories/servicemix/</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
-    </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>true</enabled></snapshots>
       <releases><enabled>false</enabled></releases>

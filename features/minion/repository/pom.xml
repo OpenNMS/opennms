@@ -281,17 +281,6 @@
             <name>OpenNMS Snapshot Maven Repository</name>
             <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>apache-snapshots</id>
-            <name>Apache Snapshots Repository</name>
-            <url>http://repository.apache.org/content/groups/snapshots-group</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
     </pluginRepositories>
 
     <repositories>
@@ -336,17 +325,6 @@
             <id>coova</id>
             <name>Coova Repository</name>
             <url>http://maven.opennms.org/content/repositories/coova/</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <id>jboss-repo</id>
-            <name>JBoss Repository</name>
-            <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
         </repository>
     </repositories>
 </project>
