@@ -38,13 +38,11 @@ public class AlarmWrapperImpl implements AlarmWrapper {
 
     private final String m_reductionKey;
     private final Status m_status;
-    private final Integer m_id;
 
     public AlarmWrapperImpl(OnmsAlarm alarm) {
         Objects.requireNonNull(alarm);
         m_reductionKey = alarm.getReductionKey();
         m_status = SeverityMapper.toStatus(alarm.getSeverity());
-        m_id = alarm.getId();
     }
 
     @Override
@@ -58,7 +56,22 @@ public class AlarmWrapperImpl implements AlarmWrapper {
     }
 
     @Override
-    public Integer getId() {
-        return m_id;
+    public boolean equals(final Object other) {
+        if (!(other instanceof AlarmWrapperImpl)) {
+            return false;
+        }
+        AlarmWrapperImpl castOther = (AlarmWrapperImpl) other;
+        return Objects.equals(m_reductionKey, castOther.m_reductionKey) && Objects.equals(m_status, castOther.m_status);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_reductionKey, m_status);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("AlarmWrapperImpl[reductionKey=%s, status=%s]", m_reductionKey, m_status);
+    }
+
 }

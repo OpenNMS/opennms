@@ -37,6 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.support.HistoryAwareSearchProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
@@ -56,7 +57,10 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Hi
 
     private String m_hiddenCategoryPrefix = null;
 
-    public CategorySearchProvider(CategoryProvider categoryProvider) {
+    private TopologyService topologyService;
+
+    public CategorySearchProvider(TopologyService topologyService, CategoryProvider categoryProvider) {
+        this.topologyService = Objects.requireNonNull(topologyService);
         this.categoryProvider = Objects.requireNonNull(categoryProvider);
     }
 
@@ -67,7 +71,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Hi
 
     @Override
     public boolean contributesTo(String namespace) {
-        return CONTRIBUTES_TO_NAMESPACE.equals(namespace);
+        return topologyService.isCategoryAware(namespace);
     }
 
     @Override
@@ -75,7 +79,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Hi
 
         Collection<OnmsCategory> categories = categoryProvider.getAllCategories();
 
-        List<SearchResult> results = new ArrayList<SearchResult>();
+        List<SearchResult> results = new ArrayList<>();
         for (OnmsCategory category : categories) {
             if (!checkHiddenPrefix(category.getName()) && searchQuery.matches(category.getName())) {
                 SearchResult result = new SearchResult(CategoryHopCriteria.NAMESPACE, category.getId().toString(), category.getName(),
@@ -108,13 +112,13 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Hi
 
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        CategoryHopCriteria criteria = createCriteria(searchResult);
+        CategoryHopCriteria criteria = createCriteria(searchResult, container);
         container.addCriteria(criteria);
     }
 
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        CategoryHopCriteria criteria = createCriteria(searchResult);
+        CategoryHopCriteria criteria = createCriteria(searchResult, container);
         container.removeCriteria(criteria);
     }
 
@@ -123,8 +127,8 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Hi
     }
 
     @Override
-    public Criteria buildCriteriaFromQuery(SearchResult input) {
-        CategoryHopCriteria criteria = createCriteria(input);
+    public Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container) {
+        CategoryHopCriteria criteria = createCriteria(input, container);
         return criteria;
     }
 
@@ -147,8 +151,8 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Hi
         return null;
     }
 
-    private CategoryHopCriteria createCriteria(SearchResult searchResult) {
-        CategoryHopCriteria criteria = new CategoryHopCriteria(searchResult, categoryProvider);
+    private CategoryHopCriteria createCriteria(SearchResult searchResult, GraphContainer graphContainer) {
+        CategoryHopCriteria criteria = new CategoryHopCriteria(searchResult, categoryProvider, graphContainer);
         return criteria;
     }
 }

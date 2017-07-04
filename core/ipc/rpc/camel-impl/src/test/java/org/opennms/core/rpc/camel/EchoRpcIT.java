@@ -287,8 +287,11 @@ public class EchoRpcIT {
             fail("Did not get ExecutionException");
         } catch (ExecutionException e) {
             assertTrue("Cause is not of type RequestTimedOutException: " + ExceptionUtils.getStackTrace(e), e.getCause() instanceof RequestTimedOutException);
+            // Verify that the exchange error was logged
+            MockLogAppender.assertLogMatched(Level.ERROR, "Message History");
+            MockLogAppender.assertLogMatched(Level.ERROR, "direct://executeRpc");
             // Verify that the message body was suppressed
-            MockLogAppender.assertLogMatched(Level.DEBUG, "[Body is not logged]");
+            MockLogAppender.assertNoLogMatched(Level.ERROR, "HELLO!!!");
         }
 
         routeManager.unbind(echoRpcModule);

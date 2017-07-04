@@ -36,7 +36,6 @@
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
     <jsp:param name="title" value="Geographcial Map" />
     <jsp:param name="nobreadcrumbs" value="true" />
-    <jsp:param name="norequirejs" value="true"/>
     <jsp:param name="useionicons" value="true" />
 </jsp:include>
 

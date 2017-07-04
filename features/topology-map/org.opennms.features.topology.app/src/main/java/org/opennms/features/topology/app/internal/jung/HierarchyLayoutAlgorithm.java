@@ -88,7 +88,7 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         // This should fix rendering if selected "Hierarchical Layout" is already selected, but the graph is not
         // fully level aware. See NMS-8703
         if (isFullyLevelAware(graph)) {
-            final edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> treeLayout = createTreeLayout(graph);
+            final HierarchyLayout<VertexRef, Edge> treeLayout = createTreeLayout(graph);
             applyLayoutPositions(graph.getDisplayVertices(), treeLayout, graphLayout);
         } else {
             // SEE NMS-8703
@@ -137,14 +137,19 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         return jungGraph;
     }
 
-    private void applyLayoutPositions(final Collection<? extends Vertex> vertices, final edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> layout, final Layout graphLayout) {
-        for(VertexRef v : vertices) {
+    private void applyLayoutPositions(final Collection<? extends Vertex> vertices, final HierarchyLayout<VertexRef, Edge> layout, final Layout graphLayout) {
+        final List<VertexRef> displayVertices = vertices.stream()
+                .map(v -> (VertexRef)v)
+                .collect(Collectors.toList());
+        layout.horizontalSqueeze(displayVertices);
+
+        for(VertexRef v : displayVertices) {
             Point2D p = layout.transform(v);
             graphLayout.setLocation(v, new Point(p.getX(), p.getY()));
         }
     }
 
-    private edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> createTreeLayout(final Graph g) {
+    private HierarchyLayout<VertexRef, Edge> createTreeLayout(final Graph g) {
         final edu.uci.ics.jung.graph.DirectedGraph<VertexRef, Edge> jungGraph = convert(g);
         HierarchyLayout<VertexRef, Edge> layout = new HierarchyLayout<>(jungGraph, ELBOW_ROOM * 2, ELBOW_ROOM * 2);
         return layout;

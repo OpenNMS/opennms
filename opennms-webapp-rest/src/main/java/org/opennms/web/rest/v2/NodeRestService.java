@@ -62,50 +62,50 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
 
-	@Autowired
-	private MonitoringLocationDao m_locationDao;
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
 
-	@Autowired
-	private NodeDao m_dao;
+    @Autowired
+    private NodeDao m_dao;
 
-	protected NodeDao getDao() {
-		return m_dao;
-	}
+    protected NodeDao getDao() {
+        return m_dao;
+    }
 
-	protected Class<OnmsNode> getDaoClass() {
-		return OnmsNode.class;
-	}
+    protected Class<OnmsNode> getDaoClass() {
+        return OnmsNode.class;
+    }
 
-	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+    protected CriteriaBuilder getCriteriaBuilder() {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
 
-		builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
-		builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
-		builder.alias("categories", "category", JoinType.LEFT_JOIN);
-		builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
-		builder.alias("location", "location", JoinType.LEFT_JOIN);
-		builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
+        builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+        builder.alias("categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("location", "location", JoinType.LEFT_JOIN);
+        builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
 
-		// Order by label by default
-		builder.orderBy("label").desc();
+        // Order by label by default
+        builder.orderBy("label").desc();
 
-		return builder;
-	}
+        return builder;
+    }
 
-	@Override
-	protected JaxbListWrapper<OnmsNode> createListWrapper(Collection<OnmsNode> list) {
-		return new OnmsNodeList(list);
-	}
+    @Override
+    protected JaxbListWrapper<OnmsNode> createListWrapper(Collection<OnmsNode> list) {
+        return new OnmsNodeList(list);
+    }
 
-	@Override
-	public Response doCreate(final UriInfo uriInfo, final OnmsNode object) {
-		if (object.getLocation() == null) {
-			OnmsMonitoringLocation location = m_locationDao.getDefaultLocation();
-			LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
-			object.setLocation(location);
-		}
-		return super.doCreate(uriInfo, object);
-	}
+    @Override
+    public Response doCreate(final UriInfo uriInfo, final OnmsNode object) {
+        if (object.getLocation() == null) {
+            OnmsMonitoringLocation location = m_locationDao.getDefaultLocation();
+            LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
+            object.setLocation(location);
+        }
+        return super.doCreate(uriInfo, object);
+    }
 }

@@ -73,6 +73,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <service id="categorySearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
         <bean class="org.opennms.features.topology.app.internal.CategorySearchProvider">
+            <argument ref="topologyService"/>
             <argument ref="categoryProvider"/>
             <property name="hiddenCategoryPrefix" value="${hiddenCategoryPrefix}" />
         </bean>

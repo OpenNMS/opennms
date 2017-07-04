@@ -4,11 +4,10 @@
         <uei>uei.opennms.org/provisioner/provisioningAdapterFailed</uei>
         <event-label>OpenNMS-defined Provisioning Adapter Failed message</event-label>
         <descr>
-            A provisioning adapter failed for host: %host%.&lt;p&gt;
-            &lt;p&gt;Message: %parm[reason]% &lt;/p&gt;
+            A provisioning adapter failed for host %host% with the following condition: %parm[reason]%.&lt;p&gt;
         </descr>
         <logmsg dest="logndisplay">
-            &lt;p&gt; %host%:%parm[host]%:%parm[reason]% &lt;/p&gt;
+            &lt;p&gt;A provisioning adapter failed for host.&lt;/p&gt;
         </logmsg>
         <severity>Major</severity>
         <alarm-data reduction-key="%uei%:%host%:%parm[reason]%" alarm-type="3" auto-clean="false"/>
@@ -38,7 +37,7 @@
         </descr>
         <logmsg dest="logndisplay">
             &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
-            aborted for the following reason: %parm[reason]% &lt;/p&gt;
+            aborted.&lt;/p&gt;
         </logmsg>
         <severity>Warning</severity>
     </event>
@@ -92,8 +91,7 @@
             called failureMessage: %parm[failureMessage]%&lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
-            &lt;p&gt;This event indicates the model-importer process has failed from resource: %parm[importResource]%
-            with reason: %parm[failureMessage]%&lt;/p&gt;
+            &lt;p&gt;This event indicates the model-importer process has failed from resource: %parm[importResource]%&lt;/p&gt;
         </logmsg>
         <severity>Warning</severity>
         <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="1" auto-clean="false"/>

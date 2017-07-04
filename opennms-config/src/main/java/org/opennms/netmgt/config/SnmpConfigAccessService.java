@@ -37,19 +37,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.config.SnmpEventInfo;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SnmpConfigAccessService {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigAccessService.class);
-
-    @Autowired
-    private SnmpPeerFactory m_snmpPeerFactory;
 
     private boolean m_dirty = false;
     private final ScheduledExecutorService m_executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {

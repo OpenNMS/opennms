@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -24,12 +24,22 @@
           <importRepositories>true</importRepositories>
           <!--
             Don't import other repositories that are already inside well-organized feature hierarchies
-            outside of OpenNMS (Karaf, ActiveMQ, Camel).
+            outside of OpenNMS (Karaf, ActiveMQ, Camel, CXF).
           -->
           <importRepositoryExclusions>
-            <value>karaf-${karafVersion}</value>
+            <!-- Apache Karaf-->
+            <value>framework-${karafVersion}</value>
+            <value>enterprise-${karafVersion}</value>
+            <value>spring-${karafVersion}</value>
+            <value>standard-${karafVersion}</value>
+
+            <!-- Apache CXF -->
             <value>cxf-${cxfVersion}</value>
+
+            <!-- Apache ActiveMQ -->
             <value>activemq-${activemqVersion}</value>
+
+            <!-- Apache Camel -->
             <value>camel-${camelVersion}</value>
           </importRepositoryExclusions>
           <repositories>
@@ -40,9 +50,10 @@
               same names, including vanilla Karaf and the org.opennms.container/karaf servlet bridge Karaf container.
             -->
             <!-- Karaf standard features -->
-            <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor> -->
-            <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/spring/${karafVersion}/xml/features</descriptor> -->
-            <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/enterprise/${karafVersion}/xml/features</descriptor> -->
+            <!-- <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor> -->
+            <!-- <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor> -->
+            <!-- <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor> -->
+            <!-- <descriptor>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</descriptor> -->
 
             <!-- OpenNMS-modified Karaf base features -->
             <!-- <repository>mvn:org.opennms.container/org.opennms.container.karaf/${project.version}/xml/features</repository> -->
@@ -128,30 +139,47 @@
             <!-- Features from ActiveMQ repository -->
             <feature>activemq-broker</feature>
 
-            <!-- Features from Karaf repository -->
-            <feature>admin</feature>
+            <!-- Karaf framework features -->
+            <feature>framework</feature>
+
+            <!-- Karaf standard features -->
+            <feature>aries-annotation</feature>
             <feature>aries-blueprint</feature>
             <feature>aries-proxy</feature>
             <feature>blueprint-web</feature>
+            <feature>bundle</feature>
             <feature>config</feature>
             <feature>deployer</feature>
             <feature>diagnostic</feature>
             <feature>eventadmin</feature>
-            <feature>features</feature>
+            <feature>feature</feature>
+            <feature>framework-security</feature>
             <feature>http</feature>
             <feature>http-whiteboard</feature>
+            <feature>instance</feature>
+            <feature>jaas-boot</feature>
             <feature>jaas</feature>
             <feature>jasypt-encryption</feature>
+            <!-- TODO: Figure out how to import 2 versions of Jetty? -->
             <feature>jetty</feature>
-            <feature>karaf-framework</feature>
+            <feature>jolokia</feature>
             <feature>kar</feature>
+            <feature>log</feature>
             <feature>management</feature>
+            <feature>minimal</feature>
             <feature>obr</feature>
+            <feature>package</feature>
+            <feature>profile</feature>
+            <feature>scheduler</feature>
             <feature>scr</feature>
+            <feature>service</feature>
             <feature>service-security</feature>
             <feature>service-wrapper</feature>
+            <feature>shell-compat</feature>
             <feature>shell</feature>
             <feature>ssh</feature>
+            <feature>standard</feature>
+            <feature>system</feature>
             <feature>war</feature>
             <feature>webconsole</feature>
             <feature>wrap</feature>
@@ -235,10 +263,11 @@
             <feature>opennms-syslogd-listener-javanet</feature>
             <feature>opennms-syslogd-listener-camel-netty</feature>
             <feature>opennms-trapd</feature>
-
             <!-- <feature>opennms-webapp</feature> -->
+
             <feature>org.json</feature>
             <feature>postgresql</feature>
+            <feature>qpid</feature>
             <feature>spring-security32</feature>
             <feature>spring-webflow</feature>
 

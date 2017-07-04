@@ -8,7 +8,7 @@
             &lt;p&gt;The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
-            &lt;p&gt;The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p&gt;
+            &lt;p&gt;The report with name %parm[reportName]% failed to run.&lt;/p&gt;
         </logmsg>
         <severity>Minor</severity>
         <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false"/>
@@ -22,8 +22,7 @@
             %parm[reason]% &lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
-            &lt;p&gt;The report with name %parm[reportName]% could not be delivered for the following reason:
-            %parm[reason]% &lt;/p&gt;
+            &lt;p&gt;The report with name %parm[reportName]% could not be delivered.&lt;/p&gt;
         </logmsg>
         <severity>Minor</severity>
         <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false"/>

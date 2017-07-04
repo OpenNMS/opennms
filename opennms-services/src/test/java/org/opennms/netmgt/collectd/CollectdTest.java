@@ -50,6 +50,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -195,7 +197,7 @@ public class CollectdTest {
     private static OnmsIpInterface getInterface() {
         OnmsNode node = new OnmsNode();
         node.setId(1);
-        OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
+        OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.getInetAddress("192.168.1.1"), node);
         iface.setId(1);
         return iface;
     }
@@ -203,7 +205,7 @@ public class CollectdTest {
     @Test
     public void testCreate() throws Exception {
 
-        setupCollector("SNMP", false);
+        setupCollector("SNMP");
         setupTransactionManager();
 
         // Use a mock scheduler to track calls to the Collectd scheduler
@@ -263,7 +265,7 @@ public class CollectdTest {
     @Test
     public void testNoMatchingSpecs() throws Exception {
 
-        setupCollector("SNMP", false);
+        setupCollector("SNMP");
         expect(m_ipIfDao.findByServiceType("SNMP")).andReturn(new ArrayList<OnmsIpInterface>(0));
         setupTransactionManager();
 
@@ -286,7 +288,7 @@ public class CollectdTest {
     public void testOneMatchingSpec() throws Exception {
         OnmsIpInterface iface = getInterface();
 
-        setupCollector("SNMP", true);
+        setupCollector("SNMP");
         setupInterface(iface);
         setupTransactionManager();
   
@@ -312,14 +314,48 @@ public class CollectdTest {
         m_easyMockUtils.verifyAll();
     }
 
+    /**
+     * NMS-9413: Verifies that collectd does not schedule interfaces when the
+     * {@link ServiceCollector} throws a {@link CollectionInitializationException}
+     * while validating the agent.
+     */
     @SuppressWarnings("unchecked")
-    private static <K> Collection<K> isACollection(Class<K> innerClass) {
-        return isA(Collection.class);
+    @Test
+    public void testInterfaceIsNotScheduledWhenValidationFails() throws Exception {
+        ServiceCollector svcCollector = m_easyMockUtils.createMock(ServiceCollector.class);
+        svcCollector.initialize();
+        svcCollector.validateAgent(isA(CollectionAgent.class), isA(Map.class));
+        expectLastCall().andThrow(new CollectionInitializationException("No!")).once();
+        setupCollector("SNMP", svcCollector);
+
+        OnmsIpInterface iface = getInterface();
+
+        setupInterface(iface);
+        setupTransactionManager();
+
+        expect(m_collectdConfig.getPackages()).andReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        expect(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).andReturn(true);
+
+        m_easyMockUtils.replayAll();
+
+        assertEquals("scheduler entry count", 0, m_scheduler.getEntryCount());
+
+        m_collectd.afterPropertiesSet();
+
+        m_collectd.start();
+
+        m_scheduler.next();
+
+        assertEquals("scheduler entry count", 0, m_scheduler.getEntryCount());
+
+        m_collectd.stop();
+
+        m_easyMockUtils.verifyAll();
     }
 
     @SuppressWarnings("unchecked")
-    private static <K, V> Map<K, V> isAMap(Class<K> keyClass, Class<V> valueClass) {
-        return isA(Map.class);
+    private static <K> Collection<K> isACollection(Class<K> innerClass) {
+        return isA(Collection.class);
     }
 
     /**
@@ -342,9 +378,16 @@ public class CollectdTest {
         expect(m_ipIfDao.load(iface.getId())).andReturn(iface).atLeastOnce();
     }
 
-    private void setupCollector(String svcName, boolean successfulInit) throws CollectionInitializationException {
+    @SuppressWarnings("unchecked")
+    private void setupCollector(String svcName) throws CollectionInitializationException {
         ServiceCollector svcCollector = m_easyMockUtils.createMock(ServiceCollector.class);
         svcCollector.initialize();
+        svcCollector.validateAgent(isA(CollectionAgent.class), isA(Map.class));
+        expectLastCall().anyTimes();
+        setupCollector(svcName, svcCollector);
+    }
+
+    private void setupCollector(String svcName, ServiceCollector svcCollector) throws CollectionInitializationException {
         MockServiceCollector.setDelegate(svcCollector);
 
         // Tell the config to use the MockServiceCollector for the specified service
@@ -360,5 +403,4 @@ public class CollectdTest {
 
         m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
     }
-
 }

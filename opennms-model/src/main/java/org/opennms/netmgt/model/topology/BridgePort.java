@@ -30,7 +30,10 @@ package org.opennms.netmgt.model.topology;
 
 import java.util.Date;
 
+import org.opennms.netmgt.model.BridgeBridgeLink;
+import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 
 public class BridgePort {
 
@@ -41,6 +44,56 @@ public class BridgePort {
     private Integer m_vlan;
     private Date m_createTime;
     private Date m_pollTime;
+
+    public static BridgeMacLink getBridgeMacLink(BridgePort bp, String mac) {
+        BridgeMacLink maclink = new BridgeMacLink();
+        maclink.setNode(bp.getNode());
+        maclink.setBridgePort(bp.getBridgePort());
+        maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
+        maclink.setBridgePortIfName(bp.getBridgePortIfName());
+        maclink.setMacAddress(mac);
+        maclink.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
+        maclink.setVlan(bp.getVlan());
+        maclink.setBridgeMacLinkCreateTime(bp.getCreateTime());
+        maclink.setBridgeMacLinkLastPollTime(bp.getPollTime());
+        return maclink;
+    }
+
+    public static BridgePort getBridgeFromBridgeMacLink(BridgeMacLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNode(link.getNode());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setBridgePortIfName(link.getBridgePortIfName());
+        bp.setVlan(link.getVlan());
+        bp.setCreateTime(link.getBridgeMacLinkCreateTime());
+        bp.setPollTime(link.getBridgeMacLinkLastPollTime());
+        return bp;
+    }
+
+    public static BridgePort getFromBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNode(link.getNode());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setBridgePortIfName(link.getBridgePortIfName());
+        bp.setVlan(link.getVlan());
+        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
+        return bp;
+    }
+
+    public static BridgePort getFromDesignatedBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNode(link.getDesignatedNode());
+        bp.setBridgePort(link.getDesignatedPort());
+        bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
+        bp.setBridgePortIfName(link.getDesignatedPortIfName());
+        bp.setVlan(link.getDesignatedVlan());
+        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
+        return bp;
+    }
 
     @Override
     public int hashCode() {
@@ -118,4 +171,16 @@ public class BridgePort {
         m_pollTime = time;
     }
     
+    public String printTopology() {
+        StringBuffer strbfr = new StringBuffer();
+
+        strbfr.append("bridge port:[nodeid:["); 
+        strbfr.append(getNode().getId());
+        strbfr.append("], bridgeport:");
+        strbfr.append(getBridgePort());
+        strbfr.append("]\n");
+
+        return strbfr.toString();
+        }
+
 }

@@ -5,8 +5,8 @@
         <uei>uei.opennms.org/internal/reloadScriptConfig</uei>
         <event-label>OpenNMS-defined internal event: reloadScriptConfig</event-label>
         <descr>
-            &lt;p&gt;The administrator has changed the ScriptD
-            configuration. ScriptD will load the new configuration.&lt;/p&gt;
+            &lt;p&gt;The administrator has changed the ScriptD configuration.
+            ScriptD will load the new configuration.&lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
             &lt;p&gt;The ScriptD configuration files have changed.&lt;/p&gt;
@@ -55,11 +55,11 @@
         <descr>
             &lt;p&gt;The administrator has changed the daemon: %parm[daemonName]%
             configuration files and the request for the configuration to be re-marshaled and applied
-            has failed.&lt;/p&gt;
+            has failed because of the following condition %parm[reason]%.&lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
             &lt;p&gt;The daemon: %parm[daemonName]% configuration changes have failed to be
-            applied. Reason: %parm[reason]%.&lt;/p&gt;
+            applied.&lt;/p&gt;
         </logmsg>
         <severity>Major</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%parm[daemonName]%" alarm-type="1" auto-clean="false"/>

@@ -6,7 +6,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>20.0.0-SNAPSHOT</version>
+        <version>21.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator</artifactId>
@@ -62,23 +62,31 @@
             However the subset defined in "jmx-datacollection.config.xsd" must be compatible with the one
             defined in opennms-config. -->
             <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.opennms.dependencies</groupId>
-                        <artifactId>jaxb-dependencies</artifactId>
-                        <type>pom</type>
-                        <version>${project.version}</version>
-                    </dependency>
-                </dependencies>
+              <groupId>org.apache.cxf</groupId>
+              <artifactId>cxf-xjc-plugin</artifactId>
+              <configuration>
+                <extensions>
+                  <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:${cxfXjcVersion}</extension>
+                </extensions>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>generate-sources-trans</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                    <goal>xsdtojava</goal>
+                  </goals>
+                  <configuration>
+                    <sourceRoot>${project.build.directory}/generated-sources/jaxb</sourceRoot>
+                    <xsdOptions>
+                      <xsdOption>
+                        <xsd>src/main/resources/jmx-datacollection-config.xsd</xsd>
+                        <packagename>org.opennms.xmlns.xsd.config.jmx_datacollection</packagename>
+                      </xsdOption>
+                    </xsdOptions>
+                  </configuration>
+                </execution>
+              </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -96,6 +104,17 @@
                                     <classifier>features</classifier>
                                 </artifact>
                             </artifacts>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/jaxb</source>
+                            </sources>
                         </configuration>
                     </execution>
                 </executions>

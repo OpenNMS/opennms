@@ -131,7 +131,9 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
                     LOG.debug("SearchProvider->query: adding IPLIKE search spec '{}' to the search results.", queryString);
                     SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString,
 							queryString, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
-                    results.add(searchResult);
+                    if (!results.contains(searchResult)) {
+						results.add(searchResult);
+					}
                 }
             }
 
@@ -151,8 +153,10 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
                     continue IPLOOP;
 
                 } else {
-                    results.add(createSearchResult(ip, queryString));
-
+                	SearchResult searchResult = createSearchResult(ip, queryString);
+                	if (!results.contains(searchResult)) {
+						results.add(searchResult);
+					}
                 }
             }
             LOG.info("SearchProvider->query: found: '{}' IP interfaces.", ips.size());
@@ -163,7 +167,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
         }
 		
 		LOG.info("SearchProvider->query: built search result with {} results.", results.size());
-		
+
         return results;
     }
 
@@ -292,7 +296,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
 	}
 
 	@Override
-	public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(SearchResult input) {
+	public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container) {
 		IpLikeHopCriteria criteria = createCriteria(input);
 		return criteria;
 	}

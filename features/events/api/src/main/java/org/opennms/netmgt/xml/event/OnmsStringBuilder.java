@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.topology;
+package org.opennms.netmgt.xml.event;
 
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.Collection;
 
-import org.opennms.netmgt.model.BridgeBridgeLink;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class SimpleConnection {
-    final Set<String> m_links;
-    final BridgeBridgeLink m_dlink;
-    
-    public SimpleConnection(Set<String> links, BridgeBridgeLink dlink){
-        m_links = links;
-        m_dlink = dlink;
+public class OnmsStringBuilder extends ReflectionToStringBuilder {
+
+    public OnmsStringBuilder(Object object) {
+        super(object, ToStringStyle.JSON_STYLE);
     }
 
-    public Set<String> getMacs() {
-        return m_links;
-    }
-
-    public BridgeBridgeLink getDlink() {
-        return m_dlink;
+    @Override
+    protected boolean accept(Field field) {
+        try {
+            final Object o = field.get(getObject());
+            if (o == null) return false;
+            if (o instanceof Collection && ((Collection<?>)o).isEmpty()) return false;
+            return super.accept(field);
+        } catch (IllegalAccessException e) {
+            return super.accept(field);
+        }
     }
 
 }

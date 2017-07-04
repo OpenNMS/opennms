@@ -58,11 +58,11 @@ public class DnsLookup extends OsgiCommandSupport {
             try {
                 try {
                     String ipAddress = future.get(1, TimeUnit.SECONDS);
-                    System.out.printf("IpAddress returned for the %s  is  %s \n", m_host, ipAddress);
+                    System.out.printf("\n%s resolves to: %s\n", m_host, ipAddress);
                 } catch (InterruptedException e) {
                     System.out.println("\nInterrupted.");
                 } catch (ExecutionException e) {
-                    System.out.printf("\n DNS lookup failed with: %s\n", e);
+                    System.out.printf("\nDNS lookup failed with: %s\n", e);
                 }
                 break;
             } catch (TimeoutException e) {
