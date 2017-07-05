@@ -520,6 +520,51 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     /**
+     * Test {@code orderBy} for properties of {@link OnmsEvent}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testLastEventAliasOrderBy() throws Exception {
+        String url = "/alarms";
+
+        // Test orderby for properties of OnmsEvent
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventAckTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventAckUser"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventAutoAction"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventCorrelation"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventCreateTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventDescr"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventDisplay"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventForward"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventHost"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventLog"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventLogGroup"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventLogMsg"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventMouseOverText"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventNotification"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventOperAction"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventOperActionMenuText"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventOperInstruct"), 200);
+        // TODO: Cannot sort by parms since they are all stored in one database column
+        //sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventParameters"), 200);
+        //sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventParms"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventPathOutage"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSeverity"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSnmp"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSnmpHost"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSource"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSuppressedCount"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventTTicket"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventTTicketState"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventUei"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.id"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.ifIndex"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=lastEvent.ipAddr"), 200);
+    }
+
+    /**
      * Test {@code orderBy} for properties of {@link OnmsIpInterface}.
      * 
      * @throws Exception

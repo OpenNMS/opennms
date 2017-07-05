@@ -71,9 +71,7 @@ public abstract class CriteriaBehaviors {
     public static final Map<String,CriteriaBehavior<?>> MONITORING_LOCATION_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> NODE_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> NODE_CATEGORY_BEHAVIORS = new HashMap<>();
-    // TODO
     public static final Map<String,CriteriaBehavior<?>> NOTIFICATION_BEHAVIORS = new HashMap<>();
-    // TODO
     public static final Map<String,CriteriaBehavior<?>> OUTAGE_BEHAVIORS = new HashMap<>();
     // TODO
     public static final Map<String,CriteriaBehavior<?>> REDUCTION_KEY_MEMO_BEHAVIORS = new HashMap<>();
@@ -188,6 +186,15 @@ public abstract class CriteriaBehaviors {
         // in the beforeVisit() method
         categoryDescription.setSkipProperty(true);
         NODE_CATEGORY_BEHAVIORS.put(Aliases.category.prop("description"), categoryDescription);
+
+        NOTIFICATION_BEHAVIORS.put(Aliases.notification.prop("notifyId"), new CriteriaBehavior<Integer>(Integer::parseInt));
+        NOTIFICATION_BEHAVIORS.put(Aliases.notification.prop("pageTime"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        NOTIFICATION_BEHAVIORS.put(Aliases.notification.prop("respondTime"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+
+        OUTAGE_BEHAVIORS.put(Aliases.outage.prop("id"), new CriteriaBehavior<Integer>(Integer::parseInt));
+        OUTAGE_BEHAVIORS.put(Aliases.outage.prop("ifLostService"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        OUTAGE_BEHAVIORS.put(Aliases.outage.prop("ifRegainedService"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        OUTAGE_BEHAVIORS.put(Aliases.outage.prop("suppressTime"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
 
         SERVICE_TYPE_BEHAVIORS.put(Aliases.serviceType.prop("id"), new CriteriaBehavior<Integer>(Integer::parseInt));
 

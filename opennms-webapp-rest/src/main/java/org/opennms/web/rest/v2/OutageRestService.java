@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -56,7 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("outages")
 @Transactional
-public class OutageRestService extends AbstractDaoRestService<OnmsOutage,OnmsOutage,Integer,Integer> {
+public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchBean,Integer,Integer> {
 
     @Autowired
     private OutageDao m_dao;
@@ -72,8 +73,8 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,OnmsOut
     }
 
     @Override
-    protected Class<OnmsOutage> getQueryBeanClass() {
-        return OnmsOutage.class;
+    protected Class<SearchBean> getQueryBeanClass() {
+        return SearchBean.class;
     }
 
     @Override

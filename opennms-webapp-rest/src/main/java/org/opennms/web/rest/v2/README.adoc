@@ -289,7 +289,6 @@ All endpoints share a common set of query parameters that can be used to query f
 | notification.pageTime | Timestamp | 
 | notification.queueId | String | 
 | notification.respondTime | Timestamp | 
-| notification.severityLabel | String | 
 | notification.subject | String | 
 | notification.textMsg | String | 
 //| notification.usersNotified | String | 
@@ -354,6 +353,7 @@ Supported search/order properties:
 * <<categoryProperties,`category.*`>> (Only valid for search)
 * <<distPollerProperties,`distPoller.*`>>
 * <<ipInterfaceProperties,`ipInterface.*`>>
+* `lastEvent.\*` (with the same properties as <<eventProperties,`event.*`>>)
 * <<locationProperties,`location.*`>>
 * <<nodeProperties,`node.*`>>
 * <<serviceTypeProperties,`serviceType.*`>>
@@ -462,8 +462,8 @@ Supported search/order properties:
 * <<locationProperties,`location.*`>>
 * <<nodeProperties,`node.*`>>
 * <<outageProperties,`outage.*`>>
-//* `serviceLostEvent.*` (with <<eventProperties,`event.*`>> properties)
-//* `serviceRegainedEvent.*` (with <<eventProperties,`event.*`>> properties)
+* `serviceLostEvent.\*` (with the same properties as <<eventProperties,`event.*`>>)
+* `serviceRegainedEvent.\*` (with the same properties as <<eventProperties,`event.*`>>)
 * <<serviceTypeProperties,`serviceType.*`>>
 * <<snmpInterfaceProperties,`snmpInterface.*`>>
 

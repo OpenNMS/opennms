@@ -117,10 +117,10 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), Aliases.alarm.toString());
 
-        builder.fetch("firstEvent", FetchType.EAGER);
         builder.fetch("lastEvent", FetchType.EAGER);
 
         // 1st level JOINs
+        builder.alias("lastEvent", "lastEvent", JoinType.LEFT_JOIN);
         builder.alias("distPoller", Aliases.distPoller.toString(), JoinType.LEFT_JOIN);
         builder.alias("node", Aliases.node.toString(), JoinType.LEFT_JOIN);
         builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
