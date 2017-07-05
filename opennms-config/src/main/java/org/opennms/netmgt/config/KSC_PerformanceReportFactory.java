@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,21 +38,20 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.config.kscReports.ReportsList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.Assert;
 
-/**
- * <p>KSC_PerformanceReportFactory class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class KSC_PerformanceReportFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(KSC_PerformanceReportFactory.class);
+
     /**
      * The static singleton instance object.
      * Null if init() hasn't been successfully called.
@@ -159,20 +158,33 @@ public class KSC_PerformanceReportFactory {
     }
 
     private void setIdsOnAllReports() {
-        int i = 0;
+        LOG.debug("setIdsOnAllReports()");
 
-        // Make sure that i is larger than the highest report ID
-        for (Report report : m_config.getReports()) {
-            if (report.getId() != null && report.getId().get() >= i) {
-                i = report.getId().get() + 1;
-            }
+        if (m_config == null || m_config.getReports() == null) {
+            LOG.debug("no reports");
+            return;
         }
 
+        // Make sure that i is larger than the highest report ID
+        int nextReportId = m_config.getReports().stream().map(report -> {
+            return report.getId() == null? -1 : report.getId();
+        }).filter(Objects::nonNull).reduce(-1, (a, b) -> {
+            if (b > a) {
+                return b;
+            }
+            return a;
+        }) + 1;
+        LOG.debug("highest ID: {}", nextReportId);
+
+        LOG.debug("existing reports: {}", m_config.getReports());
+
         // Set IDs for any report lacking one.
-        for (Report report : m_config.getReports()) {
-            if (!(report.getId() != null)) {
-                report.setId(i);
-                i++;
+        for (final Report report : m_config.getReports()) {
+            if (report.getId() == null) {
+                LOG.debug("report has no ID: {}", report);
+                report.setId(nextReportId++);
+            } else {
+                LOG.debug("report has an ID: {}", report);
             }
         }
     }
@@ -213,11 +225,14 @@ public class KSC_PerformanceReportFactory {
     private Map<Integer, Report> createReportList() {
         Map<Integer, Report> reports = new LinkedHashMap<Integer, Report>(m_config.getReports().size());
 
-        for (Report report : m_config.getReports()) {
-            if (reports.containsKey(report.getId())) {
-                throw new IllegalArgumentException("Report id " + report.getId() + " is used by multiple reports in configuration file");
+        for (final Report report : m_config.getReports()) {
+            if (report.getId() != null) {
+                final Integer reportId = report.getId();
+                if (reports.containsKey(reportId)) {
+                    throw new IllegalArgumentException("Report id " + reportId + " is used by multiple reports in configuration file");
+                }
+                reports.put(reportId, report);
             }
-            reports.put(report.getId().get(), report);
         }
 
         return reports;
@@ -240,7 +255,7 @@ public class KSC_PerformanceReportFactory {
         });
 
         for (Report report : reportList) {
-            reports.put(report.getId().get(), report.getTitle());
+            reports.put(report.getId(), report.getTitle());
         }
 
         return Collections.unmodifiableMap(reports);
@@ -255,7 +270,7 @@ public class KSC_PerformanceReportFactory {
         Map<Integer, Report> reports = new HashMap<Integer, Report>(m_config.getReports().size());
 
         for (Report report : m_config.getReports()) {
-            reports.put(report.getId().get(), report);
+            reports.put(report.getId(), report);
         }
 
         return Collections.unmodifiableMap(reports);
@@ -280,6 +295,7 @@ public class KSC_PerformanceReportFactory {
     }
 
     public void addReport(Report report) {
+        LOG.debug("addReport: {}", report);
         m_config.addReport(report);
         setIdsOnAllReports();
     }
@@ -294,7 +310,7 @@ public class KSC_PerformanceReportFactory {
         // Make sure we preserve the existing ID, if it exists (which it should)
         if (m_config.getReports().get(index1).getId() != null) {
             final int index2 = arrayIndex;
-            report.setId(m_config.getReports().get(index2).getId().orElse(null));
+            report.setId(m_config.getReports().get(index2).getId());
         }
 
         m_config.setReport(arrayIndex, report);
@@ -304,7 +320,7 @@ public class KSC_PerformanceReportFactory {
     private int getArrayIndex(int index) {
         int i = 0;
         for (Report report : m_config.getReports()) {
-            if (report.getId().isPresent() && report.getId().get() == index) {
+            if (report.getId() == index) {
                 return i;
             }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -85,7 +85,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
         final List<RequisitionDef> defs = getDefs();
         if (defs != null) {
             for (RequisitionDef def : defs) {
-                if (def.getImportName().equals(defName)) {
+                if (defName.equals(def.getImportName().orElse(null))) {
                     return def;
                 }
             }
