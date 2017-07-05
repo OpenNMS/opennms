@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,10 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.quartz.Job;
 import org.quartz.JobDetail;
@@ -56,6 +60,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -86,6 +92,9 @@ public class ImportSchedulerIT implements InitializingBean {
     @Autowired
     ProvisiondConfigurationDao m_dao;
 
+    @Autowired
+    MockEventIpcManager m_mockEventIpcManager;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -102,7 +111,7 @@ public class ImportSchedulerIT implements InitializingBean {
         RequisitionDef def = m_dao.getDefs().get(0);
         
         JobDetail detail = new JobDetailImpl("test", ImportScheduler.JOB_GROUP, ImportJob.class, false, false);
-        detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource());
+        detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource().orElse(null));
         detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
 
         
@@ -179,16 +188,40 @@ public class ImportSchedulerIT implements InitializingBean {
         //TODO: need to fix the interrupted exception that occurs in the provisioner
         
     }
-    
+
     @Test
-    @Ignore
-    public void dwRemoveCurrentJobsFromSchedule() throws SchedulerException {
-        fail("Not yet implemented");
+    public void buildImportSchedule() throws SchedulerException, InterruptedException {
+        // Add a simple definition to the configuration that attempts
+        // to import a non existent file every 5 seconds
+        RequisitionDef def = new RequisitionDef();
+        // Every 5 seconds
+        def.setCronSchedule("*/5 * * * * ? *");
+        def.setImportName("test");
+        def.setImportUrlResource("file:///tmp/should-not-exist.xml");
+        def.setRescanExisting(Boolean.FALSE.toString());
+
+        m_dao.getConfig().setRequisitionDefs(Lists.newArrayList(def));
+
+        // The import should start, and then fail
+        EventAnticipator anticipator = m_mockEventIpcManager.getEventAnticipator();
+        EventBuilder builder = new EventBuilder(EventConstants.IMPORT_STARTED_UEI, "Provisiond");
+        anticipator.anticipateEvent(builder.getEvent());
+
+        builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "Provisiond");
+        anticipator.anticipateEvent(builder.getEvent());
+
+        // Go
+        m_importScheduler.buildImportSchedule();
+        m_importScheduler.start();
+
+        // Verify
+        anticipator.waitForAnticipated(10*1000);
+        anticipator.verifyAnticipated();
     }
 
     @Test
     @Ignore
-    public void dwBuildImportSchedule() {
+    public void dwRemoveCurrentJobsFromSchedule() {
         fail("Not yet implemented");
     }
 

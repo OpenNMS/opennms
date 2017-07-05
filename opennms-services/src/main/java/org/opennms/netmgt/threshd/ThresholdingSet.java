@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -328,7 +328,7 @@ public class ThresholdingSet {
         final FilterOperator operator = thresholdEntity.getThresholdConfig().getBasethresholddef().getFilterOperator();
         boolean andResult = true;
         for (ResourceFilter f : filters) {
-            LOG.debug("passedThresholdFilters: filter #{}: field={}, regex='{}'", count, f.getField(), f.getContent());
+            LOG.debug("passedThresholdFilters: filter #{}: field={}, regex='{}'", count, f.getField(), f.getContent().orElse(null));
             count++;
             // Read Resource Attribute and apply filter rules if attribute is not null
             String attr = resource.getFieldValue(f.getField());
@@ -347,7 +347,7 @@ public class ThresholdingSet {
                             return false;
                     }
                 } catch (PatternSyntaxException e) {
-                    LOG.warn("passedThresholdFilters: the regular expression {} is invalid: {}", f.getContent(), e.getMessage(), e);
+                    LOG.warn("passedThresholdFilters: the regular expression {} is invalid: {}", f.getContent().orElse(null), e.getMessage(), e);
                     return false;
                 }
             } else {
