@@ -67,6 +67,9 @@
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
+            <!-- OpenNMS OSGI Core feature bundle -->
+            <repository>mvn:org.opennms.osgi/opennms-osgi-core-rest/${project.version}/xml/features</repository>
+
             <!-- JAAS Login Module -->
             <repository>mvn:org.opennms.container/org.opennms.container.jaas-login-module/${project.version}/xml/features</repository>
 
@@ -397,6 +400,13 @@
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>org.opennms.container.karaf</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi</groupId>
+      <artifactId>opennms-osgi-core-rest</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

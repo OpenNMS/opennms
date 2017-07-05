@@ -65,6 +65,7 @@
     
     <!-- OSGi Script Engine -->
     <module>osgi-jsr223</module>
+    <module>opennms-osgi-core-rest</module>
 
     <!-- JMX config generator -->
     <module>jmx-config-generator</module>

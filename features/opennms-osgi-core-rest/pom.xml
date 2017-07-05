@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <relativePath>../topology-map/poms/compiled/</relativePath>
+        <groupId>org.opennms.features.topology.build</groupId>
+        <artifactId>compiled-bundle-settings</artifactId>
+        <version>21.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.osgi</groupId>
+    <artifactId>opennms-osgi-core-rest</artifactId>
+    <name>OpenNMS :: Features :: OSGI :: Core :: Rest</name>
+    <description>
+        Core module which provides features to install to listen for rest related services,
+        such as @Path annotated interfaces.
+    </description>
+    <packaging>pom</packaging>
+    <properties>
+        <osgiJaxRsVersion>1.0.0-SNAPSHOT</osgiJaxRsVersion>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.opennms.maven.plugins</groupId>
+                <artifactId>features-maven-plugin</artifactId>
+                <configuration>
+                    <repositories>
+                        <repository>mvn:com.eclipsesource.jaxrs.examples/features/${osgiJaxRsVersion}/xml/features</repository>
+                    </repositories>
+                    <features>
+                        <!-- Capability to listen for ReST Services -->
+                        <feature>jax-rs-connector</feature>
+
+                        <!-- Capability to unmarshal/marshal json -->
+                        <feature>jax-rs-provider-moxy</feature>
+                    </features>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.eclipsesource.jaxrs.examples</groupId>
+            <artifactId>features</artifactId>
+            <type>pom</type>
+            <version>${osgiJaxRsVersion}</version>
+        </dependency>
+    </dependencies>
+</project>
