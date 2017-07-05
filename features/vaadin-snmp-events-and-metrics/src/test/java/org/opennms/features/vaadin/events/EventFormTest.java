@@ -51,8 +51,14 @@ import com.vaadin.ui.TextField;
  */
 public class EventFormTest {
 
+    /** The Event Configuration DAO. */
     private DefaultEventConfDao dao;
 
+    /**
+     * Sets the up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
         File config = new File(ConfigurationTestUtils.getDaemonEtcDirectory(), "events/MPLS.events.xml");
@@ -90,6 +96,58 @@ public class EventFormTest {
         Assert.assertNotNull(logMsgDest);
         Assert.assertTrue(logMsgDest instanceof ComboBox);
         Assert.assertEquals(event.getLogmsg().getDest(), logMsgDest.getValue());
+    }
+
+
+    /**
+     * Test event without alarm data.
+     * <p>See NMS-9422 for more details</p>
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testEventWithoutAlarmData() throws Exception {
+        EventForm form = new EventForm();
+        Event event = dao.findByUei("uei.opennms.org/ietf/mplsTeStdMib/traps/mplsTunnelReoptimized");
+        Assert.assertNotNull(event);
+        Assert.assertNull(event.getAlarmData());
+        form.setEvent(event);
+
+        form.setEnabled(true);
+        form.hasAlarmData.setValue(true);
+        form.alarmDataAlarmType.setValue(1);
+        form.alarmDataAutoClean.setValue(true);
+        form.alarmDataReductionKey.setValue("%uei%::%nodeid%");
+        form.commit();
+
+        Event updatedEvent = form.getEvent();
+        Assert.assertNotNull(updatedEvent.getAlarmData());
+        Assert.assertEquals(new Integer(1), updatedEvent.getAlarmData().getAlarmType());
+    }
+
+    /**
+     * Test event with alarm data.
+     * <p>See NMS-9422 for more details</p>
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testEventWithAlarmData() throws Exception {
+        EventForm form = new EventForm();
+        Event event = dao.findByUei("uei.opennms.org/mpls/traps/mplsVrfIfDown");
+        Assert.assertNotNull(event);
+        Assert.assertNotNull(event.getAlarmData());
+        form.setEvent(event);
+
+        form.setEnabled(true);
+        Assert.assertTrue(form.hasAlarmData.getValue());
+        Assert.assertEquals(new Integer(1), form.alarmDataAlarmType.getValue());
+        form.alarmDataReductionKey.setValue("this-is-a-new-reduction-key");
+        form.commit();
+
+        Event updatedEvent = form.getEvent();
+        Assert.assertNotNull(updatedEvent.getAlarmData());
+        Assert.assertEquals("this-is-a-new-reduction-key", updatedEvent.getAlarmData().getReductionKey());
     }
 
 }
