@@ -48,6 +48,7 @@
         <ref bean="atomEntryProvider"/>
         <ref bean="atomFeedProvider"/>
         <!-- <ref bean="atomPojoProvider"/> -->
+        <ref bean="errorResponseProvider" />
       </jaxrs:providers>
       <jaxrs:outInterceptors>
         <ref bean="gzipOutInterceptor" />

@@ -21,6 +21,7 @@
     <bean id="jaxbProvider"            class="org.apache.cxf.jaxrs.provider.JAXBElementProvider"/>
 
     <bean id="noSuchElementProvider"   class="org.opennms.web.rest.support.NoSuchElementProvider"/>
+    <bean id="errorResponseProvider"   class="org.opennms.web.rest.support.ErrorResponseProvider"/>
 
     <!-- JSON Serialization @Provider classes -->
     <!-- Jettison JSON provider -->
