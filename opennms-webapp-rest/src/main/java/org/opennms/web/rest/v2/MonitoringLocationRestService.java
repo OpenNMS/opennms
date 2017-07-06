@@ -100,4 +100,8 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
     }
 
+    @Override
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoringLocation object) {
+        getDao().delete(object);
+    }
 }

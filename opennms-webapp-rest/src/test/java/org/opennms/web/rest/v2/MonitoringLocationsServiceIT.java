@@ -94,4 +94,11 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
 
     }
 
+    @Test
+    @Transactional
+    public void testDelete() throws Exception {
+        sendPost("/monitoringLocations", "<location location-name=\"Test\" monitoring-area=\"test\" priority=\"100\"/>", 201);
+        sendRequest(DELETE, "/monitoringLocations/Test", 204);
+    }
+
 }

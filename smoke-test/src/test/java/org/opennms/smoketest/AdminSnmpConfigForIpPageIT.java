@@ -80,7 +80,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals(new Select(findElementById("location")).getOptions().size(), locationCount + 1);
         } finally {
             if (created) {
-                sendDelete("/api/v2/monitoringLocations/Test", 200);
+                sendDelete("/api/v2/monitoringLocations/Test", 204);
             }
         }
     }
