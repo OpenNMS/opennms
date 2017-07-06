@@ -174,7 +174,14 @@ public class ThresholdController extends AbstractController implements Initializ
             if (resourceType instanceof GenericIndexResourceType)
             // Put these in by label to sort them, we'll get them out in a moment
             {
-                genericDsTypes.put(resourceType.getLabel(), resourceType.getName());
+                final String label = resourceType.getLabel();
+                final String name = resourceType.getName();
+                if (label == null) {
+                    LOG.warn("Label should not be null for resource {}", resourceType);
+                    genericDsTypes.put(name, name);
+                } else {
+                    genericDsTypes.put(label, name);
+                }
             }
         }
 
