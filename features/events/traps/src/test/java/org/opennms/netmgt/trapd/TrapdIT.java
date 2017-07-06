@@ -38,7 +38,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -73,7 +73,7 @@ import org.springframework.test.context.ContextConfiguration;
 public class TrapdIT implements InitializingBean {
 
     @Autowired
-    private TrapdConfig m_trapdConfig;
+    private TrapdConfigFactory m_trapdConfig;
 
     @Autowired
     Trapd m_trapd;
@@ -146,6 +146,43 @@ public class TrapdIT implements InitializingBean {
 
         EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
         newSuspectBuilder.setInterface(localAddr);
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
+
+        pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
+
+        // Allow time for Trapd and Eventd to do their magic
+        Thread.sleep(5000);
+    }
+
+    /**
+     * Verifies that we can pull the agent address from the snmpTrapAddress
+     * varbind in a SNMPv2 trap.
+     */
+    @Test
+    public void testSnmpV2cTrapWithAddressFromVarbind() throws Exception {
+        // Enable the feature (disabled by default)
+        m_trapdConfig.getConfig().setUseAddressFromVarbind(true);
+
+        String localhost = "127.0.0.1";
+        InetAddress remoteAddr = InetAddress.getByName("10.255.1.1");
+
+        SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
+        SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
+        SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+        // The varbind with the address
+        pdu.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("10.255.1.1")));
+
+        EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
+        defaultTrapBuilder.setInterface(remoteAddr);
+        defaultTrapBuilder.setSnmpVersion("v2c");
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
+
+        EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
+        // The address in the newSuspect event should match the one specified in the varbind
+        newSuspectBuilder.setInterface(remoteAddr);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
         pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");

@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TrapdConfigBean implements TrapdConfig, Serializable {
 
-	private static final long serialVersionUID = -4406324301602556539L;
+	private static final long serialVersionUID = 2L;
 
 	private String snmpTrapAddress;
 	private int snmpTrapPort;
@@ -62,6 +62,7 @@ public class TrapdConfigBean implements TrapdConfig, Serializable {
 	private int batchSize;
 	private int queueSize;
 	private int numThreads;
+	private boolean useAddressFromVarbind;
 
 	public TrapdConfigBean() {
 
@@ -198,5 +199,14 @@ public class TrapdConfigBean implements TrapdConfig, Serializable {
 		snmpV3User.setPrivProtocol(snmpv3User.getPrivacyProtocol());
 		snmpV3User.setSecurityName(snmpv3User.getSecurityName());
 		return snmpV3User;
+	}
+
+	@Override
+	public boolean shouldUseAddressFromVarbind() {
+		return this.useAddressFromVarbind;
+	}
+
+	public void setUseAddressFromVarbind(boolean useAddressFromVarbind) {
+		this.useAddressFromVarbind = useAddressFromVarbind;
 	}
 }
