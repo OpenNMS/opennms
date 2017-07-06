@@ -77,7 +77,6 @@ import com.google.common.collect.ImmutableMap;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/applicationContext-troubleTicketer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
@@ -654,7 +653,6 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    @Ignore
     public void verifyTicketerMustBeEnabled() throws Exception {
         final OnmsAlarm alarm = m_databasePopulator.getAlarmDao().findAll().stream()
                 .filter(a -> a.getSeverity().isGreaterThanOrEqual(OnmsSeverity.NORMAL) && a.getAlarmAckTime() == null)

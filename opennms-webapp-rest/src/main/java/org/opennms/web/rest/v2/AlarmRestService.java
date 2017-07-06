@@ -95,7 +95,7 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
     @Autowired
     private AlarmRepository m_repository;
 
-//    @Autowired
+    @Autowired
     private TroubleTicketProxy m_troubleTicketProxy;
 
     @Override
