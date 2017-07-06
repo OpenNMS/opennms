@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,7 @@ import org.opennms.api.reporting.parameter.ReportDateParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
+import org.opennms.netmgt.config.reporting.DefaultTime;
 import org.opennms.netmgt.config.reporting.Parameters;
 import org.opennms.reporting.core.svclayer.ParameterConversionService;
 
@@ -65,9 +66,10 @@ public class DefaultParameterConversionService implements
             dateParm.setInterval(dp.getDefaultInterval());
             Calendar cal = Calendar.getInstance();
             if (dp.getDefaultTime().isPresent()) {
-                dateParm.setHours(dp.getDefaultTime().get().getHours());
+                final DefaultTime defaultTime = dp.getDefaultTime().get();
+                dateParm.setHours(defaultTime.getHours());
                 cal.set(Calendar.HOUR_OF_DAY, dateParm.getHours());
-                dateParm.setMinutes(dp.getDefaultTime().get().getMinutes());
+                dateParm.setMinutes(defaultTime.getMinutes());
                 cal.set(Calendar.MINUTE, dateParm.getMinutes());
             } else {
                 cal.set(Calendar.HOUR_OF_DAY, 0);

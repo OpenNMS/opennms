@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,42 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.threshd;
+package org.opennms.web.rest.support;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 
-@XmlRootElement(name="type")
-@XmlEnum
-public enum ThresholdType {
-    @XmlEnumValue("high")
-    HIGH("high"),
-    @XmlEnumValue("low")
-    LOW("low"),
-    @XmlEnumValue("relativeChange")
-    RELATIVE_CHANGE("relativeChange"),
-    @XmlEnumValue("absoluteChange")
-    ABSOLUTE_CHANGE("absoluteChange"),
-    @XmlEnumValue("rearmingAbsoluteChange")
-    REARMING_ABSOLUTE_CHANGE("rearmingAbsoluteChange");
-    
-    private String m_enumName;
-
-    ThresholdType(final String enumName) {
-        m_enumName = enumName;
-    }
-    
-    public String getEnumName() {
-        return m_enumName;
-    }
-
-    public static ThresholdType forName(final String name) {
-        for (final ThresholdType type : ThresholdType.values()) {
-            if (name.equalsIgnoreCase(type.getEnumName())) {
-                return type;
-            }
+/**
+ * This provider handles all exceptions which are not handled by any other provider.
+ * @author mvrueden
+ */
+public class ErrorResponseProvider implements ExceptionMapper<Exception> {
+    @Override
+    public Response toResponse(Exception exception) {
+        // if there is an optional exception message, we add it to the response
+        if (exception.getMessage() != null) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(exception.getMessage()).build();
         }
-        return null;
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 }

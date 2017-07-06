@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -497,7 +497,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
     private void importKscReport(int reportId) {
         Report report = kscPerformanceReportFactory.getReportByIndex(reportId);
 
-        int columns = report.getGraphsPerLine().orElse(1);
+        int columns = Math.max(1, report.getGraphsPerLine().orElse(1));
 
         int rows = report.getGraphs().size() / columns;
 
