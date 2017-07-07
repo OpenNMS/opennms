@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -227,7 +227,7 @@ public class KscRestService extends OnmsRestService {
             super();
             for (final Report report : reportList.values()) {
                 if (terse) {
-                    add(new KscReport(report.getId().orElse(null), report.getTitle()));
+                    add(new KscReport(report.getId(), report.getTitle()));
                 } else {
                     add(new KscReport(report));
                 }
@@ -271,11 +271,11 @@ public class KscRestService extends OnmsRestService {
         }
 
         public KscReport(Report report) {
-            m_id = report.getId().orElse(null);
+            m_id = report.getId();
             m_label = report.getTitle();
             m_show_timespan_button = report.getShowTimespanButton().orElse(null);
             m_show_graphtype_button = report.getShowGraphtypeButton().orElse(null);
-            m_graphs_per_line = report.getGraphsPerLine().orElse(null);
+            m_graphs_per_line = report.getGraphsPerLine().orElse(0);
             m_graphs.clear();
 
             for(Graph graph : report.getGraphs()) {

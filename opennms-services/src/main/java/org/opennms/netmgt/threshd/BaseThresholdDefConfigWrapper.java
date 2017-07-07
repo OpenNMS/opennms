@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -222,29 +223,32 @@ public abstract class BaseThresholdDefConfigWrapper {
     /** {@inheritDoc} */
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null) return false;
-        if (!(obj instanceof BaseThresholdDefConfigWrapper)) return false;
-        BaseThresholdDefConfigWrapper o = (BaseThresholdDefConfigWrapper)obj;
-        return getType().equals(o.getType())
-        && getDsType().equals(o.getDsType())
-        && getDatasourceExpression().equals(o.getDatasourceExpression())
-        && (getDsLabel() == o.getDsLabel() || (getDsLabel() != null && getDsLabel().equals(o.getDsLabel())))
-        && (getTriggeredUEI() == o.getTriggeredUEI() || (getTriggeredUEI() != null && getTriggeredUEI().equals(o.getTriggeredUEI())))
-        && (getRearmedUEI() ==  o.getRearmedUEI() || (getRearmedUEI() != null && getRearmedUEI().equals(o.getRearmedUEI())))
-        && getValue() == o.getValue()
-        && getRearm() == o.getRearm()
-        && getTrigger() == o.getTrigger()
-        && getBasethresholddef().getFilterOperator().equals(o.getBasethresholddef().getFilterOperator())
-        && getBasethresholddef().getRelaxed() == o.getBasethresholddef().getRelaxed()
-        && getBasethresholddef().getResourceFilters().equals(o.getBasethresholddef().getResourceFilters());
+        if ( this == obj ) {
+            return true;
+        }
+
+        if (obj instanceof BaseThresholdDefConfigWrapper) {
+            final BaseThresholdDefConfigWrapper that = (BaseThresholdDefConfigWrapper)obj;
+            return Objects.equals(this.getType(), that.getType())
+                    && Objects.equals(this.getDsType(), that.getDsType())
+                    && Objects.equals(this.getDatasourceExpression(), that.getDatasourceExpression())
+                    && Objects.equals(this.getDsLabel(), that.getDsLabel())
+                    && Objects.equals(this.getTriggeredUEI(), that.getTriggeredUEI())
+                    && Objects.equals(this.getRearmedUEI(), that.getRearmedUEI())
+                    && Objects.equals(this.getValue(), that.getValue())
+                    && Objects.equals(this.getRearm(), that.getRearm())
+                    && Objects.equals(this.getTrigger(), that.getTrigger())
+                    && Objects.equals(this.getBasethresholddef().getFilterOperator(), that.getBasethresholddef().getFilterOperator())
+                    && Objects.equals(this.getBasethresholddef().getRelaxed(), that.getBasethresholddef().getRelaxed())
+                    && Objects.equals(this.getBasethresholddef().getResourceFilters(), that.getBasethresholddef().getResourceFilters());
+        }
+        return false;
     }
     
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(97, 3)
-            .append(m_baseDef)
-            .toHashCode();
+        return Objects.hash(m_baseDef);
     }
 
     /**

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -72,7 +72,7 @@
       <div class="panel-heading">
         <h3 class="panel-title">Basic Thresholds</h3>
       </div>
-      <table class="table table-condensed table-striped">
+      <table class="table table-condensed table-striped edit-group-basic-thresholds">
         <tr>
             <th>Type</th>
             <th>Description</th>
@@ -87,18 +87,18 @@
             <th>&nbsp;</th>
             <th>&nbsp;</th>
         </tr>
-        <c:forEach items="${group.threshold}" varStatus="thresholdIndex" var="threshold">
-            <tr>
-              <td>${threshold.type}</td>
-              <td>${threshold.description}</td>
-              <td>${threshold.dsName}</td>
-              <td>${threshold.dsType}</td>
-              <td>${threshold.dsLabel}</td>
-              <td>${threshold.value}</td>
-              <td>${threshold.rearm}</td>
-              <td>${threshold.trigger}</td>
-              <td><a href="javascript: void submitNewNotificationForm('${threshold.triggeredUEI}');" title="Edit notifications for this uei">${threshold.triggeredUEI}</a></td>
-              <td><a href="javascript: void submitNewNotificationForm('${threshold.rearmedUEI}');" title="Edit notifications for this uei">${threshold.rearmedUEI}</a></td>
+        <c:forEach items="${group.thresholds}" varStatus="thresholdIndex" var="threshold">
+            <tr name="threshold.${thresholdIndex.index}">
+              <td name="threshold.${thresholdIndex.index}.type">${threshold.type.enumName}</td>
+              <td name="threshold.${thresholdIndex.index}.description">${threshold.description.orElse(null)}</td>
+              <td name="threshold.${thresholdIndex.index}.dsName">${threshold.dsName}</td>
+              <td name="threshold.${thresholdIndex.index}.dsType">${threshold.dsType}</td>
+              <td name="threshold.${thresholdIndex.index}.dsLabel">${threshold.dsLabel.orElse(null)}</td>
+              <td name="threshold.${thresholdIndex.index}.value">${threshold.value}</td>
+              <td name="threshold.${thresholdIndex.index}.rearm">${threshold.rearm}</td>
+              <td name="threshold.${thresholdIndex.index}.trigger">${threshold.trigger}</td>
+              <td name="threshold.${thresholdIndex.index}.triggeredUEI"><a href="javascript: void submitNewNotificationForm('${threshold.triggeredUEI.orElse(null)}');" title="Edit notifications for this uei">${threshold.triggeredUEI.orElse(null)}</a></td>
+              <td name="threshold.${thresholdIndex.index}.rearmedUEI"><a href="javascript: void submitNewNotificationForm('${threshold.rearmedUEI.orElse(null)}');" title="Edit notifications for this uei">${threshold.rearmedUEI.orElse(null)}</a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&thresholdIndex=${thresholdIndex.index}&editThreshold">Edit</a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&thresholdIndex=${thresholdIndex.index}&deleteThreshold">Delete</a></td>
             </tr>
@@ -117,7 +117,7 @@
       <div class="panel-heading">
         <h3 class="panel-title">Expression-based Thresholds</h3>
       </div>
-      <table class="table table-condensed table-striped">
+      <table class="table table-condensed table-striped edit-group-expression-based-thresholds">
         <tr>
             <th>Type</th>
             <th>Description</th>
@@ -132,18 +132,18 @@
             <th>&nbsp;</th>
             <th>&nbsp;</th>
         </tr>
-          <c:forEach items="${group.expression}" varStatus="expressionIndex" var="expression">
-            <tr>
-              <td>${expression.type}</td>
-              <td>${expression.description}</td>
-              <td>${expression.expression}</td>
-              <td>${expression.dsType}</td>
-              <td>${expression.dsLabel}</td>
-              <td>${expression.value}</td>
-              <td>${expression.rearm}</td>
-              <td>${expression.trigger}</td>
-              <td><a href="javascript: void submitNewNotificationForm('${expression.triggeredUEI}');" title="Edit notifications for this uei">${expression.triggeredUEI}</a></td>
-              <td><a href="javascript: void submitNewNotificationForm('${expression.rearmedUEI}');" title="Edit notifications for this uei">${expression.rearmedUEI}</a></td>
+          <c:forEach items="${group.expressions}" varStatus="expressionIndex" var="expression">
+            <tr name="expression.0">
+              <td name="expression.${expressionIndex.index}.type">${expression.type.enumName}</td>
+              <td name="expression.${expressionIndex.index}.description">${expression.description.orElse(null)}</td>
+              <td name="expression.${expressionIndex.index}.expression">${expression.expression}</td>
+              <td name="expression.${expressionIndex.index}.dsType">${expression.dsType}</td>
+              <td name="expression.${expressionIndex.index}.dsLabel">${expression.dsLabel.orElse(null)}</td>
+              <td name="expression.${expressionIndex.index}.value">${expression.value}</td>
+              <td name="expression.${expressionIndex.index}.rearm">${expression.rearm}</td>
+              <td name="expression.${expressionIndex.index}.trigger">${expression.trigger}</td>
+              <td name="expression.${expressionIndex.index}.triggeredUEI"><a href="javascript: void submitNewNotificationForm('${expression.triggeredUEI.orElse(null)}');" title="Edit notifications for this uei">${expression.triggeredUEI.orElse(null)}</a></td>
+              <td name="expression.${expressionIndex.index}.rearmedUEI"><a href="javascript: void submitNewNotificationForm('${expression.rearmedUEI.orElse(null)}');" title="Edit notifications for this uei">${expression.rearmedUEI.orElse(null)}</a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&expressionIndex=${expressionIndex.index}&editExpression">Edit</a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&expressionIndex=${expressionIndex.index}&deleteExpression">Delete</a></td>
             </tr>

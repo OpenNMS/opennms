@@ -82,7 +82,7 @@ With the configuration in place, you can test it using the `collect` command ava
 collection:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
 ----
 
-==== Caveats
+===== Caveats
 
 The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be single element of type object to make xpath query work.
 If the root element is an array, it will be wrapped in an object whereas the original array is accessible as `/elements`.
