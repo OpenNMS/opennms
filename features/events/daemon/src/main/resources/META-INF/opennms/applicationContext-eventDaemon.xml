@@ -5,7 +5,6 @@
   xmlns:context="http://www.springframework.org/schema/context"
   xmlns:util="http://www.springframework.org/schema/util"
   xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
@@ -14,6 +13,7 @@
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
 ">
 
   <context:annotation-config />
@@ -22,12 +22,6 @@
 
   <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">
     <property name="eventdServiceManager" ref="eventdServiceManager"/>
-    <property name="eventReceivers">
-      <list>
-        <ref bean="tcpReceiver"/>
-        <ref bean="udpReceiver"/>
-      </list>
-    </property>
     <property name="receiver" ref="broadcastEventProcessor"/>
   </bean>
 
@@ -76,7 +70,7 @@
   <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
   <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
   <bean id="shouldLogEventSummaries" factory-bean="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
-  
+
   <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
     <constructor-arg ref="eventdMetricRegistry"/>
     <property name="eventProcessors">
@@ -107,34 +101,6 @@
     <property name="eventIpcManager" ref="eventIpcManagerImpl"/>
   </bean>
 
-  <bean id="tcpReceiver" class="org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver">
-    <property name="port" ref="tcpPort"/>
-    <property name="ipAddress" ref="tcpIpAddress"/>
-    <property name="eventHandlers">
-      <list>
-        <ref bean="eventHandler"/>
-      </list>
-    </property>
-  </bean>
-  
-  <bean id="udpReceiver" class="org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver">
-    <property name="port" ref="udpPort"/>
-    <property name="ipAddress" ref="udpIpAddress"/>
-    <property name="eventHandlers">
-      <list>
-        <ref bean="eventHandler"/>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="tcpIpAddress" factory-bean="eventdConfigManager" factory-method="getTCPIpAddress"/>
-
-  <bean id="tcpPort" factory-bean="eventdConfigManager" factory-method="getTCPPort"/>
-
-  <bean id="udpIpAddress" factory-bean="eventdConfigManager" factory-method="getUDPIpAddress"/>
-
-  <bean id="udpPort" factory-bean="eventdConfigManager" factory-method="getUDPPort"/>
-
   <bean id="broadcastEventProcessor" class="org.opennms.netmgt.eventd.BroadcastEventProcessor" depends-on="eventIpcManagerImpl">
     <constructor-arg ref="eventIpcManagerImpl"/>
     <constructor-arg ref="eventConfDao"/>
@@ -153,5 +119,63 @@
         factory-method="build"
         init-method="start"
         destroy-method="stop" />
+
+  <!-- Camel processor that receives XML events and sends them to an EventForwarder -->
+  <bean id="xmlEventProcessor" class="org.opennms.netmgt.eventd.XmlEventProcessor">
+    <property name="eventForwarder" ref="eventIpcManagerImpl"/>
+  </bean>
+
+  <!-- Create a set of Properties that can be used as propertyPlaceholders for Camel -->
+  <bean id="eventdProperties" class="org.opennms.netmgt.eventd.EventdConfigManagerPropertiesConverter" factory-method="getProperties">
+    <constructor-arg ref="eventdConfigManager"/>
+  </bean>
+
+  <!-- Create a Camel PropertiesComponent -->
+  <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+    <property name="initialProperties" ref="eventdProperties"/>
+  </bean>
+
+  <bean id="tcpXmlFrameDecoder" class="org.opennms.core.camel.XmlFrameDecoderFactory"/>
+
+  <bean id="udpXmlFrameDecoder" class="org.opennms.core.camel.XmlFrameDecoderFactory"/>
+
+  <!-- Reduces the graceful shutdown time from 300 to 15 seconds -->
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+      <property name="timeout" value="15"/>
+  </bean>
+
+  <camelContext id="eventdCamelContext" xmlns="http://camel.apache.org/schema/spring">
+
+    <onException>
+      <exception>org.opennms.netmgt.events.api.EventProcessorException</exception>
+      <handled>
+        <constant>true</constant>
+      </handled>
+      <log loggingLevel="WARN" message="Unable to process event in route ID ${routeId}; not processing with any later processors"/>
+      <log loggingLevel="WARN" message="${exception.stacktrace}"/>
+    </onException>
+
+    <onException>
+      <exception>java.lang.Throwable</exception>
+      <handled>
+        <constant>true</constant>
+      </handled>
+      <log loggingLevel="ERROR" message="Unexpected exception while processing event in route ID ${routeId}; not processing with any later processors"/>
+      <log loggingLevel="ERROR" message="${exception.stacktrace}"/>
+    </onException>
+
+    <route id="tcpEventReceiver">
+        <from uri="netty4:tcp://{{tcpIpAddress}}:{{tcpPort}}?receiveBufferSize=2147483647&amp;sync=true&amp;allowDefaultCodec=false&amp;decoders=#tcpXmlFrameDecoder"/>
+        <log message="Receiving OpenNMS event over TCP port {{tcpPort}}"/>
+        <process ref="xmlEventProcessor"/>
+    </route>
+
+    <route id="udpEventReceiver">
+        <from uri="netty4:udp://{{udpIpAddress}}:{{udpPort}}?receiveBufferSize=2147483647&amp;sync=true&amp;allowDefaultCodec=false&amp;decoders=#udpXmlFrameDecoder"/>
+        <log message="Receiving OpenNMS event over UDP port {{udpPort}}"/>
+        <process ref="xmlEventProcessor"/>
+    </route>
+
+  </camelContext>
 
 </beans>
