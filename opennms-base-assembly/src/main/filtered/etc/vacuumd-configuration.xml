@@ -287,7 +287,9 @@
 
     <trigger name="selectPathOutagesNodes" operator="&gt;=" row-count="1" >
       <statement>
-        SELECT nodeId AS _nodeid, now() AS _ts
+        SELECT nodeId AS _nodeid,
+               now() AS _ts,
+               lastEventTime AS _eventtime_from_node_up
           FROM alarms
          WHERE eventuei='uei.opennms.org/nodes/nodeUp'
       </statement>
@@ -435,6 +437,7 @@
            SET severity = 2, lastautomationtime = ${_ts}
          WHERE eventuei = 'uei.opennms.org/nodes/pathOutage'
            AND nodeid = ${_nodeid}
+           AND lasteventtime &lt;= ${_eventtime_from_node_up}
       </statement>
     </action>
 
