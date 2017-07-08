@@ -20,14 +20,6 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-
-            <!-- Launch the Spring contexts when this bundle is loaded in OSGi -->
-            <!--
-            <Spring-Context>
-              META-INF/opennms/applicationContext-commonConfigs-osgi.xml,
-              META-INF/opennms/applicationContext-commonConfigs.xml
-            </Spring-Context>
-            -->
           </instructions>
         </configuration>
       </plugin>
