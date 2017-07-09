@@ -177,7 +177,7 @@ public class OnmsRestService {
                     if (type == null) {
                         type = Object.class;
                     }
-                    LOG.warn("comparator = {}, key = {}, propertyType = {}", comparatorParam, key, type);
+                    LOG.debug("comparator = {}, key = {}, propertyType = {}", comparatorParam, key, type);
 
                     if (comparatorParam.equals("contains") || comparatorParam.equals("iplike") || comparatorParam.equals("ilike") || comparatorParam.equals("like")) {
 						value = paramValue;

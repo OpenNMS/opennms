@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -82,7 +82,7 @@
               This resource has the following prefabricated graphs available:
             </p>
             <ul>
-              <li ng-repeat="(key,graph) in selectedResource.rrdGraphAttributes">{{ key }}</li>
+              <li ng-repeat="(key,graph) in selectedResource.rrdGraphAttributes" name="graph.{{ key }}">{{ key }}</li>
             </ul>
             <br/>
             <button class="btn btn-default" type="button" ng-click="chooseResource()">Choose this resource</button>
@@ -114,7 +114,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-class="{success: resource.id == selectedResource.id}" ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                <tr name="subresource:{{ resource.typeLabel }}:{{ resource.label }}" ng-class="{success: resource.id == selectedResource.id}" ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
                   <td>{{ resource.typeLabel }} : {{ resource.label }}</td>
                 </tr>
               </tbody>

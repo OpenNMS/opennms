@@ -342,11 +342,14 @@ E:    	for (BridgeElement element: bridgeelements) {
             return;
         for (SharedSegment segment : getSharedSegmentOnTopologyForBridge(root.getId())) {
             segment.setDesignatedBridge(root.getId());
-            tier(segment, root.getId());
+            tier(segment, root.getId(), 0);
         }
     }
     
-    private void tier(SharedSegment segment, Integer rootid) {
+    private void tier(SharedSegment segment, Integer rootid, int level) {
+        level++;
+        if (level == 30)
+            return;
         for (Integer bridgeid: segment.getBridgeIdsOnSegment()) {
             if (bridgeid.intValue() == rootid.intValue())
                 continue;
@@ -357,7 +360,7 @@ E:    	for (BridgeElement element: bridgeelements) {
                 if (s2.getDesignatedBridge() != null && s2.getDesignatedBridge().intValue() == rootid.intValue())
                     continue;
                 s2.setDesignatedBridge(bridgeid);
-                tier(s2,bridgeid);
+                tier(s2,bridgeid,level);
             }
         }
     }
@@ -494,9 +497,6 @@ E:    	for (BridgeElement element: bridgeelements) {
         strbfr.append("\n------broadcast domain-----\n");
         strbfr.append("domain bridges:");
         strbfr.append(getBridgeNodesOnDomain());
-        strbfr.append("\n");
-        strbfr.append("domain macs: ");
-        strbfr.append(getMacsOnDomain());
         strbfr.append("\n");
     	if (hasRootBridge()) {
     		Set<Integer> rootids = new HashSet<Integer>();

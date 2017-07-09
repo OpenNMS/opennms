@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,6 +60,8 @@ import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.web.api.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -77,6 +79,7 @@ import com.google.common.collect.TreeMultimap;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  */
 public class ThresholdController extends AbstractController implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdController.class);
 
     private static final String SAVE_BUTTON_TITLE = "Save";
     private static final String CANCEL_BUTTON_TITLE = "Cancel";
@@ -171,7 +174,14 @@ public class ThresholdController extends AbstractController implements Initializ
             if (resourceType instanceof GenericIndexResourceType)
             // Put these in by label to sort them, we'll get them out in a moment
             {
-                genericDsTypes.put(resourceType.getLabel(), resourceType.getName());
+                final String label = resourceType.getLabel();
+                final String name = resourceType.getName();
+                if (label == null) {
+                    LOG.warn("Label should not be null for resource {}", resourceType);
+                    genericDsTypes.put(name, name);
+                } else {
+                    genericDsTypes.put(label, name);
+                }
             }
         }
 
@@ -579,11 +589,23 @@ public class ThresholdController extends AbstractController implements Initializ
         final String dsType = request.getParameter("dsType");
         final String thresholdType = request.getParameter("type");
 
-        baseDef.setDsType(dsType == null? null : dsType.toLowerCase());
-        baseDef.setType(thresholdType == null? null : ThresholdType.valueOf(thresholdType.toUpperCase()));
-        baseDef.setRearm(WebSecurityUtils.safeParseDouble(request.getParameter("rearm")));
-        baseDef.setTrigger(WebSecurityUtils.safeParseInt(request.getParameter("trigger")));
-        baseDef.setValue(WebSecurityUtils.safeParseDouble(request.getParameter("value")));
+        baseDef.setDsType(dsType == null? null : dsType);
+        baseDef.setType(thresholdType == null? null : ThresholdType.forName(thresholdType));
+        try {
+            baseDef.setRearm(WebSecurityUtils.safeParseDouble(request.getParameter("rearm")));
+        } catch (final NumberFormatException e) {
+            LOG.warn("Failed to parse rearm ('{}') as a number.", request.getParameter("rearm"));
+        }
+        try {
+            baseDef.setTrigger(WebSecurityUtils.safeParseInt(request.getParameter("trigger")));
+        } catch (final NumberFormatException e) {
+            LOG.warn("Failed to parse trigger ('{}') as a number.", request.getParameter("trigger"));
+        }
+        try {
+            baseDef.setValue(WebSecurityUtils.safeParseDouble(request.getParameter("value")));
+        } catch (final NumberFormatException e) {
+            LOG.warn("Failed to parse value ('{}') as a number.", request.getParameter("value"));
+        }
 
         String clearKey = null;
 

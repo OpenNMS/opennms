@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -278,7 +278,7 @@ public abstract class NotificationManager {
              * Check if event severity matches pattern in notification
              */
 
-            LOG.trace("Checking event severity: {} against notification severity: {}", curNotif.getEventSeverity(), event.getSeverity());
+            LOG.trace("Checking event severity: {} against notification severity: {}", curNotif.getEventSeverity().orElse(null), event.getSeverity());
             // parameter is optional, return true if not set
             if (!curNotif.getEventSeverity().isPresent()) {
                 // Skip matching on severity
@@ -286,7 +286,7 @@ public abstract class NotificationManager {
                 // Severities match
             } else {
 
-                LOG.debug("Event severity: {} did not match notification severity: {}", curNotif.getEventSeverity(), event.getSeverity());
+                LOG.debug("Event severity: {} did not match notification severity: {}", curNotif.getEventSeverity().orElse(null), event.getSeverity());
                 continue;
             }
 

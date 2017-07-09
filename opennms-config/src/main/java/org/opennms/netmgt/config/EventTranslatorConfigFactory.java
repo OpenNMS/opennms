@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -744,13 +744,14 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             String attributeValue = getAttributeValue(srcEvent);
 
             if (attributeValue == null) {
-                throw new TranslationFailedException("failed to match null against '"+m_val.getMatches()+"' for attribute "+getAttributeName());
+                throw new TranslationFailedException("failed to match null against '"+m_val.getMatches().get()+"' for attribute "+getAttributeName());
             }
 
             Pattern p = Pattern.compile(m_val.getMatches().get());
             final Matcher m = p.matcher(attributeValue);
-            if (!m.matches())
-                throw new TranslationFailedException("failed to match "+attributeValue+" against '"+m_val.getMatches()+"' for attribute "+getAttributeName());
+            if (!m.matches()) {
+                throw new TranslationFailedException("failed to match "+attributeValue+" against '"+m_val.getMatches().get()+"' for attribute "+getAttributeName());
+            }
 
             MatchTable matches = new MatchTable(m);
 
