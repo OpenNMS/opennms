@@ -46,8 +46,6 @@ If the value `null` is passed for a given property, then the obvious operation w
 * _Ordering_: If the parameter `orderBy` is specified, results will be ordered by the named property.
 Default is ascending, unless the `order` parameter is set to `desc` (any other value will default to ascending)
 
-* _Raw where clause_:  If there is a `query` parameter, it will be used as a raw where clause (_SQL_, not _HQL_), and added to any other filters created by other parameters
-
 === Standard filter examples
 
 Take `/events` as an example.
