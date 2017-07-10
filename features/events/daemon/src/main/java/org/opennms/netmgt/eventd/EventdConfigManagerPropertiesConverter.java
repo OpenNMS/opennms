@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.eventd;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.netmgt.config.EventdConfigManager;
@@ -38,6 +39,10 @@ import org.opennms.netmgt.config.EventdConfigManager;
 public abstract class EventdConfigManagerPropertiesConverter {
 
 	public static Properties getProperties(EventdConfigManager config) {
+		return getProperties(config, null);
+	}
+
+	public static Properties getProperties(EventdConfigManager config, Map<String,String> override) {
 		final Properties m_props = new Properties();
 		m_props.setProperty("eventIpcManagerHandlerPoolSize", String.valueOf(config.getReceivers()));
 		m_props.setProperty("eventIpcManagerHandlerQueueLength", String.valueOf(config.getQueueLength()));
@@ -46,6 +51,9 @@ public abstract class EventdConfigManagerPropertiesConverter {
 		m_props.setProperty("tcpPort", String.valueOf(config.getTCPPort()));
 		m_props.setProperty("udpIpAddress", config.getUDPIpAddress());
 		m_props.setProperty("udpPort", String.valueOf(config.getUDPPort()));
+		if (override != null) {
+			m_props.putAll(override);
+		}
 		return m_props;
 	}
 
