@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.web.rest.support.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -150,7 +151,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
             ackUser = securityContext.getUserPrincipal().getName();
         }
 
-        AlarmRestService.assertUserEditCredentials(securityContext, ackUser);
+        SecurityHelper.assertUserEditCredentials(securityContext, ackUser);
 
         OnmsAcknowledgment ack = null;
         if (alarmId == null && notifId == null) {

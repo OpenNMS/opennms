@@ -26,64 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.criteria;
+package org.opennms.core.criteria.restrictions;
 
-import org.opennms.core.criteria.Criteria.CriteriaVisitor;
-import org.opennms.core.criteria.Criteria.LockType;
-import org.opennms.core.criteria.restrictions.Restriction;
+public class EqPropertyRestriction extends AttributeValueRestriction {
 
-public class AbstractCriteriaVisitor implements CriteriaVisitor {
-
-    @Override
-    public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
+    public EqPropertyRestriction(final String attribute, final Object value) {
+        super(RestrictionType.EQ, attribute, value);
     }
 
     @Override
-    public void visitOrder(final Order order) {
+    public void visit(final RestrictionVisitor visitor) {
+        visitor.visitEqProperty(this);
     }
 
     @Override
-    public void visitOrdersFinished() {
+    public String toString() {
+        return "EqPropertyRestriction [attribute=" + getAttribute() + ", value=" + getValue() + "]";
     }
-
-    @Override
-    public void visitAlias(final Alias alias) {
-    }
-
-    @Override
-    public void visitAliasesFinished() {
-    }
-
-    @Override
-    public void visitFetch(final Fetch fetch) {
-    }
-
-    @Override
-    public void visitFetchesFinished() {
-    }
-
-    @Override
-    public void visitLockType(final LockType lock) {
-    }
-
-    @Override
-    public void visitRestriction(final Restriction restriction) {
-    }
-
-    @Override
-    public void visitRestrictionsFinished() {
-    }
-
-    @Override
-    public void visitDistinct(final boolean distinct) {
-    }
-
-    @Override
-    public void visitLimit(final Integer limit) {
-    }
-
-    @Override
-    public void visitOffset(final Integer offset) {
-    }
-
 }

@@ -33,109 +33,103 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.netmgt.model.OnmsOutageCollection;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsMonitoredServiceList;
+import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Basic Web Service using REST for {@link OnmsOutage} entity.
+ * Basic Web Service using REST for {@link OnmsMonitoredService} entity.
+ * 
+ * <p>This end-point exist to retrieve and update a set of monitored services at once,
+ * based on a given criteria.</p>
+ * <p>This facilitates moving services to maintenance mode (and restore the services to be online).</p>
  *
- * @author <a href="seth@opennms.org">Seth Leger</a>
+ * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Component
-@Path("outages")
+@Path("ifservices")
 @Transactional
-public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchBean,Integer,Integer> {
+public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredService,OnmsMonitoredService,Integer,String> {
 
     @Autowired
-    private OutageDao m_dao;
+    private MonitoredServiceDao m_dao;
+
+    @Autowired
+    private MonitoredServicesComponent m_component;
 
     @Override
-    protected OutageDao getDao() {
+    protected MonitoredServiceDao getDao() {
         return m_dao;
     }
 
     @Override
-    protected Class<OnmsOutage> getDaoClass() {
-        return OnmsOutage.class;
+    protected Class<OnmsMonitoredService> getDaoClass() {
+        return OnmsMonitoredService.class;
     }
 
     @Override
-    protected Class<SearchBean> getQueryBeanClass() {
-        return SearchBean.class;
+    protected Class<OnmsMonitoredService> getQueryBeanClass() {
+        return OnmsMonitoredService.class;
     }
 
     @Override
-    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class, Aliases.outage.toString());
+    protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
+        final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
         // 1st level JOINs
-        builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
-        builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
-        builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN); 
+        builder.alias("ipInterface", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN);
+        builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
-        builder.alias("monitoredService.ipInterface", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN);
-        builder.alias("monitoredService.serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
-        builder.alias("serviceLostEvent.distPoller", Aliases.distPoller.toString(), JoinType.LEFT_JOIN);
-
-        // 3rd level JOINs
         builder.alias(Aliases.ipInterface.prop("node"), Aliases.node.toString(), JoinType.LEFT_JOIN);
         builder.alias(Aliases.ipInterface.prop("snmpInterface"), Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN);
 
-        // 4th level JOINs
+        // 3rd level JOINs
         builder.alias(Aliases.node.prop("assetRecord"), Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
-        // TODO: Only add this alias when filtering by category so that we can specify a join condition
-        //builder.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN);
         builder.alias(Aliases.node.prop("location"), Aliases.location.toString(), JoinType.LEFT_JOIN);
 
-        // NOTE: Left joins on a toMany relationship need a join condition so that only one row is returned
+        // TODO: Only add this alias when filtering so that we can specify a join condition
+        //builder.alias("node.categories", Aliases.category.toString(), JoinType.LEFT_JOIN);
 
-        // Order by ID by default
-        builder.orderBy("id").desc();
+        builder.orderBy("id");
 
         return builder;
     }
 
     @Override
-    protected JaxbListWrapper<OnmsOutage> createListWrapper(Collection<OnmsOutage> list) {
-        return new OnmsOutageCollection(list);
+    protected JaxbListWrapper<OnmsMonitoredService> createListWrapper(Collection<OnmsMonitoredService> list) {
+        return new OnmsMonitoredServiceList(list);
     }
 
     @Override
     protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
         final Map<String,CriteriaBehavior<?>> map = new HashMap<>();
 
-        // Root alias
-        map.putAll(CriteriaBehaviors.OUTAGE_BEHAVIORS);
-
         // 1st level JOINs
-        map.putAll(CriteriaBehaviors.MONITORED_SERVICE_BEHAVIORS);
-        // TODO: Add event criteria behaviors for these aliases
-        // serviceLostEvent
-        // serviceRegainedEvent 
-
-        // 2nd level JOINs
-        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
         map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
         map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
 
-        // 3rd level JOINs
+        // 2nd level JOINs
         map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
         map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
 
-        // 4th level JOINs
+        // 3rd level JOINs
         map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
         map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
         //map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
@@ -144,8 +138,17 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
     }
 
     @Override
-    protected OnmsOutage doGet(UriInfo uriInfo, Integer id) {
-        return getDao().get(id);
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
+        final String previousStatus = targetObject.getStatus();
+        RestUtils.setBeanProperties(targetObject, params);
+        getDao().update(targetObject);
+        boolean changed = m_component.hasStatusChanged(previousStatus, targetObject);
+        return changed ? Response.noContent().build() : Response.notModified().build();
+    }
+
+    @Override
+    protected OnmsMonitoredService doGet(UriInfo uriInfo, String serviceName) {
+        throw new WebApplicationException(Response.status(Status.NOT_IMPLEMENTED).build());
     }
 
 }
