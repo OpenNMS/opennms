@@ -174,6 +174,39 @@
 		document.snmpConfigForm.action = "admin/index.jsp";
 		document.snmpConfigForm.submit();
 	}
+
+  $(document).ready(function() {
+      // function to update all locatoin input fields
+      var updateLocations = function(locations) {
+          if (!locations) return;
+          // ensure that they are sorted by priority
+          locations.sort(function(a,b) {
+              return b.priority - a.priority;
+          });
+
+          // update input fields
+          var locationSelectors = ["#location", "#lookup_location"]
+          for (var i = 0; i < locationSelectors.length; i++) {
+              var selector = locationSelectors[i];
+              $.each(locations, function(index, location) {
+                  var locationName = location['location-name'];
+                  $(selector).append($("<option/>").val(locationName).text(locationName));
+              });
+          }
+      };
+
+      // Get all available locations
+      $.get('api/v2/monitoringLocations', function(locationList) {
+          if (locationList && locationList.location && locationList.location.length > 0) {
+              updateLocations(locationList.location);
+          }
+          var selectedLocation = '<%= getValue(request.getAttribute("location")) %>';
+          if (!selectedLocation) {
+              selectedLocation = 'Default';
+          }
+          $("#location").val(selectedLocation);
+      });
+  });
 </script>
 
 <%!// does Null Pointer handling
@@ -222,7 +255,6 @@
 	String contextEngineId = getValue(snmpInfo.getContextEngineId());
 	String contextName = getValue(snmpInfo.getContextName());
 	String enterpriseId = getValue(snmpInfo.getEnterpriseId());
-	String location = getValue(request.getAttribute("location"));
 %>
 
 
@@ -255,7 +287,8 @@ if (request.getAttribute("success") != null) {
             Location
             </label>
             <div class="col-sm-9">
-              <input type="text" class="form-control" name="location" id="lookup_location"/>
+              <select id="lookup_location" name="location" class="form-control">
+              </select>
             </div>
           </div>
           <div class="form-group">
@@ -352,10 +385,11 @@ if (request.getAttribute("success") != null) {
             Location:
             </label>
             <div class="col-sm-9">
-              <input id="location" name="location" class="form-control" value="<%=location%>">
+              <select id="location" name="location" class="form-control">
+              </select>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label for="timeout" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The amount of time, in milliseconds, that OpenNMS will wait for a response from the agent.">
             Timeout:

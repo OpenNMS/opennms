@@ -325,12 +325,6 @@ groovy.compiler.output.path=target/classes
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
-    <!--
-    <repository>
-        <id>maven-eclipse-repo</id>
-        <url>http://maven-eclipse.github.io/maven</url>
-    </repository>
-    -->
   </repositories>
 
 </project>

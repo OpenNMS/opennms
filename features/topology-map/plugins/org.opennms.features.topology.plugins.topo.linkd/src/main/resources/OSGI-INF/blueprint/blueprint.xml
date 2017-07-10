@@ -31,6 +31,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <bean id="enlinkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
         <property name="name" value="Enhanced Linkd Topology Provider"/>
         <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
+        <property name="supportsCategorySearch" value="true"/>
     </bean>
 
     <!-- Metrics -->

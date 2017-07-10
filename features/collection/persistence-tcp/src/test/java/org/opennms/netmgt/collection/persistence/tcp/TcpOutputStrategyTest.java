@@ -30,12 +30,14 @@ package org.opennms.netmgt.collection.persistence.tcp;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -122,6 +124,8 @@ public class TcpOutputStrategyTest {
 
     @Test
     public void peristAndReceiveProtobufMessages() {
+        Date start = new Date();
+
         // Build a collection set with both numeric and string attributes
         String owner = "192.168.1.1";
         MockCollectionAgent agent = new MockCollectionAgent(1, "n1", InetAddressUtils.addr(owner));
@@ -188,6 +192,10 @@ public class TcpOutputStrategyTest {
                 .addAllDblValue(Arrays.asList(Double.valueOf(0.0)))
                 .addAllStrValue(Arrays.asList("10", "10000000"))
                 .build(), reading);
+
+        // The reading should be a timestamp in milliseconds
+        Date dateFromReading = new Date(reading.getTimestamp());
+        assertTrue(String.format("%s <= %s", start, dateFromReading), start.compareTo(dateFromReading) <= 0);
     }
 
     public void persist(CollectionSet collectionSet, boolean forceStoreByGroup) {

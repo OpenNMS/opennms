@@ -56,6 +56,7 @@ public class NodeLevelResourceDTO {
     public NodeLevelResourceDTO(NodeLevelResource resource) {
         nodeId = resource.getNodeId();
         timestamp = resource.getTimestamp();
+        path = resource.getPath();
     }
 
     @Override

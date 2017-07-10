@@ -18,15 +18,4 @@
     <module>bridge</module>
     <module>jaas-login-module</module>
   </modules>
-
-  <repositories>
-    <repository>
-      <id>servicemix</id>
-      <name>Apache ServiceMix Repository</name>
-      <url>http://maven.opennms.org/content/repositories/servicemix/</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
-    </repository>
-  </repositories>
-
 </project>

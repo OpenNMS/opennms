@@ -274,6 +274,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             // Now set the defaults from the getSnmpConfig()
             setSnmpAgentConfig(agentConfig, new Definition(), requestedSnmpVersion);
 
+            // Set the values from best matching definition
             final AddressSnmpConfigVisitor visitor = new AddressSnmpConfigVisitor(agentInetAddress, location);
             getSnmpConfig().visit(visitor);
             final Definition matchingDef = visitor.getDefinition();

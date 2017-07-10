@@ -51,6 +51,7 @@
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <feature version="${guavaVersion}">guava</feature>
+      <feature>qpid</feature>
 
       <feature>opennms-core-camel</feature>
       <feature>opennms-dao-api</feature>
@@ -65,6 +66,7 @@
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <feature version="${guavaVersion}">guava</feature>
+      <feature>qpid</feature>
 
       <feature>opennms-core-camel</feature>
       <feature>opennms-dao-api</feature>
@@ -78,6 +80,7 @@
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
+      <feature>qpid</feature>
 
       <feature>opennms-core-camel</feature>
       <!-- TODO -->
@@ -201,6 +204,10 @@
       <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
     </feature>
 
+    <feature name="commons-lang3" description="Apache :: commons-lang3" version="${commonsLang3Version}">
+      <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
+    </feature>
+
     <feature name="commons-net" description="Apache :: commons-net" version="3.3">
       <bundle>mvn:commons-net/commons-net/3.3</bundle>
     </feature>
@@ -315,6 +322,12 @@
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
       <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
+    </feature>
+
+    <feature name="qpid" description="Apache :: Qpid" version="0.32_3">
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.qpid/0.32_3</bundle>
     </feature>
 
     <feature name="rate-limited-logger" description="Rate Limited Logger" version="${rateLimitedLoggerVersion}">
@@ -611,7 +624,7 @@
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
       <feature version="[4.2,4.3)">spring</feature>
 
-      <feature>commons-lang</feature>
+      <feature>commons-lang3</feature>
       <feature>jaxb</feature>
 
       <feature>opennms-core</feature>

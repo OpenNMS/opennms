@@ -30,10 +30,14 @@ package org.opennms.smoketest.topo;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+
+import javax.xml.bind.JAXB;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -42,6 +46,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -49,6 +54,8 @@ import org.junit.runners.MethodSorters;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.TopologyIT;
 
@@ -76,6 +83,10 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         if (existsGraph()) {
             deleteGraph();
         }
+
+        // Generating dummy nodes for the verifyCanFilterByCategory test method
+        this.createDummyNodes();
+
         importGraph();
         topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrl());
         topologyUIPage.open();
@@ -185,6 +196,92 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled after save
     }
 
+    @Test
+    /**
+     * This method tests whether the GraphMLTopologyProvider can work with categories - searching, collapsing and expanding
+     */
+    public void verifyCanFilterByCategory() throws IOException, InterruptedException {
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        topologyUIPage.selectLayer("Markets");
+        topologyUIPage.setSzl(0);
+        topologyUIPage.clearFocus();
+
+        // Search for the first category
+        topologyUIPage.search("Routers").selectItemThatContains("Routers");
+        Assert.assertNotNull(topologyUIPage.getVisibleVertices());
+        Assert.assertEquals(2, topologyUIPage.getVisibleVertices().size());
+        Assert.assertEquals("North 2", topologyUIPage.getVisibleVertices().get(0).getLabel());
+        Assert.assertEquals("North 3", topologyUIPage.getVisibleVertices().get(1).getLabel());
+
+        // Collapse and verify that collapsing works and that the category is visible while the vertex - not
+        topologyUIPage.getFocusedVertices().get(0).collapse();
+        Assert.assertEquals(1, topologyUIPage.getVisibleVertices().size());
+        Assert.assertEquals("Routers", topologyUIPage.getVisibleVertices().get(0).getLabel());
+
+        // Search for the second category
+        //TODO Theoretically it should display 2 vertices - one for each category. But it does not due to a bug (see issue NMS-9423)
+        topologyUIPage.search("Servers").selectItemThatContains("Servers");
+        Assert.assertNotNull(topologyUIPage.getVisibleVertices());
+        Assert.assertEquals(1, topologyUIPage.getVisibleVertices().size());
+        Assert.assertEquals("Routers", topologyUIPage.getVisibleVertices().get(0).getLabel());
+
+        // Expand and verify that vertices are visible again (and not duplicated)
+        topologyUIPage.getFocusedVertices().get(0).expand();
+        Assert.assertEquals(2, topologyUIPage.getVisibleVertices().size());
+        Assert.assertEquals("North 2", topologyUIPage.getVisibleVertices().get(0).getLabel());
+        Assert.assertEquals("North 3", topologyUIPage.getVisibleVertices().get(1).getLabel());
+
+        // Collapse all and verify that vertices are not visible and that both categories are visible
+        for (TopologyIT.FocusedVertex vertex : topologyUIPage.getFocusedVertices()) {
+            vertex.collapse();
+        }
+        Assert.assertEquals(2, topologyUIPage.getVisibleVertices().size());
+        Assert.assertEquals("Routers", topologyUIPage.getVisibleVertices().get(0).getLabel());
+        Assert.assertEquals("Servers", topologyUIPage.getVisibleVertices().get(1).getLabel());
+    }
+
+    /**
+     * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
+     */
+    private void createDummyNodes() throws IOException, InterruptedException {
+
+        // First node has foreign ID "node1", label - "North 2" and category "Routers"
+        // Second node has foreign ID "node2", label - "North 3" and categories "Routers" and "Servers"
+
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+
+        String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+                                "   <node foreign-id=\"node1\" node-label=\"North 2\">" +
+                                "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
+                                "           <monitored-service service-name=\"ICMP\"/>" +
+                                "       </interface>" +
+                                "       <category name=\"Routers\"/>" +
+                                "   </node>" +
+                                "   <node foreign-id=\"node2\" node-label=\"North 3\">" +
+                                "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
+                                "           <monitored-service service-name=\"ICMP\"/>" +
+                                "       </interface>" +
+                                "       <category name=\"Routers\"/>" +
+                                "       <category name=\"Servers\"/>" +
+                                "   </node>" +
+                                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 2);
+        // Send an event to force reload of topology
+        final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
+        builder.setTime(new Date());
+        builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            JAXB.marshal(builder.getEvent(), outputStream);
+            sendPost("/rest/events", new String(outputStream.toByteArray()), 204);
+        }
+        Thread.sleep(5000); // Wait to allow the event to be processed
+    }
+
     private boolean existsGraph() throws IOException {
         try (HttpClientWrapper client = createClientWrapper()) {
             HttpGet httpGet = new HttpGet(URL);
@@ -226,5 +323,4 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
     private static TopologyIT.FocusedVertex focusVertex(TopologyIT.TopologyUIPage topologyUIPage, String namespace, String label) {
         return  new TopologyIT.FocusedVertex(topologyUIPage, namespace, label);
     }
-
 }

@@ -39,8 +39,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The mask element
  * 
@@ -316,9 +314,6 @@ public class Maskelement implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("mename", _mename)
-    		.append("mevalue", _mevalueList)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }

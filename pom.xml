@@ -1051,9 +1051,9 @@
       </plugin>
       -->
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.12.3</version>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-xjc-plugin</artifactId>
+        <version>${cxfXjcVersion}</version>
       </plugin>
     </plugins>
  </build>
@@ -1285,12 +1285,14 @@
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
     <commonsIoVersion>2.4</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
+    <commonsLang3Version>3.4</commonsLang3Version>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsMath3Version>3.5</commonsMath3Version>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <c3p0Version>0.9.5.2</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
     <cxfVersion>3.1.11</cxfVersion>
+    <cxfXjcVersion>3.1.0</cxfXjcVersion>
     <dnsjavaVersion>2.1.3</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
@@ -3132,6 +3134,11 @@
         <version>${commonsLangVersion}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commonsLang3Version}</version>
+      </dependency>
+      <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
         <version>${commonsLoggingVersion}</version>
@@ -4059,13 +4066,6 @@
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
-    </pluginRepository>
-    <pluginRepository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>java-net-repo</id>
-      <name>Java.net Repository</name>
-      <url>http://maven.opennms.org/content/repositories/maven2-repository.dev.java.net/</url>
     </pluginRepository>
     <pluginRepository>
       <id>onejar-maven-plugin.googlecode.com</id>

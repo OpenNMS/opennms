@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,12 +30,18 @@ package org.opennms.netmgt.collectd;
 
 import org.junit.After;
 import org.junit.Test;
+import org.opennms.core.test.MockPlatformTransactionManager;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+
+import org.easymock.EasyMock;
 
 public class DefaultCollectionAgentTest {
 
@@ -70,5 +76,39 @@ public class DefaultCollectionAgentTest {
 
         // Verify
         verify(snmpPeerFactory, times(1)).getAgentConfig(any(), eq("Ocracoke"));
+    }
+
+    /**
+     * NMS-5105: When processing serviceDeleted and interfaceDeleted events
+     * in Collectd we need to match both the Node ID and IP Address of
+     * the service that is being collected with the information from the event.
+     *
+     * Since the entities have been deleted, we not longer be able to reach
+     * in the database to fetch the required details. Instead, they
+     * should be loaded when the agent is created, and cached for the lifetime
+     * of the object.
+     */
+    @Test
+    public void verifyThatTheIpAndNodeIdAreCached() {
+        OnmsNode node = new OnmsNode();
+        node.setId(11);
+
+        OnmsIpInterface iface = new OnmsIpInterface();
+        iface.setId(42);
+        iface.setNode(node);
+        iface.setIpAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
+
+        IpInterfaceDao ifaceDao = EasyMock.createMock(IpInterfaceDao.class);
+        EasyMock.expect(ifaceDao.load(iface.getId())).andReturn(iface).times(5);
+        EasyMock.replay(ifaceDao);
+
+        PlatformTransactionManager transMgr = new MockPlatformTransactionManager();
+
+        SnmpCollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
+
+        EasyMock.verify(ifaceDao);
+
+        assertEquals(iface.getIpAddress(), agent.getAddress());
+        assertEquals(node.getId().intValue(), agent.getNodeId());
     }
 }

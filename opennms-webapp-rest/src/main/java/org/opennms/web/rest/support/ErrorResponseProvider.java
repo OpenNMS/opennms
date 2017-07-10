@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.topology;
+package org.opennms.web.rest.support;
 
-import java.util.Set;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 
-import org.opennms.netmgt.model.BridgeBridgeLink;
-
-public class SimpleConnection {
-    final Set<String> m_links;
-    final BridgeBridgeLink m_dlink;
-    
-    public SimpleConnection(Set<String> links, BridgeBridgeLink dlink){
-        m_links = links;
-        m_dlink = dlink;
+/**
+ * This provider handles all exceptions which are not handled by any other provider.
+ * @author mvrueden
+ */
+public class ErrorResponseProvider implements ExceptionMapper<Exception> {
+    @Override
+    public Response toResponse(Exception exception) {
+        // if there is an optional exception message, we add it to the response
+        if (exception.getMessage() != null) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(exception.getMessage()).build();
+        }
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
-
-    public Set<String> getMacs() {
-        return m_links;
-    }
-
-    public BridgeBridgeLink getDlink() {
-        return m_dlink;
-    }
-
 }

@@ -279,16 +279,6 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>codehaus-snapshots</id>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <url>http://maven.opennms.org/content/groups/codehaus.org-snapshot/</url>
-    </pluginRepository>
-    <pluginRepository>
       <id>vaadin-snapshots</id>
       <snapshots>
         <enabled>true</enabled>

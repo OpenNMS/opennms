@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The event correlation information
  * 
@@ -421,13 +419,6 @@ public class Correlation implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("state", _state)
-    		.append("path", _path)
-    		.append("cuei", _cueiList)
-    		.append("cmin", _cmin)
-    		.append("cmax", _cmax)
-    		.append("ctime", _ctime)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }

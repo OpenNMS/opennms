@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,19 +41,15 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.svclayer.api.KscReportService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-/**
- * <p>FormProcReportController class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class FormProcReportController extends AbstractController implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(FormProcReportController.class);
 
     public enum Parameters {
         action,
@@ -114,10 +110,17 @@ public class FormProcReportController extends AbstractController implements Init
         if (Actions.Save.toString().equals(action)) {
             // The working model is complete now... lets save working model to configuration file 
             try {
+                LOG.debug("reports: {}", getKscReportFactory().getReportMap());
+
+                LOG.debug("unloading working report");
                 // First copy working report into report arrays
                 editor.unloadWorkingReport(getKscReportFactory());
+
+                LOG.debug("saving current report");
                 // Save the changes to the config file
                 getKscReportFactory().saveCurrent();
+
+                LOG.debug("unloading editor from session");
                 // Go ahead and unload the editor from the session since we're done using it
                 KscReportEditor.unloadFromSession(request.getSession());
             } catch (Throwable e) {

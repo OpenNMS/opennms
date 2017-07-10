@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.util.Date;
+import java.net.InetAddress;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -76,8 +77,8 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class CollectableService implements ReadyRunnable {
-    
+class CollectableService implements ReadyRunnable {
+
     private static final Logger LOG = LoggerFactory.getLogger(CollectableService.class);
 
     protected static final String STRICT_INTERVAL_SYS_PROP = "org.opennms.netmgt.collectd.strictInterval";
@@ -180,9 +181,9 @@ final class CollectableService implements ReadyRunnable {
     /**
      * <p>getAddress</p>
      *
-     * @return a {@link java.lang.Object} object.
+     * @return a {@link java.net.InetAddress} object.
      */
-    public Object getAddress() {
+    public InetAddress getAddress() {
     	return m_agent.getAddress();
     }
     
