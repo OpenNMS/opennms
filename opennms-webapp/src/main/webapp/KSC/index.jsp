@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -87,14 +87,14 @@
               </span>
               <input class="form-control" type="text" placeholder="Search/Filter Reports" ng-model="reportFilter"></input>
             </div>
-            <table class="table table-condensed table-hover ">
+            <table class="table table-condensed table-hover" name="reports">
               <thead>
                 <tr>
                   <th>Reports</th>
                 </tr>
               </thead>
               <tbody>
-                <tr ng-class="{success: report.id == reportSelected.id}" ng-click="selectReport(report)" ng-repeat="report in filteredReports | startFrom:(kscCurrentPage-1)*kscPageSize | limitTo:kscPageSize">
+                <tr name="report:{{ report.label }}" ng-class="{success: report.id == reportSelected.id}" ng-click="selectReport(report)" ng-repeat="report in filteredReports | startFrom:(kscCurrentPage-1)*kscPageSize | limitTo:kscPageSize">
                   <td>{{ report.label }}</td>
                 </tr>
              </tbody>
@@ -112,26 +112,21 @@
           <form name="kscForm">
           <div class="btn-group btn-group-justified" role="group">
             <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default" ng-click="viewReport()"> View
-              </button>
+              <button type="button" class="btn btn-default" ng-click="viewReport()">View</button>
             </div> 
             <c:choose>
               <c:when test="${isReadOnly == false}">
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="customizeReport()"> Customize
-                </button>
+                <button type="button" class="btn btn-default" ng-click="customizeReport()">Customize</button>
               </div> 
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="createReport()"> Create New
-                </button>
+                <button type="button" class="btn btn-default" ng-click="createReport()">Create New</button>
               </div> 
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="createReportFromExisting()"> Create from Existing
-                </button>
+                <button type="button" class="btn btn-default" ng-click="createReportFromExisting()">Create from Existing</button>
               </div> 
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="deleteReport()"> Delete
-                </button>
+                <button type="button" class="btn btn-default" ng-click="deleteReport()">Delete</button>
               </div> 
               </c:when>
             </c:choose>
@@ -152,14 +147,14 @@
               </span>
               <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="domainFilter"></input>
             </div>
-            <table class="table table-condensed">
+            <table class="table table-condensed" name="resources">
               <thead>
                 <tr>
                   <th>Resources</th>
                 </tr>
               </thead>
               <tbody>
-                <tr ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                <tr name="resource:{{ resource.label }}" ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
                   <td>{{ resource.label }}</td>
                 </tr>
              </tbody>

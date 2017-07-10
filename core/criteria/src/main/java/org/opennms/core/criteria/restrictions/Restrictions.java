@@ -52,6 +52,10 @@ public abstract class Restrictions {
         return new EqRestriction(attribute, comparator);
     }
 
+    public static EqPropertyRestriction eqProperty(final String attribute, final Object comparator) {
+        return new EqPropertyRestriction(attribute, comparator);
+    }
+
     public static Restriction ne(final String attribute, final Object comparator) {
         return new NeRestriction(attribute, comparator);
     }

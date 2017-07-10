@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -228,7 +228,7 @@ public class ImportScheduler implements InitializingBean {
                 
                 try {
                     detail = new JobDetailImpl(def.getImportName().orElse(null), JOB_GROUP, ImportJob.class, false, false);
-                    detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource());
+                    detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource().orElse(null));
                     detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
                     
                     trigger = new CronTriggerImpl(def.getImportName().orElse(null), JOB_GROUP, def.getCronSchedule().orElse(null));

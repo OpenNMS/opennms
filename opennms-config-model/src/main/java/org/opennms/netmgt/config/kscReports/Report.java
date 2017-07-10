@@ -42,16 +42,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
-/**
- * Class Report.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "Report")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("ksc-performance-reports.xsd")
 public class Report implements java.io.Serializable {
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     @XmlAttribute(name = "id")
     private Integer m_id;
@@ -71,8 +66,8 @@ public class Report implements java.io.Serializable {
     @XmlElement(name = "Graph")
     private List<Graph> m_graphs = new ArrayList<>();
 
-    public Optional<Integer> getId() {
-        return Optional.ofNullable(m_id);
+    public Integer getId() {
+        return m_id;
     }
 
     public void setId(final Integer id) {
@@ -159,6 +154,15 @@ public class Report implements java.io.Serializable {
                     && Objects.equals(this.m_graphs, that.m_graphs);
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Report [id=" + m_id + ", m_title=" + m_title
+                + ", showTimespanButton=" + m_showTimespanButton
+                + ", showGraphtypeButton=" + m_showGraphtypeButton
+                + ", graphsPerLine=" + m_graphsPerLine + ", graphs="
+                + m_graphs + "]";
     }
 
 }

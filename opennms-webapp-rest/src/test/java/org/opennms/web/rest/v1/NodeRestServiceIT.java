@@ -438,7 +438,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testIpInterfaceIpLikeFilter() throws Exception{
         createTwoIpInterface();
         String url = "/nodes/1/ipinterfaces";
-        String xml = sendRequest(GET, url, parseParamData("ipAddress=*.*.*.11&comparator=iplike"), 200);
+        String xml = sendRequest(GET, url, parseParamData("ipAddr=*.*.*.11&comparator=iplike"), 200);
         assertTrue(xml.contains("count=\"1\""));
         
     }
