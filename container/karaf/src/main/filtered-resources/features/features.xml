@@ -32,8 +32,8 @@
     </feature>
 
     <feature name="karaf-framework" description="Karaf core feature" version="2.4.3" resolver="(obr)">
-        <bundle start-level="5">mvn:org.ops4j.pax.url/pax-url-aether/2.4.1</bundle>
-        <bundle start-level="5">mvn:org.ops4j.pax.url/pax-url-wrap/2.4.1/jar/uber</bundle>
+        <bundle start-level="5">mvn:org.ops4j.pax.url/pax-url-aether/2.5.2</bundle>
+        <bundle start-level="5">mvn:org.ops4j.pax.url/pax-url-wrap/2.5.2/jar/uber</bundle>
         <bundle start-level="8">mvn:org.ops4j.pax.logging/pax-logging-api/1.8.3</bundle>
         <bundle start-level="8">mvn:org.ops4j.pax.logging/pax-logging-service/1.8.3</bundle>
         <bundle start-level="10">mvn:org.apache.felix/org.apache.felix.configadmin/1.8.4</bundle>
@@ -142,7 +142,7 @@
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.bundlerepository/2.0.4</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.obr/2.4.3</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.features/org.apache.karaf.features.obr/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-obr/2.4.1/jar/uber</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-obr/2.5.2/jar/uber</bundle>
         <conditional>
             <condition>management</condition>
             <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.obr/2.4.3</bundle>
@@ -207,7 +207,7 @@
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/4.2.7</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/4.2.7</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/4.2.7</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-war/2.4.7/jar/uber</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-war/2.5.2/jar/uber</bundle>
     </feature>
 
     <!-- ################ END OPENNMS CUSTOMIZATION ############## -->
@@ -328,7 +328,7 @@
     </feature>
 
     <feature name="wrap" description="Wrap URL handler">
-        <bundle start="true" start-level="5">mvn:org.ops4j.pax.url/pax-url-wrap/2.4.1/jar/uber</bundle>
+        <bundle start="true" start-level="5">mvn:org.ops4j.pax.url/pax-url-wrap/2.5.2/jar/uber</bundle>
     </feature>
 
     <!-- Spring DM support -->
