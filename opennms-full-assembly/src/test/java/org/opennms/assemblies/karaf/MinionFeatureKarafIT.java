@@ -50,7 +50,6 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("Disabling until the tests can be stabilized")
 public class MinionFeatureKarafIT extends KarafTestCase {
 
 	@Before
@@ -74,32 +73,9 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	}
 
 	@Test
-	public void testInstallFeatureOpennmsDiscoverer() {
-		installFeature("opennms-discoverer");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-
-	@Test
-	public void testInstallFeatureOpennmsSyslogdHandlerMinion() {
-		installFeature("opennms-syslogd-handler-minion");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-
-	@Test
-	public void testInstallFeatureOpennmsSyslogdHandlerKafka() {
-		installFeature("opennms-syslogd-handler-kafka");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-
-	@Test
+	@Ignore("OSGi dependency problems: org.apache.activemq.broker")
 	public void testInstallFeatureOpennmsTrapdListener() {
 		installFeature("opennms-trapd-listener");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-
-	@Test
-	public void testInstallFeatureOpennmsTrapdHandlerKafka() {
-		installFeature("opennms-trapd-handler-kafka");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 
@@ -116,8 +92,38 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	}
 
 	@Test
+	public void testInstallFeatureMinionProvisiondRequisitions() {
+		installFeature("minion-provisiond-requisitions");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionCollection() {
+		installFeature("minion-collection");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionPoller() {
+		installFeature("minion-poller");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
 	public void testInstallFeatureMinionRpcServer() {
 		installFeature("minion-rpc-server");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionShellCollection() {
+		installFeature("minion-shell-collection");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionShellPoller() {
+		installFeature("minion-shell-poller");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 
@@ -130,6 +136,12 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeatureMinionShell() {
 		installFeature("minion-shell");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionIcmpProxy() {
+		installFeature("minion-icmp-proxy");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 

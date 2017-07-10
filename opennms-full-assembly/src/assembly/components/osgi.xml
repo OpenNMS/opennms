@@ -7,7 +7,7 @@
     <fileSet>
       <filtered>false</filtered>
       <outputDirectory>system</outputDirectory>
-      <directory>target/features-repo</directory>
+      <directory>target/opennms-repo</directory>
     </fileSet>
     <fileSet>
       <filtered>false</filtered>

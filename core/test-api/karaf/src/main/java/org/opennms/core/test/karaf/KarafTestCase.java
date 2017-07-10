@@ -226,7 +226,11 @@ public abstract class KarafTestCase {
                     // TODO: Make it possible for tests to override these paths with the path where their 'add-features-to-repo' execution is creating a repo
                     //
                     "file:${karaf.home}/../test-repo@snapshots@id=default-repo",
-                    "file:${karaf.home}/../../features-repo@snapshots@id=opennms-repo"
+                    // These repositories are unpacked by the opennms-full-assembly project's build
+                    // for final integration testing
+                    "file:${karaf.home}/../../opennms-repo@snapshots@id=opennms-repo",
+                    "file:${karaf.home}/../../minion-core-repo@snapshots@id=minion-core-repo",
+                    "file:${karaf.home}/../../minion-default-repo@snapshots@id=minion-default-repo"
                 })
             ),
 
