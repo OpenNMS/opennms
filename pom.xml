@@ -1335,7 +1335,7 @@
     <minaVersion>2.0.16</minaVersion>
     <netty4Version>4.1.9.Final</netty4Version>
     <newtsVersion>1.4.3</newtsVersion>
-    <paxExamVersion>4.9.2</paxExamVersion>
+    <paxExamVersion>4.11.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>4.3.0</paxWebVersion>
     <protobufVersion>2.6.1</protobufVersion>
