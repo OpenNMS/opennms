@@ -49,6 +49,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -353,28 +354,58 @@ public class Events implements Serializable {
 
     private void indexEventsByUei() {
         m_eventsByUei.clear();
-        final Set<String> filesProcessed = new HashSet<>();
-        indexEventsByUei(this, filesProcessed);
-    }
 
-    private void indexEventsByUei(final Events eventFile, final Set<String> filesProcessed) {
-        for (final Event event : eventFile.m_events) {
-            final String uei = event.getUei();
+        // Build a map of UEI to Event definition
+        forEachEvent((e) -> {
+            final String uei = e.getUei();
             if (uei == null) {
                 // Skip events with no UEI
-                continue;
+                return;
             }
             // Don't overwrite existing keys, first one wins
-            m_eventsByUei.putIfAbsent(uei, event);
-        }
+            m_eventsByUei.putIfAbsent(uei, e);
+        });
 
-        for (final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-            if (filesProcessed.contains(loadedEvents.getKey())) {
-                // We already processed this file, don't recurse - avoid stack overflows
-                continue;
+        // Now remove event definitions from the index if any
+        // mask elements from any other event definitions match
+        // the UEI.
+        //
+        // This allows mask elements to be used against incoming
+        // event instances that already have a UEI set, provided
+        // that they include a UEI match. In this case the associated
+        // event definition will no longer be found in the
+        // UEI to Event definition index.
+
+        // 1) Gather the set of matchers from all event definitions
+        // that are used to match a UEI
+        final List<EventMatcher> matchers = new ArrayList<>();
+        forEachEvent((e) -> {
+            final Mask mask = e.getMask();
+            if (mask != null) {
+                final Maskelement ueiMask = mask.getMaskElement("uei");
+                if (ueiMask != null) {
+                    matchers.add(ueiMask.constructMatcher());
+                }
             }
-            filesProcessed.add(loadedEvents.getKey());
-            indexEventsByUei(loadedEvents.getValue(), filesProcessed);
+        });
+
+        // 2) Remove event definition from the index if they are matched
+        // by any of the known UEI matchers.
+        if (matchers.size() >= 1) {
+            events: for(Iterator<Entry<String, Event>> it = m_eventsByUei.entrySet().iterator(); it.hasNext(); ) {
+                final Entry<String, Event> entry = it.next();
+                for (EventMatcher matcher : matchers) {
+                    // Build an event instance
+                    org.opennms.netmgt.xml.event.Event eventToMatch = new org.opennms.netmgt.xml.event.Event();
+                    // The UEI is the only field the matcher should check
+                    eventToMatch.setUei(entry.getKey());
+                    if (matcher.matches(eventToMatch)) {
+                        // We got a match, remove this event definition from the index
+                        it.remove();
+                        continue events;
+                    }
+                }
+            }
         }
     }
 
@@ -444,5 +475,28 @@ public class Events implements Serializable {
                     Objects.equals(this.m_eventFiles, that.m_eventFiles);
         }
         return false;
+    }
+
+    private void forEachEvent(Consumer<Event> callback) {
+        forEachEvent(callback, this, null);
+    }
+
+    private void forEachEvent(Consumer<Event> callback, Events eventFile, Set<String> filesProcessed) {
+        for (final Event event : eventFile.m_events) {
+            callback.accept(event);
+        }
+
+        if (filesProcessed == null) {
+            filesProcessed = new HashSet<>();
+        }
+
+        for (final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+            if (filesProcessed.contains(loadedEvents.getKey())) {
+                // We already processed this file, don't recurse - avoid stack overflows
+                continue;
+            }
+            filesProcessed.add(loadedEvents.getKey());
+            forEachEvent(callback, loadedEvents.getValue(), filesProcessed);
+        }
     }
 }
