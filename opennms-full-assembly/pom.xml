@@ -201,6 +201,46 @@
               </artifactItems>
             </configuration>
           </execution>
+          <!-- Unpack the minion core repo so that it can be used in integration tests -->
+          <execution>
+            <id>unpack-minion-core-repo</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/minion-core-repo</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features.minion</groupId>
+                  <artifactId>core-repository</artifactId>
+                  <version>${project.version}</version>
+                  <type>tar.gz</type>
+                  <classifier>repo</classifier>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <!-- Unpack the minion default repo so that it can be used in integration tests -->
+          <execution>
+            <id>unpack-minion-default-repo</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/minion-default-repo</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features.minion</groupId>
+                  <artifactId>repository</artifactId>
+                  <version>${project.version}</version>
+                  <type>tar.gz</type>
+                  <classifier>repo</classifier>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -317,6 +357,11 @@
                 <feature>wrapper</feature>
 
                 <!-- Karaf Spring features -->
+                <feature>spring/3.1.4.RELEASE</feature>
+                <feature>spring/4.0.7.RELEASE_3</feature>
+                <feature>spring-jms/4.0.7.RELEASE_3</feature>
+                <feature>spring/4.1.9.RELEASE_1</feature>
+                <feature>spring-jms/4.1.9.RELEASE_1</feature>
                 <feature>spring/${springVersion}</feature>
                 <feature>spring-aspects/${springVersion}</feature>
                 <feature>spring-instrument/${springVersion}</feature>
@@ -335,7 +380,7 @@
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
               </features>
-              <repository>${project.build.directory}/features-repo</repository>
+              <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>
           </execution>
         </executions>
@@ -353,7 +398,7 @@
           <algorithms><algorithm>SHA-1</algorithm></algorithms>
           <fileSets>
             <fileSet>
-              <directory>${project.build.directory}/features-repo</directory>
+              <directory>${project.build.directory}/opennms-repo</directory>
               <includes>
                 <include>**/*.cfg</include>
                 <include>**/*.jar</include>
@@ -375,10 +420,16 @@
               <goal>clean</goal> 
             </goals> 
             <configuration> 
-              <excludeDefaultDirectories>true</excludeDefaultDirectories> 
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
               <filesets> 
                 <fileset> 
-                  <directory>${project.build.directory}/features-repo</directory> 
+                  <directory>${project.build.directory}/opennms-repo</directory>
+                </fileset> 
+                <fileset> 
+                  <directory>${project.build.directory}/minion-core-repo</directory>
+                </fileset> 
+                <fileset> 
+                  <directory>${project.build.directory}/minion-default-repo</directory>
                 </fileset> 
               </filesets> 
             </configuration> 
