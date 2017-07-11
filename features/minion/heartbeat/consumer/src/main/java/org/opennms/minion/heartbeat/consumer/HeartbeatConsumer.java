@@ -249,7 +249,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         for (final String alteredForeignSource : alteredForeignSources) {
             requisitionService.triggerImport(
-                    new ImportRequest("Web").withForeignSource(alteredForeignSource));
+                    new ImportRequest(this).withForeignSource(alteredForeignSource));
         }
     }
 

@@ -22,12 +22,12 @@ include::common/preface.adoc[]
 
 :numbered!:
 include::releasenotes/whatsnew-21.adoc[]
+include::upgrade/upgrade-20-21.adoc[]
 
 include::releasenotes/whatsnew-20.adoc[]
 include::releasenotes/changelog-20.adoc[]
 
 include::releasenotes/whatsnew-20.adoc[]
-include::upgrade/upgrade-19-20.adoc[]
 
 include::releasenotes/whatsnew-19.adoc[]
 include::releasenotes/changelog-19.adoc[]

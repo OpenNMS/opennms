@@ -1,10 +1,12 @@
-[[upgrade-19-20]]
+[[upgrade-20-21]]
 == Upgrade OpenNMS Horizon 19 to 20
 
 === Foreign Sources and Requisitions
 
 The Foreign Sources and Requisitions have been moved to the database.
-They must be manually migrated. In order to make the migration as smooth as possible a `foreignsource` and `requisition` osgi karaf command has been introduced.
+They must be manually migrated.
+In order to make the migration as smooth as possible a `foreignsource` and `requisition` osgi karaf command has been introduced.
+The karaf shell can be accessed with `$OPENNMS_HOME/bin/client`.
 The following chapters will describe on how to best migrate any existing Foreign Sources and/or or Requisitions.
 
 NOTE:   Be advised that if the `--dir` (`-d`) option is used, an {opennms_product_name} structure is assumed.
