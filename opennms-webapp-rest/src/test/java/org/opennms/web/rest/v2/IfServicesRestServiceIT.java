@@ -28,25 +28,21 @@
 
 package org.opennms.web.rest.v2;
 
-import java.util.Collections;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * TODO
- * 1. Need to figure it out how to create a Mock for EventProxy to validate events sent by RESTful service
- */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations={
@@ -63,42 +59,30 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationsServiceIT.class);
-    
-    public MonitoringLocationsServiceIT() {
+public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(IfServicesRestServiceIT.class);
+
+    public IfServicesRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
+
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
 
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
+        m_databasePopulator.populateDatabase();
     }
 
+    // TODO Need some work
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testFiqlSearch() throws Exception {
+    public void testEvents() throws Exception {
+        String url = "/ifservices";
 
-        // Add 5 locations
-        for (int i = 0; i < 5; i++) {
-            String location = "<location location-name=\"hello-world-" + i + "\" monitoring-area=\"" + i + "\"/>";
-            sendPost("/monitoringLocations", location, 201, null);
-        }
-
-        LOG.warn(sendRequest(GET, "/monitoringLocations/count", Collections.emptyMap(), 200));
-
-        LOG.warn(sendRequest(GET, "/monitoringLocations", Collections.emptyMap(), 200));
-
-        LOG.warn(sendRequest(GET, "/monitoringLocations", parseParamData("_s=monitoringArea==2"), 200));
-
-    }
-
-    @Test
-    @Transactional
-    public void testDelete() throws Exception {
-        sendPost("/monitoringLocations", "<location location-name=\"Test\" monitoring-area=\"test\" priority=\"100\"/>", 201);
-        sendRequest(DELETE, "/monitoringLocations/Test", 204);
+        LOG.warn(sendRequest(GET, url, 200));
     }
 
 }

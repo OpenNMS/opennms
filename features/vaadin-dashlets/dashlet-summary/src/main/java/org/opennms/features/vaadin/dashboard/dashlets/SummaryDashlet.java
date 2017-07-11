@@ -33,6 +33,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.opennms.features.vaadin.dashboard.model.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -417,7 +418,7 @@ public class SummaryDashlet extends AbstractDashlet {
 
         criteriaBuilder.eq("severity", onmsSeverity);
 
-        criteriaBuilder.sql("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lastEventTime) < " + age);
+        criteriaBuilder.sql("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lastEventTime) < ?", age, Type.LONG);
 
         return m_alarmDao.countMatching(criteriaBuilder.toCriteria());
     }
@@ -441,7 +442,7 @@ public class SummaryDashlet extends AbstractDashlet {
 
         criteriaBuilder.eq("uei", uei);
 
-        criteriaBuilder.sql("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lastEventTime) < " + age);
+        criteriaBuilder.sql("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lastEventTime) < ?", age, Type.LONG);
 
         return m_alarmDao.countMatching(criteriaBuilder.toCriteria());
     }

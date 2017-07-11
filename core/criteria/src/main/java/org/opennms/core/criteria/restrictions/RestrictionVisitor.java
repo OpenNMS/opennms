@@ -35,6 +35,8 @@ public interface RestrictionVisitor {
     void visitNotNullComplete(final NotNullRestriction restriction);
     void visitEq(final EqRestriction restriction);
     void visitEqComplete(final EqRestriction restriction);
+    void visitEqProperty(final EqPropertyRestriction restriction);
+    void visitEqPropertyComplete(final EqPropertyRestriction restriction);
     void visitNe(final NeRestriction restriction);
     void visitNeComplete(final NeRestriction restriction);
     void visitGt(final GtRestriction restriction);
