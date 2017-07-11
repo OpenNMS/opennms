@@ -33,3 +33,6 @@ TIP: See `${OPENNMS_HOME}/share/xsds/event.xsd` for the reference schema.
 | Resource                                        | Description
 | `/events`                                       | Publish an event on the event bus.
 |===
+
+As an alternative to set the `nodeId`, it is possible to use 2 special event parameters for the same purpose: `_foreignSource` and `_foreignId`.
+The ReST end point will retrieve and set the appropriate nodeId for the event, if the event object doesn't have a nodeId, this pair of parameters are specified and there is a node on the DB associated with the given pair.
