@@ -55,7 +55,7 @@ public class NodeStatusService {
     private NodeDao nodeDao;
 
     @Autowired
-    private NodeStatusCalculatorManager statusCalculatorManager;
+    private NodeStatusCalculator statusCalculator;
 
     public StatusSummary getSummary(NodeStatusCalculationStrategy strategy) {
         final NodeStatusCalculatorConfig config = new NodeStatusCalculatorConfig();
@@ -67,7 +67,7 @@ public class NodeStatusService {
                 OnmsSeverity.CRITICAL));
         config.setCalculationStrategy(strategy);
 
-        final Map<OnmsSeverity, Long> statusOverviewMap = statusCalculatorManager.calculateStatusOverview(config);
+        final Map<OnmsSeverity, Long> statusOverviewMap = statusCalculator.calculateStatusOverview(config);
         final long totalCount = nodeDao.countAll();
         return new StatusSummary(statusOverviewMap, totalCount);
     }
@@ -75,7 +75,7 @@ public class NodeStatusService {
     public int count(NodeQuery query) {
         NodeStatusCalculatorConfig config = buildFrom(query);
         config.prepareForCounting();
-        return statusCalculatorManager.countStatus(config);
+        return statusCalculator.countStatus(config);
     }
 
     public List<StatusEntity<OnmsNode>> getStatus(NodeQuery query) {
@@ -83,7 +83,7 @@ public class NodeStatusService {
         final NodeStatusCalculatorConfig config = buildFrom(query);
 
         // Calculate Status
-        final Status status = statusCalculatorManager.calculateStatus(config);
+        final Status status = statusCalculator.calculateStatus(config);
 
         // Find nodes for node id
         final List<OnmsNode> nodes = getNodes(status.getIds());

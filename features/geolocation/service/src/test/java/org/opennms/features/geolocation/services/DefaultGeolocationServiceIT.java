@@ -42,7 +42,7 @@ import org.opennms.features.geolocation.api.GeolocationInfo;
 import org.opennms.features.geolocation.api.GeolocationQuery;
 import org.opennms.features.geolocation.api.GeolocationQueryBuilder;
 import org.opennms.features.geolocation.api.StatusCalculationStrategy;
-import org.opennms.features.status.api.node.NodeStatusCalculatorManager;
+import org.opennms.features.status.api.node.NodeStatusCalculator;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -90,13 +90,13 @@ public class DefaultGeolocationServiceIT {
     private DatabasePopulator databasePopulator;
 
     @Autowired
-    private NodeStatusCalculatorManager statusCalculatorManager;
+    private NodeStatusCalculator statusCalculator;
 
     private DefaultGeolocationService geolocationService;
 
     @Before
     public void before() {
-        geolocationService = new DefaultGeolocationService(genericPersistenceAccessor, statusCalculatorManager);
+        geolocationService = new DefaultGeolocationService(genericPersistenceAccessor, statusCalculator);
 
         // Initialize Database and clean up alarms
         databasePopulator.populateDatabase();

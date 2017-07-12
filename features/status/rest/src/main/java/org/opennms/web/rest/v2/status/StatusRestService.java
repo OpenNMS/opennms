@@ -179,7 +179,7 @@ public class StatusRestService {
 
         // Adjust order parameters
         if (query.getParameters().getOrder() != null && query.getParameters().getOrder().getColumn().equals("label")) {
-            query.getParameters().setOrder(new QueryParameters.Order("node.label", query.getParameters().getOrder().isDesc()));
+            query.getParameters().setOrder(new QueryParameters.Order("node.nodelabel", query.getParameters().getOrder().isDesc()));
         }
 
         final List<StatusEntity<OnmsNode>> nodes = nodeStatusService.getStatus(query);

@@ -45,7 +45,7 @@ import org.opennms.features.geolocation.api.GeolocationQuery;
 import org.opennms.features.geolocation.api.GeolocationService;
 import org.opennms.features.geolocation.api.NodeInfo;
 import org.opennms.features.geolocation.api.SeverityInfo;
-import org.opennms.features.status.api.node.NodeStatusCalculationProvider;
+import org.opennms.features.status.api.node.NodeStatusCalculator;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculationStrategy;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculatorConfig;
 import org.opennms.features.status.api.node.strategy.Status;
@@ -57,11 +57,11 @@ import org.opennms.netmgt.model.OnmsSeverity;
 public class DefaultGeolocationService implements GeolocationService {
 
     private GenericPersistenceAccessor genericPersistenceAccessor;
-    private NodeStatusCalculationProvider nodeStatusService;
+    private NodeStatusCalculator nodeStatusCalculator;
 
-    public DefaultGeolocationService(GenericPersistenceAccessor genericPersistenceAccessor, NodeStatusCalculationProvider nodeStatusService) {
+    public DefaultGeolocationService(GenericPersistenceAccessor genericPersistenceAccessor, NodeStatusCalculator nodeStatusCalculator) {
         this.genericPersistenceAccessor = Objects.requireNonNull(genericPersistenceAccessor);
-        this.nodeStatusService = Objects.requireNonNull(nodeStatusService);
+        this.nodeStatusCalculator = Objects.requireNonNull(nodeStatusCalculator);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class DefaultGeolocationService implements GeolocationService {
         nodeStatusCalculatorConfig.setNodeIds(nodeIds);
 
 
-        final Status status = nodeStatusService.calculateStatus(nodeStatusCalculatorConfig);
+        final Status status = nodeStatusCalculator.calculateStatus(nodeStatusCalculatorConfig);
         return status;
     }
 

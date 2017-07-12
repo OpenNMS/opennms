@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <!-- NMS-9146: Assure that the Default location exists in the database -->
+  <changeSet author="cpape" id="21.0.0-node-status-view">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <viewExists viewName="node_status"/>
+      </not>
+    </preConditions>
+    <sql>
+      CREATE VIEW node_status AS (
+
+        SELECT
+          node.nodeid as nodeid,
+
+          COALESCE(
+            (SELECT MAX(CASE WHEN alarms.severity IS NULL OR alarms.severity &lt; 3 THEN 3 ELSE alarms.severity END) FROM alarms WHERE alarms.nodeid = node.nodeid),
+            3
+          ) AS max_alarm_severity,
+
+          COALESCE(
+            (SELECT MAX(CASE WHEN alarms.severity IS NULL OR alarms.severity &lt; 3 THEN 3 ELSE alarms.severity END) FROM alarms WHERE alarms.nodeid = node.nodeid and alarms.alarmAckTime IS NULL),
+            3
+          ) AS max_alarm_severity_unack,
+
+          (SELECT COUNT(alarms.alarmid) FROM alarms WHERE alarms.nodeid = node.nodeid and alarms.alarmAckTime IS NULL) AS alarm_count_unack,
+
+          (SELECT count(*) FROM alarms WHERE alarms.nodeid=node.nodeid) AS alarm_count,
+
+          COALESCE(
+            (SELECT MAX(CASE WHEN events.eventSeverity IS NULL OR events.eventSeverity &lt; 3 THEN 3 ELSE events.eventSeverity END) FROM outages JOIN events ON outages.svcLostEventId=events.eventid WHERE events.nodeid=node.nodeid AND outages.svcRegainedEventId IS NULL),
+            3
+          ) AS max_outage_severity
+
+        FROM node
+      );
+    </sql>
+  </changeSet>
+</databaseChangeLog>

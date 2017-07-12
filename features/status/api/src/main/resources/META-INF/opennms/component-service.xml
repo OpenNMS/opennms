@@ -16,7 +16,7 @@
     <context:component-scan base-package="org.opennms.features.status" />
 
     <!-- properties are automatically injected -->
-    <bean id="nodeStatusCalculationManager" class="org.opennms.features.status.api.node.NodeStatusCalculatorManager"/>
-    <onmsgi:service interface="org.opennms.features.status.api.node.NodeStatusCalculationProvider" ref="nodeStatusCalculationManager" />
+    <bean id="nodeStatusCalculator" class="org.opennms.features.status.api.node.strategy.DefaultNodeStatusCalculator"/>
+    <onmsgi:service interface="org.opennms.features.status.api.node.NodeStatusCalculator" ref="nodeStatusCalculator" />
 
 </beans>

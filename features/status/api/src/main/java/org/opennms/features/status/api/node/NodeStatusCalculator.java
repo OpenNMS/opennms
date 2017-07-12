@@ -26,17 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.status.api.node.strategy;
-
-import org.opennms.netmgt.model.OnmsSeverity;
+package org.opennms.features.status.api.node;
 
 import java.util.Map;
 
-public interface NodeStatusCalculator {
+import org.opennms.features.status.api.node.strategy.NodeStatusCalculatorConfig;
+import org.opennms.features.status.api.node.strategy.Status;
+import org.opennms.netmgt.model.OnmsSeverity;
 
+public interface NodeStatusCalculator {
     Status calculateStatus(NodeStatusCalculatorConfig query);
 
-    Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query);
+    Map<OnmsSeverity,Long> calculateStatusOverview(NodeStatusCalculatorConfig query);
 
-    int countStatus(NodeStatusCalculatorConfig config);
+    int countStatus(NodeStatusCalculatorConfig query);
 }

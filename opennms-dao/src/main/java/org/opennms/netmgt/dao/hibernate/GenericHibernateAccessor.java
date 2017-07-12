@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.hibernate;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -87,6 +88,24 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
             return queryObject.list();
         });
 
+    }
+
+    @Override
+    public <T> List<T> executeNativeQuery(String sql, Map<String, Object> parameterMap) {
+        final List result = getHibernateTemplate().execute(session -> {
+            final Query query = session.createSQLQuery(sql);
+            if (parameterMap != null) {
+                parameterMap.entrySet().forEach(entry -> {
+                    if (entry.getValue() instanceof Collection) {
+                        query.setParameterList(entry.getKey(), (Collection) entry.getValue());
+                    } else {
+                        query.setParameter(entry.getKey(), entry.getValue());
+                    }
+                });
+            }
+            return query.list();
+        });
+        return result;
     }
 
     @Override

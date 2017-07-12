@@ -9,7 +9,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     <reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
     <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
-    <reference id="nodeStatusCalculatorManager" interface="org.opennms.features.status.api.node.NodeStatusCalculationProvider" availability="mandatory"/>
+    <reference id="nodeStatusCalculator" interface="org.opennms.features.status.api.node.NodeStatusCalculator" availability="mandatory"/>
 
     <bean id="geolocationResolver" class="org.opennms.features.geolocation.services.DefaultGeolocationResolver" >
         <argument ref="geocoderService" />
@@ -23,7 +23,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <bean id="geolocationService" class="org.opennms.features.geolocation.services.DefaultGeolocationService" >
         <argument ref="genericPersistenceAccessor" />
-        <argument ref="nodeStatusCalculatorManager" />
+        <argument ref="nodeStatusCalculator" />
     </bean>
     <service ref="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService">
         <service-properties>
