@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assume;
@@ -46,9 +47,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,7 +156,6 @@ public class MonitorsListCommandIT {
     }
 
     public List<String> listAndVerifyMonitors(String host, InetSocketAddress sshAddr) throws Exception {
-        List<String> unmatchedMonitors = new ArrayList<>();
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
             // List the monitors
             PrintStream pipe = sshClient.openShell();
@@ -176,13 +176,11 @@ public class MonitorsListCommandIT {
             LOG.info("Found monitors: {}", monitors);
 
             // Verify
-            for (String monitorName : expectedMonitors) {
-                if (!monitors.contains(monitorName)) {
-                    unmatchedMonitors.add(monitorName);
-                }
-            }
+            return expectedMonitors.stream().filter(e -> {
+                // If no line matches the expected value, return it 
+                return monitors.stream().noneMatch(s -> s.contains(e));
+            }).collect(Collectors.toList());
         }
-        return unmatchedMonitors;
     }
 
 }

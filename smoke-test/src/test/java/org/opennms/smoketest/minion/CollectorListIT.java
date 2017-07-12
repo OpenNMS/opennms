@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assume;
@@ -123,7 +124,6 @@ public class CollectorListIT {
     }
 
     public List<String> listAndVerifyCollectors(InetSocketAddress sshAddr, Set<String> expectedCollectors) throws Exception {
-        List<String> unmatchedCollectors = new ArrayList<>();
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
             // List the collectors
             PrintStream pipe = sshClient.openShell();
@@ -144,13 +144,11 @@ public class CollectorListIT {
             LOG.info("Found collectors: {}", collectors);
 
             // Verify
-            for (String expectedCollector : expectedCollectors) {
-                if (!collectors.contains(expectedCollector)) {
-                    unmatchedCollectors.add(expectedCollector);
-                }
-            }
+            return expectedCollectors.stream().filter(e -> {
+                // If no line matches the expected value, return it 
+                return collectors.stream().noneMatch(s -> s.contains(e));
+            }).collect(Collectors.toList());
         }
-        return unmatchedCollectors;
     }
 
 }

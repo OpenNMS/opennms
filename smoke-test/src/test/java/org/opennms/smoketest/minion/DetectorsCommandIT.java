@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assume;
@@ -154,7 +155,6 @@ public class DetectorsCommandIT {
     }
 
     public List<String> listAndVerifyDetectors(String host, InetSocketAddress sshAddr) throws Exception {
-        List<String> unmatchedDetectors = new ArrayList<>();
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
             // List the detectors
             PrintStream pipe = sshClient.openShell();
@@ -178,13 +178,11 @@ public class DetectorsCommandIT {
             LOG.info("Found detectors: {}",  detectorMap);
 
             // Verify
-            for (String detectorName : expectedDetectors.keySet()) {
-                if (!detectorMap.containsKey(detectorName)) {
-                    unmatchedDetectors.add(detectorName);
-                }
-            }
+            return expectedDetectors.keySet().stream().filter(e -> {
+                // If no line matches the expected value, return it 
+                return detectorMap.keySet().stream().noneMatch(s -> s.contains(e));
+            }).collect(Collectors.toList());
         }
-        return unmatchedDetectors;
     }
 
 }
