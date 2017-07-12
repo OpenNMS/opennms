@@ -28,28 +28,24 @@
 
 package org.opennms.smoketest;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXB;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
@@ -323,6 +319,35 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
         }
+    }
+
+    /**
+     * The information of the Topology
+     */
+    public static class TopologyInfo {
+        private final OpenNMSSeleniumTestCase testCase;
+
+        public TopologyInfo(OpenNMSSeleniumTestCase testCase) {
+           this.testCase = Objects.requireNonNull(testCase);
+       }
+
+       public String getTitle() {
+           try {
+               testCase.setImplicitWait(1, TimeUnit.SECONDS);
+               return testCase.findElementByXpath("//*[@id='topologyInfo']/*[1]").getText();
+           } finally {
+               testCase.setImplicitWait();
+           }
+       }
+
+       public String getDescription() {
+           try {
+               testCase.setImplicitWait(1, TimeUnit.SECONDS);
+               return testCase.findElementByXpath("//*[@id='topologyInfo']/*[2]").getText();
+           } finally {
+               testCase.setImplicitWait();
+           }
+       }
     }
 
     /**
@@ -651,6 +676,10 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
         }
+
+        public TopologyInfo getTopologyInfo() {
+            return new TopologyInfo(testCase);
+        }
     }
 
     public static class SaveLayoutButton {
@@ -791,6 +820,78 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         Assert.assertEquals(1, topologyUiPage.search("127.0.0.*").countItemsThatContain("127.0.0.1"));
     }
 
+    /**
+     * This method allows to test whether the PathOutageProvider correctly reacts to changes of the SemanticZoomLevel
+     */
+    @Test
+    public void verifyPathOutageSemanticZoomLevel() throws IOException, InterruptedException {
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+                "   <node foreign-id=\"tests-1\" node-label=\"Node-1\">" +
+                "       <interface ip-addr=\"8.8.8.8\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-2\" node-label=\"Node-2\" parent-node-label=\"Node-1\">" +
+                "       <interface ip-addr=\"250.25.86.11\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-3\" node-label=\"Node-3\" parent-node-label=\"Node-2\">" +
+                "       <interface ip-addr=\"77.15.8.98\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-4\" node-label=\"Node-4\" parent-node-label=\"Node-2\">" +
+                "       <interface ip-addr=\"11.100.32.32\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-5\" node-label=\"Node-5\" parent-node-label=\"Node-3\">" +
+                "       <interface ip-addr=\"94.37.11.135\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 5);
+        new TopologyReloadEvent(this).send();
+
+        topologyUiPage.selectTopologyProvider(TopologyProvider.PATH_OUTAGE);
+        topologyUiPage.clearFocus();
+        topologyUiPage.setSzl(1);
+        topologyUiPage.search("Node-3").selectItemThatContains("Node-3");
+        int numFocusVertices_szl1 = topologyUiPage.getVisibleVertices().size();
+        topologyUiPage.setSzl(2);
+        int numFocusVertices_szl2 = topologyUiPage.getVisibleVertices().size();
+        Assert.assertNotEquals(numFocusVertices_szl1, numFocusVertices_szl2);
+    }
+
+    @Test
+    public void verifyPathOutageTopologyInfo() {
+        topologyUiPage.selectTopologyProvider(TopologyProvider.PATH_OUTAGE);
+        Assert.assertThat(topologyUiPage.getTopologyInfo().getTitle(), not(containsString("Undefined")));
+        Assert.assertThat(topologyUiPage.getTopologyInfo().getDescription(), not(containsString("No description available")));
+    }
+
+    /**
+     * This method is used to block and wait for any transitions to occur.
+     * This should be used after adding or removing vertices from focus and/or
+     * changing the SZL.
+     */
+    public static void waitForTransition() {
+        try {
+            // TODO: Find a better way that does not require an explicit sleep
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
     private void createDummyNode() throws InterruptedException, IOException {
         // Create Dummy Node
         final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
@@ -808,29 +909,6 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 "   </node>" +
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 1);
-
-        // Send an event to force reload of topology
-        final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
-        builder.setTime(new Date());
-        builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            JAXB.marshal(builder.getEvent(), outputStream);
-            sendPost("/rest/events", new String(outputStream.toByteArray()), 204);
-        }
-        Thread.sleep(5000); // Wait to allow the event to be processed
-    }
-
-    /**
-     * This method is used to block and wait for any transitions to occur.
-     * This should be used after adding or removing vertices from focus and/or
-     * changing the SZL.
-     */
-    public static void waitForTransition() {
-        try {
-            // TODO: Find a better way that does not require an explicit sleep
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            throw Throwables.propagate(e);
-        }
+        new TopologyReloadEvent(this).send();
     }
 }

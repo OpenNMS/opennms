@@ -23,6 +23,7 @@
     <module>runtime-base</module>
     <module>runtime-browsers</module>
     <module>runtime-bsm</module>
+    <module>runtime-pathoutage</module>
     <module>runtime-graphml</module>
     <module>runtime-linkd</module>
     <module>runtime-vmware</module>

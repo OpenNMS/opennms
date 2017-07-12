@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,45 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.info.item;
+package org.opennms.features.topology.plugins.topo.pathoutage;
 
-import com.vaadin.ui.Component;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.LevelAware;
+import org.opennms.netmgt.model.OnmsNode;
 
 /**
- * A general item to show up in the info panel.
+ * Vertex class for the {@link PathOutageProvider} object
  */
-public interface InfoPanelItem extends Comparable<InfoPanelItem> {
-    /**
-     * The vaadin component displayed to the user.
-     *
-     * @return a component
-     */
-    Component getComponent();
+class PathOutageVertex extends AbstractVertex implements LevelAware {
 
-    /**
-     * The title displayed to the user.
-     *
-     * @return a short title string
-     */
-    String getTitle();
+	private int level;
 
-    /**
-     * The order of the item in which it should occur.
-     *
-     * @return a number used to sort the contribution
-     */
-    int getOrder();
+	public PathOutageVertex(OnmsNode node) {
+		super(PathOutageProvider.NAMESPACE, String.valueOf(node.getId()), node.getLabel());
+		setNodeID(node.getId());
+		this.level = 0;
+		this.setIconKey("pathoutage.default");
+	}
 
-    /**
-     * The id of the component.
-     *
-     * @return the id of the component.
-     */
-    default String getId() {
-        return null;
-    }
+	@Override
+	public int getLevel() {
+		return this.level;
+	}
 
-    default int compareTo(final InfoPanelItem that) {
-        return Integer.compare(this.getOrder(), that.getOrder());
-    }
+	public void setLevel(int level) {
+		this.level = level;
+	}
 }
