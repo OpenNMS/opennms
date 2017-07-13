@@ -27,14 +27,28 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.service;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
 import org.opennms.features.vaadin.surveillanceviews.model.Category;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
@@ -66,18 +80,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.Executors;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * Service class that encapsulate helper methods for surveillance views.
@@ -267,41 +271,19 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     private static String createQuery(final String nodeIdProperty, final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
         StringBuffer stringBuffer = new StringBuffer();
 
-        boolean first = true;
-
         stringBuffer.append(nodeIdProperty + " in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
 
-        for (OnmsCategory onmsCategory : rowCategories) {
-
-            if (first) {
-                stringBuffer.append("'");
-                first = false;
-            } else {
-                stringBuffer.append(",'");
-            }
-
-            stringBuffer.append(onmsCategory.getName());
-            stringBuffer.append("'");
-        }
+        String[] questionMarks = new String[rowCategories.size()];
+        Arrays.fill(questionMarks, "?");
+        stringBuffer.append(String.join(",", questionMarks));
 
         stringBuffer.append("))");
 
-        first = true;
-
         stringBuffer.append("and " + nodeIdProperty + " in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
 
-        for (OnmsCategory onmsCategory : colCategories) {
-
-            if (first) {
-                stringBuffer.append("'");
-                first = false;
-            } else {
-                stringBuffer.append(",'");
-            }
-
-            stringBuffer.append(onmsCategory.getName());
-            stringBuffer.append("'");
-        }
+        questionMarks = new String[colCategories.size()];
+        Arrays.fill(questionMarks, "?");
+        stringBuffer.append(String.join(",", questionMarks));
 
         stringBuffer.append("))");
 
@@ -317,8 +299,20 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
             @Override
             public List<OnmsNode> doInTransaction(TransactionStatus transactionStatus) {
                 CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class);
+
+                List<String> parameters = new ArrayList<>(rowCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+                parameters.addAll(colCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+
+                Type[] types = new Type[parameters.size()];
+                Arrays.fill(types, Type.STRING);
+
                 // Restrict on OnmsNode.nodeId
-                criteriaBuilder.sql(createQuery("{alias}.nodeId", rowCategories, colCategories));
+                criteriaBuilder.sql(
+                    createQuery("{alias}.nodeId", rowCategories, colCategories),
+                    parameters.toArray(new String[parameters.size()]),
+                    types
+                );
+
                 return m_nodeDao.findMatching(criteriaBuilder.toCriteria());
             }
         });
@@ -340,8 +334,18 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 criteriaBuilder.limit(100);
                 criteriaBuilder.distinct();
 
+                List<String> parameters = new ArrayList<>(rowCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+                parameters.addAll(colCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+
+                Type[] types = new Type[parameters.size()];
+                Arrays.fill(types, Type.STRING);
+
                 // Restrict on OnmsAlarm.nodeId
-                criteriaBuilder.sql(createQuery("{alias}.nodeId", rowCategories, colCategories));
+                criteriaBuilder.sql(
+                    createQuery("{alias}.nodeId", rowCategories, colCategories),
+                    parameters.toArray(new String[parameters.size()]),
+                    types
+                );
 
                 return m_alarmDao.findMatching(criteriaBuilder.toCriteria());
             }
@@ -397,8 +401,18 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 serviceCriteriaBuilder.ne("ipInterface.isManaged", "D");
                 serviceCriteriaBuilder.ne("node.type", "D");
 
-                // HACK: Hibernate aliases 'node' as 'node2_' so we need to use this for the statement.
-                serviceCriteriaBuilder.sql(createQuery("node2_.nodeId", rowCategories, colCategories));
+                List<String> parameters = new ArrayList<>(rowCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+                parameters.addAll(colCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+
+                Type[] types = new Type[parameters.size()];
+                Arrays.fill(types, Type.STRING);
+
+                serviceCriteriaBuilder.sql(
+                    // HACK: Hibernate aliases 'node' as 'node2_' so we need to use this for the statement.
+                    createQuery("node2_.nodeId", rowCategories, colCategories),
+                    parameters.toArray(new String[parameters.size()]),
+                    types
+                );
 
                 return getNodeListForCriteria(serviceCriteriaBuilder.toCriteria(), outageCriteriaBuilder.toCriteria());
             }
@@ -644,8 +658,20 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNotification.class);
 
         criteriaBuilder.alias("node", "node");
+
+        final List<String> parameters = new ArrayList<>(rowCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+        parameters.addAll(colCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+
+        final Type[] types = new Type[parameters.size()];
+        Arrays.fill(types, Type.STRING);
+
         // Restrict on OnmsNotification.nodeId
-        criteriaBuilder.sql(createQuery("{alias}.nodeId", rowCategories, colCategories));
+        criteriaBuilder.sql(
+            createQuery("{alias}.nodeId", rowCategories, colCategories),
+            parameters.toArray(new String[parameters.size()]),
+            types
+        );
+
         criteriaBuilder.ne("node.type", "D");
         criteriaBuilder.orderBy("pageTime", false);
 
