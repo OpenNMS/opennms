@@ -28,15 +28,16 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -45,7 +46,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -58,10 +58,10 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
     private static class LoopDetectionCriteria extends Criteria {
         private final Set<VertexRef> seen;
 
-        private LoopDetectionCriteria(final LoopDetectionCriteria other,
+        private LoopDetectionCriteria(final LoopDetectionCriteria that,
                                      final VertexRef vertex) {
             this();
-            this.seen.addAll(other.seen);
+            this.seen.addAll(that.seen);
             this.seen.add(vertex);
         }
 
@@ -104,7 +104,7 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
         }
 
         public LoopDetectionCriteria with(final VertexRef vertex) {
-            return new LoopDetectionCriteria(this, vertex);
+            return new LoopDetectionCriteria(this, Objects.requireNonNull(vertex));
         }
     }
 
@@ -129,40 +129,57 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
                                                                                                    c -> c instanceof LoopDetectionCriteria,
                                                                                                    new LoopDetectionCriteria());
 
-        final Map<VertexRef, GraphMLVertexStatus> statuses = Maps.newHashMap();
 
+
+        // Build map from namespace to opposite vertices
+        final Multimap<String, VertexRef> oppositeVertices = HashMultimap.create();
+        for (final VertexRef sourceVertex : vertices) {
+            // Filter out loops
+            if (loopDetectionCriteria.contains(sourceVertex)) {
+                LOG.error("Loop detected with: {}:{}", sourceVertex.getNamespace(), sourceVertex.getId());
+                continue;
+            }
+
+            for (VertexRef targetVertex : this.provider.getOppositeVertices(sourceVertex)) {
+                oppositeVertices.put(targetVertex.getNamespace(), targetVertex);
+            }
+        }
+
+        // Find and call status provider for each namespace and get result per opposite vertex
+        final Map<VertexRef, Status> targetStatuses = Maps.newHashMap();
         try {
             final Collection<ServiceReference<StatusProvider>> statusProviderReferences = this.bundleContext.getServiceReferences(StatusProvider.class, null);
-
             for (final ServiceReference<StatusProvider> statusProviderReference : statusProviderReferences) {
                 try {
                     final StatusProvider statusProvider = bundleContext.getService(statusProviderReference);
 
-                    for (final VertexRef vertex : vertices) {
-                        if (loopDetectionCriteria.contains(vertex)) {
-                            LOG.error("Loop detected with: {}:{}", vertex.getNamespace(), vertex.getId());
-                            continue;
+                    for (final Map.Entry<String, Collection<VertexRef>> e : oppositeVertices.asMap().entrySet()) {
+                        if (statusProvider.contributesTo(e.getKey())) {
+                            targetStatuses.putAll(statusProvider.getStatusForVertices(
+                                                  this.provider.getGraphProviderBy(e.getKey()),
+                                                  e.getValue(),
+                                                  new Criteria[]{loopDetectionCriteria.with(null)}));
                         }
-
-                        GraphMLVertexStatus mergedStatus = statuses.getOrDefault(vertex, new GraphMLVertexStatus());
-                        for (VertexRef childVertex : this.provider.getOppositeVertices(vertex)) {
-                            if (statusProvider.contributesTo(childVertex.getNamespace())) {
-                                final GraphMLVertexStatus childStatus = (GraphMLVertexStatus) statusProvider.getStatusForVertices(
-                                        this.provider.getGraphProviderBy(childVertex.getNamespace()),
-                                        Collections.singleton(childVertex),
-                                        new Criteria[] {loopDetectionCriteria.with(vertex)}).get(childVertex);
-                                mergedStatus = GraphMLVertexStatus.merge(mergedStatus, childStatus);
-                            }
-                        }
-                        statuses.put(vertex, mergedStatus);
                     }
 
                 } finally {
                     bundleContext.ungetService(statusProviderReference);
                 }
             }
-
         } catch (final InvalidSyntaxException e) {
+        }
+
+        // Merge statuses from targets to sources
+        final Map<VertexRef, GraphMLVertexStatus> statuses = Maps.newHashMap();
+        for (final VertexRef sourceVertex : vertices) {
+            GraphMLVertexStatus mergedStatus = new GraphMLVertexStatus();
+
+            for (VertexRef targetVertex : this.provider.getOppositeVertices(sourceVertex)) {
+                if (targetStatuses.containsKey(targetVertex)) {
+                    mergedStatus = GraphMLVertexStatus.merge(mergedStatus, (GraphMLVertexStatus) targetStatuses.get(targetVertex));
+                }
+            }
+            statuses.put(sourceVertex, mergedStatus);
         }
 
         return statuses;
