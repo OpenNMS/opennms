@@ -16,7 +16,7 @@
         return list;
     };
 
-    angular.module(MODULE_NAME, [ 'ngRoute', 'ngResource', 'ui.checkbox', 'ui.bootstrap', 'onmsList' ])
+    angular.module(MODULE_NAME, [ 'angular-loading-bar', 'ngRoute', 'ngResource', 'ui.checkbox', 'ui.bootstrap', 'onmsList' ])
         .filter('severity', function() {
             return function(input) {
                 input = input || '';
