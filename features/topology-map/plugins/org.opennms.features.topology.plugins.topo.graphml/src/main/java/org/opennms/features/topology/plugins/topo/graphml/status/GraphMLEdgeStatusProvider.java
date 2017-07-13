@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.features.topology.plugins.topo.graphml.status;
 
 import org.opennms.features.topology.api.info.MeasurementsWrapper;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -36,11 +36,11 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdge;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.features.topology.plugins.topo.graphml.internal.Scripting;
 import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;

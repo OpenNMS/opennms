@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.features.topology.plugins.topo.graphml.status;
 
 import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.info.MeasurementsWrapper;
@@ -36,6 +36,7 @@ import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertex;
 import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.features.topology.plugins.topo.graphml.internal.Scripting;
@@ -54,18 +55,18 @@ import java.util.stream.Collectors;
 
 public class GraphMLScriptVertexStatusProvider implements StatusProvider {
 
-    private final GraphMLTopologyProvider provider;
+    private final String namespace;
     private final AlarmSummaryWrapper alarmSummaryWrapper;
 
     private final GraphMLServiceAccessor serviceAccessor;
     private final Scripting<GraphMLVertex, GraphMLVertexStatus> scripting;
 
-    public GraphMLScriptVertexStatusProvider(final GraphMLTopologyProvider provider,
+    public GraphMLScriptVertexStatusProvider(final String namespace,
                                              final AlarmSummaryWrapper alarmSummaryWrapper,
                                              final ScriptEngineManager scriptEngineManager,
                                              final GraphMLServiceAccessor serviceAccessor,
                                              final Path scriptPath) {
-        this.provider = Objects.requireNonNull(provider);
+        this.namespace = Objects.requireNonNull(namespace);
         this.alarmSummaryWrapper = Objects.requireNonNull(alarmSummaryWrapper);
 
         this.serviceAccessor = Objects.requireNonNull(serviceAccessor);
@@ -76,11 +77,11 @@ public class GraphMLScriptVertexStatusProvider implements StatusProvider {
                                          GraphMLVertexStatus::merge);
     }
 
-    public GraphMLScriptVertexStatusProvider(final GraphMLTopologyProvider provider,
+    public GraphMLScriptVertexStatusProvider(final String namespace,
                                              final AlarmSummaryWrapper alarmSummaryWrapper,
                                              final ScriptEngineManager scriptEngineManager,
                                              final GraphMLServiceAccessor serviceAccessor) {
-        this(provider,
+        this(namespace,
              alarmSummaryWrapper,
              scriptEngineManager,
              serviceAccessor,
@@ -123,11 +124,11 @@ public class GraphMLScriptVertexStatusProvider implements StatusProvider {
 
     @Override
     public String getNamespace() {
-        return provider.getVertexNamespace();
+        return this.namespace;
     }
 
     @Override
     public boolean contributesTo(String namespace) {
-        return getNamespace().equals(namespace);
+        return this.getNamespace().equals(namespace);
     }
 }

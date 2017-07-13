@@ -44,15 +44,15 @@ import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLDefaultVertexStatusProvider;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdgeStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLDefaultVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLEdgeStatusProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLPropagateVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLPropagateVertexStatusProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.internal.scripting.OSGiScriptEngineManager;
 import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLScriptVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLScriptVertexStatusProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -127,20 +127,20 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 					// Vertex Status Provider
 					// Only add status provider if explicitly set in GraphML document
 					final StatusProvider statusProvider;
-					switch (rawTopologyProvider.vertexStatusProvider()) {
+					switch (rawTopologyProvider.getVertexStatusProviderType()) {
 						case NO_STATUS_PROVIDER:
 							statusProvider = null;
 							break;
 
 						case DEFAULT_STATUS_PROVIDER:
 							statusProvider = new GraphMLDefaultVertexStatusProvider(
-									rawTopologyProvider,
+									rawTopologyProvider.getVertexNamespace(),
 									(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds));
 							break;
 
 						case SCRIPT_STATUS_PROVIDER:
 							statusProvider = new GraphMLScriptVertexStatusProvider(
-									rawTopologyProvider,
+									rawTopologyProvider.getVertexNamespace(),
 									(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds),
 									scriptEngineManager,
 									m_serviceAccessor);
@@ -148,10 +148,9 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 						case PROPAGATE_STATUS_PROVIDER:
 							statusProvider = new GraphMLPropagateVertexStatusProvider(
-									rawTopologyProvider,
-									m_bundleContext,
-									(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds),
-									m_serviceAccessor);
+									rawTopologyProvider.getVertexNamespace(),
+									metaTopologyProvider,
+									m_bundleContext);
 							break;
 
 						default:

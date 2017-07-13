@@ -81,7 +81,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     private final String preferredLayout;
     private final FocusStrategy focusStrategy;
     private final List<String> focusIds;
-    private final Object vertexStatusProvider;
+    private final VertexStatusProviderType vertexStatusProviderType;
 
     public GraphMLTopologyProvider(final GraphMLMetaTopologyProvider metaTopologyProvider,
                                    final GraphMLGraph graph,
@@ -111,7 +111,30 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         focusStrategy = getFocusStrategy(graph);
         focusIds = getFocusIds(graph);
         preferredLayout = graph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
-        vertexStatusProvider = graph.<Object>getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
+
+        final Object vertexStatusProviderType = graph.<Object>getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
+        if (vertexStatusProviderType instanceof Boolean) {
+            if (vertexStatusProviderType == Boolean.TRUE) {
+                this.vertexStatusProviderType = VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
+            } else {
+                this.vertexStatusProviderType = VertexStatusProviderType.NO_STATUS_PROVIDER;
+            }
+
+        } else if (vertexStatusProviderType instanceof String) {
+            if ("default".equalsIgnoreCase((String)vertexStatusProviderType)) {
+                this.vertexStatusProviderType = VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
+            } else if ("script".equalsIgnoreCase((String)vertexStatusProviderType)) {
+                this.vertexStatusProviderType = VertexStatusProviderType.SCRIPT_STATUS_PROVIDER;
+            } else if ("propagate".equalsIgnoreCase((String)vertexStatusProviderType)) {
+                this.vertexStatusProviderType = VertexStatusProviderType.PROPAGATE_STATUS_PROVIDER;
+            } else {
+                LOG.warn("Unknown GraphML vertex status provider type: {}", vertexStatusProviderType);
+                this.vertexStatusProviderType = VertexStatusProviderType.NO_STATUS_PROVIDER;
+            }
+        } else {
+            this.vertexStatusProviderType = VertexStatusProviderType.NO_STATUS_PROVIDER;
+        }
+
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
             LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
         }
@@ -162,10 +185,6 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         return Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL;
     }
 
-    public GraphMLMetaTopologyProvider getMetaTopologyProvider() {
-        return this.metaTopologyProvider;
-    }
-
     @Override
     public void refresh() {
         // TODO: How to handle refresh()?
@@ -214,26 +233,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
     }
 
-    public VertexStatusProviderType vertexStatusProvider() {
-        if (this.vertexStatusProvider instanceof Boolean) {
-            if (this.vertexStatusProvider == Boolean.TRUE) {
-                return VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
-            } else {
-                return VertexStatusProviderType.NO_STATUS_PROVIDER;
-            }
-
-        } else if (this.vertexStatusProvider instanceof String) {
-            if ("default".equalsIgnoreCase((String)this.vertexStatusProvider)) {
-                return VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
-            }
-            if ("script".equalsIgnoreCase((String)this.vertexStatusProvider)) {
-                return VertexStatusProviderType.SCRIPT_STATUS_PROVIDER;
-            }
-            if ("propagate".equalsIgnoreCase((String)this.vertexStatusProvider)) {
-                return VertexStatusProviderType.PROPAGATE_STATUS_PROVIDER;
-            }
-        }
-
-        return VertexStatusProviderType.NO_STATUS_PROVIDER;
+    public VertexStatusProviderType getVertexStatusProviderType() {
+        return this.vertexStatusProviderType;
     }
 }

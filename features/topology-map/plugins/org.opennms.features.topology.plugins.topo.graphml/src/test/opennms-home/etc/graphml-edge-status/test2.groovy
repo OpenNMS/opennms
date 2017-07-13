@@ -1,5 +1,5 @@
 import org.opennms.netmgt.model.OnmsSeverity
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdgeStatus
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLEdgeStatus
 
 return new GraphMLEdgeStatus() \
     .severity(OnmsSeverity.NORMAL) \

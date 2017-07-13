@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.features.topology.plugins.topo.graphml.status;
 
 import com.google.common.collect.Maps;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -34,8 +34,7 @@ import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
-import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -47,21 +46,16 @@ import java.util.Objects;
 
 public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
 
-    private final GraphMLTopologyProvider provider;
+    private final String namespace;
+    private final GraphMLMetaTopologyProvider provider;
     private final BundleContext bundleContext;
-    private final AlarmSummaryWrapper alarmSummaryWrapper;
 
-    private final GraphMLServiceAccessor serviceAccessor;
-
-    public GraphMLPropagateVertexStatusProvider(final GraphMLTopologyProvider provider,
-                                                final BundleContext bundleContext,
-                                                final AlarmSummaryWrapper alarmSummaryWrapper,
-                                                final GraphMLServiceAccessor serviceAccessor) {
+    public GraphMLPropagateVertexStatusProvider(final String namespace,
+                                                final GraphMLMetaTopologyProvider provider,
+                                                final BundleContext bundleContext) {
+        this.namespace = Objects.requireNonNull(namespace);
         this.provider = Objects.requireNonNull(provider);
         this.bundleContext = Objects.requireNonNull(bundleContext);
-        this.alarmSummaryWrapper = Objects.requireNonNull(alarmSummaryWrapper);
-
-        this.serviceAccessor = Objects.requireNonNull(serviceAccessor);
     }
 
     @Override
@@ -80,10 +74,10 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
 
                     for (final VertexRef vertex : vertices) {
                         GraphMLVertexStatus mergedStatus = statuses.getOrDefault(vertex, new GraphMLVertexStatus());
-                        for (VertexRef childVertex : this.provider.getMetaTopologyProvider().getOppositeVertices(vertex)) {
+                        for (VertexRef childVertex : this.provider.getOppositeVertices(vertex)) {
                             if (statusProvider.contributesTo(childVertex.getNamespace())) {
                                 final GraphMLVertexStatus childStatus = (GraphMLVertexStatus) statusProvider.getStatusForVertices(
-                                        this.provider.getMetaTopologyProvider().getGraphProviderBy(childVertex.getNamespace()),
+                                        this.provider.getGraphProviderBy(childVertex.getNamespace()),
                                         Collections.singleton(childVertex),
                                         new Criteria[0]).get(childVertex);
                                 mergedStatus = GraphMLVertexStatus.merge(mergedStatus, childStatus);
@@ -105,11 +99,11 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
 
     @Override
     public String getNamespace() {
-        return provider.getVertexNamespace();
+        return this.namespace;
     }
 
     @Override
     public boolean contributesTo(String namespace) {
-        return getNamespace().equals(namespace);
+        return this.getNamespace().equals(namespace);
     }
 }

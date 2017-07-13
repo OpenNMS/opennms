@@ -52,6 +52,8 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLEdgeStatus;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLEdgeStatusProvider;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -129,7 +131,7 @@ public class GraphMLEdgeStatusProviderIT {
         // Testing status merging from two scripts
         assertThat(status, is(notNullValue()));
         assertThat(status, is(hasEntry(edgeRef, new GraphMLEdgeStatus().severity(OnmsSeverity.WARNING)
-                                                    .style("stroke", "pink")
-                                                    .style("stroke-width", "3em"))));
+                                                                       .style("stroke", "pink")
+                                                                       .style("stroke-width", "3em"))));
     }
 }

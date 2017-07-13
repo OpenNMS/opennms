@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.features.topology.plugins.topo.graphml.status;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,45 +39,44 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertex;
 import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
 import com.google.common.collect.Maps;
 
 public class GraphMLDefaultVertexStatusProvider implements StatusProvider {
 
-    private final GraphMLTopologyProvider provider;
+    private final String namespace;
     private final AlarmSummaryWrapper alarmSummaryWrapper;
 
-    public GraphMLDefaultVertexStatusProvider(final GraphMLTopologyProvider provider,
+    public GraphMLDefaultVertexStatusProvider(final String namespace,
                                               final AlarmSummaryWrapper alarmSummaryWrapper) {
-        this.provider = Objects.requireNonNull(provider);
+        this.namespace = Objects.requireNonNull(namespace);
         this.alarmSummaryWrapper = Objects.requireNonNull(alarmSummaryWrapper);
     }
 
     @Override
     public boolean contributesTo(String namespace) {
-        return getNamespace().equals(namespace);
+        return this.getNamespace().equals(namespace);
     }
 
     @Override
     public String getNamespace() {
-        return provider.getVertexNamespace();
+        return this.namespace;
     }
 
     @Override
     public Map<? extends VertexRef, ? extends Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
         // All vertices for the current vertexProvider
         final List<GraphMLVertex> graphMLVertices = vertices.stream()
-                .filter(eachVertex -> contributesTo(eachVertex.getNamespace()) && eachVertex instanceof GraphMLVertex)
-                .map(eachVertex -> (GraphMLVertex) eachVertex)
-                .collect(Collectors.toList());
+                                                            .filter(eachVertex -> contributesTo(eachVertex.getNamespace()) && eachVertex instanceof GraphMLVertex)
+                                                            .map(eachVertex -> (GraphMLVertex) eachVertex)
+                                                            .collect(Collectors.toList());
 
         // All vertices associated with a node id
         final Map<Integer, VertexRef> nodeIdMap = graphMLVertices.stream()

@@ -31,7 +31,6 @@ package org.opennms.features.topology.plugins.topo.graphml;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,12 +53,15 @@ import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLDefaultVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLPropagateVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLScriptVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLVertexStatus;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -69,7 +71,6 @@ import org.opennms.netmgt.model.alarm.AlarmSummary;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -176,9 +177,9 @@ public class GraphMLVertexStatusProviderIT {
 
         final GraphMLTopologyProvider topologyProvider = metaTopoProvider.getRawTopologyProvider("acme:regions");
         final GraphMLPropagateVertexStatusProvider statusProvider = new GraphMLPropagateVertexStatusProvider(topologyProvider,
-                                                                                                       bundleContext,
-                                                                                                       this.alarmSummaryWrapper,
-                                                                                                       this.serviceAccessor);
+                                                                                                             bundleContext,
+                                                                                                             this.alarmSummaryWrapper,
+                                                                                                             this.serviceAccessor);
 
         List<VertexRef> vertices = topologyProvider.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
         Assert.assertEquals(4, vertices.size());
