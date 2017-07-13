@@ -28,6 +28,9 @@
 
 package org.opennms.features.status.api.bsm;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.opennms.features.status.api.Query;
 import org.opennms.features.status.api.StatusEntity;
 import org.opennms.features.status.api.StatusEntityWrapper;
@@ -40,9 +43,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.utils.QueryParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BusinessServiceStatusService {
@@ -79,10 +79,8 @@ public class BusinessServiceStatusService {
         final BusinessServiceSearchCriteriaBuilder criteriaBuilder = new BusinessServiceSearchCriteriaBuilder();
 
         if (query.getSeverityFilter() != null && !query.getSeverityFilter().getSeverities().isEmpty()) {
-            if (query.getSeverityFilter().getSeverities().size() == 1) {
-                final List<Status> statusList = query.getSeverityFilter().getSeverities().stream().map(eachSeverity -> Status.of(eachSeverity.name())).collect(Collectors.toList());
-                criteriaBuilder.inSeverity(statusList);
-            }
+            final List<Status> statusList = query.getSeverityFilter().getSeverities().stream().map(eachSeverity -> Status.of(eachSeverity.name())).collect(Collectors.toList());
+            criteriaBuilder.inSeverity(statusList);
         } else {
             criteriaBuilder.greaterOrEqualSeverity(Status.NORMAL);
         }

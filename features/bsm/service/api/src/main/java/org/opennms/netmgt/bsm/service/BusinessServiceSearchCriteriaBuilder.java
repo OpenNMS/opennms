@@ -238,9 +238,13 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
             s = s.filter(p -> p.getAttributes().containsKey(pair.getA()) && p.getAttributes().get(pair.getA()).matches(pair.getB()));
         }
 
-        for (Pair<CompareOperator, Status> pair : m_severityFilters) {
-            s = s.filter(p -> pair.getA().check(businessServiceManager.getOperationalStatus(p).compareTo(pair.getB())));
-        }
+        s = s.filter(bs -> {
+            boolean accepted = false;
+            for (Pair<CompareOperator, Status> pair : m_severityFilters) {
+                accepted |= pair.getA().check(businessServiceManager.getOperationalStatus(bs).compareTo(pair.getB()));
+            }
+            return accepted;
+        });
 
         Comparator<BusinessService> comparator = new Comparator<BusinessService>() {
 
@@ -271,12 +275,12 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
 
         s = s.sorted(comparator);
 
-        if (m_limit > 0) {
-            s = s.limit(m_limit);
-        }
-
         if (m_offset > 0) {
             s = s.skip(m_offset);
+        }
+
+        if (m_limit > 0) {
+            s = s.limit(m_limit);
         }
 
         return s.collect(Collectors.toList());
