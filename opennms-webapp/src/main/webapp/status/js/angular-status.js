@@ -199,7 +199,13 @@
 
             // Update severityFilter based on url query
             if ($location.search().severityFilter != undefined) {
-                $scope.severityFilter[$location.search().severityFilter] = true;
+                var severityFilter = $location.search().severityFilter;
+                if (typeof severityFilter === 'string') {
+                    severityFilter = [severityFilter];
+                }
+                angular.forEach(severityFilter, function(severity) {
+                    $scope.severityFilter[severity] = true;
+                });
             }
 
             $scope.$watch('severityFilter', function() {
