@@ -223,6 +223,11 @@ public final class TrapdConfigFactory implements TrapdConfig {
     }
 
     @Override
+    public boolean shouldUseAddressFromVarbind() {
+        return m_config.shouldUseAddressFromVarbind();
+    }
+
+    @Override
     public void update(TrapdConfig config) {
         m_config.setSnmpTrapAddress(config.getSnmpTrapAddress());
         m_config.setSnmpTrapPort(config.getSnmpTrapPort());
@@ -244,5 +249,9 @@ public final class TrapdConfigFactory implements TrapdConfig {
             return newUser;
         }).collect(Collectors.toList());
         m_config.setSnmpv3User(snmpv3Users);
+    }
+
+    public TrapdConfiguration getConfig() {
+        return m_config;
     }
 }
