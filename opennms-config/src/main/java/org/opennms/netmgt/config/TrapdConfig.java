@@ -82,4 +82,6 @@ public interface TrapdConfig {
     int getBatchIntervalMs();
 
     void update(TrapdConfig config);
+
+    boolean shouldUseAddressFromVarbind();
 }
