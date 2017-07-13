@@ -138,7 +138,7 @@ public class GraphMLVertexStatusProviderIT {
     public void testDefaultStatusProvider() throws InvalidGraphException {
         GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
         GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(null, graphML.getGraphs().get(0), new GraphMLServiceAccessor());
-        GraphMLDefaultVertexStatusProvider statusProvider = new GraphMLDefaultVertexStatusProvider(topologyProvider,
+        GraphMLDefaultVertexStatusProvider statusProvider = new GraphMLDefaultVertexStatusProvider(topologyProvider.getVertexNamespace(),
                                                                                                    this.alarmSummaryWrapper);
 
         List<VertexRef> vertices = topologyProvider.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
@@ -165,7 +165,7 @@ public class GraphMLVertexStatusProviderIT {
         metaTopoProvider.load();
 
         final GraphMLTopologyProvider childTopologyProvider = metaTopoProvider.getRawTopologyProvider("acme:markets");
-        final GraphMLDefaultVertexStatusProvider childStatusProvider = new GraphMLDefaultVertexStatusProvider(childTopologyProvider,
+        final GraphMLDefaultVertexStatusProvider childStatusProvider = new GraphMLDefaultVertexStatusProvider(childTopologyProvider.getVertexNamespace(),
                                                                                                          this.alarmSummaryWrapper);
 
         final ServiceReference<StatusProvider> statusProviderReference = EasyMock.niceMock(ServiceReference.class);
@@ -176,10 +176,9 @@ public class GraphMLVertexStatusProviderIT {
         EasyMock.replay(statusProviderReference, bundleContext);
 
         final GraphMLTopologyProvider topologyProvider = metaTopoProvider.getRawTopologyProvider("acme:regions");
-        final GraphMLPropagateVertexStatusProvider statusProvider = new GraphMLPropagateVertexStatusProvider(topologyProvider,
-                                                                                                             bundleContext,
-                                                                                                             this.alarmSummaryWrapper,
-                                                                                                             this.serviceAccessor);
+        final GraphMLPropagateVertexStatusProvider statusProvider = new GraphMLPropagateVertexStatusProvider(topologyProvider.getVertexNamespace(),
+                                                                                                             metaTopoProvider,
+                                                                                                             bundleContext);
 
         List<VertexRef> vertices = topologyProvider.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
         Assert.assertEquals(4, vertices.size());
@@ -199,7 +198,7 @@ public class GraphMLVertexStatusProviderIT {
     public void testScriptStatusProvider() throws InvalidGraphException {
         GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
         GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(null, graphML.getGraphs().get(0), new GraphMLServiceAccessor());
-        GraphMLScriptVertexStatusProvider statusProvider = new GraphMLScriptVertexStatusProvider(topologyProvider,
+        GraphMLScriptVertexStatusProvider statusProvider = new GraphMLScriptVertexStatusProvider(topologyProvider.getVertexNamespace(),
                                                                                                  this.alarmSummaryWrapper,
                                                                                                  new ScriptEngineManager(),
                                                                                                  this.serviceAccessor,

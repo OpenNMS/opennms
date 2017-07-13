@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-class GraphMLVertexStatus extends GraphMLStatus {
+public class GraphMLVertexStatus extends GraphMLStatus {
     private long alarmCount;
 
     public GraphMLVertexStatus(final OnmsSeverity severity,

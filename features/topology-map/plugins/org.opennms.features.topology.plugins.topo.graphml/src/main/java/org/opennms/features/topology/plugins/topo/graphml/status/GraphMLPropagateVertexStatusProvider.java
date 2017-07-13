@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
@@ -35,16 +36,77 @@ import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GraphMLPropagateVertexStatusProvider.class);
+
+    private static class LoopDetectionCriteria extends Criteria {
+        private final Set<VertexRef> seen;
+
+        private LoopDetectionCriteria(final LoopDetectionCriteria other,
+                                     final VertexRef vertex) {
+            this();
+            this.seen.addAll(other.seen);
+            this.seen.add(vertex);
+        }
+
+        public LoopDetectionCriteria() {
+            this.seen = new HashSet<>();
+        }
+
+        public boolean contains(final VertexRef vertex) {
+            return this.seen.contains(vertex);
+        }
+
+
+        @Override
+        public ElementType getType() {
+            return ElementType.VERTEX;
+        }
+
+        @Override
+        public String getNamespace() {
+            return null;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            final LoopDetectionCriteria that = (LoopDetectionCriteria) o;
+
+            return seen.equals(that.seen);
+        }
+
+        @Override
+        public int hashCode() {
+            return seen.hashCode();
+        }
+
+        public LoopDetectionCriteria with(final VertexRef vertex) {
+            return new LoopDetectionCriteria(this, vertex);
+        }
+    }
 
     private final String namespace;
     private final GraphMLMetaTopologyProvider provider;
@@ -63,6 +125,10 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
                                                                            final Collection<VertexRef> vertices,
                                                                            final Criteria[] criteria) {
 
+        final LoopDetectionCriteria loopDetectionCriteria = (LoopDetectionCriteria) Iterables.find(Arrays.asList(criteria),
+                                                                                                   c -> c instanceof LoopDetectionCriteria,
+                                                                                                   new LoopDetectionCriteria());
+
         final Map<VertexRef, GraphMLVertexStatus> statuses = Maps.newHashMap();
 
         try {
@@ -73,13 +139,18 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
                     final StatusProvider statusProvider = bundleContext.getService(statusProviderReference);
 
                     for (final VertexRef vertex : vertices) {
+                        if (loopDetectionCriteria.contains(vertex)) {
+                            LOG.error("Loop detected with: {}:{}", vertex.getNamespace(), vertex.getId());
+                            continue;
+                        }
+
                         GraphMLVertexStatus mergedStatus = statuses.getOrDefault(vertex, new GraphMLVertexStatus());
                         for (VertexRef childVertex : this.provider.getOppositeVertices(vertex)) {
                             if (statusProvider.contributesTo(childVertex.getNamespace())) {
                                 final GraphMLVertexStatus childStatus = (GraphMLVertexStatus) statusProvider.getStatusForVertices(
                                         this.provider.getGraphProviderBy(childVertex.getNamespace()),
                                         Collections.singleton(childVertex),
-                                        new Criteria[0]).get(childVertex);
+                                        new Criteria[] {loopDetectionCriteria.with(vertex)}).get(childVertex);
                                 mergedStatus = GraphMLVertexStatus.merge(mergedStatus, childStatus);
                             }
                         }

@@ -38,31 +38,32 @@ import java.util.Set;
  */
 public interface CollapsibleCriteria {
 
-	String getId();
+    String getId();
 
-	/**
-	 * Check to see whether the Criteria is collapsed or not.
-	 */
-	boolean isCollapsed();
+    /**
+     * Check to see whether the Criteria is collapsed or not.
+     */
+    boolean isCollapsed();
 
-	/**
-	 * Set the collapsed state of the criteria.
-	 * @param collapsed Whether the criteria should be collapsed or not.
-	 */
-	void setCollapsed(boolean collapsed);
+    /**
+     * Set the collapsed state of the criteria.
+     *
+     * @param collapsed Whether the criteria should be collapsed or not.
+     */
+    void setCollapsed(boolean collapsed);
 
-	/**
-	 * Fetch the list of child vertices that should be collapsed
-	 */
-	Set<VertexRef> getVertices();
+    /**
+     * Fetch the list of child vertices that should be collapsed
+     */
+    Set<VertexRef> getVertices();
 
-	/**
-	 * This function returns the vertex that will be used to represent the group when the state is
-	 * set to collapsed.
-	 */
-	Vertex getCollapsedRepresentation();
+    /**
+     * This function returns the vertex that will be used to represent the group when the state is
+     * set to collapsed.
+     */
+    Vertex getCollapsedRepresentation();
 
-	String getLabel();
+    String getLabel();
 
-	String getNamespace();
+    String getNamespace();
 }
