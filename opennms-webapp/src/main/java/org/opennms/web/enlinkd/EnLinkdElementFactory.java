@@ -45,6 +45,7 @@ import javax.servlet.ServletContext;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
@@ -824,10 +825,11 @@ public class EnLinkdElementFactory implements InitializingBean,
         final CriteriaBuilder builder = new CriteriaBuilder(
                                                             OnmsSnmpInterface.class);
         builder.alias("node", "node", JoinType.LEFT_JOIN);
-        builder.sql("snmpifalias = '" + cdpCacheDevicePort
-                            + "' OR snmpifname = '" + cdpCacheDevicePort
-                            + "' OR snmpifdescr = '" + cdpCacheDevicePort
-                            + "'").eq("node.id", nodeid);
+        builder.sql(
+            "snmpifalias = ? OR snmpifname = ? OR snmpifdescr = ?", 
+            new Object[] { cdpCacheDevicePort, cdpCacheDevicePort, cdpCacheDevicePort },
+            new Type[] { Type.STRING, Type.STRING, Type.STRING }
+        ).eq("node.id", nodeid);
         final List<OnmsSnmpInterface> nodes = m_snmpInterfaceDao.findMatching(builder.toCriteria());
 
         if (nodes.size() == 1)

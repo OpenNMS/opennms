@@ -112,6 +112,7 @@ import com.google.common.collect.Sets;
     "classpath*:/META-INF/opennms/component-dao.xml",
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
     "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+    "file:../../../../opennms-webapp-rest/src/test/resources/META-INF/opennms/component-dao.xml",
     "file:../../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
     "file:../../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-common.xml" })
 @JUnitConfigurationEnvironment
