@@ -89,7 +89,7 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
             public TrapLogDTO aggregate(TrapLogDTO oldBucket, TrapInformationWrapper newMessage) {
                 final TrapInformation trapInfo = newMessage.getTrapInformation();
                 if (oldBucket == null) { // no log created yet
-                    oldBucket = new TrapLogDTO(distPoller.getId(), distPoller.getLocation(), trapInfo.getTrapAddress());
+                    oldBucket = new TrapLogDTO(distPoller.getId(), distPoller.getLocation(), TrapUtils.getEffectiveTrapAddress(trapInfo, config.shouldUseAddressFromVarbind()));
                 }
                 final TrapDTO trapDTO = new TrapDTO(trapInfo);
 
