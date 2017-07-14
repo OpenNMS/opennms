@@ -254,8 +254,8 @@
     </feature>
 
     <feature name="java-native-access" description="Java Native Access (JNA)" version="4.2.1">
-      <bundle>wrap:mvn:net.java.dev.jna/jna/4.2.1$Export-Package=com.sun.jna</bundle>
-      <bundle>wrap:mvn:net.java.dev.jna/jna-platform/4.2.1$Export-Package=com.sun.jna.platform</bundle>
+      <bundle>mvn:net.java.dev.jna/jna/4.2.1</bundle>
+      <bundle>mvn:net.java.dev.jna/jna-platform/4.2.1</bundle>
     </feature>
 
     <feature name="javax.mail" description="javax.mail" version="1.4.5">
