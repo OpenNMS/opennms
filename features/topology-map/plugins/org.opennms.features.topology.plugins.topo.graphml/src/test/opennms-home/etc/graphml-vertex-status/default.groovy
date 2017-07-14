@@ -1,4 +1,4 @@
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertexStatus
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLVertexStatus
 import org.opennms.netmgt.model.OnmsSeverity
 
 

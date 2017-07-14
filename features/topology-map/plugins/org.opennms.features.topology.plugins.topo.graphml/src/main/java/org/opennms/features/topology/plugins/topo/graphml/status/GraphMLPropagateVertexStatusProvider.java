@@ -59,10 +59,10 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
         private final Set<VertexRef> seen;
 
         private LoopDetectionCriteria(final LoopDetectionCriteria that,
-                                     final VertexRef vertex) {
+                                      final Collection<VertexRef> vertices) {
             this();
             this.seen.addAll(that.seen);
-            this.seen.add(vertex);
+            this.seen.addAll(vertices);
         }
 
         public LoopDetectionCriteria() {
@@ -103,8 +103,8 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
             return seen.hashCode();
         }
 
-        public LoopDetectionCriteria with(final VertexRef vertex) {
-            return new LoopDetectionCriteria(this, Objects.requireNonNull(vertex));
+        public LoopDetectionCriteria with(final Collection<VertexRef> vertices) {
+            return new LoopDetectionCriteria(this, Objects.requireNonNull(vertices));
         }
     }
 
@@ -125,11 +125,9 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
                                                                            final Collection<VertexRef> vertices,
                                                                            final Criteria[] criteria) {
 
-        final LoopDetectionCriteria loopDetectionCriteria = (LoopDetectionCriteria) Iterables.find(Arrays.asList(criteria),
-                                                                                                   c -> c instanceof LoopDetectionCriteria,
-                                                                                                   new LoopDetectionCriteria());
-
-
+        final LoopDetectionCriteria loopDetectionCriteria = (LoopDetectionCriteria) Iterables.tryFind(Arrays.asList(criteria),
+                                                                                                      c -> c instanceof LoopDetectionCriteria)
+                                                                                             .or(LoopDetectionCriteria::new);
 
         // Build map from namespace to opposite vertices
         final Multimap<String, VertexRef> oppositeVertices = HashMultimap.create();
@@ -158,7 +156,7 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
                             targetStatuses.putAll(statusProvider.getStatusForVertices(
                                                   this.provider.getGraphProviderBy(e.getKey()),
                                                   e.getValue(),
-                                                  new Criteria[]{loopDetectionCriteria.with(null)}));
+                                                  new Criteria[]{loopDetectionCriteria.with(vertices)}));
                         }
                     }
 
