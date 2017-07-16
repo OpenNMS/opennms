@@ -26,34 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.status.api.node.strategy;
+package org.opennms.features.status.api.node.strategy.query;
 
-import java.util.Map;
+import java.util.Objects;
 
-import org.opennms.features.status.api.node.NodeStatusCalculator;
-import org.opennms.features.status.api.node.strategy.query.QueryBuilder;
+import org.opennms.features.status.api.node.strategy.NodeStatusCalculatorConfig;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.springframework.beans.factory.annotation.Autowired;
 
-public class DefaultNodeStatusCalculator implements NodeStatusCalculator {
+public class QueryBuilder {
 
-    @Autowired
-    private GenericPersistenceAccessor genericPersistenceAccessor;
+    private final GenericPersistenceAccessor gpa;
 
-    @Override
-    public Status calculateStatus(NodeStatusCalculatorConfig config) {
-        final Status status = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).status();
-        return status;
+    public QueryBuilder(GenericPersistenceAccessor genericPersistenceAccessor) {
+        this.gpa = Objects.requireNonNull(genericPersistenceAccessor);
     }
 
-    public int countStatus(NodeStatusCalculatorConfig config) {
-        int count = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).count();
-        return count;
-    }
-
-    public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig config) {
-        Map<OnmsSeverity, Long> overview = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).overview();
-        return overview;
+    public <T extends Query> T buildFrom(NodeStatusCalculatorConfig config) {
+        switch(config.getCalculationStrategy()) {
+            case Alarms:    return (T) new AlarmQuery(gpa, config);
+            case Outages:   return (T) new OutageQuery(gpa, config);
+            default:        throw new IllegalStateException("Query for CalculationStrategy is not implemented.");
+        }
     }
 }

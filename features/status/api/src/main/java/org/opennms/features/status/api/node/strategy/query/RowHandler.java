@@ -26,34 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.status.api.node.strategy;
+package org.opennms.features.status.api.node.strategy.query;
 
-import java.util.Map;
+interface RowHandler<T> {
 
-import org.opennms.features.status.api.node.NodeStatusCalculator;
-import org.opennms.features.status.api.node.strategy.query.QueryBuilder;
-import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.springframework.beans.factory.annotation.Autowired;
-
-public class DefaultNodeStatusCalculator implements NodeStatusCalculator {
-
-    @Autowired
-    private GenericPersistenceAccessor genericPersistenceAccessor;
-
-    @Override
-    public Status calculateStatus(NodeStatusCalculatorConfig config) {
-        final Status status = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).status();
-        return status;
-    }
-
-    public int countStatus(NodeStatusCalculatorConfig config) {
-        int count = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).count();
-        return count;
-    }
-
-    public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig config) {
-        Map<OnmsSeverity, Long> overview = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).overview();
-        return overview;
-    }
+    void handle(T row);
 }

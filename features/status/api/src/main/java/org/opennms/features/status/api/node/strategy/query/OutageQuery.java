@@ -26,34 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.status.api.node.strategy;
+package org.opennms.features.status.api.node.strategy.query;
 
-import java.util.Map;
-
-import org.opennms.features.status.api.node.NodeStatusCalculator;
-import org.opennms.features.status.api.node.strategy.query.QueryBuilder;
+import org.opennms.features.status.api.node.strategy.NodeStatusCalculatorConfig;
+import org.opennms.features.status.api.node.strategy.Status;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.springframework.beans.factory.annotation.Autowired;
 
-public class DefaultNodeStatusCalculator implements NodeStatusCalculator {
+public class OutageQuery extends Query {
 
-    @Autowired
-    private GenericPersistenceAccessor genericPersistenceAccessor;
+    public OutageQuery(GenericPersistenceAccessor genericPersistenceAccessor, NodeStatusCalculatorConfig config) {
+        super(genericPersistenceAccessor, config);
+    }
 
     @Override
-    public Status calculateStatus(NodeStatusCalculatorConfig config) {
-        final Status status = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).status();
+    public Status status() {
+        sql = new StringBuilder();
+        sql.append("SELECT ").append(getViewName()).append(".nodeid").append(", ").append(getSeverityColumn()).append(" AS severity ");
+        sql.append("FROM ").append(getViewName()).append(" ");
+        sql.append("JOIN node on ").append(getViewName()).append(".nodeid = node.nodeid ") ;
+
+        applyRestrictions();
+        applyOrder();
+        applyLimitAndOffset();
+
+        final Status status = new Status();
+        executeQuery((RowHandler<Object[]>) columns -> status.add(
+                (int) columns[0], // nodeId
+                OnmsSeverity.get((int) columns[1]) // node status
+        ));
+
         return status;
     }
 
-    public int countStatus(NodeStatusCalculatorConfig config) {
-        int count = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).count();
-        return count;
+    @Override
+    protected String getSeverityColumn() {
+        return "max_outage_severity";
     }
 
-    public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig config) {
-        Map<OnmsSeverity, Long> overview = new QueryBuilder(genericPersistenceAccessor).buildFrom(config).overview();
-        return overview;
+    @Override
+    protected String getViewName() {
+        return "node_outage_status";
     }
+
 }

@@ -49,6 +49,10 @@ public class Status {
         unacknowledgedCountMap.put(id, unacknowledgedCount);
     }
 
+    public void add(int id, OnmsSeverity severity) {
+        add(id, severity, -1, -1);
+    }
+
     public OnmsSeverity getSeverity(int nodeId) {
         return severityMap.get(nodeId);
     }

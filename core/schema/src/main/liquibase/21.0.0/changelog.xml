@@ -4,15 +4,14 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
-  <!-- NMS-9146: Assure that the Default location exists in the database -->
-  <changeSet author="cpape" id="21.0.0-node-status-view">
+  <changeSet author="cpape" id="21.0.0-node-alarm-status-view">
     <preConditions onFail="MARK_RAN">
       <not>
-        <viewExists viewName="node_status"/>
+        <viewExists viewName="node_alarm_status"/>
       </not>
     </preConditions>
     <sql>
-      CREATE VIEW node_status AS (
+      CREATE VIEW node_alarm_status AS (
 
         SELECT
           node.nodeid as nodeid,
@@ -29,14 +28,32 @@
 
           (SELECT COUNT(alarms.alarmid) FROM alarms WHERE alarms.nodeid = node.nodeid and alarms.alarmAckTime IS NULL) AS alarm_count_unack,
 
-          (SELECT count(*) FROM alarms WHERE alarms.nodeid=node.nodeid) AS alarm_count,
-
-          COALESCE(
-            (SELECT MAX(CASE WHEN events.eventSeverity IS NULL OR events.eventSeverity &lt; 3 THEN 3 ELSE events.eventSeverity END) FROM outages JOIN events ON outages.svcLostEventId=events.eventid WHERE events.nodeid=node.nodeid AND outages.svcRegainedEventId IS NULL),
-            3
-          ) AS max_outage_severity
+          (SELECT count(*) FROM alarms WHERE alarms.nodeid=node.nodeid) AS alarm_count
 
         FROM node
+      );
+    </sql>
+  </changeSet>
+  <changeSet author="mvrueden" id="21.0.0-node-outage-status-view">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <viewExists viewName="node_outage_status"/>
+      </not>
+    </preConditions>
+    <sql>
+      CREATE VIEW node_outage_status AS (
+        SELECT
+          node.nodeid,
+          (CASE WHEN severity IS NULL OR severity &lt; 3 THEN 3 ELSE severity END) AS max_outage_severity
+        FROM
+          (
+            SELECT events.nodeid, max(events.eventseverity) AS severity
+            FROM events
+            JOIN outages ON outages.svclosteventid = events.eventid
+            WHERE outages.svcregainedeventid IS NULL
+            GROUP BY events.nodeid
+          ) AS tmp
+        RIGHT JOIN node ON tmp.nodeid = node.nodeid
       );
     </sql>
   </changeSet>
