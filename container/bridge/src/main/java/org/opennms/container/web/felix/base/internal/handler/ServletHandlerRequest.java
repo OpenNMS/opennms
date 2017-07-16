@@ -103,19 +103,16 @@ final class ServletHandlerRequest extends HttpServletRequestWrapper {
         final String requestPathInfo    = req.getPathInfo();
 
         m_servletPath = m_alias;
+        m_contextPath = requestContextPath;
         if ("/".equals(m_servletPath)) {
             m_servletPath = "";
         }
 
         if (requestPathInfo == null) {
-            m_contextPath = req.getContextPath();
-
             if (!"/".equals(m_alias) && requestServletPath.startsWith(m_alias)) {
                 m_pathInfo = requestServletPath.substring(m_alias.length());
             }
         } else {
-            m_contextPath = requestContextPath + requestServletPath;
-
             if (!"/".equals(m_alias) && requestPathInfo.startsWith(m_alias)) {
                 m_pathInfo = requestPathInfo.substring(m_alias.length());
             }
