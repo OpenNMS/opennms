@@ -14,6 +14,9 @@
     <!-- Apache ActiveMQ features -->
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
 
+    <!-- Pax JDBC features -->
+    <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/1.0.1/xml/features</repository>
+
     <!-- ActiveMQ service features -->
 
     <!-- This broker configuration will configure a broker to talk to a remote OpenNMS machine -->
@@ -316,6 +319,7 @@
     </feature>
 
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
+      <feature>pax-jdbc-spec</feature>
       <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
     </feature>
