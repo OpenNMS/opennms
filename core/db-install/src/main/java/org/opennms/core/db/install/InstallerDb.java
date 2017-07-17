@@ -45,6 +45,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -107,6 +108,8 @@ public class InstallerDb {
     private String m_sql;
 
     private List<String> m_tables = null;
+
+    private List<String> m_views = new ArrayList<>();
 
     private List<String> m_sequences = null;
 
@@ -234,6 +237,8 @@ public class InstallerDb {
 
                     if (type.toLowerCase().indexOf("table") != -1) {
                         m_tables.add(name);
+                    } else if (type.toLowerCase().indexOf("view") != -1) {
+                        m_views.add(name);
                     } else if (type.toLowerCase().indexOf("sequence") != -1) {
                         m_sequences.add(name);
                     } else if (type.toLowerCase().indexOf("function") != -1) {
@@ -782,6 +787,24 @@ public class InstallerDb {
             }
             m_out.println("DONE");
         }
+    }
+
+    public void createViews() throws Exception {
+        assertUserSet();
+        m_out.println("- creating views...");
+        m_out.println(getSql());
+        try (final Statement st = getConnection().createStatement()) {
+            for (String viewName : m_views) {
+                final String viewSchema = getXFromSQL(viewName, "(?i)\\b(create|create or replace) view (\\w+) as[\\s]*([.\\s\\S]+?);", 2, 3, "view");
+                String query = "CREATE OR REPLACE VIEW " + viewName + " AS " + viewSchema;
+                if (!query.endsWith(";")) {
+                    query += ";";
+                }
+                st.executeUpdate(query);
+                grantAccessToObject(viewName, 2);
+            }
+        }
+        m_out.println("- creating views... DONE");
     }
 
     /**
