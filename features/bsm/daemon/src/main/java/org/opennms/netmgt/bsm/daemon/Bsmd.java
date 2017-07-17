@@ -33,12 +33,14 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.internal.AlarmWrapperImpl;
 import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
+import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.api.EventConfDao;
@@ -132,17 +134,24 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             @Override
             public void run() {
                 try {
-                    LOG.debug("Polling alarm table...");
+                    LOG.debug("Polling alarm table.");
                     m_template.execute(new TransactionCallbackWithoutResult() {
                         @Override
                         protected void doInTransactionWithoutResult(TransactionStatus status) {
-                            m_alarmDao.findAll().forEach(alarm -> handleAlarm(alarm));
+                            final List<AlarmWrapper> alarms = m_alarmDao.findAll().stream()
+                                .map(a -> new AlarmWrapperImpl(a))
+                                .collect(Collectors.toList());
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Handling {} alarms.", alarms.size());
+                                LOG.trace("Handling alarms: {}", alarms);
+                            }
+                            m_stateMachine.handleAllAlarms(alarms);
                         }
                     });
                 } catch (Exception ex) {
-                    LOG.error("Error while polling alarm table", ex);
+                    LOG.error("Error while polling alarm table.", ex);
                 } finally {
-                    LOG.debug("Polling alarm table DONE");
+                    LOG.debug("Polling alarm table complete.");
                 }
             }
         }, pollInterval, pollInterval, TimeUnit.SECONDS);
@@ -214,7 +223,8 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         EventConstants.ALARM_ESCALATED_UEI,
         EventConstants.ALARM_CLEARED_UEI,
         EventConstants.ALARM_UNCLEARED_UEI,
-        EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI
+        EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI,
+        EventConstants.ALARM_DELETED_EVENT_UEI
     })
     public void handleAlarmLifecycleEvents(Event e) {
         if (e == null) {
@@ -235,27 +245,49 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             return;
         }
 
+        if (EventConstants.ALARM_DELETED_EVENT_UEI.equals(e.getUei())) {
+            handleAlarmDeleted(e, alarmId);
+        } else {
+            handleAlarmCreatedOrUpdated(e, alarmId);
+        }
+    }
+
+    private void handleAlarmCreatedOrUpdated(Event e, int alarmId) {
         m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                // Flush the DAO before in order to avoid retrieving stale alarm data
-                m_alarmDao.flush();
-
                 final OnmsAlarm alarm = m_alarmDao.get(alarmId);
                 if (alarm == null) {
                     LOG.error("Could not find alarm with id: {} for event with uei: {}. Ignoring.", alarmId, e.getUei());
                     return;
                 }
-
-                handleAlarm(alarm);
+                final AlarmWrapperImpl alarmWrapper = new AlarmWrapperImpl(alarm);
+                LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {} and status: {}", alarm.getId(), alarm.getReductionKey(), alarm.getSeverity(), alarmWrapper.getStatus());
+                m_stateMachine.handleNewOrUpdatedAlarm(alarmWrapper);
             }
         });
     }
 
-    private void handleAlarm(OnmsAlarm alarm) {
-        AlarmWrapperImpl alarmWrapper = new AlarmWrapperImpl(alarm);
-        LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {} and status: {}", alarm.getId(), alarm.getReductionKey(), alarm.getSeverity(), alarmWrapper.getStatus());
-        m_stateMachine.handleNewOrUpdatedAlarm(alarmWrapper);
+    private void handleAlarmDeleted(Event e, int alarmId) {
+        final Parm alarmReductionKeyParm = e.getParm(EventConstants.PARM_ALARM_REDUCTION_KEY);
+        if (alarmReductionKeyParm == null || alarmReductionKeyParm.getValue() == null) {
+            LOG.warn("The alarmReductionKey parameter has no value on event with uei: {}. Ignoring.", e.getUei());
+            return;
+        }
+
+        final String reductionKey = alarmReductionKeyParm.getValue().toString();
+        LOG.debug("Handling delete for alarm with id: {} and reduction key: {}", alarmId, reductionKey);
+        m_stateMachine.handleNewOrUpdatedAlarm(new AlarmWrapper() {
+            @Override
+            public String getReductionKey() {
+                return reductionKey;
+            }
+
+            @Override
+            public Status getStatus() {
+                return Status.INDETERMINATE;
+            }
+        });
     }
 
     /**

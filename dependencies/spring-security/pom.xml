@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -443,14 +443,4 @@
       <artifactId>commons-codec</artifactId>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-        <id>spring-releases</id>
-        <name>Spring Releases</name>
-        <url>http://repo.spring.io/release</url>
-        <snapshots>
-            <enabled>false</enabled>
-        </snapshots>
-    </repository>
-</repositories>
 </project>

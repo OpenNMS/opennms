@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.nrtg</groupId>
     <artifactId>features</artifactId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg</groupId>
@@ -31,8 +31,8 @@
           <features>
             <feature>osgi-nrtg-api</feature>
             <feature>osgi-nrtg-broker</feature>
-            <feature>spring-jms</feature>
-            <feature>spring</feature>
+            <feature>spring-jms/${springVersion}</feature>
+            <feature>spring/${springVersion}</feature>
           </features>
         </configuration>
       </plugin>

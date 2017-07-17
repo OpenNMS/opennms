@@ -38,6 +38,9 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
 | Remote Enabled | false
 |===
 
+When the monitor is configured to persist the response time, it will count the total amount of time spent until a successful response is obtained, including the retries.
+It won't store the time spent during the last successful attempt.
+
 ===== Configuration and Usage
 
 .Monitor specific parameters for the SnmpMonitor

@@ -29,10 +29,10 @@
 package org.opennms.web.rest.v2;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
 import javax.ws.rs.Consumes;
@@ -43,14 +43,17 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.PropertyNotFoundException;
+import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchConditionVisitor;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
@@ -59,255 +62,304 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
+import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.utils.CriteriaBuilderUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.utils.QueryParameters;
 import org.opennms.web.utils.QueryParametersBuilder;
-import org.opennms.web.rest.support.RedirectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
+/**
+ * Abstract class for easily implemented V2 endpoints.
+ * 
+ * @param <T> Entity object (eg. OnmsNode)
+ * @param <Q> Query bean. This can be the same as the entity object if the object is a simple
+ *   bean but for types with more than one level of bean properties, it makes sense to use a
+ *   custom query bean or Apache CXF's {@link SearchBean}.
+ * @param <K> Type of the primary key of the entity in the database (eg. Integer).
+ * @param <I> Object Index (typically the same as the primary key, but can be different in some cases).
+ *
+ * @author <a href="seth@opennms.org">Seth Leger</a>
+ * @author <a href="agalue@opennms.org">Alejandro Galue</a>
+ */
 @Transactional
-public abstract class AbstractDaoRestService<T,K extends Serializable> {
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
+public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extends Serializable> {
 
-	private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
-	private final Lock m_writeLock = m_globalLock.writeLock();
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
 
-	protected static final int DEFAULT_LIMIT = 10;
+    @Autowired
+    @Qualifier("eventProxy")
+    private EventProxy m_eventProxy;
 
-	protected abstract OnmsDao<T,K> getDao();
-	protected abstract Class<T> getDaoClass();
-	protected abstract CriteriaBuilder getCriteriaBuilder();
-	protected abstract JaxbListWrapper<T> createListWrapper(Collection<T> list);
+    private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
 
-	protected final void writeLock() {
-		m_writeLock.lock();
-	}
+    protected static final int DEFAULT_LIMIT = 10;
 
-	protected final void writeUnlock() {
-		m_writeLock.unlock();
-	}
+    protected abstract OnmsDao<T,K> getDao();
+    protected abstract Class<T> getDaoClass();
+    protected abstract Class<Q> getQueryBeanClass();
+    protected abstract CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo);
+    protected abstract JaxbListWrapper<T> createListWrapper(Collection<T> list);
+    protected abstract T doGet(UriInfo uriInfo, I id); // Abstracted to be able to retrieve the object on different ways 
 
-	protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
-		final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+    protected final void writeLock() {
+        m_writeLock.lock();
+    }
 
-		final CriteriaBuilder builder = getCriteriaBuilder();
+    protected final void writeUnlock() {
+        m_writeLock.unlock();
+    }
 
-		if (searchContext != null) {
-			try {
-				SearchCondition<T> condition = searchContext.getCondition(getDaoClass());
-				if (condition != null) {
-					SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass());
-					condition.accept(visitor);
-				}
-			} catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {
-				LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage(), e);
-			}
-		}
+    // Do not allow create by default
+    protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, T object) {
+        return Response.status(Status.NOT_IMPLEMENTED).build();
+    }
 
-		// Apply limit, offset, orderBy, order params
-		applyLimitOffsetOrderBy(params, builder);
+    // Do not allow update by default
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, T targetObject, final MultivaluedMapImpl params) {
+        return Response.status(Status.NOT_IMPLEMENTED).build();
+    }
 
-		Criteria crit = builder.toCriteria();
+    // Do not allow delete by default
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, T object) {
+        throw new WebApplicationException(Response.status(Status.NOT_IMPLEMENTED).build());
+    }
 
-		/*
-		TODO: Figure out how to do stuff like this
+    /**
+     * <p>Map properties in the search expression to bean properties
+     * in the query capture bean. This is identical to using the
+     * {@code search.bean.property.map} context property but allows us
+     * to specify a different set of mappings for each service endpoint.</p>
+     * <ul>
+     * <li>Key: Query property name</li>
+     * <li>Value: Bean property path</li>
+     * </ul>
+     * 
+     * @see http://cxf.apache.org/docs/jax-rs-search.html#JAX-RSSearch-Mappingofquerypropertiestobeanproperties
+     * 
+     * @return
+     */
+    protected Map<String,String> getSearchBeanPropertyMap() {
+        return null;
+    }
 
-		// Don't include deleted nodes by default
-		final String type = params.getFirst("type");
-		if (type == null) {
-			final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
-			restrictions.add(Restrictions.ne("type", "D"));
-			crit.setRestrictions(restrictions);
-		}
-		 */
-		
-		return crit;
-	}
+    /**
+     * <p>Map CXF query bean properties to Criteria property names, conversions,
+     * and actions. In the absence of a mapping, the query bean property will be
+     * specified directly as a Criteria property with the same name.</p>
+     * <ul>
+     * <li>Key: CXF query property name</li>
+     * <li>Value: {@link CriteriaBehavior} to execute when this search term is specified</li>
+     * </ul>
+     * @return
+     */
+    protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
+        return null;
+    }
 
-	@GET
-	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-	public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+    protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
+        final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
+        if (searchContext != null) {
+            try {
+                SearchCondition<Q> condition = searchContext.getCondition(getQueryBeanClass(), getSearchBeanPropertyMap());
+                if (condition != null) {
+                    SearchConditionVisitor<Q,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T,Q>(builder, getDaoClass(), getCriteriaBehaviors());
+                    condition.accept(visitor);
+                }
+            } catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {
+                LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage(), e);
+            }
+        }
 
-		Criteria crit = getCriteria(uriInfo, searchContext);
+        // Apply limit, offset, orderBy, order parameters
+        final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+        applyLimitOffsetOrderBy(params, builder);
+        Criteria crit = builder.toCriteria();
 
-		final List<T> coll = getDao().findMatching(crit);
+        /*
+         * TODO: Figure out how to do stuff like this
+         * 
+         * // Don't include deleted nodes by default
+         * final String type = params.getFirst("type");
+         * if (type == null) {
+         *     final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
+         *     restrictions.add(Restrictions.ne("type", "D"));
+         *     crit.setRestrictions(restrictions);
+         * }
+         */
+        return crit;
+    }
 
-		if (coll == null || coll.size() < 1) {
-			return Response.status(Status.NO_CONTENT).build();
-		} else {
-			Integer offset = crit.getOffset();
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        Criteria crit = getCriteria(uriInfo, searchContext);
+        final List<T> coll = getDao().findMatching(crit);
+        if (coll == null || coll.size() < 1) {
+            return Response.status(Status.NO_CONTENT).build();
+        } else {
+            Integer offset = crit.getOffset();
 
-			// Remove limit, offset and ordering when fetching count
-			crit.setLimit(null);
-			crit.setOffset(null);
-			crit.setOrders(new ArrayList<Order>());
-			int totalCount = getDao().countMatching(crit);
+            // Remove limit, offset and ordering when fetching count
+            crit.setLimit(null);
+            crit.setOffset(null);
+            crit.setOrders(new ArrayList<Order>());
+            int totalCount = getDao().countMatching(crit);
 
-			JaxbListWrapper<T> list = createListWrapper(coll);
-			list.setTotalCount(totalCount);
-			list.setOffset(offset);
+            JaxbListWrapper<T> list = createListWrapper(coll);
+            list.setTotalCount(totalCount);
+            list.setOffset(offset);
 
-			// Make sure that offset is set to a numeric value when setting the Content-Range header
-			offset = (offset == null ? 0 : offset);
-			return Response.ok(list).header("Content-Range", String.format("items %d-%d/%d", offset, offset + coll.size() - 1, totalCount)).build();
-		}
-	}
+            // Make sure that offset is set to a numeric value when setting the Content-Range header
+            offset = (offset == null ? 0 : offset);
+            return Response.ok(list).header("Content-Range", String.format("items %d-%d/%d", offset, offset + coll.size() - 1, totalCount)).build();
+        }
+    }
 
-	@GET
-	@Path("count")
-	@Produces({MediaType.TEXT_PLAIN})
-	public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
-		return Response.ok(String.valueOf(getDao().countMatching(getCriteria(uriInfo, searchContext)))).build();
-	}
+    @GET
+    @Path("count")
+    @Produces({MediaType.TEXT_PLAIN})
+    public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        return Response.ok(String.valueOf(getDao().countMatching(getCriteria(uriInfo, searchContext)))).build();
+    }
 
-	@GET
-	@Path("{id}")
-	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-	public Response get(@PathParam("id") final K id) {
-		T retval = getDao().get(id);
-		if (retval == null) {
-			return Response.status(Status.NOT_FOUND).build();
-		} else {
-			return Response.ok(retval).build();
-		}
-	}
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response get(@Context final UriInfo uriInfo, @PathParam("id") final I id) {
+        T retval = doGet(uriInfo, id);
+        if (retval == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        } else {
+            return Response.ok(retval).build();
+        }
+    }
 
-	@POST
-	@Path("{id}")
-	public Response createSpecific() {
-		// Return a 404 if somebody tries to create with a specific ID
-		return Response.status(Status.NOT_FOUND).build();
-	}
+    @POST
+    @Path("{id}")
+    public Response createSpecific() {
+        // Return a 404 if somebody tries to create with a specific ID
+        return Response.status(Status.NOT_FOUND).build();
+    }
 
-	@POST
-	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Response create(@Context final UriInfo uriInfo, T object) {
-		return doCreate(uriInfo, object);
-	}
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response create(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, T object) {
+        writeLock();
+        try {
+            return doCreate(securityContext, uriInfo, object);
+        } finally {
+            writeUnlock();
+        }
+    }
 
-	protected Response doCreate(UriInfo uriInfo, T object) {
-		K id = getDao().save(object);
-		return Response.created(getRedirectUri(uriInfo, id)).build();
-	}
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
+        writeLock();
+        try {
+            Criteria crit = getCriteria(uriInfo, searchContext);
+            final List<T> objects = getDao().findMatching(crit);
+            if (objects == null || objects.size() == 0) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
+            for (T object : objects) {
+                RestUtils.setBeanProperties(object, params);
+                doUpdate(securityContext, uriInfo, object, params);
+            }
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 
-	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response updateMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
-		// TODO: Implement me
-		return Response.status(Status.NOT_IMPLEMENTED).build();
-	}
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{id}")
+    public Response updateProperties(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final I id, final MultivaluedMapImpl params) {
+        writeLock();
+        try {
+            final T object = doGet(uriInfo, id);
+            if (object == null) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
+            return doUpdate(securityContext, uriInfo, object, params);
+        } finally {
+            writeUnlock();
+        }
+    }
 
-	@PUT
-	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	@Path("{id}")
-	public Response update(@Context final UriInfo uriInfo, @PathParam("id") final K id, final T object) {
-		writeLock();
+    @DELETE
+    public Response deleteMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        writeLock();
+        try {
+            Criteria crit = getCriteria(uriInfo, searchContext);
+            final List<T> objects = getDao().findMatching(crit);
+            if (objects == null || objects.size() == 0) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
+            for (T object : objects) {
+                doDelete(securityContext, uriInfo, object);
+            }
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 
-		try {
-			// TODO: Assert that the ID of the path equals the ID of the object
+    @DELETE
+    @Path("{id}")
+    public Response delete(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final I id) {
+        writeLock();
+        try {
+            final T object = doGet(uriInfo, id);
+            if (object == null) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
+            doDelete(securityContext, uriInfo, object);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 
-			if (object == null) {
-				return Response.status(Status.NOT_FOUND).build();
-			}
+    public static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
+        applyLimitOffsetOrderBy(p, builder, DEFAULT_LIMIT);
+    }
 
-			LOG.debug("update: updating object {}", object);
+    private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
+        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(p);
+        if (queryParameters.getLimit() == null) {
+            queryParameters.setLimit(defaultLimit);
+        }
+        CriteriaBuilderUtils.applyQueryParameters(builder, queryParameters);
+    }
 
-			getDao().saveOrUpdate(object);
-			return Response.noContent().build();
-		} finally {
-			writeUnlock();
-		}
-	}
+    protected void sendEvent(final Event event) {
+        try {
+            m_eventProxy.send(event);
+        } catch (final EventProxyException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
+        }
+    }
 
-	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Path("{id}")
-	public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final K id, final MultivaluedMapImpl params) {
-		writeLock();
-
-		try {
-			final T object = getDao().get(id);
-
-			if (object == null) {
-				return Response.status(Status.NOT_FOUND).build();
-			}
-
-			LOG.debug("update: updating object {}", object);
-
-			RestUtils.setBeanProperties(object, params);
-
-			LOG.debug("update: object {} updated", object);
-			getDao().saveOrUpdate(object);
-			return Response.noContent().build();
-		} finally {
-			writeUnlock();
-		}
-	}
-
-	@DELETE
-	public Response deleteMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
-		writeLock();
-
-		try {
-			Criteria crit = getCriteria(uriInfo, searchContext);
-
-			final List<T> objects = getDao().findMatching(crit);
-
-			if (objects == null || objects.size() == 0) {
-				return Response.status(Status.NOT_FOUND).build();
-			}
-
-			for (T object : objects) {
-				LOG.debug("delete: deleting object {}", object);
-				getDao().delete(object);
-			}
-			return Response.noContent().build();
-		} finally {
-			writeUnlock();
-		}
-	}
-
-	@DELETE
-	@Path("{id}")
-	public Response delete(@PathParam("id") final K criteria) {
-		writeLock();
-
-		try {
-			final T object = getDao().get(criteria);
-
-			if (object == null) {
-				return Response.status(Status.NOT_FOUND).build();
-			}
-
-			LOG.debug("delete: deleting object {}", criteria);
-			getDao().delete(object);
-			return Response.ok().build();
-		} finally {
-			writeUnlock();
-		}
-	}
-
-	public static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
-		applyLimitOffsetOrderBy(p, builder, DEFAULT_LIMIT);
-	}
-
-	private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
-		final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(p);
-		if (queryParameters.getLimit() == null) {
-			queryParameters.setLimit(defaultLimit);
-		}
-		CriteriaBuilderUtils.applyQueryParameters(builder, queryParameters);
-	}
-
-	private static URI getRedirectUri(final UriInfo uriInfo, final Object... pathComponents) {
-		return RedirectHelper.getRedirectUri(uriInfo, pathComponents);
-	}
+    protected WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
+        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
+        LOG.error(msg);
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
+    }
 }

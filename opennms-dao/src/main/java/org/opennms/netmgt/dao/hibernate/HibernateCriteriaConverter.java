@@ -29,9 +29,11 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.FetchMode;
 import org.hibernate.LockMode;
@@ -41,7 +43,11 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.type.FloatType;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
+import org.hibernate.type.TimestampType;
 import org.opennms.core.criteria.AbstractCriteriaVisitor;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
@@ -53,6 +59,7 @@ import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.BaseRestrictionVisitor;
 import org.opennms.core.criteria.restrictions.BetweenRestriction;
+import org.opennms.core.criteria.restrictions.EqPropertyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.GeRestriction;
 import org.opennms.core.criteria.restrictions.GtRestriction;
@@ -70,6 +77,8 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.RestrictionVisitor;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.opennms.netmgt.dao.api.CriteriaConverter;
+
+import com.google.common.base.Strings;
 
 public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCriteria> {
     public org.hibernate.Criteria convert(final Criteria criteria, final Session session) {
@@ -174,10 +183,18 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             return m_criteria;
         }
 
+        /**
+         * If {@code rootAlias} is null, then Hibernate will use a default
+         * alias of {@code this}.
+         */
         @Override
-        public void visitClass(final Class<?> clazz) {
+        public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
             m_class = clazz;
-            m_criteria = DetachedCriteria.forClass(clazz);
+            if (rootAlias == null) {
+                m_criteria = DetachedCriteria.forClass(clazz);
+            } else {
+                m_criteria = DetachedCriteria.forClass(clazz, rootAlias);
+            }
         }
 
         @Override
@@ -341,6 +358,11 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
         }
 
         @Override
+        public void visitEqProperty(final EqPropertyRestriction restriction) {
+            m_criterions.add(org.hibernate.criterion.Restrictions.eqProperty(restriction.getAttribute(), restriction.getValue().toString()));
+        }
+
+        @Override
         public void visitNe(final NeRestriction restriction) {
             m_criterions.add(org.hibernate.criterion.Restrictions.ne(restriction.getAttribute(), restriction.getValue()));
         }
@@ -432,12 +454,38 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         @Override
         public void visitSql(final SqlRestriction restriction) {
-            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute()));
+            if (restriction.getParameters() != null && restriction.getParameters().length > 0) {
+                // Map our {@link Type} enum values to {@link org.hibernate.type.Type} equivalents 
+                org.hibernate.type.Type[] types = Arrays.stream(restriction.getTypes()).map(t -> { 
+                    switch(t) {
+                    case FLOAT:
+                        return new FloatType();
+                    case INTEGER:
+                        return new IntegerType();
+                    case LONG:
+                        return new LongType();
+                    case STRING:
+                        return new StringType();
+                    case TIMESTAMP:
+                        return new TimestampType();
+                    default: 
+                        throw new UnsupportedOperationException("Unsupported type specified in SqlRestriction");
+                    }
+                }).collect(Collectors.toList()).toArray(new org.hibernate.type.Type[restriction.getTypes().length]);
+                m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute(), restriction.getParameters(), types));
+            } else {
+                m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute()));
+            }
         }
 
         @Override
         public void visitIplike(final IplikeRestriction restriction) {
-            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction("iplike({alias}.ipAddr, ?)", (String) restriction.getValue(), STRING_TYPE));
+            String attribute = restriction.getAttribute();
+            if (Strings.isNullOrEmpty(attribute)) {
+                attribute = "ipAddr";
+            }
+            final String sql = String.format("ipLike({alias}.%s, ?)", attribute);
+            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(sql, restriction.getValue(), STRING_TYPE));
         }
     }
 }

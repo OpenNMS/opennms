@@ -79,9 +79,11 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     private int m_ifCount = -1;
     private long m_sysUpTime = -1;
 
-        // cached attributes
-    private int m_nodeId = -1;
-    private InetAddress m_inetAddress = null;
+    // fixed attributes
+    private final int m_nodeId;
+    private final InetAddress m_inetAddress;
+
+    // cached attributes
     private int m_ifIndex = -1;
     private PrimaryType m_isSnmpPrimary = null;
     private String m_sysObjId = null;
@@ -107,14 +109,14 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
         if (Boolean.getBoolean("org.opennms.netmgt.collectd.DefaultCollectionAgent.loadSnmpDataOnInit")) {
             getSnmpInterfaceData();
         }
+
+        m_inetAddress = m_agentService.getInetAddress();
+        m_nodeId = m_agentService.getNodeId();
     }
 
     /** {@inheritDoc} */
     @Override
     public InetAddress getAddress() {
-        if (m_inetAddress == null) {
-            m_inetAddress = m_agentService.getInetAddress();
-        }
         return m_inetAddress;
     }
 
@@ -176,9 +178,6 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
      */
     @Override
     public int getNodeId() {
-        if (m_nodeId == -1) {
-            m_nodeId = m_agentService.getNodeId();
-        }
         return m_nodeId; 
     }
 

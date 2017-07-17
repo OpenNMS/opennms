@@ -31,12 +31,14 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.web.rest.v1.support.OnmsApplicationList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,35 +46,48 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Basic Web Service using REST for {@link OnmsApplication} entity
  *
- * @author Seth
+ * @author <a href="seth@opennms.org">Seth Leger</a>
  */
 @Component
 @Path("applications")
 @Transactional
-public class ApplicationRestService extends AbstractDaoRestService<OnmsApplication,Integer> {
+public class ApplicationRestService extends AbstractDaoRestService<OnmsApplication,OnmsApplication,Integer,Integer> {
 
-	@Autowired
-	private ApplicationDao m_dao;
+    @Autowired
+    private ApplicationDao m_dao;
 
-	protected ApplicationDao getDao() {
-		return m_dao;
-	}
+    @Override
+    protected ApplicationDao getDao() {
+        return m_dao;
+    }
 
-	protected Class<OnmsApplication> getDaoClass() {
-		return OnmsApplication.class;
-	}
+    @Override
+    protected Class<OnmsApplication> getDaoClass() {
+        return OnmsApplication.class;
+    }
 
-	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsApplication.class);
+    @Override
+    protected Class<OnmsApplication> getQueryBeanClass() {
+        return OnmsApplication.class;
+    }
 
-		// Order by application name by default
-		builder.orderBy("name").asc();
+    @Override
+    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsApplication.class);
 
-		return builder;
-	}
+        // Order by application name by default
+        builder.orderBy("name").asc();
 
-	@Override
-	protected JaxbListWrapper<OnmsApplication> createListWrapper(Collection<OnmsApplication> list) {
-		return new OnmsApplicationList(list);
-	}
+        return builder;
+    }
+
+    @Override
+    protected JaxbListWrapper<OnmsApplication> createListWrapper(Collection<OnmsApplication> list) {
+        return new OnmsApplicationList(list);
+    }
+
+    @Override
+    protected OnmsApplication doGet(UriInfo uriInfo, Integer id) {
+        return getDao().get(id);
+    }
 }

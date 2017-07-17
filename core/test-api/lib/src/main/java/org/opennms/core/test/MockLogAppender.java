@@ -188,6 +188,7 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.aries.blueprint.container", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.camel", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
@@ -367,5 +368,13 @@ public class MockLogAppender {
             }
         }
         throw new AssertionFailedError("No log message matched for log level " + level + ", message '" + message + "'");
+    }
+
+    public static void assertNoLogMatched(final Level level, final String message) {
+        for (final LoggingEvent event : s_events) {
+            if (event.getLevel().eq(level) && event.getMessage().contains(message)) {
+                throw new AssertionFailedError("A log message matched for log level " + level + ", message '" + message + "'");
+            }
+        }
     }
 }

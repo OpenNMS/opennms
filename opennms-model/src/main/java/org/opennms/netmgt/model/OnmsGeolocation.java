@@ -28,14 +28,11 @@
 
 package org.opennms.netmgt.model;
 
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 @Embeddable
 public class OnmsGeolocation implements Serializable {
@@ -239,26 +236,39 @@ public class OnmsGeolocation implements Serializable {
         return !(string == null || string.isEmpty() || string.trim().isEmpty());
     }
 
-    public void mergeGeolocation(final OnmsGeolocation from) {
-        if (from == null) {
+    private boolean isAddressEqual(OnmsGeolocation other) {
+        return Objects.equals(asAddressString(), other.asAddressString());
+    }
+
+    public void mergeGeolocation(final OnmsGeolocation mergeWith) {
+        if (mergeWith == null) {
             return;
         }
 
-        final BeanWrapper toBean = PropertyAccessorFactory.forBeanPropertyAccess(this);
-        final BeanWrapper fromBean = PropertyAccessorFactory.forBeanPropertyAccess(from);
-        final PropertyDescriptor[] pds = fromBean.getPropertyDescriptors();
+        // The address has changed, we must reset long/lat to have
+        // the GeolocationProvisioningAdapter resolve it.
+        boolean addressEqual = isAddressEqual(mergeWith);
+        if (!addressEqual) {
+            setLatitude(null);
+            setLongitude(null);
+        }
 
-        for (final PropertyDescriptor pd : pds) {
-            final String propertyName = pd.getName();
+        // Update address
+        setCity(mergeWith.getCity());
+        setAddress1(mergeWith.getAddress1());
+        setAddress2(mergeWith.getAddress2());
+        setZip(mergeWith.getZip());
+        setCountry(mergeWith.getCountry());
+        setState(mergeWith.getState());
 
-            if (propertyName.equals("class")) {
-                continue;
-            }
-
-            final Object propertyValue = fromBean.getPropertyValue(propertyName);
-            if (propertyValue != null) {
-                toBean.setPropertyValue(propertyName, propertyValue);
-            }
+        // If there is long/lat defined, we use it no matter what.
+        // This prevents resetting already resolved long/lat information
+        // by the GeolocationProvisioningAdapter
+        if (mergeWith.getLongitude() != null) {
+            setLongitude(mergeWith.getLongitude());
+        }
+        if (mergeWith.getLatitude() != null) {
+            setLatitude(mergeWith.getLatitude());
         }
     }
 }

@@ -96,6 +96,15 @@ public interface BusinessServiceStateMachine {
     void handleNewOrUpdatedAlarm(AlarmWrapper alarm);
 
     /**
+     * Updates the states of the Business Services using the given list of alarms.
+     *
+     * The given list of alarms is expected to be the complete set of current alarms,
+     * and any alarms missing from this list will be treated as not being present.
+     *
+     */
+    void handleAllAlarms(List<AlarmWrapper> alarms);
+
+    /**
      * Registers a state change handler.
      *
      * @param handler handler to register

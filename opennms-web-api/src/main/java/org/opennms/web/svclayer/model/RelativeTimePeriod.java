@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,6 +48,11 @@ public class RelativeTimePeriod {
     
     static {
         s_defaultPeriods = new RelativeTimePeriod[] {
+                new RelativeTimePeriod("last_1_hour", "Last Hour", Calendar.HOUR, -1),
+                new RelativeTimePeriod("last_2_hour", "Last 2 Hours", Calendar.HOUR, -2),
+                new RelativeTimePeriod("last_4_hour", "Last 4 Hours", Calendar.HOUR, -4),
+                new RelativeTimePeriod("last_8_hour", "Last 8 Hours", Calendar.HOUR, -8),
+                new RelativeTimePeriod("last_12_hour", "Last 12 Hours", Calendar.HOUR, -12),
                 new RelativeTimePeriod("lastday", "Last Day", Calendar.DATE,
                                        -1),
                 new RelativeTimePeriod("lastweek", "Last Week",

@@ -73,6 +73,8 @@ public class DefaultGeolocationService implements GeolocationService {
         final List<OnmsNode> nodes = getNodes(query);
         final List<GeolocationInfo> nodesWithCoordinates = nodes.stream()
                 .filter(n -> geoLocation(n) != null && geoLocation(n).getLongitude() != null && geoLocation(n).getLatitude() != null)
+                // Avoid including -inf values, just in case. See NMS-9338
+                .filter(n -> geoLocation(n).getLatitude() != Float.NEGATIVE_INFINITY && geoLocation(n).getLongitude() != Float.NEGATIVE_INFINITY)
                 .map(node -> convert(node))
                 .collect(Collectors.toList());
 

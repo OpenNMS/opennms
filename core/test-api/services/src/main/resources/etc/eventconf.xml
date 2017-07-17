@@ -10,20 +10,6 @@
 		</security>
 	</global>
 
-	<event>
-		<uei>uei.opennms.org/internal/capsd/snmpConflictsWithDb</uei>
-		<event-label>OpenNMS-defined capsd event: snmpConflictsWithDb</event-label>
-		<descr>
-			&lt;p&gt;During a rescan the ip interfaces as determined by snmp
-			conflict with the ip interfaces listed in the database for this node.
-			&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			IP interfaces as determined by SNMP disagree with the database.
-		</logmsg>
-		<severity>Warning</severity>
-	</event>
-
     <event-file>events/Standard.events.xml</event-file>
     <event-file>events/Syslog.test.events.xml</event-file>
     <event-file>events/Syslog.LoadTest.events.xml</event-file>

@@ -143,6 +143,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             serviceStatus.setProperties(returnval);
         } catch (Throwable e) {
             LOG.debug("failed to ping {}", host, e);
+            serviceStatus = PollStatus.unavailable(String.format("Failed to ping %s: %s", host, e.getMessage()));
         }
 
         return serviceStatus;

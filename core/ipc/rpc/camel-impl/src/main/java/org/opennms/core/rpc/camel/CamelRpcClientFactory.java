@@ -78,43 +78,52 @@ public class CamelRpcClientFactory implements RpcClientFactory {
 
                 // Wrap the request in a CamelRpcRequest and forward it to the Camel route
                 final CompletableFuture<T> future = new CompletableFuture<>();
-                template.asyncCallbackSendBody(endpoint, new CamelRpcRequest<>(module, request), new Synchronization() {
-                    @Override
-                    public void onComplete(Exchange exchange) {
-                        try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
-                            final T response = module.unmarshalResponse(exchange.getOut().getBody(String.class));
-                            if (response.getErrorMessage() != null) {
-                                future.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
-                            } else {
-                                future.complete(response);
+                try {
+                    template.asyncCallbackSendBody(endpoint, new CamelRpcRequest<>(module, request), new Synchronization() {
+                        @Override
+                        public void onComplete(Exchange exchange) {
+                            try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
+                                final T response = module.unmarshalResponse(exchange.getOut().getBody(String.class));
+                                if (response.getErrorMessage() != null) {
+                                    future.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
+                                } else {
+                                    future.complete(response);
+                                }
+                            } catch (Throwable ex) {
+                                LOG.error("Unmarshalling a response in RPC module {} failed.", module, ex);
+                                future.completeExceptionally(ex);
                             }
-                        } catch (Throwable ex) {
-                            LOG.error("Unmarshalling a response in RPC module {} failed.", module, ex);
-                            future.completeExceptionally(ex);
+                            // Ensure that future log statements on this thread are routed properly
+                            Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                         }
-                        // Ensure that future log statements on this thread are routed properly
-                        Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
-                    }
 
-                    @Override
-                    public void onFailure(Exchange exchange) {
-                        try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
-                            final ExchangeTimedOutException timeoutException = exchange.getException(ExchangeTimedOutException.class);
-                            final DirectConsumerNotAvailableException directConsumerNotAvailableException = exchange.getException(DirectConsumerNotAvailableException.class);
-                            if (timeoutException != null) {
-                                // Wrap timeout exceptions within a RequestTimedOutException
-                                future.completeExceptionally(new RequestTimedOutException(exchange.getException()));
-                            } else if (directConsumerNotAvailableException != null) {
-                                // Wrap consumer not available exceptions with a RequestRejectedException
-                                future.completeExceptionally(new RequestRejectedException(exchange.getException()));
-                            } else {
-                                future.completeExceptionally(exchange.getException());
+                        @Override
+                        public void onFailure(Exchange exchange) {
+                            try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
+                                final ExchangeTimedOutException timeoutException = exchange.getException(ExchangeTimedOutException.class);
+                                final DirectConsumerNotAvailableException directConsumerNotAvailableException = exchange.getException(DirectConsumerNotAvailableException.class);
+                                if (timeoutException != null) {
+                                    // Wrap timeout exceptions within a RequestTimedOutException
+                                    future.completeExceptionally(new RequestTimedOutException(exchange.getException()));
+                                } else if (directConsumerNotAvailableException != null) {
+                                    // Wrap consumer not available exceptions with a RequestRejectedException
+                                    future.completeExceptionally(new RequestRejectedException(exchange.getException()));
+                                } else {
+                                    future.completeExceptionally(exchange.getException());
+                                }
                             }
+                            // Ensure that future log statements on this thread are routed properly
+                            Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                         }
-                        // Ensure that future log statements on this thread are routed properly
-                        Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
+                    });
+                } catch (IllegalStateException e) {
+                    try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
+                        // Wrap ProducerTemplate exceptions with a RequestRejectedException
+                        future.completeExceptionally(new RequestRejectedException(e));
                     }
-                });
+                    // Ensure that future log statements on this thread are routed properly
+                    Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
+                }
                 return future;
             }
         };

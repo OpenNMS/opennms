@@ -387,13 +387,14 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                     container.getSelectionManager().getSelectedVertexRefs().isEmpty())
                     ? Collections.singleton(new DefaultInfoPanelItem()
                     .withOrder(0)
+                    .withId("topologyInfo")
                     .withTitle(metaInfo.getName())
                     .withComponent(new Label(metaInfo.getDescription())))
                     : Collections.emptySet();
         };
 
         private Component wrap(final InfoPanelItem item) {
-            return wrap(item.getComponent(), item.getTitle());
+            return wrap(item.getComponent(), item.getTitle(), item.getId());
         }
 
         /**
@@ -402,9 +403,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
          *
          * @param component The component to wrap.
          * @param title the title of the component to wrap.
+         * @param id the id of the wrapped component.
          * @return The wrapped component.
          */
-        private Component wrap(Component component, String title) {
+        private Component wrap(Component component, String title, String id) {
             Label label = new Label();
             label.addStyleName("info-panel-item-label");
             if (title != null) {
@@ -416,7 +418,9 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             layout.addComponent(label);
             layout.addComponent(component);
             layout.setMargin(true);
-
+            if (id != null) {
+                layout.setId(id);
+            }
             return layout;
         }
 

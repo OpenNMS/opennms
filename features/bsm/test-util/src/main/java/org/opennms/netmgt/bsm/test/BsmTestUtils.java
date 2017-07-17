@@ -249,11 +249,6 @@ public class BsmTestUtils {
             public Status getStatus() {
                 return SeverityMapper.toStatus(alarm.getSeverity());
             }
-
-            @Override
-            public Integer getId() {
-                return alarm.getId();
-            }
         };
     }
 

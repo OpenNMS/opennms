@@ -29,7 +29,10 @@
 package org.opennms.netmgt.eventd;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.EventdServiceManager;
@@ -93,7 +96,7 @@ public final class Eventd extends AbstractServiceDaemon {
     /**
      * All handlers that can receive events to be started/stopped with Eventd.
      */
-    private Collection<EventReceiver> m_eventReceivers;
+    private final List<EventReceiver> m_eventReceivers = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * Constuctor creates the localhost address(to be used eventually when
@@ -109,7 +112,6 @@ public final class Eventd extends AbstractServiceDaemon {
     @Override
     protected void onInit() {
         Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
-        Assert.state(m_eventReceivers != null, "property eventReceivers must be set");
         Assert.state(m_receiver != null, "property receiver must be set");
         
         m_eventdServiceManager.dataSourceSync();
@@ -190,7 +192,7 @@ public final class Eventd extends AbstractServiceDaemon {
      * @return a {@link java.util.Collection} object.
      */
     public Collection<EventReceiver> getEventReceivers() {
-        return m_eventReceivers;
+        return Collections.unmodifiableList(m_eventReceivers);
     }
 
     /**
@@ -199,6 +201,9 @@ public final class Eventd extends AbstractServiceDaemon {
      * @param eventReceivers a {@link java.util.Collection} object.
      */
     public void setEventReceivers(Collection<EventReceiver> eventReceivers) {
-        m_eventReceivers = eventReceivers;
+        synchronized(m_eventReceivers) {
+            m_eventReceivers.clear();
+            m_eventReceivers.addAll(eventReceivers);
+        }
     }
 }

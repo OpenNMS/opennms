@@ -111,31 +111,6 @@
                 auto-clean="false"/>
     </event>
     <event>
-        <uei>uei.opennms.org/nodes/thresholdingFailed</uei>
-        <event-label>OpenNMS-defined threshold event: thresholdingFailed</event-label>
-        <descr>
-            &lt;p&gt;%service% thresholding on interface %interface%
-            failed.&lt;/p&gt;
-        </descr>
-        <logmsg dest="logndisplay">
-            %service% thresholding on interface %interface% failed.
-        </logmsg>
-        <severity>Warning</severity>
-    </event>
-    <event>
-        <uei>uei.opennms.org/nodes/thresholdingSucceeded</uei>
-        <event-label>OpenNMS-defined threshold event: thresholdingSucceeded</event-label>
-        <descr>
-            &lt;p&gt;%service% thresholding on interface %interface%
-            previously failed and has been restored.&lt;/p&gt;
-        </descr>
-        <logmsg dest="logndisplay">
-            %service% thresholding on interface %interface% previously
-            failed and has been restored.
-        </logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
         <uei>uei.opennms.org/threshold/relativeChangeExceeded</uei>
         <event-label>OpenNMS-defined threshold event: relativeChangeExceeded</event-label>
         <descr>

@@ -31,12 +31,17 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,35 +49,59 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Basic Web Service using REST for {@link OnmsMonitoringLocation} entity
  *
- * @author Seth
+ * @author <a href="seth@opennms.org">Seth Leger</a>
  */
 @Component
 @Path("monitoringLocations")
 @Transactional
-public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,String> {
+public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,OnmsMonitoringLocation,String,String> {
 
-	@Autowired
-	private MonitoringLocationDao m_dao;
+    @Autowired
+    private MonitoringLocationDao m_dao;
 
-	protected MonitoringLocationDao getDao() {
-		return m_dao;
-	}
+    @Override
+    protected MonitoringLocationDao getDao() {
+        return m_dao;
+    }
 
-	protected Class<OnmsMonitoringLocation> getDaoClass() {
-		return OnmsMonitoringLocation.class;
-	}
+    @Override
+    protected Class<OnmsMonitoringLocation> getDaoClass() {
+        return OnmsMonitoringLocation.class;
+    }
 
-	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
+    @Override
+    protected Class<OnmsMonitoringLocation> getQueryBeanClass() {
+        return OnmsMonitoringLocation.class;
+    }
 
-		// Order by location name by default
-		builder.orderBy("locationName").asc();
+    @Override
+    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
 
-		return builder;
-	}
+        // Order by location name by default
+        builder.orderBy("locationName").asc();
 
-	@Override
-	protected JaxbListWrapper<OnmsMonitoringLocation> createListWrapper(Collection<OnmsMonitoringLocation> list) {
-		return new OnmsMonitoringLocationDefinitionList(list);
-	}
+        return builder;
+    }
+
+    @Override
+    protected JaxbListWrapper<OnmsMonitoringLocation> createListWrapper(Collection<OnmsMonitoringLocation> list) {
+        return new OnmsMonitoringLocationDefinitionList(list);
+    }
+
+    @Override
+    protected OnmsMonitoringLocation doGet(UriInfo uriInfo, String id) {
+        return getDao().get(id);
+    }
+
+    @Override
+    public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsMonitoringLocation object) {
+        final String id = getDao().save(object);
+        return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
+    }
+
+    @Override
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoringLocation object) {
+        getDao().delete(object);
+    }
 }

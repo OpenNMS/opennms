@@ -86,7 +86,8 @@ import com.google.common.base.Throwables;
                                  "classpath:/META-INF/opennms/applicationContext-newts.xml"})
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.rrd.storeByForeignSource=true",
-        "org.opennms.timeseries.strategy=newts"
+        "org.opennms.timeseries.strategy=newts",
+        "org.opennms.newts.nan_on_counter_wrap=false"
 })
 @JUnitTemporaryDatabase
 public class NewtsConverterIT implements TemporaryDatabaseAware<TemporaryDatabase> {

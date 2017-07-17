@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -40,6 +41,8 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -90,7 +93,7 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
         "classpath:/syslogdTest.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
 @JUnitTemporaryDatabase
 public class SyslogdLoadIT implements InitializingBean {
 
@@ -143,6 +146,7 @@ public class SyslogdLoadIT implements InitializingBean {
 
     @After
     public void tearDown() throws Exception {
+        MockLogAppender.assertNoErrorOrGreater();
         if (m_syslogd != null) {
             m_syslogd.stop();
         }
@@ -238,6 +242,13 @@ public class SyslogdLoadIT implements InitializingBean {
     @Transactional
     public void testSyslogReceiverCamelNetty() throws Exception {
         startSyslogdCamelNetty();
+        // Wait for the Camel context to start
+        await().atMost(10, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return ((SyslogReceiverCamelNettyImpl)m_syslogd.getSyslogReceiver()).isStarted();
+            }
+        });
         doTestSyslogReceiver();
     }
 
@@ -358,7 +369,7 @@ public class SyslogdLoadIT implements InitializingBean {
     @Test
     @Transactional
     public void testEventd() throws Exception {
-    	m_eventd.start();
+        m_eventd.start();
 
         EventProxy ep = createEventProxy();
 
@@ -389,6 +400,8 @@ public class SyslogdLoadIT implements InitializingBean {
         m_eventCounter.waitForFinish(120000);
         long end = System.currentTimeMillis();
 
+        assertEquals(eventCount, m_eventCounter.getCount());
+
         m_eventd.stop();
 
         final long total = (end - start);
@@ -397,23 +410,7 @@ public class SyslogdLoadIT implements InitializingBean {
     }
 
     private static EventProxy createEventProxy() throws UnknownHostException {
-        /*
-         * Rather than defaulting to localhost all the time, give an option in properties
-         */
-        String proxyHostName = "127.0.0.1";
-        String proxyHostPort = "5837";
-        String proxyHostTimeout = String.valueOf(TcpEventProxy.DEFAULT_TIMEOUT);
-        InetAddress proxyAddr = null;
-        EventProxy proxy = null;
-
-        proxyAddr = InetAddressUtils.addr(proxyHostName);
-
-        if (proxyAddr == null) {
-        	proxy = new TcpEventProxy();
-        } else {
-            proxy = new TcpEventProxy(new InetSocketAddress(proxyAddr, Integer.parseInt(proxyHostPort)), Integer.parseInt(proxyHostTimeout));
-        }
-        return proxy;
+        return new TcpEventProxy(new InetSocketAddress(InetAddressUtils.ONE_TWENTY_SEVEN, 5837), TcpEventProxy.DEFAULT_TIMEOUT);
     }
 
     public static class EventCounter implements EventListener {

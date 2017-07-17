@@ -45,6 +45,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -161,12 +162,25 @@ public class KarafExtender {
             .map(f -> f.getVersion() != null ? f.getName() + "/" + f.getVersion() : f.getName())
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        try {
-            LOG.info("Installing features: {}", featuresToInstall);
-            m_featuresService.installFeatures(featuresToInstall, EnumSet.noneOf(Option.class));
-        } catch (Exception e) {
-            LOG.error("Failed to install one or more features.", e);
-        }
+        // Because of the fix for the following issue, we need to call the
+        // feature installation in another thread since this method is invoked
+        // during a feature installation itself and feature installations are
+        // now single-threaded.
+        //
+        // https://issues.apache.org/jira/browse/KARAF-3798
+        // https://github.com/apache/karaf/pull/138
+        //
+        CompletableFuture.runAsync(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    LOG.info("Installing features: {}", featuresToInstall);
+                    m_featuresService.installFeatures(featuresToInstall, EnumSet.noneOf(Option.class));
+                } catch (Exception e) {
+                    LOG.error("Failed to install one or more features.", e);
+                }
+            }
+        });
     }
 
     private boolean canResolveAllFeatureUris(List<Repository> repositories) {

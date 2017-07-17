@@ -147,5 +147,7 @@ public interface EnhancedLinkdService {
     boolean hasUpdatedBft(int nodeid);
         
     List<BridgeElement> getBridgeElements(Set<Integer> nodeids);
+    
+    void persistForwarders();
 
 }

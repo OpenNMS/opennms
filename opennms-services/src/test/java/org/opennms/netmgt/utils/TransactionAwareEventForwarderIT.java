@@ -58,6 +58,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/org/opennms/netmgt/utils/applicationContext-testTAEventForwarderTest.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -170,7 +171,7 @@ public class TransactionAwareEventForwarderIT implements InitializingBean {
     }
 
     private Event sendEvent() {
-        Event event = new EventBuilder(EventConstants.ADD_INTERFACE_EVENT_UEI, "Test")
+        Event event = new EventBuilder(EventConstants.ADD_NODE_EVENT_UEI, "Test")
         .setNodeid(m_eventNumber++)
         .getEvent();
 

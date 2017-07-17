@@ -40,8 +40,9 @@ import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.rpc.api.RpcClient;
+import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
-import org.opennms.core.rpc.echo.EchoClient;
 import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
@@ -68,8 +69,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-client-camel.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml"
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-camel.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.ipc.rpc.threads=1",
@@ -93,7 +93,7 @@ public class EchoRpcThreadIT extends CamelBlueprintTest {
     private OnmsDistPoller identity;
 
     @Autowired
-    private EchoClient echoClient;
+    private RpcClientFactory rpcClientFactory;
 
     private ThreadLockingEchoRpcModule lockingRpcModule = new ThreadLockingEchoRpcModule();
 
@@ -123,14 +123,15 @@ public class EchoRpcThreadIT extends CamelBlueprintTest {
         // Lock the run method in our RPC module, we want to validate
         // the number of threads that are "running" the module
         CompletableFuture<Integer> runLockedFuture = lockingRpcModule.getRunLocker().waitForThreads(NTHREADS);
- 
+
         // Fire off NTHREADS request
+        ThreadLockingEchoClient client = new ThreadLockingEchoClient(rpcClientFactory, lockingRpcModule);
         List<CompletableFuture<EchoResponse>> futures = new ArrayList<>();
         for (int i = 0; i < NTHREADS; i++) {
             EchoRequest request = new EchoRequest("ping");
             request.setTimeToLiveMs(30000L);
             request.setLocation(REMOTE_LOCATION_NAME);
-            futures.add(echoClient.execute(request));
+            futures.add(client.execute(request));
         }
 
         // Wait for all the threads calling run() to be locked
@@ -141,13 +142,52 @@ public class EchoRpcThreadIT extends CamelBlueprintTest {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[NTHREADS])).get();
     }
 
-    public static class ThreadLockingEchoRpcModule extends EchoRpcModule {
+    public static class ThreadLockingEchoClient implements RpcClient<EchoRequest, EchoResponse> {
 
+        private RpcClient<EchoRequest, EchoResponse> m_delegate;
+
+        public ThreadLockingEchoClient(RpcClientFactory rpcClientFactory, ThreadLockingEchoRpcModule threadLockingEchoRpcModule) {
+            m_delegate = rpcClientFactory.getClient(threadLockingEchoRpcModule);
+        }
+
+        @Override
+        public CompletableFuture<EchoResponse> execute(EchoRequest request) {
+            return m_delegate.execute(request);
+        }
+    }
+
+    public static class ThreadLockingEchoRpcModule extends EchoRpcModule {
         private final ThreadLocker runLocker = new ThreadLocker();
 
         @Override
         public void beforeRun() {
             runLocker.park();
+        }
+
+        @Override
+        public String getId() {
+            return "Locking" + RPC_MODULE_ID;
+        }
+
+        @Override
+        public CompletableFuture<EchoResponse> execute(final EchoRequest request) {
+            final CompletableFuture<EchoResponse> future = new CompletableFuture<>();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (request.getDelay() != null) {
+                        try {
+                            Thread.sleep(request.getDelay());
+                            processRequest(request, future);
+                        } catch (InterruptedException e) {
+                            future.completeExceptionally(e);
+                        }
+                    } else {
+                        processRequest(request, future);
+                    }
+                }
+            }).start();
+            return future;
         }
 
         public ThreadLocker getRunLocker() {

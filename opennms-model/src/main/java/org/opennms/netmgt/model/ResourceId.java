@@ -96,6 +96,10 @@ public class ResourceId implements Comparable<ResourceId> {
     }
 
     public static ResourceId fromString(final String s) {
+        if (s == null) {
+            return null;
+        }
+
         final Matcher m = PATTERN.matcher(s);
 
         final StringBuffer sb = new StringBuffer();

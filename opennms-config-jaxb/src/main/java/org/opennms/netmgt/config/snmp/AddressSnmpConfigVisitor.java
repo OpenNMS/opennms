@@ -50,12 +50,11 @@ import static org.opennms.netmgt.snmp.SnmpConfiguration.versionToString;
 
 import java.net.InetAddress;
 import java.util.List;
-import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,45 +63,79 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private static final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
 
     private final InetAddress m_address;
+    private final String m_location;
 
     private SnmpConfig m_currentConfig;
     private Definition m_currentDefinition;
-    private Definition m_matchedDefinition;
+    private String m_currentLocation;
+
+    private Definition m_matchedDefinitionAtDefaultLocation;
+    private Definition m_matchedDefinitionAtGivenLocation;
+
     private Definition m_generatedDefinition = null;
-    private String m_location = null;
-    private Definition m_definitionWithLocation = null;
-    private Definition m_prevMatchedDefinition = null;
-    static private final String DEFAULT_LOCATION ="Default";
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
-        m_address = addr;
-        m_location = DEFAULT_LOCATION;
+        this(addr, null);
     }
 
-    public AddressSnmpConfigVisitor(final InetAddress addr, String location) {
+    public AddressSnmpConfigVisitor(final InetAddress addr, final String location) {
         m_address = addr;
-        m_location = location;
-        if (StringUtils.isBlank(m_location)) {
-            m_location = DEFAULT_LOCATION;
-        }
+        m_location = LocationUtils.getEffectiveLocationName(location);
     }
+
+    @Override
     public void visitSnmpConfig(final SnmpConfig config) {
         m_currentConfig = config;
     }
 
+    @Override
     public void visitDefinition(final Definition definition) {
         //LOG.debug("visitDefinition: {}", definition);
         m_currentDefinition = definition;
+        m_currentLocation = LocationUtils.getEffectiveLocationName(definition.getLocation());
+    }
+
+    private void handleMatch() {
+        if (LocationUtils.isDefaultLocationName(m_currentLocation)) {
+            m_matchedDefinitionAtDefaultLocation = m_currentDefinition;
+        }
+        if (m_location.equals(m_currentLocation)) {
+            m_matchedDefinitionAtGivenLocation = m_currentDefinition;
+        }
+    }
+
+    private Definition getBestMatch() {
+        if (m_matchedDefinitionAtGivenLocation != null) {
+            return m_matchedDefinitionAtGivenLocation;
+        }
+        return m_matchedDefinitionAtDefaultLocation;
+    }
+
+    private boolean shouldTryToMatch() {
+        if (LocationUtils.isDefaultLocationName(m_currentLocation)) {
+            // We're currently processing a definition at the default location,
+            // try to match if we don't already have a definition here
+            return m_matchedDefinitionAtDefaultLocation == null;
+        } else if (m_location.equals(m_currentLocation)) {
+            // We're currently processing a definition at the target location,
+            // try to match if we don't already have a definition here
+            return m_matchedDefinitionAtGivenLocation == null;
+        } else {
+            // We're not interested in definitions at this location
+            return false;
+        }
     }
 
     @Override
     public void visitSpecifics(final List<String> specifics) {
+        if (!shouldTryToMatch()) return;
+
         for (final String saddr : specifics) {
             try {
                 final InetAddress addr = InetAddressUtils.addr(saddr);
                 if (addr != null && addr.equals(m_address)) {
                     //LOG.debug("{} == {}", addr, m_address);
-                    m_matchedDefinition = m_currentDefinition;
+                    handleMatch();
                     return;
                 }
             } catch (final IllegalArgumentException e) {
@@ -114,7 +147,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     @Override
     public void visitRanges(List<Range> ranges) {
         // if we've already matched a specific, don't bother with the ranges
-        if (m_matchedDefinition != null) return;
+        if (!shouldTryToMatch()) return;
 
         for (final Range range : ranges) {
             final byte[] addr = m_address.getAddress();
@@ -129,7 +162,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
                 inRange = InetAddressUtils.isInetAddressInRange(addr, end, begin);
             }
             if (inRange) {
-                m_matchedDefinition = m_currentDefinition;
+                handleMatch();
                 return;
             }
         }
@@ -138,50 +171,29 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     @Override
     public void visitIpMatches(final List<String> ipMatches) {
         // if we've already matched a specific or range, don't bother with the ipmatches
-        if (m_matchedDefinition != null) return;
+        if (!shouldTryToMatch()) return;
 
         for (final String ipMatch : ipMatches) {
             if (IPLike.matches(m_address, ipMatch)) {
-                m_matchedDefinition = m_currentDefinition;
+                handleMatch();
                 return;
             }
         }
     }
 
+    @Override
     public void visitDefinitionFinished() {
-        // LOG.debug("matched = {}", m_matchedDefinition);
-
-        if (m_matchedDefinition != null && Objects.equals(m_currentDefinition, m_matchedDefinition)) {
-
-            String location = m_matchedDefinition.getLocation();
-            if (StringUtils.isBlank(location)) {
-                location = DEFAULT_LOCATION;
-            }
-            // If location doesn't match, it's not a matched definition
-            if (!Objects.equals(location, m_location)) {
-                // Retrieve if there is a matched Definition before
-                m_matchedDefinition = m_prevMatchedDefinition;
-                m_currentDefinition = null;
-                return;
-            }
-            // Save Definition with location in case of a valid location match
-            if (StringUtils.isNotBlank(m_location) && m_location.equals(location)) {
-                m_definitionWithLocation = m_matchedDefinition;
-            }
-            m_prevMatchedDefinition = m_matchedDefinition;
-        }
-
+        //LOG.debug("matched = {}", m_matchedDefinition);
         m_currentDefinition = null;
     }
 
+    @Override
     public void visitSnmpConfigFinished() {
         final Definition ret = new Definition();
 
         final Configuration sourceConfig;
-        if (m_definitionWithLocation != null) {
-            sourceConfig = m_definitionWithLocation;
-        } else if (m_matchedDefinition != null) {
-            sourceConfig = m_matchedDefinition;
+        if (getBestMatch() != null) {
+            sourceConfig = getBestMatch();
         } else {
             sourceConfig = m_currentConfig;
         }
@@ -360,7 +372,6 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
         //LOG.debug("generated: {}", ret);
         m_generatedDefinition = ret;
-
     }
 
     public Definition getDefinition() {

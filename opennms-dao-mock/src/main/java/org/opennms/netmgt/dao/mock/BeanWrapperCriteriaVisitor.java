@@ -68,7 +68,7 @@ public class BeanWrapperCriteriaVisitor implements CriteriaVisitor {
     }
 
     @Override
-    public void visitClass(final Class<?> clazz) {
+    public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
         final List<Object> matching = new ArrayList<Object>();
         for (final Object o : m_matching) {
             if (o.getClass().isAssignableFrom(clazz)) {

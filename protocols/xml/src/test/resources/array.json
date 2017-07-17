@@ -1,0 +1,6 @@
+[
+  {"it": "foo", "val": 0},
+  {"it": "bar", "val": 1},
+  {"it": "baz", "val": 2},
+  {"it": "works", "val": 1337}
+]

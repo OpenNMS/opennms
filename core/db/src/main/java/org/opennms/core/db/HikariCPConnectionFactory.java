@@ -85,6 +85,8 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
         config.setUsername(dataSource.getUserName());
         config.setPassword(dataSource.getPassword());
         config.setDriverClassName(dataSource.getClassName());
+        // NMS-9387: Block indefinitely when waiting for a connection
+        config.setConnectionTimeout(0);
         config.setRegisterMbeans(true); // For JMX Monitoring
         config.validate();
         m_pool = new HikariDataSource(config);

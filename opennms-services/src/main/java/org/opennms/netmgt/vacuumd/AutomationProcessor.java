@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -442,11 +442,10 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         String getUei() {
-            if (hasEvent() && getAutoEvent().getUei().getContent().isPresent()) {
-                return getAutoEvent().getUei().getContent().get();
-            } else {
-                return null;
+            if (hasEvent()) {
+                return getAutoEvent().getUei().getContent().orElse(null);
             }
+            return null;
         }
 
         Event getEvent() {
@@ -717,7 +716,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
         LOG.debug("runAutomation: {} action statement is: {}", m_automation.getName(), m_action.getActionSQL());
 
-        LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName());
+        LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName().orElse(null));
 
         final List<Event> eventsToSend = new LinkedList<>();
         Transaction.begin();

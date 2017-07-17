@@ -6,10 +6,10 @@
   xmlns:util="http://www.springframework.org/schema/util"
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
-  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
-  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
-  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
   http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.14.4.xsd
 ">
@@ -29,6 +29,8 @@
   <bean id="camelRpcClientFactory" class="org.opennms.core.rpc.camel.CamelRpcClientFactory" primary="true" >
      <property name="location" ref="location"/>
   </bean>
+
+  <onmsgi:service ref="camelRpcClientFactory" interface="org.opennms.core.rpc.api.RpcClientFactory" />
 
   <bean id="camelRpcClientPreProcessor" class="org.opennms.core.rpc.camel.CamelRpcClientPreProcessor"/>
 

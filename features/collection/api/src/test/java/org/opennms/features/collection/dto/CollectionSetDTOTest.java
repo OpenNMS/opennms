@@ -64,6 +64,7 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
     public static Collection<Object[]> data() throws ParseException {
         CollectionAgent collectionAgent = mock(CollectionAgent.class);
         NodeLevelResource nodeLevelResource = new NodeLevelResource(1);
+        NodeLevelResource jmxNodeLevelResource = new NodeLevelResource(1, "opennns-jvm");
         InterfaceLevelResource interfaceLevelResource = new InterfaceLevelResource(nodeLevelResource, "eth0");
 
         ResourceType rt = mock(ResourceType.class, RETURNS_DEEP_STUBS);
@@ -83,6 +84,7 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
         CollectionSet collectionSet = new CollectionSetBuilder(collectionAgent)
                 .withTimestamp(new Date(0))
                 .withNumericAttribute(nodeLevelResource, "ucd-sysstat", "CpuRawIdle", 99, AttributeType.GAUGE)
+                .withNumericAttribute(jmxNodeLevelResource, "opennms-jvm", "heap", 2048, AttributeType.GAUGE)
                 .withNumericAttribute(interfaceLevelResource, "mib2-X-interfaces", "ifHCInOctets", 1001, AttributeType.COUNTER)
                 .withStringAttribute(interfaceLevelResource, "mib2-X-interfaces", "ifDescr", "LAN")
                 .withIdentifiedNumericAttribute(deferredGenericTypeResource, "net-snmp-disk", "ns-dsk1", 1024, AttributeType.GAUGE, "some-oid")
@@ -97,6 +99,10 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
                 "   <collection-resource>\n" +
                 "      <node-level-resource node-id=\"1\"/>\n" +
                 "      <numeric-attribute group=\"ucd-sysstat\" name=\"CpuRawIdle\" type=\"gauge\" value=\"99\"/>\n" +
+                "   </collection-resource>\n" +
+                "   <collection-resource>\n" +
+                "      <node-level-resource node-id=\"1\" path=\"opennns-jvm\"/>\n" +
+                "      <numeric-attribute group=\"opennms-jvm\" name=\"heap\" type=\"gauge\" value=\"2048\"/>\n" +
                 "   </collection-resource>\n" +
                 "   <collection-resource>\n" +
                 "      <interface-level-resource if-name=\"eth0\">\n" +

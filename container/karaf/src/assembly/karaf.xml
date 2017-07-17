@@ -34,7 +34,7 @@
                     <exclude>demos/*</exclude>
 
                     <!-- Get rid of the old Karaf features XML -->
-                    <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
+                    <exclude>**/org.opennms.container.standalone*-features.xml*</exclude>
 
                     <!-- Get rid of any files that we replace with files from this project -->
                     <exclude>**/custom.properties</exclude>
@@ -48,7 +48,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>target/filtered-resources/etc</directory>
+            <directory>${project.build.directory}/filtered-resources/etc</directory>
             <outputDirectory>etc</outputDirectory>
             <lineEnding>unix</lineEnding>
             <filtered>false</filtered>
@@ -56,10 +56,30 @@
     </fileSets>
 
     <files>
+        <!-- OpenNMS-modified copy of Karaf's mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features -->
         <file>
-            <source>target/filtered-resources/features/features.xml</source>
+            <source>${project.build.directory}/filtered-resources/features/features.xml</source>
             <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
-            <destName>${project.groupId}.${project.artifactId}-${project.version}-features.xml</destName>
+            <destName>${project.artifactId}-${project.version}-features.xml</destName>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <file>
+            <source>${project.build.directory}/filtered-resources/features/features.xml.sha1</source>
+            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <destName>${project.artifactId}-${project.version}-features.xml.sha1</destName>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <!-- OpenNMS-modified copy of Karaf's mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features -->
+        <file>
+            <source>${project.build.directory}/filtered-resources/features/spring.xml</source>
+            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <destName>${project.artifactId}-${project.version}-spring.xml</destName>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <file>
+            <source>${project.build.directory}/filtered-resources/features/spring.xml.sha1</source>
+            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <destName>${project.artifactId}-${project.version}-spring.xml.sha1</destName>
             <lineEnding>unix</lineEnding>
         </file>
     </files>

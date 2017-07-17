@@ -50,7 +50,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.NONE)
 @SuppressWarnings("all") 
 public class TrapdConfiguration implements  Serializable {
-	private static final long serialVersionUID = -3548367130814097723L;
+	private static final long serialVersionUID = 2;
+
+	public static final boolean DEFAULT_USE_ADDESS_FROM_VARBIND = false;
 
 	/**
      * The IP address on which trapd listens for connections.
@@ -124,6 +126,14 @@ public class TrapdConfiguration implements  Serializable {
 	@XmlElement(name="snmpv3-user")
     private java.util.List<Snmpv3User> _snmpv3UserList;
 
+	/**
+	 * When enabled, the source address of the trap will be pulled
+     * from the snmpTrapAddress (1.3.6.1.6.3.18.1.3.0) varbind when available.
+     * This varbind is appended by certain trap forwarders when forwarding
+     * SNMPv2 traps.
+	 */
+	@XmlAttribute(name="use-address-from-varbind", required=false)
+    private Boolean _useAddessFromVarbind;
 
     public TrapdConfiguration() {
         super();
@@ -196,7 +206,7 @@ public class TrapdConfiguration implements  Serializable {
 
     public int hashCode() {
         return Objects.hash(_snmpTrapAddress, _snmpTrapPort, _has_snmpTrapPort, _newSuspectOnTrap, _snmpv3UserList,
-                _includeRawMessage, _threads, _queueSize, _batchSize, _batchInterval);
+                _includeRawMessage, _threads, _queueSize, _batchSize, _batchInterval, _useAddessFromVarbind);
     }
 
     @Override()
@@ -215,7 +225,8 @@ public class TrapdConfiguration implements  Serializable {
                     && Objects.equals(_threads, other._threads)
                     && Objects.equals(_queueSize, other._queueSize)
                     && Objects.equals(_batchSize, other._batchSize)
-                    && Objects.equals(_batchInterval, other._batchInterval);
+                    && Objects.equals(_batchInterval, other._batchInterval)
+                    && Objects.equals(_useAddessFromVarbind, other._useAddessFromVarbind);
             return equals;
         }
         return false;
@@ -351,6 +362,13 @@ public class TrapdConfiguration implements  Serializable {
         return this._newSuspectOnTrap;
     }
 
+    public boolean shouldUseAddressFromVarbind() {
+        return _useAddessFromVarbind != null ? _useAddessFromVarbind : DEFAULT_USE_ADDESS_FROM_VARBIND;
+    }
+
+    public void setUseAddressFromVarbind(Boolean useAddessFromVarbind) {
+        _useAddessFromVarbind = useAddessFromVarbind;
+    }
 
     /**
      * Method iterateSnmpv3User.
