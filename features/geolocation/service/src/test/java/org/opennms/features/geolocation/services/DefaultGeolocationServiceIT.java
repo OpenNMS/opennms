@@ -130,6 +130,7 @@ public class DefaultGeolocationServiceIT {
 
         // Add an alarm for one node and try again
         alarmDao.save(createAlarm(databasePopulator.getNode1(), OnmsSeverity.MAJOR, distPollerDao.whoami()));
+        alarmDao.flush();
         locations = geolocationService.getLocations(query);
         Assert.assertEquals(nodeDao.countAll(), locations.size());
         locations.forEach(l -> {

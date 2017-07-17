@@ -35,6 +35,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,10 +69,24 @@ public class StatusRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void verifySummary() throws Exception {
+    public void verifyStatus() throws Exception {
         sendRequest("GET", "/status/business-services", 204);
         sendRequest("GET", "/status/applications", 204);
         sendRequest("GET", "/status/nodes/alarms", 204);
         sendRequest("GET", "/status/nodes/outages", 204);
+    }
+
+    @Test
+    public void verifySummary() throws Exception {
+        getSummary("/status/summary/business-services");
+        getSummary("/status/summary/applications");
+        getSummary("/status/summary/nodes/alarms");
+        getSummary("/status/summary/nodes/outages");
+    }
+
+    private void getSummary(String url) throws Exception {
+        MockHttpServletRequest request = createRequest(GET, url);
+        request.addHeader("Accept", "application/json");
+        sendRequest(request, 200);
     }
 }

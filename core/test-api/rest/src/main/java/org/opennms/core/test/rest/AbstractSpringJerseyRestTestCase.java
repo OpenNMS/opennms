@@ -286,6 +286,10 @@ public abstract class AbstractSpringJerseyRestTestCase {
         }
     }
 
+    protected MockHttpServletRequest createRequest(final String requestType, final String urlPath) {
+        return createRequest(servletContext, requestType, urlPath, getUser(), getUserRoles());
+    }
+
     protected static MockHttpServletResponse createResponse() {
         return new MockHttpServletResponse();
     }
@@ -493,7 +497,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final String xml = response.getContentAsString();
         if (xml != null && !xml.isEmpty()) {
             try {
-                System.err.println(StringUtils.prettyXml(xml));
+                if (request.getHeader("Accept").contains("json")) {
+                    System.err.println(xml);
+                } else {
+                    System.err.println(StringUtils.prettyXml(xml));
+                }
             } catch (Exception e) {
                 System.err.println(xml);
             }

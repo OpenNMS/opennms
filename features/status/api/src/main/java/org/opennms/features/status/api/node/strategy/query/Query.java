@@ -111,7 +111,7 @@ public abstract class Query {
     protected void applyRestrictions() {
         sql.append("WHERE 1=1 ");
         if (!config.getNodeIds().isEmpty()) {
-            sql.append(String.format("AND %s.nodeid IN (:nodeIds)) ", getViewName()));
+            sql.append(String.format("AND %s.nodeid IN (:nodeIds) ", getViewName()));
             parameterMap.put("nodeIds", config.getNodeIds());
         }
         if(config.getLocation() != null) {

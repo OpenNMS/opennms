@@ -28,20 +28,22 @@
 
 package org.opennms.features.status.api.node.strategy;
 
-import com.google.common.collect.Lists;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.utils.QueryParameters;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.utils.QueryParameters;
+
+import com.google.common.collect.Lists;
 
 public class NodeStatusCalculatorConfig {
     private boolean includeAcknowledgedAlarms;
     private String location;
     private Collection<Integer> nodeIds = new ArrayList<>();
     private NodeStatusCalculationStrategy calculationStrategy;
-    private List<OnmsSeverity> severities = Lists.newArrayList(OnmsSeverity.NORMAL);
+    private List<OnmsSeverity> severities = Lists.newArrayList(
+            OnmsSeverity.NORMAL, OnmsSeverity.WARNING, OnmsSeverity.MINOR, OnmsSeverity.MAJOR, OnmsSeverity.CRITICAL);
     private Integer limit;
     private QueryParameters.Order order;
     private Integer offset;
