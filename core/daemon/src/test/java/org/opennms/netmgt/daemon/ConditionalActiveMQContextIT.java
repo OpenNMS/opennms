@@ -45,7 +45,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties=ConditionalActiveMQContext.DISABLE_BROKER_SYS_PROP + "=true")
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class ConditionalActiveMQContextTest {
+public class ConditionalActiveMQContextIT {
 
     @Autowired
     ActiveMQConnectionFactory activeMQConnectionFactory;

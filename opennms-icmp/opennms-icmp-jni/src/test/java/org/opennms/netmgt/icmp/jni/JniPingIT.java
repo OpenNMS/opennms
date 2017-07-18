@@ -55,7 +55,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({}) 
-public class JniPingTest {
+public class JniPingIT {
 
     static private JniPinger s_jniPinger = new JniPinger();
 

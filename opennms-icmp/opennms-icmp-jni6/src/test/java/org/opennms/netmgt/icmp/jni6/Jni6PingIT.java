@@ -56,7 +56,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({}) 
-public class Jni6PingTest {
+public class Jni6PingIT {
 
     static private Jni6Pinger s_jniPinger = new Jni6Pinger();
 
@@ -249,4 +249,4 @@ public class Jni6PingTest {
         System.out.print(sb);
     }
 }
-    
+
