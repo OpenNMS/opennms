@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -39,7 +39,7 @@
             </executions>
             <configuration>
               <descriptors>
-                <descriptor>src/assembly/default.xml</descriptor>
+                <descriptor>src/assembly/full.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
               <tarLongFileMode>posix</tarLongFileMode>
@@ -109,7 +109,7 @@
             </executions>
             <configuration>
               <descriptors>
-                <descriptor>src/assembly/dir.xml</descriptor>
+                <descriptor>src/assembly/fulldir.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
               <tarLongFileMode>posix</tarLongFileMode>
@@ -179,6 +179,72 @@
       </plugin> 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-karaf</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <!-- Unpack the Karaf boot classpath JARs so that we can put them into the lib directory in base-assembly.xml -->
+              <includes>lib/boot/*.jar</includes>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.container</groupId>
+                  <artifactId>org.opennms.container.karaf</artifactId>
+                  <version>${project.version}</version>
+                  <type>tar.gz</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <!-- Unpack the minion core repo so that it can be used in integration tests -->
+          <execution>
+            <id>unpack-minion-core-repo</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/minion-core-repo</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features.minion</groupId>
+                  <artifactId>core-repository</artifactId>
+                  <version>${project.version}</version>
+                  <type>tar.gz</type>
+                  <classifier>repo</classifier>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <!-- Unpack the minion default repo so that it can be used in integration tests -->
+          <execution>
+            <id>unpack-minion-default-repo</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/minion-default-repo</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features.minion</groupId>
+                  <artifactId>repository</artifactId>
+                  <version>${project.version}</version>
+                  <type>tar.gz</type>
+                  <classifier>repo</classifier>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.5</version>
         <executions>
@@ -202,15 +268,15 @@
       </plugin>
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>features-maven-plugin</artifactId>
+        <artifactId>karaf-maven-plugin</artifactId>
         <version>${karafVersion}</version>
 
         <executions>
           <execution>
-            <id>add-features-to-repo</id>
+            <id>features-add-to-repository</id>
             <phase>process-resources</phase>
             <goals>
-              <goal>add-features-to-repo</goal>
+              <goal>features-add-to-repository</goal>
             </goals>
             <configuration>
               <karafVersion>DONT_USE_STANDARD_FEATURES</karafVersion>
@@ -220,19 +286,23 @@
                   org.apache.karaf.features.cfg file so that the features are available to the container.
                 -->
 
-                <!-- Karaf standard features -->
-                <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor>
-                <!-- Karaf Spring features -->
-                <descriptor>mvn:org.apache.karaf.assemblies.features/spring/${karafVersion}/xml/features</descriptor>
+                <!-- Karaf framework features -->
+                <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
+                <!-- Karaf standard and Spring features, replaced by our modified versions -->
+                <!-- <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor> -->
+                <!-- <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor> -->
                 <!-- Pax Exam features -->
                 <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
                 <!-- Pax Web features -->
-                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/3.2.4/xml/features</descriptor>
+                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/4.3.0/xml/features</descriptor>
 
                 <!-- Features for the OpenNMS-modified Karaf container -->
                 <descriptor>mvn:org.opennms.container/org.opennms.container.karaf/${project.version}/xml/features</descriptor>
+                <descriptor>mvn:org.opennms.container/org.opennms.container.karaf/${project.version}/xml/spring</descriptor>
+
                 <!-- OpenNMS product features generated by container/features/pom.xml -->
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
+
                 <!-- OpenNMS Minion features generated by container/features/pom.xml -->
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
               </descriptors>
@@ -240,46 +310,68 @@
                 <!-- Pax Exam feature that is necessary to run the tests -->
                 <feature>exam</feature>
 
-                <!-- Standard Karaf features -->
-                <feature>admin</feature>
+                <!-- Karaf framework features -->
+                <feature>framework</feature>
+
+                <!-- Karaf standard features -->
+                <feature>aries-annotation</feature>
                 <feature>aries-blueprint</feature>
                 <feature>aries-proxy</feature>
                 <feature>blueprint-web</feature>
+                <feature>bundle</feature>
                 <feature>config</feature>
                 <feature>deployer</feature>
                 <feature>diagnostic</feature>
                 <feature>eventadmin</feature>
-                <feature>features</feature>
+                <feature>feature</feature>
+                <feature>framework-security</feature>
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
+                <feature>instance</feature>
+                <feature>jaas-boot</feature>
                 <feature>jaas</feature>
                 <feature>jasypt-encryption</feature>
+                <!-- TODO: Figure out how to import 2 versions of Jetty? -->
                 <feature>jetty</feature>
-                <feature>karaf-framework</feature>
+                <feature>jolokia</feature>
                 <feature>kar</feature>
+                <feature>log</feature>
                 <feature>management</feature>
+                <feature>minimal</feature>
                 <feature>obr</feature>
+                <feature>package</feature>
+                <feature>profile</feature>
+                <feature>scheduler</feature>
                 <feature>scr</feature>
+                <feature>service</feature>
                 <feature>service-security</feature>
                 <feature>service-wrapper</feature>
+                <feature>shell-compat</feature>
                 <feature>shell</feature>
                 <feature>ssh</feature>
+                <feature>standard</feature>
+                <feature>system</feature>
                 <feature>war</feature>
                 <feature>webconsole</feature>
                 <feature>wrap</feature>
                 <feature>wrapper</feature>
 
-                <!-- Spring features -->
-                <feature>spring</feature>
-                <feature>spring-aspects</feature>
-                <feature>spring-instrument</feature>
-                <feature>spring-jdbc</feature>
-                <feature>spring-jms</feature>
-                <feature>spring-test</feature>
-                <feature>spring-orm</feature>
-                <feature>spring-oxm</feature>
-                <feature>spring-tx</feature>
-                <feature>spring-web</feature>
+                <!-- Karaf Spring features -->
+                <feature>spring/3.1.4.RELEASE</feature>
+                <feature>spring/4.0.7.RELEASE_3</feature>
+                <feature>spring-jms/4.0.7.RELEASE_3</feature>
+                <feature>spring/4.1.9.RELEASE_1</feature>
+                <feature>spring-jms/4.1.9.RELEASE_1</feature>
+                <feature>spring/${springVersion}</feature>
+                <feature>spring-aspects/${springVersion}</feature>
+                <feature>spring-instrument/${springVersion}</feature>
+                <feature>spring-jdbc/${springVersion}</feature>
+                <feature>spring-jms/${springVersion}</feature>
+                <feature>spring-test/${springVersion}</feature>
+                <feature>spring-orm/${springVersion}</feature>
+                <feature>spring-oxm/${springVersion}</feature>
+                <feature>spring-tx/${springVersion}</feature>
+                <feature>spring-web/${springVersion}</feature>
 
                 <!-- Include everything in the opennms-${project.version} feature produced by container/features/pom.xml -->
                 <feature>opennms-${project.version}</feature>
@@ -288,18 +380,35 @@
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
               </features>
-              <repository>${project.build.directory}/features-repo</repository>
+              <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>
           </execution>
         </executions>
-        <!-- https://issues.apache.org/jira/browse/SM-2416 -->
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-http-lightweight</artifactId>
-            <version>2.6</version>
-          </dependency>
-        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>net.nicoulaj.maven.plugins</groupId>
+        <artifactId>checksum-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals><goal>files</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <algorithms><algorithm>SHA-1</algorithm></algorithms>
+          <fileSets>
+            <fileSet>
+              <directory>${project.build.directory}/opennms-repo</directory>
+              <includes>
+                <include>**/*.cfg</include>
+                <include>**/*.jar</include>
+                <include>**/*.pom</include>
+                <include>**/*.war</include>
+                <include>**/*.xml</include>
+              </includes>
+            </fileSet>
+          </fileSets>
+        </configuration>
       </plugin>
       <plugin> 
         <artifactId>maven-clean-plugin</artifactId> 
@@ -311,10 +420,16 @@
               <goal>clean</goal> 
             </goals> 
             <configuration> 
-              <excludeDefaultDirectories>true</excludeDefaultDirectories> 
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
               <filesets> 
                 <fileset> 
-                  <directory>${project.build.directory}/features-repo</directory> 
+                  <directory>${project.build.directory}/opennms-repo</directory>
+                </fileset> 
+                <fileset> 
+                  <directory>${project.build.directory}/minion-core-repo</directory>
+                </fileset> 
+                <fileset> 
+                  <directory>${project.build.directory}/minion-default-repo</directory>
                 </fileset> 
               </filesets> 
             </configuration> 
@@ -612,14 +727,21 @@
 
     <!-- Apache Karaf features.xml artifacts -->
     <dependency>
-      <groupId>org.apache.karaf.assemblies.features</groupId>
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>framework</artifactId>
+      <version>${karafVersion}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.features</groupId>
       <artifactId>standard</artifactId>
       <version>${karafVersion}</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
     <dependency>
-      <groupId>org.apache.karaf.assemblies.features</groupId>
+      <groupId>org.apache.karaf.features</groupId>
       <artifactId>spring</artifactId>
       <version>${karafVersion}</version>
       <classifier>features</classifier>
@@ -634,7 +756,7 @@
     <dependency>
       <groupId>org.ops4j.pax.web</groupId>
       <artifactId>pax-web-features</artifactId>
-      <version>3.2.4</version>
+      <version>4.3.0</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
@@ -701,13 +823,6 @@
       <id>coova</id>
       <name>Coova Repository</name>
       <url>http://maven.opennms.org/content/repositories/coova/</url>
-    </repository>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>jboss-repo</id>
-      <name>JBoss Repository</name>
-      <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
     </repository>
   </repositories>
 </project>

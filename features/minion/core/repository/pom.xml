@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>core-parent</artifactId>
-        <version>20.0.0-SNAPSHOT</version>
+        <version>21.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core-repository</artifactId>
@@ -14,18 +14,14 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>features.xml</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>features-add-to-repo</id>
-                        <phase>generate-resources</phase>
+                        <id>features-add-to-repository</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>generate-features-maven-repo</goal>
+                            <goal>features-add-to-repository</goal>
                         </goals>
                         <configuration>
                             <descriptors>
@@ -42,7 +38,7 @@
                                 <feature>minion-core</feature>
                                 <feature>minion-core-shell</feature>
                             </features>
-                            <repository>target/maven-repo</repository>
+                            <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
                     </execution>
                 </executions>
@@ -58,7 +54,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>target/maven-repo</outputDirectory>
+                            <outputDirectory>${project.build.directory}/maven-repo</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/resources</directory>
@@ -68,6 +64,31 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.nicoulaj.maven.plugins</groupId>
+                <artifactId>checksum-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals><goal>files</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <algorithms><algorithm>SHA-1</algorithm></algorithms>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}/maven-repo</directory>
+                            <includes>
+                                <include>**/*.cfg</include>
+                                <include>**/*.jar</include>
+                                <include>**/*.pom</include>
+                                <include>**/*.war</include>
+                                <include>**/*.xml</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -86,6 +107,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>cleanup-after-integration-tests</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.directory}/maven-repo</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -98,28 +139,4 @@
         </dependency>
     </dependencies>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <id>opennms-snapshots</id>
-            <name>OpenNMS Snapshot Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>apache-snapshots</id>
-            <name>Apache Snapshots Repository</name>
-            <url>http://repository.apache.org/content/groups/snapshots-group</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 </project>

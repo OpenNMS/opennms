@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>minion-parent</artifactId>
-        <version>20.0.0-SNAPSHOT</version>
+        <version>21.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -18,18 +18,14 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>features.xml</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>features-add-to-repo</id>
-                        <phase>generate-resources</phase>
+                        <id>features-add-to-repository</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>generate-features-maven-repo</goal>
+                            <goal>features-add-to-repository</goal>
                         </goals>
                         <configuration>
                             <descriptors>
@@ -269,31 +265,6 @@
         </dependency>
     </dependencies>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <id>opennms-snapshots</id>
-            <name>OpenNMS Snapshot Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>apache-snapshots</id>
-            <name>Apache Snapshots Repository</name>
-            <url>http://repository.apache.org/content/groups/snapshots-group</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
     <repositories>
         <repository>
             <snapshots><enabled>false</enabled></snapshots>
@@ -336,17 +307,6 @@
             <id>coova</id>
             <name>Coova Repository</name>
             <url>http://maven.opennms.org/content/repositories/coova/</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <id>jboss-repo</id>
-            <name>JBoss Repository</name>
-            <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
         </repository>
     </repositories>
 </project>

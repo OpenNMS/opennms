@@ -89,6 +89,10 @@ Requires(pre):  %{name}-container = %{version}-%{release}
 Requires:       %{name}-container = %{version}-%{release}
 Requires(post): util-linux
 Requires:       util-linux
+Requires:       jicmp >= 2.0.0
+Requires(pre):  jicmp >= 2.0.0
+Requires:       jicmp6 >= 2.0.0
+Requires(pre):  jicmp6 >= 2.0.0
 
 %description features-core
 Minion Core Features
@@ -132,10 +136,8 @@ tools/packages/minion/create-minion-assembly.sh $EXTRA_ARGS
 mkdir -p %{buildroot}%{minioninstprefix}
 tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
 
-# Remove the data directory
-rm -rf %{buildroot}%{minioninstprefix}/data
-# Remove the demos directory
-rm -rf %{buildroot}%{minioninstprefix}/demos
+# Remove extraneous directories that start with "d"
+rm -rf %{buildroot}%{minioninstprefix}/{data,debian,demos}
 
 # Create a default org.opennms.minion.controller.cfg file
 echo "location = MINION" > %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg

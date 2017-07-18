@@ -28,6 +28,7 @@
 
 package org.opennms.minion.heartbeat.producer;
 
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,12 +52,15 @@ public class HeartbeatProducer {
         final MinionIdentityDTO identityDTO = new MinionIdentityDTO(identity);
         final SyncDispatcher<MinionIdentityDTO> dispatcher = messageDispatcherFactory.createSyncDispatcher(new HeartbeatModule());
         timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
                     LOG.info("Sending heartbeat to Minion with id: {} at location: {}",
                             identity.getId(), identity.getLocation());
+                    // We reuse the same DTO instead of creating a new object
+                    // on every trigger, so we need to update the timestamp each time
+                    identityDTO.setTimestamp(new Date());
                     dispatcher.send(identityDTO);
                 } catch (Throwable t) {
                     LOG.error("An error occured while sending the heartbeat. Will try again in {} ms", PERIOD_MS, t);

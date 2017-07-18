@@ -55,4 +55,13 @@ public enum ThresholdType {
     public String getEnumName() {
         return m_enumName;
     }
+
+    public static ThresholdType forName(final String name) {
+        for (final ThresholdType type : ThresholdType.values()) {
+            if (name.equalsIgnoreCase(type.getEnumName())) {
+                return type;
+            }
+        }
+        return null;
+    }
 }

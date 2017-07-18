@@ -73,6 +73,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonValue;
@@ -372,6 +373,17 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
             }
             return null;
         }
+
+        @JsonCreator
+        public static NodeType create(String s) {
+            if (s == null || s.length() == 0) return null;
+            for (NodeType nodeType: NodeType.values()) {
+                if (nodeType.value == s.charAt(0))
+                    return nodeType;
+            }
+            return null;
+        }
+
     }
 
     /**
@@ -571,6 +583,15 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         @JsonValue
         public char value() {
             return value;
+        }
+
+        @JsonCreator
+        static NodeLabelSource create(String s) {
+            if (s == null || s.length() == 0) return null;
+            for (NodeLabelSource src : NodeLabelSource.values()) {
+                if (src.value == s.charAt(0)) return src;
+            }
+            return null;
         }
 
         @Override

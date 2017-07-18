@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -58,14 +58,6 @@
             -->
             <DynamicImport-Package>*</DynamicImport-Package>
             <Export-Package>org.opennms.core.soa.*;version="${project.version}"</Export-Package>
-
-            <!-- Launch the Spring context when this bundle is loaded in OSGi -->
-            <!--
-            <Spring-Context>
-              META-INF/opennms/applicationContext-soa.xml,
-              META-INF/opennms/applicationContext-soa-osgi.xml
-            </Spring-Context>
-            -->
             <!-- Launch a BundleActivator that will synchronize services between OSGi and the OnmSGi registry -->
             <Bundle-Activator>org.opennms.core.soa.support.OnmsOSGiBridgeActivator</Bundle-Activator>
           </instructions>

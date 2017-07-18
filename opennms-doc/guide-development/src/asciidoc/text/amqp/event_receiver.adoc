@@ -29,9 +29,9 @@ Update the properties with your deployment specific values:
 [source]
 ----
 config:edit org.opennms.features.amqp.eventreceiver
-propset connectionUrl amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672\'
-propset source amqp:OpenNMS-Queue
-propset processorName default-event-receiver-processor
+config:property-set connectionUrl amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672\'
+config:property-set source amqp:OpenNMS-Queue
+config:property-set processorName default-event-receiver-processor
 config:update
 ----
 
@@ -39,7 +39,7 @@ Install the feature:
 
 [source]
 ----
-features:install opennms-amqp-event-receiver
+feature:install opennms-amqp-event-receiver
 ----
 
 ==== Debugging

@@ -31,9 +31,11 @@ package org.opennms.minion.heartbeat.common;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.utils.StringUtils;
 
 public class MinionIdentityDTOTest extends XmlTestNoCastor<MinionIdentityDTO> {
 
@@ -43,15 +45,18 @@ public class MinionIdentityDTOTest extends XmlTestNoCastor<MinionIdentityDTO> {
 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
+        Date timestamp = new Date(0);
         MinionIdentityDTO identity = new MinionIdentityDTO();
         identity.setId("idx");
         identity.setLocation("locationx");
+        identity.setTimestamp(timestamp);
         return Arrays.asList(new Object[][] {
             {
                 identity,
                 "<minion>\n" +
                    "<id>idx</id>\n" +
                    "<location>locationx</location>\n" +
+                   "<timestamp>" + StringUtils.iso8601LocalOffsetString(timestamp) + "</timestamp>\n" +
                 "</minion>",
                 null, }
         });

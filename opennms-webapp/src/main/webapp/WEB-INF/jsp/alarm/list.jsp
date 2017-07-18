@@ -34,6 +34,7 @@
 <%@page import="org.opennms.core.utils.InetAddressUtils" %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page import="org.opennms.netmgt.model.OnmsAlarm" %>
+<%@page import="org.opennms.netmgt.model.OnmsEvent" %>
 <%@page import="org.opennms.netmgt.model.OnmsFilterFavorite"%>
 <%@page import="org.opennms.web.alarm.AcknowledgeType" %>
 <%@page import="org.opennms.web.alarm.SortStyle" %>
@@ -43,6 +44,7 @@
 <%@page import="org.opennms.web.controller.alarm.AlarmSeverityChangeController" %>
 <%@page import="org.opennms.web.filter.Filter"%>
 <%@page import="org.opennms.web.filter.NormalizedQueryParameters" %>
+<%@page import="org.opennms.web.filter.NormalizedAcknowledgeType" %>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
 <%@page import="org.opennms.web.tags.filters.AlarmFilterCallback" %>
 <%@page import="org.opennms.web.tags.filters.FilterCallback" %>
@@ -66,7 +68,7 @@
 --%>
 
 <%
-    urlBase = (String) request.getAttribute("relativeRequestPath");
+	urlBase = (String) request.getAttribute("relativeRequestPath");
 
     XssRequestWrapper req = new XssRequestWrapper(request);
 
@@ -74,13 +76,19 @@
     OnmsAlarm[] alarms = (OnmsAlarm[])req.getAttribute( "alarms" );
     long alarmCount = req.getAttribute("alarmCount") == null ? -1 : (Long)req.getAttribute("alarmCount");
     NormalizedQueryParameters parms = (NormalizedQueryParameters)req.getAttribute( "parms" );
+    
+    // show unacknowledged alarms as flashing alarms
+    String unAckFlashStr = System.getProperty("opennms.alarmlist.unackflash");
+	boolean unAckFlash = (unAckFlashStr == null) ? false : "true".equals(unAckFlashStr.trim());
+	if(unAckFlash) parms.setAckType(NormalizedAcknowledgeType.BOTH);
+    
     FilterCallback callback = (AlarmFilterCallback) req.getAttribute("callback");
 
     if( alarms == null || parms == null ) {
         throw new ServletException( "Missing either the alarms or parms request attribute." );
     }
-
-    // Make 'action' the opposite of the current acknowledgement state
+  
+    //Make 'action' the opposite of the current acknowledgement state
     String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
     if (parms.getAckType() != null && parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType())) {
         action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
@@ -94,6 +102,48 @@
     pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
     pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
     pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
+    
+    // get sound constants from session, request or opennms.properties
+	String soundEnabledStr = System.getProperty("opennms.alarmlist.sound.enable");
+	boolean soundEnabled = (soundEnabledStr == null) ? false : "true".equals(soundEnabledStr.trim());
+
+	boolean soundOn = false;
+	boolean soundOnEvent = false;
+
+	String alarmSoundStatusStr = null; // newalarm,newalarmcount,off
+	if (soundEnabled) {
+		// get request parameter if present, or session parameter if present or system property
+		String sessionStatus = (String) session.getAttribute("opennms.alarmlist.STATUS");
+		alarmSoundStatusStr = request.getParameter("alarmSoundStatus");
+		if (alarmSoundStatusStr != null) {
+			if(!alarmSoundStatusStr.equals(sessionStatus)){
+			   session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
+			   session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(0));
+			}
+		} else {
+			alarmSoundStatusStr = (String) session.getAttribute("opennms.alarmlist.STATUS");
+			if (alarmSoundStatusStr == null) {
+				alarmSoundStatusStr = System.getProperty("opennms.alarmlist.sound.status");
+				if (alarmSoundStatusStr == null) alarmSoundStatusStr = "off";
+				session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
+			}
+		}
+		switch (alarmSoundStatusStr) {
+		case "newalarm": {
+			soundOn = true;
+			soundOnEvent = false;
+			break;
+		}
+		case "newalarmcount": {
+			soundOn = true;
+			soundOnEvent = true;
+			break;
+		}
+		default: { //off 
+			break;
+		}
+		}
+	}
 %>
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
@@ -104,6 +154,31 @@
   <jsp:param name="breadcrumb" value="<a href='${baseHref}alarm/index.htm' title='Alarms System Page'>Alarms</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
+
+<% if(unAckFlash){ //style to make unacknowledged alarms flash %>
+<style media="screen" type="text/css">
+.blink_text {
+    animation:1s blinker linear infinite;
+    -webkit-animation:1s blinker linear infinite;
+    -moz-animation:1s blinker linear infinite;
+    }
+    @-moz-keyframes blinker {  
+     0% { opacity: 1.0; }
+     50% { opacity: 0.0; }
+     100% { opacity: 1.0; }
+     }
+    @-webkit-keyframes blinker {  
+     0% { opacity: 1.0; }
+     50% { opacity: 0.0; }
+     100% { opacity: 1.0; }
+     }
+    @keyframes blinker {  
+     0% { opacity: 1.0; }
+     50% { opacity: 0.0; }
+     100% { opacity: 1.0; }
+     }
+</style>
+<% } %>
 
   <script type="text/javascript">
     function checkAllCheckboxes() {
@@ -201,9 +276,15 @@
     function changeFavorite(favoriteId, filter) {
         window.location.href = "<%=req.getContextPath()%>/alarm/list?display=<%=parms.getDisplay()%>&favoriteId=" + favoriteId + '&' + filter;
     }
+    
+    // function to play sound
+    var snd = new Audio("sounds/alert.wav"); // loads automatically
+    function playSound(){
+    	snd.play();
+    }
 
   </script>
-
+  
 <div id="severityLegendModal" class="modal fade" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -235,11 +316,13 @@
               <input type="hidden" name="actionCode" value="<%=action%>" />
               <%=Util.makeHiddenTags(req)%>
             </form>
+         <% if (!unAckFlash) { // global ack or unack only displayed if flashing disabled %>
             <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
               <a class="btn btn-default" href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
             <% } else { %>
               <a class="btn btn-default" href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
             <% } %>
+         <% } %>
         <% } %>
       <% } %>
 
@@ -250,6 +333,16 @@
           <option value="<%= makeLimitLink(callback, parms, favorite, 100) %>" ${(parms.getLimit() == 100) ? 'selected' : ''}>100</option>
           <option value="<%= makeLimitLink(callback, parms, favorite, 500) %>" ${(parms.getLimit() == 500) ? 'selected' : ''}>500</option>
       </select>
+      
+<% if(soundEnabled){ %>
+      <select class="form-control pull-right" onchange="location = this.value;">
+          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"off") %>" <% out.write("off".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound off</option>
+          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarm" ) %>" <% out.write("newalarm".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on new alarm</option>
+          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarmcount" ) %>" <% out.write("newalarmcount".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm event count</option>
+      </select>
+<% 
+}
+%>
 
       </div>
       </div>
@@ -359,7 +452,7 @@
       <table class="table table-condensed severity">
 				<thead>
 					<tr>
-                                             <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
+                        <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
 						<% if ( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
 						<th width="1%">Ack</th>
 						<% } else if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
@@ -370,8 +463,6 @@
                     <% } else { %>
                         <th width="1%">&nbsp;</th>
                     <% } %>
-
-
 
 			<th width="2%">
               <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" ,       favorite )%>
@@ -418,9 +509,30 @@
 
       <% for( int i=0; i < alarms.length; i++ ) { 
       	pageContext.setAttribute("alarm", alarms[i]);
-      %> 
+      %>
 
-        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%>">
+      <% if(unAckFlash){ // flash unacknowledged alarms %>
+        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> <%=alarms[i].isAcknowledged() ? "" : "blink_text"%>">
+        
+          <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
+              <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
+                <nobr>
+                  <input  type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
+                  <% if(unAckFlash && alarms[i].isAcknowledged() ){ // tick char %>
+                  &#10004;
+                  <% } %>
+                </nobr>
+          <% } else { %>
+            <td valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>" class="divider">
+                  <% if(unAckFlash && alarms[i].isAcknowledged() ){ // tick char %>
+                  &#10004;
+                  <% } %>
+          <% } %>
+          </td>
+        
+      <% } else { // normal behaviour %>
+        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> ">
+
           <% if( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
               <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
                 <nobr>
@@ -435,6 +547,7 @@
             <td valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>" class="divider">&nbsp;
           <% } %>
           </td>
+      <% } %>
 
           <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
 
@@ -605,6 +718,12 @@
             </nobr>
 			<% }%>
           </c:if>
+
+          <%-- if sound enabled, write java script to play sound --%>
+          <%
+          if (soundOn) out.write(this.alarmSound(alarms[i], session, soundOnEvent));
+          %>
+
           </td>
           <c:if test="${param.display != 'long'}">
           <td class="divider"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
@@ -624,13 +743,18 @@
           <input class="btn btn-default" TYPE="reset" />
           <input class="btn btn-default" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <select class="form-control" name="alarmAction">
-        <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-          <option value="acknowledge">Acknowledge Alarms</option>
-        <% } else if( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-          <option value="unacknowledge">Unacknowledge Alarms</option>
-        <% } %>
-          <option value="clear">Clear Alarms</option>
-          <option value="escalate">Escalate Alarms</option>
+          <% if(unAckFlash){ // allow alarms to be acked and unacked %>
+              <option value="acknowledge">Acknowledge Alarms</option>
+              <option value="unacknowledge">Unacknowledge Alarms</option>
+          <% } else { // normal behaviour %>
+            <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+              <option value="acknowledge">Acknowledge Alarms</option>
+            <% } else if( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+              <option value="unacknowledge">Unacknowledge Alarms</option>
+            <% } %>
+         <% } %>
+              <option value="clear">Clear Alarms</option>
+              <option value="escalate">Escalate Alarms</option>
           </select>
           <input class="btn btn-default" type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>
@@ -647,7 +771,6 @@
             <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
           </jsp:include>
         <% } %>
-
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
@@ -741,6 +864,7 @@
     }
 
     public String[] getNodeLabels( String nodeLabel ) {
+        nodeLabel = WebSecurityUtils.sanitizeString(nodeLabel);
         String[] labels = null;
 
         if( nodeLabel.length() > 32 ) {
@@ -752,6 +876,52 @@
         }
 
         return( labels );
+    }
+
+    public String makeAlarmSoundLink(FilterCallback callback, NormalizedQueryParameters parms, OnmsFilterFavorite favorite, String alarmSoundStatus ) {
+        NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms); // clone;
+        String urlStr = this.makeLink(callback, newParms, favorite)+"&alarmSoundStatus="+alarmSoundStatus;
+        return urlStr;
+    }
+
+    
+    public String alarmSound(OnmsAlarm onmsAlarm, HttpSession session, boolean soundOnEvent ){
+
+        // added this section to fire when a new alarm arrives
+        // This maintains the highest alarmId or eventId received in the session variable "opennms.alarmlist.HIGHEST"
+        // If a new alarm is received the variable is updated
+        String soundStr="<script type=\"text/javascript\"> playSound(); </script>";
+
+        Integer highest = (Integer)session.getAttribute("opennms.alarmlist.HIGHEST");
+        Integer latest = 0;
+        Integer lastId = 0;
+
+        // To have every new unique alarm trigger, use getId.  To have every new
+        // alarm and every increment of Count, use last event Id.
+        if(soundOnEvent){
+            OnmsEvent lastEvent=onmsAlarm.getLastEvent();
+            if(lastEvent!=null && lastEvent.getId()!=null) lastId = lastEvent.getId();
+        } else {
+            lastId=onmsAlarm.getId();
+        }
+
+        if(highest==null) {
+            if (lastId!=null) {
+                highest = new Integer(lastId);
+                session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(highest));
+                return soundStr;
+            }
+        } else {
+            latest = new Integer(lastId);
+            if (latest > highest) {
+                highest = latest;
+                session.setAttribute("opennms.alarmlist.HIGHEST", highest);
+                return soundStr;
+            }
+        }
+
+        return "<!-- no sound -->";
+
     }
 
 %>

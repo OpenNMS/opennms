@@ -217,19 +217,18 @@ function main()
 
         dpkg-buildpackage -p/bin/true -us -uc
 
-        if [ -e opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz ]; then
-            pushd target >/dev/null 2>&1
-                cp ../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "opennms-minion_${VERSION}.orig.tar.gz"
-                tar -xzf "opennms-minion_${VERSION}.orig.tar.gz" || die "could not unpack opennms-minion tarball"
-                DIRNAME=$(ls ../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz | sed -e 's,^.*org.opennms.assemblies.,,' -e 's,-minion.tar.gz,,')
-                mv "${DIRNAME}" "opennms-minion-${VERSION}"
-                pushd "opennms-minion-${VERSION}" >/dev/null 2>&1
-                    dch -b -v "${VERSION}-${RELEASE}" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update minion debian/changelog"
-                    dpkg-buildpackage -p/bin/true -us -uc
-                popd >/dev/null 2>&1
-                mv *.deb *.orig.tar.gz *.changes *.dsc ../..
+        mkdir -p target
+        pushd target >/dev/null 2>&1
+            cp ../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "opennms-minion_${VERSION}.orig.tar.gz"
+            tar -xzf "opennms-minion_${VERSION}.orig.tar.gz" || die "could not unpack opennms-minion tarball"
+            DIRNAME=$(ls ../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz | sed -e 's,^.*org.opennms.assemblies.,,' -e 's,-minion.tar.gz,,')
+            mv "${DIRNAME}" "opennms-minion-${VERSION}"
+            pushd "opennms-minion-${VERSION}" >/dev/null 2>&1
+                dch -b -v "${VERSION}-${RELEASE}" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update minion debian/changelog"
+                dpkg-buildpackage -p/bin/true -us -uc
             popd >/dev/null 2>&1
-        fi
+            mv *.deb *.orig.tar.gz *.changes *.dsc ../..
+        popd >/dev/null 2>&1
     fi
 
     if $SIGN; then

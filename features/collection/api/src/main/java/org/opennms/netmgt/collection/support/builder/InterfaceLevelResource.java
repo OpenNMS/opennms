@@ -62,6 +62,11 @@ public class InterfaceLevelResource extends AbstractResource {
     }
 
     @Override
+    public String getLabel(CollectionResource resource) {
+        return m_ifName;
+    }
+
+    @Override
     public ResourcePath getPath(CollectionResource resource) {
         return ResourcePath.get(getIfName());
     }

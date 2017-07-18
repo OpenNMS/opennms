@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -66,21 +66,21 @@
         	<th>Trigger</th>
         </tr>
         	<tr>
-        		<td>
-        			<select name="type" class="form-control">
-        				<c:forEach items="${thresholdTypes}" var="thisType">
-       						<c:choose>
-      							<c:when test="${expression.type==thisType}">
-        							<c:set var="selected">selected="selected"</c:set>
-      							</c:when>
-    	 						<c:otherwise>
-    	    						<c:set var="selected" value=""/>
-    	  						</c:otherwise>
-    						</c:choose>
-    						<option ${selected} value='${thisType}'>${thisType}</option>
-        				</c:forEach>
-        			</select>
-        		</td>
+                <td>
+                    <select name="type" class="form-control">
+                        <c:forEach items="${thresholdTypes}" var="thisType">
+                            <c:choose>
+                                <c:when test="${expression.type.enumName==thisType}">
+                                    <c:set var="selected">selected="selected"</c:set>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="selected" value=""/>
+                                </c:otherwise>
+                            </c:choose>
+                            <option ${selected} value='${thisType}'>${thisType}</option>
+                        </c:forEach>
+                    </select>
+                </td>
         		<td><input type="text" name="expression" class="form-control" size="30" value="${expression.expression}"/></td>
         		<td>
         		   	<select name="dsType" class="form-control">
@@ -96,10 +96,10 @@
     						<option ${selected} value='${thisDsType.key}'>${thisDsType.value}</option>
         				</c:forEach>
         			</select></td>
-     			<td><input type="text" name="dsLabel" class="form-control" size="30" value="${expression.dsLabel}"/></td>
-        		<td><input type="text" name="value" class="form-control" size="10" value="${expression.value}"/></td>
-        		<td><input type="text" name="rearm" class="form-control" size="10" value="${expression.rearm}"/></td>
-        		<td><input type="text" name="trigger" class="form-control" size="10" value="${expression.trigger}"/></td>
+                <td><input type="text" name="dsLabel" class="form-control" size="30" value="${expression.dsLabel.orElse(null)}"/></td>
+                <td><input type="text" name="value" class="form-control" size="10" value="${expression.value}"/></td>
+                <td><input type="text" name="rearm" class="form-control" size="10" value="${expression.rearm}"/></td>
+                <td><input type="text" name="trigger" class="form-control" size="10" value="${expression.trigger}"/></td>
         	</tr>
         </table>
         <table class="table table-condensed">
@@ -109,9 +109,9 @@
                     <th>Re-armed UEI</th>
             </tr>
         	<tr>
-    			<td><input type="text" name="description" class="form-control" size="60" value="${expression.description}"/></td>
-    			<td><input type="text" name="triggeredUEI" class="form-control" size="60" value="${expression.triggeredUEI}"/></td>
-    		    <td><input type="text" name="rearmedUEI" class="form-control" size="60" value="${expression.rearmedUEI}"/></td>
+                <td><input type="text" name="description" class="form-control" size="60" value="${expression.description.orElse(null)}"/></td>
+                <td><input type="text" name="triggeredUEI" class="form-control" size="60" value="${expression.triggeredUEI.orElse(null)}"/></td>
+                <td><input type="text" name="rearmedUEI" class="form-control" size="60" value="${expression.rearmedUEI.orElse(null)}"/></td>
         	</tr>
       </table>
       <div class="panel-footer">
@@ -140,7 +140,7 @@
                   <select name="filterOperator" class="form-control">
                       <c:forEach items="${filterOperators}" var="thisOperator">
                           <c:choose>
-                              <c:when test="${expression.filterOperator==thisOperator}">
+                              <c:when test="${expression.filterOperator.enumName==thisOperator}">
                                   <c:set var="selected">selected="selected"</c:set>
                               </c:when>
                               <c:otherwise>
@@ -159,17 +159,17 @@
           <div class="col-md-12">
             <table class="table table-condensed">
             <tr><th>Field Name</th><th>Regular Expression</th><th>Actions</th></tr>
-              <c:forEach items="${expression.resourceFilter}" var="filter" varStatus="i">
-                <tr>
+              <c:forEach items="${expression.resourceFilters}" var="filter" varStatus="i">
+                <tr name="filter.${i.count}">
                     <c:choose>
                       <c:when test="${i.count==filterSelected}">
                         <td><input type="text" name="updateFilterField" class="form-control" size="60" value="${filter.field}"/></td>
-                        <td><input type="text" name="updateFilterRegexp" class="form-control" size="60" value="${filter.content}"/></td>
+                        <td><input type="text" name="updateFilterRegexp" class="form-control" size="60" value="${filter.content.orElse(null)}"/></td>
                         <td><input type="submit" name="submitAction" class="form-control" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>          
                       </c:when>
                       <c:otherwise>
                         <td class="standard"><input type="text" class="form-control" disabled="disabled" size="60" value="${filter.field}"/></td>
-                        <td class="standard"><input type="text" class="form-control" disabled="disabled" size="60" value="${filter.content}"/></td>
+                        <td class="standard"><input type="text" class="form-control" disabled="disabled" size="60" value="${filter.content.orElse(null)}"/></td>
                         <td><input type="submit" name="submitAction" class="btn btn-default" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                             <input type="submit" name="submitAction" class="btn btn-default" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                             <input type="submit" name="submitAction" class="btn btn-default" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>

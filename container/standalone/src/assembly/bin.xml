@@ -16,7 +16,7 @@
 
         <!-- Expanded Karaf Standard Distribution -->
         <fileSet>
-            <directory>target/dependencies/apache-karaf-${karafVersion}</directory>
+            <directory>${project.build.directory}/dependencies/apache-karaf-${karafVersion}</directory>
             <!-- Output to the root directory -->
             <outputDirectory></outputDirectory>
             <excludes>
@@ -46,7 +46,7 @@
 
         <!-- Copy over bin/* separately to get the correct file mode -->
         <fileSet>
-            <directory>target/dependencies/apache-karaf-${karafVersion}</directory>
+            <directory>${project.build.directory}/dependencies/apache-karaf-${karafVersion}</directory>
             <!-- Output to the root directory -->
             <outputDirectory></outputDirectory>
             <includes>
@@ -66,13 +66,13 @@
         </fileSet>
 
         <fileSet>
-            <directory>target/classes/etc</directory>
+            <directory>${project.build.directory}/classes/etc</directory>
             <outputDirectory>etc</outputDirectory>
             <lineEnding>unix</lineEnding>
         </fileSet>
 
         <fileSet>
-            <directory>target/features-repo</directory>
+            <directory>${project.build.directory}/features-repo</directory>
             <outputDirectory>system</outputDirectory>
         </fileSet>
 
@@ -80,20 +80,14 @@
 
     <files>
         <file>
-            <source>${basedir}/target/dependencies/apache-karaf-${karafVersion}/bin/karaf</source>
+            <source>${project.build.directory}/dependencies/apache-karaf-${karafVersion}/bin/karaf</source>
             <outputDirectory>bin</outputDirectory>
             <destName>karaf</destName>
             <fileMode>0755</fileMode>
             <lineEnding>unix</lineEnding>
         </file>
         <file>
-            <source>${basedir}/target/classes/features.xml</source>
-            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
-            <destName>${project.artifactId}-${project.version}-features.xml</destName>
-            <lineEnding>unix</lineEnding>
-        </file>
-        <file>
-            <source>${basedir}/target/dependencies/opennms-branding.jar</source>
+            <source>${project.build.directory}/dependencies/opennms-branding.jar</source>
             <outputDirectory>lib</outputDirectory>
             <destName>opennms-branding.jar</destName>
         </file>

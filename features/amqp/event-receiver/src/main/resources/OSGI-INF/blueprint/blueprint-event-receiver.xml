@@ -15,13 +15,14 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 
 		http://camel.apache.org/schema/blueprint
-		http://camel.apache.org/schema/blueprint/camel-blueprint-2.16.5.xsd
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.19.1.xsd
 ">
 
   <!-- Configuration properties -->
   <cm:property-placeholder id="eventReceiverProperties" persistent-id="org.opennms.features.amqp.eventreceiver" update-strategy="reload">
     <cm:default-properties>
-      <!-- amqp://username:password@virtualhost?brokerlist='tcp://127.0.0.1:5672?options -->
+      <!-- amqp://[user:pass@][clientid]/virtualhost?brokerlist='tcp://host:port?option=\'value\',option=\'value\';tcp://host:port?option=\'value\'',failover='method?option=\'value\',option='value'' -->
+      <!-- The only required option is a single broker in the broker list -->
       <cm:property name="connectionUrl" value="amqp://guest:guest@onms/test?brokerlist='tcp://127.0.0.1:5672'"/>
       <!-- amqp:exchange/routingkey?options -->
       <cm:property name="source" value="amqp:OpenNMS-Queue"/>

@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.opennms.core.collection.test.CollectionSetUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -70,10 +71,10 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.mycila.xmltool.XMLDoc;
 import com.mycila.xmltool.XMLTag;
 
@@ -241,7 +242,7 @@ public class WSManCollectorTest {
         collector.setNodeDao(nodeDao);
 
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getAddress()).thenReturn(InetAddrUtils.getLocalHostAddress());
+        when(agent.getAddress()).thenReturn(InetAddressUtils.getLocalHostAddress());
         when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
 
         Map<String, Object> collectionParams = Maps.newHashMap();
@@ -311,12 +312,14 @@ public class WSManCollectorTest {
         WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify the result
+        CollectionSet collectionSet = builder.build();
         assertEquals(Arrays.asList(
                 "wsProcIndex/c0/windows-os-wmi-processor/wmiOSCpuName[c0,null]",
                 "wsProcIndex/c0/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,95.0]",
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuName[c1,null]",
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,100.0]"),
-                CollectionSetUtils.flatten(builder.build()));
+                CollectionSetUtils.flatten(collectionSet));
+        assertEquals(Sets.newHashSet("c0", "c1"), CollectionSetUtils.getResourcesByLabel(collectionSet).keySet());
     }
 
     private static void addAttribute(Group group, String name, String alias, AttributeType type) {

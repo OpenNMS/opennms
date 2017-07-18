@@ -29,6 +29,7 @@ package org.opennms.features.topology.plugins.topo.asset;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.nio.file.Paths;
 
@@ -45,6 +46,9 @@ public class AssetGraphDefinitionRepositoryTest {
 	public void test() {
 		System.setProperty("opennms.home", "target");
 		Paths.get("target", "etc").toFile().mkdirs();
+		File configFile = Paths.get("target", "etc", "org.opennms.features.topology.plugins.topo.asset.xml").toFile();
+
+        configFile.delete(); // make sure we start clean
 
 		LOG.debug("start of AssetGraphDefinitionRepositoryTest");
 		AssetGraphDefinitionRepositoryImpl assetGraphDefinitionRepository = new AssetGraphDefinitionRepositoryImpl();
@@ -86,6 +90,8 @@ public class AssetGraphDefinitionRepositoryTest {
 		LOG.debug("List of installed asset topology definitions");
 		LOG.debug("{}", writer);
 		LOG.debug("End of {}", getClass().getSimpleName());
+
+        configFile.delete(); // let's leave it clean, too
 	}
 
 }

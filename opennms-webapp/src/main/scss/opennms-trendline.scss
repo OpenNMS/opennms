@@ -29,31 +29,31 @@
 /* Background color for trend charts */
 
 .alert-trend {
-  background-color: $white;
-  border-color: $color_tundora_approx;
+  background-color: #eeeeee;
+  border-color: #eeeeee;
   height: 90px;
-  color: $color_tundora_approx;
+  color: #000000;
   margin-bottom: 10px;
   margin-right: 5px;
   margin-left: 5px;
   margin-top: 5px;
 }
 
+.alert-trend hr {
+  border-top-color: #bbbbbb;
+}
+
 .alert-trend h1 .glyphicon {
   font-size: 1em;
-  padding-right: 10px;
+  padding-right: 5px;
 }
 
 .alert-trend .alert-link {
-  color: $color_tundora_approx;
+  color: $color_lima_approx;
 }
 
 .alert-trend a {
-  color: $color_suva_gray_approx;
-}
-
-.alert-trend table {
-  margin-bottom: 15px;
+  color: $color_lima_approx;
 }
 
 .alert {

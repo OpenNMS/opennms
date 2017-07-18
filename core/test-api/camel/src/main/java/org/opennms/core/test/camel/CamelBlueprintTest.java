@@ -28,6 +28,9 @@
 
 package org.opennms.core.test.camel;
 
+import java.net.ServerSocket;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.PingerFactory;
@@ -73,4 +76,15 @@ public class CamelBlueprintTest extends CamelBlueprintTestSupport {
     public String isMockEndpoints() {
         return "*";
     }
+
+    protected static final int getAvailablePort(final AtomicInteger current, final int max) {
+        while (current.get() < max) {
+            try (final ServerSocket socket = new ServerSocket(current.get())) {
+                return socket.getLocalPort();
+            } catch (final Throwable e) {}
+            current.incrementAndGet();
+        }
+        throw new IllegalStateException("Can't find an available network port");
+    }
+
 }

@@ -940,4 +940,19 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             elems.addAll(m_bridgeElementDao.findByNodeId(nodeid));
         return elems;
     }
+    
+    @Override
+    public void persistForwarders() {
+        for (BroadcastDomain domain: m_bridgeTopologyDao.getAll()) {
+            for (Integer nodeId: domain.getBridgeNodesOnDomain()) {
+                List<BridgeMacLink> forwarders = domain.getForwarders(nodeId);
+                if (forwarders == null || forwarders.size() == 0)
+                    continue;
+                for (BridgeMacLink forward: forwarders) {
+                    forward.setBridgeMacLinkLastPollTime(new Date());
+                    saveBridgeMacLink(forward);
+                }
+            }
+        }
+    }
 }

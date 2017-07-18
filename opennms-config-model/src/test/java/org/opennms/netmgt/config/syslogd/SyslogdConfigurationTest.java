@@ -28,12 +28,16 @@
 
 package org.opennms.netmgt.config.syslogd;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.xml.JaxbUtils;
 
 public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfiguration> {
 
@@ -47,19 +51,19 @@ public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfigurati
             {
                 getConfig(),
                 "<syslogd-configuration>\n" + 
-                "    <configuration\n" + 
-                "            syslog-port=\"10514\"\n" + 
-                "            new-suspect-on-message=\"false\"\n" + 
-                "            parser=\"org.opennms.netmgt.syslogd.CustomSyslogParser\"\n" + 
-                "            forwarding-regexp=\"^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)\"\n" + 
-                "            matching-group-host=\"6\"\n" + 
-                "            matching-group-message=\"8\"\n" + 
-                "            discard-uei=\"DISCARD-MATCHING-MESSAGES\"\n" + 
-                "            />\n" +
-                "    <ueiList/>" +
-                "    <hideMessage/>" +
-                "    <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>" +
-                "</syslogd-configuration>"
+                        "    <configuration\n" + 
+                        "            syslog-port=\"10514\"\n" + 
+                        "            new-suspect-on-message=\"false\"\n" + 
+                        "            parser=\"org.opennms.netmgt.syslogd.CustomSyslogParser\"\n" + 
+                        "            forwarding-regexp=\"^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)\"\n" + 
+                        "            matching-group-host=\"6\"\n" + 
+                        "            matching-group-message=\"8\"\n" + 
+                        "            discard-uei=\"DISCARD-MATCHING-MESSAGES\"\n" + 
+                        "            />\n" +
+                        "    <ueiList/>" +
+                        "    <hideMessage/>" +
+                        "    <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>" +
+                        "</syslogd-configuration>"
             }
         });
     }
@@ -79,5 +83,19 @@ public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfigurati
 
         daemonConfig.addImportFile("syslog/ApacheHTTPD.syslog.xml");
         return daemonConfig;
+    }
+
+    @Test
+    public void testOutOfOrderUeiMatch() {
+        final String xml = "<ueiMatch>\n" + 
+                "    <process-match expression=\"^HAL_ASE\\\\DbServer\" />\n" + 
+                "    <match type=\"regex\" expression=\"^((.+?) (.*))\\r?\\n?$\"/>\n" + 
+                "    <severity>Critical</severity>\n" + 
+                "    <uei>mottmac.com/syslog/HAL_ASE/critical</uei>\n" + 
+                "</ueiMatch>";
+
+        final UeiMatch match = JaxbUtils.unmarshal(UeiMatch.class, xml);
+        assertEquals("^HAL_ASE\\\\DbServer", match.getProcessMatch().get().getExpression());
+        assertEquals("Critical", match.getSeverities().get(0));
     }
 }

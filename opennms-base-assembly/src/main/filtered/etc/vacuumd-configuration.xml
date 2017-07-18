@@ -37,17 +37,25 @@
                 action-event="sendAlarmClearedEvent" />
 
     <automation name="cleanUp" interval="60000" active="true"
-                action-name="deletePastClearedAlarms" />
+                trigger-name="selectPastClearedAlarmsToDelete"
+                action-name="deleteAlarms"
+                action-event="sendAlarmDeletedEvent" />
                 
     <automation name="fullCleanUp" interval="300000" active="true" 
-                action-name="deleteAllPastClearedAlarms" />
-                
+                trigger-name="selectAllPastClearedAlarmsToDelete"
+                action-name="deleteAlarms"
+                action-event="sendAlarmDeletedEvent" />
+
     <automation name="GC" interval="300000" active="true" 
-                action-name="garbageCollect" />
-                
+                trigger-name="selectAlarmsToGarbageCollect"
+                action-name="deleteAlarms"
+                action-event="sendAlarmDeletedEvent" />
+
     <automation name="fullGC" interval="300000" active="true" 
-                action-name="fullGarbageCollect" />
-                
+                trigger-name="selectAlarmsToFullGarbageCollect"
+                action-name="deleteAlarms"
+                action-event="sendAlarmDeletedEvent" />
+
     <automation name="unclear" interval="30000"  active="true" 
                 trigger-name="selectClearedAlarms" 
                 action-name="resetSeverity"
@@ -61,7 +69,11 @@
     <automation name="purgeStatisticsReports" active="true"
                 interval="3600000" 
                 action-name="deletePurgeableStatisticsReports" />
-    
+
+    <automation name="clearPathOutages" interval="30000" active="true"
+                trigger-name="selectPathOutagesNodes"
+                action-name="clearPathOutages" />
+
     <!-- Enable these automation for automatic Trouble Ticketing -->
     <automation name="createTickets" interval="30000" active="false" 
                 trigger-name="selectNullTicketStateAlarms" 
@@ -231,6 +243,58 @@
       </statement>
     </trigger>
 
+    <!-- Find cleared alarms that can be deleted -->
+    <!--  ticket state of 5 is closed, 11 is canceled -->
+    <trigger name="selectPastClearedAlarmsToDelete" operator="&gt;=" row-count="1" >
+      <statement>
+        SELECT alarmid, eventuei, reductionkey, now() AS _ts
+          FROM alarms
+         WHERE severity &lt;= 3
+           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '5 minutes'
+           AND (alarmacktime IS NULL AND (tticketState IS NULL OR tticketState = 5  OR tticketState = 11))
+      </statement>
+    </trigger>
+
+    <!-- Find cleared alarms that can be deleted -->
+    <!-- May need to add a check for Open ticket state and wait for the state to be closed based on
+         update ticket action-event -->
+    <trigger name="selectAllPastClearedAlarmsToDelete" operator="&gt;=" row-count="1" >
+      <statement>
+        SELECT alarmid, eventuei, reductionkey, now() AS _ts
+          FROM alarms
+         WHERE severity &lt;= 3
+           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '24 hours'
+           AND (tticketState IS NULL OR tticketState = 5 OR tticketState = 11)
+      </statement>
+    </trigger>
+
+    <trigger name="selectAlarmsToGarbageCollect" operator="&gt;=" row-count="1" >
+      <statement>
+        SELECT alarmid, eventuei, reductionkey, now() AS _ts
+          FROM alarms
+         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '3 days'
+           AND alarmacktime IS NULL
+      </statement>
+    </trigger>
+
+    <trigger name="selectAlarmsToFullGarbageCollect" operator="&gt;=" row-count="1" >
+      <statement>
+        SELECT alarmid, eventuei, reductionkey, now() AS _ts
+          FROM alarms
+         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
+      </statement>
+    </trigger>
+
+    <trigger name="selectPathOutagesNodes" operator="&gt;=" row-count="1" >
+      <statement>
+        SELECT nodeId AS _nodeid,
+               now() AS _ts,
+               lastEventTime AS _eventtime_from_node_up
+          FROM alarms
+         WHERE eventuei='uei.opennms.org/nodes/nodeUp'
+      </statement>
+    </trigger>
+
     <!-- Find assets that have maintenance-contract that will expire in less then 30 days -->
     <!-- 
     <trigger name="selectExpirationMaintenance" operator="&gt;=" row-count="1" >
@@ -314,63 +378,13 @@
       </statement>
     </action>
 
-    <!-- action used for postgres 7.4 compatibility -->
-    <action name="garbageCollect" >
+    <action name="deleteAlarms" >
       <statement>
         DELETE FROM alarms
-         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '3 days'
-           AND alarmacktime IS NULL
-      </statement>
-    </action>
-  
-    <!-- a better action when using postgres 8.1 
-    <action name="garbageCollect" >
-      <statement>
-        DELETE FROM alarms
-         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '3 days'
-           AND alarmacktime IS NULL
-      </statement>
-    </action>
-    -->
-  
-    <!-- action used for postgres 7.4 compatibility -->
-    <action name="fullGarbageCollect" >
-      <statement>
-        DELETE FROM alarms
-         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
-      </statement>
-    </action>
-  
-    <!-- a better action when using postgres 8.1 
-    <action name="fullGarbageCollect" >
-      <statement>
-        DELETE FROM alarms
-         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
-      </statement>
-    </action>
-    -->
-    
-    <!--  ticket state of 5 is closed, 11 is canceled -->
-    <action name="deletePastClearedAlarms" >
-      <statement>
-        DELETE FROM alarms
-         WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '5 minutes'
-           AND (alarmacktime IS NULL AND (tticketState IS NULL OR tticketState = 5  OR tticketState = 11))
+         WHERE alarmid = ${alarmid}
       </statement>
     </action>
 
-    <!-- May need to add a check for Open ticket state and wait for the state to be closed based on
-         update ticket action-event -->
-    <action name="deleteAllPastClearedAlarms" >
-      <statement>
-        DELETE from alarms
-         WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '24 hours'
-           AND (tticketState IS NULL OR tticketState = 5 OR tticketState = 11)
-      </statement>
-    </action>
-  
     <action name="clearAlarms" >
       <statement>
         UPDATE alarms
@@ -416,7 +430,17 @@
            AND statustime &lt; now() - interval '24 hours'
       </statement>
     </action>
-    
+
+    <action name="clearPathOutages" >
+      <statement>
+        UPDATE alarms
+           SET severity = 2, lastautomationtime = ${_ts}
+         WHERE eventuei = 'uei.opennms.org/nodes/pathOutage'
+           AND nodeid = ${_nodeid}
+           AND lasteventtime &lt;= ${_eventtime_from_node_up}
+      </statement>
+    </action>
+
     <!-- Monitoring maintenance contracts -->
     <!--
     <action name="maintenanceExpirationWarning" >
@@ -503,7 +527,14 @@
       <assignment type="parameter" name="alarmEventUei" value="${_eventUei}" />
     </action-event>
 
-    <!-- Monitoring maintenance conracts -->
+    <action-event name="sendAlarmDeletedEvent" for-each-result="true" >
+      <assignment type="field" name="uei" value="uei.opennms.org/alarms/alarmDeleted" />
+      <assignment type="parameter" name="alarmId" value="${alarmid}" />
+      <assignment type="parameter" name="alarmEventUei" value="${eventUei}" />
+      <assignment type="parameter" name="alarmReductionKey" value="${reductionkey}" />
+    </action-event>
+
+    <!-- Monitoring maintenance contracts -->
     <!--
     <action-event name="maintenanceExpirationWarning" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/asset/maintenance/expirationWarning" />

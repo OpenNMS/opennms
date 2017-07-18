@@ -384,7 +384,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public List<IpService> getAllIpServices() {
-        return monitoredServiceDao.findAll().stream()
+        return monitoredServiceDao.findAllServices().stream()
                                   .map(s -> new IpServiceImpl(this, s))
                                   .collect(Collectors.toList());
     }

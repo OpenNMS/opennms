@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -853,6 +853,11 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>${freemarkerVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.link</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- test dependencies -->

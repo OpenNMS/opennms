@@ -138,7 +138,7 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 		
 		CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
 
-		bldr.iplike("ipAddress", m_ipQuery);
+		bldr.iplike("ipAddr", m_ipQuery);
 		List<OnmsIpInterface> ips = ipInterfaceProvider.findMatching(bldr.toCriteria());
 
 		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());

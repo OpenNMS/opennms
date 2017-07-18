@@ -15,11 +15,10 @@
         <uei>uei.opennms.org/internal/discovery/hardwareInventoryFailed</uei>
         <event-label>OpenNMS-defined internal event: reload specified daemon configuration failed</event-label>
         <descr>
-            &lt;p&gt;The hardware discovery on node %nodelabel% (IP address %interface%) has failed.&lt;/p&gt;
+            &lt;p&gt;The hardware discovery on node %nodelabel% (IP address %interface%) has failed with the following reason: %parm[reason]%.&lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
             &lt;p&gt;The hardware discovery on node %nodelabel% (IP address %interface%) has failed.&lt;/p&gt;
-            &lt;p&gt;Reason: %parm[reason]%.&lt;/p&gt;
         </logmsg>
         <severity>Minor</severity>
     </event>

@@ -51,7 +51,7 @@
       <label for="nodeId">Node ID:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
       <input class="form-control" type="text" name="nodeId" />
-      <input class="form-control btn btn-default" type="submit" value="Search"/>
+      <input name="nodeIdSearchButton" class="form-control btn btn-default" type="submit" value="Search"/>
     </form>
     <br/>
     <form class="form-inline" action="element/nodeList.htm" method="get">

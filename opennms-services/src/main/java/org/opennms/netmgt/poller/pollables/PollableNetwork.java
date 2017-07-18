@@ -306,19 +306,25 @@ public class PollableNetwork extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
     @Override
-    public PollableElement getLockRoot() {
+    protected PollableElement getLockRoot() {
         return this;
     }
     
     /** {@inheritDoc} */
     @Override
-    public void obtainTreeLock(long timeout) {
+    protected void obtainTreeLock() {
     }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void obtainTreeLock(long timeout) {
+    }
+
     /**
      * <p>releaseTreeLock</p>
      */
     @Override
-    public void releaseTreeLock() {
+    protected void releaseTreeLock() {
     }
 
     /** {@inheritDoc} */

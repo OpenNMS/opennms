@@ -43,4 +43,5 @@ public interface TopologyService {
 
     MetaTopologyProvider getMetaTopologyProvider(String metaTopologyId);
 
+	boolean isCategoryAware(String namespace);
 }

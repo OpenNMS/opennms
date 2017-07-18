@@ -230,16 +230,30 @@ public class PollableNode extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
     @Override
-    public PollableElement getLockRoot() {
+    protected PollableElement getLockRoot() {
         return this;
     }
     
-    /** {@inheritDoc} */
+    /**
+     * This method does not have a timeout, it blocks indefinitely
+     * until the lock is obtained. 
+     */
     @Override
-    public void obtainTreeLock(long timeout) {
+    protected void obtainTreeLock() {
+        m_lock.lock();
+    }
+
+    /** 
+     * This method tries to obtain the lock within the given timeout.
+     * @param Timeout in milliseconds
+     * @throws LockUnavailable If the lock cannot be acquired before
+     * the timeout or the thread is interrupted while trying to acquire the 
+     * lock.
+     */
+    @Override
+    protected void obtainTreeLock(long timeout) throws LockUnavailable {
         if (timeout < 1) {
-            // Block until the lock is obtained
-            m_lock.lock();
+            obtainTreeLock();
         } else {
             try {
                 if (m_lock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
@@ -259,7 +273,7 @@ public class PollableNode extends PollableContainer {
      * <p>releaseTreeLock</p>
      */
     @Override
-    public void releaseTreeLock() {
+    protected void releaseTreeLock() {
         m_lock.unlock();
     }
     

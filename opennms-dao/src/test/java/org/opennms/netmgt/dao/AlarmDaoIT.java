@@ -43,8 +43,10 @@ import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -319,5 +321,65 @@ public class AlarmDaoIT implements InitializingBean {
 				Order.asc("node.label")
 		}));
 		m_alarmDao.findMatching(criteria);
+	}
+
+	/**
+	 * @see https://issues.opennms.org/browse/NMS-9480
+	 */
+	@Test
+	@Transactional
+	public void testParameterizedSql() {
+		OnmsEvent event = new OnmsEvent();
+		event.setEventLog("Y");
+		event.setEventDisplay("Y");
+		event.setEventCreateTime(new Date());
+		event.setDistPoller(m_distPollerDao.whoami());
+		event.setEventTime(new Date());
+		event.setEventSeverity(new Integer(7));
+		event.setEventUei("uei://org/opennms/test/EventDaoTest");
+		event.setEventSource("test");
+		m_eventDao.save(event);
+
+		OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+		OnmsAlarm alarm = new OnmsAlarm();
+
+		alarm.setNode(node);
+		alarm.setUei(event.getEventUei());
+		alarm.setSeverityId(event.getEventSeverity());
+		alarm.setFirstEventTime(event.getEventTime());
+		alarm.setLastEvent(event);
+		alarm.setCounter(1);
+		alarm.setDistPoller(m_distPollerDao.whoami());
+
+		m_alarmDao.save(alarm);
+
+		CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
+		cb.sql("{alias}.alarmid in (?)", alarm.getId(), Type.INTEGER);
+		List<OnmsAlarm> alarms = m_alarmDao.findMatching(cb.toCriteria());
+		assertEquals(alarm.getId(), alarms.get(0).getId());
+		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());
+		assertEquals(event.getEventUei(), alarms.get(0).getUei());
+
+		cb = new CriteriaBuilder(OnmsAlarm.class);
+		cb.sql("{alias}.firsteventtime = ?", event.getEventTime(), Type.TIMESTAMP);
+		m_alarmDao.findMatching(cb.toCriteria());
+		assertEquals(alarm.getId(), alarms.get(0).getId());
+		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());
+		assertEquals(event.getEventUei(), alarms.get(0).getUei());
+
+		cb = new CriteriaBuilder(OnmsAlarm.class);
+		cb.sql("{alias}.eventuei = ?", event.getEventUei(), Type.STRING);
+		m_alarmDao.findMatching(cb.toCriteria());
+		assertEquals(alarm.getId(), alarms.get(0).getId());
+		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());
+		assertEquals(event.getEventUei(), alarms.get(0).getUei());
+
+		cb = new CriteriaBuilder(OnmsAlarm.class);
+		cb.sql("{alias}.alarmid = ? and {alias}.eventuei like ?", new Object[] { alarm.getId(), "%uei.opennms.org%" }, new Type[] { Type.INTEGER, Type.STRING });
+		m_alarmDao.findMatching(cb.toCriteria());
+		assertEquals(alarm.getId(), alarms.get(0).getId());
+		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());
+		assertEquals(event.getEventUei(), alarms.get(0).getUei());
 	}
 }

@@ -39,7 +39,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * A varbind from the trap
@@ -136,9 +137,8 @@ public class Parm implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("parmName", _parmName)
-    		.append("value", _value)
+    	return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+    		.append(_parmName, _value == null ? null : _value.getContent())
     		.toString();
     }
 
