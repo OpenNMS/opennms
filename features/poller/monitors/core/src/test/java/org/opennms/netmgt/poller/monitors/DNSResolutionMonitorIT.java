@@ -50,7 +50,7 @@ import org.opennms.netmgt.poller.mock.MockMonitoredService;
  *
  * @author brozow
  */
-public class DNSResolutionMonitorTest {
+public class DNSResolutionMonitorIT {
     
     @Before
     public void setUp() {

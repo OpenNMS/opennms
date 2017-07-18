@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.icmp.jni6;
+package org.opennms.netmgt.icmp.jna;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -45,7 +45,6 @@ import org.opennms.core.utils.CollectionMath;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.Pinger;
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -56,33 +55,45 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({}) 
-public class Jni6PingTest {
+public class JnaPingIT {
 
-    static private Jni6Pinger s_jniPinger = new Jni6Pinger();
+    static private JnaPinger s_jnaPinger = new JnaPinger();
 
     private InetAddress m_goodHost = null;
     private InetAddress m_badHost = null;
+    private InetAddress m_ipv6goodHost = null;
+    private InetAddress m_ipv6badHost = null;
 
     @Before
     public void setUp() throws Exception {
-        m_goodHost = InetAddress.getByName("::1");
+        m_goodHost = InetAddress.getLocalHost();
+        // 192.0.2.0/24 is reserved for documentation purposes
+        m_badHost  = InetAddress.getByName("192.0.2.123");
+        m_ipv6goodHost = InetAddress.getByName("::1");
         // Originally we used the 2001:db8 prefix, which is reserved for documentation purposes
         // (suffix is 'BadAddr!' as ascii), but some networks actually return "no route to host"
         // rather than just timing out, which throws off these tests.
-        m_badHost = InetAddress.getByName("2600:5800:f2a2:ffff:ffff:ffff:dead:beef");
-        assertEquals(16, m_badHost.getAddress().length);
+        m_ipv6badHost = InetAddress.getByName("2600:5800:f2a2:ffff:ffff:ffff:dead:beef");
+        assertEquals(16, m_ipv6badHost.getAddress().length);
+        
+    }
+
+    private void singlePingGood(InetAddress addr) throws Exception {
+        Number rtt = s_jnaPinger.ping(addr);
+        assertNotNull("No RTT value returned from ping, looks like the ping failed", rtt);
+        assertTrue("Negative RTT value returned from ping", rtt.doubleValue() > 0);
     }
 
     @Test
     @IfProfileValue(name="runPingTests", value="true")
-    public void testSinglePingJni() throws Exception {
-        singlePing(s_jniPinger);
+    public void testSinglePingIPv4() throws Exception {
+        singlePingGood(m_goodHost);
     }
 
-    protected void singlePing(Pinger pinger) throws Exception {
-        Number rtt = pinger.ping(m_goodHost);
-        assertNotNull("No RTT value returned from ping, looks like the ping failed", rtt);
-        assertTrue("Negative RTT value returned from ping", rtt.doubleValue() > 0);
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
+    public void testSinglePingIPv6() throws Exception {
+        singlePingGood(m_ipv6goodHost);
     }
     
     private static class TestPingResponseCallback implements PingResponseCallback {
@@ -153,49 +164,58 @@ public class Jni6PingTest {
         
     };
 
-    protected void pingCallbackTimeout(Pinger pinger) throws Exception {
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
+    public void testPingCallbackTimeoutIPv4() throws Exception {
+        pingCallbackTimeout(m_badHost);
+    }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
+    public void testPingCallbackTimeoutIPv6() throws Exception {
+        pingCallbackTimeout(m_ipv6badHost);
+    }
+
+    private void pingCallbackTimeout(InetAddress addr) throws Exception {
         TestPingResponseCallback cb = new TestPingResponseCallback();
         
-        pinger.ping(m_badHost, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, PingConstants.DEFAULT_PACKET_SIZE, 1, cb);
+        s_jnaPinger.ping(addr, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, PingConstants.DEFAULT_PACKET_SIZE,1, cb);
         
         cb.await();
-
-        assertTrue("Unexpected Error sending ping to " + m_badHost + ": " + cb.getThrowable(), cb.getThrowable() == null || cb.getThrowable() instanceof NoRouteToHostException);
+        
+        assertTrue("Unexpected Error sending ping to " + addr + ": " + cb.getThrowable(), 
+                cb.getThrowable() == null || cb.getThrowable() instanceof NoRouteToHostException);
         assertTrue(cb.isTimeout());
         assertNotNull(cb.getPacket());
         assertNotNull(cb.getAddress());
-        
     }
 
     @Test
     @IfProfileValue(name="runPingTests", value="true")
-    public void testPingCallbackTimeoutJni() throws Exception {
-        pingCallbackTimeout(s_jniPinger);
+    public void testSinglePingFailureIPv4() throws Exception {
+        assertNull(s_jnaPinger.ping(m_badHost));
     }
 
     @Test
     @IfProfileValue(name="runPingTests", value="true")
-    public void testSinglePingFailureJni() throws Exception {
-        try {
-            singlePingFailure(s_jniPinger);
-        } catch (NoRouteToHostException ex) {
-            // this is a possible option if the OS knows that this is impossible
-        }
-    }
-
-    protected void singlePingFailure(Pinger pinger) throws Exception {
-        assertNull(pinger.ping(m_badHost));
+    public void testSinglePingFailureIPv6() throws Exception {
+        assertNull(s_jnaPinger.ping(m_ipv6badHost));
     }
 
     @Test
     @IfProfileValue(name="runPingTests", value="true")
-    public void testParallelPingJni() throws Exception {
-        parallelPing(s_jniPinger);
+    public void testParallelPingIPv4() throws Exception {
+        parallelPingGood(m_goodHost);
     }
 
-    protected void parallelPing(Pinger pinger) throws Exception {
-        List<Number> items = pinger.parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
+    public void testParallelPingIPv6() throws Exception {
+        parallelPingGood(m_ipv6goodHost);
+    }
+
+    private void parallelPingGood(InetAddress addr) throws Exception, InterruptedException {
+        List<Number> items = s_jnaPinger.parallelPing(addr, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
         assertTrue("Collection contained all null values, all parallel pings failed", CollectionMath.countNotNull(items) > 0);
@@ -207,17 +227,23 @@ public class Jni6PingTest {
 
     @Test
     @IfProfileValue(name="runPingTests", value="true")
-    public void testParallelPingFailureJni() throws Exception {
-        parallelPingFailure(s_jniPinger);
+    public void testParallelPingFailureIPv4() throws Exception {
+        parallelPingFailure(m_badHost);
     }
 
-    protected void parallelPingFailure(Pinger pinger) throws Exception {
-        List<Number> items = pinger.parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
+    public void testParallelPingFailureIPv6() throws Exception {
+        parallelPingFailure(m_ipv6badHost);
+    }
+
+    private void parallelPingFailure(InetAddress addr) throws Exception {
+        List<Number> items = s_jnaPinger.parallelPing(addr, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(PingConstants.DEFAULT_TIMEOUT + 100);
         printResponse(items);
         assertTrue("Collection contained some numeric values when all parallel pings should have failed", CollectionMath.countNotNull(items) == 0);
     }
-    
+
     private void printResponse(List<Number> items) {
         Long passed = CollectionMath.countNotNull(items);
         Long failed = CollectionMath.countNull(items);

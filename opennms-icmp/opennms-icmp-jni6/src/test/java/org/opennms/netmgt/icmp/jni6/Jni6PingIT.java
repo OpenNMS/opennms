@@ -26,8 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.icmp.jni;
+package org.opennms.netmgt.icmp.jni6;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -55,18 +56,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({}) 
-public class JniPingTest {
+public class Jni6PingIT {
 
-    static private JniPinger s_jniPinger = new JniPinger();
+    static private Jni6Pinger s_jniPinger = new Jni6Pinger();
 
     private InetAddress m_goodHost = null;
     private InetAddress m_badHost = null;
 
     @Before
     public void setUp() throws Exception {
-        m_goodHost = InetAddress.getLocalHost();
-        // 192.0.2.0/24 is reserved for documentation purposes
-        m_badHost  = InetAddress.getByName("192.0.2.123");
+        m_goodHost = InetAddress.getByName("::1");
+        // Originally we used the 2001:db8 prefix, which is reserved for documentation purposes
+        // (suffix is 'BadAddr!' as ascii), but some networks actually return "no route to host"
+        // rather than just timing out, which throws off these tests.
+        m_badHost = InetAddress.getByName("2600:5800:f2a2:ffff:ffff:ffff:dead:beef");
+        assertEquals(16, m_badHost.getAddress().length);
     }
 
     @Test
@@ -157,8 +161,7 @@ public class JniPingTest {
         
         cb.await();
 
-        assertTrue("Unexpected Error sending ping to " + m_badHost + ": " + cb.getThrowable(), 
-                cb.getThrowable() == null || cb.getThrowable() instanceof NoRouteToHostException);
+        assertTrue("Unexpected Error sending ping to " + m_badHost + ": " + cb.getThrowable(), cb.getThrowable() == null || cb.getThrowable() instanceof NoRouteToHostException);
         assertTrue(cb.isTimeout());
         assertNotNull(cb.getPacket());
         assertNotNull(cb.getAddress());
@@ -246,4 +249,4 @@ public class JniPingTest {
         System.out.print(sb);
     }
 }
-    
+
