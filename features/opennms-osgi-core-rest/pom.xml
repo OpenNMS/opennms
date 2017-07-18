@@ -15,8 +15,10 @@
         Core module which provides features to install to listen for rest related services,
         such as @Path annotated interfaces.
     </description>
-    <packaging>pom</packaging>
+    <packaging>bundle</packaging>
     <properties>
+        <bundle.namespace>org.opennms.osgi.core.rest</bundle.namespace>
+        <bundle.symbolicName>${bundle.namespace}</bundle.symbolicName>
         <osgiJaxRsVersion>1.0.0-SNAPSHOT</osgiJaxRsVersion>
     </properties>
     <build>
@@ -32,7 +34,7 @@
                         <!-- Capability to listen for ReST Services -->
                         <feature>jax-rs-connector</feature>
 
-                        <!-- Capability to unmarshal/marshal json -->
+                        <!-- Capability to unmarshal/marshal json/xml -->
                         <feature>jax-rs-provider-moxy</feature>
                     </features>
                 </configuration>
@@ -60,6 +62,11 @@
             <artifactId>features</artifactId>
             <type>pom</type>
             <version>${osgiJaxRsVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.rest-provider</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

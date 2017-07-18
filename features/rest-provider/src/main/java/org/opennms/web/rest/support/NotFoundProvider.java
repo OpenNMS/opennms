@@ -28,23 +28,19 @@
 
 package org.opennms.web.rest.support;
 
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-/**
- * This provider handles all exceptions which are not handled by any other provider.
- * @author mvrueden
- */
-public class ErrorResponseProvider implements ExceptionMapper<Exception> {
+@Provider
+public class NotFoundProvider implements ExceptionMapper<NotFoundException> {
     @Override
-    public Response toResponse(Exception exception) {
+    public Response toResponse(NotFoundException exception) {
         // if there is an optional exception message, we add it to the response
         if (exception.getMessage() != null) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(exception.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(exception.getMessage()).build();
         }
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 }

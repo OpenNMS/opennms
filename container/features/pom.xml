@@ -408,7 +408,6 @@
       <groupId>org.opennms.osgi</groupId>
       <artifactId>opennms-osgi-core-rest</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
