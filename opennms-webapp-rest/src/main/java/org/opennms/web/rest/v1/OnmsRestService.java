@@ -140,8 +140,10 @@ public class OnmsRestService {
 			}
 		}
 
-	    final String query = removeParameter(params, "query");
-	    if (query != null) builder.sql(query);
+		if (Boolean.getBoolean("org.opennms.web.rest.enableQuery")) {
+			final String query = removeParameter(params, "query");
+			if (query != null) builder.sql(query);
+		}
 
 		final String matchType;
 		final String match = removeParameter(params, "match");
