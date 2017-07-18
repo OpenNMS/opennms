@@ -8,7 +8,7 @@
 :numbered!:
 
 = OpenNMS Release Notes
-:author: Copyright (c) 2014 The OpenNMS Group, Inc.
+:author: Copyright (c) 2017 The OpenNMS Group, Inc.
 :revnumber: OpenNMS v{opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
