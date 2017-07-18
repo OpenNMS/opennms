@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- ApplicationContext for the TicketerPlugin -->
+    <context:annotation-config />
+    <tx:annotation-driven/>
+
+    <bean id="troubleTicketProxy" class="org.opennms.web.svclayer.support.DefaultTroubleTicketProxy">
+        <property name="alarmDao" ref="alarmDao"/>
+        <property name="eventProxy" ref="eventProxy"/>
+    </bean>
+
+    <bean name="ticketerPlugin" class="org.opennms.netmgt.ticketd.TicketerPluginFactory">
+        <property name="pluginClass" value="org.opennms.netmgt.ticketd.NullTicketerPlugin"/>
+    </bean>
+
+    <bean name="ticketerServiceLayer" class="org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer">
+        <property name="ticketerPlugin" ref="ticketerPlugin"/>
+    </bean>
+
+    <bean name="troubleTicketer" class="org.opennms.netmgt.ticketd.TroubleTicketer">
+        <property name="eventIpcManager" ref="mockEventIpcManager"/>
+        <property name="ticketerServiceLayer" ref="ticketerServiceLayer" />
+    </bean>
+
+</beans>
+
+

@@ -46,14 +46,3 @@ In OpenNMS 1.11.0, some additional features are supported in the alarm ack API:
 
 Additionally, when acknowledging alarms (ack=true) you can now specify an `ackUser` parameter.
 You will only be allowed to `ack` as a different user IF you are PUTting as an authenticated user who is in the _admin_ role.
-
-===== Queries
-
-As noted above, it is possible to pass a raw `query` parameter when doing ReST queries.
-In the case of alarms, it is possible to pass severity names when querying by severity, rather than having to know the number that the severity enum maps to.
-For example:
-
-    /alarms?query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3E%20MAJOR%20AND%20alarmAckUser%20IS%20NULL
-
-This will get any alarms where the last event associated with the alarm is newer than August 19th, 2011 11:11:11, the severity is greater than _MAJOR_, and the alarm is not acknowledged (`alarmAckUser` is null).
-You should be able to use any column in the _alarm_, _event_, _node_, _ipinterface_, or _snmpinterface_ tables.

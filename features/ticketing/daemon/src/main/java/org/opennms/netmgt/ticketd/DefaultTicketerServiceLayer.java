@@ -78,7 +78,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /**
      * Needs access to the AlarmDao.
      *
-     * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     * @param alarmDao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
      */
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;

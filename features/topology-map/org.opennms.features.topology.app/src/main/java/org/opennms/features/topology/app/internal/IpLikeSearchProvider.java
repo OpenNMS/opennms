@@ -111,7 +111,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
     	
     	CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
     	
-		bldr.iplike("ipAddress", queryString).orderBy("ipAddress", true);
+		bldr.iplike("ipAddr", queryString).orderBy("ipAddress", true);
 		Criteria dbQueryCriteria = bldr.toCriteria();
 		List<OnmsIpInterface> ips;
 		
