@@ -171,11 +171,12 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         try {
             m_linkd.getLocationAwareSnmpClient().walk(peer, dot1dbase).withDescription("dot1dbase").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.info("run: Agent error while scanning the dot1dbase table", e);
+            LOG.info("run: node [{}]: ExecutionException: dot1dbase: {}", 
+                     getNodeId(), e.getMessage());
             return null; 
         } catch (final InterruptedException e) {
-            LOG.error("run: Bridge Linkd node collection interrupted, exiting",
-                      e);
+            LOG.info("run: node [{}]: InterruptedException: dot1dbase: {}", 
+                     getNodeId(), e.getMessage());
             return null;
         }
 
@@ -222,11 +223,12 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: Agent error while scanning the vtpVersion table", e);
+           LOG.info("run: node [{}]: ExecutionException: vtpVersion: {}", 
+                    getNodeId(), e.getMessage());
            return vlanmap;
        } catch (final InterruptedException e) {
-           LOG.info("run: Bridge Linkd node collection interrupted, exiting",
-                     e);
+           LOG.info("run: node [{}]: InterruptedException: vtpVersion: {}", 
+                    getNodeId(), e.getMessage());
            return vlanmap;
        }
 
@@ -253,10 +255,11 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.error("run: collection execution failed, exiting",e);
+            LOG.info("run: node [{}]: ExecutionException: ciscoVtpVlan table: {}", 
+                     getNodeId(), e.getMessage());
         } catch (final InterruptedException e) {
-            LOG.error("run: Bridge Linkd node collection interrupted, exiting",
-                      e);
+            LOG.info("run: node [{}]: InterruptedException: ciscoVtpVlan table: {}", 
+                     getNodeId(), e.getMessage());
         }
         return vlanmap;
     }
@@ -278,10 +281,11 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.error("run: collection execution failed, exiting",e);
+            LOG.info("run: node [{}]: ExecutionException: dot1dBasePortTable table: {}", 
+                     getNodeId(), e.getMessage());
         } catch (final InterruptedException e) {
-            LOG.error("run: Bridge Linkd node collection interrupted, exiting",
-                      e);
+            LOG.info("run: node [{}]: InterruptedException: dot1dBasePortTable table: {}", 
+                     getNodeId(), e.getMessage());
         }
         return bridgetoifindex;
     }
@@ -346,10 +350,11 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       dot1dTpFdbTableTracker).withDescription("dot1dTbFdbPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.error("run: collection execution failed, exiting", e);
+            LOG.info("run: node [{}]: ExecutionException: dot1dTbFdbPortTable table: {}", 
+                     getNodeId(), e.getMessage());
         } catch (final InterruptedException e) {
-            LOG.error("run: Bridge Linkd node collection interrupted, exiting",
-                      e);
+            LOG.info("run: node [{}]: InterruptedException: dot1dTbFdbPortTable table: {}", 
+                     getNodeId(), e.getMessage());
         }
         return bft;
     }
@@ -386,7 +391,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             	bridgeifindex.put(bridgeport, diffbefore+bridgeport);
         	}
         }
-        LOG.debug("fixCiscoBridgeMibPort: node [{}]: port {} ifindex {}.",
+        LOG.info("fixCiscoBridgeMibPort: node [{}]: port {} ifindex {}.",
         		bridgeport,bridgeifindex.get(bridgeport));
     }
     
@@ -450,10 +455,11 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       dot1qTpFdbTableTracker).withDescription("dot1qTbFdbPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.error("run: collection execution failed, exiting", e);
+            LOG.info("run: node [{}]: ExecutionException: dot1qTbFdbPortTable table: {}", 
+                     getNodeId(), e.getMessage());
         } catch (final InterruptedException e) {
-            LOG.error("run: Bridge Linkd node collection interrupted, exiting",
-                      e);
+            LOG.info("run: node [{}]: InterruptedException: dot1qTbFdbPortTable table: {}", 
+                     getNodeId(), e.getMessage());
         }
         return bft;
     }
@@ -493,10 +499,11 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       stpPortTableTracker).withDescription("dot1dStpPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.error("run: collection execution failed, exiting", e);
+            LOG.info("run: node [{}]: ExecutionException: dot1dStpPortTable: {}", 
+                     getNodeId(), e.getMessage());
         } catch (final InterruptedException e) {
-            LOG.error("run: Bridge Linkd node collection interrupted, exiting",
-                      e);
+            LOG.info("run: node [{}]: InterruptedException: dot1dStpPortTable: {}", 
+                     getNodeId(), e.getMessage());
         }
         return stplinks;
     }
