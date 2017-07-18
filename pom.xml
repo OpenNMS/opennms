@@ -1348,6 +1348,7 @@
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
     <trackerVersion>0.7</trackerVersion>
+    <twilioVersion>7.13.0</twilioVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
@@ -2846,6 +2847,12 @@
         <version>${project.version}</version>
         <type>pom</type>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>twilio-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
