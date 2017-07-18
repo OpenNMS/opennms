@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.snmp;
 
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class Win32ServiceDetector extends SnmpDetector {
     private static final String DEFAULT_SERVICE_NAME = "Win32Service";
 
     private String m_win32SvcName;
-    
+
     /**
      * <p>Constructor for Win32ServiceDetector.</p>
      */
@@ -63,14 +64,10 @@ public class Win32ServiceDetector extends SnmpDetector {
     public void setWin32ServiceName(String serviceName) {
         m_win32SvcName = serviceName;
         LOG.debug("setWin32ServiceName: setting service name to {}", serviceName);
-        int snLength = serviceName.length();
-        
-        StringBuffer serviceOidBuf = new StringBuffer(SV_SVC_OPERATING_STATE_OID);
-        serviceOidBuf.append(".").append(Integer.toString(snLength));
-        for (byte thisByte : serviceName.getBytes()) {
-            serviceOidBuf.append(".").append(Byte.toString(thisByte));
-        }
-        
+
+        StringBuilder serviceOidBuf = new StringBuilder(SV_SVC_OPERATING_STATE_OID);
+        serviceOidBuf.append(".").append(SnmpObjId.convertStringToDottedOIDString(serviceName, true));
+
         LOG.debug("setWin32ServiceName: the OID for the Win32 service  is {}", serviceOidBuf.toString());
         setOid(serviceOidBuf.toString());
     }

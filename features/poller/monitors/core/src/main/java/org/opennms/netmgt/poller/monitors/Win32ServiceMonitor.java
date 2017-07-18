@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,25 +47,22 @@ public class Win32ServiceMonitor extends SnmpMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(Win32ServiceMonitor.class);
 	private static final String SV_SVC_OPERATING_STATE_OID = ".1.3.6.1.4.1.77.1.2.3.1.3";
 	private static final String DEFAULT_SERVICE_NAME = "Server";
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 		String serviceName = ParameterMap.getKeyedString(parameters, "service-name", DEFAULT_SERVICE_NAME);
 		int snLength = serviceName.length();
-		
-		StringBuffer serviceOidBuf = new StringBuffer(SV_SVC_OPERATING_STATE_OID);
-		serviceOidBuf.append(".").append(Integer.toString(snLength));
-		for (byte thisByte : serviceName.getBytes()) {
-			serviceOidBuf.append(".").append(Byte.toString(thisByte));
-		}
-		
-		LOG.debug("For Win32 service '{}', OID to check is {}", serviceName, serviceOidBuf);
-		
+
+        StringBuilder serviceOidBuf = new StringBuilder(SV_SVC_OPERATING_STATE_OID);
+        serviceOidBuf.append(".").append(SnmpObjId.convertStringToDottedOIDString(serviceName, true));
+
+        LOG.debug("For Win32 service '{}', OID to check is {}", serviceName, serviceOidBuf);
+
 		parameters.put("oid", serviceOidBuf.toString());
 		parameters.put("operator", "=");
 		parameters.put("operand", "1");
-		
+
 		return super.poll(svc, parameters);
 	}
 }
