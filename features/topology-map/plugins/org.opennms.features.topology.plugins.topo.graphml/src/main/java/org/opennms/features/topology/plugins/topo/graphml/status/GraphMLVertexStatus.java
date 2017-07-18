@@ -83,7 +83,7 @@ public class GraphMLVertexStatus extends GraphMLStatus {
             return true;
         }
 
-        if (o == null || this.getClass() != o.getClass()) {
+        if (!(o instanceof GraphMLVertexStatus)) {
             return false;
         }
 

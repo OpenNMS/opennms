@@ -112,28 +112,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         focusIds = getFocusIds(graph);
         preferredLayout = graph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
 
-        final Object vertexStatusProviderType = graph.<Object>getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
-        if (vertexStatusProviderType instanceof Boolean) {
-            if (vertexStatusProviderType == Boolean.TRUE) {
-                this.vertexStatusProviderType = VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
-            } else {
-                this.vertexStatusProviderType = VertexStatusProviderType.NO_STATUS_PROVIDER;
-            }
-
-        } else if (vertexStatusProviderType instanceof String) {
-            if ("default".equalsIgnoreCase((String)vertexStatusProviderType)) {
-                this.vertexStatusProviderType = VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
-            } else if ("script".equalsIgnoreCase((String)vertexStatusProviderType)) {
-                this.vertexStatusProviderType = VertexStatusProviderType.SCRIPT_STATUS_PROVIDER;
-            } else if ("propagate".equalsIgnoreCase((String)vertexStatusProviderType)) {
-                this.vertexStatusProviderType = VertexStatusProviderType.PROPAGATE_STATUS_PROVIDER;
-            } else {
-                LOG.warn("Unknown GraphML vertex status provider type: {}", vertexStatusProviderType);
-                this.vertexStatusProviderType = VertexStatusProviderType.NO_STATUS_PROVIDER;
-            }
-        } else {
-            this.vertexStatusProviderType = VertexStatusProviderType.NO_STATUS_PROVIDER;
-        }
+        this.vertexStatusProviderType = getVertexProviderTypeFromGraph(graph);
 
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
             LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
@@ -235,5 +214,30 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
 
     public VertexStatusProviderType getVertexStatusProviderType() {
         return this.vertexStatusProviderType;
+    }
+
+    private static VertexStatusProviderType getVertexProviderTypeFromGraph(final GraphMLGraph graph) {
+        final Object vertexStatusProviderType = graph.<Object>getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
+        if (vertexStatusProviderType instanceof Boolean) {
+            if (vertexStatusProviderType == Boolean.TRUE) {
+                return VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
+            } else {
+                return VertexStatusProviderType.NO_STATUS_PROVIDER;
+            }
+
+        } else if (vertexStatusProviderType instanceof String) {
+            if ("default".equalsIgnoreCase((String)vertexStatusProviderType)) {
+                return VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
+            } else if ("script".equalsIgnoreCase((String)vertexStatusProviderType)) {
+                return VertexStatusProviderType.SCRIPT_STATUS_PROVIDER;
+            } else if ("propagate".equalsIgnoreCase((String)vertexStatusProviderType)) {
+                return VertexStatusProviderType.PROPAGATE_STATUS_PROVIDER;
+            } else {
+                LOG.warn("Unknown GraphML vertex status provider type: {}", vertexStatusProviderType);
+                return VertexStatusProviderType.NO_STATUS_PROVIDER;
+            }
+        } else {
+            return VertexStatusProviderType.NO_STATUS_PROVIDER;
+        }
     }
 }

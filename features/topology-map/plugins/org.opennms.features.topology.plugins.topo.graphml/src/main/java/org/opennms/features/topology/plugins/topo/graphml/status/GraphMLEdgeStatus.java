@@ -60,7 +60,7 @@ public class GraphMLEdgeStatus extends GraphMLStatus {
             return true;
         }
 
-        if (o == null || this.getClass() != o.getClass()) {
+        if (!(o instanceof GraphMLEdgeStatus)) {
             return false;
         }
 

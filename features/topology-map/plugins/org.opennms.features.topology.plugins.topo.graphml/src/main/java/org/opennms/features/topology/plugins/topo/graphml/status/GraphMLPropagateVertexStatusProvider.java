@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.graphml.status;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -89,7 +91,7 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
             if (this == o) {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {
+            if (!(o instanceof LoopDetectionCriteria)) {
                 return false;
             }
 
@@ -124,10 +126,12 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
     public Map<? extends VertexRef, ? extends Status> getStatusForVertices(final VertexProvider vertexProvider,
                                                                            final Collection<VertexRef> vertices,
                                                                            final Criteria[] criteria) {
+        final List<Criteria> criteriaList = Lists.newArrayList(criteria);
 
-        final LoopDetectionCriteria loopDetectionCriteria = (LoopDetectionCriteria) Iterables.tryFind(Arrays.asList(criteria),
-                                                                                                      c -> c instanceof LoopDetectionCriteria)
-                                                                                             .or(LoopDetectionCriteria::new);
+        final LoopDetectionCriteria loopDetectionCriteria = Iterables.tryFind(criteriaList,
+                                                                              c -> c instanceof LoopDetectionCriteria)
+                                                                     .transform(c -> (LoopDetectionCriteria) c)
+                                                                     .or(LoopDetectionCriteria::new);
 
         // Build map from namespace to opposite vertices
         final Multimap<String, VertexRef> oppositeVertices = HashMultimap.create();
@@ -143,6 +147,10 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
             }
         }
 
+        // Replace loop detection criteria with extended one
+        criteriaList.remove(loopDetectionCriteria);
+        criteriaList.add(loopDetectionCriteria.with(vertices));
+
         // Find and call status provider for each namespace and get result per opposite vertex
         final Map<VertexRef, Status> targetStatuses = Maps.newHashMap();
         try {
@@ -156,7 +164,7 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
                             targetStatuses.putAll(statusProvider.getStatusForVertices(
                                                   this.provider.getGraphProviderBy(e.getKey()),
                                                   e.getValue(),
-                                                  new Criteria[]{loopDetectionCriteria.with(vertices)}));
+                                                  criteriaList.toArray(new Criteria[0])));
                         }
                     }
 
