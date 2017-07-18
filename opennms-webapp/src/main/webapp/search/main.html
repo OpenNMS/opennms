@@ -1,0 +1,92 @@
+<div ng-controller="QuickSearchCtrl">
+
+	<form onSubmit="" ng-submit="">
+		<input class="form-control input-lg" type="text" ng-model="query.q"/>
+	</form>
+
+	<br/>
+
+	<div class="text-center">
+		<div class="btn-group" style="margin:0px 0px 0px 0px">
+			<!-- <button style="outline: none" type="button" class="btn btn-default nohover {{query.nodes ? 'active' : ''}}" ng-click="query.nodes = !query.nodes">Nodes</button> -->
+			<button style="outline: none" type="button" class="btn btn-default nohover {{query.alarms ? 'active' : ''}}" ng-click="query.alarms = !query.alarms">Alarms</button>
+			<button style="outline: none" type="button" class="btn btn-default nohover {{query.events ? 'active' : ''}}" ng-click="query.events = !query.events">Events</button>
+			<button style="outline: none" type="button" class="btn btn-default nohover {{query.notifications ? 'active' : ''}}" ng-click="query.notifications = !query.notifications">Notifications</button>
+		</div>
+	</div>
+
+	<!-- <br/> -->
+
+<!--
+	<div ng-show="query.nodes &amp;&amp; nodes.length > 0">
+
+		<h4>Nodes <i ng-click="query.nodes = false" class="fa fa-close fa-lg"/></h4> 
+
+		<div class="row">
+			<div class="col-sm-6 col-md-4" ng-repeat="item in nodes">
+				<a href="#">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<!- - <h3 class="panel-title">{{item.nodeLabel}}</h3> - ->
+							<h3 class="panel-title"><span ng-bind-html="item.nodeLabel | uibTypeaheadHighlight:query.q"></span></h3>
+						</div>
+						<div class="panel-body">
+							<ul class="list-unstyled">
+								<li><strong>IP Address:</strong> <span ng-bind-html="item.ipAddress | uibTypeaheadHighlight:query.q"></span></li>
+							</ul>
+						</div>
+					</div>
+				</a>
+			</div>
+		</div>
+
+	</div>
+-->
+
+	<div ng-show="query.alarms &amp;&amp; alarms.length > 0">
+		<h4>Alarms <i ng-click="query.alarms = false" class="fa fa-close fa-lg"/></h4>
+
+		<div class="row">
+			<div class="col-sm-6 col-md-4" ng-repeat="item in alarms">
+				<a href="alarm/detail.htm?id={{item.id}}">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">{{item.logMessage | stripTags}}</h3>
+						</div>
+						<div class="panel-body">
+							<ul class="list-unstyled">
+								<li><strong>Node:</strong> <span ng-bind-html="item.nodeLabel | stripTags | uibTypeaheadHighlight:query.q"></span></li>
+								<li><strong>IP Address:</strong> <span ng-bind-html="item.ipAddress | stripTags | uibTypeaheadHighlight:query.q"></span></li>
+							</ul>
+						</div>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<div ng-show="query.events &amp;&amp; events.length > 0">
+		<h4>Events <i ng-click="query.events = false" class="fa fa-close fa-lg"/></h4>
+
+		<div class="row">
+			<div class="col-sm-6 col-md-4" ng-repeat="item in events">
+				<a href="event/detail.jsp?id={{item.id}}">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">{{item.logMessage | stripTags}}</h3>
+						</div>
+						<div class="panel-body">
+							<ul class="list-unstyled">
+								<li><strong>Node:</strong> <span ng-bind-html="item.nodeLabel | stripTags | uibTypeaheadHighlight:query.q"></span></li>
+								<li><strong>IP Address:</strong> <span ng-bind-html="item.ipAddress | stripTags | uibTypeaheadHighlight:query.q"></span></li>
+							</ul>
+						</div>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<br/>
+
+</div>
