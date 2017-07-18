@@ -45,11 +45,9 @@ import javax.xml.bind.JAXB;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -758,11 +756,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     public void verifyCollapsibleCriteriaNoDefaultFocusWindow() throws IOException, InterruptedException {
         topologyUiPage.clearFocus();
 
-        String categoryName = "testCategory234";
-
-        //TODO throws RuntimeException if the category name already exists
-        addNewCategory(categoryName);
-        waitForTransition();
+        String categoryName = "Servers";
 
         topologyUiPage.search(categoryName).selectItemThatContains(categoryName);
         topologyUiPage.testCase.findElementByXpath("//div[@id='gwt-uid-24']");
@@ -780,11 +774,5 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         } catch (InterruptedException e) {
             throw Throwables.propagate(e);
         }
-    }
-
-    private void addNewCategory(String categoryName) throws IOException, InterruptedException {
-        OnmsCategory category = new OnmsCategory();
-        category.setName(categoryName);
-        this.sendPost("/rest/categories", JaxbUtils.marshal(category), 201);
     }
 }
