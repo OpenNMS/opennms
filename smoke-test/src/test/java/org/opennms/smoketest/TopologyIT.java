@@ -45,11 +45,14 @@ import javax.xml.bind.JAXB;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -744,7 +747,27 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         Assert.assertNotNull(focusedVertices);
         Assert.assertEquals(1, focusedVertices.size());
     }
-    
+
+    /**
+     * This method tests that selecting an empty category does not cause a default "No focus defined" window to pop up.
+     * <p>
+     *     Temporary solution which only works if the category name is unused
+     * </p>
+     */
+    @Test(expected = NoSuchElementException.class)
+    public void verifyCollapsibleCriteriaNoDefaultFocusWindow() throws IOException, InterruptedException {
+        topologyUiPage.clearFocus();
+
+        String categoryName = "testCategory234";
+
+        //TODO throws RuntimeException if the category name already exists
+        addNewCategory(categoryName);
+        waitForTransition();
+
+        topologyUiPage.search(categoryName).selectItemThatContains(categoryName);
+        topologyUiPage.testCase.findElementByXpath("//div[@id='gwt-uid-24']");
+    }
+
     /**
      * This method is used to block and wait for any transitions to occur.
      * This should be used after adding or removing vertices from focus and/or
@@ -757,5 +780,11 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         } catch (InterruptedException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    private void addNewCategory(String categoryName) throws IOException, InterruptedException {
+        OnmsCategory category = new OnmsCategory();
+        category.setName(categoryName);
+        this.sendPost("/rest/categories", JaxbUtils.marshal(category), 201);
     }
 }
