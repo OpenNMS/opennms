@@ -140,5 +140,8 @@
 
     <!-- Event Integration Facility Adapter -->
     <module>eif-adapter</module>
+
+    <!-- IfTtt integration -->
+    <module>ifttt</module>
   </modules>
 </project>
