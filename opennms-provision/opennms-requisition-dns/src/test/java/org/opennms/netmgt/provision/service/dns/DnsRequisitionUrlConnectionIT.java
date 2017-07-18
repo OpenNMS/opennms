@@ -57,7 +57,7 @@ import java.net.URLConnection;
 
 /**
  * This class tests the new "dns" protocol handling created for the Provisioner.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
@@ -79,7 +79,7 @@ public class DnsRequisitionUrlConnectionIT {
     public void registerFactory() {
         GenericURLFactory.initialize();
     }
-    
+
     @Test
     public void dwoValidateMultipathUrl() throws MalformedURLException {
         DnsRequisitionUrlConnection c = new DnsRequisitionUrlConnection(new URL("dns://localhost/opennms"));
@@ -131,7 +131,7 @@ public class DnsRequisitionUrlConnectionIT {
         }
         Assert.assertNotNull(e);
         Assert.assertEquals("The specified DNS URL contains an invalid query string: dns://localhost/opennms/?string=abc[123]", e.getLocalizedMessage());
-        
+
     }
 
     @Test
@@ -149,9 +149,9 @@ public class DnsRequisitionUrlConnectionIT {
 
     @Test
     @JUnitDNSServer(port=9153, zones={
-            @DNSZone(name="example.com", entries={
-                    @DNSEntry(hostname="www", address="72.14.204.99")
-            })
+        @DNSZone(name = "example.com", entries = {
+            @DNSEntry(hostname = "www", data = "72.14.204.99")
+        })
     })
     public void dwoUrlAsResource() throws IOException, JAXBException {
         Resource resource = new UrlResource(TEST_URL);
@@ -172,10 +172,11 @@ public class DnsRequisitionUrlConnectionIT {
 
     @Test
     @JUnitDNSServer(port=9153, zones={
-            @DNSZone(name="example.com", entries={
-                    @DNSEntry(hostname="www", address="72.14.204.99"),
-                    @DNSEntry(hostname="monkey", address="72.14.204.99")
-            })
+        @DNSZone(name = "example.com", entries = {
+            @DNSEntry(hostname = "www", data = "72.14.204.99")
+            ,
+            @DNSEntry(hostname = "monkey", data = "72.14.204.99")
+        })
     })
     public void dwoUrlAsResourceUsingMatchingExpression() throws IOException, JAXBException {
         String urlString = "dns://localhost:9153/example.com/?expression=[Ww]ww.*";
@@ -197,10 +198,11 @@ public class DnsRequisitionUrlConnectionIT {
 
     @Test
     @JUnitDNSServer(port=9153, zones={
-            @DNSZone(name="example.com", entries={
-                    @DNSEntry(hostname="www", address="72.14.204.99"),
-                    @DNSEntry(hostname="monkey", address="72.14.204.99")
-            })
+        @DNSZone(name = "example.com", entries = {
+            @DNSEntry(hostname = "www", data = "72.14.204.99")
+            ,
+            @DNSEntry(hostname = "monkey", data = "72.14.204.99")
+        })
     })
     public void dwoUrlAsResourceUsingNonMatchingExpression() throws IOException, JAXBException {
         String urlString = "dns://localhost:9153/example.com/?expression=Local.*";
@@ -219,12 +221,12 @@ public class DnsRequisitionUrlConnectionIT {
         Assert.assertEquals(0, req.getNodeCount());
         resourceStream.close();
     }
-    
+
     @Test
     @JUnitDNSServer(port=9153, zones={
-            @DNSZone(name="example.com", entries={
-                    @DNSEntry(hostname="www", address="72.14.204.99")
-            })
+        @DNSZone(name = "example.com", entries = {
+            @DNSEntry(hostname = "www", data = "72.14.204.99")
+        })
     })
     public void dwoUrlAsResourceUsingComplexMatchingExpression() throws IOException, JAXBException {
         String urlString = "dns://localhost:9153/example.com/?expression=(%3Fi)^WWW.EXAM.*";
@@ -243,7 +245,7 @@ public class DnsRequisitionUrlConnectionIT {
         Assert.assertEquals(1, req.getNodeCount());
         resourceStream.close();
     }
-    
+
     @Test
     public void dwoDnsRequisitionUrlConnection() throws MalformedURLException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
@@ -256,9 +258,9 @@ public class DnsRequisitionUrlConnectionIT {
      */
     @Test
     @JUnitDNSServer(port=9153, zones={
-            @DNSZone(name="example.com", entries={
-                    @DNSEntry(hostname="www", address="72.14.204.99")
-            })
+        @DNSZone(name = "example.com", entries = {
+            @DNSEntry(hostname = "www", data = "72.14.204.99")
+        })
     })
     public void dwoConnect() throws IOException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
@@ -267,9 +269,9 @@ public class DnsRequisitionUrlConnectionIT {
 
     @Test
     @JUnitDNSServer(port=9153, zones={
-            @DNSZone(name="example.com", entries={
-                    @DNSEntry(hostname="www", address="72.14.204.99")
-            })
+        @DNSZone(name = "example.com", entries = {
+            @DNSEntry(hostname = "www", data = "72.14.204.99")
+        })
     })
     public void dwoGetInputStream() throws IOException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
