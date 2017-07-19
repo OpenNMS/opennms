@@ -321,7 +321,7 @@
             <feature>tsrm-troubleticketer</feature>
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
-            <feature>twilio</feature>
+            <feature>twilio-sms-strategy</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>

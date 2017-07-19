@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.notifications</groupId>
-  <artifactId>org.opennms.features.notifications.twilio-sms-strategy</artifactId>
+  <artifactId>twilio-sms-strategy</artifactId>
   <name>OpenNMS :: Features :: Notifications :: Twilio SMS</name>
   <packaging>bundle</packaging>
   <build>
@@ -23,6 +23,16 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>org.apache.felix.service.command,org.apache.felix.gogo.commands,org.apache.karaf.shell.console,*</Import-Package>
           </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <configuration>
+          <bundles>
+            <bundle>mvn:org.opennms.features.notifications/twilio-sms-strategy/${project.version}</bundle>
+            <bundle>wrap:mvn:com.twilio.sdk/twilio/${twilioVersion}</bundle>
+          </bundles>
         </configuration>
       </plugin>
     </plugins>
@@ -44,11 +54,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

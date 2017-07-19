@@ -28,14 +28,16 @@
 
 package org.opennms.features.notifications.twilio.shell.internal;
 
+import java.util.Objects;
+
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opennms.features.datachoices.internal.StateManager;
 import org.opennms.features.notifications.twilio.internal.ConfigManager;
 
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 
 /**
  * @author Jeff Gehlbach <mailto:jeffg@opennms.com>
