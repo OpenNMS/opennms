@@ -262,6 +262,10 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
     private void unmarshallStateFromDisk(boolean serialize) {
         final File stateFile = getPathToState().toFile();
+        if (!stateFile.exists()) {
+            LOG.error("Can't restore state from {} because the file doesn't exist", stateFile);
+            return;
+        }
         LOG.debug("Restoring state for engine {} from {} ...", m_name, stateFile);
         final KieMarshallers kMarshallers = KieServices.Factory.get().getMarshallers();
         final ObjectMarshallingStrategy oms = serialize ?
