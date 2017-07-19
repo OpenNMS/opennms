@@ -28,6 +28,8 @@
 
 package org.opennms.core.test.karaf.test;
 
+import static org.ops4j.pax.exam.CoreOptions.maven;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.karaf.KarafTestCase;
@@ -96,16 +98,18 @@ public class FeatureInstallKarafIT extends KarafTestCase {
      */
     @Test
     public void testInstallAllSpringFeatures() {
-        installFeature("spring", "4.2.8.RELEASE_1");
-        installFeature("spring-aspects", "4.2.8.RELEASE_1");
-        installFeature("spring-instrument", "4.2.8.RELEASE_1");
-        installFeature("spring-jdbc", "4.2.8.RELEASE_1");
-        installFeature("spring-jms", "4.2.8.RELEASE_1");
-        //installFeature("spring-test", "4.2.8.RELEASE_1");
-        installFeature("spring-orm", "4.2.8.RELEASE_1");
-        installFeature("spring-oxm", "4.2.8.RELEASE_1");
-        installFeature("spring-tx", "4.2.8.RELEASE_1");
-        installFeature("spring-web", "4.2.8.RELEASE_1");
+        addFeaturesUrl(maven().groupId("org.apache.karaf.features").artifactId("spring-legacy").version("4.1.1").type("xml").classifier("features").getURL());
+
+        installFeature("spring", "4.2.9.RELEASE_1");
+        installFeature("spring-aspects", "4.2.9.RELEASE_1");
+        installFeature("spring-instrument", "4.2.9.RELEASE_1");
+        installFeature("spring-jdbc", "4.2.9.RELEASE_1");
+        installFeature("spring-jms", "4.2.9.RELEASE_1");
+        //installFeature("spring-test", "4.2.9.RELEASE_1");
+        installFeature("spring-orm", "4.2.9.RELEASE_1");
+        installFeature("spring-oxm", "4.2.9.RELEASE_1");
+        installFeature("spring-tx", "4.2.9.RELEASE_1");
+        installFeature("spring-web", "4.2.9.RELEASE_1");
         //installFeature("spring-web-portlet");
         //installFeature("spring-websocket");
         //installFeature("spring-security");

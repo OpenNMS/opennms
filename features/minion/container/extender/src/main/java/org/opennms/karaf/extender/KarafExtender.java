@@ -112,15 +112,16 @@ public class KarafExtender {
         filterFeatures(featuresBoot);
 
         // Build a comma separated list of our Maven repositories
-        StringBuilder mavenReposSb = new StringBuilder();
+        final StringBuilder mavenReposSb = new StringBuilder();
         for (Repository repository : repositories) {
             if (mavenReposSb.length() != 0) {
                 mavenReposSb.append(",");
             }
             mavenReposSb.append(repository.toMavenUri());
         }
+        final String mavenRepos = mavenReposSb.toString();
 
-        LOG.info("Updating Maven repositories to include: {}", mavenReposSb);
+        LOG.info("Updating Maven repositories to include: {}", mavenRepos);
         try {
             final Configuration config = m_configurationAdmin.getConfiguration(PAX_MVN_PID);
             if (config == null) {
@@ -128,11 +129,13 @@ public class KarafExtender {
                         ", but a configuration could not be located/generated.  This shouldn't happen.");
             }
             final Dictionary<String, Object> props = config.getProperties();
-            props.put(PAX_MVN_REPOSITORIES, mavenReposSb.toString());
-            config.update(props);
+            if (!mavenRepos.equals(props.get(PAX_MVN_REPOSITORIES))) {
+                props.put(PAX_MVN_REPOSITORIES, mavenRepos);
+                config.update(props);
+            }
         } catch (IOException e) {
             LOG.error("Failed to update the list of Maven repositories to '{}'. Aborting.",
-                    mavenReposSb, e);
+                    mavenRepos, e);
             return;
         }
 
@@ -151,7 +154,6 @@ public class KarafExtender {
                 try {
                     LOG.info("Adding feature repository: {}", featureUri);
                     m_featuresService.addRepository(featureUri);
-                    m_featuresService.refreshRepository(featureUri);
                 } catch (Exception e) {
                     LOG.error("Failed to add feature repository '{}'. Skipping.", featureUri, e);
                 }

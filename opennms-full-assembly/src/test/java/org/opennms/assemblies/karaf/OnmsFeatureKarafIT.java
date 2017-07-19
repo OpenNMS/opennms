@@ -56,6 +56,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	public void setUp() {
 		final String version = getOpenNMSVersion();
 		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("features").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("spring-legacy").getURL());
 		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 	}
 
@@ -513,6 +514,8 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureOpennmsEsRest() {
+		installFeature("pax-http", "4.3.0");
+		installFeature("opennms-http-whiteboard");
 		installFeature("org.opennms.plugin.licencemanager"); // Plugin manager
 		installFeature("org.opennms.plugin.featuremanager"); // Plugin manager
 		installFeature("opennms-core"); // System classpath

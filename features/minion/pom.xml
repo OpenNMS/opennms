@@ -25,7 +25,7 @@
                 <plugin>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
-                    <version>${minionKarafVersion}</version>
+                    <version>${karafVersion}</version>
                     <extensions>true</extensions>
                 </plugin>
             </plugins>
