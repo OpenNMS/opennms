@@ -31,15 +31,11 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.core.test.xml.XmlTest.assertXpathDoesNotMatch;
-import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
@@ -258,87 +254,6 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         });
         alarms.addAll(getAlarmDao().findAll());
         return alarms.last();
-    }
-
-    @Test
-    @JUnitTemporaryDatabase
-    @Transactional
-    public void testComplexQuery() throws Exception {
-        String xml = null;
-        final Map<String, String> parameters = new HashMap<String, String>();
-
-        createAlarm(OnmsSeverity.CRITICAL);
-
-        for (final OnmsAlarm alarm : getAlarmDao().findAll()) {
-            System.err.println("alarm = " + alarm);
-        }
-        parameters.put("offset", "00");
-        parameters.put("limit", "10");
-        parameters.put("orderBy", "lastEventTime");
-        parameters.put("order", "desc");
-
-        // original requirements:
-        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&lastEventTime=2011-08-19T11:11:11.000-07:00&comparator=gt&severity=MAJOR&comparator=eq
-
-        // modified version:
-        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3D%20MAJOR
-        parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity = 3");
-        xml = sendRequest(GET, "/alarms", parameters, 200);
-        // assertTrue(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
-        assertXpathMatches(xml, "//alarm[@severity='NORMAL' and @id='1']");
-        // assertFalse(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
-        assertXpathDoesNotMatch(xml, "//alarm[@severity='CRITICAL' and @id='2']");
-
-        parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity >= 3");
-        xml = sendRequest(GET, "/alarms", parameters, 200);
-        // assertTrue(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
-        assertXpathMatches(xml, "//alarm[@severity='NORMAL' and @id='1']");
-        // assertTrue(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
-        assertXpathMatches(xml, "//alarm[@severity='CRITICAL' and @id='2']");
-
-        parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity >= NORMAL");
-        xml = sendRequest(GET, "/alarms", parameters, 200);
-        // assertTrue(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
-        assertXpathMatches(xml, "//alarm[@severity='NORMAL' and @id='1']");
-        // assertTrue(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
-        assertXpathMatches(xml, "//alarm[@severity='CRITICAL' and @id='2']");
-
-        parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity < NORMAL");
-        xml = sendRequest(GET, "/alarms", parameters, 200);
-        // assertFalse(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
-        assertXpathDoesNotMatch(xml, "//alarm[@severity='NORMAL' and @id='1']");
-        // assertFalse(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
-        assertXpathDoesNotMatch(xml, "//alarm[@severity='CRITICAL' and @id='2']");
-        // assertTrue(xml.contains("count=\"0\""));
-        assertXpathMatches(xml, "//alarms[@totalCount='0']");
-
-        // original requirements:
-        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&lastEventTime=2011-08-19T11:11:11.000-07:00&comparator=gt&severity=MAJOR&comparator=eq&ackUser=myuser&comparator=eq
-
-        // acked - modified version:
-        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3E%20MAJOR%20AND%20alarmAckUser%20%3D%20'admin'
-        parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity > MAJOR AND alarmAckUser = 'admin'");
-        xml = sendRequest(GET, "/alarms", parameters, 200);
-        // assertFalse(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
-        assertXpathDoesNotMatch(xml, "//alarm[@severity='NORMAL' and @id='1']");
-        // assertTrue(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
-        assertXpathMatches(xml, "//alarm[@severity='CRITICAL' and @id='2']");
-
-        // unacked - modified version:
-        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3E%20MAJOR%20AND%20alarmAckUser%20IS%20NULL
-        parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity > MAJOR AND alarmAckUser IS NULL");
-        xml = sendRequest(GET, "/alarms", parameters, 200);
-        // assertTrue(xml.contains("count=\"0\""));
-        assertXpathMatches(xml, "//alarms[@totalCount='0']");
-
-        // unacked - modified version:
-        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3C%20MAJOR%20AND%20alarmAckUser%20IS%20NULL
-        parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity < MAJOR AND alarmAckUser IS NULL");
-        xml = sendRequest(GET, "/alarms", parameters, 200);
-        // assertTrue(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
-        assertXpathMatches(xml, "//alarm[@severity='NORMAL' and @id='1']");
-        // assertFalse(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
-        assertXpathDoesNotMatch(xml, "//alarm[@severity='CRITICAL' and @id='2']");
     }
 
     private OnmsAlarm createAlarm(final OnmsSeverity severity) {
