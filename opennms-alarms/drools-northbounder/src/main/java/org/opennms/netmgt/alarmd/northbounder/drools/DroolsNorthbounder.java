@@ -301,7 +301,7 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
             marshaller.marshall( fos, m_kieSession );
             m_kieSession.dispose();
             m_kieSession.destroy();
-            LOG.info("Sucessfully save state for engine {} in {}.", getName(), stateFile);
+            LOG.info("Sucessfully save state for engine {} in {}. There are {} elements on the working memory.", getName(), stateFile, m_kieSession.getObjects().size());
         } catch (IOException e) {
             LOG.error("Failed to save state for engine {} in {}.", getName(), stateFile, e);
         }
@@ -322,7 +322,7 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
         try (FileInputStream fin = new FileInputStream(stateFile)) {
             marshaller.unmarshall( fin, m_kieSession );
             stateFile.delete();
-            LOG.info("Sucessfully restored state for engine {} from {}.", getName(), stateFile);
+            LOG.info("Sucessfully restored state for engine {} from {}. There are {} elements on the working memory.", getName(), stateFile, m_kieSession.getObjects().size());
         } catch (IOException | ClassNotFoundException e) {
             LOG.error("Failed to restore state for engine {} from {}.", getName(), stateFile, e);
         }
