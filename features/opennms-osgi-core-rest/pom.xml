@@ -35,7 +35,7 @@
                         <feature>jax-rs-connector</feature>
 
                         <!-- Capability to unmarshal/marshal json/xml -->
-                        <feature>jax-rs-provider-moxy</feature>
+                        <feature>jax-rs-provider-jackson</feature>
                     </features>
                 </configuration>
             </plugin>
