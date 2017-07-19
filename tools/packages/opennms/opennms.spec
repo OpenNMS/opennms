@@ -587,6 +587,7 @@ END
 # Move the docs into %{_docdir}
 rm -rf %{buildroot}%{_docdir}/%{name}-%{version}
 mkdir -p %{buildroot}%{_docdir}
+find %{buildroot}%{instprefix}/docs -xdev -depth -type d -print0 | xargs -0 -r rmdir 2>/dev/null || true
 mv %{buildroot}%{instprefix}/docs %{buildroot}%{_docdir}/%{name}-%{version}
 cp README* %{buildroot}%{instprefix}/etc/
 rm -rf %{buildroot}%{instprefix}/etc/README
