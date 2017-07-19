@@ -1,5 +1,5 @@
 <ifttt-config enabled="false" key="your-key-here" pollInterval="30">
-    <trigger-package category-filter="">
+    <trigger-package category-filter=""  onlyUnacknowledged="true">
         <trigger-set name="ON">
             <trigger eventName="test" delay="0">
                 <value1>ON</value1>

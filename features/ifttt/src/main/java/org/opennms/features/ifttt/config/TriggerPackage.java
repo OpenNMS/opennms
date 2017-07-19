@@ -43,6 +43,10 @@ public class TriggerPackage {
      * trigger sets for firing IFTTT events
      */
     private List<TriggerSet> triggerSets = new ArrayList<>();
+    /**
+     * whether only unacknowledged alarms are retrieved
+     */
+    private Boolean onlyUnacknowledged = Boolean.TRUE;
 
     @XmlAttribute
     public String getCategoryFilter() {
@@ -51,6 +55,15 @@ public class TriggerPackage {
 
     public void setCategoryFilter(final String categoryFilter) {
         this.categoryFilter = categoryFilter;
+    }
+
+    @XmlAttribute
+    public Boolean getOnlyUnacknowledged() {
+        return onlyUnacknowledged;
+    }
+
+    public void setOnlyUnacknowledged(Boolean onlyUnacknowledged) {
+        this.onlyUnacknowledged = onlyUnacknowledged;
     }
 
     @XmlElement(name = "trigger-set")

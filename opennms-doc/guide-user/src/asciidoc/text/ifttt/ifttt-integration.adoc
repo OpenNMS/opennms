@@ -7,9 +7,9 @@ service has several triggers that can be used to trigger actions of other servic
 brightness and color of a smart bulb, send messages or date to IoT devices.
 
 The _{opennms-product-name}_ integration makes uses of the so-called "Webhooks" service, that allows to trigger actions
-when a specific web-request was received. The basic operation is as follows: _{opennms-product-name}_ polls for unacknowledged
-alarms with associated nodes and matches a given category filter. For the resulting alarm set the maximum severity and total
-count is computed. If one of these values changed compared to the last poll one or more events specified for the computed
+when a specific web-request was received. The basic operation is as follows: _{opennms-product-name}_ polls for alarms with
+associated nodes and matches a given category filter. For the resulting alarm set the maximum severity and total count
+is computed. If one of these values changed compared to the last poll one or more events specified for the computed
 maximum severity will be sent to _IFTTT_.
 
 === IFTTT Configuration
@@ -33,10 +33,11 @@ image:ifttt/webhooks-settings-small.png[]
 On the side of _{opennms-product-name}_ you need a configuration that defines which event names to send on an alarm count
 or severity change. The configuration file `ifttt-config.xml` contains so called trigger packages.
 
-The operation is as follows: _{opennms-product-name}_ retrieves all unacknowledged alarms that have a node associated.
-It computes the maximum severity and alarm count for each trigger package's category filter. After that it triggers all
-events defined in the corresponding trigger sets for the computed maximum severity. The category filter accepts Java
-regular expressions. Using an empty category filter will use all unacknowledged alarms with an associated node.
+The operation is as follows: _{opennms-product-name}_ retrieves all alarms that have a node associated. Each trigger
+package defines whether only acknowledged alarms should be taken into account. It then computes the maximum severity
+and alarm count for each trigger package's category filter. After that it triggers all events defined in the corresponding
+trigger sets for the computed maximum severity. The category filter accepts Java regular expressions. Using an empty
+category filter will use all unacknowledged alarms with an associated node.
 
 Each trigger inside a trigger set defines the event name to be triggered and three additional values. These values can be
 used to set additional attributes for the corresponding _IFTTT_ applet action. The following trigger sets can be defined:
@@ -74,7 +75,7 @@ or operating LED displays via _IFTTT_.
 [source, xml]
 ----
 <ifttt-config enabled="true" key="X71dfUZsH4Wkl6cjsLjdV" pollInterval="30">
-    <trigger-package categoryFilter="Routers|Switches">
+    <trigger-package categoryFilter="Routers|Switches" onlyUnacknowledged="true">
         <trigger-set name="ON">
             <trigger eventName="on" delay="0">
                 <value1></value1>

@@ -1,6 +1,6 @@
 <ifttt-config enabled="true" key="test-key" pollInterval="2">
 
-    <trigger-package categoryFilter="Bar">
+    <trigger-package categoryFilter="Bar" onlyUnacknowledged="false">
         <trigger-set name="ON">
             <trigger eventName="test" delay="0">
                 <value1>ON</value1>
@@ -58,7 +58,7 @@
         </trigger-set>
     </trigger-package>
 
-    <trigger-package categoryFilter="Foo">
+    <trigger-package categoryFilter="Foo" onlyUnacknowledged="true">
         <trigger-set name="ON">
             <trigger eventName="test" delay="0">
                 <value1>ON</value1>
@@ -116,7 +116,7 @@
         </trigger-set>
     </trigger-package>
 
-    <trigger-package categoryFilter="Foo|Bar">
+    <trigger-package categoryFilter="Foo|Bar" onlyUnacknowledged="true">
         <trigger-set name="ON">
             <trigger eventName="test" delay="0">
                 <value1>ON</value1>

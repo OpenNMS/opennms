@@ -140,7 +140,16 @@ public class IfTttDaemonTest {
     }
 
     private void addAlarm(Integer id, Integer nodeId, OnmsSeverity onmsSeverity) {
-        final OnmsAlarm onmsAlarm = new OnmsAlarm(id, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, null, null, onmsSeverity.getId(), new Date(), new OnmsEvent());
+        addAlarm(id, nodeId, onmsSeverity, false);
+    }
+
+    private void addAlarm(Integer id, Integer nodeId, OnmsSeverity onmsSeverity, final boolean acknowledged) {
+        final OnmsAlarm onmsAlarm = new OnmsAlarm(id, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, null, null, onmsSeverity.getId(), new Date(), new OnmsEvent()) {
+            @Override
+            public boolean isAcknowledged() {
+                return acknowledged;
+            }
+        };
         onmsAlarm.setNode(nodeMap.get(nodeId));
         alarmMap.put(id, onmsAlarm);
     }
@@ -182,6 +191,8 @@ public class IfTttDaemonTest {
         addAlarm(9, 3, OnmsSeverity.MINOR);         // bar
 
         addAlarm(10, null, OnmsSeverity.CRITICAL);  // -
+
+        addAlarm(11, 2, OnmsSeverity.CRITICAL, true);  // -
     }
 
     @Test
@@ -197,8 +208,8 @@ public class IfTttDaemonTest {
         Assert.assertEquals(new ResultEntry("MAJOR", "MINOR", 5, "MAJOR", 6), foo.get(2));
         Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), foo.get(3));
         Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bar.get(0));
-        Assert.assertEquals(new ResultEntry("MINOR", "INDETERMINATE", 0, "MINOR", 6), bar.get(1));
-        Assert.assertEquals(new ResultEntry("MAJOR", "MINOR", 6, "MAJOR", 7), bar.get(2));
+        Assert.assertEquals(new ResultEntry("CRITICAL", "INDETERMINATE", 0, "CRITICAL", 7), bar.get(1));
+        Assert.assertEquals(new ResultEntry("CRITICAL", "CRITICAL", 7, "CRITICAL", 8), bar.get(2));
         Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bar.get(3));
         Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), foobar.get(0));
         Assert.assertEquals(new ResultEntry("MINOR", "INDETERMINATE", 0, "MINOR", 8), foobar.get(1));
@@ -238,7 +249,7 @@ public class IfTttDaemonTest {
         await().atMost(timeout, SECONDS).until(() -> allEntrySizesMatch(receivedEntries, entryCount - 2));
         LOG.debug("#1: {}", receivedEntries);
 
-        addAlarm(11, 4, OnmsSeverity.MAJOR);
+        addAlarm(12, 4, OnmsSeverity.MAJOR);
         when(alarmDao.findMatching((Criteria) Matchers.anyObject())).thenReturn(alarmMap.values().stream().collect(Collectors.toList()));
 
         await().atMost(timeout, SECONDS).until(() -> allEntrySizesMatch(receivedEntries, entryCount - 1));
