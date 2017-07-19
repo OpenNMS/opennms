@@ -28,7 +28,7 @@
                 <artifactId>features-maven-plugin</artifactId>
                 <configuration>
                     <repositories>
-                        <repository>mvn:com.eclipsesource.jaxrs.examples/features/${osgiJaxRsVersion}/xml/features</repository>
+                        <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
                     </repositories>
                     <features>
                         <!-- Capability to listen for ReST Services -->
@@ -58,7 +58,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.eclipsesource.jaxrs.examples</groupId>
+            <groupId>com.eclipsesource.jaxrs</groupId>
             <artifactId>features</artifactId>
             <type>pom</type>
             <version>${osgiJaxRsVersion}</version>
