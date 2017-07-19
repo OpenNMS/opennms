@@ -614,7 +614,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     	return m_linkdConfig.getMaxBft();
     }
     
-    public boolean collectBft(int nodeid) {
+    public synchronized boolean collectBft(int nodeid) {
     	if (getQueryManager().getUpdateBftMap().size()+m_bridgecollectionsscheduled.size() >= m_linkdConfig.getMaxBft() )
     		return false;
     	synchronized (m_bridgecollectionsscheduled) {
