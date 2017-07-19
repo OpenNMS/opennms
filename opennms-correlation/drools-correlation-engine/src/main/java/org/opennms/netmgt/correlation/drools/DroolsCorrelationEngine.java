@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.drools.compiler.compiler.DroolsParserException;
 import org.drools.core.RuleBaseConfiguration;
@@ -55,10 +56,16 @@ import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
+import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
+import org.opennms.netmgt.correlation.drools.config.RuleSet;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 
 import com.codahale.metrics.Gauge;
@@ -86,14 +93,26 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private boolean m_isStreaming = false;
     private final Meter m_eventsMeter;
     private Boolean m_persistState;
+    private Resource m_configPath;
+    private ApplicationContext m_configContext;
     
-    public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry) {
+    public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry, final Resource configPath, final ApplicationContext configContext) {
         this.m_name = name;
+        this.m_configPath = configPath;
+        this.m_configContext = configContext;
         final Gauge<Long> factCount = () -> { return getKieSession().getFactCount(); };
         metricRegistry.register(MetricRegistry.name(name, "fact-count"), factCount);
         final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
         metricRegistry.register(MetricRegistry.name(name, "pending-tasks-count"), pendingTasksCount);
         m_eventsMeter = metricRegistry.meter(MetricRegistry.name(name, "events"));
+    }
+
+    public Resource getConfigPath() {
+        return m_configPath;
+    }
+
+    public ApplicationContext getConfigContext() {
+        return m_configContext;
     }
 
     /** {@inheritDoc} */
@@ -309,6 +328,33 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     @Override
     public String toString() {
         return String.format("DroolsCorrelationEngine[%s]", m_name);
+    }
+
+    @Override
+    public void reloadConfig() {
+        EventBuilder ebldr = null;
+        try {
+            LOG.info("Reloading configuration for engine {}", m_name);
+            EngineConfiguration cfg = JaxbUtils.unmarshal(EngineConfiguration.class, m_configPath);
+            Optional<RuleSet> opt = cfg.getRuleSetCollection().stream().filter(rs -> rs.getName().equals(getName())).findFirst();
+            if (opt.isPresent()) {
+                marshallStateToDisk(true);
+                opt.get().updateEngine(this);
+                initialize();
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+            } else {
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+                ebldr.addParam(EventConstants.PARM_REASON, "RuleSet not found on " + m_configPath);
+            }
+        } catch (Exception e) {
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+            ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
+        } finally {
+            if (ebldr != null) sendEvent(ebldr.getEvent());
+        }
     }
 
 }

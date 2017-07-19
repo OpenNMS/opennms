@@ -86,4 +86,8 @@ public class TestEngine extends AbstractCorrelationEngine {
         // pass
     }
 
+    @Override
+    public void reloadConfig() {
+    }
+
 }

@@ -53,6 +53,8 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
     private ScheduledExecutorService m_scheduler;
     private final Map<Integer, ScheduledFuture<?>> m_pendingTasks = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
 
+    public abstract void reloadConfig();
+
     /** {@inheritDoc} */
         @Override
     public abstract void correlate(Event e);
