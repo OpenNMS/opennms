@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -99,7 +99,7 @@ if (autocomplete != null && autocomplete.matches("^[#@%\\$].*$")){
     }
 }
 if (listCategories) {
-    Set<OnmsCategory> set = new HashSet<OnmsCategory>();
+    Set<OnmsCategory> set = new TreeSet<>();
     for (OnmsNode item : items) {
         set.addAll(item.getCategories());
     }
@@ -114,7 +114,7 @@ if (listCategories) {
     }
 
 } else if (listForeignSources) {
-    Set<String> set = new HashSet<String>();
+    Set<String> set = new TreeSet<>();
     for (OnmsNode item : items) {
         if (item.getForeignSource() != null && !"".equals(item.getForeignSource())) {
             set.add(item.getForeignSource());
@@ -132,23 +132,39 @@ if (listCategories) {
 
 } else {
     for (OnmsNode item : items) {
-	// Check to see if the item matches the search term
+        // Check to see if the item matches the search term
+        if (category != null) {
+            boolean skipItem = true;
+            for (OnmsCategory cat : item.getCategories()) {
+                if (cat.getName().startsWith(category)) {
+                    skipItem = false;
+                    break;
+                }
+            }
+            if (skipItem) {
+                continue;
+            }
+        } else if (foreignSource != null) {
+            if (item.getForeignSource() != null && !item.getForeignSource().startsWith(foreignSource) && !item.getForeignSource().equals(foreignSource)) {
+                continue;
+            }
+        }
 
-		StringBuffer result = new StringBuffer();
+        StringBuffer result = new StringBuffer();
 
         result.append(item.getLabel());
-		result.append(" (Node ID ").append(item.getId()).append(")");
-		// If we've already printed the first item, separate the items with a comma
-		if (printedFirst) {
-			out.println(",");
-		}
-		out.println(JSONSerializer.toJSON(new AutocompleteRecord(result.toString(), item.getNodeId())));
-		printedFirst = true;
-		// Don't print more than a certain number of records to limit the
-		// performance impact in the web browser
-		if (recordCounter++ >= recordLimit) {
-			break;
-		}
+        result.append(" (Node ID ").append(item.getId()).append(")");
+        // If we've already printed the first item, separate the items with a comma
+        if (printedFirst) {
+            out.println(",");
+        }
+        out.println(JSONSerializer.toJSON(new AutocompleteRecord(result.toString(), item.getNodeId())));
+        printedFirst = true;
+        // Don't print more than a certain number of records to limit the
+        // performance impact in the web browser
+        if (recordCounter++ >= recordLimit) {
+            break;
+        }
     }
 }
 %>
