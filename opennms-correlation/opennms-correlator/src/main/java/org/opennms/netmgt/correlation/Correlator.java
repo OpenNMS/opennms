@@ -36,10 +36,12 @@ import java.util.Map;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -69,13 +71,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 			m_name = m_engine.getClass().getSimpleName() + '-' + m_engine.getName() ;
 			Map<String,String> mdc = Logging.getCopyOfContextMap();
 			Logging.putPrefix(m_name);
-			final List<String> interesting = m_engine.getInterestingEvents();
-			if (interesting.contains(EventHandler.ALL_UEIS)) {
-				LOG.warn("Registering engine {} for ALL events", m_engine.getName());
-				m_eventIpcManager.addEventListener(this);
-			} else {
-				m_eventIpcManager.addEventListener(this, interesting);
-			}
+			registerEventListeners();
 			Logging.setContextMap(mdc);
 		}
 
@@ -86,9 +82,42 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 
 		@Override
 		public void onEvent(final Event e) {
-			m_engine.correlate(e);
+		    if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
+		        m_eventIpcManager.removeEventListener(this);
+		        handleReloadEvent(e);
+		        registerEventListeners();
+		        return;
+		    }
+		    m_engine.correlate(e);
 		}
-		
+
+		private void registerEventListeners() {
+                    final List<String> interesting = m_engine.getInterestingEvents();
+                    if (interesting.contains(EventHandler.ALL_UEIS)) {
+                            LOG.warn("Registering engine {} for ALL events", m_engine.getName());
+                            m_eventIpcManager.addEventListener(this);
+                    } else {
+                            m_eventIpcManager.addEventListener(this, interesting);
+                            m_eventIpcManager.addEventListener(this, EventConstants.RELOAD_DAEMON_CONFIG_UEI);
+                    }
+		}
+
+		private void handleReloadEvent(Event e) {
+		    List<Parm> parmCollection = e.getParmCollection();
+		    for (Parm parm : parmCollection) {
+		        String parmName = parm.getParmName();
+		        if("daemonName".equals(parmName)) {
+		            if (parm.getValue() == null || parm.getValue().getContent() == null) {
+		                LOG.warn("The daemonName parameter has no value, ignoring.");
+		                return;
+		            }
+		            if (parm.getValue().getContent().contains(getName())) {
+		                m_engine.reloadConfig();
+		                return;
+		            }
+		        }
+		    }
+		}
 	}
 
 	/**

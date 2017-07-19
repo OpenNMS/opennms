@@ -301,7 +301,7 @@ public class EngineConfiguration implements Serializable {
 
 		List<CorrelationEngine> engineList = new ArrayList<CorrelationEngine>();
 		for (final RuleSet ruleSet : getRuleSet()) {
-			LOG.debug("Constucting engind for ruleset {} in configuration {}.", ruleSet.getName(), basePath);
+			LOG.debug("Constucting engine for ruleset {} in configuration {}.", ruleSet.getName(), basePath);
 			engineList.add(ruleSet.constructEngine(basePath, appContext, eventIpcManager, metricRegistry));
 	    }
 	    

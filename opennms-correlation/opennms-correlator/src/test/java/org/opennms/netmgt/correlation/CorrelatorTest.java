@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.easymock.EasyMock;
 import org.opennms.core.fiber.Fiber;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 
@@ -65,7 +66,7 @@ public class CorrelatorTest extends TestCase {
 		EasyMock.expectLastCall().anyTimes();
 
 		m_eventIpcManager.addEventListener(isA(EventListener.class), same(interestingEvents));
-
+		m_eventIpcManager.addEventListener(isA(EventListener.class), same(EventConstants.RELOAD_DAEMON_CONFIG_UEI));
 		replayMocks();
 	}
 
