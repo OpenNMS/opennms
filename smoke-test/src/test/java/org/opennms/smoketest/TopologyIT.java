@@ -32,7 +32,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -42,15 +41,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXB;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
@@ -893,12 +888,11 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     public void verifyCollapsibleCriteriaNoDefaultFocusWindow() throws IOException, InterruptedException {
         topologyUiPage.clearFocus();
 
-        String categoryName = "Servers";
+        String categoryName = "Switches";
 
         topologyUiPage.search(categoryName).selectItemThatContains(categoryName);
-        topologyUiPage.testCase.findElementByXpath("//div[@id='gwt-uid-24']");
+        topologyUiPage.testCase.findElementByXpath("//*[contains(text(), 'No focus defined')]");
     }
-
 
     /**
      * This method is used to block and wait for any transitions to occur.
