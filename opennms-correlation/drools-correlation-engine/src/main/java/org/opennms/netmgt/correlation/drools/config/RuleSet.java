@@ -785,4 +785,8 @@ public class RuleSet implements Serializable {
         return PropertiesUtils.substitute(getAppContext(), System.getProperties());
     }
 
+    @Override
+    public String toString() {
+        return "RuleSet[" + getName() + "]";
+    }
 }
