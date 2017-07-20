@@ -26,7 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.container.web.felix.base.internal.handler;
+package org.opennms.container.web.felix.base.internal.service;
+
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.Assert.assertThat;
+import static org.opennms.container.web.felix.base.internal.service.HttpServiceFactory.getRestAliases;
+
+import org.junit.Test;
 
 public class HttpServiceFactoryTest {
+
+    @Test
+    public void verifyGetAliases() {
+        assertThat(getRestAliases("/services"), hasItems("/services"));
+        assertThat(getRestAliases("services"), hasItems("/services"));
+        assertThat(getRestAliases("/services/"), hasItems("/services"));
+        assertThat(getRestAliases("services/"), hasItems("/services"));
+
+        assertThat(getRestAliases("services,x,,y,  , z "), hasItems("/services", "/x", "/y", "/z"));
+
+        assertThat(getRestAliases("/"), hasItems("/"));
+
+        assertThat(getRestAliases(""), hasItems());
+        assertThat(getRestAliases(null), hasItems());
+    }
 }

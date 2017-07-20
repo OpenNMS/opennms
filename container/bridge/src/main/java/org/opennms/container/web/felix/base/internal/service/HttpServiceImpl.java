@@ -57,14 +57,14 @@ public final class HttpServiceImpl
     private final List<String> restServiceAliases = new ArrayList<>();
 
     public HttpServiceImpl(Bundle bundle, ServletContext context, HandlerRegistry handlerRegistry,
-        ServletContextAttributeListener servletAttributeListener, boolean sharedContextAttributes)
+        ServletContextAttributeListener servletAttributeListener, boolean sharedContextAttributes,
+        Set<String> restAliases)
     {
         this.bundle = bundle;
         this.handlerRegistry = handlerRegistry;
         this.contextManager = new ServletContextManager(this.bundle, context, servletAttributeListener, sharedContextAttributes);
 
-        this.restServiceAliases.add("/rest");
-        this.restServiceAliases.add("/api/v2");
+        this.restServiceAliases.addAll(restAliases);
     }
 
     private ExtServletContext getServletContext(HttpContext context)
