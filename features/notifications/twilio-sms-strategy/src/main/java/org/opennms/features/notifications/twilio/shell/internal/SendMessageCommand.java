@@ -71,6 +71,7 @@ public class SendMessageCommand extends OsgiCommandSupport {
 		).create();
 		
 		System.out.println("Request submitted. Message SID = " + message.getSid());
+		return null;
 	}
 	
     public void setConfigManager(ConfigManager configManager) {

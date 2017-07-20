@@ -23,7 +23,7 @@
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command name="twilio:send-message">
-            <action class="org.opennms.features.datachoices.shell.internal.SendMessageCommand">
+            <action class="org.opennms.features.notifications.twilio.shell.internal.SendMessageCommand">
                 <property name="configManager" ref="configManager"/>
             </action>
         </command>
