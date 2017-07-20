@@ -81,10 +81,9 @@ public class IfTttTrigger {
     }
 
     public void trigger() {
-        final CloseableHttpClient httpclient = HttpClients.createDefault();
-        LOG.debug("Sending '" + event + "' event to IFTTT.");
+        try (final CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            LOG.debug("Sending '" + event + "' event to IFTTT.");
 
-        try {
             final HttpPost httpPost = new HttpPost(String.format(IFTTT_URL, event, key));
             httpPost.setHeader("Content-type", "application/json");
 
@@ -97,10 +96,8 @@ public class IfTttTrigger {
             if (statusCode != 200) {
                 LOG.warn("Received HTTP Status {} for request to {} with body {}", statusCode, httpPost.getURI(), httpPost.getEntity());
             }
-
-            httpclient.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error invoking request: {}", e);
         }
     }
 }

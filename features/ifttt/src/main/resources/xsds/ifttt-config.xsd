@@ -55,7 +55,7 @@
                     <documentation>The categoryFilter for this trigger package.</documentation>
                 </annotation>
             </attribute>
-            <attribute name="onlyUnacknowledged" type="boolean" default="true" use="required">
+            <attribute name="onlyUnacknowledged" type="boolean" default="true" use="optional">
                 <annotation>
                     <documentation>Whether only unacknowledged alarms are used for this trigger package.</documentation>
                 </annotation>

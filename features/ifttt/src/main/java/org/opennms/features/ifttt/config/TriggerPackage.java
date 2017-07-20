@@ -83,4 +83,25 @@ public class TriggerPackage {
         }
         return null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TriggerPackage that = (TriggerPackage) o;
+
+        if (categoryFilter != null ? !categoryFilter.equals(that.categoryFilter) : that.categoryFilter != null)
+            return false;
+        if (triggerSets != null ? !triggerSets.equals(that.triggerSets) : that.triggerSets != null) return false;
+        return onlyUnacknowledged != null ? onlyUnacknowledged.equals(that.onlyUnacknowledged) : that.onlyUnacknowledged == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = categoryFilter != null ? categoryFilter.hashCode() : 0;
+        result = 31 * result + (triggerSets != null ? triggerSets.hashCode() : 0);
+        result = 31 * result + (onlyUnacknowledged != null ? onlyUnacknowledged.hashCode() : 0);
+        return result;
+    }
 }

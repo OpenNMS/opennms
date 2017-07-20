@@ -100,4 +100,28 @@ public class Trigger {
     public void setDelay(final int delay) {
         this.delay = delay;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Trigger trigger = (Trigger) o;
+
+        if (delay != trigger.delay) return false;
+        if (eventName != null ? !eventName.equals(trigger.eventName) : trigger.eventName != null) return false;
+        if (value1 != null ? !value1.equals(trigger.value1) : trigger.value1 != null) return false;
+        if (value2 != null ? !value2.equals(trigger.value2) : trigger.value2 != null) return false;
+        return value3 != null ? value3.equals(trigger.value3) : trigger.value3 == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = eventName != null ? eventName.hashCode() : 0;
+        result = 31 * result + (value1 != null ? value1.hashCode() : 0);
+        result = 31 * result + (value2 != null ? value2.hashCode() : 0);
+        result = 31 * result + (value3 != null ? value3.hashCode() : 0);
+        result = 31 * result + delay;
+        return result;
+    }
 }

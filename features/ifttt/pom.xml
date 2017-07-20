@@ -78,12 +78,16 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.collection</groupId>
             <artifactId>org.opennms.features.collection.test-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.test-api</groupId>
+            <artifactId>org.opennms.core.test-api.xml</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

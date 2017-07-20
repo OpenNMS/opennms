@@ -69,11 +69,11 @@ public class IfTttDaemon {
     /**
      * the alarm dao instance
      */
-    private final AlarmDao m_alarmDao;
+    private final AlarmDao alarmDao;
     /**
      * the transaction template
      */
-    private final TransactionOperations m_transactionOperations;
+    private final TransactionOperations transactionOperations;
     /**
      * file reload container for the ifttt-config.xml file
      */
@@ -94,8 +94,8 @@ public class IfTttDaemon {
      * @param transactionOperations the transaction template to be used
      */
     public IfTttDaemon(final AlarmDao alarmDao, final TransactionOperations transactionOperations) {
-        this.m_alarmDao = alarmDao;
-        this.m_transactionOperations = transactionOperations;
+        this.alarmDao = alarmDao;
+        this.transactionOperations = transactionOperations;
 
         // initialize the FileReloadContainer instance for the configuration file
 
@@ -167,7 +167,7 @@ public class IfTttDaemon {
                         return;
                     }
 
-                    m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
+                    transactionOperations.execute(new TransactionCallbackWithoutResult() {
                         @Override
                         protected void doInTransactionWithoutResult(TransactionStatus status) {
 
@@ -177,7 +177,7 @@ public class IfTttDaemon {
                                     .isNotNull("node")
                                     .gt("severity", OnmsSeverity.NORMAL);
 
-                            final List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteriaBuilder.toCriteria());
+                            final List<OnmsAlarm> alarms = alarmDao.findMatching(criteriaBuilder.toCriteria());
 
                             for (final TriggerPackage triggerPackage : ifTttConfig.getTriggerPackages()) {
 

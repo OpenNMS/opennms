@@ -102,4 +102,27 @@ public class IfTttConfig {
         }
         return null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IfTttConfig that = (IfTttConfig) o;
+
+        if (key != null ? !key.equals(that.key) : that.key != null) return false;
+        if (enabled != null ? !enabled.equals(that.enabled) : that.enabled != null) return false;
+        if (triggerPackages != null ? !triggerPackages.equals(that.triggerPackages) : that.triggerPackages != null)
+            return false;
+        return pollInterval != null ? pollInterval.equals(that.pollInterval) : that.pollInterval == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = key != null ? key.hashCode() : 0;
+        result = 31 * result + (enabled != null ? enabled.hashCode() : 0);
+        result = 31 * result + (triggerPackages != null ? triggerPackages.hashCode() : 0);
+        result = 31 * result + (pollInterval != null ? pollInterval.hashCode() : 0);
+        return result;
+    }
 }
