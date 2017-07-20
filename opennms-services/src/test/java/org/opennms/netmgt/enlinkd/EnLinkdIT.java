@@ -179,6 +179,20 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         forward.setBridgeMacLinkLastPollTime(forward.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(forward);
 
+        BridgeMacLink sharedB = new BridgeMacLink();
+        sharedB.setNode(nodeB);
+        sharedB.setBridgePort(topology.portBC);
+        sharedB.setMacAddress(topology.shar);
+        sharedB.setBridgeMacLinkLastPollTime(sharedB.getBridgeMacLinkCreateTime());
+        m_bridgeMacLinkDao.save(sharedB);
+
+        BridgeMacLink sharedC = new BridgeMacLink();
+        sharedC.setNode(nodeC);
+        sharedC.setBridgePort(topology.portCB);
+        sharedC.setMacAddress(topology.shar);
+        sharedC.setBridgeMacLinkLastPollTime(sharedC.getBridgeMacLinkCreateTime());
+        m_bridgeMacLinkDao.save(sharedC);
+        
         BridgeMacLink mac1 = new BridgeMacLink();
         mac1.setNode(nodeA);
         mac1.setBridgePort(topology.portA);
@@ -202,7 +216,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
 
         m_bridgeMacLinkDao.flush();
         m_bridgeBridgeLinkDao.flush();
-        assertEquals(4, m_bridgeMacLinkDao.countAll());
+        assertEquals(6, m_bridgeMacLinkDao.countAll());
         assertEquals(2, m_bridgeBridgeLinkDao.countAll());
         
         assertNotNull(m_bridgeTopologyDao);
@@ -217,7 +231,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(nodeAbd, nodeCbd);
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
 
-        topology.check(nodeAbd);
+        topology.checkwithshared(nodeAbd);
         assertEquals(0, nodeAbd.getForwarders(topology.nodeAId).size());
         assertEquals(1, nodeAbd.getForwarders(topology.nodeBId).size());
         assertEquals(0, nodeAbd.getForwarders(topology.nodeCId).size());
