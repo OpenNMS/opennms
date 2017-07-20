@@ -280,6 +280,10 @@
             <feature>opennms-trapd</feature>
             <!-- <feature>opennms-webapp</feature> -->
 
+            <!-- OSGI Rest -->
+            <feature>jax-rs-connector</feature>
+            <feature>opennms-osgi-core-rest</feature>
+
             <feature>org.json</feature>
             <feature>postgresql</feature>
             <feature>qpid</feature>
@@ -781,4 +785,22 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <!-- Required for com.eclipsesource.jaxrs/* -->
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+  </repositories>
 </project>
