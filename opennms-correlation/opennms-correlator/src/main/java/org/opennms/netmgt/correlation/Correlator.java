@@ -106,7 +106,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		    List<Parm> parmCollection = e.getParmCollection();
 		    for (Parm parm : parmCollection) {
 		        String parmName = parm.getParmName();
-		        if("daemonName".equals(parmName)) {
+		        if(EventConstants.PARM_DAEMON_NAME.equals(parmName)) {
 		            if (parm.getValue() == null || parm.getValue().getContent() == null) {
 		                LOG.warn("The daemonName parameter has no value, ignoring.");
 		                return;
