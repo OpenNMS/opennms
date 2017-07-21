@@ -103,7 +103,7 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
      * @param engineName the engine name
      */
     public DroolsNorthbounder(ApplicationContext context, DroolsNorthbounderConfigDao configDao, EventProxy eventProxy, String engineName) {
-        super(NBI_NAME + ":" + engineName);
+        super(NBI_NAME + '-' + engineName);
         m_context = context;
         m_configDao = configDao;
         m_eventProxy = eventProxy;
@@ -178,7 +178,7 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
         }
 
         new Thread(() -> {
-            Logging.putPrefix("alarmd");
+            Logging.putPrefix(getName());
             LOG.debug("Starting task thread for {}", getName());
             m_kieSession.fireUntilHalt();
             LOG.debug("Stopping task thread for {}", getName());

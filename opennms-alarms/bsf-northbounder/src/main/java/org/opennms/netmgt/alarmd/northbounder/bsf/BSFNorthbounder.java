@@ -71,7 +71,7 @@ public class BSFNorthbounder extends AbstractNorthbounder implements Initializin
      * @param engineName the engine name
      */
     public BSFNorthbounder(BSFNorthbounderConfigDao configDao, String engineName) {
-        super(NBI_NAME + ":" + engineName);
+        super(NBI_NAME + '-' + engineName);
         m_configDao = configDao;
         m_engine = configDao.getConfig().getEngine(engineName);
 
