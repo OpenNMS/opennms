@@ -92,6 +92,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private String m_eventProcessingMode;
     private boolean m_isStreaming = false;
     private final Meter m_eventsMeter;
+    private MetricRegistry m_metricRegistry;
     private Boolean m_persistState;
     private Resource m_configPath;
     private ApplicationContext m_configContext;
@@ -100,6 +101,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         this.m_name = name;
         this.m_configPath = configPath;
         this.m_configContext = configContext;
+        this.m_metricRegistry = metricRegistry;
         final Gauge<Long> factCount = () -> { return getKieSession().getFactCount(); };
         metricRegistry.register(MetricRegistry.name(name, "fact-count"), factCount);
         final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
@@ -230,13 +232,25 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     @Override
     public void tearDown() {
         getScheduler().shutdown();
+        m_metricRegistry.remove(MetricRegistry.name(getName(), "pending-tasks-count"));
+        m_metricRegistry.remove(MetricRegistry.name(getName(), "fact-count"));
+        m_metricRegistry.remove(MetricRegistry.name(getName(), "events"));
         if (m_persistState != null && m_persistState) {
             if (getPendingTasksCount() > 0) {
                 LOG.error("Cannot marshall state because there are pending time based tasks running.");
+                shutDownKieSession();
             } else {
                 marshallStateToDisk(true);
             }
+        } else {
+            shutDownKieSession();
         }
+    }
+
+    private void shutDownKieSession() {
+        m_kieSession.halt();
+        m_kieSession.dispose();
+        m_kieSession.destroy();
     }
 
     private Path getPathToState() {
