@@ -54,8 +54,10 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     private final static Logger LOG = LoggerFactory.getLogger(BridgeTopologyDaoInMemory.class);
 
     @Override
-    public synchronized void save(BroadcastDomain domain) {
-        m_domains.add(domain);
+    public void save(BroadcastDomain domain) {
+        synchronized (m_domains) {
+            m_domains.add(domain);
+        }
     }
 
     @Override
@@ -314,33 +316,38 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
     }
     
     @Override
-    public synchronized void delete(BroadcastDomain domain) {
-        m_domains.remove(domain);
+    public void delete(BroadcastDomain domain) {
+        synchronized (m_domains) {
+            m_domains.remove(domain);
+        }
     }
 
     @Override
-    public synchronized BroadcastDomain get(int nodeid) {
-        for (BroadcastDomain domain: m_domains) {
-            if (domain.containBridgeId(nodeid))
-                return domain;
+    public BroadcastDomain get(int nodeid) {
+        synchronized (m_domains) {
+            for (BroadcastDomain domain: m_domains) {
+                if (domain.containBridgeId(nodeid))
+                    return domain;
+            }
         }
         return null;
     }
 
-    public synchronized Set<BroadcastDomain> getAll() {
+    public Set<BroadcastDomain> getAll() {
         return m_domains;
     }
 
     @Override
-    public synchronized void clean() {
+    public void clean() {
         Set<BroadcastDomain> domains = new HashSet<BroadcastDomain>();
-        for (BroadcastDomain domain: m_domains) {
-            if (domain.isEmpty())
-                continue;
-            domains.add(domain);
+        synchronized (m_domains) {
+            for (BroadcastDomain domain: m_domains) {
+                if (domain.isEmpty())
+                    continue;
+                domains.add(domain);
+            }
+            m_domains = domains;
         }
-        m_domains = domains;
-    }
-    
+    }    
 
 }
