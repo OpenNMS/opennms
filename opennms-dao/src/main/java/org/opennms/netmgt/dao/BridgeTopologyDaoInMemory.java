@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     
-    volatile Set<BroadcastDomain> m_domains = new HashSet<BroadcastDomain>();
+    volatile Set<BroadcastDomain> m_domains = new CopyOnWriteArraySet<BroadcastDomain>();
     private final static Logger LOG = LoggerFactory.getLogger(BridgeTopologyDaoInMemory.class);
 
     @Override

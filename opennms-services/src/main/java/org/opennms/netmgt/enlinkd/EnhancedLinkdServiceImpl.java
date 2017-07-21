@@ -615,7 +615,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             link.setNode(node);
             effectiveBFT.put(new BridgeMacLinkHash(link), link);
         }
-        m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+        synchronized (m_nodetoBroadcastDomainMap) {
+            m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+        }
     }
 
     public synchronized Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
@@ -652,13 +654,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public synchronized boolean hasUpdatedBft(int nodeid) {
-        return m_nodetoBroadcastDomainMap.containsKey(nodeid);
+    public boolean hasUpdatedBft(int nodeid) {
+        synchronized (m_nodetoBroadcastDomainMap) {
+            return m_nodetoBroadcastDomainMap.containsKey(nodeid);            
+        }
+
     }
     
     @Override
-    public synchronized List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
-        return m_nodetoBroadcastDomainMap.remove(nodeid);
+    public List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
+        synchronized (m_nodetoBroadcastDomainMap) {
+            return m_nodetoBroadcastDomainMap.remove(nodeid);
+        }
     }
 
     @Override

@@ -691,6 +691,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             m_notYetParsedBFTMap.put(m_domain.getBridge(nodeid), bft);
         }
         
+        Set<Integer> nodetoberemovedondomain= new HashSet<Integer>();
         synchronized (nodeBftMap) {
             for (Integer nodeid: nodeBftMap.keySet()) {
                 if (nodeswithupdatedbftonbroadcastdomain.contains(nodeid))
@@ -699,9 +700,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                             getNodeId(),
                          nodeid,                                  
                          m_domain.getBridgeNodesOnDomain());
-                m_domain.clearTopologyForBridge(nodeid);
-                m_domain.removeBridge(nodeid);
+                nodetoberemovedondomain.add(nodeid);
             }
+        }
+        for (Integer nodeid: nodetoberemovedondomain) {
+            m_domain.clearTopologyForBridge(nodeid);
+            m_domain.removeBridge(nodeid);
         }
         m_linkd.getQueryManager().cleanBroadcastDomains();
         
