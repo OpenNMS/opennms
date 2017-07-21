@@ -422,17 +422,19 @@ E:    	for (BridgeElement element: bridgeelements) {
             portifindexmap.put(bridgeport, bridgeportifIndex);
 
         }
-        for (SharedSegment segment: getTopology()) {
-            
-            Set<String> macs = segment.getMacsOnSegment();
-            
-            if (macs == null || macs.isEmpty())
-                continue;
-            Integer bridgeport = goUp(segment,bridge,0);
-            if (!bft.containsKey(bridgeport))
-                bft.put(bridgeport, new HashSet<String>());
-            bft.get(bridgeport).addAll(macs);
-       }
+        synchronized (m_topology) {
+            for (SharedSegment segment: m_topology) {
+                
+                Set<String> macs = segment.getMacsOnSegment();
+                
+                if (macs == null || macs.isEmpty())
+                    continue;
+                Integer bridgeport = goUp(segment,bridge,0);
+                if (!bft.containsKey(bridgeport))
+                    bft.put(bridgeport, new HashSet<String>());
+                bft.get(bridgeport).addAll(macs);
+           }
+        }
             
         for (Integer bridgePort: bft.keySet()) {
             for (String mac: bft.get(bridgePort)) {
