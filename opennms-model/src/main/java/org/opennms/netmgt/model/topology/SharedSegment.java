@@ -107,6 +107,8 @@ public class SharedSegment {
                 && m_designatedBridge.getNode().getId() == designatedBridge.intValue())
             return;
         for (BridgePort port: m_portsOnSegment) {
+            if (port == null)
+                continue;
             if ( port.getNode() != null &&
                     port.getNode().getId() != null
                     && port.getNode().getId().intValue() == designatedBridge.intValue()) {
