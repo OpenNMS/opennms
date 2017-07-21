@@ -244,7 +244,10 @@ public class SharedSegment {
     public Set<Integer> getBridgeIdsOnSegment() {
         Set<Integer> nodes = new HashSet<Integer>();
         for (BridgePort link: m_portsOnSegment) {
-            nodes.add(link.getNode().getId());
+            if (link == null || link.getNode() == null)
+                continue;
+            if (link.getNode().getId() != null)
+                nodes.add(link.getNode().getId());
         }
         return nodes;
     }
