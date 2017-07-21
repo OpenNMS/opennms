@@ -91,6 +91,10 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		    m_engine.correlate(e);
 		}
 
+		public void tearDown() {
+		    m_eventIpcManager.removeEventListener(this);
+		}
+
 		private void registerEventListeners() {
                     final List<String> interesting = m_engine.getInterestingEvents();
                     if (interesting.contains(EventHandler.ALL_UEIS)) {
@@ -178,10 +182,20 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
     public void addCorrelationEngine(final CorrelationEngine engine) {
         m_engines.put(engine.getName(), engine);
         if (m_initialized) {
+            LOG.debug("addCorrelationEngine: adding engine {}", engine.getName());
             m_adapters.add(new EngineAdapter(engine));
         }
     }
     
+    public void removeCorrelationEngine(final String engineName) {
+        m_adapters.stream().filter(a -> a.getName().endsWith(engineName)).findFirst().ifPresent(a -> {
+            LOG.debug("removeCorrelationEngine: removing engine {}", engineName);
+            a.tearDown();
+            m_adapters.remove(a);
+            m_engines.get(engineName).tearDown();
+            m_engines.remove(engineName);
+        });
+    }
     
 
     @Override

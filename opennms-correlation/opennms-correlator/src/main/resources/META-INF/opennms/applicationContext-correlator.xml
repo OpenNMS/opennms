@@ -2,13 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
-        
-  <bean id="correlationEngines" class="org.opennms.netmgt.correlation.CorrelationEngineFactoryBean">
-  </bean>
-  
+          
   <bean id="correlator" class="org.opennms.netmgt.correlation.Correlator">
 	<property name="eventIpcManager" ref="eventIpcManager" />
-	<property name="correlationEngines" ref="correlationEngines" />
   </bean>
 
 </beans>

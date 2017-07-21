@@ -34,7 +34,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -156,6 +157,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         Assert.state(!m_configDirectory.exists() || m_configDirectory.isDirectory(), m_configDirectory+" must be a directory!");
         
         m_eventIpcManager.addEventListener(this, EventConstants.RELOAD_DAEMON_CONFIG_UEI);
+        m_eventIpcManager.addEventListener(this, EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI);
         readConfiguration();
         registerEngines();
     }
@@ -276,64 +278,95 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 
     @Override
     public void onEvent(Event e) {
-        LOG.warn("{} received an event: {}", getName(), e.getUei());
-        // This handles only the addition of new engines and the removal of existing engines.
-        // For updating existing engines, use the appropriate value for the daemonName
         if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
-            List<Parm> parmCollection = e.getParmCollection();
-            for (Parm parm : parmCollection) {
-                String parmName = parm.getParmName();
-                if(EventConstants.PARM_DAEMON_NAME.equals(parmName)) {
-                    if (parm.getValue() == null || parm.getValue().getContent() == null) {
-                        LOG.warn("The daemonName parameter has no value, ignoring.");
-                        return;
-                    }
-                    if (parm.getValue().getContent().equals(getName())) {
-                        LOG.info("Analyzing directory {} to add/remove drools engines...", m_configDirectory);
-                        EventBuilder ebldr = null;
-                        try {
-                            final PluginConfiguration[] newPlugins = locatePluginConfigurations();
-                            final List<RuleSet> newEngines = Arrays.stream(newPlugins).peek(p -> p.readConfig()).flatMap(pc -> pc.getRuleSets().stream()).collect(Collectors.toList());
-                            final List<RuleSet> currentEngines = Arrays.stream(m_pluginConfigurations).flatMap(pc -> pc.getRuleSets().stream()).collect(Collectors.toList());
-                            LOG.debug("Current engines: {}", currentEngines);
-                            LOG.debug("New engines: {}", newEngines);
-                            // Find old engines to remove
-                            currentEngines.stream().filter(en -> !newEngines.contains(en)).forEach(en -> {
-                                LOG.warn("Deleting engine {}", en);
-                                Optional<CorrelationEngine> correlator = m_correlator.getEngines().stream().filter(c -> c.getName().equals(en.getName())).findFirst();
-                                if (correlator.isPresent()) {
-                                    correlator.get().tearDown();
-                                    m_correlator.getEngines().remove(correlator);
-                                }
-                            });
-                            // Find new engines to add
-                            newEngines.stream().filter(en -> !currentEngines.contains(en)).forEach(en -> {
-                                LOG.warn("Adding engine {}", en);
-                                Arrays.stream(newPlugins).filter(p -> p.getRuleSets().contains(en)).findFirst().ifPresent(p -> {
-                                    m_correlator.addCorrelationEngine(en.constructEngine(p.getConfigResource(), m_appContext, m_eventIpcManager, m_metricRegistry));
-                                });
-                            });
-                            m_pluginConfigurations = newPlugins;
-                            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
-                            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
-                        } catch (Exception ex) {
-                            LOG.error("Cannot process reloadDaemonConfig", ex);
-                            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-                            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
-                            ebldr.addParam(EventConstants.PARM_REASON, ex.getMessage());
-                        } finally {
-                            if (ebldr != null)
-                                try {
-                                    m_eventIpcManager.send(ebldr.getEvent());
-                                } catch (EventProxyException epx) {
-                                    LOG.error("Can't send reloadDaemonConfig status event", epx);
-                                }
+            final String daemonName = getDaemonNameFromReloadDaemonEvent(e);
+            if (daemonName != null && daemonName.equals(getName())) {
+                doAddAndRemoveEngines();
+                return;
+            }
+        }
+        if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI)) {
+            final String daemonName = getDaemonNameFromReloadDaemonEvent(e);
+            if (daemonName.startsWith(getName() + '-')) {
+                Matcher m = Pattern.compile(getName() + "-(.+)$").matcher(daemonName);
+                if (m.find()) {
+                    final String engineName = m.group(1);
+                    LOG.warn("An error was detected while reloading engine {}, this engine will be removed. Fix the error and try again.", engineName);
+                    m_correlator.removeCorrelationEngine(engineName);
+                    for (PluginConfiguration p : m_pluginConfigurations) {
+                        final RuleSet set = p.getRuleSets().stream().filter(r -> r.getName().equals(engineName)).findFirst().orElse(null);
+                        if (set != null) {
+                            p.getRuleSets().remove(set);
                         }
-                        return;
                     }
                 }
             }
         }
+    }
+
+    private String getDaemonNameFromReloadDaemonEvent(Event e) {
+        List<Parm> parmCollection = e.getParmCollection();
+        for (Parm parm : parmCollection) {
+            String parmName = parm.getParmName();
+            if (EventConstants.PARM_DAEMON_NAME.equals(parmName)) {
+                if (parm.getValue() == null || parm.getValue().getContent() == null) {
+                    LOG.warn("The daemonName parameter has no value, ignoring.");
+                    return null;
+                }
+                return parm.getValue().getContent();
+            }
+        }
+        return null;
+    }
+
+    // This handles only the addition of new engines and the removal of existing engines.
+    // For updating existing engines, use the appropriate value for the daemonName
+    private void doAddAndRemoveEngines() {
+        LOG.info("Analyzing directory {} to add/remove drools engines...", m_configDirectory);
+        EventBuilder ebldr = null;
+        try {
+            final PluginConfiguration[] newPlugins = locatePluginConfigurations();
+            final List<RuleSet> newEngines = Arrays.stream(newPlugins).peek(p -> p.readConfig()).flatMap(pc -> pc.getRuleSets().stream()).collect(Collectors.toList());
+            final List<RuleSet> currentEngines = Arrays.stream(m_pluginConfigurations).flatMap(pc -> pc.getRuleSets().stream()).collect(Collectors.toList());
+            LOG.debug("Current engines: {}", currentEngines);
+            LOG.debug("New engines: {}", newEngines);
+            // Find old engines to remove
+            currentEngines.stream().filter(en -> !newEngines.contains(en)).forEach(en -> {
+                LOG.warn("Deleting engine {}", en);
+                m_correlator.removeCorrelationEngine(en.getName());
+            });
+            // Find new engines to add
+            newEngines.stream().filter(en -> !currentEngines.contains(en)).forEach(en -> {
+                LOG.warn("Adding engine {}", en);
+                addEngine(newPlugins, en);
+            });
+            m_pluginConfigurations = newPlugins;
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+        } catch (Exception ex) {
+            LOG.error("Cannot process reloadDaemonConfig", ex);
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+            ebldr.addParam(EventConstants.PARM_REASON, ex.getMessage());
+        } finally {
+            if (ebldr != null)
+                try {
+                    m_eventIpcManager.send(ebldr.getEvent());
+                } catch (EventProxyException epx) {
+                    LOG.error("Can't send reloadDaemonConfig status event", epx);
+                }
+        }
+    }
+
+    private void addEngine(final PluginConfiguration[] newPlugins, RuleSet ruleSet) {
+        Arrays.stream(newPlugins).filter(p -> p.getRuleSets().contains(ruleSet)).findFirst().ifPresent(p -> {
+            try {
+                LOG.debug("addEngine: adding engine {} using {}", ruleSet.getName(), p.getConfigResource());
+                m_correlator.addCorrelationEngine(ruleSet.constructEngine(p.getConfigResource(), m_appContext, m_eventIpcManager, m_metricRegistry));
+            } catch (Exception e) {
+                p.getRuleSets().remove(ruleSet);
+            }
+        });
     }
 
 }
