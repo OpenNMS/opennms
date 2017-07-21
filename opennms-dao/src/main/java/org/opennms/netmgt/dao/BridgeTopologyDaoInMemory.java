@@ -142,7 +142,6 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
     @Override
     public Set<BroadcastDomain> getAllPersisted(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao) {
 
-        LOG.info("getAllPersisted: Start loading topology from database");
         List<SharedSegment> bblsegments = new ArrayList<SharedSegment>();
         Map<Integer,Set<Integer>> rootnodetodomainnodemap = new HashMap<Integer,Set<Integer>>();
 
@@ -311,7 +310,6 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
             LOG.info("getAllPersisted: loading root Broadcast Domain: {}", domain.getBridgeNodesOnDomain());
             domain.loadTopologyRoot();
         }
-        LOG.info("getAllPersisted: loaded topology from database");
         return domains;
     }
     
