@@ -46,46 +46,12 @@
 	});
 
 	// Outage list module
-	angular.module(MODULE_NAME, [ 'ngResource', 'onmsList', 'outageListFilters' ])
-
-	/**
-	 * OnmsOutage REST $resource
-	 */
-	.factory('Outages', function($resource, $log, $http, $location) {
-		return $resource(BASE_REST_URL + '/outages/:id', { id: '@id' },
-			{
-				'query': { 
-					method: 'GET',
-					isArray: true,
-					// Append a transformation that will unwrap the item array
-					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.outage) ? data.outage : [ data.outage ];
-						}
-					})
-				},
-				'update': { 
-					method: 'PUT'
-				}
-			}
-		);
-	})
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onmsList', 'outageListFilters' ])
 
 	/**
 	 * Outage list controller
 	 */
-	.controller('OutageListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'Outages', function($scope, $http, $location, $window, $log, $filter, Outages) {
+	.controller('OutageListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'outageFactory', function($scope, $http, $location, $window, $log, $filter, outageFactory) {
 		$log.debug('OutageListCtrl initializing...');
 
 		/**
@@ -163,7 +129,7 @@
 			$scope.selectedOutages = [];
 
 			// Fetch all of the items
-			Outages.query(
+			outageFactory.query(
 				{
 					_s: $scope.$parent.query.searchParam, // FIQL search
 					limit: $scope.$parent.query.limit,
@@ -202,7 +168,7 @@
 
 		// Save an item by using $resource.$update
 		$scope.$parent.update = function(item) {
-			var saveMe = Outages.get({id: item.id}, function() {
+			var saveMe = outageFactory.get({id: item.id}, function() {
 
 				// TODO: Update updateable fields
 

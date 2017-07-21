@@ -50,46 +50,12 @@
 	});
 
 	// Notification list module
-	angular.module(MODULE_NAME, [ 'ngResource', 'onmsList', 'notificationListFilters' ])
-
-	/**
-	 * OnmsNotification REST $resource
-	 */
-	.factory('Notifications', function($resource, $log, $http, $location) {
-		return $resource(BASE_REST_URL + '/notifications/:id', { id: '@id' },
-			{
-				'query': { 
-					method: 'GET',
-					isArray: true,
-					// Append a transformation that will unwrap the item array
-					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.notification) ? data.notification : [ data.notification ];
-						}
-					})
-				},
-				'update': { 
-					method: 'PUT'
-				}
-			}
-		);
-	})
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onmsList', 'notificationListFilters' ])
 
 	/**
 	 * Notification list controller
 	 */
-	.controller('NotificationListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'Notifications', function($scope, $http, $location, $window, $log, $filter, Notifications) {
+	.controller('NotificationListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'notificationFactory', function($scope, $http, $location, $window, $log, $filter, notificationFactory) {
 		$log.debug('NotificationListCtrl initializing...');
 
 		/**
@@ -167,7 +133,7 @@
 			$scope.selectedNotifications = [];
 
 			// Fetch all of the items
-			Notifications.query(
+			notificationFactory.query(
 				{
 					_s: $scope.$parent.query.searchParam, // FIQL search
 					limit: $scope.$parent.query.limit,
@@ -206,7 +172,7 @@
 
 		// Save an item by using $resource.$update
 		$scope.$parent.update = function(item) {
-			var saveMe = Notifications.get({id: item.id}, function() {
+			var saveMe = notificationFactory.get({id: item.id}, function() {
 
 				// TODO: Update updateable fields
 

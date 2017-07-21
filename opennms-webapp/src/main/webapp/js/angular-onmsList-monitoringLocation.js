@@ -36,47 +36,13 @@
 
 
 	// Minion module
-	angular.module(MODULE_NAME, [ 'ngResource', 'onmsList', 'monitoringLocationsListFilters' ])
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onmsList', 'monitoringLocationsListFilters' ])
 
-
-	/**
-	 * OnmsMonitoringLocation REST $resource
-	 */
-	.factory('MonitoringLocations', function($resource, $log, $http, $location) {
-		return $resource(BASE_REST_URL + '/monitoringLocations/:id', {},
-			{
-				'query': { 
-					method: 'GET',
-					isArray: true,
-					// Append a transformation that will unwrap the item array
-					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.location) ? data.location : [ data.location ];
-						}
-					})
-				},
-				'update': { 
-					method: 'PUT'
-				}
-			}
-		);
-	})
 
 	/**
 	 * MonitoringLocations list controller
 	 */
-	.controller('MonitoringLocationsListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'MonitoringLocations', function($scope, $location, $window, $log, $filter, MonitoringLocations) {
+	.controller('MonitoringLocationsListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'monitoringLocationFactory', function($scope, $location, $window, $log, $filter, monitoringLocationFactory) {
 		$log.debug('MonitoringLocationsListCtrl initializing...');
 
 		// Set the default sort and set it on $scope.$parent.query
@@ -88,7 +54,7 @@
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
 			// Fetch all of the items
-			MonitoringLocations.query(
+			monitoringLocationFactory.query(
 				{
 					_s: $scope.$parent.query.searchParam, // FIQL search
 					limit: $scope.$parent.query.limit,
@@ -135,7 +101,7 @@
 
 			// We have to provide the locationName here because it has a dash in its
 			// name and we can't use dot notation to refer to it as a default param
-			var saveMe = MonitoringLocations.get({id: item['location-name']}, function() {
+			var saveMe = monitoringLocationFactory.get({id: item['location-name']}, function() {
 				// Update fields
 				saveMe['monitoring-area'] = item['monitoring-area'];
 				saveMe.geolocation = item.geolocation;
@@ -156,7 +122,7 @@
 			}, function(response) {
 				if (response.status === 404) {
 					// Create a new $resource and assign properties on it
-					var saveMe = new MonitoringLocations({});
+					var saveMe = new monitoringLocationFactory({});
 					saveMe['location-name'] = item['location-name'];
 					saveMe['monitoring-area'] = item['monitoring-area'];
 					saveMe.geolocation = item.geolocation;
@@ -181,7 +147,7 @@
 		$scope.$parent.deleteItem = function(item) {
 			// We have to provide the locationName here because it has a dash in its
 			// name and we can't use dot notation to refer to it as a default param
-			var saveMe = MonitoringLocations.get({id: item['location-name']}, function() {
+			var saveMe = monitoringLocationFactory.get({id: item['location-name']}, function() {
 				if ($window.confirm('Are you sure you want to remove location \"' + item['location-name'] + '\"?')) {
 					// We have to provide the locationName here because it has a dash in its
 					// name and we can't use dot notation to refer to it as a default param

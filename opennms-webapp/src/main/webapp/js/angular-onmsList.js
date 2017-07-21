@@ -240,7 +240,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 	;
 
 	// List module
-	angular.module(MODULE_NAME, [ 'ngResource' ])
+	angular.module(MODULE_NAME, [])
 
 	.config(function($locationProvider) {
 		$locationProvider.html5Mode({
