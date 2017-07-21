@@ -1,30 +1,34 @@
 (function() {
 	'use strict';
 
-	var MODULE_NAME = 'onmsList.outage';
+	var MODULE_NAME = 'onms.elementList.notification';
 
 	// $filters that can be used to create human-readable versions of filter values
-	angular.module('outageListFilters', [ 'onmsListFilters' ])
+	angular.module('notificationListFilters', [ 'onmsListFilters' ])
 	.filter('property', function() {
 		return function(input) {
-			// TODO: Update these values
 			switch (input) {
-			case 'id':
+			case 'notifyId':
 				return 'ID';
-			case 'node.foreignSource':
-				return 'Foreign Source';
+			case 'event.id':
+				return 'Event ID';
+			case 'event.eventSeverity':
+				return 'Event Severity';
+			case 'pageTime':
+				return 'Sent Time';
+			case 'answeredBy':
+				return 'Responder';
+			case 'respondTime':
+				return 'Response Time';
 			case 'node.id':
 				return 'Node ID';
 			case 'node.label':
 				return 'Node Label';
-			case 'ipInterface.ipAddress':
+			// TODO: ipAddress doesn't work because it is type InetAddress
+			case 'ipAddress':
 				return 'IP Address';
 			case 'serviceType.name':
 				return 'Service';
-			case 'ifLostService':
-				return 'Lost Service Time';
-			case 'ifRegainedService':
-				return 'Regained Service Time';
 			}
 			// If no match, return the input
 			return input;
@@ -33,8 +37,8 @@
 	.filter('value', function($filter) {
 		return function(input, property) {
 			switch (property) {
-			case 'ifLostService':
-			case 'ifRegainedService':
+			case 'pageTime':
+			case 'respondTime':
 				// Return the date in our preferred format
 				return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
 			}
@@ -45,71 +49,71 @@
 		}
 	});
 
-	// Outage list module
-	angular.module(MODULE_NAME, [ 'onms.restResources', 'onmsList', 'outageListFilters' ])
+	// Notification list module
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'notificationListFilters' ])
 
 	/**
-	 * Outage list controller
+	 * Notification list controller
 	 */
-	.controller('OutageListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'outageFactory', function($scope, $http, $location, $window, $log, $filter, outageFactory) {
-		$log.debug('OutageListCtrl initializing...');
+	.controller('NotificationListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'notificationFactory', function($scope, $http, $location, $window, $log, $filter, notificationFactory) {
+		$log.debug('NotificationListCtrl initializing...');
 
 		/**
-		 * Search clause that represents current Outages
+		 * Search clause that represents Unacknowledged Notifications
 		 */
-		$scope.currentClause = {
-			property: 'ifRegainedService',
+		$scope.unackClause = {
+			property: 'answeredBy',
 			operator: 'EQ',
-			value: $filter('date')(0, ISO_8601_DATE_FORMAT) // null
+			value: '\u0000' // null
 		};
 
 		/**
-		 * Search clause that represents resolved Outages
+		 * Search clause that represents Acknowledged Notifications
 		 */
-		$scope.resolvedClause = {
-			property: 'ifRegainedService',
+		$scope.ackClause = {
+			property: 'answeredBy',
 			operator: 'NE',
-			value: $filter('date')(0, ISO_8601_DATE_FORMAT) // null
+			value: '\u0000' // null
 		};
 
 		/**
-		 * Array that will hold the currently selected outage IDs.
+		 * Array that will hold the currently selected notification IDs.
 		 */
-		$scope.selectedOutages = [];
+		$scope.selectedNotifications = [];
 
 		/**
-		 * Toggle the selected state for one outage ID.
+		 * Toggle the selected state for one notification ID.
 		 */
-		$scope.toggleOutageSelection = function(id) {
-			var index = $scope.selectedOutages.indexOf(id);
+		$scope.toggleNotificationSelection = function(id) {
+			var index = $scope.selectedNotifications.indexOf(id);
 
 			if (index >= 0) {
-				$scope.selectedOutages.splice(index, 1);
+				$scope.selectedNotifications.splice(index, 1);
 			} else {
-				$scope.selectedOutages.push(id);
+				$scope.selectedNotifications.push(id);
 			}
 		}
 
 		/**
 		 * Select all of the items in the current view.
 		 */
-		$scope.selectAllOutages = function() {
+		$scope.selectAllNotifications = function() {
 			var newSelection = [];
 			for (var i = 0; i < $scope.$parent.items.length; i++) {
 				newSelection.push($scope.$parent.items[i].id);
 			}
-			$scope.selectedOutages = newSelection;
+			$scope.selectedNotifications = newSelection;
 		}
 
 		/**
-		 * Acknowledge the selected outages as the current user.
+		 * Acknowledge the selected notifications as the current user.
 		 */
-		$scope.acknowledgeSelectedOutages = function() {
+		$scope.acknowledgeSelectedNotifications = function() {
 			$http({
 				method: 'POST',
 				url: 'notification/acknowledge',
 				params: {
-					notices: $scope.selectedOutages
+					notices: $scope.selectedNotifications
 				}
 			}).then(function success(response) {
 				$scope.$parent.refresh();
@@ -120,16 +124,16 @@
 
 
 		// Set the default sort and set it on $scope.$parent.query
-		$scope.$parent.defaults.orderBy = 'id';
-		$scope.$parent.query.orderBy = 'id';
+		$scope.$parent.defaults.orderBy = 'notifyId';
+		$scope.$parent.query.orderBy = 'notifyId';
 
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
 			// Reset the list of selected notifications
-			$scope.selectedOutages = [];
+			$scope.selectedNotifications = [];
 
 			// Fetch all of the items
-			outageFactory.query(
+			notificationFactory.query(
 				{
 					_s: $scope.$parent.query.searchParam, // FIQL search
 					limit: $scope.$parent.query.limit,
@@ -168,7 +172,7 @@
 
 		// Save an item by using $resource.$update
 		$scope.$parent.update = function(item) {
-			var saveMe = outageFactory.get({id: item.id}, function() {
+			var saveMe = notificationFactory.get({id: item.id}, function() {
 
 				// TODO: Update updateable fields
 
@@ -184,10 +188,18 @@
 
 		};
 
+		$scope.getSeverityClass = function(severity) {
+			return 'severity-' + severity.substr(0,1).toUpperCase() + severity.substr(1).toLowerCase();
+		}
+
+		$scope.getPrettySeverity = function(severity) {
+			return severity.substr(0,1).toUpperCase() + severity.substr(1).toLowerCase();
+		}
+
 		// Refresh the item list;
 		$scope.$parent.refresh();
 
-		$log.debug('OutageListCtrl initialized');
+		$log.debug('NotificationListCtrl initialized');
 	}])
 
 	.run(['$rootScope', '$log', function($rootScope, $log) {

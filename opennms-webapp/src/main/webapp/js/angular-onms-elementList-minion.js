@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var MODULE_NAME = 'onmsList.minion';
+	var MODULE_NAME = 'onms.elementList.minion';
 
 	// $filters that can be used to create human-readable versions of filter values
 	angular.module('minionListFilters', [ 'onmsListFilters' ])
@@ -37,7 +37,7 @@
 	});
 
 	// Minion list module
-	angular.module(MODULE_NAME, [ 'onms.restResources', 'onmsList', 'minionListFilters' ])
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionListFilters' ])
 
 	/**
 	 * Minion list controller

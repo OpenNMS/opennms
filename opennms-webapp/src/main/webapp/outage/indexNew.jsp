@@ -39,8 +39,8 @@
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-outage.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-outage.js"></script>' />
 </jsp:include>
 
 <ng-include src="'outage/main.html'"></ng-include>

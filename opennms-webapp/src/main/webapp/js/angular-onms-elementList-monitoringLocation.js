@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var MODULE_NAME = 'onmsList.monitoringLocation';
+	var MODULE_NAME = 'onms.elementList.monitoringLocation';
 
 	// $filters that can be used to create human-readable versions of filter values
 	angular.module('monitoringLocationsListFilters', [ 'onmsListFilters' ])
@@ -36,7 +36,7 @@
 
 
 	// Minion module
-	angular.module(MODULE_NAME, [ 'onms.restResources', 'onmsList', 'monitoringLocationsListFilters' ])
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitoringLocationsListFilters' ])
 
 
 	/**

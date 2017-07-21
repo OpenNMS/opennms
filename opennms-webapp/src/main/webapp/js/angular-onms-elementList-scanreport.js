@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var MODULE_NAME = 'onmsList.scanreport';
+	var MODULE_NAME = 'onms.elementList.scanreport';
 
 	// $filters that can be used to create human-readable versions of filter values
 	angular.module('scanReportListFilters', [ 'onmsListFilters' ])
@@ -64,7 +64,7 @@
 	});
 
 	// ScanReport list module
-	angular.module(MODULE_NAME, [ 'onms.restResources', 'onmsList', 'scanReportListFilters' ])
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'scanReportListFilters' ])
 
 	.directive('scanReportLogs', function($window) {
 		return {
@@ -100,7 +100,7 @@
 			scope: {
 				report: '='
 			},
-			templateUrl: 'js/angular-onmsList-scanreportlogs.html',
+			templateUrl: 'js/angular-onms-elementList-scanreportlogs.html',
 			transclude: true
 		};
 	})
@@ -114,7 +114,7 @@
 			scope: {
 				report: '='
 			},
-			templateUrl: 'js/angular-onmsList-scanreportdetails.html',
+			templateUrl: 'js/angular-onms-elementList-scanreportdetails.html',
 			transclude: true
 		};
 	})

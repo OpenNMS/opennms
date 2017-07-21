@@ -1,9 +1,4 @@
 /**
- * Base URL of the REST service.
- */
-var BASE_REST_URL = 'api/v2';
-
-/**
  * ISO-8601 date format string.
  */
 var ISO_8601_DATE_FORMAT = 'yyyy-MM-ddTHH:mm:ss.sssZ';
@@ -193,7 +188,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 (function() {
 	'use strict';
 	
-	var MODULE_NAME = 'onmsList';
+	var MODULE_NAME = 'onms.elementList';
 
 	String.prototype.endsWith = function(suffix) {
 		return this.indexOf(suffix, this.length - suffix.length) !== -1;
@@ -299,7 +294,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 				step: '=',
 				onSubmit: '&onSubmit'
 			},
-			templateUrl: 'js/angular-onmsListEditInPlace.html',
+			templateUrl: 'js/angular-onms-elementList-editInPlace.html',
 			transclude: true
 		};
 	})
@@ -355,7 +350,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 				step: '=',
 				onEdit: '&onEdit'
 			},
-			templateUrl: 'js/angular-onmsListEditListInPlace.html',
+			templateUrl: 'js/angular-onms-elementList-editListInPlace.html',
 			transclude: true
 		};
 	})
@@ -412,7 +407,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 				step: '=',
 				onEdit: '&onEdit'
 			},
-			templateUrl: 'js/angular-onmsListEditMapInPlace.html',
+			templateUrl: 'js/angular-onms-elementList-editMapInPlace.html',
 			transclude: true
 		};
 	})
