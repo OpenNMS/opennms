@@ -282,6 +282,7 @@
 
             <!-- OSGI Rest -->
             <feature>jax-rs-connector</feature>
+            <feature>jax-rs-shell-commands</feature>
             <feature>opennms-osgi-core-rest</feature>
 
             <feature>org.json</feature>
