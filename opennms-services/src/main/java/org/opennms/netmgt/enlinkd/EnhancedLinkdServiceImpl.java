@@ -618,7 +618,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
     }
 
-    public Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
+    public synchronized Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
         return m_nodetoBroadcastDomainMap;
     }
     
