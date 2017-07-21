@@ -278,7 +278,6 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
             domains.add(domain);
         }
         
-        // Assign the segment to domain and add to single nodes
         for (SharedSegment segment : bblsegments) {
             for (BroadcastDomain cdomain: domains) {
                 if (cdomain.containsAtleastOne(segment.getBridgeIdsOnSegment())) {
@@ -307,6 +306,7 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
         }
 
         for (BroadcastDomain domain: domains) {
+            LOG.info("getAllPersisted: loading root Broadcast Domain: {}", domain.getBridgeNodesOnDomain());
             domain.loadTopologyRoot();
         }
         LOG.info("getAllPersisted: loaded topology from database");

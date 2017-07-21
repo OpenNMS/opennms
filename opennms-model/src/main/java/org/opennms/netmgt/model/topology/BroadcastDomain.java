@@ -334,7 +334,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     }    
     
     public void hierarchySetUp(Bridge root) {
-        if (root.isRootBridge())
+        if (root== null || root.isRootBridge())
             return;
         root.setRootBridge(true);
         root.setRootPort(null);
