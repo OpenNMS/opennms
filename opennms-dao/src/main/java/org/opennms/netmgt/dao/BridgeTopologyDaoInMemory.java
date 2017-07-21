@@ -331,7 +331,7 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
         return null;
     }
 
-    public Set<BroadcastDomain> getAll() {
+    public synchronized Set<BroadcastDomain> getAll() {
         return m_domains;
     }
 
