@@ -59,4 +59,9 @@ public class MockCorrelator implements CorrelationEngineRegistrar {
     public Collection<CorrelationEngine> getEngines() {
         return m_engines.values();
     }
+
+    @Override
+    public void removeCorrelationEngine(String name) {
+        m_engines.remove(name);
+    }
 }
