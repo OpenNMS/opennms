@@ -936,6 +936,13 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     // here we assume that rbridge exists in topology
     // while xBridge is to be added
     private boolean findBridgesTopo(BridgeTopologyHelper rx,SharedSegment topSegment, Bridge xBridge, List<BridgeMacLink> xBFT, int level) {
+        if (topSegment == null) {
+            LOG.warn("calculate: node: [{}]: level: {}, bridge: [{}], top segment is null exiting.....",
+                     getNodeId(),
+                     level,
+                     xBridge.getId());
+         return false;
+        }
         level++;
         if (level == 30) {
             LOG.warn("calculate: node: [{}]: level: {}, bridge: [{}], too many iteration on topology exiting.....",
