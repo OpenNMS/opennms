@@ -436,15 +436,37 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                              link.getBridgeDot1qTpFdbStatus());
                     return;
                 }
-                if (!bridgeifindex.containsKey(link.getBridgePort())
-                        && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
+                if (bridgeifindex.isEmpty() && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
                     link.setBridgePortIfIndex(link.getBridgePort());
-                    LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. there is no map from bridgeport to ifindex. Assuming ifindex=bridgeport",
+                    LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. Empty map from bridgeport to ifindex. Assuming ifindex=bridgeport",
+                              getNodeId(),
+                           row.getDot1qTpFdbAddress(),
+                           row.getDot1qTpFdbPort(),
+                           link.getBridgePortIfIndex(),
+                           link.getBridgeDot1qTpFdbStatus());
+                } else  if (!bridgeifindex.containsKey(link.getBridgePort()) && bridgeifindex.containsValue(link.getBridgePort())
+                        && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
+                    for (Integer bridgeport: bridgeifindex.keySet()) {
+                        if (link.getBridgePort().intValue() == bridgeifindex.get(bridgeport).intValue()) {
+                            link.setBridgePort(bridgeport);
+                            link.setBridgePortIfIndex(bridgeifindex.get(bridgeport));
+                        }
+                    }
+                    LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. Assument bridgeport index is ifindex. Reverting bridgeport/ifindex",
                              getNodeId(),
                           row.getDot1qTpFdbAddress(),
                           row.getDot1qTpFdbPort(),
                           link.getBridgePortIfIndex(),
                           link.getBridgeDot1qTpFdbStatus());
+                } else  if (!bridgeifindex.containsKey(link.getBridgePort()) 
+                        && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
+                    LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. Cnnot find suitable skipping entry",
+                             getNodeId(),
+                          row.getDot1qTpFdbAddress(),
+                          row.getDot1qTpFdbPort(),
+                          link.getBridgePortIfIndex(),
+                          link.getBridgeDot1qTpFdbStatus());
+                    return;
                 } else {
                     link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
                 }
