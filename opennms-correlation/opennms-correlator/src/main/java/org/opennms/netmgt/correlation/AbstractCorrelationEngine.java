@@ -129,6 +129,10 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
     public void setScheduler(final ScheduledExecutorService scheduler) {
         m_scheduler = scheduler;
     }
+
+    public ScheduledExecutorService getScheduler() {
+        return m_scheduler;
+    }
     
     /**
      * <p>runTimer</p>

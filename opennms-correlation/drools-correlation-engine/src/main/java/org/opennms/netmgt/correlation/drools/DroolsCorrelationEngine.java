@@ -229,6 +229,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
     @Override
     public void tearDown() {
+        getScheduler().shutdown();
         if (m_persistState != null && m_persistState) {
             if (getPendingTasksCount() > 0) {
                 LOG.error("Cannot marshall state because there are pending time based tasks running.");
@@ -336,7 +337,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
     @Override
     public void reloadConfig() {
-        EventBuilder ebldr = null;
+        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "DroolsCorrelationEngine-" + m_name);
         try {
             LOG.info("Reloading configuration for engine {}", m_name);
             EngineConfiguration cfg = JaxbUtils.unmarshal(EngineConfiguration.class, m_configPath);
@@ -345,16 +347,12 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
                 marshallStateToDisk(true);
                 opt.get().updateEngine(this);
                 initialize();
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
             } else {
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+                ebldr.setUei(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI);
                 ebldr.addParam(EventConstants.PARM_REASON, "RuleSet not found on " + m_configPath);
             }
         } catch (Exception e) {
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+            ebldr.setUei(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI);
             ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
         } finally {
             if (ebldr != null) sendEvent(ebldr.getEvent());
