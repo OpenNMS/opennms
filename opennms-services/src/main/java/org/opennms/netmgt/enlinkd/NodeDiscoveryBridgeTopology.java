@@ -602,7 +602,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         LOG.info("run: node: [{}], getting broadcast domain. Start", getNodeId());
         for (BroadcastDomain domain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
-            LOG.debug("run: node: [{}], parsing domain with nodes: {}, macs: {}", getNodeId(), domain.getBridgeNodesOnDomain(),domain.getMacsOnDomain());
+            LOG.debug("run: node: [{}], parsing domain with nodes: {}, macs: {}", 
+                      getNodeId(),
+                      domain.getBridgeNodesOnDomain(),
+                      domain.getMacsOnDomain());
             Set<String>retainedSet = new HashSet<String>(
                                                           domain.getMacsOnDomain());
             retainedSet.retainAll(incomingSet);
@@ -610,7 +613,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             // should contain at list 5 or 10% of the all size
             if (retainedSet.size() > 5
                     || retainedSet.size() >= incomingSet.size() * 0.1) {
-                LOG.debug("run: node: [{}], domain {} found!",getNodeId(), domain.getBridgeNodesOnDomain());
+                LOG.debug("run: node: [{}], domain {} found!",getNodeId(), 
+                          domain.getBridgeNodesOnDomain());
                     m_domain = domain;
             }
         }
@@ -658,8 +662,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 }
             }
         }
-        if (clean)
+        if (clean) {
             m_linkd.getQueryManager().cleanBroadcastDomains();
+        }
         LOG.info("run: node: [{}], clean broadcast domains. End", getNodeId());
         
         if (stop) {
