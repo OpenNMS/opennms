@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IfTttTrigger {
     private static final Logger LOG = LoggerFactory.getLogger(IfTttTrigger.class);
-    private final String IFTTT_URL = "https://maker.ifttt.com" + "/trigger/%s/with/key/%s";
+    private final String IFTTT_URL = "https://maker.ifttt.com/trigger/%s/with/key/%s";
     private final String IFTTT_JSON = "{\"value1\":\"%s\",\"value2\":\"%s\",\"value3\":\"%s\"}";
 
     private String key = "key";

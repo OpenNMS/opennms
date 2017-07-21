@@ -30,6 +30,7 @@ package org.opennms.features.ifttt.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -106,7 +107,7 @@ public class IfTttConfig {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof IfTttConfig)) return false;
 
         IfTttConfig that = (IfTttConfig) o;
 
@@ -119,10 +120,6 @@ public class IfTttConfig {
 
     @Override
     public int hashCode() {
-        int result = key != null ? key.hashCode() : 0;
-        result = 31 * result + (enabled != null ? enabled.hashCode() : 0);
-        result = 31 * result + (triggerPackages != null ? triggerPackages.hashCode() : 0);
-        result = 31 * result + (pollInterval != null ? pollInterval.hashCode() : 0);
-        return result;
+        return Objects.hash(key, enabled, pollInterval, triggerPackages);
     }
 }

@@ -28,6 +28,8 @@
 
 package org.opennms.features.ifttt.config;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -49,7 +51,7 @@ public class Trigger {
      */
     private String value3 = "";
     /**
-     * delay after executing the trigger
+     * delay (ms) after executing the trigger
      */
     private int delay;
 
@@ -104,7 +106,7 @@ public class Trigger {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Trigger)) return false;
 
         Trigger trigger = (Trigger) o;
 
@@ -117,11 +119,6 @@ public class Trigger {
 
     @Override
     public int hashCode() {
-        int result = eventName != null ? eventName.hashCode() : 0;
-        result = 31 * result + (value1 != null ? value1.hashCode() : 0);
-        result = 31 * result + (value2 != null ? value2.hashCode() : 0);
-        result = 31 * result + (value3 != null ? value3.hashCode() : 0);
-        result = 31 * result + delay;
-        return result;
+        return Objects.hash(eventName, value1, value2, value3, delay);
     }
 }

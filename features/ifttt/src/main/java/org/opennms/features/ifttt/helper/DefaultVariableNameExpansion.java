@@ -50,6 +50,10 @@ public class DefaultVariableNameExpansion implements VariableNameExpansion {
         return string.replace("%os%", oldSeverity.toString())
                 .replace("%ns%", newSeverity.toString())
                 .replace("%oc%", String.valueOf(oldAlarmCount))
-                .replace("%nc%", String.valueOf(newAlarmCount));
+                .replace("%nc%", String.valueOf(newAlarmCount))
+                .replace("%oldSeverity%", oldSeverity.toString())
+                .replace("%newSeverity%", newSeverity.toString())
+                .replace("%oldCount%", String.valueOf(oldAlarmCount))
+                .replace("%newCount%", String.valueOf(newAlarmCount));
     }
 }

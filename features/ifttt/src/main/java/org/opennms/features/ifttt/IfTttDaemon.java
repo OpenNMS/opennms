@@ -85,7 +85,26 @@ public class IfTttDaemon {
     /**
      * the config file instance
      */
-    private final File ifTttConfigFile = Paths.get(System.getProperty("opennms.home", ""), "etc", "ifttt-config.xml").toFile();
+    private final File ifTttConfigFile;
+
+    /**
+     * Constructor to create the daemon instance with a given configuraton file
+
+     * @param alarmDao              the alarm dao instance to be used
+     * @param transactionOperations the transaction template to be used
+     * @param ifTttConfigFile       the configuration file to be used
+     */
+    public IfTttDaemon(final AlarmDao alarmDao, final TransactionOperations transactionOperations, final File ifTttConfigFile) {
+        this.alarmDao = alarmDao;
+        this.transactionOperations = transactionOperations;
+        this.ifTttConfigFile = ifTttConfigFile;
+        // initialize the FileReloadContainer instance for the configuration file
+
+        this.m_fileReloadContainer = new FileReloadContainer<>(ifTttConfigFile, (object, resource) -> {
+            LOG.debug("Reloading configuration file {}.", resource.getFilename());
+            return JaxbUtils.unmarshal(IfTttConfig.class, ifTttConfigFile);
+        });
+    }
 
     /**
      * Constructor to create the daemon instance.
@@ -94,15 +113,7 @@ public class IfTttDaemon {
      * @param transactionOperations the transaction template to be used
      */
     public IfTttDaemon(final AlarmDao alarmDao, final TransactionOperations transactionOperations) {
-        this.alarmDao = alarmDao;
-        this.transactionOperations = transactionOperations;
-
-        // initialize the FileReloadContainer instance for the configuration file
-
-        this.m_fileReloadContainer = new FileReloadContainer<>(ifTttConfigFile, (object, resource) -> {
-            LOG.debug("Reloading configuration file {}.", resource.getFilename());
-            return JaxbUtils.unmarshal(IfTttConfig.class, ifTttConfigFile);
-        });
+        this(alarmDao, transactionOperations, Paths.get(System.getProperty("opennms.home", ""), "etc", "ifttt-config.xml").toFile());
     }
 
     /**
@@ -152,6 +163,25 @@ public class IfTttDaemon {
                 oldSeverity.put(Boolean.FALSE, new HashMap<>());
             }
 
+            private List<OnmsAlarm> filterAlarms(List<OnmsAlarm> alarms, TriggerPackage triggerPackage) {
+                if (triggerPackage.getOnlyUnacknowledged()) {
+                    return alarms.stream()
+                            .filter(alarm -> alarm.getNodeId() != null)
+                            .filter(alarm -> !alarm.isAcknowledged())
+                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) ||
+                                    alarm.getNode().getCategories().stream()
+                                            .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())))
+                            .collect(Collectors.toList());
+                } else {
+                    return alarms.stream()
+                            .filter(alarm -> alarm.getNodeId() != null)
+                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) ||
+                                    alarm.getNode().getCategories().stream()
+                                            .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())))
+                            .collect(Collectors.toList());
+                }
+            }
+
             @Override
             public void run() {
                 try {
@@ -186,24 +216,7 @@ public class IfTttDaemon {
                                     oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).put(triggerPackage.getCategoryFilter(), 0);
                                 }
 
-                                final List<OnmsAlarm> filteredAlarms;
-
-                                if (triggerPackage.getOnlyUnacknowledged()) {
-                                    filteredAlarms = alarms.stream()
-                                            .filter(alarm -> alarm.getNodeId() != null)
-                                            .filter(alarm -> !alarm.isAcknowledged())
-                                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) ||
-                                                    alarm.getNode().getCategories().stream()
-                                                            .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())))
-                                            .collect(Collectors.toList());
-                                } else {
-                                    filteredAlarms = alarms.stream()
-                                            .filter(alarm -> alarm.getNodeId() != null)
-                                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) ||
-                                                    alarm.getNode().getCategories().stream()
-                                                            .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())))
-                                            .collect(Collectors.toList());
-                                }
+                                final List<OnmsAlarm> filteredAlarms = filterAlarms(alarms, triggerPackage);
 
                                 // Compute the maximum severity.
 
@@ -256,10 +269,7 @@ public class IfTttDaemon {
     private void restartPoller(final long pollInterval) {
         LOG.debug("Restarting alarm poller (interval {}s).", pollInterval);
 
-        if (m_alarmPoller != null) {
-            stopPoller();
-        }
-
+        stopPoller();
         startPoller(pollInterval);
     }
 

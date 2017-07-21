@@ -33,12 +33,14 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -71,55 +73,50 @@ public class IfTttDaemonTest {
     private static final Logger LOG = LoggerFactory.getLogger(IfTttDaemonTest.class);
 
     private class ResultEntry {
-        public String os = "null", ns = "null";
-        public int oc = 0, nc = 0;
-        public String event;
+        private String oldSeverity = "null", newSeverity = "null";
+        private int oldCount = 0, newCount = 0;
+        private String event;
 
         public ResultEntry(final String event, final VariableNameExpansion variableNameExpansion) {
             this.event = event;
             if (variableNameExpansion instanceof DefaultVariableNameExpansion) {
-                this.oc = Integer.valueOf(variableNameExpansion.replace("%oc%"));
-                this.nc = Integer.valueOf(variableNameExpansion.replace("%nc%"));
-                os = variableNameExpansion.replace("%os%");
-                ns = variableNameExpansion.replace("%ns%");
+                this.oldCount = Integer.valueOf(variableNameExpansion.replace("%oc%"));
+                this.newCount = Integer.valueOf(variableNameExpansion.replace("%nc%"));
+                this.oldSeverity = variableNameExpansion.replace("%os%");
+                this.newSeverity = variableNameExpansion.replace("%ns%");
             }
         }
 
-        public ResultEntry(final String event, final String os, final Integer oc, final String ns, final Integer nc) {
+        public ResultEntry(final String event, final String oldSeverity, final Integer oldCount, final String newSeverity, final Integer newCount) {
             this.event = event;
-            this.os = os;
-            this.ns = ns;
-            this.oc = oc;
-            this.nc = nc;
+            this.oldSeverity = oldSeverity;
+            this.newSeverity = newSeverity;
+            this.oldCount = oldCount;
+            this.newCount = newCount;
         }
 
         @Override
         public String toString() {
-            return String.format("%s : %s/%d -> %s/%d", event, os, oc, ns, nc);
+            return String.format("%s : %s/%d -> %s/%d", event, oldSeverity, oldCount, newSeverity, newCount);
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (!(o instanceof ResultEntry)) return false;
 
             ResultEntry that = (ResultEntry) o;
 
-            if (oc != that.oc) return false;
-            if (nc != that.nc) return false;
-            if (!os.equals(that.os)) return false;
-            if (!ns.equals(that.ns)) return false;
+            if (oldCount != that.oldCount) return false;
+            if (newCount != that.newCount) return false;
+            if (!oldSeverity.equals(that.oldSeverity)) return false;
+            if (!newSeverity.equals(that.newSeverity)) return false;
             return event.equals(that.event);
         }
 
         @Override
         public int hashCode() {
-            int result = os.hashCode();
-            result = 31 * result + ns.hashCode();
-            result = 31 * result + oc;
-            result = 31 * result + nc;
-            result = 31 * result + event.hashCode();
-            return result;
+            return Objects.hash(oldSeverity,newSeverity,oldCount,newCount,event);
         }
     }
 
@@ -157,8 +154,6 @@ public class IfTttDaemonTest {
     @Before
     public void setup() {
         MockLogAppender.setupLogging();
-
-        System.setProperty("opennms.home", "src/test/resources");
 
         categoryMap = new HashMap<>();
         addCategory("Foo");
@@ -234,7 +229,7 @@ public class IfTttDaemonTest {
         //final List<ResultEntry> receivedEntries = new ArrayList<>();
         final Map<String, List<ResultEntry>> receivedEntries = new HashMap<>();
 
-        final IfTttDaemon ifTttDaemon = new IfTttDaemon(alarmDao, transactionOperations) {
+        final IfTttDaemon ifTttDaemon = new IfTttDaemon(alarmDao, transactionOperations, new File("src/test/resources/etc/ifttt-config.xml")) {
             @Override
             protected void fireIfTttTriggerSet(IfTttConfig ifTttConfig, String categoryFilter, String name, VariableNameExpansion variableNameExpansion) {
                 if (!receivedEntries.containsKey(categoryFilter)) {
@@ -263,9 +258,9 @@ public class IfTttDaemonTest {
         return receivedEntries;
     }
 
-    private boolean allEntrySizesMatch(final Map<String, List<ResultEntry>> entries, final int i) {
+    private boolean allEntrySizesMatch(final Map<String, List<ResultEntry>> entries, final int expectedSize) {
         for (final Map.Entry<String, List<ResultEntry>> entry : entries.entrySet()) {
-            if (entry.getValue().size() != i) {
+            if (entry.getValue().size() != expectedSize) {
                 return false;
             }
         }

@@ -74,7 +74,7 @@ The following example shows the configuration file for a WiFi light bulb control
 The defined applets use `value1` for setting the color and `value2` for setting the brightness.
 The third value demonstrate the use of placeholders.
 For the severity-based trigger sets the following placeholders can be used in the three value fields:
-`%os%` for old severity, `%ns%` for new severity, `%oc%` for old alarm count and `%nc%` for new alarm count.
+`%os%`/`%oldSeverity` for old severity, `%ns%`/`%newSeverity%` for new severity, `%oc%`/`%oldCount` for old alarm count and `%nc%`/``%newCount% for new alarm count.
 This is useful for sending messages or operating LED displays via _IFTTT_.
 
 [source, xml]

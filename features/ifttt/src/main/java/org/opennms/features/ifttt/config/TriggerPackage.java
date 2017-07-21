@@ -30,6 +30,7 @@ package org.opennms.features.ifttt.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -87,7 +88,7 @@ public class TriggerPackage {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof TriggerPackage)) return false;
 
         TriggerPackage that = (TriggerPackage) o;
 
@@ -99,9 +100,6 @@ public class TriggerPackage {
 
     @Override
     public int hashCode() {
-        int result = categoryFilter != null ? categoryFilter.hashCode() : 0;
-        result = 31 * result + (triggerSets != null ? triggerSets.hashCode() : 0);
-        result = 31 * result + (onlyUnacknowledged != null ? onlyUnacknowledged.hashCode() : 0);
-        return result;
+        return Objects.hash(categoryFilter, triggerSets, onlyUnacknowledged);
     }
 }

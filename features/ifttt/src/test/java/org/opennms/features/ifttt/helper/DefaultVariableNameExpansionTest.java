@@ -37,7 +37,9 @@ public class DefaultVariableNameExpansionTest {
     @Test
     public void replaceTest() {
         final VariableNameExpansion variableNameExpansion = new DefaultVariableNameExpansion(OnmsSeverity.CRITICAL, OnmsSeverity.MAJOR, 10,20);
-        final String string = "foo%os%bar%ns%abc%oc%def%nc%xyz";
-        Assert.assertEquals("fooCRITICALbarMAJORabc10def20xyz", variableNameExpansion.replace(string));
+        final String string1 = "foo%os%bar%ns%abc%oc%def%nc%xyz";
+        Assert.assertEquals("fooCRITICALbarMAJORabc10def20xyz", variableNameExpansion.replace(string1));
+        final String string2 = "foo%oldSeverity%bar%newSeverity%abc%oldCount%def%newCount%xyz";
+        Assert.assertEquals("fooCRITICALbarMAJORabc10def20xyz", variableNameExpansion.replace(string2));
     }
 }
