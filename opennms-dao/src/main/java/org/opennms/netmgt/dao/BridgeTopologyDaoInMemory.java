@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     
-    volatile Set<BroadcastDomain> m_domains = new CopyOnWriteArraySet<BroadcastDomain>();
+    volatile Set<BroadcastDomain> m_domains;
     private final static Logger LOG = LoggerFactory.getLogger(BridgeTopologyDaoInMemory.class);
 
     @Override
@@ -269,7 +269,7 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
             }
         }          
                 
-        Set<BroadcastDomain> domains = new HashSet<BroadcastDomain>();
+        Set<BroadcastDomain> domains = new CopyOnWriteArraySet<BroadcastDomain>();
         for (Integer rootnode : rootnodetodomainnodemap.keySet()) {
             BroadcastDomain domain = new BroadcastDomain();
             domain.addBridge(new Bridge(rootnode));
@@ -337,7 +337,7 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
 
     @Override
     public void clean() {
-        Set<BroadcastDomain> domains = new HashSet<BroadcastDomain>();
+        Set<BroadcastDomain> domains = new CopyOnWriteArraySet<BroadcastDomain>();
         synchronized (m_domains) {
             for (BroadcastDomain domain: m_domains) {
                 if (domain.isEmpty())

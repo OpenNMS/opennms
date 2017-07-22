@@ -139,6 +139,8 @@ public class SharedSegment {
     public List<BridgeBridgeLink> getBridgeBridgeLinks() {
         List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
         for (BridgePort port: m_portsOnSegment) {
+            if (port == null) 
+                continue;
             if (port.equals(m_designatedBridge))
                 continue;
             links.add(getBridgeBridgeLink(port));
