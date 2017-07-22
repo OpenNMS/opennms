@@ -101,17 +101,17 @@ public class IfTttDaemonTest {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if (this == o) return true;
             if (!(o instanceof ResultEntry)) return false;
 
             ResultEntry that = (ResultEntry) o;
 
-            if (oldCount != that.oldCount) return false;
-            if (newCount != that.newCount) return false;
-            if (!oldSeverity.equals(that.oldSeverity)) return false;
-            if (!newSeverity.equals(that.newSeverity)) return false;
-            return event.equals(that.event);
+            return Objects.equals(oldCount, that.oldCount) &&
+                   Objects.equals(newCount, that.newCount) &&
+                   Objects.equals(oldSeverity, that.oldSeverity) &&
+                   Objects.equals(newSeverity,that.newSeverity) &&
+                   Objects.equals(event, that.event);
         }
 
         @Override

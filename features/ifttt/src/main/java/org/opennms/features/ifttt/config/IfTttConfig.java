@@ -105,17 +105,16 @@ public class IfTttConfig {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof IfTttConfig)) return false;
 
-        IfTttConfig that = (IfTttConfig) o;
+        final IfTttConfig that = (IfTttConfig) o;
 
-        if (key != null ? !key.equals(that.key) : that.key != null) return false;
-        if (enabled != null ? !enabled.equals(that.enabled) : that.enabled != null) return false;
-        if (triggerPackages != null ? !triggerPackages.equals(that.triggerPackages) : that.triggerPackages != null)
-            return false;
-        return pollInterval != null ? pollInterval.equals(that.pollInterval) : that.pollInterval == null;
+        return Objects.equals(key, that.key) &&
+               Objects.equals(enabled, that.enabled) &&
+               Objects.equals(triggerPackages, that.triggerPackages) &&
+               Objects.equals(pollInterval, that.pollInterval);
     }
 
     @Override

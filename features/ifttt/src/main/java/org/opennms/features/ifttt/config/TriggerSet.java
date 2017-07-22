@@ -67,14 +67,14 @@ public class TriggerSet {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof TriggerSet)) return false;
 
-        TriggerSet that = (TriggerSet) o;
+        final TriggerSet that = (TriggerSet) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return triggers != null ? triggers.equals(that.triggers) : that.triggers == null;
+        return Objects.equals(name, that.name) &&
+               Objects.equals(triggers, that.triggers);
     }
 
     @Override

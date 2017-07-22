@@ -86,16 +86,15 @@ public class TriggerPackage {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof TriggerPackage)) return false;
 
-        TriggerPackage that = (TriggerPackage) o;
+        final TriggerPackage that = (TriggerPackage) o;
 
-        if (categoryFilter != null ? !categoryFilter.equals(that.categoryFilter) : that.categoryFilter != null)
-            return false;
-        if (triggerSets != null ? !triggerSets.equals(that.triggerSets) : that.triggerSets != null) return false;
-        return onlyUnacknowledged != null ? onlyUnacknowledged.equals(that.onlyUnacknowledged) : that.onlyUnacknowledged == null;
+        return Objects.equals(categoryFilter, that.categoryFilter) &&
+               Objects.equals(triggerSets, that.triggerSets) &&
+               Objects.equals(onlyUnacknowledged, that.onlyUnacknowledged);
     }
 
     @Override

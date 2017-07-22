@@ -104,17 +104,16 @@ public class Trigger {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof Trigger)) return false;
 
-        Trigger trigger = (Trigger) o;
+        final Trigger that = (Trigger) o;
 
-        if (delay != trigger.delay) return false;
-        if (eventName != null ? !eventName.equals(trigger.eventName) : trigger.eventName != null) return false;
-        if (value1 != null ? !value1.equals(trigger.value1) : trigger.value1 != null) return false;
-        if (value2 != null ? !value2.equals(trigger.value2) : trigger.value2 != null) return false;
-        return value3 != null ? value3.equals(trigger.value3) : trigger.value3 == null;
+        return Objects.equals(delay, that.delay) &&
+               Objects.equals(value1, that.value1) &&
+               Objects.equals(value2, that.value2) &&
+               Objects.equals(value3, that.value3);
     }
 
     @Override
