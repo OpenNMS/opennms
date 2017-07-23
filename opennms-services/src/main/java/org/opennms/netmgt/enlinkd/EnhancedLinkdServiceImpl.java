@@ -676,6 +676,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     @Override
     public void store(BroadcastDomain domain, Date now) {
         for (SharedSegment segment : domain.getTopology()) {
+            //FIXME why I can have a segment without a designated port?
+            if (!segment.hasDesignatedBridgeport())
+                continue;
             for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
                 link.setBridgeBridgeLinkLastPollTime(new Date());
                 saveBridgeBridgeLink(link);

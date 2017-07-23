@@ -347,6 +347,8 @@ E:    	for (BridgeElement element: bridgeelements) {
     }
     
     private void tier(SharedSegment segment, Integer rootid, int level) {
+        if (segment == null)
+            return;
         level++;
         if (level == 30)
             return;
@@ -354,6 +356,8 @@ E:    	for (BridgeElement element: bridgeelements) {
             if (bridgeid.intValue() == rootid.intValue())
                 continue;
             Bridge bridge = getBridge(bridgeid);
+            if (bridge == null)
+                return;
             bridge.setRootPort(segment.getPortForBridge(bridgeid));
             bridge.setRootBridge(false);
             for (SharedSegment s2: getSharedSegmentOnTopologyForBridge(bridgeid)) {

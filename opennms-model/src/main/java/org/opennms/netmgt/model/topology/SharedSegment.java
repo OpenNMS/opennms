@@ -139,6 +139,7 @@ public class SharedSegment {
     public List<BridgeBridgeLink> getBridgeBridgeLinks() {
         List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
         for (BridgePort port: m_portsOnSegment) {
+            //FIXME port must not be null
             if (port == null) 
                 continue;
             if (port.equals(m_designatedBridge))
@@ -152,7 +153,10 @@ public class SharedSegment {
     	List<BridgeMacLink> maclinks = new ArrayList<BridgeMacLink>();
     	for (String mac: m_macsOnSegment) {
     		for (BridgePort bp: m_portsOnSegment) {
-    			maclinks.add(BridgePort.getBridgeMacLink(bp, mac));
+    	            //FIXME port must not be null
+    		    if (bp == null)
+    		        continue;
+    		    maclinks.add(BridgePort.getBridgeMacLink(bp, mac));
     		}
     	}
         return maclinks;
@@ -186,14 +190,16 @@ public class SharedSegment {
             return;
     	Set<BridgePort> portsOnSegment = new HashSet<BridgePort>();
         for (BridgePort bp: m_portsOnSegment) {
-        	if ( bp.getNode() == null ||
+            //FIXME port should never be null
+        	if ( bp == null || bp.getNode() == null ||
         	     bp.getNode().getId() == null ||  
         	        bp.getNode().getId().intValue() == bridgeId.intValue())
         		continue;
         	portsOnSegment.add(bp);
         }
         for (BridgePort port: shared.getBridgePortsOnSegment()) {
-            if (port.getNode() == null || 
+            //FIXME port should never be null
+            if (port == null && port.getNode() == null || 
                     port.getNode().getId() == null
                     || port.getNode().getId().intValue() == bridgeId.intValue())
                 continue;
@@ -218,7 +224,7 @@ public class SharedSegment {
             return;
         Set<BridgePort> updateportsonsegment = new HashSet<BridgePort>();
         for (BridgePort port: m_portsOnSegment) {
-            if (port.getNode() != null &&
+            if (port != null && port.getNode() != null &&
                     port.getNode().getId() != null
                     && port.getNode().getId().intValue() == bridgeId)
                 continue;
@@ -246,6 +252,7 @@ public class SharedSegment {
     public Set<Integer> getBridgeIdsOnSegment() {
         Set<Integer> nodes = new HashSet<Integer>();
         for (BridgePort link: m_portsOnSegment) {
+            //FIXME port should never be null
             if (link == null || link.getNode() == null)
                 continue;
             if (link.getNode().getId() != null)
@@ -266,6 +273,8 @@ public class SharedSegment {
             return false;
         }
         for (BridgePort port: m_portsOnSegment) {
+                if (port == null)
+                    continue;
         	if (port.getNode().getId().intValue() != nodeid.intValue()) {
         		continue;
         	}
@@ -281,7 +290,7 @@ public class SharedSegment {
         if (nodeid == null)
             return null;
         for (BridgePort link: m_portsOnSegment) {
-                if (link.getNode() != null &&
+                if (link!= null && link.getNode() != null &&
                         link.getNode().getId() != null &&
                         link.getNode().getId().intValue() == nodeid.intValue() )
                     return link;
@@ -293,7 +302,7 @@ public class SharedSegment {
         if (nodeid == null)
             return null;
         for (BridgePort link: m_portsOnSegment) {
-                if (link.getNode() != null 
+                if (link != null && link.getNode() != null 
                         && link.getNode().getId() != null 
                         && link.getNode().getId().intValue() == nodeid.intValue() )
                     return link.getBridgePort();
