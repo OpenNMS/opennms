@@ -117,6 +117,171 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
             System.err.println(link.printTopology());
         }
     }
+
+    /*
+     * 1400=
+     *      [1544, 1534]
+     *             1534=
+     *                   [1364, 405, 1310]}
+     *                    1364=
+     *                          [2965, 5022]
+     */
+    @Test 
+    public void testLoadFourLevelTopology() {
+        final OnmsMonitoringLocation location = new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        OnmsNode lnode1400= new OnmsNode();
+        lnode1400.setId(1400);
+        lnode1400.setForeignSource("linkd");
+        lnode1400.setForeignId("lnode1400");
+        lnode1400.setLabel("lnode1400");
+        lnode1400.setLocation(location);
+
+        OnmsNode lnode1544= new OnmsNode();
+        lnode1544.setId(1544);
+        lnode1544.setForeignSource("linkd");
+        lnode1544.setForeignId("lnode1544");
+        lnode1544.setLabel("lnode1544");
+        lnode1544.setLocation(location);
+        
+        OnmsNode lnode1534= new OnmsNode();
+        lnode1534.setId(1534);
+        lnode1534.setForeignSource("linkd");
+        lnode1534.setForeignId("lnode1534");
+        lnode1534.setLabel("lnode1534");
+        lnode1534.setLocation(location);
+
+        OnmsNode lnode1364= new OnmsNode();
+        lnode1364.setId(1364);
+        lnode1364.setForeignSource("linkd");
+        lnode1364.setForeignId("lnode1364");
+        lnode1364.setLabel("lnode1364");
+        lnode1364.setLocation(location);
+
+        OnmsNode lnode1310= new OnmsNode();
+        lnode1310.setId(1310);
+        lnode1310.setForeignSource("linkd");
+        lnode1310.setForeignId("lnode1310");
+        lnode1310.setLabel("lnode1310");
+        lnode1310.setLocation(location);
+
+        OnmsNode lnode405= new OnmsNode();
+        lnode405.setId(405);
+        lnode405.setForeignSource("linkd");
+        lnode405.setForeignId("lnode405");
+        lnode405.setLabel("lnode405");
+        lnode405.setLocation(location);
+        
+        OnmsNode lnode2965= new OnmsNode();
+        lnode2965.setId(2965);
+        lnode2965.setForeignSource("linkd");
+        lnode2965.setForeignId("lnode2965");
+        lnode2965.setLabel("lnode2965");
+        lnode2965.setLocation(location);
+
+        OnmsNode lnode5022= new OnmsNode();
+        lnode5022.setId(5022);
+        lnode5022.setForeignSource("linkd");
+        lnode5022.setForeignId("lnode5022");
+        lnode5022.setLabel("lnode5022");
+        lnode5022.setLocation(location);
+        
+        m_nodeDao.save(lnode1400);
+        m_nodeDao.save(lnode1544);
+        m_nodeDao.save(lnode1534);
+        m_nodeDao.save(lnode1364);
+        m_nodeDao.save(lnode1310);
+        m_nodeDao.save(lnode405);
+        m_nodeDao.save(lnode2965);
+        m_nodeDao.save(lnode5022);
+
+        OnmsNode node1400 = m_nodeDao.findByForeignId("linkd", "lnode1400");
+        OnmsNode node1544 = m_nodeDao.findByForeignId("linkd", "lnode1544");
+        OnmsNode node1534 = m_nodeDao.findByForeignId("linkd", "lnode1534");
+        OnmsNode node1364 = m_nodeDao.findByForeignId("linkd", "lnode1364");
+        OnmsNode node1310 = m_nodeDao.findByForeignId("linkd", "lnode1310");
+        OnmsNode node405 = m_nodeDao.findByForeignId("linkd", "lnode405");
+        OnmsNode node2965 = m_nodeDao.findByForeignId("linkd", "lnode2965");
+        OnmsNode node5022 = m_nodeDao.findByForeignId("linkd", "lnode5022");
+        
+
+        BridgeBridgeLink link7 = new BridgeBridgeLink();
+        link7.setNode(node5022);
+        link7.setBridgePort(4);
+        link7.setDesignatedNode(node2965);
+        link7.setDesignatedPort(5);
+        link7.setBridgeBridgeLinkLastPollTime(link7.getBridgeBridgeLinkCreateTime());
+        m_bridgeBridgeLinkDao.save(link7);
+        m_bridgeBridgeLinkDao.flush();
+
+        BridgeBridgeLink link1 = new BridgeBridgeLink();
+        link1.setNode(node1544);
+        link1.setBridgePort(15);
+        link1.setDesignatedNode(node1400);
+        link1.setDesignatedPort(1);
+        link1.setBridgeBridgeLinkLastPollTime(link1.getBridgeBridgeLinkCreateTime());
+        m_bridgeBridgeLinkDao.save(link1);
+        m_bridgeBridgeLinkDao.flush();
+
+        BridgeBridgeLink link3 = new BridgeBridgeLink();
+        link3.setNode(node1310);
+        link3.setBridgePort(1);
+        link3.setDesignatedNode(node1534);
+        link3.setDesignatedPort(1);
+        link3.setBridgeBridgeLinkLastPollTime(link3.getBridgeBridgeLinkCreateTime());
+        m_bridgeBridgeLinkDao.save(link3);
+        m_bridgeBridgeLinkDao.flush();
+
+        BridgeBridgeLink link4 = new BridgeBridgeLink();
+        link4.setNode(node1364);
+        link4.setBridgePort(24);
+        link4.setDesignatedNode(node1534);
+        link4.setDesignatedPort(4);
+        link4.setBridgeBridgeLinkLastPollTime(link4.getBridgeBridgeLinkCreateTime());
+        m_bridgeBridgeLinkDao.save(link4);
+        m_bridgeBridgeLinkDao.flush();
+
+        BridgeBridgeLink link2 = new BridgeBridgeLink();
+        link2.setNode(node1534);
+        link2.setBridgePort(11);
+        link2.setDesignatedNode(node1400);
+        link2.setDesignatedPort(11);
+        link2.setBridgeBridgeLinkLastPollTime(link2.getBridgeBridgeLinkCreateTime());
+        m_bridgeBridgeLinkDao.save(link2);
+        m_bridgeBridgeLinkDao.flush();
+
+
+        BridgeBridgeLink link6 = new BridgeBridgeLink();
+        link6.setNode(node2965);
+        link6.setBridgePort(2);
+        link6.setDesignatedNode(node1364);
+        link6.setDesignatedPort(5);
+        link6.setBridgeBridgeLinkLastPollTime(link6.getBridgeBridgeLinkCreateTime());
+        m_bridgeBridgeLinkDao.save(link6);
+        m_bridgeBridgeLinkDao.flush();
+
+        BridgeBridgeLink link5 = new BridgeBridgeLink();
+        link5.setNode(node405);
+        link5.setBridgePort(1);
+        link5.setDesignatedNode(node1534);
+        link5.setDesignatedPort(1);
+        link5.setBridgeBridgeLinkLastPollTime(link5.getBridgeBridgeLinkCreateTime());
+        m_bridgeBridgeLinkDao.save(link5);
+        m_bridgeBridgeLinkDao.flush();
+
+        assertEquals(0, m_bridgeMacLinkDao.countAll());
+        assertEquals(7, m_bridgeBridgeLinkDao.countAll());
+
+        assertNotNull(m_bridgeTopologyDao);
+        m_linkd.getQueryManager().loadBridgeTopology();
+
+        assertEquals(1, m_bridgeTopologyDao.getAll().size());
+        
+        BroadcastDomain fourlevelDomain = m_bridgeTopologyDao.getAll().iterator().next();
+        assertEquals(8, fourlevelDomain.getBridgeNodesOnDomain().size());
+        
+        System.err.println(fourlevelDomain.printTopology());
+
+    }
     
     @Test 
     public void testLoadTopology() {
