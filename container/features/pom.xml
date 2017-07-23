@@ -41,6 +41,10 @@
 
             <!-- Apache Camel -->
             <value>camel-${camelVersion}</value>
+
+            <!-- Pax JDBC -->
+            <value>org.ops4j.pax.jdbc-1.0.1</value>
+
           </importRepositoryExclusions>
           <repositories>
 
