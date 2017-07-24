@@ -774,8 +774,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                        electedRoot.getId());
         }
 
-        if (electedRoot == null || electedRoot.getId() == null) {
-            LOG.error("calculate: node: [{}], electedRootBridge should not be null",
+        if (electedRoot.getId() == null) {
+            LOG.error("calculate: node: [{}], electedRootBridge must have an id!",
                     getNodeId()
             		);
             return;
