@@ -825,21 +825,23 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 		xBridge.getId());
             }
         }
-        
+
         Set<Bridge> nodetobeparsed = new HashSet<Bridge>(m_notYetParsedBFTMap.keySet());
         for (Bridge xBridge: nodetobeparsed) {
             List<BridgeMacLink> xBft = new ArrayList<BridgeMacLink>(m_notYetParsedBFTMap.remove(xBridge));
             calculate(electedRoot, rootBft, xBridge, xBft);            
         }
         m_domain.cleanForwarders(m_domain.getMacsOnDomain());
-        LOG.debug("calculate: node: [{}], Print Topology {}", 
-        		getNodeId(),
-        		m_domain.printTopology());
-        LOG.info("calculate: node: [{}], stop: broadcast domain {} topology calculated.", 
-                 getNodeId(),
-                 m_domain.getBridgeNodesOnDomain());
-
-
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("calculate: node: [{}], Print Topology {}",
+                    getNodeId(),
+                    m_domain.printTopology());
+        }
+        if (LOG.isInfoEnabled()) {
+            LOG.info("calculate: node: [{}], stop: broadcast domain {} topology calculated.",
+                    getNodeId(),
+                    m_domain.getBridgeNodesOnDomain());
+        }
     }
      
     private void addForwarding(BroadcastDomain domain, List<BridgeMacLink> bft) {
