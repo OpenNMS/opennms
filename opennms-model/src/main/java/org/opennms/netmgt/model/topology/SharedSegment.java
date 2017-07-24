@@ -199,10 +199,11 @@ public class SharedSegment {
         }
         for (BridgePort port: shared.getBridgePortsOnSegment()) {
             //FIXME port should never be null
-            if (port == null && port.getNode() == null || 
+            if (port == null || port.getNode() == null ||
                     port.getNode().getId() == null
-                    || port.getNode().getId().intValue() == bridgeId.intValue())
+                    || port.getNode().getId().intValue() == bridgeId.intValue()) {
                 continue;
+            }
             portsOnSegment.add(port);
         }
         m_portsOnSegment = portsOnSegment;
