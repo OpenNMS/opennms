@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.BridgeElement;
@@ -48,10 +49,6 @@ public class BroadcastDomain {
     volatile List<SharedSegment> m_topology = new ArrayList<SharedSegment>();    
     
     volatile Map<Integer,List<BridgeMacLink>> m_forwarding = new HashMap<Integer,List<BridgeMacLink>>();
-    
-    boolean m_lock = false;
-
-    Object m_locker;
 
     public void addForwarding(BridgeMacLink forward) {
         Integer bridgeid = forward.getNode().getId();
@@ -132,29 +129,6 @@ E:    	for (BridgeElement element: bridgeelements) {
         for (Bridge bridge: m_bridges) 
             bridgeIds.add(bridge.getId());
         return bridgeIds;
-    }
-    
-    public synchronized boolean getLock(Object locker) {
-        if (m_lock)
-            return false;
-        if (locker == null)
-            return false;
-        m_lock=true;
-        m_locker=locker;
-        return true;
-    }
-
-    public synchronized boolean releaseLock(Object locker) {
-        if (locker == null)
-            return false;
-        if (!m_lock )
-            return false;
-        if (!m_locker.equals(locker))
-            return false;
-        m_locker = null;
-        m_lock=false; 
-        return true;
-                
     }
 
     public Set<Bridge> getBridges() {

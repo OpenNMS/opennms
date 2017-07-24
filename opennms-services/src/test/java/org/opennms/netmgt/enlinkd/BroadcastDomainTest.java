@@ -80,17 +80,6 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testLock() throws Exception {
-        Object locker = new Object();
-        Object notlocker = new Object();
-        BroadcastDomain domain = new BroadcastDomain();
-        assertTrue(domain.getLock(locker));
-        assertTrue(!domain.getLock(notlocker));
-        assertTrue(!domain.releaseLock(notlocker));
-        assertTrue(domain.releaseLock(locker));
-    }
-
-    @Test
     public void testOneBridgeOnePortOneMac() throws Exception {
         OneBridgeOnePortOneMacTopology topology = new OneBridgeOnePortOneMacTopology();
 

@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -362,15 +363,9 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
 
     @Override
     public void clean() {
-        Set<BroadcastDomain> domains = new CopyOnWriteArraySet<BroadcastDomain>();
         synchronized (m_domains) {
-            for (BroadcastDomain domain: m_domains) {
-                if (domain.isEmpty())
-                    continue;
-                domains.add(domain);
-            }
-            m_domains = domains;
+            m_domains.removeIf(BroadcastDomain::isEmpty);
         }
-    }    
+    }
 
 }
