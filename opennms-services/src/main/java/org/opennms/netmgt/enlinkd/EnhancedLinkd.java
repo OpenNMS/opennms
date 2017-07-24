@@ -384,16 +384,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         BroadcastDomain domain = m_queryMgr.getBroadcastDomain(nodeid);
         LOG.debug("deleteNode: {}, found broadcast domain: nodes {}, macs {}", nodeid, domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
         // must be calculated the topology for nodeid...
-        domain.getLock(this);
-        LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
-        domain.clearTopologyForBridge(nodeid);
-        LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
-        LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
-        m_queryMgr.store(domain,now);
-        LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
-        domain.removeBridge(nodeid);
-        domain.releaseLock(this);
-        
+        synchronized (domain) {
+            LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
+            domain.clearTopologyForBridge(nodeid);
+            LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
+            LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
+            m_queryMgr.store(domain,now);
+            LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
+            domain.removeBridge(nodeid);
+        }
         Node node = removeNode(nodeid);
 
         if (node == null) {
