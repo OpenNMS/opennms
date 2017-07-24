@@ -637,7 +637,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         Set<Integer> nodeswithupdatedbftonbroadcastdomain = getAllNodesWithUpdatedBFTOnDomain(incomingSet,nodeBftMap);            
 
         LOG.info("run: node: [{}], clean broadcast domains. Start", getNodeId());
-        boolean stop = false;
         boolean clean = false;
         for (BroadcastDomain domain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
         	if (m_domain == domain)
@@ -664,14 +663,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             m_linkd.getQueryManager().cleanBroadcastDomains();
         }
         LOG.info("run: node: [{}], clean broadcast domains. End", getNodeId());
-        
-        if (stop) {
-            LOG.info("run: node [{}]: at least one other broadcast domain locked. scheduling with time interval {}", 
-                    getNodeId(), 
-                    getInitialSleepTime());
-        	schedule();
-        	return;        	
-        }
 
         synchronized (m_domain) {
             m_notYetParsedBFTMap = new HashMap<Bridge, List<BridgeMacLink>>();
