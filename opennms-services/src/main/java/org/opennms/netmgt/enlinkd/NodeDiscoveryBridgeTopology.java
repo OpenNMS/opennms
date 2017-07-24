@@ -49,6 +49,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeDiscoveryBridgeTopology.class);
 
+
+    private static final int DOMAIN_MATCH_MIN_SIZE = 5;
+    private static final float DOMAIN_MATCH_MIN_RATIO = 0.1f;
+
     // least condition theorem for simple connections
     // X and Y are bridges
     // m_1 m_2 m_3 are mac addresses
@@ -561,8 +565,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 LOG.debug("run: node: [{}], parsing updated bft node: [{}], macs {}", getNodeId(), curNodeId,retainedSet);
                 retainedSet.retainAll(incomingSet);
                 LOG.debug("run: node: [{}], node: [{}] - common mac address set: {}", getNodeId(), curNodeId, retainedSet);
-                if (retainedSet.size() > 10
-                        || retainedSet.size() >= incomingSet.size() * 0.1) {
+                if (retainedSet.size() > DOMAIN_MATCH_MIN_SIZE
+                        || retainedSet.size() >= incomingSet.size() * DOMAIN_MATCH_MIN_RATIO) {
                     nodeswithupdatedbftonbroadcastdomain.add(curNodeId);
                     LOG.debug("run: node: [{}], node: [{}] - put on same broadcast domain, common macs: {} ", getNodeId(), 
                              curNodeId,
@@ -611,11 +615,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             retainedSet.retainAll(incomingSet);
             LOG.debug("run: node: [{}], retained: {}", getNodeId(), retainedSet);
             // should contain at list 5 or 10% of the all size
-            if (retainedSet.size() > 5
-                    || retainedSet.size() >= incomingSet.size() * 0.1) {
+            if (retainedSet.size() > DOMAIN_MATCH_MIN_SIZE
+                    || retainedSet.size() >= incomingSet.size() * DOMAIN_MATCH_MIN_RATIO) {
                 LOG.debug("run: node: [{}], domain {} found!",getNodeId(), 
                           domain.getBridgeNodesOnDomain());
                     m_domain = domain;
+                    // TODO: We should find the *best* domain, instead of using the last match
             }
         }
         if (m_domain == null) {
