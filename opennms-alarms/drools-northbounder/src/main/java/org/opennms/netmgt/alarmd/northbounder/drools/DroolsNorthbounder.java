@@ -231,8 +231,9 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
         }
         LOG.info("Forwarding {} alarms to engine {}", alarms.size(), m_engine.getName());
         alarms.forEach(a -> {
-            LOG.debug("Processing {} with engine {}", a, m_engine.getName());
+            LOG.debug("Begin correlation for alarm {} uei: {}", a.getId(), a.getUei());
             m_kieSession.insert(a);   
+            LOG.debug("End correlation for alarm {} uei: {}", a.getId(), a.getUei());
         });
     }
 
