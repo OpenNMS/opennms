@@ -43,6 +43,24 @@
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-quicksearch.js"></script>' />
 </jsp:include>
 
+<style>
+.typeahead strong {
+	color: #237cb7;
+}
+
+.panel-body dl {
+	margin: 0;
+}
+
+.btn-default:hover, .btn-default:focus {
+	background-color: white;
+}
+
+.btn-default.active {
+	background-color: inherit;
+}
+</style>
+
 <ng-include src="'search/main.html'"></ng-include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

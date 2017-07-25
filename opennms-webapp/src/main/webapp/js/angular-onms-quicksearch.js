@@ -1,10 +1,4 @@
 /**
- * ISO-8601 date format string.
- */
-var ISO_8601_DATE_FORMAT = 'yyyy-MM-ddTHH:mm:ss.sssZ';
-var ISO_8601_DATE_FORMAT_WITHOUT_MILLIS = 'yyyy-MM-ddTHH:mm:ssZ';
-
-/**
  * Convert from a clause into a FIQL query string.
  */
 function toFiql(clauses) {
@@ -40,65 +34,6 @@ function toFiql(clauses) {
 }
 
 /**
- * Convert from a FIQL query string into separate clause objects.
- * This only works for simple queries composed of multiple AND (';')
- * clauses.
- * 
- * TODO: Expand this to cover more FIQL syntax
- */
-function fromFiql(fiql) {
-	var statements = fiql.split(';');
-	var segments = [];
-	var clauses = [];
-	for (var i = 0; i < statements.length; i++) {
-		if (statements[i].indexOf('==') > 0) {
-			segments = statements[i].split('==');
-			clauses.push({
-				property: segments[0],
-				operator: 'EQ',
-				value: segments[1]
-			});
-		} else if (statements[i].indexOf('!=') > 0) {
-			segments = statements[i].split('!=');
-			clauses.push({
-				property: segments[0],
-				operator: 'NE',
-				value: segments[1]
-			});
-		} else if (statements[i].indexOf('=lt=') > 0) {
-			segments = statements[i].split('=lt=');
-			clauses.push({
-				property: segments[0],
-				operator: 'LT',
-				value: segments[1]
-			});
-		} else if (statements[i].indexOf('=le=') > 0) {
-			segments = statements[i].split('=le=');
-			clauses.push({
-				property: segments[0],
-				operator: 'LE',
-				value: segments[1]
-			});
-		} else if (statements[i].indexOf('=gt=') > 0) {
-			segments = statements[i].split('=gt=');
-			clauses.push({
-				property: segments[0],
-				operator: 'GT',
-				value: segments[1]
-			});
-		} else if (statements[i].indexOf('=ge=') > 0) {
-			segments = statements[i].split('=ge=');
-			clauses.push({
-				property: segments[0],
-				operator: 'GE',
-				value: segments[1]
-			});
-		}
-	}
-	return clauses;
-}
-
-/**
  * Escape FIQL reserved characters by URL-encoding them. Reserved characters are:
  * <ul>
  * <li>!</li>
@@ -116,7 +51,7 @@ function fromFiql(fiql) {
  * @returns String with reserved characters URL-encoded
  */
 function escapeSearchValue(value) {
-	if (typeof value === 'String') {
+	if (typeof value === 'string') {
 		return value
 			.replace('!', '%21')
 			.replace('$', '%24')
@@ -136,48 +71,6 @@ function escapeSearchValue(value) {
 	}
 }
 
-/**
- * Parse an HTTP Content-Range header into the start, end, and total fields.
- * The header should be in a format like: "items 0-14/28".
- * 
- * @param contentRange String from the Content-Range header
- */
-function parseContentRange(contentRange) {
-	if (typeof contentRange === 'undefined' || contentRange === null) {
-		return {start: 0, end: 0, total: 0};
-	}
-	// Example: items 0-14/28
-	var pattern = /items\s+?(\d+)\s*\-\s*(\d+)\s*\/\s*(\d+)/;
-	return {
-		start: Number(contentRange.replace(pattern, '$1')),
-		end: Number(contentRange.replace(pattern, '$2')),
-		total: Number(contentRange.replace(pattern, '$3'))
-	};
-}
-
-function normalizeOffset(offset, maxOffset, limit) {
-	var newOffset = offset;
-
-	// Offset of the last page
-	var lastPageOffset;
-	if (maxOffset < 0) {
-		newOffset = 0;
-		lastPageOffset = 0;
-	} else {
-		lastPageOffset = Math.floor(maxOffset / limit) * limit; 
-	}
-
-	// Bounds checking
-	newOffset = ((newOffset < 0) ? 0 : newOffset);
-	newOffset = ((newOffset > lastPageOffset) ? lastPageOffset : newOffset);
-
-	// Make sure that offset is a multiple of limit
-	newOffset = Math.floor(newOffset / limit) * limit;
-
-	return newOffset;
-}
-
-
 (function() {
 	'use strict';
 	
@@ -195,65 +88,14 @@ function normalizeOffset(offset, maxOffset, limit) {
 		});
 	})
 
-	.directive('onmsQuickSearchInput', function() {
-		return {
-			controller: function($scope) {
-				$scope.editing = false;
-				$scope.originalValue = angular.copy($scope.value);
-
-				// Start editing the value
-				$scope.edit = function() {
-					$scope.editing = true;
-				}
-
-				// Stop editing the value
-				$scope.unedit = function() {
-					$scope.editing = false;
-				}
-
-				$scope.onKeyup = function($event) {
-					// If the user types ESC, then abort the edit
-					if($event.keyCode === 27) {
-						$scope.cancel();
-					}
-				}
-
-				$scope.submit = function() {
-					$scope.onSubmit();
-					// TODO: Handle update failures
-					// Now that we've save a new value, use it as the original value
-					$scope.originalValue = $scope.value;
-					// Switch out of edit mode
-					$scope.unedit();
-				}
-
-				$scope.cancel = function() {
-					// Restore the original value
-					$scope.value = $scope.originalValue;
-					// Switch out of edit mode
-					$scope.unedit();
-				}
-			},
-			// Use an isolated scope
-			scope: {
-				item: '=',
-				value: '=',
-				valueType: '=',
-				// Optional step attribute for number fields
-				step: '=',
-				onSubmit: '&onSubmit'
-			},
-			templateUrl: 'js/angular-onms-elementList-editInPlace.html',
-			transclude: true
-		};
-	})
-
 	.filter('stripTags', function() {
 		return function(input) {
 			if (typeof input === 'string') {
 				return input.replace(/<(?:.|\n)*?>/gm, '');
+			} else if (typeof input === 'number') {
+				return input + '';
 			} else {
-				return input;
+				return '';
 			}
 		}
 	})
@@ -261,7 +103,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 	/**
 	 * Generic list controller
 	 */
-	.controller('QuickSearchCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'alarmFactory', 'eventFactory', function($scope, $location, $window, $log, $filter, alarmFactory, eventFactory) {
+	.controller('QuickSearchCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'alarmFactory', 'eventFactory', 'notificationFactory', function($scope, $location, $window, $log, $filter, alarmFactory, eventFactory, notificationFactory) {
 		$log.debug('QuickSearchCtrl initializing...');
 
 		$scope.defaults = {
@@ -271,8 +113,6 @@ function normalizeOffset(offset, maxOffset, limit) {
 			notifications: true,
 			nodes: true
 		}
-
-		//var initialLimit = typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit);
 
 		// Restore any query parameters that you can from the 
 		// query string, blank out the rest
@@ -305,159 +145,222 @@ function normalizeOffset(offset, maxOffset, limit) {
 			true // Use object equality because the reference doesn't change
 		);
 
-		// Add the search clause to the list of clauses
-		$scope.addSearchClause = function(clause) {
-			if(angular.isDate(clause.value)) {
-				// Returns a value in yyyy-MM-ddTHH:mm:ss.sssZ format
-				// Unfortunately, I don't think CXF will like this because
-				// it includes the millisecond portion of the date.
-				//clause.value = new Date(clause.value).toISOString();
+		/**
+		 * Generate a hash containing all fields of <code>item</code>
+		 * whose values match the current query string. Always include
+		 * the fields listed in <code>required</code>.
+		 */
+		$scope.getKeyFields = function(item, required) {
+			var retval = {};
+			var keys = Object.keys(item);
+			keyLoop:
+			for (var i = 0; i < keys.length; i++) {
+				var value = item[keys[i]];
 
-				clause.value = $filter('date')(new Date(clause.value), ISO_8601_DATE_FORMAT);
-			}
-
-			// Make sure the clause isn't already in the list of search clauses
-			if ($scope.getSearchClause(clause) != null) {
-				return;
-			}
-
-			// TODO: Add validation?
-			$scope.query.searchClauses.push(angular.copy(clause));
-			$scope.query.searchParam = toFiql($scope.query.searchClauses);
-			$scope.refresh();
-		}
-
-		$scope.getSearchClause = function(clause) {
-			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
-				if ($scope.clauseEquals(clause, $scope.query.searchClauses[i])) {
-					return $scope.query.searchClauses[i];
+				// If the field is in the required list, always add the value
+				for (var j = 0; j < required.length; j++) {
+					if (keys[i] === required[j]) {
+						// Special case for formatting epoch dates
+						if(
+							keys[i] === 'lastEventTime' ||
+							keys[i] === 'time'
+						) {
+							value = $filter('date')(new Date(value), 'MMM d, yyyy h:mm:ss a');
+						}
+						retval[keys[i]] = value;
+						continue keyLoop;
+					}
 				}
-			}
-			return null;
-		}
 
-		$scope.clauseEquals = function(a, b) {
-			if (
-				a.property === b.property &&
-				a.operator === b.operator &&
-				a.value === b.value
-			) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		// Convert an epoch timestamp into String format before adding the search clause
-		$scope.addEpochTimestampSearchClause = function(clause) {
-			clause.value = $filter('date')(clause.value, ISO_8601_DATE_FORMAT);
-			$scope.addSearchClause(clause);
-		}
-
-		// Remove a search clause from the list of clauses
-		$scope.removeSearchClause = function(clause) {
-			// TODO: Add validation?
-			$scope.query.searchClauses.splice($scope.query.searchClauses.indexOf(clause), 1);
-			$scope.query.searchParam = toFiql($scope.query.searchClauses);
-			$scope.refresh();
-		}
-
-		$scope.removeSearchClauses = function(clauses) {
-			for (var i = 0; i < clauses.length; i++) {
-				var index = $scope.query.searchClauses.indexOf(clauses[i]);
-				if (index >= 0) {
-					$scope.query.searchClauses.splice(index, 1);
+				// Handle string values
+				if (
+					typeof $scope.query.q === 'string' && 
+					typeof value === 'string' && 
+					value.match($scope.query.q) != null
+				) {
+					// Special case for formatting epoch dates
+					if(
+						keys[i] === 'lastEventTime' ||
+						keys[i] === 'time'
+					) {
+						value = $filter('date')(new Date(clause.value), 'MMM d, yyyy h:mm:ss a');
+					}
+					retval[keys[i]] = value;
+				} else if (
+					value &&
+					typeof value === 'object'
+				) {
+					// Handle object values by recursively calling getKeyFields()
+					var childFields = $scope.getKeyFields(value, required);
+					var childKeys = Object.keys(childFields);
+					for (var k = 0; k < childKeys.length; k++) {
+						retval[keys[i] + '.' + childKeys[k]] = childFields[childKeys[k]];
+					}
 				}
-			}
-			$scope.query.searchParam = toFiql($scope.query.searchClauses);
-			$scope.refresh();
-		}
+			};
+			return retval;
+		};
 
-		// Replace a search clause with a new clause
-		$scope.replaceSearchClause = function(oldClause, newClause) {
-			if(angular.isDate(newClause.value)) {
-				// Returns a value in yyyy-MM-ddTHH:mm:ss.sssZ format
-				// Unfortunately, I don't think CXF will like this because
-				// it includes the millisecond portion of the date.
-				//clause.value = new Date(clause.value).toISOString();
+		$scope.assetFields = [
+			"assetRecord.assetNumber",
+			"assetRecord.building",
+			"assetRecord.category",
+			"assetRecord.comment",
+			"assetRecord.cpu",
+			"assetRecord.department",
+			"assetRecord.description",
+			"assetRecord.floor",
+			"assetRecord.lastModifiedBy",
+			"assetRecord.manufacturer",
+			"assetRecord.modelNumber",
+			"assetRecord.operatingSystem",
+			"assetRecord.rack",
+			"assetRecord.ram",
+			"assetRecord.region",
+			"assetRecord.room",
+			"assetRecord.serialNumber",
+			"assetRecord.slot",
+			"assetRecord.supportPhone",
+			"assetRecord.vendor",
+			"assetRecord.vendorAssetNumber",
+			"assetRecord.vendorFax",
+			"assetRecord.vendorPhone"
+		];
 
-				newClause.value = $filter('date')(new Date(newClause.value), ISO_8601_DATE_FORMAT);
-			}
+		$scope.categoryFields = [
+			"category.description",
+			"category.name"
+		];
 
-			// TODO: Add validation?
-			var scopeOldClause = $scope.getSearchClause(oldClause);
-			var scopeNewClause = $scope.getSearchClause(newClause);
-			if (scopeOldClause == null) {
-				if (scopeNewClause == null) {
-					// If the old clause is not present, simply add the new clause
-					$scope.addSearchClause(newClause);
-				} else {
-					// If the old clause is not present and the new clause is already
-					// present, then do nothing
-				}
-			} else {
-				if (scopeNewClause == null) {
-					// If the old clause is present and the new clause is not, replace
-					// the values inside the old clause and then refresh
-					scopeOldClause.property = newClause.property;
-					scopeOldClause.operator = newClause.operator;
-					scopeOldClause.value = newClause.value;
+		$scope.distPollerFields = [
+			"distPoller.label",
+			"distPoller.location"
+		];
 
-					$scope.query.searchParam = toFiql($scope.query.searchClauses);
-					$scope.refresh();
-				} else {
-					// If the old clause is present and the new clause is present,
-					// then just remove the old clause (as if it had been replaced by
-					// the already-existing new clause)
-					$scope.removeSearchClause(oldClause);
-				}
-			}
-		}
+		$scope.ipInterfaceFields = [
+			'ipInterface.ipHostName'
+		];
 
-		// Clear the current search
-		$scope.clearSearch = function() {
-			if ($scope.query.searchClauses.length > 0) {
-				$scope.query.searchClauses = [];
-				$scope.query.searchParam = '';
-				$scope.refresh();
-			}
-		}
+		$scope.locationFields = [
+			"location.locationName",
+			"location.monitoringArea"
+			//"location.priority"
+		];
 
-		// Change the sorting of the table
-		$scope.changeOrderBy = function(property) {
-			if ($scope.query.orderBy === property) {
-				// TODO: Figure out if we should reset limit/offset here also
-				// If the property is already selected then reverse the sorting
-				$scope.query.order = ($scope.query.order === 'asc' ? 'desc' : 'asc');
-			} else {
-				// TODO: Figure out if we should reset limit/offset here also
-				$scope.query.orderBy = property;
-				$scope.query.order = $scope.defaults.order;
-			}
-			$scope.refresh();
-		}
+		$scope.nodeFields = [
+			"node.foreignId",
+			"node.foreignSource",
+			"node.label",
+			//"node.labelSource",
+			"node.netBiosDomain",
+			"node.netBiosName",
+			"node.operatingSystem",
+			"node.sysContact",
+			"node.sysDescription",
+			"node.sysLocation",
+			"node.sysName",
+			"node.sysObjectId",
+			//"node.type"
+		];
 
-		$scope.setOffset = function(offset) {
-			offset = normalizeOffset(offset, $scope.query.maxOffset, $scope.query.limit);
+		$scope.serviceTypeFields = [
+			"serviceType.name"
+		];
 
-			if ($scope.query.offset !== offset) {
-				$scope.query.offset = offset;
-				$scope.refresh();
-			}
-		}
+		$scope.alarmFields = [
+			//"alarm.alarmType",
+			"alarm.clearKey",
+			"alarm.description",
+			"alarm.ipAddr",
+			"alarm.logMsg",
+			"alarm.operInstruct",
+			"alarm.reductionKey",
+			"alarm.uei",
+			"lastEvent.eventAutoAction",
+			"lastEvent.eventCorrelation",
+			"lastEvent.eventDescr",
+			"lastEvent.eventHost",
+			"lastEvent.eventLogMsg",
+			"lastEvent.eventOperAction",
+			"lastEvent.eventOperActionMenuText",
+			"lastEvent.eventOperInstruct",
+			"lastEvent.eventPathOutage",
+			"lastEvent.eventSnmp",
+			"lastEvent.eventSnmpHost",
+			"lastEvent.eventSource",
+			"lastEvent.eventTTicket",
+			//"lastEvent.eventTTicketState",
+			"lastEvent.eventUei",
+			//"lastEvent.ifIndex",
+			//"lastEvent.ipAddr",
+			//"snmpInterface.ifAdminStatus",
+			//"snmpInterface.ifIndex",
+			//"snmpInterface.ifOperStatus",
+			//"snmpInterface.ifSpeed",
+			//"snmpInterface.netMask"
+		];
+		// Add the asset fields
+		Array.prototype.push.apply($scope.alarmFields, $scope.assetFields);
+		// Add the category fields
+		Array.prototype.push.apply($scope.alarmFields, $scope.categoryFields);
+		// Add the distPoller fields
+		Array.prototype.push.apply($scope.alarmFields, $scope.distPollerFields);
+		// Add the ipInterface fields
+		Array.prototype.push.apply($scope.alarmFields, $scope.ipInterfaceFields);
+		// Add the location fields
+		Array.prototype.push.apply($scope.alarmFields, $scope.locationFields);
+		// Add the node fields
+		Array.prototype.push.apply($scope.alarmFields, $scope.nodeFields);
+		// Add the serviceType fields
+		Array.prototype.push.apply($scope.alarmFields, $scope.serviceTypeFields);
 
-		$scope.setLimit = function(limit) {
-			if (limit < 1) {
-				$scope.query.newLimit = $scope.query.limit;
-				// TODO: Throw a validation error
-				return;
-			}
-			if ($scope.query.limit !== limit) {
-				$scope.query.limit = limit;
-				$scope.query.offset = normalizeOffset($scope.query.offset, $scope.query.maxOffset, $scope.query.limit);
-				$scope.refresh();
-			}
-		}
+		$scope.eventFields = [
+			"event.eventAutoAction",
+			"event.eventCorrelation",
+			"event.eventDescr",
+			"event.eventHost",
+			"event.eventLogMsg",
+			"event.eventOperAction",
+			"event.eventOperActionMenuText",
+			"event.eventOperInstruct",
+			"event.eventPathOutage",
+			"event.eventSnmp",
+			"event.eventSnmpHost",
+			"event.eventSource",
+			"event.eventTTicket",
+			//"event.eventTTicketState",
+			"event.eventUei",
+			//"event.ifIndex",
+			//"event.ipAddr"
+		];
+		// Add the asset fields
+		Array.prototype.push.apply($scope.eventFields, $scope.assetFields);
+		// Add the category fields
+		Array.prototype.push.apply($scope.eventFields, $scope.categoryFields);
+		// Add the distPoller fields
+		Array.prototype.push.apply($scope.eventFields, $scope.distPollerFields);
+		// Add the ipInterface fields
+		Array.prototype.push.apply($scope.eventFields, $scope.ipInterfaceFields);
+		// Add the location fields
+		Array.prototype.push.apply($scope.eventFields, $scope.locationFields);
+		// Add the node fields
+		Array.prototype.push.apply($scope.eventFields, $scope.nodeFields);
+		// Add the serviceType fields
+		Array.prototype.push.apply($scope.eventFields, $scope.serviceTypeFields);
+
+		$scope.notificationFields = [
+			//"notification.notifyId",
+			"notification.answeredBy",
+			//"notification.ipAddress",
+			"notification.numericMsg",
+			//"notification.pageTime",
+			"notification.queueId",
+			//"notification.respondTime",
+			"notification.subject",
+			"notification.textMsg"
+		];
+		// Add the event fields
+		Array.prototype.push.apply($scope.notificationFields, $scope.eventFields);
 
 		// Override this to implement updates to an object
 		$scope.refresh = function() {
@@ -467,184 +370,35 @@ function normalizeOffset(offset, maxOffset, limit) {
 			 * constraints if the value is appropriate.
 			 */
 
-			var assetFields = [
-				"assetRecord.assetNumber",
-				"assetRecord.building",
-				"assetRecord.category",
-				"assetRecord.comment",
-				"assetRecord.cpu",
-				"assetRecord.department",
-				"assetRecord.description",
-				"assetRecord.floor",
-				"assetRecord.lastModifiedBy",
-				"assetRecord.manufacturer",
-				"assetRecord.modelNumber",
-				"assetRecord.operatingSystem",
-				"assetRecord.rack",
-				"assetRecord.ram",
-				"assetRecord.region",
-				"assetRecord.room",
-				"assetRecord.serialNumber",
-				"assetRecord.slot",
-				"assetRecord.supportPhone",
-				"assetRecord.vendor",
-				"assetRecord.vendorAssetNumber",
-				"assetRecord.vendorFax",
-				"assetRecord.vendorPhone"
-			];
-
-			var categoryFields = [
-				"category.description",
-				"category.name"
-			];
-
-			var distPollerFields = [
-				"distPoller.label",
-				"distPoller.location"
-			];
-
-			var ipInterfaceFields = [
-				'ipInterface.ipHostName'
-			];
-
-			var locationFields = [
-				"location.locationName",
-				"location.monitoringArea"
-//				"location.priority"
-			];
-
-			var nodeFields = [
-				"node.foreignId",
-				"node.foreignSource",
-				"node.label",
-//				"node.labelSource",
-				"node.netBiosDomain",
-				"node.netBiosName",
-				"node.operatingSystem",
-				"node.sysContact",
-				"node.sysDescription",
-				"node.sysLocation",
-				"node.sysName",
-				"node.sysObjectId",
-//				"node.type"
-			];
-
-			var serviceTypeFields = [
-				"serviceType.name"
-			];
-
-			var alarmFields = [
-//				"alarm.alarmType",
-				"alarm.clearKey",
-				"alarm.description",
-				"alarm.ipAddr",
-				"alarm.logMsg",
-				"alarm.operInstruct",
-				"alarm.reductionKey",
-				"alarm.uei",
-				"lastEvent.eventAutoAction",
-				"lastEvent.eventCorrelation",
-				"lastEvent.eventDescr",
-				"lastEvent.eventHost",
-				"lastEvent.eventLogMsg",
-				"lastEvent.eventOperAction",
-				"lastEvent.eventOperActionMenuText",
-				"lastEvent.eventOperInstruct",
-				"lastEvent.eventPathOutage",
-				"lastEvent.eventSnmp",
-				"lastEvent.eventSnmpHost",
-				"lastEvent.eventSource",
-				"lastEvent.eventTTicket",
-//				"lastEvent.eventTTicketState",
-				"lastEvent.eventUei",
-//				"lastEvent.ifIndex",
-//				"lastEvent.ipAddr",
-//				"snmpInterface.ifAdminStatus",
-//				"snmpInterface.ifIndex",
-//				"snmpInterface.ifOperStatus",
-//				"snmpInterface.ifSpeed",
-//				"snmpInterface.netMask"
-			];
-			// Add the asset fields
-			Array.prototype.push.apply(alarmFields, assetFields);
-			// Add the category fields
-			Array.prototype.push.apply(alarmFields, categoryFields);
-			// Add the distPoller fields
-			Array.prototype.push.apply(alarmFields, distPollerFields);
-			// Add the ipInterface fields
-			Array.prototype.push.apply(alarmFields, ipInterfaceFields);
-			// Add the location fields
-			Array.prototype.push.apply(alarmFields, locationFields);
-			// Add the node fields
-			Array.prototype.push.apply(alarmFields, nodeFields);
-			// Add the serviceType fields
-			Array.prototype.push.apply(alarmFields, serviceTypeFields);
-
-			var eventFields = [
-				"event.eventAutoAction",
-				"event.eventCorrelation",
-				"event.eventDescr",
-				"event.eventHost",
-				"event.eventLogMsg",
-				"event.eventOperAction",
-				"event.eventOperActionMenuText",
-				"event.eventOperInstruct",
-				"event.eventPathOutage",
-				"event.eventSnmp",
-				"event.eventSnmpHost",
-				"event.eventSource",
-				"event.eventTTicket",
-//				"event.eventTTicketState",
-				"event.eventUei",
-//				"event.ifIndex",
-//				"event.ipAddr"
-			];
-			// Add the asset fields
-			Array.prototype.push.apply(eventFields, assetFields);
-			// Add the category fields
-			Array.prototype.push.apply(eventFields, categoryFields);
-			// Add the distPoller fields
-			Array.prototype.push.apply(eventFields, distPollerFields);
-			// Add the ipInterface fields
-			Array.prototype.push.apply(alarmFields, ipInterfaceFields);
-			// Add the location fields
-			Array.prototype.push.apply(eventFields, locationFields);
-			// Add the node fields
-			Array.prototype.push.apply(eventFields, nodeFields);
-			// Add the serviceType fields
-			Array.prototype.push.apply(eventFields, serviceTypeFields);
-
+			// If there is a query string then use the REST services to perform
+			// a typeahead search
 			if (typeof $scope.query.q === 'string' && $scope.query.q.length > 0) {
-				$scope.nodes = [
-					{ "ipAddress": "192.168.1.1", "nodeLabel": "nas.local" },
-					{ "ipAddress": "192.168.1.9", "nodeLabel": "server.local" }
-				];
-
-				$scope.nodes = $scope.nodes.filter(function(item) {
-					var keys = Object.keys(item);
-					for (var i = 0; i < keys.length; i++) {
-						var value = item[keys[i]];
-						if (value.toLowerCase().match($scope.query.q.toLowerCase()) != null) {
-							return true;
-						}
-					};
-					return false;
-				});
 
 				var searchClauses = [];
-				for (var i = 0; i < alarmFields.length; i++) {
+				for (var i = 0; i < $scope.alarmFields.length; i++) {
 					searchClauses.push({
-						'property': alarmFields[i],
-						'operator': 'EQ',
-						'value': '*' + $scope.query.q + '*' // Substring query
+						property: $scope.alarmFields[i],
+						operator: 'EQ',
+						value: '*' + $scope.query.q + '*' // Substring query
 					});
 				}
+
+				var alarmQuery = toFiql(searchClauses);
+
+				// Only search among unacknowledged alarms
+				alarmQuery = toFiql([{
+					property: 'alarmAckUser',
+					operator: 'EQ',
+					value: '\u0000' // null
+				}]) + ';(' + alarmQuery + ')';
 
 				// Fetch all of the items
 				alarmFactory.query(
 					{
-						_s: toFiql(searchClauses),
-						limit: 10
+						_s: alarmQuery,
+						limit: 10,
+						orderBy: 'id',
+						order: 'desc'
 					},
 					function(value, headers) {
 						$scope.alarms = value;
@@ -662,15 +416,17 @@ function normalizeOffset(offset, maxOffset, limit) {
 							break;
 						}
 						// TODO: Handle 500 Server Error by executing an undo callback?
+						// TODO: Handle 431 Request Header Fields Too Large
+						// TODO: Handle 414 URI Too Long
 					}
 				);
 
 				searchClauses = [];
-				for (var i = 0; i < eventFields.length; i++) {
+				for (var i = 0; i < $scope.eventFields.length; i++) {
 					searchClauses.push({
-						'property': eventFields[i],
-						'operator': 'EQ',
-						'value': '*' + $scope.query.q + '*' // Substring query
+						property: $scope.eventFields[i],
+						operator: 'EQ',
+						value: '*' + $scope.query.q + '*' // Substring query
 					});
 				}
 
@@ -678,7 +434,9 @@ function normalizeOffset(offset, maxOffset, limit) {
 				eventFactory.query(
 					{
 						_s: toFiql(searchClauses),
-						limit: 10
+						limit: 10,
+						orderBy: 'id',
+						order: 'desc'
 					},
 					function(value, headers) {
 						$scope.events = value;
@@ -696,23 +454,63 @@ function normalizeOffset(offset, maxOffset, limit) {
 							break;
 						}
 						// TODO: Handle 500 Server Error by executing an undo callback?
+						// TODO: Handle 431 Request Header Fields Too Large
+						// TODO: Handle 414 URI Too Long
+					}
+				);
+
+				searchClauses = [];
+				for (var i = 0; i < $scope.notificationFields.length; i++) {
+					searchClauses.push({
+						property: $scope.notificationFields[i],
+						operator: 'EQ',
+						value: '*' + $scope.query.q + '*' // Substring query
+					});
+				}
+
+				var notificationQuery = toFiql(searchClauses);
+
+				// Only search among open notifications
+				notificationQuery = toFiql([{
+					property: 'answeredBy',
+					operator: 'EQ',
+					value: '\u0000' // null
+				}]) + ';(' + notificationQuery + ')';
+
+				// Fetch all of the items
+				notificationFactory.query(
+					{
+						_s: notificationQuery,
+						limit: 10,
+						orderBy: 'notifyId',
+						order: 'desc'
+					},
+					function(value, headers) {
+						$scope.notifications = value;
+					},
+					function(response) {
+						switch(response.status) {
+						case 404:
+							// If we didn't find any elements, then clear the list
+							$scope.notifications = [];
+							break;
+						case 401:
+						case 403:
+							// Handle session timeout by reloading page completely
+							$window.location.href = $location.absUrl();
+							break;
+						}
+						// TODO: Handle 500 Server Error by executing an undo callback?
+						// TODO: Handle 431 Request Header Fields Too Large
+						// TODO: Handle 414 URI Too Long
 					}
 				);
 			} else {
 				$scope.alarms = [];
 				$scope.events = [];
 				$scope.nodes = [];
+				$scope.notifications = [];
 			}
-		}
-
-		// Override this to implement updates to an object
-		$scope.update = function() {
-			$log.warn("You need to override $scope.$parent.update() in your controller");
-		}
-
-		// Override this to implement deletions
-		$scope.deleteItem = function(item) {
-			$log.warn("You need to override $scope.$parent.deleteItem() in your controller");
 		}
 
 		// Refresh the item list;
