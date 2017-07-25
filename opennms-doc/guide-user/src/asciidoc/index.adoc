@@ -37,6 +37,3 @@ include::text/bsm/change-icons.adoc[]
 == Alarms
 include::text/alarms/alarm-notes.adoc[]
 
-[[gu-ifttt]]
-== IFTTT
-include::text/ifttt/ifttt-integration.adoc[]
