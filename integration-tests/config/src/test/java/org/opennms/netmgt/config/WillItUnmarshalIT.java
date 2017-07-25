@@ -50,6 +50,8 @@ import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
+import org.opennms.netmgt.alarmd.northbounder.bsf.BSFNorthbounderConfig;
+import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -189,6 +191,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.JAXB);
+        addFile(Source.CONFIG, "bsf-northbounder-configuration.xml", BSFNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
@@ -201,6 +204,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, Impl.JAXB);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.JAXB);
+        addFile(Source.CONFIG, "drools-northbounder-configuration.xml", DroolsNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, Impl.JAXB);
