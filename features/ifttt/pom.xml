@@ -26,6 +26,20 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.opennms.maven.plugins</groupId>
+                <artifactId>features-maven-plugin</artifactId>
+                <configuration>
+                    <name>ifttt-integration</name>
+                    <bundles>
+                        <bundle>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}</bundle>
+                    </bundles>
+                    <features>
+                        <feature>opennms-dao-api</feature>
+                        <feature>guava</feature>
+                    </features>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -47,22 +61,31 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>jaxb-dependencies</artifactId>
             <type>pom</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-model</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-dao-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guavaVersion}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -74,6 +97,7 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
