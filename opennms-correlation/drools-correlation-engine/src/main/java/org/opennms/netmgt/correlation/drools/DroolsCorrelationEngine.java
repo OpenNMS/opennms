@@ -369,7 +369,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
             ebldr.setUei(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI);
             ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
         } finally {
-            if (ebldr != null) sendEvent(ebldr.getEvent());
+            sendEvent(ebldr.getEvent());
         }
     }
 
