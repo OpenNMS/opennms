@@ -28,8 +28,11 @@
 
 package org.opennms.smoketest;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +46,7 @@ import org.junit.Test;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -105,6 +109,26 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 ui.testCase.setImplicitWait();
             }
             waitForTransition();
+        }
+
+        public void expand() throws org.openqa.selenium.NoSuchElementException {
+            try {
+                ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-plus']")).click();
+                waitForTransition();
+            } finally {
+                ui.testCase.setImplicitWait();
+            }
+        }
+
+        public void collapse() throws org.openqa.selenium.NoSuchElementException {
+            try {
+                ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-minus']")).click();
+                waitForTransition();
+            } finally {
+                ui.testCase.setImplicitWait();
+            }
         }
 
         private WebElement getElement() {
@@ -295,6 +319,35 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     /**
+     * The information of the Topology
+     */
+    public static class TopologyInfo {
+        private final OpenNMSSeleniumTestCase testCase;
+
+        public TopologyInfo(OpenNMSSeleniumTestCase testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        public String getTitle() {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                return testCase.findElementByXpath("//*[@id='topologyInfo']/*[1]").getText();
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
+
+        public String getDescription() {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                return testCase.findElementByXpath("//*[@id='topologyInfo']/*[2]").getText();
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
+    }
+
+    /**
      * Controls the workflow of the "Topology UI" Page
      */
     public static class TopologyUIPage {
@@ -360,6 +413,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 clickOnMenuItemsWithLabels("View", "Automatic Refresh");
             } else {
                 LOG.info("setAutomaticRefresh: refresh is already {}", enabled ? "enabled" : "disabled");
+                resetMenu(); // ensure menu is reset, otherwise test may fail
             }
             return this;
         }
@@ -593,6 +647,42 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
         }
+
+        public TopologyInfo getTopologyInfo() {
+            return new TopologyInfo(testCase);
+        }
+
+        public TopologyUIPage searchAndSelect(String query) {
+            search(query).selectItemThatContains(query);
+            return this;
+        }
+
+        public NoFocusDefinedWindow getNoFocusDefinedWindow() {
+            return new NoFocusDefinedWindow(testCase);
+        }
+
+    }
+
+    public static class NoFocusDefinedWindow {
+        private final OpenNMSSeleniumTestCase testCase;
+
+        private NoFocusDefinedWindow(OpenNMSSeleniumTestCase testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        public boolean isVisible() {
+            try {
+                // Reduce the timeout so we don't wait around for too long if there are no vertices in focus
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                try {
+                    return testCase.findElementById("no-focus-defined-window").isDisplayed();
+                } catch (NoSuchElementException ex) {
+                    return false;
+                }
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
     }
 
     public static class SaveLayoutButton {
@@ -734,14 +824,20 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      *     Temporary solution which only works if the category name is unused
      * </p>
      */
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void verifyCollapsibleCriteriaNoDefaultFocusWindow() throws IOException, InterruptedException {
         topologyUiPage.clearFocus();
+        Assert.assertThat(topologyUiPage.getNoFocusDefinedWindow().isVisible(), is(true));
 
-        String categoryName = "Switches";
+        topologyUiPage.searchAndSelect("Servers");
+        Assert.assertThat(topologyUiPage.getFocusedVertices(), hasSize(1));
+        Assert.assertThat(topologyUiPage.getVisibleVertices(), hasSize(0));
+        Assert.assertThat(topologyUiPage.getNoFocusDefinedWindow().isVisible(), is(false));
 
-        topologyUiPage.search(categoryName).selectItemThatContains(categoryName);
-        topologyUiPage.testCase.findElementByXpath("//*[contains(text(), 'No focus defined')]");
+        topologyUiPage.getFocusedVertices().get(0).collapse();
+        Assert.assertThat(topologyUiPage.getFocusedVertices(), hasSize(1));
+        Assert.assertThat(topologyUiPage.getVisibleVertices(), hasSize(1));
+        Assert.assertThat(topologyUiPage.getNoFocusDefinedWindow().isVisible(), is(false));
     }
 
     /**
