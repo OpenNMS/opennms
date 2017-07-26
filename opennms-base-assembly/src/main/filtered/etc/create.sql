@@ -2474,3 +2474,139 @@ CREATE TABLE topo_layout_vertex_positions (
 	CONSTRAINT fk_topo_layout_vertex_positions_vertex_position_id FOREIGN KEY (vertex_position_id)
 	REFERENCES topo_vertex_position (id) ON DELETE CASCADE
 );
+<<<<<<< HEAD
+
+--##################################################################
+--# Foreign Source tables
+--##################################################################
+
+--# install: foreignSourceNxtId id foreignsource_plugins
+CREATE SEQUENCE foreignSourceNxtId MINVALUE 1;
+
+-- ForeignSource table
+CREATE TABLE foreignsource (
+  name text NOT NULL,
+  date timestamp NOT NULL,
+	isdefault boolean,
+	scaninterval integer,
+	CONSTRAINT foreignsource_pkey PRIMARY KEY (name)
+);
+
+-- Relation table ForeignSource -> Plugins
+CREATE TABLE foreignsource_plugins (
+	id integer NOT NULL,
+  name text NOT NULL,
+	type text NOT NULL,
+	class text NOT NULL,
+	foreignsource text NOT NULL,
+	position integer,
+	CONSTRAINT foreignsource_plugins_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_foreignsource_foreignsource_plugins FOREIGN KEY (foreignsource)
+	REFERENCES foreignsource (name) ON DELETE CASCADE
+);
+
+-- Relation table Plugins -> Parameters
+CREATE TABLE foreignsource_plugin_parameters (
+	key text NOT NULL,
+	value text NOT NULL,
+	plugin_id integer NOT NULL,
+	CONSTRAINT foreignsource_plugin_parameters_pkey PRIMARY KEY (key, plugin_id),
+	CONSTRAINT fk_foreignsource_plugins_foreignsource_plugin_parameters FOREIGN KEY (plugin_id)
+	REFERENCES foreignsource_plugins (id) ON DELETE CASCADE
+);
+
+--##################################################################
+--# Requisition tables
+--##################################################################
+
+--# install: requisitionNodeNxtId id requisition_nodes
+CREATE SEQUENCE requisitionNodeNxtId MINVALUE 1;
+
+--# install: requisitionInterfaceNxtId id requisition_node_interfaces
+CREATE SEQUENCE requisitionInterfaceNxtId MINVALUE 1;
+
+--# install: requisitionServiceNxtId id requisition_node_interface_services
+CREATE SEQUENCE requisitionServiceNxtId MINVALUE 1;
+
+CREATE TABLE requisition (
+  name text NOT NULL,
+  lastimport timestamp with time zone,
+  date timestamp with time zone,
+  CONSTRAINT requisition_pkey PRIMARY KEY (name)
+);
+
+CREATE TABLE requisition_nodes (
+  id integer NOT NULL,
+  foreignid text NOT NULL,
+  foreignsource text NOT NULL,
+  location text,
+  nodelabel text,
+  parent_foreignid text,
+  parent_foreignsource text,
+  parent_nodelabel text,
+  CONSTRAINT requisition_nodes_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_requisition_nodes_requisition FOREIGN KEY (foreignsource)
+  REFERENCES requisition (name) ON DELETE CASCADE
+);
+CREATE INDEX requisition_nodes_requisition ON requisition_nodes (foreignsource);
+
+CREATE TABLE requisition_node_assets (
+  key text NOT NULL,
+  value text NOT NULL,
+  node_id integer NOT NULL,
+  CONSTRAINT requisition_node_assets_pkey PRIMARY KEY (key,node_id),
+  CONSTRAINT fk_requisition_node_assets_requisition_nodes FOREIGN KEY (node_id)
+  REFERENCES requisition_nodes (id) ON DELETE CASCADE
+);
+CREATE INDEX requisition_node_assets_node_id ON requisition_node_assets (node_id);
+
+CREATE TABLE requisition_node_categories (
+  name text NOT NULL,
+  node_id integer NOT NULL,
+  CONSTRAINT requisition_node_categories_pkey PRIMARY KEY (name,node_id),
+  CONSTRAINT fk_requisition_node_categories_requisition_nodes FOREIGN KEY (node_id)
+  REFERENCES requisition_nodes (id) ON DELETE CASCADE
+);
+CREATE INDEX requisition_node_categories_node_id ON requisition_node_categories (node_id);
+
+CREATE TABLE requisition_node_interfaces (
+  id integer NOT NULL,
+  description text,
+  ipaddress text NOT NULL,
+  status integer,
+  managed boolean,
+  issnmpprimary character(1),
+  node_id integer NOT NULL,
+  CONSTRAINT requisition_node_interfaces_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_requisition_node_interfaces_requisition_nodes FOREIGN KEY (node_id)
+  REFERENCES requisition_nodes (id) ON DELETE CASCADE
+);
+CREATE INDEX requisition_node_interfaces_node_id ON requisition_node_interfaces (node_id);
+
+CREATE TABLE requisition_node_interface_categories (
+  name text NOT NULL,
+  interface_id integer NOT NULL,
+  CONSTRAINT requisition_node_interface_categories_pkey PRIMARY KEY (name,interface_id),
+  CONSTRAINT fk_requisition_node_interface_categories_requisition_node_inter FOREIGN KEY (interface_id)
+  REFERENCES requisition_node_interfaces (id) ON DELETE CASCADE
+);
+CREATE INDEX requisition_node_interface_categories_interface_id ON requisition_node_interface_services (interface_id);
+
+CREATE TABLE requisition_node_interface_services (
+  id integer NOT NULL,
+  name text NOT NULL,
+  interface_id integer NOT NULL,
+  CONSTRAINT requisition_node_interface_services_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_requisition_node_interface_services_requisition_node_interfa FOREIGN KEY (interface_id)
+  REFERENCES requisition_node_interfaces (id) ON DELETE CASCADE
+);
+CREATE INDEX requisition_node_interface_services_interface_id ON requisition_node_interface_services (interface_id);
+
+CREATE TABLE requisition_node_interface_service_categories (
+  name text NOT NULL,
+  service_id integer NOT NULL,
+  CONSTRAINT requisition_node_interface_service_categories_pkey PRIMARY KEY (name,service_id),
+  CONSTRAINT fk_req_node_iface_service_categories_req_nodes FOREIGN KEY (service_id)
+  REFERENCES requisition_node_interface_services (id) ON DELETE CASCADE
+);
+CREATE INDEX requisition_node_interface_service_categories_service_id ON requisition_node_interface_service_categories (service_id);

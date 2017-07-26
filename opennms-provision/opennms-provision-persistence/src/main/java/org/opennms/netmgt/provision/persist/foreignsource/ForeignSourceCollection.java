@@ -49,7 +49,15 @@ import org.opennms.core.xml.ValidateUsing;
 public class ForeignSourceCollection {
 
     @XmlElement(name="foreign-source")
-    private List<ForeignSource> m_elements = new ArrayList<ForeignSource>();
+    private List<ForeignSource> m_elements = new ArrayList<>();
+
+    public ForeignSourceCollection() {
+
+    }
+
+    public ForeignSourceCollection(List<ForeignSource> elements) {
+        m_elements.addAll(elements);
+    }
 
     public List<ForeignSource> getForeignSources() {
         return m_elements;

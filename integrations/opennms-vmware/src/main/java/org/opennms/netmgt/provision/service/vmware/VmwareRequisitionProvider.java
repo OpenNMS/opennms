@@ -33,13 +33,14 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.VmwareConfigDao;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionProvider;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Generates requisition for Vmware entities.
@@ -55,8 +56,7 @@ public class VmwareRequisitionProvider extends AbstractRequisitionProvider<Vmwar
     public static final String TYPE_NAME = "vmware";
 
     @Autowired
-    @Qualifier("fileDeployed")
-    private ForeignSourceRepository foreignSourceRepository;
+    private RequisitionService requisitionService;
 
     @Autowired
     private VmwareConfigDao vmwareConfigDao;
@@ -99,7 +99,8 @@ public class VmwareRequisitionProvider extends AbstractRequisitionProvider<Vmwar
 
     protected Requisition getExistingRequisition(String foreignSource) {
         try {
-            return foreignSourceRepository.getRequisition(foreignSource);
+            final RequisitionEntity entity = requisitionService.getRequisition(foreignSource);
+            return RequisitionMapper.toRestModel(entity);
         } catch (Exception e) {
             LOG.warn("Can't retrieve requisition {}", foreignSource, e);
             return null;

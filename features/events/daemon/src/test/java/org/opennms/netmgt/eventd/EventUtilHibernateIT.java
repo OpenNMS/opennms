@@ -89,20 +89,21 @@ public class EventUtilHibernateIT {
         /*
          * Checking default location
          */
-        Event event1 = new EventBuilder("testUei", "testSource").setNodeid(1).getEvent();
+        int nodeId = m_populator.getNode1().getId();
+        Event event1 = new EventBuilder("testUei", "testSource").setNodeid(nodeId).getEvent();
         String string1 = eventUtilDaoImpl.expandParms(testString, event1);
-        assertEquals("testUei:1:node1:Default", string1);
+        assertEquals("testUei:" + nodeId + ":node1:Default", string1);
 
         /*
          * Checking custom location
          */
-        OnmsNode onmsNode = m_populator.getNodeDao().get(2);
+        OnmsNode onmsNode = m_populator.getNode2();
         onmsNode.setLocation(m_populator.getMonitoringLocationDao().get("RDU"));
         m_populator.getNodeDao().update(onmsNode);
 
-        Event event2 = new EventBuilder("testUei", "testSource").setNodeid(2).getEvent();
+        Event event2 = new EventBuilder("testUei", "testSource").setNodeid(onmsNode.getId()).getEvent();
         String string2 = eventUtilDaoImpl.expandParms(testString, event2);
-        assertEquals("testUei:2:node2:RDU", string2);
+        assertEquals("testUei:" + onmsNode.getId() + ":node2:RDU", string2);
     }
 
     @Test

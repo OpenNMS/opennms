@@ -31,7 +31,8 @@ package org.opennms.netmgt.provision.service;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
 
 /**
  * The Class IpInterfaceScanTest.
@@ -109,7 +110,7 @@ public class IpInterfaceScanTest {
      * @param expectedResult the expected result
      */
     private void runTest(String ipAddress, String ipMatch, boolean expectedResult) {
-        PluginConfig detectorConfig = new PluginConfig();
+        PluginConfigEntity detectorConfig = new DetectorPluginConfigEntity();
         detectorConfig.addParameter("ipMatch", ipMatch);
         Assert.assertEquals(expectedResult, IpInterfaceScan.shouldDetect(detectorConfig, InetAddressUtils.addr(ipAddress)));
     }

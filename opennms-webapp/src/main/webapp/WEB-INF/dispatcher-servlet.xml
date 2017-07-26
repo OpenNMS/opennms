@@ -68,11 +68,6 @@
         <property name="flowExecutor" ref="flowExecutor"/>
     </bean>
 
-    <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
-        <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
-        <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
-    </bean>
-
     <bean name="/admin/sendevent.htm" class="org.opennms.web.controller.SendEventController">
           <property name="eventConfDao" ref="eventConfDao"/>
     </bean>

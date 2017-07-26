@@ -57,15 +57,17 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.opennms.web.svclayer.support.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
@@ -82,6 +84,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
 
     /** The foreign source service. */
     @Autowired
+    @Qualifier("default")
     protected ForeignSourceService m_foreignSourceService;
 
     /** The poller configuration. */
@@ -105,8 +108,6 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         Assert.notNull(m_foreignSourceService, "ForeignSourceService is required.");
 
         // The following is required, otherwise getWrappers() throws a NPE
-        m_foreignSourceService.getPolicyTypes();
-        m_foreignSourceService.getDetectorTypes();
     }
 
     /**
@@ -289,6 +290,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @GET
     @Path("services/{groupName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public ElementList getServices(@PathParam("groupName") String groupName) {
         ElementList elements = new ElementList(m_pollerConfig.getServiceMonitors().keySet());
         m_collectdConfigFactory.getCollectdConfig().getCollectors().forEach(c -> {
@@ -298,7 +300,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         });
         if (groupName != null) {
             final SortedSet<String> serviceNames = new TreeSet<>();
-            final ForeignSource pendingForeignSource = m_foreignSourceService.getForeignSource(groupName);
+            final ForeignSourceEntity pendingForeignSource = m_foreignSourceService.getForeignSource(groupName);
             serviceNames.addAll(pendingForeignSource.getDetectorNames());
 
             for (final OnmsServiceType type : m_serviceTypeDao.findAll()) {

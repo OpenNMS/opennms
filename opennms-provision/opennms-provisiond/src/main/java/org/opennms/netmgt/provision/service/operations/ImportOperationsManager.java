@@ -30,22 +30,20 @@ package org.opennms.netmgt.provision.service.operations;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.service.ProvisionService;
-import org.opennms.netmgt.provision.service.RequisitionAccountant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,46 +56,22 @@ import org.slf4j.LoggerFactory;
 public class ImportOperationsManager {
     private static final Logger LOG = LoggerFactory.getLogger(ImportOperationsManager.class);
 
-    /**
-     * TODO: Seth 2012-03-08: These lists may consume a lot of RAM for large provisioning 
-     * groups. We may need to figure out how to use flyweight objects instead of heavier 
-     * {@link OnmsNode} objects in these lists. Our goal is to handle 50,000+ nodes per 
-     * import operation.
-     */
-    private final List<ImportOperation> m_inserts = new LinkedList<ImportOperation>();
-    private final List<ImportOperation> m_updates = new LinkedList<ImportOperation>();
+    private final List<ImportOperation> m_inserts = new LinkedList<>();
+    private final List<ImportOperation> m_updates = new LinkedList<>();
     
     private final ProvisionService m_provisionService;
     private final Map<String, Integer> m_foreignIdToNodeMap;
-    private String m_rescanExisting;
+    private boolean m_rescanExisting;
     
     private String m_foreignSource;
     
-    /**
-     * <p>Constructor for ImportOperationsManager.</p>
-     *
-     * @param foreignIdToNodeMap a {@link java.util.Map} object.
-     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     * @param rescanExisting TODO
-     */
-    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService, final String rescanExisting) {
+    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService, final boolean rescanExisting) {
         m_provisionService = provisionService;
-        m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
+        m_foreignIdToNodeMap = new HashMap<>(foreignIdToNodeMap);
         m_rescanExisting = rescanExisting;
     }
 
-    /**
-     * <p>foundNode</p>
-     *
-     * @param foreignId a {@link java.lang.String} object.
-     * @param nodeLabel a {@link java.lang.String} object.
-     * @param location a {@link java.lang.String} object.
-     * @param building a {@link java.lang.String} object.
-     * @param city a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation} object.
-     */
     public SaveOrUpdateOperation foundNode(String foreignId, String nodeLabel, String location, String building, String city) {
-        
         SaveOrUpdateOperation ret;
         if (nodeExists(foreignId)) {
             ret = updateNode(foreignId, nodeLabel, location, building, city);
@@ -120,7 +94,7 @@ public class ImportOperationsManager {
     private SaveOrUpdateOperation updateNode(final String foreignId, final String nodeLabel, final String location, final String building, final String city) {
         final Integer nodeId = processForeignId(foreignId);
         final UpdateOperation updateOperation;
-        if (Boolean.valueOf(m_rescanExisting) || m_rescanExisting.equalsIgnoreCase("dbonly")) {
+        if (m_rescanExisting) {
             updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);
         } else {
             updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);
@@ -139,117 +113,22 @@ public class ImportOperationsManager {
         return m_foreignIdToNodeMap.remove(foreignId);
     }
     
-    /**
-     * <p>getOperationCount</p>
-     *
-     * @return a int.
-     */
     public int getOperationCount() {
         return m_inserts.size() + m_updates.size() + m_foreignIdToNodeMap.size();
     }
     
-    /**
-     * <p>getInsertCount</p>
-     *
-     * @return a int.
-     */
     public int getInsertCount() {
     	return m_inserts.size();
     }
 
-    /**
-     * <p>getUpdateCount</p>
-     *
-     * @return a int.
-     */
     public int  getUpdateCount() {
         return m_updates.size();
     }
 
-    /**
-     * <p>getDeleteCount</p>
-     *
-     * @return a int.
-     */
     public int getDeleteCount() {
     	return m_foreignIdToNodeMap.size();
     }
-    
-    private class DeleteIterator implements Iterator<ImportOperation> {
-    	
-    	private final Iterator<Entry<String, Integer>> m_foreignIdIterator = m_foreignIdToNodeMap.entrySet().iterator();
 
-            @Override
-		public boolean hasNext() {
-			return m_foreignIdIterator.hasNext();
-		}
-
-            @Override
-		public ImportOperation next() {
-            Entry<String, Integer> entry = m_foreignIdIterator.next();
-            return new DeleteOperation(entry.getValue(), getForeignSource(), entry.getKey(), m_provisionService);
-			
-		}
-
-            @Override
-		public void remove() {
-			m_foreignIdIterator.remove();
-		}
-    	
-    }
-    
-    private class OperationIterator implements Iterator<ImportOperation>, Enumeration<ImportOperation> {
-    	
-    	Iterator<Iterator<ImportOperation>> m_iterIter;
-    	Iterator<ImportOperation> m_currentIter;
-    	
-    	OperationIterator() {
-    		List<Iterator<ImportOperation>> iters = new ArrayList<Iterator<ImportOperation>>(3);
-    		iters.add(new DeleteIterator());
-    		iters.add(m_updates.iterator());
-    		iters.add(m_inserts.iterator());
-    		m_iterIter = iters.iterator();
-    	}
-    	
-            @Override
-		public boolean hasNext() {
-			while((m_currentIter == null || !m_currentIter.hasNext()) && m_iterIter.hasNext()) {
-				m_currentIter = m_iterIter.next();
-				m_iterIter.remove();
-			}
-			
-			return (m_currentIter == null ? false: m_currentIter.hasNext());
-		}
-
-            @Override
-		public ImportOperation next() {
-			return m_currentIter.next();
-		}
-
-            @Override
-		public void remove() {
-			m_currentIter.remove();
-		}
-
-            @Override
-        public boolean hasMoreElements() {
-            return hasNext();
-        }
-
-            @Override
-        public ImportOperation nextElement() {
-            return next();
-        }
-    	
-    	
-    }
-    
-    /**
-     * <p>shutdownAndWaitForCompletion</p>
-     *
-     * @param executorService a {@link java.util.concurrent.ExecutorService} object.
-     * @param msg a {@link java.lang.String} object.
-     */
     public void shutdownAndWaitForCompletion(ExecutorService executorService, String msg) {
         executorService.shutdown();
         try {
@@ -262,13 +141,18 @@ public class ImportOperationsManager {
         }
     }
     
-    /**
-     * <p>getOperations</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
     public Collection<ImportOperation> getOperations() {
-        return Collections.list(new OperationIterator());
+        final List<DeleteOperation> deletes = m_foreignIdToNodeMap.entrySet()
+                .stream()
+                .map(entry -> new DeleteOperation(entry.getValue(), m_provisionService))
+                .collect(Collectors.toList());
+
+        final List<ImportOperation> operations = new ArrayList<>();
+        operations.addAll(deletes);
+        operations.addAll(m_updates);
+        operations.addAll(m_inserts);
+
+        return operations;
     }
     
     @SuppressWarnings("unused")
@@ -282,35 +166,37 @@ public class ImportOperationsManager {
         };
     }
 
-    /**
-     * <p>setForeignSource</p>
-     *
-     * @param foreignSource a {@link java.lang.String} object.
-     */
     public void setForeignSource(String foreignSource) {
         m_foreignSource = foreignSource;
     }
 
-    /**
-     * <p>getForeignSource</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getForeignSource() {
         return m_foreignSource;
     }
 
-    public String getRescanExisting() {
+    public boolean getRescanExisting() {
         return m_rescanExisting;
     }
-    
-    /**
-     * <p>auditNodes</p>
-     *
-     * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
-     */
-    public void auditNodes(Requisition requisition) {
-        requisition.visit(new RequisitionAccountant(this));
+
+    public void auditNodes(RequisitionEntity requisition) {
+        for (RequisitionNodeEntity node : requisition.getNodes()) {
+            final SaveOrUpdateOperation importOperation = foundNode(node.getForeignId(), node.getNodeLabel(), node.getLocation(), node.getBuilding(), node.getCity());
+
+            for (RequisitionInterfaceEntity eachInterface : node.getInterfaces()) {
+                importOperation.foundInterface(
+                        eachInterface.getIpAddress().trim(),
+                        eachInterface.getDescription(),
+                        eachInterface.getSnmpPrimary(),
+                        eachInterface.isManaged(),
+                        eachInterface.getStatus());
+
+                for (RequisitionMonitoredServiceEntity eachService : eachInterface.getMonitoredServices()) {
+                    importOperation.foundMonitoredService(eachService.getServiceName());
+                }
+            }
+            node.getCategories().forEach(c -> importOperation.foundCategory(c));
+            node.getAssets().entrySet().forEach(e -> importOperation.foundAsset(e.getKey(), e.getValue()));
+        }
     }
 
     @SuppressWarnings("unused")

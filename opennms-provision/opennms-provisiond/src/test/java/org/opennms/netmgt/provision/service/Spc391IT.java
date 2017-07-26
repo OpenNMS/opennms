@@ -46,9 +46,10 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockForeignSourceService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
@@ -82,16 +83,17 @@ public class Spc391IT extends ProvisioningITCase {
     @Autowired
     private DatabasePopulator m_populator;
 
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-        final MockForeignSourceRepository mfsr = new MockForeignSourceRepository();
-        final ForeignSource fs = new ForeignSource();
+        final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
-        fs.addDetector(new PluginConfig("ICMP", "org.opennms.netmgt.provision.service.MockServiceDetector"));
-        fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
-        mfsr.putDefaultForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
+        fs.addDetector(new DetectorPluginConfigEntity("ICMP", "org.opennms.netmgt.provision.service.MockServiceDetector"));
+        fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        m_foreignSourceService.saveForeignSource(fs);
         m_provisioner.start();
     }
     

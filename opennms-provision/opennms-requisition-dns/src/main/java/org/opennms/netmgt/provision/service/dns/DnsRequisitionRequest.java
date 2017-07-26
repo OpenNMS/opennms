@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service.dns;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,7 +40,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.provision.persist.RequisitionRequest;
-import java.util.Objects;
 
 @XmlRootElement(name = "dns-requisition-request")
 @XmlAccessorType(XmlAccessType.NONE)

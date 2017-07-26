@@ -32,17 +32,36 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXB;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import com.google.common.collect.Lists;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -62,7 +81,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
-    
+
+    @Autowired
+    private GenericPersistenceAccessor genericPersistenceAccessor;
+
     @Test
     public void testGetDefaultForeignSources() throws Exception {
         String url = "/foreignSources/default";
@@ -71,16 +93,15 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("ICMP"));
 
         sendRequest(DELETE, url, 202);
-        sendRequest(DELETE, "/foreignSources/deployed/default", 202);
     }
     
     @Test
     public void testGetDeployedForeignSources() throws Exception {
-        String url = "/foreignSources/deployed";
-        String xml = sendRequest(GET, url, 200);
+        String url = "/foreignSources";
+        sendRequest(GET, url, 200);
 
-        url = "/foreignSources/deployed/count";
-        xml = sendRequest(GET, url, 200);
+        url = "/foreignSources/count";
+        String xml = sendRequest(GET, url, 200);
         assertEquals(xml, "0", xml);
     }
     
@@ -148,6 +169,90 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 404);
     }
 
+    /**
+     * Verifies that updating certain elements within the graph works,
+     * e.g. add/remove/edit plugins, as well as parameters
+     */
+    @Test
+    public void verifyUpdateGraph() throws Exception {
+        createForeignSource();
+        ForeignSource foreignSource = get("test");
+        foreignSource.setPolicies(new ArrayList<>()); // remove policies
+        post(foreignSource);
+
+        // Verify the entries in the database
+        List<PluginConfigEntity> pluginConfigs = findPlugins();
+        Assert.assertEquals(4, pluginConfigs.size());
+        List parameters = findPluginParameters();
+        Assert.assertEquals(0, parameters.size());
+
+        // Verify the rest API
+        foreignSource = get("test");
+        Assert.assertEquals(0, foreignSource.getPolicies().size());
+        Assert.assertEquals(4, foreignSource.getDetectors().size());
+        Assert.assertEquals(0, foreignSource.getDetectors().stream().mapToLong(d -> d.getParameters().size()).sum());
+
+        // Add Policy and Edit Detector
+        foreignSource.addPolicy(new PluginConfig("dummy", "dummy.class"));
+        foreignSource.getDetector("DNS").setName("DNS2");
+        foreignSource.getDetector("HTTP").addParameter("port", "8980");
+        post(foreignSource);
+
+        // Verify
+        pluginConfigs = findPlugins();
+        Assert.assertEquals(5, pluginConfigs.size());
+        parameters = findPluginParameters();
+        Assert.assertEquals(1, parameters.size());
+
+        foreignSource = get("test");
+        Assert.assertEquals(1, foreignSource.getPolicies().size());
+        Assert.assertEquals(4, foreignSource.getDetectors().size());
+        Assert.assertNotNull(foreignSource.getDetector("DNS2"));
+        Assert.assertNull(foreignSource.getDetector("DNS"));
+        Assert.assertEquals(1, foreignSource.getDetector("HTTP").getParameters().size());
+        Assert.assertEquals("8980", foreignSource.getDetector("HTTP").getParameter("port"));
+
+        // Remove ForeignSource
+        delete("test");
+        Assert.assertEquals(0, findPlugins().size());
+        Assert.assertEquals(0, findPluginParameters().size());
+    }
+
+    @Test
+    public void verifyOrder() throws Exception {
+        createForeignSource();
+        ForeignSource foreignSource = get("test");
+
+        // Change order
+        foreignSource.setDetectors(foreignSource.getDetectors().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+        foreignSource.setPolicies(foreignSource.getPolicies().stream().sorted(Comparator.comparing(PluginConfig::getPluginClass)).collect(Collectors.toList()));
+        post(foreignSource);
+
+        // Verify change
+        foreignSource = get("test");
+        Assert.assertEquals(
+                Lists.newArrayList("ICMP", "HTTPS", "HTTP", "DNS"),
+                foreignSource.getDetectors().stream().map(d -> d.getName()).collect(Collectors.toList()));
+        Assert.assertEquals(
+                Lists.newArrayList("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy"),
+                foreignSource.getPolicies().stream().map(p -> p.getPluginClass()).collect(Collectors.toList()));
+
+        // Verify again and see it is updated as well
+        foreignSource.setDetectors(foreignSource.getDetectors().stream().sorted(Comparator.comparing(PluginConfig::getName)).collect(Collectors.toList()));
+        post(foreignSource);
+        Assert.assertEquals(
+                Lists.newArrayList("DNS", "HTTP", "HTTPS", "ICMP"),
+                foreignSource.getDetectors().stream().map(d -> d.getName()).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void verifyMoved() throws Exception {
+        // Deployed
+        sendRequest(GET, "/foreignSources/deployed", 301);
+        sendRequest(GET, "/foreignSources/deployed/count", 301);
+        sendRequest(DELETE, "/foreignSources/deployed/some-foreign-source", 301);
+    }
+
     private void createForeignSource() throws Exception {
         // Be sure there are no foreign-sources defined
         System.err.println("[createForeignSource] : deleting existing foreign source definitions");
@@ -183,5 +288,41 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         MockHttpServletResponse response = sendPost("/foreignSources", fs, 202, "/foreignSources/test");
         System.err.println("response = " + stringifyResponse(response));
     }
-    
+
+    private ForeignSource get(String foreignSource) throws Exception {
+        return unmarshal(sendRequest(GET, "/foreignSources/" + foreignSource, 200));
+    }
+
+    private void post(ForeignSource input) throws Exception {
+        sendPost("/foreignSources", marshal(input), 202, "/foreignSources/" + input.getName());
+    }
+
+    private void delete(String foreignSource) throws Exception {
+        sendRequest(DELETE, "/foreignSources/" + foreignSource, 202);
+    }
+
+    private List<PluginConfigEntity> findPlugins() {
+        return genericPersistenceAccessor.find("select c from PluginConfigEntity c");
+    }
+
+    private List findPluginParameters() {
+        return genericPersistenceAccessor.find("select new list(elements(c.parameters)) from PluginConfigEntity c");
+    }
+
+    private static ForeignSource unmarshal(String input) {
+        try (ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes())) {
+            return JAXB.unmarshal(in, ForeignSource.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String marshal(ForeignSource foreignSource) {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            JAXB.marshal(foreignSource, out);
+            return out.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

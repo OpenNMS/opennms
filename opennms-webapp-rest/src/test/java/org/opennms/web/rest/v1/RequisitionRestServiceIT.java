@@ -33,8 +33,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
+import javax.xml.bind.JAXB;
+
+import org.junit.Before;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,6 +49,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -74,19 +79,18 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     MockEventIpcManager m_eventProxy;
 
+    @Before
+    public void setUp() throws Throwable {
+        super.setUp();
+        cleanUpRequisitions();
+    }
+
     @Test
     public void testRequisition() throws Exception {
-        cleanUpImports();
-
         createRequisition();
         String url = "/requisitions";
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("Management interface"));
-
-        url = "/requisitions/test";
-
-        sendRequest(DELETE, url, 202);
-        xml = sendRequest(GET, url, 404);
     }
 
     @Test
@@ -253,7 +257,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // create a category on a node that is not in the requisition
         base = "/requisitions/test/nodes/4244/categories";
-        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 202, "/nodes/4244/categories/New%20Category");
+        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 404);
         xml = sendRequest(GET, base + "/New%20Category", 404);
     }
     
@@ -366,11 +370,24 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testDeployedStats() throws Exception {
+    public void testStats() throws Exception {
         createRequisition();
 
-        String xml = sendRequest(GET, "/requisitions/deployed/stats", 200);
+        String xml = sendRequest(GET, "/requisitions/stats", 200);
         assertTrue(xml.contains("deployed-stats"));
+    }
+
+    @Test
+    public void verifyMovedAndGone() throws Exception {
+        // Deployed
+        sendRequest(GET, "/requisitions/deployed", 301);
+        sendRequest(GET, "/requisitions/deployed/count", 301);
+        sendRequest(GET, "/requisitions/deployed/stats", 301);
+        sendRequest(GET, "/requisitions/deployed/stats/some-foreign-source", 301);
+        sendRequest(DELETE, "/requisitions/deployed/some-foreign-source", 301);
+
+        // Repository Strategy
+        sendRequest(GET, "/requisitions/repositoryStrategy", 410);
     }
 
     private void createRequisition() throws Exception {
@@ -394,7 +411,6 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 "</node>" +
             "</model-import>";
 
-        
         sendPost("/requisitions", req, 202, "/requisitions/test");
     }
 }

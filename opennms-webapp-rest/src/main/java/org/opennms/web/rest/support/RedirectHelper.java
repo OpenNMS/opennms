@@ -54,4 +54,15 @@ public class RedirectHelper {
             return builder.build();
         }
     }
+
+    public static URI getRedirectUriFromBaseUri(UriInfo uriInfo, String baseSegment, String... segments) {
+        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
+        uriBuilder = uriBuilder.path(baseSegment);
+        if (segments != null) {
+            for (String eachSegment : segments) {
+                uriBuilder = uriBuilder.path(eachSegment);
+            }
+        }
+        return uriBuilder.build();
+    }
 }

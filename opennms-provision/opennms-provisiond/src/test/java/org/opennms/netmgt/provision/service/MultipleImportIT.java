@@ -44,9 +44,10 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockForeignSourceService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
@@ -66,25 +67,26 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 public class MultipleImportIT extends ProvisioningITCase {
-    
+
     @Autowired
     private Provisioner m_provisioner;
-    
+
     @Autowired
     private ResourceLoader m_resourceLoader;
-    
+
     @Autowired
     private NodeDao m_nodeDao;
-    
+
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        final MockForeignSourceRepository mfsr = new MockForeignSourceRepository();
-        final ForeignSource fs = new ForeignSource();
-        fs.setName("default");
-        fs.addDetector(new PluginConfig("ICMP", "org.opennms.netmgt.provision.service.MockServiceDetector"));
-        mfsr.putDefaultForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
+        final ForeignSourceEntity foreignSource = new ForeignSourceEntity();
+        foreignSource.setName("default");
+        foreignSource.addDetector(new DetectorPluginConfigEntity("ICMP", "org.opennms.netmgt.provision.service.MockServiceDetector"));
+        m_foreignSourceService.saveForeignSource(foreignSource);
     }
 
     @Test
@@ -103,7 +105,7 @@ public class MultipleImportIT extends ProvisioningITCase {
         waitForEverything();
 
         System.err.println("finished triggering imports");
-        
+
         eventReceived.await(5, TimeUnit.MINUTES);
 
         final List<OnmsNode> nodes = getNodeDao().findAll();

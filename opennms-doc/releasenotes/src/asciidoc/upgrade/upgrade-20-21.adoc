@@ -1,0 +1,47 @@
+[[upgrade-20-21]]
+== Upgrade OpenNMS Horizon 19 to 20
+
+=== Foreign Sources and Requisitions
+
+The Foreign Sources and Requisitions have been moved to the database.
+They must be manually migrated.
+In order to make the migration as smooth as possible a `foreignsource` and `requisition` osgi karaf command has been introduced.
+The karaf shell can be accessed with `$OPENNMS_HOME/bin/client`.
+The following chapters will describe on how to best migrate any existing Foreign Sources and/or or Requisitions.
+
+NOTE:   Be advised that if the `--dir` (`-d`) option is used, an {opennms_product_name} structure is assumed.
+        This means that if a file exists also in `<directory>/pending/` the one in pending is used instead.
+        In addition `--dir` does NOT recursively walk the directory.
+
+==== Foreign Sources
+
+Before the Requisitions can be migrated, the Foreign Sources must be migrated first.
+
+[source, shell]
+----
+foreignsource:import --dir $OPENNMS_HOME/etc/foreign-sources <1>
+foreignsource:import --file $OPENNMS_HOME/etc/default-foreign-source.xml <2>
+----
+<1> Imports all files which end with `.xml` in the given directory.
+<2> Imports the defined file.
+
+In any case, if a foreign source already exists with the name, defined in the xml document, it is not imported.
+To force an import the option `--overwrite` (`-o`) will overwrite any existing data.
+
+
+==== Requisitions
+
+[source, shell]
+----
+requisition:import --dir $OPENNMS_HOME/etc/imports <1>
+----
+<1> Imports all files which end with `.xml` in the given directory.
+
+If it is necessary to re-synchronize the imported Requisitions afterwards, the following command can be used:
+[source, shell]
+----
+requisition:synchronize --all <1>
+requisition:synchronize --name my-requisition <2>
+----
+<1> Synchronizes all existing requisitions.
+<2> Synchronizes the given requisitions.

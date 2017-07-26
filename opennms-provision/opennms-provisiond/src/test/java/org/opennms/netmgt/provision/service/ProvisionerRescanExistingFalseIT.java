@@ -55,12 +55,13 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockRequisitionService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,20 +107,18 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
     private ResourceLoader m_resourceLoader;
 
     @Autowired
-    private ProvisionService m_provisionService;
-
-    @Autowired
     @Qualifier("scheduledExecutor")
     private PausibleScheduledThreadPoolExecutor m_scheduledExecutor;
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     protected EventAnticipator m_eventAnticipator;
 
-    private ForeignSourceRepository m_foreignSourceRepository;
-
-    private ForeignSource m_foreignSource;
+    private ForeignSourceEntity m_foreignSource;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -138,26 +137,21 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         //((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).setEventForwarder(m_mockEventIpcManager);
         m_provisioner.start();
         
-        m_foreignSource = new ForeignSource();
+        m_foreignSource = new ForeignSourceEntity();
         m_foreignSource.setName("noRescanOnImport");
-        m_foreignSource.setScanInterval(Duration.standardDays(1));
+        m_foreignSource.setScanInterval(Duration.standardDays(1).getMillis());
 
-        final PluginConfig icmpDetector = new PluginConfig("ICMP", IcmpDetector.class.getName());
+        final DetectorPluginConfigEntity icmpDetector = new DetectorPluginConfigEntity("ICMP", IcmpDetector.class.getName());
         icmpDetector.addParameter("timeout", "500");
         icmpDetector.addParameter("retries", "0");
         m_foreignSource.addDetector(icmpDetector);
 
-        final PluginConfig snmpDetector = new PluginConfig("SNMP", SnmpDetector.class.getName());
+        final DetectorPluginConfigEntity snmpDetector = new DetectorPluginConfigEntity("SNMP", SnmpDetector.class.getName());
         snmpDetector.addParameter("timeout", "500");
         snmpDetector.addParameter("retries", "0");
 		m_foreignSource.addDetector(snmpDetector);
 
-        m_foreignSourceRepository = new MockForeignSourceRepository();
-        m_foreignSourceRepository.save(m_foreignSource);
-        m_foreignSourceRepository.flush();
-
-        m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
-        
+        m_foreignSourceService.saveForeignSource(m_foreignSource);
         m_scheduledExecutor.pause();
     }
     

@@ -73,4 +73,5 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
         };
         return getHibernateTemplate().execute(callback);
     }
+
 }

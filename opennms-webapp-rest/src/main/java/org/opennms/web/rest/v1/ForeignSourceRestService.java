@@ -28,9 +28,13 @@
 
 package org.opennms.web.rest.v1;
 
-import java.util.List;
+import static org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMapper.toPersistenceModel;
+import static org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMapper.toRestModel;
+import static org.opennms.web.rest.v1.RequisitionRestService.DEPLOYED_NO_LONGER_EXISTS;
+
+import java.net.URI;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -47,16 +51,20 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.Duration;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigType;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.DetectorCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.DetectorWrapper;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMerger;
 import org.opennms.netmgt.provision.persist.foreignsource.PolicyCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.PolicyWrapper;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.RedirectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -129,14 +137,12 @@ public class ForeignSourceRestService extends OnmsRestService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceRestService.class);
 
-    
     @Autowired
-    @Qualifier("pending")
-    private ForeignSourceRepository m_pendingForeignSourceRepository;
-    
+    @Qualifier("default")
+    private ForeignSourceService foreignSourceService;
+
     @Autowired
-    @Qualifier("deployed")
-    private ForeignSourceRepository m_deployedForeignSourceRepository;
+    private ForeignSourceMerger foreignSourceMerger;
 
     /**
      * <p>getDefaultForeignSource</p>
@@ -146,70 +152,52 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("default")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public ForeignSource getDefaultForeignSource() {
         readLock();
         try {
-            m_deployedForeignSourceRepository.flush();
-            return m_deployedForeignSourceRepository.getDefaultForeignSource();
+            return toRestModel(foreignSourceService.getDefaultForeignSource());
         } finally {
             readUnlock();
         }
     }
 
-    /**
-     * Returns all the deployed foreign sources
-     *
-     * @return Collection of OnmsForeignSources (ready to be XML-ified)
-     */
     @GET
     @Path("deployed")
-    public ForeignSourceCollection getDeployedForeignSources() {
-        readLock();
-        try {
-            m_deployedForeignSourceRepository.flush();
-            ForeignSourceCollection retval = new ForeignSourceCollection();
-            retval.getForeignSources().addAll(m_deployedForeignSourceRepository.getForeignSources());
-            return retval;
-        } finally {
-            readUnlock();
-        }
+    @Produces({MediaType.TEXT_PLAIN})
+    @Deprecated
+    public Response getDeployedForeignSources(@Context UriInfo uriInfo) {
+        return Response.status(Status.MOVED_PERMANENTLY)
+                .location(buildLocation(uriInfo))
+                .entity(DEPLOYED_NO_LONGER_EXISTS)
+                .build();
     }
 
-    /**
-     * returns a plaintext string being the number of pending foreign sources
-     *
-     * @return a int.
-     */
     @GET
     @Path("deployed/count")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getDeployedCount() {
-        readLock();
-        try {
-            m_deployedForeignSourceRepository.flush();
-            return Integer.toString(m_deployedForeignSourceRepository.getForeignSourceCount());
-        } finally {
-            readUnlock();
-        }
+    @Deprecated
+    public Response getDeployedCount(@Context UriInfo uriInfo) {
+        return Response.status(Status.MOVED_PERMANENTLY)
+                .location(buildLocation(uriInfo, "count"))
+                .entity(DEPLOYED_NO_LONGER_EXISTS)
+                .build();
     }
 
     /**
-     * Returns the union of deployed and pending foreign sources
+     * Returns all foreign sources
      *
      * @return Collection of OnmsForeignSources (ready to be XML-ified)
      * @throws java.text.ParseException if any.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public ForeignSourceCollection getForeignSources() {
         readLock();
         try {
-            final Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
-            for (final String fsName : getActiveForeignSourceNames()) {
-                foreignSources.add(getActiveForeignSource(fsName));
-            }
-            ForeignSourceCollection retval = new ForeignSourceCollection();
-            retval.getForeignSources().addAll(foreignSources);
+            Set<ForeignSourceEntity> foreignSources = foreignSourceService.getAllForeignSources();
+            ForeignSourceCollection retval = new ForeignSourceCollection(toRestModel(foreignSources));
             return retval;
         } finally {
             readUnlock();
@@ -224,6 +212,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
+    @Transactional(readOnly = true)
     public String getTotalCount() {
         readLock();
         try {
@@ -242,14 +231,12 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public ForeignSource getForeignSource(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
-            final ForeignSource fs = getActiveForeignSource(foreignSource);
-            if (fs == null) {
-                throw getException(Status.NOT_FOUND, "Foreign source definition '{}' not found.", foreignSource);
-            }
-            return fs;
+            final ForeignSourceEntity fs = loadForeignSource(foreignSource);
+            return toRestModel(fs);
         } finally {
             readUnlock();
         }
@@ -264,11 +251,14 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/detectors")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public DetectorCollection getDetectors(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
             DetectorCollection retval = new DetectorCollection();
-            retval.getDetectors().addAll(getActiveForeignSource(foreignSource).getDetectors());
+            retval.getDetectors().addAll(loadForeignSource(foreignSource).getDetectors().stream()
+                    .map(d -> toRestModel(d))
+                    .collect(Collectors.toSet()));
             return retval;
         } finally {
             readUnlock();
@@ -285,12 +275,13 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/detectors/{detector}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public DetectorWrapper getDetector(@PathParam("foreignSource") String foreignSource, @PathParam("detector") String detector) {
         readLock();
         try {
-            for (final PluginConfig pc : getActiveForeignSource(foreignSource).getDetectors()) {
+            for (final PluginConfigEntity pc : loadForeignSource(foreignSource).getDetectors()) {
                 if (pc.getName().equals(detector)) {
-                    return new DetectorWrapper(pc);
+                    return new DetectorWrapper(toRestModel(pc));
                 }
             }
             throw getException(Status.NOT_FOUND, "Detector {} on foreign source definition '{}' not found.", detector, foreignSource);
@@ -308,11 +299,12 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/policies")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public PolicyCollection getPolicies(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
             PolicyCollection retval = new PolicyCollection();
-            retval.getPolicies().addAll(getActiveForeignSource(foreignSource).getPolicies());
+            retval.getPolicies().addAll(loadForeignSource(foreignSource).getPolicies().stream().map(p -> toRestModel(p)).collect(Collectors.toSet()));
             return retval;
         } finally {
             readUnlock();
@@ -329,12 +321,13 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/policies/{policy}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public PolicyWrapper getPolicy(@PathParam("foreignSource") String foreignSource, @PathParam("policy") String policy) {
         readLock();
         try {
-            for (final PluginConfig pc : getActiveForeignSource(foreignSource).getPolicies()) {
+            for (final PluginConfigEntity pc : loadForeignSource(foreignSource).getPolicies()) {
                 if (pc.getName().equals(policy)) {
-                    return new PolicyWrapper(pc);
+                    return new PolicyWrapper(toRestModel(pc));
                 }
             }
             throw getException(Status.NOT_FOUND, "Policy {} on foreign source definition '{}' not found.", policy, foreignSource);
@@ -356,8 +349,8 @@ public class ForeignSourceRestService extends OnmsRestService {
         writeLock();
         try {
             LOG.debug("addForeignSource: Adding foreignSource {}", foreignSource.getName());
-            m_pendingForeignSourceRepository.save(foreignSource);
-            return Response.accepted().header("Location", getRedirectUri(uriInfo, foreignSource.getName())).build();
+            foreignSourceService.saveForeignSource(foreignSourceMerger.createOrMerge(foreignSource));
+            return Response.accepted().location(getRedirectUri(uriInfo, foreignSource.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -378,11 +371,10 @@ public class ForeignSourceRestService extends OnmsRestService {
         writeLock();
         try {
             LOG.debug("addDetector: Adding detector {}", detector.getName());
-            ForeignSource fs = getActiveForeignSource(foreignSource);
-            fs.updateDateStamp();
-            fs.addDetector(detector);
-            m_pendingForeignSourceRepository.save(fs);
-            return Response.accepted().header("Location", getRedirectUri(uriInfo, detector.getName())).build();
+            final ForeignSourceEntity fs = loadForeignSource(foreignSource);
+            fs.addDetector(toPersistenceModel(detector, PluginConfigType.Detector));
+            foreignSourceService.saveForeignSource(fs);
+            return Response.accepted().location(getRedirectUri(uriInfo, detector.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -403,11 +395,10 @@ public class ForeignSourceRestService extends OnmsRestService {
         writeLock();
         try {
             LOG.debug("addPolicy: Adding policy {}", policy.getName());
-            ForeignSource fs = getActiveForeignSource(foreignSource);
-            fs.updateDateStamp();
-            fs.addPolicy(policy);
-            m_pendingForeignSourceRepository.save(fs);
-            return Response.accepted().header("Location", getRedirectUri(uriInfo, policy.getName())).build();
+            final ForeignSourceEntity fs = loadForeignSource(foreignSource);
+            fs.addPolicy(toPersistenceModel(policy, PluginConfigType.Policy));
+            foreignSourceService.saveForeignSource(fs);
+            return Response.accepted().location(getRedirectUri(uriInfo, policy.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -427,13 +418,15 @@ public class ForeignSourceRestService extends OnmsRestService {
     public Response updateForeignSource(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
         writeLock();
         try {
-            ForeignSource fs = getActiveForeignSource(foreignSource);
             LOG.debug("updateForeignSource: updating foreign source {}", foreignSource);
             
             if (params.isEmpty()) return Response.notModified().build();
 
+            ForeignSourceEntity fsEntity = loadForeignSource(foreignSource);
+            ForeignSource fsDto = toRestModel(fsEntity);
+
             boolean modified = false;
-            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fs);
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fsDto);
             wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -445,10 +438,11 @@ public class ForeignSourceRestService extends OnmsRestService {
                 }
             }
             if (modified) {
+                fsEntity = foreignSourceMerger.createOrMerge(fsDto);
+
                 LOG.debug("updateForeignSource: foreign source {} updated", foreignSource);
-                fs.updateDateStamp();
-                m_pendingForeignSourceRepository.save(fs);
-                return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
+                foreignSourceService.saveForeignSource(fsEntity);
+                return Response.accepted().location(getRedirectUri(uriInfo)).build();
             } else {
                 return Response.notModified().build();
             }
@@ -469,38 +463,23 @@ public class ForeignSourceRestService extends OnmsRestService {
     public Response deletePendingForeignSource(@PathParam("foreignSource") final String foreignSource) {
         writeLock();
         try {
-            ForeignSource fs = getForeignSource(foreignSource);
             LOG.debug("deletePendingForeignSource: deleting foreign source {}", foreignSource);
-            m_pendingForeignSourceRepository.delete(fs);
+            foreignSourceService.deleteForeignSource(foreignSource);
             return Response.accepted().build();
         } finally {
             writeUnlock();
         }
     }
 
-    /**
-     * <p>deleteDeployedForeignSource</p>
-     *
-     * @param foreignSource a {@link java.lang.String} object.
-     * @return a {@link javax.ws.rs.core.Response} object.
-     */
     @DELETE
     @Path("deployed/{foreignSource}")
-    @Transactional
-    public Response deleteDeployedForeignSource(@PathParam("foreignSource") final String foreignSource) {
-        writeLock();
-        try {
-            ForeignSource fs = getForeignSource(foreignSource);
-            LOG.debug("deleteDeployedForeignSource: deleting foreign source {}", foreignSource);
-            if ("default".equals(foreignSource)) {
-                m_deployedForeignSourceRepository.resetDefaultForeignSource();
-            } else {
-                m_deployedForeignSourceRepository.delete(fs);
-            }
-            return Response.accepted().build();
-        } finally {
-            writeUnlock();
-        }
+    @Produces({MediaType.TEXT_PLAIN})
+    @Deprecated
+    public Response deleteDeployedForeignSource(@PathParam("foreignSource") final String foreignSource, @Context UriInfo uriInfo) {
+        return Response.status(Status.MOVED_PERMANENTLY)
+                    .location(buildLocation(uriInfo, foreignSource))
+                    .entity(DEPLOYED_NO_LONGER_EXISTS)
+                    .build();
     }
 
     /**
@@ -516,13 +495,9 @@ public class ForeignSourceRestService extends OnmsRestService {
     public Response deleteDetector(@PathParam("foreignSource") final String foreignSource, @PathParam("detector") final String detector) {
         writeLock();
         try {
-            ForeignSource fs = getActiveForeignSource(foreignSource);
-            List<PluginConfig> detectors = fs.getDetectors();
-            PluginConfig removed = removeEntry(detectors, detector);
-            if (removed != null) {
-                fs.updateDateStamp();
-                fs.setDetectors(detectors);
-                m_pendingForeignSourceRepository.save(fs);
+            ForeignSourceEntity fs = loadForeignSource(foreignSource);
+            if (fs.removeDetector(detector)) {
+                foreignSourceService.saveForeignSource(fs);
                 return Response.accepted().build();
             }
             return Response.notModified().build();
@@ -544,13 +519,9 @@ public class ForeignSourceRestService extends OnmsRestService {
     public Response deletePolicy(@PathParam("foreignSource") final String foreignSource, @PathParam("policy") final String policy) {
         writeLock();
         try {
-            ForeignSource fs = getActiveForeignSource(foreignSource);
-            List<PluginConfig> policies = fs.getPolicies();
-            PluginConfig removed = removeEntry(policies, policy);
-            if (removed != null) {
-                fs.updateDateStamp();
-                fs.setPolicies(policies);
-                m_pendingForeignSourceRepository.save(fs);
+            ForeignSourceEntity fs = loadForeignSource(foreignSource);
+            if (fs.removePolicy(policy)) {
+                foreignSourceService.saveForeignSource(fs);
                 return Response.accepted().build();
             }
             return Response.notModified().build();
@@ -559,32 +530,17 @@ public class ForeignSourceRestService extends OnmsRestService {
         }
     }
 
-    private static PluginConfig removeEntry(List<PluginConfig> plugins, String name) {
-        PluginConfig removed = null;
-        java.util.Iterator<PluginConfig> i = plugins.iterator();
-        while (i.hasNext()) {
-            PluginConfig pc = i.next();
-            if (pc.getName().equals(name)) {
-                removed = pc;
-                i.remove();
-                break;
-            }
-        }
-        return removed;
-    }
-
     private Set<String> getActiveForeignSourceNames() {
-        Set<String> fsNames = m_pendingForeignSourceRepository.getActiveForeignSourceNames();
-        fsNames.addAll(m_deployedForeignSourceRepository.getActiveForeignSourceNames());
+        Set<String> fsNames = foreignSourceService.getActiveForeignSourceNames();
+        fsNames.addAll(foreignSourceService.getActiveForeignSourceNames());
         return fsNames;
     }
 
-    private ForeignSource getActiveForeignSource(final String foreignSourceName) {
-        ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSourceName);
-        if (fs.isDefault()) {
-            return m_deployedForeignSourceRepository.getForeignSource(foreignSourceName);
-        }
-        return fs;
+    private ForeignSourceEntity loadForeignSource(final String foreignSourceName) {
+        return foreignSourceService.getForeignSource(foreignSourceName);
     }
 
+    private static URI buildLocation(UriInfo uriInfo, String... segments) {
+        return RedirectHelper.getRedirectUriFromBaseUri(uriInfo, "foreignSources", segments);
+    }
 }

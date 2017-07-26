@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -44,8 +45,8 @@ public class RequisitionCategoryCollection extends JaxbListWrapper<RequisitionCa
     private static final long serialVersionUID = 1L;
 
     public RequisitionCategoryCollection() { super(); }
-    public RequisitionCategoryCollection(final Collection<? extends RequisitionCategory> categories) {
-        super(categories);
+    public RequisitionCategoryCollection(final Collection<? extends String> categories) {
+        super(categories.stream().map(c -> new RequisitionCategory(c)).collect(Collectors.toList()));
     }
 
     @XmlElement(name="category")

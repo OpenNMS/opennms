@@ -33,8 +33,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Dictionary;
 import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Assert;
@@ -66,17 +64,8 @@ import com.google.common.base.Throwables;
 @JUnitConfigurationEnvironment
 public class TrapdConfigReloadIT extends CamelBlueprintTest {
 
-	private AtomicInteger m_port = new AtomicInteger(1162);
-
 	@Autowired
 	private DistPollerDao distPollerDao;
-
-	@Override
-	protected String setConfigAdminInitialConfiguration(Properties props) {
-		getAvailablePort(m_port, 2162);
-		props.put("trapd.listen.port", String.valueOf(m_port.get()));
-		return "org.opennms.netmgt.trapd";
-	}
 
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {

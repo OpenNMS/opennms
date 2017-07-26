@@ -229,13 +229,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         System.err.println("------------------------------------------------------------------------------");
     }
 
-    protected static void cleanUpImports() {
-        final Iterator<File> fileIterator = FileUtils.iterateFiles(new File("target/test/opennms-home/etc/imports"), null, true);
-        while (fileIterator.hasNext()) {
-            if(!fileIterator.next().delete()) {
-                LOG.warn("Could not delete file: {}", fileIterator.next().getPath());
-            }
-        }
+    protected void cleanUpRequisitions() throws Exception {
+        final String url = "/requisitions/test";
+
+        sendRequest(DELETE, url, 202);
+        sendRequest(GET, url, 404);
     }
 
     /**

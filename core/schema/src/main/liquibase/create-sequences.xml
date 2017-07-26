@@ -162,4 +162,60 @@
 	</rollback>
 </changeSet>
 
+	<!-- Sequences for requisitions -->
+	<changeSet runOnChange="false" author="mvrueden" id="requisitionnodenxtid">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+				WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'requisitionnodenxtid'
+			</sqlCheck>
+		</preConditions>
+		<createSequence sequenceName="requisitionnodenxtid" />
+
+		<rollback>
+			<dropSequence sequenceName="requisitionnodenxtid" />
+		</rollback>
+	</changeSet>
+	<changeSet runOnChange="false" author="mvrueden" id="requisitioninterfacenxtid">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+				WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'requisitioninterfacenxtid'
+			</sqlCheck>
+		</preConditions>
+		<createSequence sequenceName="requisitioninterfacenxtid" />
+
+		<rollback>
+			<dropSequence sequenceName="requisitioninterfacenxtid" />
+		</rollback>
+	</changeSet>
+	<changeSet runOnChange="false" author="mvrueden" id="requisitionservicenxtid">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+				WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'requisitionservicenxtid'
+			</sqlCheck>
+		</preConditions>
+		<createSequence sequenceName="requisitionservicenxtid" />
+
+		<rollback>
+			<dropSequence sequenceName="requisitionservicenxtid" />
+		</rollback>
+	</changeSet>
+
+	<!-- Sequences for foreign sources -->
+	<changeSet runOnChange="false" author="mvrueden" id="foreignsourcenxtid">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+				WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'foreignsourcenxtid'
+			</sqlCheck>
+		</preConditions>
+		<createSequence sequenceName="foreignsourcenxtid" />
+
+		<rollback>
+			<dropSequence sequenceName="foreignsourcenxtid" />
+		</rollback>
+	</changeSet>
+
 </databaseChangeLog>

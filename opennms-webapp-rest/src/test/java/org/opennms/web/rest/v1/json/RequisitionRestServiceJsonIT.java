@@ -38,6 +38,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -75,9 +76,15 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
     @Autowired
     MockEventIpcManager m_eventProxy;
 
+    @Before
+    public void setUp() throws Throwable {
+        super.setUp();
+        cleanUpRequisitions();
+    }
+
     @Test
     public void testRequisition() throws Exception {
-        cleanUpImports();
+        cleanUpRequisitions();
 
         createRequisition();
         String url = "/requisitions";
@@ -357,7 +364,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         category = new JSONObject();
         category.put("name", "New Category");
 
-        sendPost(base, category.toString(), 202, "/nodes/4244/categories/New%20Category");
+        sendPost(base, category.toString(), 404);
         json = sendRequest(GET, base + "/New%20Category", 404);
     }
 

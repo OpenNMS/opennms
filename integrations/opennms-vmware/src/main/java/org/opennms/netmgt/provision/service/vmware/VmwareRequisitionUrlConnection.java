@@ -43,8 +43,10 @@ import org.apache.commons.io.IOExceptionWithCause;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.url.GenericURLConnection;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,16 +95,18 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     }
 
     protected Requisition getExistingRequisition(String foreignSource) {
-        Requisition curReq = null;
         try {
-            ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
-            if (repository != null) {
-                curReq = repository.getRequisition(foreignSource);
+            RequisitionService requisitionService = BeanUtils.getBean("daoContext", "requisitionService", RequisitionService.class);
+            if (requisitionService != null) {
+                RequisitionEntity requisitionEntity = requisitionService.getRequisition(foreignSource);
+                if (requisitionEntity != null) {
+                    return RequisitionMapper.toRestModel(requisitionEntity);
+                }
             }
         } catch (Exception e) {
             logger.warn("Can't retrieve requisition {}", foreignSource, e);
         }
-        return curReq;
+        return null;
     }
 
     @Override

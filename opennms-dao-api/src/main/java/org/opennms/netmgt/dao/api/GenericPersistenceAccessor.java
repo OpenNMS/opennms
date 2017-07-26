@@ -42,4 +42,5 @@ public interface GenericPersistenceAccessor {
     <T> T get(Class<T> entityType, int entityId);
 
     List findMatching(Criteria criteria);
+
 }

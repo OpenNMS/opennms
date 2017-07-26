@@ -39,17 +39,14 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
-import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 
 /*
@@ -97,7 +94,7 @@ public interface ProvisionService {
      *            dbonly, if the node should not be rescanned (perform all DB operations)
      */
     @Transactional
-    void updateNode(OnmsNode node, String rescanExisting);
+    void updateNode(OnmsNode node, boolean rescanExisting);
     
     @Transactional
     OnmsNode updateNodeAttributes(OnmsNode node);
@@ -203,11 +200,7 @@ public interface ProvisionService {
 
     NodeScanSchedule getScheduleForNode(int nodeId, boolean force);
     
-    void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository);
-
-    Requisition loadRequisition(Resource resource);
-
-    List<PluginConfig> getDetectorsForForeignSource(String foreignSource);
+    List<DetectorPluginConfigEntity> getDetectorsForForeignSource(String foreignSource);
 
     List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName);
     
@@ -241,4 +234,5 @@ public interface ProvisionService {
     LocationAwareSnmpClient getLocationAwareSnmpClient();
 
     LocationAwareDnsLookupClient getLocationAwareDnsLookupClient();
+
 }

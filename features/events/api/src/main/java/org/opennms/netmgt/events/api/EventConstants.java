@@ -451,6 +451,8 @@ public abstract class EventConstants {
     /** Constant <code>PARM_IMPORT_STATS="importStats"</code> */
     public static final String PARM_IMPORT_STATS = "importStats";
 
+    public static final String PARM_IMPORT_FOREIGN_SOURCE = "importForeignSource";
+
     /** Constant <code>PARM_IMPORT_RESOURCE="importResource"</code> */
     public static final String PARM_IMPORT_RESOURCE = "importResource";
 

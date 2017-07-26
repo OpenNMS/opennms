@@ -48,9 +48,12 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockRequisitionService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,20 +95,22 @@ public class PolicyIT {
     @Autowired
     private MockEventIpcManager m_eventSubscriber;
 
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        final MockForeignSourceRepository mfsr = new MockForeignSourceRepository();
-        final ForeignSource fs = new ForeignSource();
+        final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
-        fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
 
-        PluginConfig policy1 = new PluginConfig("poll-trunk-1", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
+        PolicyPluginConfigEntity policy1 = new PolicyPluginConfigEntity("poll-trunk-1", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
         policy1.addParameter("ifDescr", "~^.*Trunk 1.*$");
         policy1.addParameter("action", "ENABLE_POLLING");
         policy1.addParameter("matchBehavior", "ANY_PARAMETER");
 
-        PluginConfig policy2 = new PluginConfig("poll-vlan-600", "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy");
+        PolicyPluginConfigEntity policy2 = new PolicyPluginConfigEntity("poll-vlan-600", "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy");
         policy2.addParameter("ipAddress", "~^10\\.102\\..*$");
         policy2.addParameter("action", "ENABLE_SNMP_POLL");
         policy2.addParameter("matchBehavior", "ANY_PARAMETER");
@@ -114,11 +119,9 @@ public class PolicyIT {
         System.err.println(policy2.toString());
 
         fs.addPolicy(policy1);
-
         fs.addPolicy(policy2);
 
-        mfsr.putDefaultForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
+        m_foreignSourceService .saveForeignSource(fs);
     }
 
     @Test

@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -46,7 +45,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.opennms.netmgt.provision.support.PluginWrapper;
 
 /**
  * A PluginConfig represents a portion of a configuration that defines a reference
@@ -216,25 +214,6 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
         m_parameters.remove(p);
     }
 
-    /**
-     * <p>getAvailableParameterKeys</p>
-     *
-     * @return a {@link java.util.Set} object.
-     */
-    public Set<String> getAvailableParameterKeys() {
-        Set<String> keys = new TreeSet<String>();
-        try {
-            PluginWrapper pw = new PluginWrapper(m_pluginClass);
-            keys = pw.getOptionalKeys();
-            for (PluginParameter p : getParameters()) {
-                keys.remove(p.getKey());
-            }
-        } catch (ClassNotFoundException e) {
-            // we just let it return the empty set
-        }
-        return keys;
-    }
-
     private String getParametersAsString() {
         final StringBuilder sb = new StringBuilder();
         for (final PluginParameter p : getParameters()) {
@@ -294,4 +273,5 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
             .append(m_pluginClass, other.m_pluginClass)
             .toComparison();
     }
+
 }

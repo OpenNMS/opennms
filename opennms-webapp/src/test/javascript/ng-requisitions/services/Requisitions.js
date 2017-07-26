@@ -144,7 +144,7 @@ describe('Service: RequisitionsService', function () {
   var initializeCache = function() {
     var requisitionsUrl = requisitionsService.internal.requisitionsUrl;
     $httpBackend.expect('GET', requisitionsUrl).respond(requisitions);
-    $httpBackend.expect('GET', requisitionsUrl + '/deployed/stats').respond(deployedStats);
+    $httpBackend.expect('GET', requisitionsUrl + '/stats').respond(deployedStats);
     requisitionsService.getRequisitions().then(function() { console.log('Cache updated!'); });
     $httpBackend.flush();
   };
@@ -194,7 +194,7 @@ describe('Service: RequisitionsService', function () {
 
     var requisitionsUrl = requisitionsService.internal.requisitionsUrl;
     $httpBackend.expect('GET', requisitionsUrl).respond(requisitions);
-    $httpBackend.expect('GET', requisitionsUrl + '/deployed/stats').respond(deployedStats);
+    $httpBackend.expect('GET', requisitionsUrl + '/stats').respond(deployedStats);
 
     var handlerFn = function(data) {
       expect(data).not.toBe(null);
@@ -296,7 +296,7 @@ describe('Service: RequisitionsService', function () {
         '1003'
       ]
     };
-    var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats/test-network';
+    var url = requisitionsService.internal.requisitionsUrl + '/stats/test-network';
     $httpBackend.expect('GET', url).respond(stats);
 
     requisitionsService.updateDeployedStatsForRequisition(req).then(function() {
@@ -336,7 +336,7 @@ describe('Service: RequisitionsService', function () {
       }]
     };
 
-    var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats';
+    var url = requisitionsService.internal.requisitionsUrl + '/stats';
     $httpBackend.expect('GET', url).respond(stats);
 
     var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
@@ -443,9 +443,7 @@ describe('Service: RequisitionsService', function () {
     expect(r).not.toBe(null);
 
     $httpBackend.expect('DELETE', requisitionsService.internal.requisitionsUrl + '/' + foreignSource).respond({});
-    $httpBackend.expect('DELETE', requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource).respond({});
     $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource).respond({});
-    $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource).respond({});
 
     requisitionsService.deleteRequisition(foreignSource).then(function() {}, errorHandlerFn);
     $httpBackend.flush();
@@ -468,9 +466,7 @@ describe('Service: RequisitionsService', function () {
     r.nodesInDatabase = 0;
 
     $httpBackend.expect('DELETE', requisitionsService.internal.requisitionsUrl + '/' + foreignSource).respond({});
-    $httpBackend.expect('DELETE', requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource).respond({});
     $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource).respond({});
-    $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource).respond({});
 
     requisitionsService.deleteRequisition(foreignSource).then(function() {}, errorHandlerFn);
     $httpBackend.flush();
@@ -892,8 +888,6 @@ describe('Service: RequisitionsService', function () {
 
     var urlP = requisitionsService.internal.foreignSourcesUrl + '/test-requisition';
     $httpBackend.expect('DELETE', urlP).respond();
-    var urlD = requisitionsService.internal.foreignSourcesUrl + '/deployed/test-requisition';
-    $httpBackend.expect('DELETE', urlD).respond();
 
     requisitionsService.deleteForeignSourceDefinition('test-requisition').then(function() {}, errorHandlerFn);
 

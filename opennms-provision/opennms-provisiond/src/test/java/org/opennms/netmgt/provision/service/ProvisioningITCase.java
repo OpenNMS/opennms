@@ -76,6 +76,9 @@ public abstract class ProvisioningITCase {
     }
 
     protected void waitForEverything() throws InterruptedException {
+        // Give the importer a chance to kick off, otherwise the executors below will already be done with it,
+        // before import has started, letting all ProvisioningITCases fail.
+        Thread.sleep(5000);
         final CountDownLatch latch = new CountDownLatch(4);
         final Runnable runnable = new Runnable() {
             @Override public void run() {

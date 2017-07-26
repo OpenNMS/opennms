@@ -47,6 +47,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -140,7 +141,10 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
 
         // This requisition has an asset on some nodes called "pollercategory".
         // Change it to "pollerCategory" (capital 'C') and the test passes...
-        m_provisioner.doImport(invalidAssetFieldResource.getURL().toString(), Boolean.TRUE.toString());
+        m_provisioner.doImport(
+                new ImportRequest(this)
+                    .withUrl(invalidAssetFieldResource.getURL().toString())
+                    .withRescanExisting(Boolean.TRUE.toString()));
         waitForEverything();
         m_eventManager.getEventAnticipator().verifyAnticipated();
 
@@ -172,7 +176,10 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         // This requisition has an asset called "maintContractNumber" which was changed in
         // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
         // field still works.
-        m_provisioner.doImport(resource.getURL().toString(), Boolean.TRUE.toString());
+        m_provisioner.doImport(
+                new ImportRequest(this)
+                    .withUrl(resource.getURL().toString())
+                    .withRescanExisting(Boolean.TRUE.toString()));
         waitForEverything();
         m_eventManager.getEventAnticipator().verifyAnticipated();
 
@@ -194,7 +201,10 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
 
         // This requisition has a "foreign-source" on the node tag, which is invalid,
         // foreign-source only belongs on the top-level model-import tag.
-        m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), Boolean.TRUE.toString());
+        m_provisioner.doImport(
+                new ImportRequest(this)
+                    .withUrl(invalidRequisitionResource.getURL().toString())
+                    .withRescanExisting(Boolean.TRUE.toString()));
         waitForEverything();
         m_eventManager.getEventAnticipator().verifyAnticipated();
 

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+    <!-- Create foreign source tables -->
+    <changeSet author="mvrueden" id="21.0.0-create-foreign-source-tables">
+        <!-- Foreign Source Table -->
+        <createTable tableName="foreignsource">
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="isdefault" type="boolean"/>
+            <column name="scaninterval" type="integer"/>
+        </createTable>
+        <addPrimaryKey tableName="foreignsource" columnNames="name" constraintName="foreignsource_pkey"/>
+
+        <!-- Detector/Policies Table -->
+        <createTable tableName="foreignsource_plugins">
+            <column name="id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="class" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer"/>
+            <column name="foreignsource" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="foreignsource_plugins" columnNames="id" constraintName="foreignsource_plugins_pkey"/>
+        <addForeignKeyConstraint constraintName="fk_foreignsource_foreignsource_plugins"
+                                 baseTableName="foreignsource_plugins" baseColumnNames="foreignsource"
+                                 referencedTableName="foreignsource" referencedColumnNames="name" onDelete="CASCADE"/>
+        <createIndex tableName="foreignsource_plugins" indexName="foreignsource_plugins_foreignsource_idx" unique="false">
+            <column name="foreignsource" type="text"/>
+        </createIndex>
+
+        <!-- Plugin Parameters -->
+        <createTable tableName="foreignsource_plugin_parameters">
+            <column name="key" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="plugin_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="foreignsource_plugin_parameters" columnNames="key,plugin_id" constraintName="foreignsource_plugin_parameters_pkey"/>
+        <addForeignKeyConstraint constraintName="fk_foreignsource_plugins_foreignsource_plugin_parameters"
+                                 baseTableName="foreignsource_plugin_parameters" baseColumnNames="plugin_id"
+                                 referencedTableName="foreignsource_plugins" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="foreignsource_plugin_parameters" indexName="foreignsource_plugin_parameters_plugin_id" unique="false">
+            <column name="plugin_id" type="integer"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Create requisition tables -->
+    <changeSet author="mvrueden" id="21.0.0-create-requisition-tables">
+        <!-- Requisition Table -->
+        <createTable tableName="requisition">
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastimport" type="DATETIME"/>
+            <column name="date" type="DATETIME"/>
+        </createTable>
+        <addPrimaryKey tableName="requisition" columnNames="name" constraintName="requisition_pkey"/>
+
+        <!-- Requisition Nodes -->
+        <createTable tableName="requisition_nodes">
+            <column name="id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="foreignid" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="foreignsource" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location" type="text"/>
+            <column name="nodelabel" type="text"/>
+            <column name="parent_foreignid" type="text"/>
+            <column name="parent_foreignsource" type="text"/>
+            <column name="parent_nodelabel" type="text"/>
+        </createTable>
+        <addUniqueConstraint tableName="requisition_nodes" columnNames="foreignsource,foreignid" />
+        <addPrimaryKey tableName="requisition_nodes" columnNames="id" constraintName="requisition_nodes_pkey"/>
+        <addForeignKeyConstraint constraintName="fk_requisition_nodes_requisition"
+                                 baseTableName="requisition_nodes" baseColumnNames="foreignsource"
+                                 referencedTableName="requisition" referencedColumnNames="name" onDelete="CASCADE"/>
+        <createIndex tableName="requisition_nodes" indexName="requisition_nodes_foreignsource" unique="false">
+            <column name="foreignsource" type="text"/>
+        </createIndex>
+
+        <!-- Requisition Node Interfaces -->
+        <createTable tableName="requisition_node_interfaces">
+            <column name="id" type="integer">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="description" type="text"/>
+            <column name="ipaddress" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="integer"/>
+            <column name="managed" type="boolean"/>
+            <column name="issnmpprimary" type="char(1)" />
+            <column name="node_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="requisition_node_interfaces" columnNames="node_id,ipaddress"/>
+        <addPrimaryKey tableName="requisition_node_interfaces" columnNames="id" constraintName="requisition_node_interfaces_pkey"/>
+        <addForeignKeyConstraint constraintName="fk_requisition_node_interfaces_requisition_nodes"
+                                 baseTableName="requisition_node_interfaces" baseColumnNames="node_id"
+                                 referencedTableName="requisition_nodes" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="requisition_node_interfaces" indexName="requisition_node_interfaces_node_id" unique="false">
+            <column name="node_id" type="integer"/>
+        </createIndex>
+
+        <!-- Requisition Node Categories -->
+        <createTable tableName="requisition_node_categories">
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="node_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="requisition_node_categories" columnNames="node_id,name" constraintName="requisition_node_categories_pkey"/>
+        <addForeignKeyConstraint constraintName="fk_requisition_node_categories_requisition_nodes"
+                                 baseTableName="requisition_node_categories" baseColumnNames="node_id"
+                                 referencedTableName="requisition_nodes" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="requisition_node_categories" indexName="requisition_node_categories_node_id" unique="false">
+            <column name="node_id" type="integer"/>
+        </createIndex>
+
+        <!-- Requisition Node Assets -->
+        <createTable tableName="requisition_node_assets">
+            <column name="key" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="node_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="requisition_node_assets" columnNames="node_id,key" constraintName="requisition_node_assets_pkey"/>
+        <addForeignKeyConstraint constraintName="fk_requisition_node_assets_requisition_nodes"
+                                 baseTableName="requisition_node_assets" baseColumnNames="node_id"
+                                 referencedTableName="requisition_nodes" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="requisition_node_assets" indexName="requisition_node_assets_node_id" unique="false">
+            <column name="node_id" type="integer"/>
+        </createIndex>
+
+        <!-- Requisition Node Interface Categories -->
+        <createTable tableName="requisition_node_interface_categories">
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="interface_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="requisition_node_interface_categories" columnNames="interface_id,name" constraintName="requisition_node_interface_categories_pkey"/>
+        <addForeignKeyConstraint constraintName="fk_requisition_node_interface_categories_requisition_node_interfaces"
+                                 baseTableName="requisition_node_interface_categories" baseColumnNames="interface_id"
+                                 referencedTableName="requisition_node_interfaces" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="requisition_node_interface_categories" indexName="requisition_node_interface_categories_interface_id" unique="false">
+            <column name="interface_id" type="integer"/>
+        </createIndex>
+
+        <!-- Requisition Node Interface Services -->
+        <createTable tableName="requisition_node_interface_services">
+            <column name="id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="interface_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="requisition_node_interface_services" columnNames="id" constraintName="requisition_node_interface_services_pkey"/>
+        <addForeignKeyConstraint constraintName="fk_requisition_node_interface_services_requisition_node_interfaces"
+                                 baseTableName="requisition_node_interface_services" baseColumnNames="interface_id"
+                                 referencedTableName="requisition_node_interfaces" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="requisition_node_interface_services" indexName="requisition_node_interface_services_interface_id" unique="false">
+            <column name="interface_id" type="integer"/>
+        </createIndex>
+
+        <!-- Requisition Node Interface Services Categories -->
+        <createTable tableName="requisition_node_interface_service_categories">
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="requisition_node_interface_service_categories" columnNames="service_id,name" constraintName="requisition_node_interface_service_categories_pkey"/>
+        <addForeignKeyConstraint constraintName="fk_req_node_iface_service_categories_req_nodes"
+                                 baseTableName="requisition_node_interface_service_categories" baseColumnNames="service_id"
+                                 referencedTableName="requisition_node_interface_services" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="requisition_node_interface_service_categories" indexName="requisition_node_interface_service_categories_service_id" unique="false">
+            <column name="service_id" type="integer"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

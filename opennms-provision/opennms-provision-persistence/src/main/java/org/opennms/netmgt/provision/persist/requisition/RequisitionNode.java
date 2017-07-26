@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.core.network.IPAddress;
+
 
 /**
  * <p>RequisitionNode class.</p>
@@ -60,11 +62,11 @@ public class RequisitionNode {
 
     @XmlElement(name = "interface")
     protected List<RequisitionInterface> m_interfaces = new ArrayList<RequisitionInterface>();
-    @XmlElement(name="category")
+    @XmlElement(name = "category")
     protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
-    @XmlElement(name="asset")
+    @XmlElement(name = "asset")
     protected List<RequisitionAsset> m_assets = new ArrayList<RequisitionAsset>();
-    
+
     @XmlAttribute(name = "building")
     protected String m_building;
 
@@ -76,7 +78,7 @@ public class RequisitionNode {
 
     @XmlAttribute(name = "node-label", required = true)
     protected String m_nodeLabel;
-    
+
     @XmlAttribute(name = "parent-foreign-source")
     protected String m_parentForeignSource;
 
@@ -93,10 +95,11 @@ public class RequisitionNode {
      */
     @XmlTransient
     public int getInterfaceCount() {
-        return (m_interfaces == null)? 0 : m_interfaces.size();
+        return (m_interfaces == null) ? 0 : m_interfaces.size();
     }
 
     /* backwards-compat with ModelImport */
+
     /**
      * <p>getInterface</p>
      *
@@ -104,7 +107,7 @@ public class RequisitionNode {
      */
     @XmlTransient
     public RequisitionInterface[] getInterface() {
-        return getInterfaces().toArray(new RequisitionInterface[] {});
+        return getInterfaces().toArray(new RequisitionInterface[]{});
     }
 
     /**
@@ -138,7 +141,7 @@ public class RequisitionNode {
      */
     public RequisitionInterface getInterface(String ipAddress) {
         for (RequisitionInterface iface : m_interfaces) {
-            if (iface.getIpAddr().equals(ipAddress)) {
+            if (new IPAddress(iface.getIpAddr()).equals(new IPAddress(ipAddress))) {
                 return iface;
             }
         }
@@ -188,10 +191,11 @@ public class RequisitionNode {
      */
     @XmlTransient
     public int getCategoryCount() {
-        return (m_categories == null)? 0 : m_categories.size();
+        return (m_categories == null) ? 0 : m_categories.size();
     }
 
     /* backwards compatibility with ModelImport */
+
     /**
      * <p>getCategory</p>
      *
@@ -199,7 +203,7 @@ public class RequisitionNode {
      */
     @XmlTransient
     public RequisitionCategory[] getCategory() {
-        return m_categories.toArray(new RequisitionCategory[] {});
+        return m_categories.toArray(new RequisitionCategory[]{});
     }
 
     /**
@@ -285,10 +289,11 @@ public class RequisitionNode {
      */
     @XmlTransient
     public int getAssetCount() {
-        return (m_assets == null)? 0 : m_assets.size();
+        return (m_assets == null) ? 0 : m_assets.size();
     }
     
     /* backwards compatibility with ModelImport */
+
     /**
      * <p>getAsset</p>
      *
@@ -296,7 +301,7 @@ public class RequisitionNode {
      */
     @XmlTransient
     public RequisitionAsset[] getAsset() {
-        return m_assets.toArray(new RequisitionAsset[] {});
+        return m_assets.toArray(new RequisitionAsset[]{});
     }
 
     /**
@@ -554,5 +559,4 @@ public class RequisitionNode {
                 + ", parentNodeLabel=" + m_parentNodeLabel
                 + ", location=" + m_location + "]";
     }
-
 }

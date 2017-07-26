@@ -28,21 +28,23 @@
 
 package org.opennms.netmgt.provision.service.dns;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.url.GenericURLFactory;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.springframework.core.io.UrlResource;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import static org.junit.Assert.*;
+import org.xml.sax.InputSource;
 
 public class HandlerTest {
     
@@ -65,13 +67,9 @@ public class HandlerTest {
     public void dwOpenConnectionURL() throws IOException {
         
         URL url = new URL(DNS_URL);
-        
-        UrlResource resource = new UrlResource(url);
+        Requisition r = JaxbUtils.unmarshal(Requisition.class, new InputSource(new DnsRequisitionUrlConnection(url).getInputStream()));
 
-        MockForeignSourceRepository fsr = new MockForeignSourceRepository();
-        Requisition r = fsr.importResourceRequisition(resource);
-        
-        Assert.assertTrue("Number of nodes in Model Import > 1", 1 == r.getNodeCount());
+        Assert.assertTrue("Number of nodes in Model Import > 1", 1 == r.getNodes().size());
         Assert.assertTrue("NodeLabel isn't localhost", "localhost".equals(r.getNodes().get(0).getNodeLabel()));
         Assert.assertTrue("127.0.0.1".equals(r.getNodes().get(0).getInterfaces().get(0).getIpAddr()));
     }

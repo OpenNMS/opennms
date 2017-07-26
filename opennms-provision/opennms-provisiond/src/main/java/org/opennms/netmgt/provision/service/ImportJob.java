@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.service;
 
+import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -57,7 +58,9 @@ public class ImportJob implements Job {
             String url = context.getJobDetail().getJobDataMap().getString(URL);
             Assert.notNull(url);
             String rescanExisting = context.getJobDetail().getJobDataMap().getString(RESCAN_EXISTING);
-            getProvisioner().doImport(url, rescanExisting == null ? Boolean.TRUE.toString() : rescanExisting);
+            getProvisioner().doImport(new ImportRequest(getClass().getSimpleName())
+                    .withUrl(url)
+                    .withRescanExisting(rescanExisting == null ? Boolean.TRUE.toString() : rescanExisting));
             
         } catch (Throwable t) {
             throw new JobExecutionException(t);

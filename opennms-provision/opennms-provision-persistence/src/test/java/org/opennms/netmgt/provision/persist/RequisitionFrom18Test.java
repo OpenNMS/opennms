@@ -30,34 +30,42 @@ package org.opennms.netmgt.provision.persist;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Set;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.JAXB;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @JUnitConfigurationEnvironment
 public class RequisitionFrom18Test {
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionFrom18Test.class);
-    private FilesystemForeignSourceRepository m_foreignSourceRepository;
+
+    private List<Requisition> requisitions = new ArrayList<>();
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         MockLogAppender.setupLogging(true, "DEBUG");
-        m_foreignSourceRepository = new FilesystemForeignSourceRepository();
-        m_foreignSourceRepository.setForeignSourcePath("target/test-classes/empty");
-        m_foreignSourceRepository.setRequisitionPath("target/test-classes/1.8-upgrade-test");
+        Files.newDirectoryStream(Paths.get("target/test-classes/1.8-upgrade-test")).forEach(p -> {
+            if (p.toFile().isFile()) {
+                requisitions.add(JAXB.unmarshal(p.toFile(), Requisition.class));
+            }
+        });
     }
 
     @Test
     public void test18Requisitions() {
-        final Set<Requisition> requisitions = m_foreignSourceRepository.getRequisitions();
         assertEquals(11, requisitions.size());
         int nodeCount = 0;
         int interfaceCount = 0;

@@ -45,7 +45,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -62,21 +61,21 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.Lists;
+
 public class PersistenceSerializationTest {
-    private ForeignSourceCollection fsw;
-    private AbstractForeignSourceRepository fsr;
-    private Marshaller m;
-    private JAXBContext c;
-    private ForeignSource fs;
-    private FileAnticipator fa;
+    private ForeignSourceCollection foreignSourceCollection;
+    private ForeignSource foreignSource;
+    private JAXBContext jaxbContext;
+    private FileAnticipator fileAnticipator;
 
     static private class TestOutputResolver extends SchemaOutputResolver {
         private final File m_schemaFile;
-        
+
         public TestOutputResolver(File schemaFile) {
             m_schemaFile = schemaFile;
         }
-        
+
         @Override
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
             return new StreamResult(m_schemaFile);
@@ -87,26 +86,21 @@ public class PersistenceSerializationTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        fa = new FileAnticipator();
+        fileAnticipator = new FileAnticipator();
 
-        fsr = new MockForeignSourceRepository();
-        fsr.save(new ForeignSource("cheese"));
-        fsr.flush();
-
-        fs = fsr.getForeignSource("cheese");
+        foreignSource = new ForeignSource("cheese");
+        foreignSource.setDateStamp(DatatypeFactory.newInstance().newXMLGregorianCalendar("2009-02-25T12:45:38.800-05:00"));
 //        fs.setScanInterval(scanInterval)
-        XMLGregorianCalendar cal = DatatypeFactory.newInstance().newXMLGregorianCalendar("2009-02-25T12:45:38.800-05:00");
-        fs.setDateStamp(cal);
 
-        List<PluginConfig> detectors = new ArrayList<PluginConfig>();
+        List<PluginConfig> detectors = new ArrayList<>();
         final PluginConfig detector = new PluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
         detector.addParameter("type", "cheese");
         detector.addParameter("density", "soft");
         detector.addParameter("sharpness", "mild");
         detectors.add(detector);
-        fs.setDetectors(detectors);
+        foreignSource.setDetectors(detectors);
 
-        List<PluginConfig> policies = new ArrayList<PluginConfig>();
+        List<PluginConfig> policies = new ArrayList<>();
         PluginConfig policy = new PluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
         policy.addParameter("label", "~^[a-z]$");
         policy.addParameter("category", "Lower-Case-Nodes");
@@ -119,13 +113,11 @@ public class PersistenceSerializationTest {
         policy = new PluginConfig("cisco-snmp-interfaces", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
         policy.addParameter("ifdescr", "~^(?i:LEC).*$");
         policies.add(policy);
-        fs.setPolicies(policies);
+        foreignSource.setPolicies(policies);
 
-        fsw = new ForeignSourceCollection();
-        fsw.getForeignSources().addAll(fsr.getForeignSources());
-        c = JAXBContext.newInstance(ForeignSourceCollection.class, ForeignSource.class);
-        m = c.createMarshaller();
-        
+        foreignSourceCollection = new ForeignSourceCollection(Lists.newArrayList(foreignSource));
+        jaxbContext = JAXBContext.newInstance(ForeignSourceCollection.class, ForeignSource.class);
+
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
         XMLUnit.setNormalize(true);
@@ -133,23 +125,25 @@ public class PersistenceSerializationTest {
 
     @After
     public void tearDown() throws Exception {
-        fa.tearDown();
+        fileAnticipator.tearDown();
     }
 
     @Test
     public void generateSchema() throws Exception {
-        File schemaFile = fa.expecting("foreign-sources.xsd");
-        c.generateSchema(new TestOutputResolver(schemaFile));
-        if (fa.isInitialized()) {
-            fa.deleteExpected();
+        File schemaFile = fileAnticipator.expecting("foreign-sources.xsd");
+        jaxbContext.generateSchema(new TestOutputResolver(schemaFile));
+        if (fileAnticipator.isInitialized()) {
+            fileAnticipator.deleteExpected();
         }
     }
-    
+
     @Test
     public void generateXML() throws Exception {
         // Marshal the test object to an XML string
         StringWriter objectXML = new StringWriter();
-        m.marshal(fsw, objectXML);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.marshal(foreignSourceCollection, objectXML);
 
         // Read the example XML from src/test/resources
         StringBuffer exampleXML = new StringBuffer();
@@ -157,14 +151,10 @@ public class PersistenceSerializationTest {
         assertTrue("foreign-sources.xml is readable", foreignSources.canRead());
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(foreignSources), StandardCharsets.UTF_8));
         String line;
-        while (true) {
-            line = reader.readLine();
-            if (line == null) {
-                reader.close();
-                break;
-            }
+        while ((line = reader.readLine()) != null) {
             exampleXML.append(line).append("\n");
         }
+        reader.close();
         System.err.println("========================================================================");
         System.err.println("Object XML:");
         System.err.println("========================================================================");
@@ -174,12 +164,11 @@ public class PersistenceSerializationTest {
         System.err.println("========================================================================");
         System.err.print(exampleXML.toString());
         DetailedDiff myDiff = getDiff(objectXML, exampleXML);
-        assertEquals("number of XMLUnit differences between the example XML and the mock object XML is 0", 0, myDiff.getAllDifferences().size());
+        assertEquals("Number of XMLUnit differences between the example XML and the mock object XML is not 0.", 0, myDiff.getAllDifferences().size());
     }
 
     @SuppressWarnings("unchecked")
-    private static DetailedDiff getDiff(StringWriter objectXML,
-            StringBuffer exampleXML) throws SAXException, IOException {
+    private static DetailedDiff getDiff(StringWriter objectXML, StringBuffer exampleXML) throws SAXException, IOException {
         DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(exampleXML.toString(), objectXML.toString()));
         List<Difference> allDifferences = myDiff.getAllDifferences();
         if (allDifferences.size() > 0) {

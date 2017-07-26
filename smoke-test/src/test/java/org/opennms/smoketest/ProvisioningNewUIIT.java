@@ -179,6 +179,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         findElementByCss("form[name='assetForm']");
         enterText(By.id("asset-name"), "countr");
         findElementByXpath("//a[@title='country']/strong").click();
+        Thread.sleep(100);
         enterText(By.id("asset-value"), "USA");
         clickId("save-asset", false);
         waitForModalClose();

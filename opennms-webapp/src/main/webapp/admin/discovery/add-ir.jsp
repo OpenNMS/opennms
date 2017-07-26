@@ -31,19 +31,19 @@
 <%@page language="java" contentType="text/html" session="true" import="
   java.util.Map,
   java.util.TreeMap,
-  org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation,
-  org.opennms.netmgt.provision.persist.requisition.Requisition,
-  org.opennms.netmgt.dao.api.*,
-  org.springframework.web.context.WebApplicationContext,
-  org.springframework.web.context.support.WebApplicationContextUtils,
-  org.opennms.web.svclayer.api.RequisitionAccessService,
   org.opennms.netmgt.config.DiscoveryConfigFactory,
-  org.opennms.netmgt.config.discovery.*,
-  org.opennms.web.admin.discovery.DiscoveryServletConstants,
+  org.opennms.netmgt.config.discovery.DiscoveryConfiguration,
+  org.opennms.netmgt.dao.api.MonitoringLocationDao,
+  org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation,
+  org.opennms.netmgt.model.requisition.RequisitionEntity,
+  org.opennms.netmgt.provision.persist.RequisitionService,
   org.opennms.web.admin.discovery.ActionDiscoveryServlet,
-  org.opennms.web.admin.discovery.DiscoveryScanServlet
+  org.opennms.web.admin.discovery.DiscoveryScanServlet,
+  org.opennms.web.admin.discovery.DiscoveryServletConstants,
+  org.springframework.web.context.WebApplicationContext,
+  org.springframework.web.context.support.WebApplicationContextUtils
 "%>
-<% 
+<%
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
 	if (request.getProtocol().equals("HTTP/1.1")) {
@@ -73,9 +73,9 @@ for (OnmsMonitoringLocation location : locationDao.findAll()) {
 }
 
 // Map of primary key to label (which in this case are the same too)
-RequisitionAccessService reqAccessService = context.getBean(RequisitionAccessService.class);
+RequisitionService reqAccessService = context.getBean(RequisitionService.class);
 Map<String,String> foreignsources = new TreeMap<String,String>();
-for (Requisition requisition : reqAccessService.getRequisitions()) {
+for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
 	foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
 }
 

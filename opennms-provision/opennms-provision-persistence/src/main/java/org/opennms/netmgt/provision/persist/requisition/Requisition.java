@@ -63,8 +63,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
-import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -83,35 +81,30 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     private static final long serialVersionUID = 1629774241824443273L;
 
     @XmlTransient
-    private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
-    
-    @XmlElement(name="node")
+    // Mapping foreignId -> Node
+    private Map<String, RequisitionNode> m_nodeReqs = new LinkedHashMap<>();
+
+    @XmlElement(name = "node")
     protected List<RequisitionNode> m_nodes = new ArrayList<RequisitionNode>();
-    
-    @XmlAttribute(name="date-stamp")
+
+    @XmlAttribute(name = "date-stamp")
     protected XMLGregorianCalendar m_dateStamp;
-    
-    @XmlAttribute(name="foreign-source")
+
+    @XmlAttribute(name = "foreign-source")
     protected String m_foreignSource = "imported:";
-    
-    @XmlAttribute(name="last-import")
+
+    @XmlAttribute(name = "last-import")
     protected XMLGregorianCalendar m_lastImport;
 
     @XmlTransient
     /** the resource that this requisition was created from **/
     private Resource m_resource;
 
-    /**
-     * <p>getNode</p>
-     *
-     * @param foreignId a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
-     */
     public RequisitionNode getNode(String foreignId) {
         if (m_nodes != null) {
             for (RequisitionNode n : m_nodes) {
                 if (n.getForeignId().equals(foreignId)) {
-                	LOG.debug("returning node '{}' for foreign id '{}'", n, foreignId);
+                    LOG.debug("returning node '{}' for foreign id '{}'", n, foreignId);
                     return n;
                 }
             }
@@ -119,11 +112,6 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         return null;
     }
 
-    /**
-     * <p>removeNode</p>
-     *
-     * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
-     */
     public void deleteNode(RequisitionNode node) {
         if (m_nodes != null) {
             Iterator<RequisitionNode> i = m_nodes.iterator();
@@ -137,14 +125,9 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         }
     }
 
-    /**
-     * <p>deleteNode</p>
-     *
-     * @param foreignId a {@link java.lang.String} object.
-     */
     public void deleteNode(final String foreignId) {
         if (m_nodes != null) {
-        	final Iterator<RequisitionNode> i = m_nodes.iterator();
+            final Iterator<RequisitionNode> i = m_nodes.iterator();
             while (i.hasNext()) {
                 final RequisitionNode n = i.next();
                 if (n.getForeignId().equals(foreignId)) {
@@ -156,86 +139,43 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     }
 
     /* backwards-compat with ModelImport */
-    /**
-     * <p>getNode</p>
-     *
-     * @return an array of {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} objects.
-     */
+
     @XmlTransient
     public RequisitionNode[] getNode() {
-        return getNodes().toArray(new RequisitionNode[] {});
+        return getNodes().toArray(new RequisitionNode[]{});
     }
 
-    /**
-     * <p>getNodes</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     public List<RequisitionNode> getNodes() {
         return m_nodes;
     }
 
-    /**
-     * <p>setNodes</p>
-     *
-     * @param nodes a {@link java.util.List} object.
-     */
     public void setNodes(final List<RequisitionNode> nodes) {
         m_nodes = nodes;
         updateNodeCache();
     }
 
-    /**
-     * <p>insertNode</p>
-     *
-     * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
-     */
     public void insertNode(final RequisitionNode node) {
         updateNodeCacheIfNecessary();
         if (m_nodeReqs.containsKey(node.getForeignId())) {
-        	final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
+            final RequisitionNode n = m_nodeReqs.get(node.getForeignId());
             m_nodes.remove(n);
         }
         m_nodes.add(0, node);
-        m_nodeReqs.put(node.getForeignId(), new OnmsNodeRequisition(getForeignSource(), node));
+        m_nodeReqs.put(node.getForeignId(), node);
     }
 
-    /**
-     * <p>putNode</p>
-     *
-     * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
-     */
     public void putNode(final RequisitionNode node) {
-        updateNodeCacheIfNecessary();
-        if (m_nodeReqs.containsKey(node.getForeignId())) {
-            final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
-            m_nodes.remove(n);
-        }
-        m_nodes.add(node);
-        m_nodeReqs.put(node.getForeignId(), new OnmsNodeRequisition(getForeignSource(), node));
+        insertNode(node);
     }
 
-    /**
-     * <p>getDateStamp</p>
-     *
-     * @return a {@link javax.xml.datatype.XMLGregorianCalendar} object.
-     */
     public XMLGregorianCalendar getDateStamp() {
         return m_dateStamp;
     }
 
-    /**
-     * <p>setDateStamp</p>
-     *
-     * @param value a {@link javax.xml.datatype.XMLGregorianCalendar} object.
-     */
     public void setDateStamp(final XMLGregorianCalendar value) {
         m_dateStamp = value;
     }
 
-    /**
-     * <p>updateDateStamp</p>
-     */
     public void updateDateStamp() {
         try {
             m_dateStamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
@@ -244,11 +184,6 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         }
     }
 
-    /**
-     * <p>getForeignSource</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getForeignSource() {
         if (m_foreignSource == null) {
             return "imported:";
@@ -257,40 +192,20 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         }
     }
 
-    /**
-     * <p>setForeignSource</p>
-     *
-     * @param value a {@link java.lang.String} object.
-     */
     public void setForeignSource(final String value) {
         m_foreignSource = value;
     }
 
-    /**
-     * <p>getLastImport</p>
-     *
-     * @return a {@link javax.xml.datatype.XMLGregorianCalendar} object.
-     */
     public XMLGregorianCalendar getLastImport() {
         return m_lastImport;
     }
 
-    /**
-     * <p>getLastImport</p>
-     *
-     * @return a {@link javax.xml.datatype.XMLGregorianCalendar} object.
-     */
     @Transient
     @XmlTransient
     public Date getLastImportAsDate() {
         return m_lastImport == null ? null : m_lastImport.toGregorianCalendar().getTime();
     }
 
-    /**
-     * <p>setLastImport</p>
-     *
-     * @param value a {@link javax.xml.datatype.XMLGregorianCalendar} object.
-     */
     public void setLastImport(final XMLGregorianCalendar value) {
         m_lastImport = value;
     }
@@ -308,19 +223,11 @@ public class Requisition implements Serializable, Comparable<Requisition> {
 
     /* Start non-JAXB methods */
 
-    /**
-     * <p>Constructor for Requisition.</p>
-     */
     public Requisition() {
         updateNodeCache();
         updateDateStamp();
     }
 
-    /**
-     * <p>Constructor for Requisition.</p>
-     *
-     * @param foreignSource a {@link java.lang.String} object.
-     */
     public Requisition(final String foreignSource) {
         this();
         m_foreignSource = foreignSource;
@@ -333,7 +240,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     public Resource getResource() {
         return m_resource;
     }
-    
+
     public void setResource(final Resource resource) {
         m_resource = resource;
     }
@@ -342,55 +249,17 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         m_nodeReqs.clear();
         if (m_nodes != null) {
             for (final RequisitionNode n : m_nodes) {
-                m_nodeReqs.put(n.getForeignId(), new OnmsNodeRequisition(getForeignSource(), n));
+                m_nodeReqs.put(n.getForeignId(), n);
             }
         }
     }
-    
-	private void updateNodeCacheIfNecessary() {
-		if (m_nodes != null && m_nodeReqs.size() != m_nodes.size()) {
+
+    private void updateNodeCacheIfNecessary() {
+        if (m_nodes != null && m_nodeReqs.size() != m_nodes.size()) {
             updateNodeCache();
         }
-	}
-
-    /**
-     * <p>visit</p>
-     *
-     * @param visitor a {@link org.opennms.netmgt.provision.persist.RequisitionVisitor} object.
-     */
-    public void visit(final RequisitionVisitor visitor) {
-        updateNodeCacheIfNecessary();
-
-        if (visitor == null) {
-            LOG.warn("no visitor specified!");
-            return;
-        }
-
-        visitor.visitModelImport(this);
-        
-        for (final OnmsNodeRequisition nodeReq : m_nodeReqs.values()) {
-            nodeReq.visit(visitor);
-        }
-        
-        visitor.completeModelImport(this);
     }
 
-    /**
-     * <p>getNodeRequistion</p>
-     *
-     * @param foreignId a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.persist.OnmsNodeRequisition} object.
-     */
-    public OnmsNodeRequisition getNodeRequistion(final String foreignId) {
-        updateNodeCacheIfNecessary();
-        return m_nodeReqs.get(foreignId);
-    }
-    
-    /**
-     * <p>getNodeCount</p>
-     *
-     * @return a int.
-     */
     @XmlTransient
     public int getNodeCount() {
         return (m_nodes == null) ? 0 : m_nodes.size();
@@ -411,7 +280,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
-        if (!(obj instanceof Requisition))  return false;
+        if (!(obj instanceof Requisition)) return false;
 
         final Requisition other = (Requisition) obj;
         if (m_dateStamp == null) {
@@ -454,47 +323,47 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     @Override
     public int compareTo(final Requisition obj) {
         return new CompareToBuilder()
-            .append(m_foreignSource, obj.m_foreignSource)
-            .append(m_dateStamp, obj.m_dateStamp)
-            .append(m_lastImport, obj.m_lastImport)
-            .toComparison();
+                .append(m_foreignSource, obj.m_foreignSource)
+                .append(m_dateStamp, obj.m_dateStamp)
+                .append(m_lastImport, obj.m_lastImport)
+                .toComparison();
     }
-    
+
     /**
      * Make sure that no data in the requisition is inconsistent.  Nodes should be unique,
      * interfaces should be unique per node, etc.
      */
     public void validate() throws ValidationException {
-    	final Map<String,Integer> foreignSourceCounts = new HashMap<String,Integer>();
-    	final Set<String> errors = new HashSet<String>();
+        final Map<String, Integer> foreignSourceCounts = new HashMap<String, Integer>();
+        final Set<String> errors = new HashSet<String>();
 
-    	for (final RequisitionNode node : m_nodes) {
-    		final String foreignId = node.getForeignId();
-			Integer count = foreignSourceCounts.get(foreignId);
-			foreignSourceCounts.put(foreignId, count == null? 1 : ++count);
-    	}
-    	
-    	for (final Entry<String,Integer> entry : foreignSourceCounts.entrySet()) {
-    	    final String foreignId = entry.getKey();
-    		final Integer count = entry.getValue();
-    		if (count > 1) {
-    			errors.add( foreignId + " (" + count + " found)");
-    		}
-    	}
-    	
-    	if (errors.size() > 0) {
-    		final StringBuilder sb = new StringBuilder();
-    		sb.append("Duplicate nodes found on foreign source ").append(getForeignSource()).append(": ");
-    		final Iterator<String> it = errors.iterator();
-    		while (it.hasNext()) {
-    			final String error = it.next();
-    			sb.append(error);
-    			if (it.hasNext()) {
-    				sb.append(", ");
-    			}
-    		}
-    		throw new ValidationException(sb.toString());
-    	}
+        for (final RequisitionNode node : m_nodes) {
+            final String foreignId = node.getForeignId();
+            Integer count = foreignSourceCounts.get(foreignId);
+            foreignSourceCounts.put(foreignId, count == null ? 1 : ++count);
+        }
+
+        for (final Entry<String, Integer> entry : foreignSourceCounts.entrySet()) {
+            final String foreignId = entry.getKey();
+            final Integer count = entry.getValue();
+            if (count > 1) {
+                errors.add(foreignId + " (" + count + " found)");
+            }
+        }
+
+        if (errors.size() > 0) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("Duplicate nodes found on foreign source ").append(getForeignSource()).append(": ");
+            final Iterator<String> it = errors.iterator();
+            while (it.hasNext()) {
+                final String error = it.next();
+                sb.append(error);
+                if (it.hasNext()) {
+                    sb.append(", ");
+                }
+            }
+            throw new ValidationException(sb.toString());
+        }
     }
 
     @XmlTransient
@@ -510,6 +379,16 @@ public class Requisition implements Serializable, Comparable<Requisition> {
             setDateStamp(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
         } catch (final DatatypeConfigurationException e) {
             LOG.warn("Failed to turn {} into an XML date.", date);
+        }
+    }
+
+    public void setLastImport(final Date lastImport) {
+        final GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTime(lastImport);
+        try {
+            setLastImport(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
+        } catch (final DatatypeConfigurationException e) {
+            LOG.warn("Failed to turn {} into an XML date.", lastImport);
         }
     }
 }

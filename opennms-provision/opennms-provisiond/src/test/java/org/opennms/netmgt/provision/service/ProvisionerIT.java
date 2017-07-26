@@ -37,9 +37,8 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -97,22 +96,16 @@ import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
-import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
-import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
-import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
-import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
-import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
-import org.opennms.netmgt.provision.persist.RequisitionVisitor;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMerger;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -124,7 +117,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
-import org.springframework.core.style.ToStringCreator;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
@@ -196,11 +188,18 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     private EventAnticipator m_eventAnticipator;
 
-    private ForeignSourceRepository m_foreignSourceRepository;
+    @Autowired
+    private RequisitionService requisitionService;
 
-    private ForeignSource m_foreignSource;
+    private ForeignSourceEntity m_foreignSource;
 
     private MockSnmpDataProvider m_mockSnmpDataProvider;
+
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
+    @Autowired
+    private RequisitionMerger requisitionMerger;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -237,34 +236,28 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         m_provisioner.start();
 
-        m_foreignSource = new ForeignSource();
+        m_foreignSource = new ForeignSourceEntity();
         m_foreignSource.setName("imported:");
-        m_foreignSource.setScanInterval(Duration.standardDays(1));
+        m_foreignSource.setScanInterval(Duration.standardDays(1).getMillis());
 
-        final PluginConfig policy = new PluginConfig("setCategory", NodeCategorySettingPolicy.class.getName());
+        final PolicyPluginConfigEntity policy = new PolicyPluginConfigEntity("setCategory", NodeCategorySettingPolicy.class.getName());
         policy.addParameter("category", "TestCategory");
         policy.addParameter("label", "localhost");
-
         m_foreignSource.addPolicy(policy);
 
-        m_foreignSourceRepository = new MockForeignSourceRepository();
-        m_foreignSourceRepository.save(m_foreignSource);
+        m_foreignSourceService.saveForeignSource(m_foreignSource);
 
-        final ForeignSource emptyForeignSource = new ForeignSource();
+        final ForeignSourceEntity emptyForeignSource = new ForeignSourceEntity();
         emptyForeignSource.setName("empty");
-        emptyForeignSource.setScanInterval(Duration.standardDays(1));
-        m_foreignSourceRepository.save(emptyForeignSource);
+        emptyForeignSource.setScanInterval(Duration.standardDays(1).getMillis());
+        m_foreignSourceService.saveForeignSource(emptyForeignSource);
 
-        final ForeignSource snmpForeignSource = new ForeignSource();
+        final ForeignSourceEntity snmpForeignSource = new ForeignSourceEntity();
         snmpForeignSource.setName("snmp");
-        snmpForeignSource.setScanInterval(Duration.standardDays(1));
-        final PluginConfig snmpDetector = new PluginConfig("SNMP", SnmpDetector.class.getName());
+        snmpForeignSource.setScanInterval(Duration.standardDays(1).getMillis());
+        final DetectorPluginConfigEntity snmpDetector = new DetectorPluginConfigEntity("SNMP", SnmpDetector.class.getName());
         snmpForeignSource.addDetector(snmpDetector);
-        m_foreignSourceRepository.save(snmpForeignSource);
-
-        m_foreignSourceRepository.flush();
-
-        m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
+        m_foreignSourceService.saveForeignSource(snmpForeignSource);
 
         // make sure node scan scheduler is running initially
         getScanExecutor().resume();
@@ -280,10 +273,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testVisit() throws Exception {
-        final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/NewFile2.xml"));
-        final CountingVisitor visitor = new CountingVisitor();
-        requisition.visit(visitor);
-        verifyBasicImportCounts(visitor);
+        final RequisitionEntity requisition = new ResourceRequisitionProvider(new ClassPathResource("/NewFile2.xml"), requisitionMerger).getRequisition();
+        requisitionService.saveOrUpdateRequisition(requisition);
+        verifyBasicImportCounts(requisition);
     }
 
 
@@ -364,9 +356,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
     /**
      * We have to ignore this test until there is a DNS service available in the test harness
-     * 
-     * @throws ForeignSourceRepositoryException
-     * @throws MalformedURLException
+     *
      */
     @Test(timeout=300000)
     @JUnitDNSServer(port=9153, zones={
@@ -376,25 +366,11 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
                     // @DNSEntry(hostname="www", address="::1:2:3:4", ipv6=true)
             })
     })
-    public void testDnsVisit() throws ForeignSourceRepositoryException, MalformedURLException {
-        final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost:9153/opennms.com"));
-        final CountingVisitor visitor = new CountingVisitor() {
-            @Override
-            public void visitNode(final OnmsNodeRequisition req) {
-                LOG.debug("visitNode: {}/{} {}", req.getForeignSource(), req.getForeignId(), req.getNodeLabel());
-                m_nodes.add(req);
-                m_nodeCount++;
-            }
-            @Override
-            public void visitInterface(final OnmsIpInterfaceRequisition req) {
-                LOG.debug("visitInterface: {}", req.getIpAddr());
-                m_ifaces.add(req);
-                m_ifaceCount++;
-            }
-        };
-        requisition.visit(visitor);
+    public void testDnsVisit() throws IOException {
+        final RequisitionEntity requisition = new ResourceRequisitionProvider(new UrlResource("dns://localhost:9153/opennms.com"), requisitionMerger).getRequisition();
+        requisitionService.saveOrUpdateRequisition(requisition);
 
-        verifyDnsImportCounts(visitor);
+        verifyDnsImportCounts(requisition);
     }
 
     @Test(timeout=300000)
@@ -623,10 +599,10 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         @JUnitSnmpAgent(host="2001:0470:e2f1:cafe:16c1:7cff:12d6:7bb9", resource="classpath:/snmpwalk-demo.properties")
     })
     public void testPopulateWithIpv6SnmpAndNodeScan() throws Exception {
-        final ForeignSource fs = new ForeignSource();
+        final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("matt:");
-        fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
-        m_foreignSourceRepository.putDefaultForeignSource(fs);
+        fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        m_foreignSourceService.saveForeignSource(fs);
 
         importFromResource("classpath:/requisition_then_scanv6.xml", Boolean.TRUE.toString());
 
@@ -1163,7 +1139,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
      * from the import file.
-     * 
+     *
      * @throws ModelImportException
      */
     @Test(timeout=300000)
@@ -1173,7 +1149,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"), Boolean.TRUE.toString());
 
         assertEquals(1, getNodeDao().countAll());
-        // \u00f1 is unicode for n~ 
+        // \u00f1 is unicode for n~
         final OnmsNode onmsNode = getNodeDao().get(nextNodeId);
         LOG.debug("node = {}", onmsNode);
         assertEquals("\u00f1ode2", onmsNode.getLabel());
@@ -1183,7 +1159,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
      * from the import file.
-     * 
+     *
      * @throws ModelImportException
      */
     @Test(timeout=300000)
@@ -1447,7 +1423,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     /**
      * Test that the parent-foreign-source attribute in a requisition can add a parent to a
      * node that resides in a different provisioning group.
-     * 
+     *
      * @see http://issues.opennms.org/browse/NMS-4109
      */
     @Test(timeout=300000)
@@ -1573,12 +1549,12 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     public void testRequisitionedCategoriesWithPolicies() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
-        final ForeignSource fs = m_foreignSourceRepository.getForeignSource("empty");
-        final PluginConfig policy = new PluginConfig("addDumbCategory", NodeCategorySettingPolicy.class.getName());
+        final ForeignSourceEntity fs = m_foreignSourceService.getForeignSource("empty");
+        final PolicyPluginConfigEntity policy = new PolicyPluginConfigEntity("addDumbCategory", NodeCategorySettingPolicy.class.getName());
         policy.addParameter("category", "Dumb");
         policy.addParameter("label", "test");
         fs.addPolicy(policy);
-        m_foreignSourceRepository.save(fs);
+        m_foreignSourceService.saveForeignSource(fs);
 
         importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
 
@@ -1780,13 +1756,13 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     private static Event nodeDeleted(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
-        return bldr.getEvent();        
+        return bldr.getEvent();
     }
 
     private static Event deleteNode(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
-        return bldr.getEvent();        
+        return bldr.getEvent();
     }
 
     private static Event interfaceDeleted(int nodeid, String ipaddr) {
@@ -1840,212 +1816,37 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         return node;
     }
 
-    private static void verifyDnsImportCounts(CountingVisitor visitor) {
-        assertEquals(1, visitor.getModelImportCount());
+    private static void verifyDnsImportCounts(RequisitionEntity requisition) {
         // 1 for "opennms.com", 1 for "www.opennms.com"
-        assertEquals(2, visitor.getNodeCount());
-        assertEquals(0, visitor.getNodeCategoryCount());
+        assertEquals(2, requisition.getNodes().size());
+        assertEquals(0, requisition.getNodes().stream().mapToInt(n -> n.getCategories().size()).sum());
         // 1 IPv4 address per hostname
-        assertEquals(2, visitor.getInterfaceCount());
+        assertEquals(2, requisition.getNodes().stream().mapToInt(n -> n.getInterfaces().size()).sum());
         // 2 services per interface (ICMP + SNMP)
-        assertEquals(4, visitor.getMonitoredServiceCount());
-        assertEquals(0, visitor.getServiceCategoryCount());
-        assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
-        assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
-        assertEquals(visitor.getNodeCategoryCount(), visitor.getNodeCategoryCompletedCount());
-        assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
-        assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
-        assertEquals(visitor.getServiceCategoryCount(), visitor.getServiceCategoryCompletedCount());
+        assertEquals(4, requisition.getNodes().stream()
+                .mapToInt(n -> n.getInterfaces().stream()
+                        .mapToInt(i -> i.getMonitoredServices().size()).sum()
+                ).sum());
+        assertEquals(0, requisition.getNodes().stream()
+                .mapToInt(n -> n.getInterfaces().stream()
+                            .mapToInt(i -> i.getMonitoredServices().stream()
+                                .mapToInt(s -> s.getCategories().size()).sum()).sum()
+                ).sum());
     }
 
-    private static void verifyBasicImportCounts(CountingVisitor visitor) {
-        assertEquals(1, visitor.getModelImportCount());
-        assertEquals(1, visitor.getNodeCount());
-        assertEquals(3, visitor.getNodeCategoryCount());
-        assertEquals(4, visitor.getInterfaceCount());
-        assertEquals(6, visitor.getMonitoredServiceCount());
-        assertEquals(0, visitor.getServiceCategoryCount());
-        assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
-        assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
-        assertEquals(visitor.getNodeCategoryCount(), visitor.getNodeCategoryCompletedCount());
-        assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
-        assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
-        assertEquals(visitor.getServiceCategoryCount(), visitor.getServiceCategoryCompletedCount());
-    }
-
-    static class CountingVisitor implements RequisitionVisitor {
-        protected int m_modelImportCount;
-        protected int m_modelImportCompleted;
-        protected int m_nodeCount;
-        protected int m_nodeCompleted;
-        protected int m_nodeCategoryCount;
-        protected int m_nodeCategoryCompleted;
-        protected int m_ifaceCount;
-        protected int m_ifaceCompleted;
-        protected int m_svcCount;
-        protected int m_svcCompleted;
-        protected int m_svcCategoryCount;
-        protected int m_svcCategoryCompleted;
-        protected int m_assetCount;
-        protected int m_assetCompleted;
-        protected List<OnmsNodeRequisition> m_nodes = new ArrayList<OnmsNodeRequisition>();
-        protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<OnmsIpInterfaceRequisition>();
-
-        public List<OnmsNodeRequisition> getNodes() {
-            return m_nodes;
-        }
-
-        public List<OnmsIpInterfaceRequisition> getInterfaces() {
-            return m_ifaces;
-        }
-
-        public int getModelImportCount() {
-            return m_modelImportCount;
-        }
-
-        public int getModelImportCompletedCount() {
-            return m_modelImportCompleted;
-        }
-
-        public int getNodeCount() {
-            return m_nodeCount;
-        }
-
-        public int getNodeCompletedCount() {
-            return m_nodeCompleted;
-        }
-
-        public int getInterfaceCount() {
-            return m_ifaceCount;
-        }
-
-        public int getInterfaceCompletedCount() {
-            return m_ifaceCompleted;
-        }
-
-        public int getMonitoredServiceCount() {
-            return m_svcCount;
-        }
-
-        public int getMonitoredServiceCompletedCount() {
-            return m_svcCompleted;
-        }
-
-        public int getNodeCategoryCount() {
-            return m_nodeCategoryCount;
-        }
-
-        public int getNodeCategoryCompletedCount() {
-            return m_nodeCategoryCompleted;
-        }
-
-        public int getServiceCategoryCount() {
-            return m_svcCategoryCount;
-        }
-
-        public int getServiceCategoryCompletedCount() {
-            return m_svcCategoryCompleted;
-        }
-
-        public int getAssetCount() {
-            return m_assetCount;
-        }
-
-        public int getAssetCompletedCount() {
-            return m_assetCompleted;
-        }
-
-        @Override
-        public void visitModelImport(final Requisition req) {
-            m_modelImportCount++;
-        }
-
-        @Override
-        public void visitNode(final OnmsNodeRequisition nodeReq) {
-            m_nodeCount++;
-            assertEquals("apknd", nodeReq.getNodeLabel());
-            assertEquals("4243", nodeReq.getForeignId());
-        }
-
-        @Override
-        public void visitInterface(final OnmsIpInterfaceRequisition ifaceReq) {
-            m_ifaceCount++;
-        }
-
-        @Override
-        public void visitMonitoredService(final OnmsMonitoredServiceRequisition monSvcReq) {
-            m_svcCount++;
-        }
-
-        @Override
-        public void visitNodeCategory(final OnmsNodeCategoryRequisition catReq) {
-            m_nodeCategoryCount++;
-        }
-
-        @Override
-        public void visitServiceCategory(final OnmsServiceCategoryRequisition catReq) {
-            m_svcCategoryCount++;
-        }
-
-        @Override
-        public void visitAsset(final OnmsAssetRequisition assetReq) {
-            m_assetCount++;
-        }
-
-        @Override
-        public String toString() {
-            return (new ToStringCreator(this)
-            .append("modelImportCount", getModelImportCount())
-            .append("modelImportCompletedCount", getModelImportCompletedCount())
-            .append("nodeCount", getNodeCount())
-            .append("nodeCompletedCount", getNodeCompletedCount())
-            .append("nodeCategoryCount", getNodeCategoryCount())
-            .append("nodeCategoryCompletedCount", getNodeCategoryCompletedCount())
-            .append("interfaceCount", getInterfaceCount())
-            .append("interfaceCompletedCount", getInterfaceCompletedCount())
-            .append("monitoredServiceCount", getMonitoredServiceCount())
-            .append("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
-            .append("serviceCategoryCount", getServiceCategoryCount())
-            .append("serviceCategoryCompletedCount", getServiceCategoryCompletedCount())
-            .append("assetCount", getAssetCount())
-            .append("assetCompletedCount", getAssetCompletedCount())
-            .toString());
-        }
-
-        @Override
-        public void completeModelImport(Requisition req) {
-            m_modelImportCompleted++;
-        }
-
-        @Override
-        public void completeNode(OnmsNodeRequisition nodeReq) {
-            m_nodeCompleted++;
-        }
-
-        @Override
-        public void completeInterface(OnmsIpInterfaceRequisition ifaceReq) {
-            m_ifaceCompleted++;
-        }
-
-        @Override
-        public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
-            m_svcCompleted++;
-        }
-
-        @Override
-        public void completeNodeCategory(OnmsNodeCategoryRequisition catReq) {
-            m_nodeCategoryCompleted++;
-        }
-
-        @Override
-        public void completeServiceCategory(OnmsServiceCategoryRequisition catReq) {
-            m_nodeCategoryCompleted++;
-        }
-
-        @Override
-        public void completeAsset(OnmsAssetRequisition assetReq) {
-            m_assetCompleted++;
-        }
+    private static void verifyBasicImportCounts(RequisitionEntity requisition) {
+        assertEquals(1, requisition.getNodes().size());
+        assertEquals(3, requisition.getNodes().stream().mapToInt(n -> n.getCategories().size()).sum());
+        assertEquals(4, requisition.getNodes().stream().mapToInt(n -> n.getInterfaces().size()).sum());
+        assertEquals(6, requisition.getNodes().stream()
+                .mapToInt(n -> n.getInterfaces().stream()
+                        .mapToInt(i -> i.getMonitoredServices().size()).sum()
+                ).sum());
+        assertEquals(0, requisition.getNodes().stream()
+                .mapToInt(n -> n.getInterfaces().stream()
+                        .mapToInt(i -> i.getMonitoredServices().stream()
+                                .mapToInt(s -> s.getCategories().size()).sum()).sum()
+                ).sum());
     }
 
     @Override
