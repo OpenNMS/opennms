@@ -287,17 +287,15 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         }
         if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI)) {
             final String daemonName = getDaemonNameFromReloadDaemonEvent(e);
-            if (daemonName.startsWith(getName() + '-')) {
-                Matcher m = Pattern.compile(getName() + "-(.+)$").matcher(daemonName);
-                if (m.find()) {
-                    final String engineName = m.group(1);
-                    LOG.warn("An error was detected while reloading engine {}, this engine will be removed. Fix the error and try again.", engineName);
-                    m_correlator.removeCorrelationEngine(engineName);
-                    for (PluginConfiguration p : m_pluginConfigurations) {
-                        final RuleSet set = p.getRuleSets().stream().filter(r -> r.getName().equals(engineName)).findFirst().orElse(null);
-                        if (set != null) {
-                            p.getRuleSets().remove(set);
-                        }
+            Matcher m = Pattern.compile(getName() + "-(.+)$").matcher(daemonName);
+            if (m.find()) {
+                final String engineName = m.group(1);
+                LOG.warn("An error was detected while reloading engine {}, this engine will be removed. Fix the error and try again.", engineName);
+                m_correlator.removeCorrelationEngine(engineName);
+                for (PluginConfiguration p : m_pluginConfigurations) {
+                    final RuleSet set = p.getRuleSets().stream().filter(r -> r.getName().equals(engineName)).findFirst().orElse(null);
+                    if (set != null) {
+                        p.getRuleSets().remove(set);
                     }
                 }
             }
