@@ -29,9 +29,12 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
@@ -58,6 +61,54 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
     }
 
     @Override
+    public <T> List<T> findUsingNamedParameters(final String query, String[] paramNames, Object[] values, Integer offset, Integer limit) {
+        if (limit == null && offset == null) {
+            return findUsingNamedParameters(query, paramNames, values);
+        }
+
+        // This part is inspired by HibernateTemplate.findUsingNamedParameters.
+        // Unfortunately it does not support limiting the query, so we do it manually
+        if(paramNames.length != values.length) {
+            throw new IllegalArgumentException("Length of paramNames array must match length of values array");
+        }
+        return getHibernateTemplate().executeWithNativeSession(session -> {
+            final Query queryObject = session.createQuery(query);
+            prepareQuery(queryObject);
+            if (offset != null) {
+                queryObject.setFirstResult(offset);
+            }
+            if (limit != null) {
+                queryObject.setMaxResults(limit);
+            }
+            if (values != null) {
+                for (int i = 0; i < values.length; ++i) {
+                    applyNamedParameterToQuery(queryObject, paramNames[i], values[i]);
+                }
+            }
+            return queryObject.list();
+        });
+
+    }
+
+    @Override
+    public <T> List<T> executeNativeQuery(String sql, Map<String, Object> parameterMap) {
+        final List result = getHibernateTemplate().execute(session -> {
+            final Query query = session.createSQLQuery(sql);
+            if (parameterMap != null) {
+                parameterMap.entrySet().forEach(entry -> {
+                    if (entry.getValue() instanceof Collection) {
+                        query.setParameterList(entry.getKey(), (Collection) entry.getValue());
+                    } else {
+                        query.setParameter(entry.getKey(), entry.getValue());
+                    }
+                });
+            }
+            return query.list();
+        });
+        return result;
+    }
+
+    @Override
     public <T> T get(Class<T> entityType, int entityId) {
         return getHibernateTemplate().get(entityType, entityId);
     }
@@ -72,5 +123,33 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
             }
         };
         return getHibernateTemplate().execute(callback);
+    }
+
+    private void prepareQuery(Query queryObject) {
+        if(getHibernateTemplate().isCacheQueries()) {
+            queryObject.setCacheable(true);
+            if(getHibernateTemplate().getQueryCacheRegion() != null) {
+                queryObject.setCacheRegion(getHibernateTemplate().getQueryCacheRegion());
+            }
+        }
+
+        if(getHibernateTemplate().getFetchSize() > 0) {
+            queryObject.setFetchSize(getHibernateTemplate().getFetchSize());
+        }
+
+        if(getHibernateTemplate().getMaxResults() > 0) {
+            queryObject.setMaxResults(getHibernateTemplate().getMaxResults());
+        }
+    }
+
+    private static void applyNamedParameterToQuery(Query queryObject, String paramName, Object value) throws HibernateException {
+        if(value instanceof Collection) {
+            queryObject.setParameterList(paramName, (Collection)value);
+        } else if(value instanceof Object[]) {
+            queryObject.setParameterList(paramName, (Object[])((Object[])value));
+        } else {
+            queryObject.setParameter(paramName, value);
+        }
+
     }
 }

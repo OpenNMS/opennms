@@ -51,6 +51,7 @@ public class BusinessServicesBoxController extends AbstractController implements
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int numberOfRows = Integer.getInteger("opennms.businessServicesWithProblems.count", DEFAULT_ROW_COUNT);
+        boolean all = "true".equalsIgnoreCase(request.getParameter("all"));
 
         BusinessServiceSearchCriteriaBuilder criteriaBuilder = new BusinessServiceSearchCriteriaBuilder()
                 .order(BusinessServiceSearchCriteriaBuilder.Order.Severity)
@@ -58,9 +59,11 @@ public class BusinessServicesBoxController extends AbstractController implements
                 .desc();
 
         List<BusinessService> bsList = criteriaBuilder.apply(businessServiceManager, businessServiceManager.getAllBusinessServices());
-        boolean more = bsList.size() - numberOfRows > 0;
-        if (bsList.size() > numberOfRows) {
-            bsList = bsList.subList(0, numberOfRows);
+        boolean more = !all && bsList.size() - numberOfRows > 0;
+        if (!all) {
+            if (bsList.size() > numberOfRows) {
+                bsList = bsList.subList(0, numberOfRows);
+            }
         }
         ModelAndView modelAndView = new ModelAndView(m_successView);
         modelAndView.addObject("more", more);

@@ -236,7 +236,8 @@ function normalizeOffset(offset, maxOffset, limit) {
 				return false;
 			}
 		}
-	});
+	})
+	;
 
 	// List module
 	angular.module(MODULE_NAME, [ 'ngResource' ])

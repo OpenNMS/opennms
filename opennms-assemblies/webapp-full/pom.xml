@@ -178,6 +178,17 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.status</groupId>
+      <artifactId>org.opennms.features.status.rest</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.ncs</groupId>
       <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
       <type>war</type>

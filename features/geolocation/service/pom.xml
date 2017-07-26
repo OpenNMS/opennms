@@ -37,12 +37,41 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.status</groupId>
+      <artifactId>org.opennms.features.status.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.service.api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.service.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>

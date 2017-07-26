@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.criteria.Criteria;
 
@@ -39,7 +40,20 @@ public interface GenericPersistenceAccessor {
 
     <T> List<T> findUsingNamedParameters(String query, String[] paramNames, Object[] values);
 
+    <T> List<T> findUsingNamedParameters(final String query, String[] paramNames, Object[] values, Integer offset, Integer limit);
+
     <T> T get(Class<T> entityType, int entityId);
 
     List findMatching(Criteria criteria);
+
+    /**
+     * Executes a native SQL query.
+     * Use with care.
+     *
+     * @param sql The SQL query to execute
+     * @param parameterMap An optional parameters map to apply to the query.
+     * @param <T>
+     * @return The result.
+     */
+    <T> List<T> executeNativeQuery(String sql, Map<String, Object> parameterMap);
 }

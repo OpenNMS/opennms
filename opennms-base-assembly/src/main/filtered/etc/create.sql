@@ -2474,3 +2474,46 @@ CREATE TABLE topo_layout_vertex_positions (
 	CONSTRAINT fk_topo_layout_vertex_positions_vertex_position_id FOREIGN KEY (vertex_position_id)
 	REFERENCES topo_vertex_position (id) ON DELETE CASCADE
 );
+
+--##################################################################
+--# Status views
+--##################################################################
+
+CREATE VIEW node_alarm_status AS SELECT node.nodeid,
+  COALESCE(
+        (SELECT max(
+              CASE
+                  WHEN alarms.severity IS NULL OR alarms.severity < 3 THEN 3
+                  ELSE alarms.severity
+              END)
+        FROM alarms
+        WHERE alarms.nodeid = node.nodeid), 3) AS max_alarm_severity,
+  COALESCE(
+        (SELECT max(
+              CASE
+                  WHEN alarms.severity IS NULL OR alarms.severity < 3 THEN 3
+                  ELSE alarms.severity
+              END)
+         FROM alarms
+         WHERE alarms.nodeid = node.nodeid AND alarms.alarmacktime IS NULL), 3) AS max_alarm_severity_unack,
+  (SELECT count(alarms.alarmid)
+         FROM alarms
+        WHERE alarms.nodeid = node.nodeid AND alarms.alarmacktime IS NULL) AS alarm_count_unack,
+  (SELECT count(*)
+         FROM alarms
+        WHERE alarms.nodeid = node.nodeid) AS alarm_count
+ FROM node;
+
+CREATE VIEW node_outage_status AS
+ SELECT node.nodeid,
+      CASE
+          WHEN tmp.severity IS NULL OR tmp.severity < 3 THEN 3
+          ELSE tmp.severity
+      END AS max_outage_severity
+ FROM ( SELECT events.nodeid,
+          max(events.eventseverity) AS severity
+         FROM events
+           JOIN outages ON outages.svclosteventid = events.eventid
+        WHERE outages.svcregainedeventid IS NULL
+        GROUP BY events.nodeid) tmp
+ RIGHT JOIN node ON tmp.nodeid = node.nodeid;

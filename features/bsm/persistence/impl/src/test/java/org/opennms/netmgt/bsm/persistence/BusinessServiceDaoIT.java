@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolationException;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,8 +74,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-
-import org.junit.Assert;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -374,7 +373,7 @@ public class BusinessServiceDaoIT {
                 .toEntity());
         m_businessServiceDao.flush();
 
-        // restrict to value3% and order by id descending
+        // restrict to edge.weight > 3 and order by id descending
         criteria.setAliases(Lists.newArrayList(new Alias("edges", "edge", Alias.JoinType.INNER_JOIN, Restrictions.ge("edge.weight", 3))));
         criteria.setOrders(Lists.newArrayList(new Order("id", false)));
 
@@ -382,8 +381,8 @@ public class BusinessServiceDaoIT {
         filteredBusinessServices = m_businessServiceDao.findMatching(criteria);
         Assert.assertEquals(2, filteredBusinessServices.size());
         Assert.assertEquals(Lists.newArrayList(
-                    m_businessServiceDao.get(bsId2),
-                    m_businessServiceDao.get(bsId3)),
+                    m_businessServiceDao.get(bsId3),
+                    m_businessServiceDao.get(bsId2)),
                 filteredBusinessServices);
 
         /*
