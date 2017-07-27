@@ -31,10 +31,22 @@ package org.opennms.smoketest.rest;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.opennms.smoketest.junit.RestTestCase;
+import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 
-public class DataChoicesRestServiceTest extends RestTestCase {
+import io.restassured.RestAssured;
+
+public class DataChoicesRestServiceIT extends OpenNMSSeleniumTestCase {
+
+    @Before
+    public void before() {
+        System.out.println("before");
+        RestAssured.baseURI = getBaseUrl();
+        RestAssured.port = getServerHttpPort();
+        RestAssured.basePath = "/opennms";
+        RestAssured.authentication = RestAssured.preemptive().basic(OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME, OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD);
+    }
 
     @Test
     public void verifyGet() {
