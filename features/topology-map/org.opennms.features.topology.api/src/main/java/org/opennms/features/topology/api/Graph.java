@@ -54,9 +54,9 @@ public interface Graph {
 	
 	Vertex getVertexByKey(String vertexKey);
 
-	Map<VertexRef, Status> getVertexStatus();
+	Map<? extends VertexRef, ? extends Status> getVertexStatus();
 
-	Map<EdgeRef, Status> getEdgeStatus();
+	Map<? extends EdgeRef, ? extends Status> getEdgeStatus();
 
 	void visit(GraphVisitor visitor) throws Exception;
 }
