@@ -51,7 +51,7 @@ public class GraphMLEdge extends AbstractEdge {
      * It is required because each edge (whatever type) is cloned in the UI.
      * The resulting object is of type AbstractEdge.
      * This may be okay for edges which have the same fields. However, if a certain implementation needs Edge
-     * specific properties (e.g. a StatusProvider) there is no way to retrieve those.
+     * specific properties (e.g. a VertexStatusProviderType) there is no way to retrieve those.
      * In order to make them accessible (without knowing the actual implementation), the clone constructor is used.
      *
      * @param edgeToClone The edge to clone

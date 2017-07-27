@@ -34,6 +34,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,13 +45,15 @@ import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdgeStatusProvider;
+import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.internal.scripting.OSGiScriptEngineManager;
-import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLDefaultVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLEdgeStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLPropagateVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLScriptVertexStatusProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -64,6 +67,7 @@ import com.google.common.collect.Maps;
 
 public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
+<<<<<<< HEAD
 	private static final Logger LOG = LoggerFactory.getLogger(GraphMLMetaTopologyFactory.class);
 	private static final String TOPOLOGY_LOCATION = "topologyLocation";
 	private static final String LABEL = "label";
@@ -124,12 +128,8 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 					// Vertex Status Provider
 					// Only add status provider if explicitly set in GraphML document
-					if (rawTopologyProvider.requiresStatusProvider()) {
-						GraphMLVertexStatusProvider statusProvider = new GraphMLVertexStatusProvider(
-								rawTopologyProvider.getNamespace(),
-								(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds));
-						registerService(pid, StatusProvider.class, statusProvider);
-					}
+					this.buildStatusProvider(metaTopologyProvider, scriptEngineManager, rawTopologyProvider)
+							.ifPresent(statusProvider -> registerService(pid, StatusProvider.class, statusProvider));
 				});
 			} catch (InvalidGraphException | IOException e) {
 				LOG.error("An error occurred while loading GraphMLTopology from file {}. Ignoring...", location, e);
@@ -159,4 +159,35 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 		m_serviceRegistration.putIfAbsent(pid, Lists.newArrayList());
 		m_serviceRegistration.get(pid).add(serviceRegistration);
 	}
+
+	private Optional<StatusProvider> buildStatusProvider(final GraphMLMetaTopologyProvider metaTopologyProvider,
+														 final ScriptEngineManager scriptEngineManager,
+														 final GraphMLTopologyProvider rawTopologyProvider) {
+		switch (rawTopologyProvider.getVertexStatusProviderType()) {
+			case NO_STATUS_PROVIDER:
+				return Optional.empty();
+
+			case DEFAULT_STATUS_PROVIDER:
+				return Optional.of(new GraphMLDefaultVertexStatusProvider(
+						rawTopologyProvider.getVertexNamespace(),
+						(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds)));
+
+			case SCRIPT_STATUS_PROVIDER:
+				return Optional.of(new GraphMLScriptVertexStatusProvider(
+						rawTopologyProvider.getVertexNamespace(),
+						(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds),
+						scriptEngineManager,
+						m_serviceAccessor));
+
+			case PROPAGATE_STATUS_PROVIDER:
+				return Optional.of(new GraphMLPropagateVertexStatusProvider(
+						rawTopologyProvider.getVertexNamespace(),
+						metaTopologyProvider,
+						m_bundleContext));
+
+			default:
+				throw null;
+		}
+	}
 }
+
