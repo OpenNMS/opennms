@@ -40,7 +40,7 @@ angular.module('onms-search', [
   };
 
   $scope.goToChooseResources = function(node) {
-    $window.location.href = 'graph/chooseresource.jsp?node=' + node.id;
+    $window.location.href = getBaseHref() + 'graph/chooseresource.jsp?node=' + node.id;
   }
 
 }])
@@ -58,7 +58,7 @@ angular.module('onms-search', [
   };
 
   $scope.goToKscReport = function(ksc) {
-    $window.location.href = 'KSC/customView.htm?type=custom&report=' + ksc.id;
+    $window.location.href = getBaseHref() + 'KSC/customView.htm?type=custom&report=' + ksc.id;
   }
 
 }]);
