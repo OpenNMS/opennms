@@ -133,7 +133,7 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
         parameters.put("limit", "1");
         xml = sendRequest(GET, "/alarms", parameters, 200);
         // There are no acknowledged alarms
-        assertTrue(xml.contains("<alarms totalCount=\"0\"/>"));
+        assertTrue(xml.contains("<alarms offset=\"0\" totalCount=\"0\"/>"));
 
         xml = sendRequest(GET, "/alarms/1", parameters, 200);
         assertTrue(xml.contains("This is a test alarm"));

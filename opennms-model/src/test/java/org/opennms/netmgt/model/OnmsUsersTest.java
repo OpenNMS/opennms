@@ -60,11 +60,11 @@ public class OnmsUsersTest extends XmlTestNoCastor<OnmsUserList> {
         return Arrays.asList(new Object[][] {
             {
                 new OnmsUserList(),
-                "<users></users>"
+                "<users offset=\"0\"></users>"
             },
             {
                 userList,
-                "<users count=\"2\" totalCount=\"2\">"
+                "<users count=\"2\" totalCount=\"2\" offset=\"0\">"
                 + "<user>"
                 + "  <user-id>foo</user-id>"
                 + "  <full-name>Foo Barson</full-name>"

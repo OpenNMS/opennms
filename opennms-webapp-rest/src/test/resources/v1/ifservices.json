@@ -1,6 +1,6 @@
 {
     "count": 10, 
-    "offset": null, 
+    "offset": 0, 
     "monitored-service": [
         {
             "id": "2",

@@ -140,22 +140,22 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @JUnitTemporaryDatabase
     public void testAlarmQueryByNode() throws Exception {
         String xml = sendRequest(GET, "/alarms", parseParamData("nodeId=6&limit=1"), 200);
-        assertTrue(xml.contains("<alarms totalCount=\"0\"/>"));
+        assertTrue(xml.contains("<alarms offset=\"0\" totalCount=\"0\"/>"));
         xml = sendRequest(GET, "/alarms", parseParamData("nodeLabel=notFound&limit=1"), 200);
-        assertTrue(xml.contains("<alarms totalCount=\"0\"/>"));
+        assertTrue(xml.contains("<alarms offset=\"0\" totalCount=\"0\"/>"));
         xml = sendRequest(GET, "/alarms", parseParamData("node.id=6&limit=1"), 200);
-        assertTrue(xml.contains("<alarms totalCount=\"0\"/>"));
+        assertTrue(xml.contains("<alarms offset=\"0\" totalCount=\"0\"/>"));
         xml = sendRequest(GET, "/alarms", parseParamData("nodeId=1&limit=1"), 200);
-        assertFalse(xml.contains("<alarms totalCount=\"0\"/>"));
+        assertFalse(xml.contains("<alarms offset=\"0\" totalCount=\"0\"/>"));
         assertTrue(xml.contains("node1"));
         xml = sendRequest(GET, "/alarms", parseParamData("nodeLabel=node1&limit=1"), 200);
-        assertFalse(xml.contains("<alarms totalCount=\"0\"/>"));
+        assertFalse(xml.contains("<alarms offset=\"0\" totalCount=\"0\"/>"));
         assertTrue(xml.contains("node1"));
         xml = sendRequest(GET, "/alarms", parseParamData("node.label=node1&limit=1"), 200);
-        assertFalse(xml.contains("<alarms totalCount=\"0\"/>"));
+        assertFalse(xml.contains("<alarms offset=\"0\" totalCount=\"0\"/>"));
         assertTrue(xml.contains("node1"));
         xml = sendRequest(GET, "/alarms", parseParamData("ipInterface.ipAddress=192.168.1.2&limit=1"), 200);
-        assertFalse(xml.contains("<alarms totalCount=\"0\"/>"));
+        assertFalse(xml.contains("<alarms offset=\"0\" totalCount=\"0\"/>"));
         assertTrue(xml.contains("node1"));
     }
 
