@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.SortedSet;
 import java.util.concurrent.Callable;
 
 import javax.ws.rs.Consumes;
@@ -70,6 +71,8 @@ import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.support.SecurityHelper;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +144,11 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
     @Override
     protected JaxbListWrapper<OnmsAlarm> createListWrapper(Collection<OnmsAlarm> list) {
         return new OnmsAlarmCollection(list);
+    }
+
+    @Override
+    protected SortedSet<SearchProperty> getQueryProperties() {
+        return SearchProperties.ALARM_SERVICE_PROPERTIES;
     }
 
     @Override

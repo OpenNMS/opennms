@@ -31,9 +31,13 @@ package org.opennms.web.rest.v2;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -43,6 +47,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -69,6 +74,8 @@ import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -134,6 +141,16 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
     // Do not allow delete by default
     protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, T object) {
         throw new WebApplicationException(Response.status(Status.NOT_IMPLEMENTED).build());
+    }
+
+    /**
+     * <p>Get a list of query properties that this endpoint supports
+     * for FIQL expressions and {@code orderBy} expressions.</p>
+     * 
+     * @return
+     */
+    protected SortedSet<SearchProperty> getQueryProperties() {
+        return Collections.emptySortedSet();
     }
 
     /**
@@ -232,6 +249,52 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
     @Produces({MediaType.TEXT_PLAIN})
     public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         return Response.ok(String.valueOf(getDao().countMatching(getCriteria(uriInfo, searchContext)))).build();
+    }
+
+    @GET
+    @Path("properties")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getProperties(@QueryParam("q") final String query) {
+        SortedSet<SearchProperty> props = getQueryProperties();
+        if (props != null && props.size() > 0) {
+            return Response.ok(new SearchPropertyCollection(props.stream().filter(s -> {
+                // If there is a query string...
+                if (query != null && query.length() > 0) {
+                    if (s.name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    // If there is no query string, don't filter
+                    return true;
+                }
+            }).collect(Collectors.toList()))).build();
+        } else {
+            return Response.noContent().build();
+        }
+    }
+
+    @GET
+    @Path("properties/{property}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getPropertyValues(@PathParam("property") final String property, @QueryParam("q") final String query) {
+        SortedSet<SearchProperty> props = getQueryProperties();
+        // Find the property with the matching ID
+        Optional<SearchProperty> prop = props.stream().filter(p -> p.id.equals(property)).findAny();
+        if (prop.isPresent()) {
+            // If there is a query string...
+            if (query != null && query.length() > 0) {
+                // TODO TODO
+                return Response.status(Status.NOT_FOUND).build();
+            } else {
+                // TODO TODO
+                return Response.status(Status.NOT_FOUND).build();
+            }
+        } else {
+            // 404
+            return Response.status(Status.NOT_FOUND).build();
+        }
     }
 
     @GET
