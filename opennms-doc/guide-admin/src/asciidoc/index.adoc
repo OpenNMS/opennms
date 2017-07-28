@@ -302,3 +302,7 @@ include::text/plugins/opennms-es-rest-mapping-table.adoc[]
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds
 include::text/workarounds/snmp.adoc[]
+
+[[ga-ifttt]]
+== IFTTT Integration
+include::text/ifttt/ifttt-integration.adoc[]

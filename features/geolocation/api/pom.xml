@@ -18,6 +18,12 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.features.status</groupId>
+      <artifactId>org.opennms.features.status.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <scope>provided</scope>

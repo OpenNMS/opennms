@@ -1,0 +1,141 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+The free web-based service _IFTTT_ allows to combine web applications using simple conditional instructions.
+Each supported service has several triggers that can be used to trigger actions of other services.
+This allows for example to change brightness and color of a smart bulb, send messages or date to IoT devices.
+
+The _{opennms-product-name}_ integration makes uses of the so-called "Webhooks" service, that allows to trigger actions when a specific web-request was received.
+The basic operation is as follows: _{opennms-product-name}_ polls for alarms with associated nodes and matches a given category filter.
+For the resulting alarm set the maximum severity and total count is computed.
+If one of these values changed compared to the last poll one or more events specified for the computed maximum severity will be sent to _IFTTT_.
+
+=== IFTTT Configuration
+
+In order to use the _IFTTT_ integration in _{opennms-product-name}_ you need an _IFTTT_ account.
+With this account you are able to create so-called applets that combine a trigger with an action.
+In our case we use the "Webhooks" service as the trigger and define the event name `OpenNMS`.
+After this step you can combine this trigger with any of the possible supported services and their actions.
+
+[[gu-ifttt-trigger-definition]]
+.Webhooks service trigger definition
+image:ifttt/trigger-definition-small.png[]
+
+In your account service settings for the "Webhooks" service you find your key in the given service URL.
+In the following example this key is `X71dfUZsH4Wkl6cjsLjdV`.
+
+[[gu-ifttt-webhooks-settings]]
+.Webhooks service settings
+image:ifttt/webhooks-settings-small.png[]
+
+On the side of _{opennms-product-name}_ you need a configuration that defines which event names to send on an alarm count or severity change.
+The configuration file `ifttt-config.xml` contains so called trigger packages.
+
+The operation is as follows:
+_{opennms-product-name}_ retrieves all alarms that have a node associated.
+Each trigger package defines whether only acknowledged alarms should be taken into account.
+It then computes the maximum severity and alarm count for each trigger package's category filter.
+After that it triggers all events defined in the corresponding trigger sets for the computed maximum severity.
+The category filter accepts Java regular expressions.
+Using an empty category filter will use all unacknowledged alarms with an associated node.
+
+Each trigger inside a trigger set defines the event name to be triggered and three additional values.
+These values can be used to set additional attributes for the corresponding _IFTTT_ applet action.
+The following trigger sets can be defined:
+
+[options="header, autowidth"]
+|===
+| Name     | Execution
+| ON       | on start of the _IFTTT_ alarm polling daemon to switch on a device
+| OFF      | on stop of the _IFTTT_ alarm polling daemon to switch off a device
+| NORMAL   | if severity is NORMAL
+| WARNING  | if severity is WARNING
+| MINOR    | if severity is MINOR
+| MAJOR    | if severity is MAJOR
+| CRITICAL | if severity is CRITICAL
+|===
+
+There are also `ON` and `OFF` available for the trigger set definition.
+The `ON` event will be sent when the polling daemon is started and the `OFF` when it is stopped.
+These events can be used to powering up/down and initializing devices.
+
+=== OpenNMS Configuration
+
+_IFTTT_ alarm polling will be enabled by setting the attribute `enabled` to `true` in the `ifttt-config.xml` file.
+It is also possible to configure the polling interval.
+The following trigger package defined the trigger sets which itself define a sequence of events to be triggered at _IFTTT_.
+Each trigger defines the `eventName` and an additional delay.
+This allows to defer the execution of the next trigger in a trigger set.
+
+=== Example
+
+The following example shows the configuration file for a WiFi light bulb controlled via _IFTTT_.
+The defined applets use `value1` for setting the color and `value2` for setting the brightness.
+The third value demonstrate the use of placeholders.
+For the severity-based trigger sets the following placeholders can be used in the three value fields:
+`%os%`/`%oldSeverity` for old severity, `%ns%`/`%newSeverity%` for new severity, `%oc%`/`%oldCount` for old alarm count and `%nc%`/``%newCount% for new alarm count.
+This is useful for sending messages or operating LED displays via _IFTTT_.
+
+[source, xml]
+----
+<ifttt-config enabled="true" key="X71dfUZsH4Wkl6cjsLjdV" pollInterval="30">
+    <trigger-package categoryFilter="Routers|Switches" onlyUnacknowledged="true">
+        <trigger-set name="ON">
+            <trigger eventName="on" delay="0">
+                <value1></value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="OFF">
+            <trigger eventName="off" delay="0">
+                <value1></value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="NORMAL">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#336600</value1>
+                <value2>0.40</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="WARNING">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#FFCC00</value1>
+                <value2>0.50</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MINOR">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#FF9900</value1>
+                <value2>0.60</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MAJOR">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#CC3300</value1>
+                <value2>0.70</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="CRITICAL">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#FF0000</value1>
+                <value2>0.80</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+    <trigger-package>
+</ifttt-config>
+----

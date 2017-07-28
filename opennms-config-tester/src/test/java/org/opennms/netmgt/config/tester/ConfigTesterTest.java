@@ -179,6 +179,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testIfTttConfig() {
+        ignoreConfigFile("ifttt-config.xml");
+    }
+
+    @Test
     public void testJasperReports() {
         testConfigFile("jasper-reports.xml");
     }

@@ -602,6 +602,11 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.status</groupId>
+      <artifactId>org.opennms.features.status.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.geolocation</groupId>
       <artifactId>org.opennms.features.geolocation.api</artifactId>
       <version>${project.version}</version>

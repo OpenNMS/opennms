@@ -48,6 +48,7 @@ import org.opennms.features.geolocation.api.GeolocationQuery;
 import org.opennms.features.geolocation.api.GeolocationService;
 import org.opennms.features.geolocation.api.GeolocationSeverity;
 import org.opennms.features.geolocation.api.StatusCalculationStrategy;
+import org.opennms.features.status.api.node.strategy.NodeStatusCalculationStrategy;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -129,7 +130,7 @@ public class GeolocationRestService {
     private static void validate(GeolocationQueryDTO query) throws InvalidQueryException {
         // Validate Strategy
         if (query.getStrategy() != null) {
-            boolean valid = isValid(query.getStrategy(), StatusCalculationStrategy.values());
+            boolean valid = isValid(query.getStrategy(), NodeStatusCalculationStrategy.values());
             if (!valid) {
                 throw new InvalidQueryException("Strategy '" + query.getStrategy() + "' is not supported");
             }

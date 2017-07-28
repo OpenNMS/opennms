@@ -1064,4 +1064,5 @@
       -->
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
+
 </features>

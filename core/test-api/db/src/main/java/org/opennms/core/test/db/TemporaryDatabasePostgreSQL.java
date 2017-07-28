@@ -196,6 +196,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
 
             m_installerDb.createTables();
+            m_installerDb.createViews();
             m_installerDb.insertData();
         } catch (final Exception e) {
             throw new TemporaryDatabaseException("Error while initializing up database.", e);

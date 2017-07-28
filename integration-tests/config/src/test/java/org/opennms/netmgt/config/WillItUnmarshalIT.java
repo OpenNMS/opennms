@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.ifttt.config.IfTttConfig;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
@@ -208,6 +209,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.CONFIG, "ifttt-config.xml", IfTttConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, Impl.JAXB);
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "jms-northbounder-configuration.xml", JmsNorthbounderConfig.class, Impl.JAXB);

@@ -562,4 +562,17 @@ public abstract class Util extends Object {
         .replace("\b", "\\b");
     }
 
+    public static String getParameter(HttpServletRequest request, String name) {
+        return getParameter(request, name, null);
+    }
+
+    // Returns request parameter or default if the parameter does not exist
+    public static String getParameter(HttpServletRequest request, String name, String defaultValue) {
+        String value = request.getParameter(name);
+        if (value == null || value.isEmpty() && defaultValue != null && !defaultValue.isEmpty()) {
+            return defaultValue;
+        }
+        return value;
+    }
+
 }
