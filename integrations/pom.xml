@@ -20,6 +20,7 @@
     <module>opennms-snmp-hardware-inventory-provisioning-adapter</module>
     <module>opennms-jasper-extensions</module>
     <module>opennms-jasperstudio-extension</module>
+    <module>opennms-twilio-notification-strategy</module>
     <module>opennms-vmware</module>
     <module>opennms-vtdxml-collector-handler</module>
   </modules>

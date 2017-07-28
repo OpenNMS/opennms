@@ -57,7 +57,6 @@
     <module>spring-test</module>
     <module>spring-web</module>
     <module>tracker</module>
-    <module>twilio</module>
     <module>twitter4j</module>
   </modules>
 </project>
