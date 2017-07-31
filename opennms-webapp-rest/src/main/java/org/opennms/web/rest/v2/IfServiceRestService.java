@@ -31,6 +31,7 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -50,6 +51,8 @@ import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,6 +118,11 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     @Override
     protected JaxbListWrapper<OnmsMonitoredService> createListWrapper(Collection<OnmsMonitoredService> list) {
         return new OnmsMonitoredServiceList(list);
+    }
+
+    @Override
+    protected SortedSet<SearchProperty> getQueryProperties() {
+        return SearchProperties.IF_SERVICE_SERVICE_PROPERTIES;
     }
 
     @Override

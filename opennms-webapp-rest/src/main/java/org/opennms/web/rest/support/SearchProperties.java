@@ -42,7 +42,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsSeverity;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Seth
@@ -84,6 +89,11 @@ public abstract class SearchProperties {
 		new SearchProperty("uei", "UEI", STRING),
 		new SearchProperty("x733AlarmType", "X.733 Alarm Type", STRING),
 		new SearchProperty("x733ProbableCause", "X.733 Probable Cause", INTEGER)
+	}));
+
+	private static final SortedSet<SearchProperty> APPLICATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+		new SearchProperty("id", "ID", STRING),
+		new SearchProperty("name", "Name", STRING)
 	}));
 
 	private static final SortedSet<SearchProperty> ASSET_RECORD_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
@@ -169,9 +179,9 @@ public abstract class SearchProperties {
 
 	private static final SortedSet<SearchProperty> DIST_POLLER_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
-		new SearchProperty("label", "Label for the system", STRING),
+		new SearchProperty("label", "Label", STRING),
 		//new SearchProperty("lastUpdated", "Last Updated", TIMESTAMP),
-		new SearchProperty("location", "ID of the monitoring location that this Minion is assigned to", STRING)
+		new SearchProperty("location", "Monitoring Location", STRING)
 	}));
 
 	private static final SortedSet<SearchProperty> EVENT_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
@@ -182,10 +192,19 @@ public abstract class SearchProperties {
 		new SearchProperty("eventCorrelation", "Correlation", STRING),
 		new SearchProperty("eventCreateTime", "Creation Time", TIMESTAMP),
 		new SearchProperty("eventDescr", "Description", STRING),
-		new SearchProperty("eventDisplay", "Display TODO", STRING),
-		new SearchProperty("eventForward", "Forward TODO", STRING),
+		new SearchProperty("eventDisplay", "Display", STRING, ImmutableMap.<String,String>builder()
+			.put("Y", "Yes")
+			.put("N", "No")
+			.build()
+		),
+		// This field has an unusual format with fields from the eventconf
+		new SearchProperty("eventForward", "Forward", STRING),
 		new SearchProperty("eventHost", "Host", STRING),
-		new SearchProperty("eventLog", "Log TODO", STRING),
+		new SearchProperty("eventLog", "Log", STRING, ImmutableMap.<String,String>builder()
+			.put("Y", "Yes")
+			.put("N", "No")
+			.build()
+		),
 		new SearchProperty("eventLogGroup", "Log Group", STRING),
 		new SearchProperty("eventLogMsg", "Log Message", STRING),
 		new SearchProperty("eventMouseOverText", "Mouseover Text", STRING),
@@ -194,14 +213,20 @@ public abstract class SearchProperties {
 		new SearchProperty("eventOperActionMenuText", "Operator Action Menu Text", STRING),
 		new SearchProperty("eventOperInstruct", "Operator Instructions", STRING),
 		new SearchProperty("eventPathOutage", "Path Outage", STRING),
-		new SearchProperty("eventSeverity", "Severity (TODO: Enumerate values) ", INTEGER),
-		new SearchProperty("eventSnmp", "SNMP TODO", STRING),
+		new SearchProperty("eventSeverity", "Severity", INTEGER, ONMS_SEVERITIES),
+		// This field has an unusual format with fields from the eventconf
+		new SearchProperty("eventSnmp", "SNMP", STRING),
 		new SearchProperty("eventSnmpHost", "SNMP Host", STRING),
 		new SearchProperty("eventSource", "Event Source", STRING),
 		new SearchProperty("eventSuppressedCount", "Suppressed Count", INTEGER),
 		new SearchProperty("eventTime", "Event Time", TIMESTAMP),
 		new SearchProperty("eventTTicket", "Trouble Ticket ID", STRING),
-		new SearchProperty("eventTTicketState", "Trouble Ticket State (TODO: Enumerate values) ", INTEGER),
+		new SearchProperty("eventTTicketState", "Trouble Ticket State", INTEGER, ImmutableMap.<String,String>builder()
+			// Can also be null, but that's probably not useful for searching
+			.put("0", "Off")
+			.put("1", "On")
+			.build()
+		),
 		new SearchProperty("eventUei", "UEI", STRING),
 		new SearchProperty("ifIndex", "ifIndex", INTEGER),
 		new SearchProperty("ipAddr", "IP Address", IP_ADDRESS)
@@ -211,23 +236,32 @@ public abstract class SearchProperties {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("lastFail", "Last Failure Time", TIMESTAMP),
 		new SearchProperty("lastGood", "Last Good Time", TIMESTAMP),
-		new SearchProperty("notify", "? (TODO: Enumerate values)", STRING),
-		new SearchProperty("qualifier", "? TODO", STRING),
-		new SearchProperty("source", "? (TODO: Enumerate values)", STRING),
-		new SearchProperty("status", "Management status of the service (TODO: Enumerate values)", STRING)
+		new SearchProperty("notify", "Notify", STRING, ImmutableMap.<String,String>builder()
+			.put("Y", "Yes")
+			.put("N", "No")
+			.build()
+		),
+		// Unclear if this value is ever used
+		new SearchProperty("qualifier", "Qualifier", STRING),
+		new SearchProperty("source", "Detection Source", STRING, ImmutableMap.<String,String>builder()
+			.put("P", "Plugin")
+			.put("F", "Forced")
+			.build()
+		),
+		new SearchProperty("status", "Management Status", STRING, OnmsMonitoredService.STATUS_MAP)
 	}));
 
 	private static final SortedSet<SearchProperty> IP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
-		new SearchProperty("ipAddress", "IPv4 or IPv6 address of the interface", IP_ADDRESS),
+		new SearchProperty("ipAddress", "IP Address", IP_ADDRESS),
 		new SearchProperty("ipHostName", "Hostname", STRING),
-		new SearchProperty("ipLastCapsdPoll", "Time of last provisioning scan", TIMESTAMP),
-		new SearchProperty("isManaged", "Management status", STRING)
+		new SearchProperty("ipLastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
+		new SearchProperty("isManaged", "Management Status", STRING)
 	}));
 
 	private static final SortedSet<SearchProperty> LOCATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("locationName", "ID", STRING),
-		new SearchProperty("geolocation", "Geographic address of the location", STRING),
+		new SearchProperty("geolocation", "Geographic Address", STRING),
 		new SearchProperty("latitude", "Latitude", FLOAT),
 		new SearchProperty("longitude", "Longitude", FLOAT),
 		new SearchProperty("monitoringArea", "Monitoring Area", STRING),
@@ -236,31 +270,44 @@ public abstract class SearchProperties {
 
 	private static final SortedSet<SearchProperty> MINION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
-		new SearchProperty("label", "Label for the system", STRING),
-		new SearchProperty("lastUpdated", "Timestamp of the last heartbeat communication with the system", TIMESTAMP),
-		new SearchProperty("location", "ID of the monitoring location that this Minion is assigned to", STRING),
+		new SearchProperty("label", "Label", STRING),
+		new SearchProperty("lastUpdated", "Last Heartbeat Update", TIMESTAMP),
+		new SearchProperty("location", "Monitoring Location", STRING),
 		new SearchProperty("status", "Status", STRING)
 	}));
 
 	private static final SortedSet<SearchProperty> NODE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
-		new SearchProperty("createTime", "Creation time for the node", TIMESTAMP),
+		new SearchProperty("createTime", "Creation Time", TIMESTAMP),
 		new SearchProperty("foreignId", "Foreign ID", STRING),
-		new SearchProperty("foreignSource", "Foreign source", STRING),
-		new SearchProperty("label", "Node label", STRING),
-		new SearchProperty("labelSource", "Source for the label (TODO: Enumerate values)", STRING),
-		new SearchProperty("lastCapsdPoll", "Time of last provisioning scan", TIMESTAMP),
-		new SearchProperty("netBiosDomain", "Windows domain of the node", STRING),
-		new SearchProperty("netBiosName", "Windows name for the node", STRING),
-		new SearchProperty("operatingSystem", "Operating system", STRING),
+		new SearchProperty("foreignSource", "Foreign Source", STRING),
+		new SearchProperty("label", "Node Label", STRING),
+		new SearchProperty("labelSource", "Label Source", STRING, ImmutableMap.<String,String>builder()
+			.put(String.valueOf(NodeLabelSource.ADDRESS.value()), "IP Address")
+			.put(String.valueOf(NodeLabelSource.HOSTNAME.value()), "Hostname")
+			.put(String.valueOf(NodeLabelSource.NETBIOS.value()), "NetBIOS")
+			.put(String.valueOf(NodeLabelSource.SYSNAME.value()), "SNMP sysName")
+			.put(String.valueOf(NodeLabelSource.UNKNOWN.value()), "Unknown")
+			.put(String.valueOf(NodeLabelSource.USER.value()), "User-Defined")
+			.build()
+		),
+		new SearchProperty("lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
+		new SearchProperty("netBiosDomain", "Windows NetBIOS Domain", STRING),
+		new SearchProperty("netBiosName", "Windows NetBIOS Name", STRING),
+		new SearchProperty("operatingSystem", "Operating System", STRING),
 		//new SearchProperty("parent", "?", ?),
 		//new SearchProperty("pathElement", "?", ?),
-		new SearchProperty("sysContact", "SNMP sysContact field", STRING),
-		new SearchProperty("sysDescription", "SNMP sysDescription field", STRING),
-		new SearchProperty("sysLocation", "SNMP sysLocation field", STRING),
-		new SearchProperty("sysName", "SNMP sysName field", STRING),
+		new SearchProperty("sysContact", "SNMP sysContact", STRING),
+		new SearchProperty("sysDescription", "SNMP sysDescription", STRING),
+		new SearchProperty("sysLocation", "SNMP sysLocation", STRING),
+		new SearchProperty("sysName", "SNMP sysName", STRING),
 		new SearchProperty("sysObjectId", "SNMP sysObjectId", STRING),
-		//new SearchProperty("type", "?", ?)
+		new SearchProperty("type", "Type", STRING, ImmutableMap.<String,String>builder()
+			.put(String.valueOf(NodeType.ACTIVE.value()), "Active")
+			.put(String.valueOf(NodeType.DELETED.value()), "Deleted")
+			.put(String.valueOf(NodeType.UNKNOWN.value()), "Unknown")
+			.build()
+		)
 	}));
 
 	private static final SortedSet<SearchProperty> NOTIFICATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
@@ -285,14 +332,14 @@ public abstract class SearchProperties {
 
 	private static final SortedSet<SearchProperty> SCAN_REPORT_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", STRING),
-		new SearchProperty("locale", "Locale for the report", STRING),
-		new SearchProperty("location", "ID of the monitoring location that this report was generated for", STRING),
-		new SearchProperty("timestamp", "Timestamp of the report", TIMESTAMP)
+		new SearchProperty("locale", "Locale", STRING),
+		new SearchProperty("location", "Monitoring Location", STRING),
+		new SearchProperty("timestamp", "Timestamp", TIMESTAMP)
 	}));
 
 	private static final SortedSet<SearchProperty> SERVICE_TYPE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
-		new SearchProperty("name", "Service name", STRING)
+		new SearchProperty("name", "Service Name", STRING)
 	}));
 
 	private static final SortedSet<SearchProperty> SNMP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
@@ -300,13 +347,22 @@ public abstract class SearchProperties {
 		new SearchProperty("ifAdminStatus", "Admin status", INTEGER),
 		new SearchProperty("ifIndex", "Interface index", INTEGER),
 		new SearchProperty("ifOperStatus", "Operational status", INTEGER),
-		new SearchProperty("ifSpeed", "Bits-per-second speed for the interface", LONG),
-		new SearchProperty("lastCapsdPoll", "Time of last provisioning scan", TIMESTAMP),
-		new SearchProperty("lastSnmpPoll", "?", TIMESTAMP),
-		new SearchProperty("netMask", "IP address representing the netmask of the interface", IP_ADDRESS)
+		new SearchProperty("ifSpeed", "Bits-per-second Interface Speed", LONG),
+		new SearchProperty("lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
+		new SearchProperty("lastSnmpPoll", "Last SNMP Interface Poll", TIMESTAMP),
+		new SearchProperty("netMask", "Network Mask", IP_ADDRESS)
 	}));
 
 	public static final SortedSet<SearchProperty> ALARM_SERVICE_PROPERTIES;
+	public static final SortedSet<SearchProperty> APPLICATION_SERVICE_PROPERTIES;
+	public static final SortedSet<SearchProperty> EVENT_SERVICE_PROPERTIES;
+	public static final SortedSet<SearchProperty> IF_SERVICE_SERVICE_PROPERTIES;
+	public static final SortedSet<SearchProperty> MINION_SERVICE_PROPERTIES;
+	public static final SortedSet<SearchProperty> LOCATION_SERVICE_PROPERTIES;
+	//public static final SortedSet<SearchProperty> NODE_SERVICE_PROPERTIES;
+	public static final SortedSet<SearchProperty> NOTIFICATION_SERVICE_PROPERTIES;
+	public static final SortedSet<SearchProperty> OUTAGE_SERVICE_PROPERTIES;
+	public static final SortedSet<SearchProperty> SCAN_REPORT_SERVICE_PROPERTIES;
 
 	/**
 	 * Prepend a join alias to the property ID for each {@link SearchProperty}.
@@ -316,7 +372,19 @@ public abstract class SearchProperties {
 	 * @return
 	 */
 	private static final Set<SearchProperty> withAliasPrefix(Aliases alias, Set<SearchProperty> properties) {
-		return properties.stream().map(p -> { return new SearchProperty(alias.prop(p.id), p.name, p.type, p.values); }).collect(Collectors.toSet());
+		return withAliasPrefix(alias, properties, SearchProperty.DEFAULT_ORDER_BY);
+	}
+
+	/**
+	 * Prepend a join alias to the property ID for each {@link SearchProperty}.
+	 * 
+	 * @param alias
+	 * @param properties
+	 * @param orderBy
+	 * @return
+	 */
+	private static final Set<SearchProperty> withAliasPrefix(Aliases alias, Set<SearchProperty> properties, boolean orderBy) {
+		return properties.stream().map(p -> { return new SearchProperty(alias.prop(p.id), p.name, p.type, orderBy, p.values); }).collect(Collectors.toSet());
 	}
 
 	/**
@@ -336,7 +404,7 @@ public abstract class SearchProperties {
 		ALARM_SERVICE_PROPERTIES.addAll(ALARM_PROPERTIES);
 		//ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.alarm, ALARM_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, CATEGORY_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, CATEGORY_PROPERTIES, false));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, DIST_POLLER_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix("lastEvent", EVENT_PROPERTIES));
@@ -344,5 +412,74 @@ public abstract class SearchProperties {
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+
+		APPLICATION_SERVICE_PROPERTIES = new TreeSet<>();
+		// Root prefix
+		APPLICATION_SERVICE_PROPERTIES.addAll(APPLICATION_PROPERTIES);
+
+		EVENT_SERVICE_PROPERTIES = new TreeSet<>();
+		// Root prefix
+		EVENT_SERVICE_PROPERTIES.addAll(EVENT_PROPERTIES);
+		//EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.event, EVENT_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.alarm, ALARM_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, CATEGORY_PROPERTIES, false));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, DIST_POLLER_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, LOCATION_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+
+		IF_SERVICE_SERVICE_PROPERTIES = new TreeSet<>();
+		// Root prefix
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(IF_SERVICE_PROPERTIES);
+		//IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.monitoredService, IF_SERVICE_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, LOCATION_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+
+		MINION_SERVICE_PROPERTIES = new TreeSet<>();
+		// Root prefix
+		MINION_SERVICE_PROPERTIES.addAll(MINION_PROPERTIES);
+
+		LOCATION_SERVICE_PROPERTIES = new TreeSet<>();
+		// Root prefix
+		LOCATION_SERVICE_PROPERTIES.addAll(LOCATION_PROPERTIES);
+
+		NOTIFICATION_SERVICE_PROPERTIES = new TreeSet<>();
+		// Root prefix
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(NOTIFICATION_PROPERTIES);
+		//NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.notification, NOTIFICATION_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, CATEGORY_PROPERTIES, false));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, DIST_POLLER_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.event, EVENT_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, LOCATION_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+
+		OUTAGE_SERVICE_PROPERTIES = new TreeSet<>();
+		// Root prefix
+		OUTAGE_SERVICE_PROPERTIES.addAll(OUTAGE_PROPERTIES);
+		//OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.outage, OUTAGE_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, DIST_POLLER_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, LOCATION_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceLostEvent", EVENT_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceRegainedEvent", EVENT_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+
+		SCAN_REPORT_SERVICE_PROPERTIES = new TreeSet<>();
+		// Root prefix
+		SCAN_REPORT_SERVICE_PROPERTIES.addAll(SCAN_REPORT_PROPERTIES);
 	}
 }
