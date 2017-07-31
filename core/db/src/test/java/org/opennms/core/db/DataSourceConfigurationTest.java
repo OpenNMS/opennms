@@ -61,7 +61,7 @@ public class DataSourceConfigurationTest extends XmlTestNoCastor<DataSourceConfi
         JdbcDataSource opennmsDs = new JdbcDataSource();
         opennmsDs.setName("opennms");
         opennmsDs.setClassName("org.postgresql.Driver");
-        opennmsDs.setUrl("jdbc:postgresql://localhost:5432/template1");
+        opennmsDs.setUrl(System.getProperty("mock.db.url", "jdbc:postgresql://localhost:5432/") + "template1");
         opennmsDs.setUserName("opennms");
         opennmsDs.setPassword("opennms");
         config.addJdbcDataSource(opennmsDs);
@@ -69,7 +69,7 @@ public class DataSourceConfigurationTest extends XmlTestNoCastor<DataSourceConfi
         JdbcDataSource opennmsDeuceDs = new JdbcDataSource();
         opennmsDeuceDs.setName("opennms2");
         opennmsDeuceDs.setClassName("org.postgresql.Driver");
-        opennmsDeuceDs.setUrl("jdbc:postgresql://localhost:5432/template1");
+        opennmsDeuceDs.setUrl(System.getProperty("mock.db.url", "jdbc:postgresql://localhost:5432/") + "template1");
         opennmsDeuceDs.addParam(new Param("user", "opennms"));
         opennmsDeuceDs.addParam(new Param("password", "opennms"));
         config.addJdbcDataSource(opennmsDeuceDs);

@@ -99,7 +99,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             validate(graphML);
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
-                final GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider(eachGraph, m_serviceAccessor);
+                final GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider(this, eachGraph, m_serviceAccessor);
                 final VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(topoProvider);
                 graphsByNamespace.put(topoProvider.getVertexNamespace(), vertexHopGraphProvider);
                 rawGraphsByNamespace.put(topoProvider.getVertexNamespace(), topoProvider);
