@@ -28,9 +28,12 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -48,6 +51,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @Entity
+@IdClass(OnmsEventParameter.OnmsEventParameterId.class)
 @Table(name="event_parameters")
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -55,12 +59,56 @@ public class OnmsEventParameter implements Serializable {
 
     private static final long serialVersionUID = 4530678411898489175L;
 
+    public class OnmsEventParameterId implements Serializable {
+        private OnmsEvent event;
+        private String name;
+
+        public OnmsEventParameterId(OnmsEvent event, String name) {
+            this.event = event;
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) { return false; }
+            if (!(obj instanceof OnmsEventParameterId)) { return false; }
+            if (!super.equals(obj)) {
+                return false;
+            }
+            return Objects.equals(this.event, ((OnmsEventParameterId) obj).event) &&
+                   Objects.equals(this.name, ((OnmsEventParameterId) obj).name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.event, this.name);
+        }
+
+        public OnmsEvent getEvent() {
+            return event;
+        }
+
+        public void setEvent(OnmsEvent event) {
+            this.event = event;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    @Id
     @XmlTransient
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="eventID")
     private OnmsEvent event;
 
     /** The name. */
+    @Id
     @XmlAttribute(name="name")
     private String name;
 

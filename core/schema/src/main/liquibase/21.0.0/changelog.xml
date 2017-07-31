@@ -80,7 +80,7 @@
                              referencedTableName="events"
                              referencedColumnNames="eventid" />
 
-    <dropColumn tableName="alarms" columnName="eventParms" />
+    <dropColumn tableName="alarms" columnName="eventparms" />
     <addColumn tableName="alarms">
       <column name="eventParametersRef" type="INTEGER">
         <constraints nullable="false"/>
