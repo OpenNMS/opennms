@@ -555,7 +555,7 @@ public class DatabasePopulator {
         event.setEventLog("Y");
         event.setEventLogMsg("Test Event Log Message");
         event.setEventParms("testParm=HelloWorld(string,text)");
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("test");
         event.setEventTime(new Date(1437061537105L));
         event.setEventUei("uei.opennms.org/test");

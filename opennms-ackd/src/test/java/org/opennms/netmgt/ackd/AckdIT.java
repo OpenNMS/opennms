@@ -312,7 +312,7 @@ public class AckdIT implements InitializingBean {
         
         event.setEventCreateTime(time);
         event.setEventDescr("Test node down event.");
-        event.setEventSeverity(6);
+        event.setEventSeverity(OnmsSeverity.MAJOR.getId());
         event.setEventSource("AckdTest");
         event.setEventTime(time);
         event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
