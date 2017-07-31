@@ -28,10 +28,10 @@
 
 package org.opennms.features.topology.api.support;
 
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
+
 import java.util.List;
 import java.util.function.Predicate;
-
-import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 
 /**
  * Helper interface to lookup all available {@link MetaTopologyProvider}s.

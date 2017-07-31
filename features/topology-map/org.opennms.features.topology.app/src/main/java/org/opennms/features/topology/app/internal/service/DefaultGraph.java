@@ -57,8 +57,8 @@ public class DefaultGraph implements Graph {
     private final Set<Vertex> m_displayVertices = new TreeSet<>(new RefComparator());
     private final Set<Edge> m_displayEdges = new TreeSet<>(new RefComparator());
     private Layout m_layout;
-    private Map<EdgeRef, Status> edgeStatus = Maps.newHashMap();
-    private Map<VertexRef, Status> vertexStatus = Maps.newHashMap();
+    private Map<? extends EdgeRef, ? extends Status> edgeStatus = Maps.newHashMap();
+    private Map<? extends VertexRef, ? extends Status> vertexStatus = Maps.newHashMap();
 
     public DefaultGraph(Collection<Vertex> displayVertices, Collection<Edge> displayEdges) {
         updateLayout(displayVertices, displayEdges);
@@ -122,20 +122,20 @@ public class DefaultGraph implements Graph {
     }
 
     @Override
-    public Map<EdgeRef, Status> getEdgeStatus() {
+    public Map<? extends EdgeRef, ? extends Status> getEdgeStatus() {
         return edgeStatus;
     }
 
-    public void setVertexStatus(Map<VertexRef, Status> statusForVertices) {
+    public void setVertexStatus(Map<? extends VertexRef, ? extends Status> statusForVertices) {
         this.vertexStatus = statusForVertices;
     }
 
-    public void setEdgeStatus(Map<EdgeRef, Status> edgeStatus) {
+    public void setEdgeStatus(Map<? extends EdgeRef, ? extends Status> edgeStatus) {
         this.edgeStatus = edgeStatus;
     }
 
     @Override
-    public Map<VertexRef, Status> getVertexStatus() {
+    public Map<? extends VertexRef, ? extends Status> getVertexStatus() {
         return vertexStatus;
     }
 
