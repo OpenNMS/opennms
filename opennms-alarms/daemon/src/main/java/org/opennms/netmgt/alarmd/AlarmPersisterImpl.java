@@ -160,7 +160,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             
             //We always set these even if there are not update fields specified
             alarm.setLogMsg(e.getEventLogMsg());
-            alarm.setEventParms(e.getEventParms());
+            alarm.setEventParametersRef(e);
         } else {
             for (UpdateField field : event.getAlarmData().getUpdateFieldList()) {
                 String fieldName = field.getFieldName();
@@ -175,7 +175,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 if (fieldName.equalsIgnoreCase("Parms") && field.isUpdateOnReduction() == false) {
                     continue;
                 } else {
-                    alarm.setEventParms(e.getEventParms());
+                    alarm.setEventParametersRef(e);
                 }
 
 
@@ -228,7 +228,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         alarm.setCounter(1);
         alarm.setDescription(e.getEventDescr());
         alarm.setDistPoller(e.getDistPoller());
-        alarm.setEventParms(e.getEventParms());
+        alarm.setEventParametersRef(e);
         alarm.setFirstEventTime(e.getEventTime());
         alarm.setIfIndex(e.getIfIndex());
         alarm.setIpAddr(e.getIpAddr());

@@ -29,6 +29,7 @@
 package org.opennms.web.event;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 
@@ -69,7 +70,7 @@ public class Event {
     protected String dpName;
 
     /** The &lt;parms&gt; element from the Event Data Stream DTD */
-    protected String parms;
+    protected Map<String, String> parms;
 
     /** Unique integer identifier for node, can be null */
     protected Integer nodeID;
@@ -270,7 +271,7 @@ public class Event {
      * @param acknowledgeUser a {@link java.lang.String} object.
      * @param acknowledgeTime a {@link java.util.Date} object.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, Map<String, String> parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime) {
         this(id, uei, time, dpName, createTime, severityId, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, null, null, null, null);
     }
 
@@ -308,7 +309,7 @@ public class Event {
      * @param serviceName a {@link java.lang.String} object.
      * @param alarmId a {@link java.lang.Integer} object.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, Map<String, String> parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
         this(id, uei, time, dpName, createTime, severityId, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, nodeLabel, serviceName, alarmId, null);
     }
 
@@ -316,7 +317,7 @@ public class Event {
      * Create an event that represents a real network event with all the
      * parameters.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId, Boolean eventDisplay) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, Map<String, String> parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId, Boolean eventDisplay) {
 
         if (uei == null || time == null || dpName == null || createTime == null) {
             throw new IllegalArgumentException("Cannot take null values for the following parameters: uei, time, dpName, createTime.");
@@ -444,7 +445,7 @@ public class Event {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getParms() {
+    public Map<String, String> getParms() {
         return (parms);
     }
 

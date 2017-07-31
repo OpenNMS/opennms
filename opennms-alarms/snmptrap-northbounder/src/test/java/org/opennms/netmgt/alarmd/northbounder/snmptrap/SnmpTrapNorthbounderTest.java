@@ -97,7 +97,6 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
-        onmsAlarm.setEventParms("alarmId=10(Int32,text);alarmMessage=this is a test(string,text);");
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
         Assert.assertEquals(2, alarm.getEventParametersCollection().size());
 

@@ -47,6 +47,7 @@ import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.alarm.AlarmUtil;
@@ -57,6 +58,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -317,7 +320,23 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     public void testParmsLikeFilter() {
         List<OnmsEvent> events = m_dbPopulator.getEventDao().findAll();
         assertNotNull(events);
+
         OnmsEvent event = events.get(0);
+        event.setEventParameters(Lists.newArrayList(
+                new OnmsEventParameter(event, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
+                new OnmsEventParameter(event, "user", "rtc", "string"),
+                new OnmsEventParameter(event, "passwd", "rtc", "string"),
+                new OnmsEventParameter(event, "catlabel", "Network Interfaces", "string")));
+        m_dbPopulator.getEventDao().saveOrUpdate(event);
+
+        OnmsEvent event2 = events.get(1);
+        event2.setEventParameters(Lists.newArrayList(
+                new OnmsEventParameter(event2, "componentType", "serviceElement", "string"),
+                new OnmsEventParameter(event2, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
+                new OnmsEventParameter(event2, "user", "rtcbomb", "string"),
+                new OnmsEventParameter(event2, "passwd", "rtc", "string"),
+                new OnmsEventParameter(event2, "catlabel", "Network Interfaces", "string")));
+        m_dbPopulator.getEventDao().saveOrUpdate(event2);
         
         OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
         assertNotNull(poller);
@@ -328,7 +347,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm.setSeverityId(3);
         alarm.setDistPoller(poller);
         alarm.setCounter(100);
-        alarm.setEventParms("url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtc(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        alarm.setEventParametersRef(event);
         
         AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
         alarmDao.save(alarm);
@@ -336,11 +355,11 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         
         OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm2.setLastEvent(event);
+        alarm2.setLastEvent(event2);
         alarm2.setSeverityId(3);
         alarm2.setDistPoller(poller);
         alarm2.setCounter(100);
-        alarm2.setEventParms("componentType=serviceElement(string,text);url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtcbomb(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        alarm2.setEventParametersRef(event2);
         
         alarmDao.save(alarm2);
         alarmDao.flush();
@@ -358,7 +377,23 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     public void testParmsNotLikeFilter() {
         List<OnmsEvent> events = m_dbPopulator.getEventDao().findAll();
         assertNotNull(events);
+
         OnmsEvent event = events.get(0);
+        event.setEventParameters(Lists.newArrayList(
+                new OnmsEventParameter(event, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
+                new OnmsEventParameter(event, "user", "rtc", "string"),
+                new OnmsEventParameter(event, "passwd", "rtc", "string"),
+                new OnmsEventParameter(event, "catlabel", "Network Interfaces", "string")));
+        m_dbPopulator.getEventDao().saveOrUpdate(event);
+
+        OnmsEvent event2 = events.get(1);
+        event2.setEventParameters(Lists.newArrayList(
+                new OnmsEventParameter(event2, "componentType", "serviceElement", "string"),
+                new OnmsEventParameter(event2, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
+                new OnmsEventParameter(event2, "user", "rtcbomb", "string"),
+                new OnmsEventParameter(event2, "passwd", "rtc", "string"),
+                new OnmsEventParameter(event2, "catlabel", "Network Interfaces", "string")));
+        m_dbPopulator.getEventDao().saveOrUpdate(event2);
         
         OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
         assertNotNull(poller);
@@ -369,7 +404,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm.setSeverityId(3);
         alarm.setDistPoller(poller);
         alarm.setCounter(100);
-        alarm.setEventParms("componentType=service(string,text);url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=rtc(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        alarm.setEventParametersRef(event);
         
         AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
         alarmDao.save(alarm);
@@ -377,11 +412,11 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         
         OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm2.setLastEvent(event);
+        alarm2.setLastEvent(event2);
         alarm2.setSeverityId(3);
         alarm2.setDistPoller(poller);
         alarm2.setCounter(100);
-        alarm2.setEventParms("componentType=serviceElement(string,text);url=http://localhost:8980/opennms/rtc/post/Network+Interfaces(string,text);user=admin(string,text);passwd=rtc(string,text);catlabel=Network Interfaces(string,text)");
+        alarm2.setEventParametersRef(event2);
         
         alarmDao.save(alarm2);
         alarmDao.flush();

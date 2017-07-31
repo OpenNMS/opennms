@@ -114,7 +114,6 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setCounter(1);
         onmsAlarm.setLogMsg("Interface Down");
-        onmsAlarm.setEventParms("owner=agalue(String,text)");
         NorthboundAlarm nbAlarm = new NorthboundAlarm(onmsAlarm);
         List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
         alarms.add(nbAlarm);

@@ -57,4 +57,38 @@
       );
     </sql>
   </changeSet>
+  <changeSet id="21.0.0-event-parameters" author="fooker">
+    <createTable tableName="event_parameters">
+      <column name="eventid" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(256)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type" type="VARCHAR(256)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="event_parameters"
+                   columnNames="eventid,name"
+                   constraintName="pk_eventParameters" />
+    <addForeignKeyConstraint baseTableName="event_parameters" baseColumnNames="eventid"
+                             constraintName="fk_eventParametersEventID"
+                             referencedTableName="events"
+                             referencedColumnNames="eventid" />
+
+    <dropColumn tableName="alarms" columnName="eventParms" />
+    <addColumn tableName="alarms">
+      <column name="eventParametersRef" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+    <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="eventParametersRef"
+                             constraintName="fk_alarmsEventParametersRef"
+                             referencedTableName="events"
+                             referencedColumnNames="eventid" />
+  </changeSet>
 </databaseChangeLog>

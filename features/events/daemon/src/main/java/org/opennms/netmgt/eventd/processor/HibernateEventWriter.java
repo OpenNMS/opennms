@@ -47,7 +47,6 @@ import org.opennms.netmgt.dao.util.OperatorAction;
 import org.opennms.netmgt.dao.util.SnmpInfo;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventDatabaseConstants;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -294,9 +293,7 @@ public class HibernateEventWriter implements EventWriter {
         ovent.setEventSnmp(event.getSnmp() == null ? null : SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE));
 
         // eventParms
-        // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE
-        final String parametersString = EventParameterUtils.format(event);
-        ovent.setEventParms(EventDatabaseConstants.format(parametersString, 0));
+        ovent.setEventParametersFromEvent(event);
 
         // eventCreateTime
         // TODO: We are overriding the 'eventcreatetime' field of the event with a new Date

@@ -48,9 +48,13 @@ import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.ncs.northbounder.NCSNorthbounderConfig.HttpMethod;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.google.common.collect.Lists;
 
 /**
  * Tests the HTTP North Bound Interface
@@ -149,10 +153,18 @@ public class NCSNorthbounderIT {
 
 
     private NorthboundAlarm alarm(int alarmId) {
+        OnmsEvent event = new OnmsEvent();
+        event.setEventParameters(Lists.newArrayList(
+                new OnmsEventParameter(event, "componentType", "Service", "string"),
+                new OnmsEventParameter(event, "componentName", "NAM" + alarmId, "string"),
+                new OnmsEventParameter(event, "componentForeignSource", "FS", "string"),
+                new OnmsEventParameter(event, "componentForeignId", "" + alarmId, "string"),
+                new OnmsEventParameter(event, "cause", "17", "string")));
+
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(alarmId);
         alarm.setUei("uei.opennms.org/test/httpNorthBounder");
-        alarm.setEventParms("componentType=Service(string,text);componentName=NAM"+alarmId+"(string,text);componentForeignSource=FS(string,text);componentForeignId="+alarmId+"(string,text);cause=17(string,text)");
+        alarm.setEventParametersRef(event);
         alarm.setAlarmType((alarmId+1) % 2 + 1);
 
         return new NorthboundAlarm(alarm);

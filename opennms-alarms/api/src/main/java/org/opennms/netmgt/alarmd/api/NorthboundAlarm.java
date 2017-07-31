@@ -44,14 +44,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
-import org.opennms.netmgt.xml.event.Parm;
 
 /**
  * Wraps the OnmsAlarm into a more generic Alarm instance
@@ -776,10 +774,10 @@ public class NorthboundAlarm implements Preservable, Serializable {
             m_nodeSysObjectId = alarm.getNode().getSysObjectId();
         }
 
-        if (alarm.getEventParms() != null) {
-            for (Parm parm : EventParameterUtils.decode(alarm.getEventParms())) {
-                m_eventParametersCollection.add(new OnmsEventParameter(parm));
-                m_eventParametersMap.put(parm.getParmName(), parm.getValue().getContent());
+        if (alarm.getEventParameters() != null) {
+            for (OnmsEventParameter parm : alarm.getEventParameters()) {
+                m_eventParametersCollection.add(parm);
+                m_eventParametersMap.put(parm.getName(), parm.getValue());
             }
         }
     }

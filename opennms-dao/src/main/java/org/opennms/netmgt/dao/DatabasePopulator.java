@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -77,6 +78,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
+
+import com.google.common.collect.Lists;
 
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
@@ -554,7 +557,7 @@ public class DatabasePopulator {
         event.setEventHost("127.0.0.1"); // TODO: Figure out exactly what this field is storing
         event.setEventLog("Y");
         event.setEventLogMsg("Test Event Log Message");
-        event.setEventParms("testParm=HelloWorld(string,text)");
+        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter(event, "testParm", "HelloWorld", "string")));
         event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("test");
         event.setEventTime(new Date(1437061537105L));
@@ -604,7 +607,7 @@ public class DatabasePopulator {
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
-        alarm.setEventParms(event.getEventParms());
+        alarm.setEventParametersRef(event);
         alarm.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return alarm;
     }

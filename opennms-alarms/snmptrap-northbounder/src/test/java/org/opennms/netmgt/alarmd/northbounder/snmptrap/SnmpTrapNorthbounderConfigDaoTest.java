@@ -240,7 +240,6 @@ public class SnmpTrapNorthbounderConfigDaoTest {
         onmsAlarm.setNode(node);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
         onmsAlarm.setLogMsg("everything is good");
-        onmsAlarm.setEventParms("alarmId=99(Int32,text);alarmMessage=this is just a test(string,text);forwardAlarmToUserSnmpTrap=true(string,text)");
 
         // Build a test northbound alarm
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);

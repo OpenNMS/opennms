@@ -60,6 +60,7 @@ import org.opennms.netmgt.dao.mock.MockMonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -70,6 +71,8 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.Lists;
 
 /**
  * Tests the JMS North Bound Interface.
@@ -218,9 +221,13 @@ public class JmsNorthBounderTest {
                 onmsAlarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(i).getId());
                 if (i < j) { // Do not add parameters to the last alarm for
                              // testing NMS-6383
-                    String eventparms = "foreignSource=fabric(string,text);foreignId=space-0256012012000038(string,text);reason=Aborting node scan : Agent timed out while scanning the system table(string,text);"
-                            + ".1.3.6.1.4.1.2636.3.18.1.7.1.2.732=207795895(TimeTicks,text)";
-                    onmsAlarm.setEventParms(eventparms);
+                    OnmsEvent event = new OnmsEvent();
+                    event.setEventParameters(Lists.newArrayList(
+                            new OnmsEventParameter(event, "foreignSource", "fabric", "string"),
+                            new OnmsEventParameter(event, "foreignId", "space-0256012012000038", "string"),
+                            new OnmsEventParameter(event, "reason", "Aborting node scan : Agent timed out while scanning the system table", "string"),
+                            new OnmsEventParameter(event, ".1.3.6.1.4.1.2636.3.18.1.7.1.2.732", "207795895", "TimeTicks")));
+                    onmsAlarm.setEventParametersRef(event);
                 }
                 NorthboundAlarm a = new NorthboundAlarm(onmsAlarm);
 
@@ -297,21 +304,44 @@ public class JmsNorthBounderTest {
         m_nodeDao.flush();
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
-            OnmsEvent event = new OnmsEvent(5, "uei.uei.org/uei", new Date(),
-                "eventhost", "eventsource", ia,
-                null, "eventssnmphost", null,
-                "eventsnmp", null, new Date(),
-                "eventdescr", "eventloggroup", "eventlogmsg",
-                4, null, null,
-                0, "operinstruct",
-                null, null,
-                null, null,
-                "tticketid", 1,
-                null, null, null,
-                null, null, null,
-                null, node,
-                null, null,
-                null);
+            OnmsEvent event = new OnmsEvent();
+            event.setId(5);
+            event.setEventUei("uei.uei.org/uei");
+            event.setEventTime(new Date());
+            event.setEventHost("eventhost");
+            event.setEventSource("eventsource");
+            event.setIpAddr(ia);
+            event.setDistPoller(null);
+            event.setEventSnmpHost("eventsnmphost");
+            event.setServiceType(null);
+            event.setEventSnmp("eventsnmp");
+            event.setEventCreateTime(new Date());
+            event.setEventDescr("eventdescr");
+            event.setEventLogGroup("eventloggroup");
+            event.setEventLogMsg("eventlogmsg");
+            event.setEventSeverity(4);
+            event.setEventPathOutage(null);
+            event.setEventCorrelation(null);
+            event.setEventSuppressedCount(0);
+            event.setEventOperInstruct("operinstruct");
+            event.setEventAutoAction(null);
+            event.setEventOperAction(null);
+            event.setEventOperActionMenuText(null);
+            event.setEventNotification(null);
+            event.setEventTTicket("tticketid");
+            event.setEventTTicketState(1);
+            event.setEventForward(null);
+            event.setEventMouseOverText(null);
+            event.setEventLog(null);
+            event.setEventDisplay(null);
+            event.setEventAckUser(null);
+            event.setEventAckTime(null);
+            event.setAlarm(null);
+            event.setNode(node);
+            event.setNotifications(null);
+            event.setAssociatedServiceRegainedOutages(null);
+            event.setAssociatedServiceLostOutages(null);
+
             OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
@@ -387,22 +417,50 @@ public class JmsNorthBounderTest {
         m_nodeDao.flush();
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
-            String eventparms = "syslogmessage=Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed(string,text);severity=Error(string,text);timestamp=Dec 22 14:13:21(string,text);process=229250(string,text);service=local7(string,text)";
-            OnmsEvent event = new OnmsEvent(5, "uei.uei.org/uei", new Date(),
-                "eventhost", "eventsource", ia,
-                null, "eventssnmphost", null,
-                "eventsnmp", eventparms, new Date(),
-                "eventdescr", "eventloggroup", "eventlogmsg",
-                4, null, null,
-                0, "operinstruct",
-                null, null,
-                null, null,
-                "tticketid", 1,
-                null, null, null,
-                null, null, null,
-                null, node,
-                null, null,
-                null);
+            OnmsEvent event = new OnmsEvent();
+            event.setId(5);
+            event.setEventUei("uei.uei.org/uei");
+            event.setEventTime(new Date());
+            event.setEventHost("eventhost");
+            event.setEventSource("eventsource");
+            event.setIpAddr(ia);
+            event.setDistPoller(null);
+            event.setEventSnmpHost("eventsnmphost");
+            event.setServiceType(null);
+            event.setEventSnmp("eventsnmp");
+            event.setEventParameters(Lists.newArrayList(
+                    new OnmsEventParameter(event, "syslogmessage", "Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed", "string"),
+                    new OnmsEventParameter(event, "severity", "Error", "string"),
+                    new OnmsEventParameter(event, "timestamp", "Dec 22 14:13:21", "string"),
+                    new OnmsEventParameter(event, "process", "229250", "string"),
+                    new OnmsEventParameter(event, "service", "local7", "string")));
+            event.setEventCreateTime(new Date());
+            event.setEventDescr("eventdescr");
+            event.setEventLogGroup("eventloggroup");
+            event.setEventLogMsg("eventlogmsg");
+            event.setEventSeverity(4);
+            event.setEventPathOutage(null);
+            event.setEventCorrelation(null);
+            event.setEventSuppressedCount(0);
+            event.setEventOperInstruct("operinstruct");
+            event.setEventAutoAction(null);
+            event.setEventOperAction(null);
+            event.setEventOperActionMenuText(null);
+            event.setEventNotification(null);
+            event.setEventTTicket("tticketid");
+            event.setEventTTicketState(1);
+            event.setEventForward(null);
+            event.setEventMouseOverText(null);
+            event.setEventLog(null);
+            event.setEventDisplay(null);
+            event.setEventAckUser(null);
+            event.setEventAckTime(null);
+            event.setAlarm(null);
+            event.setNode(node);
+            event.setNotifications(null);
+            event.setAssociatedServiceRegainedOutages(null);
+            event.setAssociatedServiceLostOutages(null);
+
             OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
@@ -419,7 +477,7 @@ public class JmsNorthBounderTest {
             alarm.setFirstEventTime(new Date(0));
             alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setIpAddr(ia);
-            alarm.setEventParms(eventparms);
+            alarm.setEventParametersRef(event);
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
             alarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(1).getId());
             NorthboundAlarm a = new NorthboundAlarm(alarm);
@@ -478,22 +536,50 @@ public class JmsNorthBounderTest {
         m_nodeDao.flush();
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
-            String eventparms = "syslogmessage=Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed(string,text);severity=Error(string,text);timestamp=Dec 22 14:13:21(string,text);process=229250(string,text);service=local7(string,text)";
-            OnmsEvent event = new OnmsEvent(5, "uei.uei.org/uei", new Date(),
-                "eventhost", "eventsource", ia,
-                null, "eventssnmphost", null,
-                "eventsnmp", eventparms, new Date(),
-                "eventdescr", "eventloggroup", "eventlogmsg",
-                4, null, null,
-                0, "operinstruct",
-                null, null,
-                null, null,
-                "tticketid", 1,
-                null, null, null,
-                null, null, null,
-                null, node,
-                null, null,
-                null);
+            OnmsEvent event = new OnmsEvent();
+            event.setId(5);
+            event.setEventUei("uei.uei.org/uei");
+            event.setEventTime(new Date());
+            event.setEventHost("eventhost");
+            event.setEventSource("eventsource");
+            event.setIpAddr(ia);
+            event.setDistPoller(null);
+            event.setEventSnmpHost("eventsnmphost");
+            event.setServiceType(null);
+            event.setEventSnmp("eventsnmp");
+            event.setEventParameters(Lists.newArrayList(
+                    new OnmsEventParameter(event, "syslogmessage", "Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed", "string"),
+                    new OnmsEventParameter(event, "severity", "Error", "string"),
+                    new OnmsEventParameter(event, "timestamp", "Dec 22 14:13:21", "string"),
+                    new OnmsEventParameter(event, "process", "229250", "string"),
+                    new OnmsEventParameter(event, "service", "local7", "string")));
+            event.setEventCreateTime(new Date());
+            event.setEventDescr("eventdescr");
+            event.setEventLogGroup("eventloggroup");
+            event.setEventLogMsg("eventlogmsg");
+            event.setEventSeverity(4);
+            event.setEventPathOutage(null);
+            event.setEventCorrelation(null);
+            event.setEventSuppressedCount(0);
+            event.setEventOperInstruct("operinstruct");
+            event.setEventAutoAction(null);
+            event.setEventOperAction(null);
+            event.setEventOperActionMenuText(null);
+            event.setEventNotification(null);
+            event.setEventTTicket("tticketid");
+            event.setEventTTicketState(1);
+            event.setEventForward(null);
+            event.setEventMouseOverText(null);
+            event.setEventLog(null);
+            event.setEventDisplay(null);
+            event.setEventAckUser(null);
+            event.setEventAckTime(null);
+            event.setAlarm(null);
+            event.setNode(node);
+            event.setNotifications(null);
+            event.setAssociatedServiceRegainedOutages(null);
+            event.setAssociatedServiceLostOutages(null);
+
             OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
@@ -510,7 +596,7 @@ public class JmsNorthBounderTest {
             alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setFirstEventTime(new Date(0));
             alarm.setIpAddr(ia);
-            alarm.setEventParms(eventparms);
+            alarm.setEventParametersRef(event);
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
             alarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(1).getId());
             NorthboundAlarm a = new NorthboundAlarm(alarm);

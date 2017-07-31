@@ -34,7 +34,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -65,7 +66,6 @@ import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -170,7 +170,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private OnmsEvent m_lastEvent;
     
     /** persistent field */
-    private String m_eventParms;
+    private OnmsEvent m_eventParametersRef;
 
     /** persistent field */
     private String m_managedObjectInstance;
@@ -783,34 +783,30 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         }
     }
 
-    /**
-     * <p>getEventParms</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @XmlTransient
-    @Column(name="eventParms")
-    public String getEventParms() {
-            return m_eventParms;
+    @ManyToOne()
+    @JoinColumn(name="eventParametersRefId")
+    public OnmsEvent getEventParametersRef() {
+            return m_eventParametersRef;
     }
 
     @Transient
     @XmlElementWrapper(name="parameters")
     @XmlElement(name="parameter")
     public List<OnmsEventParameter> getEventParameters() {
-        if (m_eventParms == null) {
-            return null;
-        }
-        return EventParameterUtils.decode(m_eventParms).stream().map(p -> new OnmsEventParameter(p)).collect(Collectors.toList());
+        return m_eventParametersRef.getEventParameters();
     }
 
-    /**
-     * <p>setEventParms</p>
-     *
-     * @param eventparms a {@link java.lang.String} object.
-     */
-    public void setEventParms(String eventparms) {
-        this.m_eventParms = eventparms;
+    public void setEventParametersRef(final OnmsEvent event) {
+        this.m_eventParametersRef = event;
+    }
+
+    public Optional<OnmsEventParameter> findEventParameter(final String name) {
+        return this.getEventParameters().stream().filter(p -> Objects.equals(name, p.getName())).findAny();
+    }
+
+    public String getEventParameter(final String name) {
+        return this.getEventParameters().stream().filter(p -> Objects.equals(name, p.getName())).findAny().map(OnmsEventParameter::getValue).orElse(null);
     }
 
     /**

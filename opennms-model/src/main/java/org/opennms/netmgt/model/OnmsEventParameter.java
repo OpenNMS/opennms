@@ -29,10 +29,16 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.netmgt.xml.event.Parm;
 
@@ -41,11 +47,18 @@ import org.opennms.netmgt.xml.event.Parm;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
+@Entity
+@Table(name="event_parameters")
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OnmsEventParameter implements Serializable {
 
     private static final long serialVersionUID = 4530678411898489175L;
+
+    @XmlTransient
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name="eventID")
+    private OnmsEvent event;
 
     /** The name. */
     @XmlAttribute(name="name")
@@ -69,10 +82,29 @@ public class OnmsEventParameter implements Serializable {
      *
      * @param parm the Event parameter object
      */
-    public OnmsEventParameter(Parm parm) {
+    public OnmsEventParameter(OnmsEvent event, Parm parm) {
+        this.event = event;
         name = parm.getParmName();
         value = parm.getValue().getContent();
         type = parm.getValue().getType();
+    }
+
+    public OnmsEventParameter(final OnmsEvent event,
+                              final String name,
+                              final String value,
+                              final String type) {
+        this.event = event;
+        this.name = name;
+        this.value = value;
+        this.type = type;
+    }
+
+    public OnmsEvent getEvent() {
+        return this.event;
+    }
+
+    public void setEvent(final OnmsEvent event) {
+        this.event = event;
     }
 
     /**

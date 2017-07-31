@@ -57,6 +57,7 @@ drop table monitoringlocationscollectionpackages cascade;
 drop table monitoringlocationstags cascade;
 drop table monitoringsystems cascade;
 drop table events cascade;
+drop table event_parameters cascade;
 drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
@@ -822,7 +823,6 @@ create table events (
 	eventSnmphost		varchar(256),
 	serviceID		integer,
 	eventSnmp		varchar(256),
-	eventParms		text,
 	eventCreateTime		timestamp with time zone not null,
 	eventDescr		text,
 	eventLoggroup		varchar(32),
@@ -863,6 +863,16 @@ create index events_ackuser_idx on events(eventAckUser);
 create index events_acktime_idx on events(eventAckTime);
 create index events_alarmid_idx on events(alarmID);
 create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, eventackuser);
+
+create table event_parameters (
+	eventID			integer not null,
+	name        varchar(256) not null,
+	value		    text not null,
+	type		    varchar(256) not null,
+
+	constraint pk_eventParameters primary key (eventID, name),
+	constraint fk_eventParametersEventID foreign key (eventID) references events (eventID) ON DELETE CASCADE
+);
 
 --########################################################################
 --#
@@ -1077,7 +1087,7 @@ create table alarms (
     qosAlarmState           VARCHAR(31),
     ifIndex                 INTEGER,
     clearKey                VARCHAR(256),
-    eventParms              text,
+    eventParametersRef      INTEGER NOT NULL, CONSTRAINT fk_alarmsEventParametersRef FOREIGN KEY (eventParametersRef) REFERENCES events (eventID) ON DELETE RESTRICT
     stickymemo              INTEGER, CONSTRAINT fk_stickyMemo FOREIGN KEY (stickymemo) REFERENCES memos (id) ON DELETE CASCADE
 );
 
