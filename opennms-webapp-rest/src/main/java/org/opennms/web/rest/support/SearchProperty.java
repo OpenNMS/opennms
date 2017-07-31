@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="property")
 public class SearchProperty implements Comparable<SearchProperty> {
 
-	private static final boolean DEFAULT_ORDER_BY = true;
+	public static final boolean DEFAULT_ORDER_BY = true;
 
 	public static enum SearchPropertyType {
 		FLOAT,
