@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -66,6 +67,10 @@ public class TwilioSmsNotificationStrategy implements NotificationStrategy {
     private static String MESSAGING_SERVICE_KEY = "org.opennms.protocols.twilio.messagingService";
     private static String VALIDITY_PERIOD_KEY = "org.opennms.protocols.twilio.validityPeriod";
     private static Integer DEFAULT_VALIDITY_PERIOD = 14400;
+    
+	private static final Pattern s_e164Pattern = Pattern.compile("^\\+[1-9][0-9]+$");
+	private static final Pattern s_nanpPattern = Pattern.compile("^[2-9][0-9]{2}[2-9][0-9]{6}$");
+
     private List<Argument> m_arguments;
 
     /* (non-Javadoc)
@@ -112,7 +117,15 @@ public class TwilioSmsNotificationStrategy implements NotificationStrategy {
 			return 1;
 		} catch (UnsupportedEncodingException e) {
 			LOG.error("UnsupportedEncodingException sending Twilio message: " + e.getMessage());
+			return 1;
+		} catch (JSONException e) {
+			LOG.error("JSONException processing response from Twilio: " + e.getMessage());
+			return 1;
+		} catch (Exception e) {
+			LOG.error("Unexpected " + e.getClass().getSimpleName() + ": " + e.getMessage());
+			return 1;
 		}
+        
         return 0;
     }
 
@@ -132,6 +145,9 @@ public class TwilioSmsNotificationStrategy implements NotificationStrategy {
     
     private String getFromNumber() {
     	String fromNumber = System.getProperty(FROM_NUMBER_KEY);
+    	if (! numberLooksValid(fromNumber)) {
+    		LOG.warn("From phone number '{}' does not look like a valid E.164 or NANP number. Proceeding, but Twilio may reject it.");
+    	}
     	return fromNumber;
     }
     
@@ -156,15 +172,19 @@ public class TwilioSmsNotificationStrategy implements NotificationStrategy {
     	if (toNumber == null) {
     		return null;
     	}
-    	if (! toNumber.startsWith("+")) {
-    		LOG.warn("Mobile phone number '{}' does not start with '+'; Twilio SMS not likely to work.", toNumber);
-    	}
-    	toNumber.replaceAll(" ", "");
-    	toNumber.replaceAll("-", "");
-    	if (! toNumber.matches("^[+][0-9]+$")) {
-    		LOG.warn("Mobile number {} does not look like an E164 number, even after removing spaces and dashes. Twilio SMS not likely to work.");
+    	
+    	if (! numberLooksValid(toNumber)) {
+    		LOG.warn("To phone number '{}' does not look like a valid E.164 or NANP number. Proceeding, but Twilio may reject it.");
     	}
     	return toNumber;
+    }
+    
+    private boolean numberLooksValid(String number) {
+    	if (number == null) {
+    		return false;
+    	}
+    	number.replaceAll("[. -]", "");
+    	return (s_e164Pattern.matcher(number).matches() && s_nanpPattern.matcher(number).matches());
     }
     
     private String getBody() {
@@ -190,7 +210,7 @@ public class TwilioSmsNotificationStrategy implements NotificationStrategy {
         return value;
     }
     
-    private JSONObject sendTwilioMessage(String toNumber, String body) throws MalformedURLException, UnsupportedEncodingException, JSONException {
+    private void sendTwilioMessage(String toNumber, String body) throws Exception {
     	final String messagesUrlStr = new StringBuilder("https://")
     			.append(getAuthSid())
     			.append(":")
@@ -219,8 +239,8 @@ public class TwilioSmsNotificationStrategy implements NotificationStrategy {
     	
     	LOG.debug("Using validityPeriod {}", getMessagingService());
     	postData.add(new BasicNameValuePair("ValidityPeriod", getValidityPeriod().toString()));
-    	
     	postData.add(new BasicNameValuePair("Body", body));
+    	
     	postMethod.setEntity(new UrlEncodedFormEntity(postData));
     	
     	String contents = null;
@@ -239,12 +259,17 @@ public class TwilioSmsNotificationStrategy implements NotificationStrategy {
     	}
     	
     	JSONObject jsonData = new JSONObject(contents);
-    	if (statusCode == 201) {
-    		LOG.debug("sendTwilioMessage: Got expected 201 response from Twilio API.");
-    		LOG.info("sendTwilioMessage: Submitted message, SID={} / status={}", jsonData.get("sid"), jsonData.get("status"));
-    	} else {
+    	if (statusCode != 201) {
     		LOG.error("sendTwilioMessage: Got unexpected {} response from Twilio API with contents: {}", statusCode, contents);
+    		throw new RuntimeException("Unexpected HTTP response " + statusCode + " from Twilio API. Contents: " + contents);
     	}
-    	return jsonData;    		
+    	
+    	if ("accepted".equals(jsonData.get("status")) || ("queued".equals(jsonData.get("status")))) {
+    		LOG.debug("Message submitted to Twilio API. Status={}, SID {}", jsonData.get("status"), jsonData.get("sid"));    		
+    	} else if ("failed".equals(jsonData.get("status"))) {
+    		throw new RuntimeException("Twilio API response indicates send failure, error code "  + jsonData.get("error_code") + "; Error message: " + jsonData.get("error_message"));
+    	} else {
+    		LOG.warn("Twilio API initial response has unexpected status '{}', expected 'accepted' or 'queued'. Proceeding, but this is weird.");
+    	}
     }
 }
