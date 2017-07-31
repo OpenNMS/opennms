@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -221,7 +222,7 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventTime(new Date());
         event.setEventSource("test");
         event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setNode(node);

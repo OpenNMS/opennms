@@ -723,7 +723,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventDisplay("Y");
         event.setEventHost("127.0.0.1");
         event.setEventLog("Y");
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("JUnit");
         event.setEventTime(new Date());
         event.setEventUei(eventUei);
