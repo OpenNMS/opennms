@@ -1,0 +1,49 @@
+<div class="modal" id="subscription-checker-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Your Meridian Subscription has expired</h4>
+            </div>
+            <div class="modal-body">
+                <p>Your Meridian Subscription has expired or has not been installed. If your subscription expires you can continue to use your 
+                current Meridian instance but you will not receive updates. Further more, OpenNMS support services will not be
+                applicable to this instance. To update your subscription please go to  <a target="_blank" href="https://opennms.com">OpenNMS Support</a>.<p>
+            </div>
+            <div class="modal-footer">
+                <div id="textout"></div>
+                <button id="subscription-checker-acknowledge" type="button" class="btn btn-success" data-dismiss="modal">Acknowledge this message</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  http://demo1.opennms.co.uk:8980/opennms/licencemgr/rest/v1-0/licence-mgr/isauthenticated?productId= -->
+	<!--  status 400<?xml version="1.0" encoding="UTF-8" standalone="yes"?><errorMessage><status>400</status>
+	<message>Licence not installed for productId=myproject/1.0-SNAPSHOT</message><code>0</code></errorMessage>
+	-->
+	<!-- status 200 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<replyMessage><replyComment>Licence is not authenticated for productId=myproject/1.0-SNAPSHOT</replyComment>
+	<productId>myproject/1.0-SNAPSHOT</productId><isAuthenticated>false</isAuthenticated></replyMessage> -->
+
+<script type="text/javascript">
+(function(){
+    $(document).ready(function() {
+
+    	var authenticated=false;
+    	$.get('licencemgr/rest/v1-0/licence-mgr/isauthenticated?productId=myproject/1.0-SNAPSHOT', function(data,textStatus,jqXHR) {
+    		responseText=jqXHR.responseText;
+    	    console.log(responseText);
+    		if(responseText.includes("<isAuthenticated>true")) authenticated=true;
+    		console.log(authenticated);
+        	if(! authenticated){
+        		$('#subscription-checker-modal').modal('show');
+        	};
+    	  });
+
+   		$('#subscription-checker-modal').on('shown.bs.modal', function () {
+   		    $(this).find('.modal-dialog').css({height:'auto', 'max-height':'100%'});
+   			$('#subscription-checker-enable').focus();
+ 		});
+    });
+})();
+
+</script>

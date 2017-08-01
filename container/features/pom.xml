@@ -134,6 +134,9 @@
 
             <!-- IFTTT Integration -->
             <repository>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}/xml/features</repository>
+            
+            <!-- Subscription Checker -->
+            <repository>mvn:org.opennms.features/subscription-checker/${project.version}/xml/features</repository>
 
           </repositories>
 
@@ -335,6 +338,10 @@
 
             <!-- IFTTT Integration -->
             <feature>ifttt-integration</feature>
+            
+            <!-- Subscription Checker -->
+            <feature>subscription-checker</feature>
+            
           </features>
         </configuration>
       </plugin>

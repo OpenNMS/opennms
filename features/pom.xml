@@ -144,5 +144,9 @@
 
     <!-- IfTtt integration -->
     <module>ifttt</module>
+    
+    <!-- Subscription Checker -->
+    <module>subscription-checker</module>
+    
   </modules>
 </project>

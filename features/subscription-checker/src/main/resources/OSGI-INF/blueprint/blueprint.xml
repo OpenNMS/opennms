@@ -1,0 +1,37 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	       xsi:schemaLocation="
+                http://www.osgi.org/xmlns/blueprint/v1.0.0
+                http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                
+                http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+                http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+">
+
+    <cm:property-placeholder persistent-id="org.opennms.features.subscriptionchecker.cfg">
+        <cm:default-properties>
+            <cm:property name="checksubscription" value="true"/> 
+            <cm:property name="version" value="Meridian2017"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" availability="mandatory"/>
+    <reference id="licenceService" interface="org.opennms.karaf.licencemgr.LicenceService" availability="mandatory"/>
+
+    <!-- The state manager will manually pull properties from the configuration file -->
+    <bean id="stateManager" class="org.opennms.features.subscriptionchecker.internal.StateManager"/>
+    
+    <bean id="modalInjector" class="org.opennms.features.subscriptionchecker.web.internal.ModalInjector">
+        <property name="stateManager" ref="stateManager"/>
+    </bean>
+    <service interface="org.opennms.web.api.HtmlInjector" ref="modalInjector">
+        <service-properties>
+          <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+
+
+
+</blueprint>
