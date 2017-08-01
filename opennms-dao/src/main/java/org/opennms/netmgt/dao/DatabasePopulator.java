@@ -595,7 +595,7 @@ public class DatabasePopulator {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_node1);
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");

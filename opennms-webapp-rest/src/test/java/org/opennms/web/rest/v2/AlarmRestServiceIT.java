@@ -737,7 +737,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(node);
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");
