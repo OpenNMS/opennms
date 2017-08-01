@@ -33,13 +33,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.IfIndexFilter;
 import org.opennms.web.event.filter.InterfaceFilter;
@@ -50,6 +52,8 @@ import org.opennms.web.filter.Filter;
 
 /**
  * Encapsulates all querying functionality for events.
+ * 
+ * @deprecated Use an injected {@link EventDao} implementation instead
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
@@ -1212,8 +1216,7 @@ public class EventFactory {
      * @throws java.sql.SQLException if any.
      */
     protected static Event[] rs2Events(ResultSet rs) throws SQLException {
-        Event[] events = null;
-        Vector<Event> vector = new Vector<Event>();
+        List<Event> vector = new ArrayList<>();
 
         while (rs.next()) {
             Event event = new Event();
@@ -1281,16 +1284,10 @@ public class EventFactory {
             event.location = rs.getString("location");
             event.systemId = rs.getString("systemId");
 
-            vector.addElement(event);
+            vector.add(event);
         }
 
-        events = new Event[vector.size()];
-
-        for (int i = 0; i < events.length; i++) {
-            events[i] = vector.elementAt(i);
-        }
-
-        return events;
+        return vector.toArray(new Event[vector.size()]);
     }
 
     /**
