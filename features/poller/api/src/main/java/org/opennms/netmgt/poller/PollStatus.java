@@ -418,7 +418,7 @@ public class PollStatus implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="statusReason", length=255, nullable=true)
+    @Column(name="statusReason", nullable=true)
     public String getReason() {
         return m_reason;
     }
@@ -429,13 +429,7 @@ public class PollStatus implements Serializable {
      * @param reason a {@link java.lang.String} object.
      */
     public void setReason(final String reason) {
-        if (reason == null) {
-            m_reason = null;
-        } else if (reason.length() <= 255) {
-            m_reason = reason;
-        } else {
-            m_reason = reason.substring(0, 255);
-        }
+        m_reason = reason;
     }
 
     /**
