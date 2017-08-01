@@ -38,8 +38,9 @@
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-notification.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-notification.js"></script>' />
 </jsp:include>
 
 <ng-include src="'notification/main.html'"></ng-include>

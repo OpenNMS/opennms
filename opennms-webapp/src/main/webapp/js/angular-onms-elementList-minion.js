@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var MODULE_NAME = 'onmsList.minion';
+	var MODULE_NAME = 'onms.elementList.minion';
 
 	// $filters that can be used to create human-readable versions of filter values
 	angular.module('minionListFilters', [ 'onmsListFilters' ])
@@ -37,46 +37,12 @@
 	});
 
 	// Minion list module
-	angular.module(MODULE_NAME, [ 'ngResource', 'onmsList', 'minionListFilters' ])
-
-	/**
-	 * OnmsMinion REST $resource
-	 */
-	.factory('Minions', function($resource, $log, $http, $location) {
-		return $resource(BASE_REST_URL + '/minions/:id', { id: '@id' },
-			{
-				'query': { 
-					method: 'GET',
-					isArray: true,
-					// Append a transformation that will unwrap the item array
-					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.minion) ? data.minion : [ data.minion ];
-						}
-					})
-				},
-				'update': { 
-					method: 'PUT'
-				}
-			}
-		);
-	})
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionListFilters' ])
 
 	/**
 	 * Minion list controller
 	 */
-	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'Minions', function($scope, $location, $window, $log, $filter, Minions) {
+	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'minionFactory', function($scope, $location, $window, $log, $filter, minionFactory) {
 		$log.debug('MinionListCtrl initializing...');
 
 		// Set the default sort and set it on $scope.$parent.query
@@ -86,7 +52,7 @@
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
 			// Fetch all of the items
-			Minions.query(
+			minionFactory.query(
 				{
 					_s: $scope.$parent.query.searchParam, // FIQL search
 					limit: $scope.$parent.query.limit,
@@ -125,7 +91,7 @@
 
 		// Save an item by using $resource.$update
 		$scope.$parent.update = function(item) {
-			var saveMe = Minions.get({id: item.id}, function() {
+			var saveMe = minionFactory.get({id: item.id}, function() {
 				saveMe.label = item.label;
 				saveMe.location = item.location;
 				saveMe.properties = item.properties;
