@@ -42,6 +42,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
@@ -59,11 +60,15 @@ public abstract class SearchProperties {
 	 */
 	private static final Map<String,String> ONMS_SEVERITIES = Arrays.stream(OnmsSeverity.values()).collect(Collectors.toMap(s -> String.valueOf(s.getId()), OnmsSeverity::getLabel));
 
-	private static final SortedSet<SearchProperty> ALARM_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> ALARM_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", STRING),
 		new SearchProperty("alarmAckTime", "Acknowledged Time", TIMESTAMP),
 		new SearchProperty("alarmAckUser", "Acknowledging User", STRING),
-		new SearchProperty("alarmType", "Alarm Type", INTEGER),
+		new SearchProperty("alarmType", "Alarm Type", INTEGER, ImmutableMap.<String,String>builder()
+			.put(String.valueOf(OnmsAlarm.PROBLEM_TYPE), "Problem")
+			.put(String.valueOf(OnmsAlarm.RESOLUTION_TYPE), "Resolution")
+			.build()
+		),
 		new SearchProperty("applicationDN", "Application DN", STRING),
 		new SearchProperty("clearKey", "Clear Key", STRING),
 		new SearchProperty("counter", "Event Counter", INTEGER),
@@ -91,12 +96,12 @@ public abstract class SearchProperties {
 		new SearchProperty("x733ProbableCause", "X.733 Probable Cause", INTEGER)
 	}));
 
-	private static final SortedSet<SearchProperty> APPLICATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
-		new SearchProperty("id", "ID", STRING),
+	static final SortedSet<SearchProperty> APPLICATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("name", "Name", STRING)
 	}));
 
-	private static final SortedSet<SearchProperty> ASSET_RECORD_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> ASSET_RECORD_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("additionalhardware", "Additional Hardware", STRING),
 		//new SearchProperty("address1", "Address 1", STRING),
@@ -171,20 +176,20 @@ public abstract class SearchProperties {
 		//new SearchProperty("zip", "ZIP or Postal Code", STRING)
 	}));
 
-	private static final SortedSet<SearchProperty> CATEGORY_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> CATEGORY_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("description", "Description", STRING),
 		new SearchProperty("name", "Name", STRING)
 	}));
 
-	private static final SortedSet<SearchProperty> DIST_POLLER_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> DIST_POLLER_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("label", "Label", STRING),
 		//new SearchProperty("lastUpdated", "Last Updated", TIMESTAMP),
 		new SearchProperty("location", "Monitoring Location", STRING)
 	}));
 
-	private static final SortedSet<SearchProperty> EVENT_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> EVENT_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("eventAckTime", "Acknowledged Time", TIMESTAMP),
 		new SearchProperty("eventAckUser", "Acknowledging User", STRING),
@@ -232,7 +237,7 @@ public abstract class SearchProperties {
 		new SearchProperty("ipAddr", "IP Address", IP_ADDRESS)
 	}));
 
-	private static final SortedSet<SearchProperty> IF_SERVICE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> IF_SERVICE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("lastFail", "Last Failure Time", TIMESTAMP),
 		new SearchProperty("lastGood", "Last Good Time", TIMESTAMP),
@@ -251,7 +256,7 @@ public abstract class SearchProperties {
 		new SearchProperty("status", "Management Status", STRING, OnmsMonitoredService.STATUS_MAP)
 	}));
 
-	private static final SortedSet<SearchProperty> IP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> IP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("ipAddress", "IP Address", IP_ADDRESS),
 		new SearchProperty("ipHostName", "Hostname", STRING),
@@ -259,7 +264,7 @@ public abstract class SearchProperties {
 		new SearchProperty("isManaged", "Management Status", STRING)
 	}));
 
-	private static final SortedSet<SearchProperty> LOCATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> LOCATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("locationName", "ID", STRING),
 		new SearchProperty("geolocation", "Geographic Address", STRING),
 		new SearchProperty("latitude", "Latitude", FLOAT),
@@ -268,7 +273,7 @@ public abstract class SearchProperties {
 		new SearchProperty("priority", "Priority in UI", INTEGER)
 	}));
 
-	private static final SortedSet<SearchProperty> MINION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> MINION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("label", "Label", STRING),
 		new SearchProperty("lastUpdated", "Last Heartbeat Update", TIMESTAMP),
@@ -276,7 +281,7 @@ public abstract class SearchProperties {
 		new SearchProperty("status", "Status", STRING)
 	}));
 
-	private static final SortedSet<SearchProperty> NODE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> NODE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("createTime", "Creation Time", TIMESTAMP),
 		new SearchProperty("foreignId", "Foreign ID", STRING),
@@ -310,7 +315,7 @@ public abstract class SearchProperties {
 		)
 	}));
 
-	private static final SortedSet<SearchProperty> NOTIFICATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> NOTIFICATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("notifyId", "ID", INTEGER),
 		new SearchProperty("answeredBy", "Answered By", STRING),
 		new SearchProperty("ipAddress", "IP Address", IP_ADDRESS),
@@ -322,7 +327,7 @@ public abstract class SearchProperties {
 		new SearchProperty("textMsg", "Text Message", STRING)
 	}));
 
-	private static final SortedSet<SearchProperty> OUTAGE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> OUTAGE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("ifLostService", "Lost Service Time", TIMESTAMP),
 		new SearchProperty("ifRegainedService", "Regained Service Time", TIMESTAMP),
@@ -330,19 +335,19 @@ public abstract class SearchProperties {
 		new SearchProperty("suppressTime", "Suppressed Time", TIMESTAMP)
 	}));
 
-	private static final SortedSet<SearchProperty> SCAN_REPORT_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> SCAN_REPORT_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", STRING),
 		new SearchProperty("locale", "Locale", STRING),
 		new SearchProperty("location", "Monitoring Location", STRING),
 		new SearchProperty("timestamp", "Timestamp", TIMESTAMP)
 	}));
 
-	private static final SortedSet<SearchProperty> SERVICE_TYPE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> SERVICE_TYPE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("name", "Service Name", STRING)
 	}));
 
-	private static final SortedSet<SearchProperty> SNMP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+	static final SortedSet<SearchProperty> SNMP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("ifAdminStatus", "Admin status", INTEGER),
 		new SearchProperty("ifIndex", "Interface index", INTEGER),
@@ -371,7 +376,7 @@ public abstract class SearchProperties {
 	 * @param properties
 	 * @return
 	 */
-	private static final Set<SearchProperty> withAliasPrefix(Aliases alias, Set<SearchProperty> properties) {
+	static final Set<SearchProperty> withAliasPrefix(Aliases alias, Set<SearchProperty> properties) {
 		return withAliasPrefix(alias, properties, SearchProperty.DEFAULT_ORDER_BY);
 	}
 
@@ -383,8 +388,8 @@ public abstract class SearchProperties {
 	 * @param orderBy
 	 * @return
 	 */
-	private static final Set<SearchProperty> withAliasPrefix(Aliases alias, Set<SearchProperty> properties, boolean orderBy) {
-		return properties.stream().map(p -> { return new SearchProperty(alias.prop(p.id), p.name, p.type, orderBy, p.values); }).collect(Collectors.toSet());
+	private static final SortedSet<SearchProperty> withAliasPrefix(Aliases alias, Set<SearchProperty> properties, boolean orderBy) {
+		return new TreeSet<>(properties.stream().map(p -> { return new SearchProperty(alias.prop(p.id), p.name, p.type, orderBy, p.values); }).collect(Collectors.toSet()));
 	}
 
 	/**
