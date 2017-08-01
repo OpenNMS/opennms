@@ -325,7 +325,7 @@ public class AckdIT implements InitializingBean {
         vo.m_eventID = event.getId();
         
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setClearKey(EventConstants.NODE_UP_EVENT_UEI + ":localhost:1");
         alarm.setCounter(1);
         alarm.setDescription(event.getEventDescr());
