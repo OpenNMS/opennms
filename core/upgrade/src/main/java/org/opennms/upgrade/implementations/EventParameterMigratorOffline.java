@@ -36,7 +36,6 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
@@ -65,6 +64,7 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void preExecute() throws OnmsUpgradeException {
+        // check for eventparms column
     }
 
     @Override
@@ -77,6 +77,54 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void execute() throws OnmsUpgradeException {
+        long eventCount = 0, parameterCount = 0;
+
+        try (final Connection connection = DataSourceFactory.getInstance().getConnection())
+        {
+            connection.setAutoCommit(false);
+            try (final Statement selectStatement = connection.createStatement();
+                 final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO event_parameters (eventid, name, value, type) VALUES  (?,?,?,?)");
+                 final PreparedStatement nullifyStatement = connection.prepareStatement("UPDATE events SET eventparms=NULL WHERE eventid=?")) {
+                try (final ResultSet resultSet = selectStatement.executeQuery("SELECT eventid, eventparms FROM events")) {
+                    while (resultSet.next()) {
+                        final Integer eventId = resultSet.getInt("eventid");
+                        final String eventParms = resultSet.getString("eventparms");
+                        final List<Parm> parmList = EventParameterUtils.decode(eventParms);
+                        if (parmList != null) {
+                            for (Parm parm : parmList) {
+                                insertStatement.setInt(1, eventId);
+                                insertStatement.setString(2, parm.getParmName());
+                                insertStatement.setString(3, parm.getValue().getContent());
+                                insertStatement.setString(4, parm.getValue().getType());
+                                insertStatement.execute();
+
+                                nullifyStatement.setInt(1, eventId);
+                                nullifyStatement.execute();
+                                parameterCount++;
+                            }
+                        }
+
+                        eventCount++;
+
+                        if (eventCount % 10000 == 0) {
+                            log("Processed %d event(s) and inserted %d event parameter(s)...\n", eventCount, parameterCount);
+                        }
+                    }
+
+                    log("Processed %d event(s) and inserted %d event parameter(s)...\n", eventCount, parameterCount);
+                }
+            } catch(SQLException e) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                throw e;
+            }
+
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (Throwable e) {
+            throw new OnmsUpgradeException("Can't move event parameters to table " + e.getMessage(), e);
+        }
+/*
         try {
             Connection connection = null;
             final DBUtils dbUtils = new DBUtils(getClass());
@@ -135,5 +183,6 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
         } catch (Throwable e) {
             throw new OnmsUpgradeException("Can't move event parameters to table " + e.getMessage(), e);
         }
+        */
     }
 }
