@@ -110,8 +110,6 @@ class EventCreator {
         final org.opennms.netmgt.xml.eventconf.Event econf = eventConfDao.findByEvent(event);
         if (econf == null || econf.getUei() == null) {
             event.setUei("uei.opennms.org/default/trap");
-        } else {
-            event.setUei(econf.getUei());
         }
         return event;
     }
