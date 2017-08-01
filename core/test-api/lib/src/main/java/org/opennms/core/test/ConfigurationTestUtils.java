@@ -199,7 +199,7 @@ public abstract class ConfigurationTestUtils extends Assert {
      * @throws java.io.IOException if any.
      */
     public static Resource getResourceForConfigWithReplacements(String config,
-            String[] ... replacements) throws IOException {
+            String[] ... replacements) {
         String newConfig = performReplacements(config, replacements);
         return new ByteArrayResource(newConfig.getBytes());
     }

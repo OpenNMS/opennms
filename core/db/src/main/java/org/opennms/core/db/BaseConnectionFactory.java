@@ -28,7 +28,6 @@
 
 package org.opennms.core.db;
 
-import java.beans.PropertyVetoException;
 import java.io.InputStream;
 import java.sql.SQLException;
 
@@ -50,7 +49,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @throws java.beans.PropertyVetoException if any.
      * @throws java.sql.SQLException if any.
      */
-    protected BaseConnectionFactory(final JdbcDataSource ds) throws PropertyVetoException, SQLException {
+    protected BaseConnectionFactory(final JdbcDataSource ds) throws SQLException {
         initializePool(ds);
     }
 

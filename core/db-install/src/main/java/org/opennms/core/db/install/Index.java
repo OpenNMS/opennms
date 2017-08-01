@@ -234,7 +234,7 @@ public class Index {
      * @return a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-    public String getIndexUniquenessQuery() throws Exception {
+    public String getIndexUniquenessQuery() {
         String firstColumn = getColumns().get(0);
         String columnList = StringUtils.collectionToDelimitedString(getColumns(), ", ");
         

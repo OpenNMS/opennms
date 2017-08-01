@@ -143,11 +143,6 @@ public class NCSEdgeStatusProvider implements EdgeStatusProvider{
         return alarmsSet;
     }
 
-    private void getParms(String eventParms) {
-        String[] parms = eventParms.split(";");
-
-    }
-
     @Override
     public boolean contributesTo(String namespace) {
         return namespace.equals("nodes");

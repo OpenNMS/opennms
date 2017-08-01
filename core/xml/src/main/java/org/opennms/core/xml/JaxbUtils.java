@@ -265,7 +265,7 @@ public abstract class JaxbUtils {
         }
     }
 
-    public static <T> String getNamespaceForClass(final Class<T> clazz) throws SAXException {
+    public static <T> String getNamespaceForClass(final Class<T> clazz) {
         final XmlSchema schema = clazz.getPackage().getAnnotation(XmlSchema.class);
         if (schema != null) {
             final String namespace = schema.namespace();

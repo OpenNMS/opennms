@@ -34,7 +34,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -100,7 +99,7 @@ public class PollOutagesConfigManagerTest {
 
         m_manager = new PollOutagesConfigManager() {
             @Override
-            public void update() throws IOException {}
+            public void update() {}
         };
 
         FileWriter w = new FileWriter(m_configFile);
