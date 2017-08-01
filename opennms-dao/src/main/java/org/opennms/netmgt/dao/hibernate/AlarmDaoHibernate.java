@@ -65,7 +65,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     /** {@inheritDoc} */
     @Override
     public List<AlarmSummary> getNodeAlarmSummariesIncludeAcknowledgedOnes(List<Integer> nodeIds) {
-        if (nodeIds.size() < 1) {
+        if (nodeIds.isEmpty()) {
             return Collections.emptyList();
         }
         StringBuilder sql = new StringBuilder();

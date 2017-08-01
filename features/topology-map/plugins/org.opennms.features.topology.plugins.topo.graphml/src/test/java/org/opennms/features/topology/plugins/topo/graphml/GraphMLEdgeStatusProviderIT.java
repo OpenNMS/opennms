@@ -52,6 +52,8 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLEdgeStatus;
+import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLEdgeStatusProvider;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -106,7 +108,7 @@ public class GraphMLEdgeStatusProviderIT {
         serviceAccessor.setMeasurementsService(request -> new QueryResponse());
 
         final GraphMLGraph graph = GraphMLReader.read(getClass().getResourceAsStream("/test-graph2.xml")).getGraphs().get(0);
-        final GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graph, serviceAccessor);
+        final GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(null, graph, serviceAccessor);
         final GraphMLEdgeStatusProvider provider = new GraphMLEdgeStatusProvider(
                 topologyProvider,
                 new ScriptEngineManager(),
@@ -118,7 +120,7 @@ public class GraphMLEdgeStatusProviderIT {
 
         // Calculating the status executes some tests defined int the according scripts as a side effect
         final EdgeRef edgeRef = topologyProvider.getEdge("acme:regions", "center_north");
-        final Map<EdgeRef, Status> status = provider.getStatusForEdges(topologyProvider, ImmutableList.of(edgeRef), new Criteria[0]);
+        final Map<? extends EdgeRef, ? extends Status> status = provider.getStatusForEdges(topologyProvider, ImmutableList.of(edgeRef), new Criteria[0]);
 
         // Checking nodeID creation for vertices with only foreignSource/foreignID set
         final VertexRef vertexRef = topologyProvider.getVertex("acme:regions", "west");
@@ -129,7 +131,7 @@ public class GraphMLEdgeStatusProviderIT {
         // Testing status merging from two scripts
         assertThat(status, is(notNullValue()));
         assertThat(status, is(hasEntry(edgeRef, new GraphMLEdgeStatus().severity(OnmsSeverity.WARNING)
-                                                    .style("stroke", "pink")
-                                                    .style("stroke-width", "3em"))));
+                                                                       .style("stroke", "pink")
+                                                                       .style("stroke-width", "3em"))));
     }
 }
