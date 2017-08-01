@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,16 +28,14 @@
 
 package org.opennms.netmgt.tools.spectrum;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 
 
@@ -47,7 +45,6 @@ public class IntegrationTest {
     
     @Before
     public void setUp() throws IOException {
-        MockLogAppender.setupLogging();
         AlertMapReader amReader = new AlertMapReader(new FileSystemResource("src/test/resources/sonus-traps/AlertMap"));
         EventDispositionReader edReader = new EventDispositionReader(new FileSystemResource("src/test/resources/sonus-traps/EventDisp"));
         m_alertMappings = amReader.getAlertMappings();
@@ -55,7 +52,6 @@ public class IntegrationTest {
     }
     
     @Test
-    @Ignore
     public void integrateIpUnityInterfaceHighError() throws IOException {
         AlertMapping mapping = null;
         EventDisposition disposition = null;
@@ -91,7 +87,7 @@ public class IntegrationTest {
         importer.setBaseUei("uei.opennms.org/import/Spectrum");
         importer.setCustomEventsDir(new FileSystemResource("src/test/resources/sonus-traps"));
         importer.setModelTypeAssetField("manufacturer");
-        importer.setOutputWriter(new PrintWriter(System.out));
+        importer.setOutputResource(new FileSystemResource(new File(System.getProperty("java.io.tmpdir", "SpectrumEventImporterIT.xml"))));
         importer.setReductionKeyBody("%dpname%:%uei%:%interface%");
         importer.afterPropertiesSet();
         Assert.assertEquals("751 alert-mappings", 751, importer.getAlertMappings().size());

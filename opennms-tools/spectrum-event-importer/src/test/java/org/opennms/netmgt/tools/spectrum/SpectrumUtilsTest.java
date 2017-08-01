@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,12 @@
 package org.opennms.netmgt.tools.spectrum;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author jeffg
@@ -41,12 +42,14 @@ import org.opennms.core.test.MockLogAppender;
  */
 public class SpectrumUtilsTest {
     private SpectrumUtils m_utils;
+    private static final Logger LOG = LoggerFactory.getLogger(SpectrumUtilsTest.class);
     
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
+
         m_utils = new SpectrumUtils();
         m_utils.setModelTypeAssetField("manufacturer");
-        MockLogAppender.setupLogging();
     }
     
     @Test
@@ -77,8 +80,9 @@ public class SpectrumUtilsTest {
         EventFormat format = new EventFormat("0xdeadbeef");
         format.setContents(input);
         String output = m_utils.translateAllSubstTokens(format);
+        LOG.debug("Output: {}", output);
         Assert.assertTrue("Date token got removed", !output.contains("{d"));
-        Assert.assertTrue("Date token got replaced correctly", output.contains("%eventtime%"));
+        Assert.assertTrue("Date token got replaced correctly", output.contains("%time%"));
         Assert.assertTrue("Model-type token got removed", !output.contains("{t}"));
         Assert.assertTrue("Model-type token got replaced correctly", output.contains("%asset[manufacturer]%"));
         Assert.assertTrue("Model-name token got removed", !output.contains("{m}"));
@@ -97,12 +101,12 @@ public class SpectrumUtilsTest {
         et.put(3, "baz");
         Varbindsdecode vbd = m_utils.translateEventTable(et, "parm[#1]");
         Assert.assertEquals("Parm ID is parm[#1]", "parm[#1]", vbd.getParmid());
-        Assert.assertEquals("Three decode elements", 3, vbd.getDecodeCount());
-        Assert.assertEquals("First key is 1", "1", vbd.getDecode(0).getVarbindvalue());
-        Assert.assertEquals("First value is foo", "foo", vbd.getDecode(0).getVarbinddecodedstring());
-        Assert.assertEquals("Second key is 2", "2", vbd.getDecode(1).getVarbindvalue());
-        Assert.assertEquals("Second value is bar", "bar", vbd.getDecode(1).getVarbinddecodedstring());
-        Assert.assertEquals("Third key is 3", "3", vbd.getDecode(2).getVarbindvalue());
-        Assert.assertEquals("Third value is baz", "baz", vbd.getDecode(2).getVarbinddecodedstring());
+        Assert.assertEquals("Three decode elements", 3, vbd.getDecodes().size());
+        Assert.assertEquals("First key is 1", "1", vbd.getDecodes().get(0).getVarbindvalue());
+        Assert.assertEquals("First value is foo", "foo", vbd.getDecodes().get(0).getVarbinddecodedstring());
+        Assert.assertEquals("Second key is 2", "2", vbd.getDecodes().get(1).getVarbindvalue());
+        Assert.assertEquals("Second value is bar", "bar", vbd.getDecodes().get(1).getVarbinddecodedstring());
+        Assert.assertEquals("Third key is 3", "3", vbd.getDecodes().get(2).getVarbindvalue());
+        Assert.assertEquals("Third value is baz", "baz", vbd.getDecodes().get(2).getVarbinddecodedstring());
     }
 }

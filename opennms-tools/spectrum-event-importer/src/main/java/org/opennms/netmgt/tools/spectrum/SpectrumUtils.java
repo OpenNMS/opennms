@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -106,7 +106,7 @@ public class SpectrumUtils {
                 EventTable et = loadEventTable(eventTablePath, mat.group(1));
                 String parmId = "parm[#" + mat.group(2) + "]";
                 Varbindsdecode vbd = translateEventTable(et, parmId);
-                LOG.debug("Loaded event-table [{}] with parm-ID [{}], with {} mappings", et.getTableName(), parmId, vbd.getDecodeCount());
+                LOG.debug("Loaded event-table [{}] with parm-ID [{}], with {} mappings", et.getTableName(), parmId, vbd.getDecodes().size());
                 vbds.add(translateEventTable(et, parmId));
             } else {
                 LOG.debug("Token [{}] does not look like an event-table, skipping it", token);

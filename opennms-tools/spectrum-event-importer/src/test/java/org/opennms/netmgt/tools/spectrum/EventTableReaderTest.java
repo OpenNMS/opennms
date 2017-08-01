@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,10 +31,7 @@ package org.opennms.netmgt.tools.spectrum;
 import java.io.IOException;
 
 import org.junit.Assert;
-
-import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -42,10 +39,6 @@ import org.springframework.core.io.FileSystemResource;
  *
  */
 public class EventTableReaderTest {
-    @Before
-    public void setUp() {
-        MockLogAppender.setupLogging();
-    }
     
     @Test
     public void oneArgConstructor() throws IOException {
