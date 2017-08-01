@@ -368,7 +368,7 @@ public abstract class NotificationManager {
             return true;
         }
 
-        StringBuffer constraints = new StringBuffer();
+        final StringBuilder constraints = new StringBuilder();
         if (event.getNodeid() != 0) {
             constraints.append(" & (nodeId == " + event.getNodeid() + ")");
         }
@@ -533,7 +533,7 @@ public abstract class NotificationManager {
                 }
             }
 
-            StringBuffer sql = new StringBuffer(matchParameters ? "SELECT n.eventid FROM notifications n, events e WHERE n.eventid = e.eventid AND n.eventuei=? " : "SELECT n.eventid FROM notifications n WHERE n.eventuei=? ");
+            final StringBuilder sql = new StringBuilder(matchParameters ? "SELECT n.eventid FROM notifications n, events e WHERE n.eventid = e.eventid AND n.eventuei=? " : "SELECT n.eventid FROM notifications n WHERE n.eventuei=? ");
             for (int i = 0; i < matchList.length; i++) {
                 if (matchList[i].startsWith("parm[")) {
                     sql.append("AND e.eventparms LIKE ? ");

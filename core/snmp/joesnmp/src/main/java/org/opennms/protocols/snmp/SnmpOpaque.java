@@ -131,7 +131,7 @@ public class SnmpOpaque extends SnmpOctetString {
         // format the string for hex
         //
     	final byte[] data = getString();
-    	final StringBuffer b = new StringBuffer();
+    	final StringBuilder b = new StringBuilder();
         // b.append("SNMP Opaque [length = " + data.length + ", fmt = HEX] =
         // [");
         for (int i = 0; i < data.length; ++i) {

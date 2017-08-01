@@ -201,7 +201,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
             @SuppressWarnings("unchecked")
             public List<CdpTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
 
-                StringBuffer idList = new StringBuffer();
+                final StringBuilder idList = new StringBuilder();
                 String conditional = "";
                 if(ids.length > 0) {
                     for (int i  = 0; i < ids.length; i++) {

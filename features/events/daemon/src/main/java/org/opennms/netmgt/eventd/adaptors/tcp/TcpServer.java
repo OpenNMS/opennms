@@ -321,7 +321,7 @@ final class TcpServer implements Runnable {
                 ioInterrupted = false; // reset the flag
 
                 // build a connection string for the thread identifier
-                StringBuffer connection = new StringBuffer(InetAddressUtils.str(newbie.getInetAddress()));
+                final StringBuilder connection = new StringBuilder(InetAddressUtils.str(newbie.getInetAddress()));
                 connection.append(":").append(newbie.getPort());
 
                 LOG.debug("New connection accepted from {}", connection);

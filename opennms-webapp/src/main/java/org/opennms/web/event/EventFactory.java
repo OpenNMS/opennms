@@ -86,7 +86,7 @@ public class EventFactory {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
+            final StringBuilder select = new StringBuilder("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (Filter filter : filters) {
@@ -138,7 +138,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
+            final StringBuilder select = new StringBuilder("SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (Filter filter : filters) {
@@ -317,7 +317,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("" +
+            final StringBuilder select = new StringBuilder("" +
                     "          SELECT events.*, node.nodelabel, service.servicename, " +
                     "                 monitoringsystems.id AS systemId, " + 
                     "                 monitoringsystems.label AS systemLabel, " +
@@ -455,7 +455,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS WHERE ");
+            final StringBuilder select = new StringBuilder("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             select.append(" AND NODEID=?");
@@ -877,7 +877,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, monitoringsystems.location AS location FROM events LEFT JOIN monitoringsystems ON events.systemid=monitoringsystems.id WHERE monitoringsystems.type='OpenNMS' AND systemLabel=?");
+            final StringBuilder select = new StringBuilder("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, monitoringsystems.location AS location FROM events LEFT JOIN monitoringsystems ON events.systemid=monitoringsystems.id WHERE monitoringsystems.type='OpenNMS' AND systemLabel=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND EVENTACKUSER IS NULL");
@@ -961,7 +961,7 @@ public class EventFactory {
         }
 
         if (eventIds.length > 0) {
-            StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=?");
+            final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=?");
             update.append(" WHERE EVENTID IN (");
             update.append(eventIds[0]);
 
@@ -1016,7 +1016,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE");
+        final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE");
         update.append(getAcknowledgeTypeClause(AcknowledgeType.UNACKNOWLEDGED));
 
         for (Filter filter : filters) {
@@ -1117,7 +1117,7 @@ public class EventFactory {
         }
 
         if (eventIds.length > 0) {
-            StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL");
+            final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL");
             update.append(" WHERE EVENTID IN (");
             update.append(eventIds[0]);
 
@@ -1154,7 +1154,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE");
+        final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE");
         update.append(getAcknowledgeTypeClause(AcknowledgeType.ACKNOWLEDGED));
 
         for (Filter filter : filters) {

@@ -215,7 +215,7 @@ public class VarbindMapping {
      */
     private String encode(String parameterInstance) {
         int snLength = parameterInstance.length();
-        StringBuffer oidBuf = new StringBuffer();
+        final StringBuilder oidBuf = new StringBuilder();
         oidBuf.append(".").append(Integer.toString(snLength));
         for (byte thisByte : parameterInstance.getBytes()) {
             oidBuf.append(".").append(Byte.toString(thisByte));

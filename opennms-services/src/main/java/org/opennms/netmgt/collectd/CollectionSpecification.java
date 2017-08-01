@@ -180,11 +180,11 @@ public class CollectionSpecification {
     	final Map<String, Object> m = new TreeMap<String, Object>();
         m.put(ParameterName.SERVICE.toString(), m_svcName);
         m.put(ParameterName.SERVICE_INTERVAL.toString(), getService().getInterval().toString());
-        StringBuffer sb;
+        StringBuilder sb;
         Collection<Parameter> params = getService().getParameters();
         for (Parameter p : params) {
             if (LOG.isDebugEnabled()) {
-                sb = new StringBuffer();
+                sb = new StringBuilder();
                 sb.append("initializeParameters: adding service: ");
                 sb.append(getServiceName());
                 sb.append(" parameter: ");
@@ -217,7 +217,7 @@ public class CollectionSpecification {
             }
             m.put("ifAliasComment", ifAliasComment());
             if (LOG.isDebugEnabled()) {
-                sb = new StringBuffer();
+                sb = new StringBuilder();
                 sb.append("ifAliasDomain = ");
                 sb.append(ifAliasDomain());
                 sb.append(", storeByIfAlias = ");

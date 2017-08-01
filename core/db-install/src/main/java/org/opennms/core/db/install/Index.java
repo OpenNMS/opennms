@@ -166,7 +166,7 @@ public class Index {
      * @return a {@link java.lang.String} object.
      */
     public String getSql() {
-        StringBuffer sql = new StringBuffer();
+        final StringBuilder sql = new StringBuilder();
         sql.append("CREATE ");
         if (m_unique) {
             sql.append("UNIQUE ");
@@ -242,7 +242,7 @@ public class Index {
          * E.g. select * from foo where (a, b) in (select a, b from foo
          *      group by a, b having count(a) > 1 order by a, b);
          */
-        StringBuffer sql = new StringBuffer();
+        final StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM " + getTable() + " WHERE ( "
                    + columnList + " ) IN ( SELECT "  + columnList + " FROM "
                    + getTable() + " GROUP BY " + columnList + " HAVING count("

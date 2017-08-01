@@ -275,7 +275,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Snmp info = event.getSnmp();
             if (info != null) {
-                StringBuffer snmpStr = new StringBuffer(info.getId());
+                final StringBuilder snmpStr = new StringBuilder(info.getId());
                 if (info.getIdtext() != null) {
                     snmpStr.append(ATTRIB_DELIM + escape(info.getIdtext().trim(), ATTRIB_DELIM));
                 } else {

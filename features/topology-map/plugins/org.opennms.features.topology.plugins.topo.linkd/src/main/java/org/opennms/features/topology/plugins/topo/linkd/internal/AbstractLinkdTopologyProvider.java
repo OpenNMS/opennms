@@ -169,7 +169,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     }
 
     protected static String getNodeTooltipDefaultText(String ip, String label, boolean isManaged, String location,NodeType nodeType) {
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append(label);
         tooltipText.append(": ");

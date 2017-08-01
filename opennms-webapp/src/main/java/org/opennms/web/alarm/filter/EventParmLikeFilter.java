@@ -43,7 +43,7 @@ public class EventParmLikeFilter extends SubstringFilter {
     public String getTextDescription() {
         String strippedType = getValue().replace("(string,text)", "");
         String[] parms = strippedType.split("=");
-        StringBuffer buffer = new StringBuffer(parms[0] + "=\"");
+        final StringBuilder buffer = new StringBuilder(parms[0] + "=\"");
         buffer.append(parms[parms.length - 1]);
         buffer.append("\"");
 

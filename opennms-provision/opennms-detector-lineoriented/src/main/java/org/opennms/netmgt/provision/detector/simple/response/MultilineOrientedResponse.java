@@ -166,7 +166,7 @@ public class MultilineOrientedResponse {
     private String getEntireResponse(final BufferedReader in) throws IOException {
         final char[] cbuf = new char[1024];
         int chars = 0;
-        final StringBuffer response = new StringBuffer();
+        final StringBuilder response = new StringBuilder();
         try {
             while ((chars = in.read(cbuf, 0, 1024)) != -1) {
                 response.append(cbuf, 0, chars);

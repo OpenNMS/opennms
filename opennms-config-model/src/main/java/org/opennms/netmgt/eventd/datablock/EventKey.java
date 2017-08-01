@@ -354,7 +354,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      */
     @Override
     public String toString() {
-        StringBuffer s = new StringBuffer("EventKey\n[\n\t");
+        final StringBuilder s = new StringBuilder("EventKey\n[\n\t");
 
         for (Map.Entry<String, Object> e : entrySet()) {
             s.append(e.getKey() + "    = " + e.getValue().toString() + "\n\t");

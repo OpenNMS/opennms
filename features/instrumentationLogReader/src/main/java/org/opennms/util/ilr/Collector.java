@@ -372,7 +372,7 @@ public class Collector {
             return "0s";
         }
         boolean force = false;
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         if (force || millis >= (1000*3600*24)) {
             long d = millis/(1000*3600*24);
             buf.append(d);

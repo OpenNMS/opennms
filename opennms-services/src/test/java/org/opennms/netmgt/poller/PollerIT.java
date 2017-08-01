@@ -1102,11 +1102,11 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         anticipator.anticipateAllServices(svc1);
 
-        StringBuffer didNotOccur = new StringBuffer();
+        final StringBuilder didNotOccur = new StringBuilder();
         for (MockService service : anticipator.waitForAnticipated(10000)) {
             didNotOccur.append(service.toString());
         }
-        StringBuffer unanticipatedStuff = new StringBuffer();
+        final StringBuilder unanticipatedStuff = new StringBuilder();
         for (MockService service : anticipator.unanticipatedPolls()) {
             unanticipatedStuff.append(service.toString());
         }

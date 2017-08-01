@@ -173,7 +173,7 @@ public abstract class CheckNrpe {
 			"Use \"-h\" option for help.");
 		}
 		
-		StringBuffer buffer = new StringBuffer();
+		final StringBuilder buffer = new StringBuilder();
 		buffer.append(command);
 		for (Iterator<String> i = arglist.iterator(); i.hasNext(); ) {
 			buffer.append(" ");

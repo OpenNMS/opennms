@@ -84,7 +84,7 @@ public class Column {
      */
     @Override
     public String toString() {
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
 
         b.append(m_name);
 

@@ -358,7 +358,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      * @return an SQL FROM clause or "" if no expression is found
      */
     public String constructJoinExprForTables(final List<Table> tables) {
-        StringBuffer joinExpr = new StringBuffer();
+        final StringBuilder joinExpr = new StringBuilder();
 
         getReadLock().lock();
         try {

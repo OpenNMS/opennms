@@ -282,7 +282,7 @@ public class TcaCollectorIT implements InitializingBean {
 		collectionSet.visit(persister);
 
 		// Generate new SNMP Data
-		StringBuffer sb = new StringBuffer("|25|");
+		final StringBuilder sb = new StringBuilder("|25|");
 		long ts = 1327451787l;
 		for (int i = 0; i < 25; i++) {
 			sb.append(ts++);

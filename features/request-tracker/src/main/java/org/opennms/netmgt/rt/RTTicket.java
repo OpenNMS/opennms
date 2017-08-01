@@ -165,7 +165,7 @@ public class RTTicket implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder customFields = new StringBuilder();
+        final StringBuilder customFields = new StringBuilder();
         for (CustomField cf : m_customFields) {
             customFields.append(cf.toString())
             .append("\n");

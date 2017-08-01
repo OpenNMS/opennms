@@ -241,7 +241,7 @@ public class ThresholdingVisitorIT {
         EventIpcManagerFactory.setIpcManager(eventdIpcMgr);
         
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        final StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<outages>");
         sb.append("<outage name=\"junit outage\" type=\"specific\">");
         sb.append("<time begins=\"");

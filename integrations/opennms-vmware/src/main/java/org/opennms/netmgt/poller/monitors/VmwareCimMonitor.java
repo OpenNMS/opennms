@@ -173,7 +173,7 @@ public class VmwareCimMonitor extends AbstractVmwareMonitor {
                 }
 
                 boolean success = true;
-                StringBuffer reason = new StringBuffer("VMware CIM query returned: ");
+                final StringBuilder reason = new StringBuilder("VMware CIM query returned: ");
 
                 for (CIMObject cimObject : cimObjects) {
                     String healthState = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, "HealthState");

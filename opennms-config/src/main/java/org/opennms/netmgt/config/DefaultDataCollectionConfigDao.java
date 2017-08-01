@@ -134,7 +134,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     public String getConfigDirectory() {
         if (m_configDirectory == null) {
-            final StringBuffer sb = new StringBuffer(ConfigFileConstants.getHome());
+            final StringBuilder sb = new StringBuilder(ConfigFileConstants.getHome());
             sb.append(File.separator);
             sb.append("etc");
             sb.append(File.separator);

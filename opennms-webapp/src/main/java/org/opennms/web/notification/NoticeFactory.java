@@ -80,7 +80,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS WHERE");
+            final StringBuilder select = new StringBuilder("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS WHERE");
             select.append(ackType.getAcknowledgeTypeClause());
 
             for (Filter filter : filters) {
@@ -297,7 +297,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATIONS WHERE");
             select.append(ackType.getAcknowledgeTypeClause());
 
             for (Filter filter : filters) {
@@ -419,7 +419,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=?");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND RESPONDTIME IS NULL");
@@ -476,7 +476,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE INTERFACEID=?");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATIONS WHERE INTERFACEID=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND RESPONDTIME IS NULL");
@@ -533,7 +533,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=? AND SERVICEID=?");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=? AND SERVICEID=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND RESPONDTIME IS NULL");
@@ -587,7 +587,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATION WHERE SERVICEID=?");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATION WHERE SERVICEID=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND RESPONDTIME IS NULL");
@@ -668,7 +668,7 @@ public class NoticeFactory {
         }
 
         if (noticeIds.length > 0) {
-            StringBuffer update = new StringBuffer("UPDATE NOTIFICATIONS SET RESPONDTIME=?, ANSWEREDBY=?");
+            final StringBuilder update = new StringBuilder("UPDATE NOTIFICATIONS SET RESPONDTIME=?, ANSWEREDBY=?");
             update.append(" WHERE NOTIFYID IN (");
             update.append(noticeIds[0]);
 

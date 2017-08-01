@@ -282,7 +282,7 @@ public class AsteriskOriginator {
      * @return
      */
     private String createCallLogMsg() {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append("\n\tChannel: ");
         sb.append(getLegAChannel());
         sb.append("\n\tFrom Caller-ID: ");

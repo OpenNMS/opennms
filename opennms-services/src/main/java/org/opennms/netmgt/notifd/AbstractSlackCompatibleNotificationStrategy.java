@@ -244,7 +244,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 			}
 		}
 
-		StringBuilder bldr = new StringBuilder();
+		final StringBuilder bldr = new StringBuilder();
 		if ("".equals(subject) || "RESOLVED: ".equals(subject)) {
 			subject = null;
 		} else {

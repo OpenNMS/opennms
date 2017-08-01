@@ -105,7 +105,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      */
     @Override
     public String toString() {
-    	StringBuffer buffer = new StringBuffer();
+    	final StringBuilder buffer = new StringBuilder();
 
     	buffer.append("CollectionAgent: ");
     	buffer.append(m_agent);

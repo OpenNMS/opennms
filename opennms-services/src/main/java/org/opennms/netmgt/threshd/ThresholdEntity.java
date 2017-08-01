@@ -179,7 +179,7 @@ public final class ThresholdEntity implements Cloneable {
             return "";
         }
 
-        StringBuffer buffer = new StringBuffer("{");
+        final StringBuilder buffer = new StringBuilder("{");
 
         buffer.append("evaluator=").append(this.getThresholdConfig().getType());
         buffer.append(", dsName=").append(this.getDataSourceExpression());

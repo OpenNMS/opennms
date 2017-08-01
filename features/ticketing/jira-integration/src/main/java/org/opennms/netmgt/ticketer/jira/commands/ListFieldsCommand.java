@@ -59,7 +59,7 @@ public class ListFieldsCommand extends AbstractJiraCommand {
 
     @Override
     protected void doExecute(JiraRestClient jiraRestClient) throws Exception {
-        StringBuilder info = new StringBuilder();
+        final StringBuilder info = new StringBuilder();
         info.append("Fetching ");
         info.append(showAll ? "custom" : "all");
         info.append(" fields for ");

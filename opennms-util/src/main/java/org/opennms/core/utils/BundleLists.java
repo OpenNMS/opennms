@@ -109,7 +109,7 @@ public abstract class BundleLists {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuilder strings = new StringBuilder();
+        final StringBuilder strings = new StringBuilder();
 
         for (int i = 0; i < objArray.length; i++) {
             strings.append(objArray[i].toString());

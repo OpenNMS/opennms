@@ -87,7 +87,7 @@ public class PollOutagesConfigManagerTest {
                 "       <interface address=\"192.168.0.1\"/>\n" + 
                 "   </outage>\n";
         
-        StringBuffer sb = new StringBuffer(xml);
+        final StringBuilder sb = new StringBuilder(xml);
 
         // Fake a really big poll-outages.xml
         for (int i = 1; i <= 10000; i++) {

@@ -295,7 +295,7 @@ public class SharedSegment {
     }
 
     public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+            final StringBuilder strbfr = new StringBuilder();
             strbfr.append("segment ->\nsegment bridges:");
             strbfr.append(getBridgeIdsOnSegment());
             strbfr.append(", designated bridge:[");
@@ -311,6 +311,6 @@ public class SharedSegment {
                 strbfr.append("\n");
             }
             
-            return strbfr.toString();    	
+            return strbfr.toString();
     }
 }

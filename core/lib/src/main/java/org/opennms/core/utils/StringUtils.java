@@ -122,7 +122,7 @@ public abstract class StringUtils {
     private static class CommandArrayGenerator {
         private final ArrayList<String> m_segments = new ArrayList<String>();
         private boolean m_isInQuotes = false;
-        private StringBuffer m_segmentBuffer = new StringBuffer();
+        private StringBuilder m_segmentBuffer = new StringBuilder();
 
         public CommandArrayGenerator(String s) {
             if (s == null) {
@@ -165,7 +165,7 @@ public abstract class StringUtils {
             // Reset the segment if the buffer is not empty
             if (m_segmentBuffer.length() > 0) {
                 m_segments.add(m_segmentBuffer.toString());
-                m_segmentBuffer = new StringBuffer();
+                m_segmentBuffer = new StringBuilder();
             }
         }
 

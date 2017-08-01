@@ -328,7 +328,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
             label.addStyleName("alert-details-noalarms-font");
             component.addComponent(label);
         } else {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
 
             sb.append("<table class='alert-details-dashlet onms-table'>");
             sb.append("<thead>");

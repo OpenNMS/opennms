@@ -53,7 +53,7 @@ public class PrefabGraphDumper {
      */
     public void dump(List<PrefabGraph> graphs, Writer writer) throws IOException {
         List<String> templates = new ArrayList<String>();
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         for (PrefabGraph graph : graphs) {
             String name = "report." + graph.getName();
             templates.add(graph.getName());

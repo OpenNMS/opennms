@@ -73,7 +73,7 @@ public abstract class JDBCTemplate {
      }
 
     private String argsToString(final Object[] values) {
-        final StringBuffer sb = new StringBuffer("[");
+        final StringBuilder sb = new StringBuilder("[");
          for(int i = 0; i < values.length; i++) {
              if (i != 0)
                  sb.append(", ");

@@ -432,7 +432,7 @@ public class NodeLabelDaoImpl implements NodeLabel{
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         // Build the buffer
         buffer.append(m_nodeLabel);

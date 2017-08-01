@@ -493,7 +493,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     }
     
     public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+    	final StringBuilder strbfr = new StringBuilder();
         strbfr.append("\n------broadcast domain-----\n");
         strbfr.append("domain bridges:");
         strbfr.append(getBridgeNodesOnDomain());
@@ -515,7 +515,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     
     public String printTopologyFromLevel(Set<Integer> bridgeIds, int level) {
     	Set<Integer> bridgesDownLevel = new HashSet<Integer>();
-    	StringBuffer strbfr = new StringBuffer();
+    	final StringBuilder strbfr = new StringBuilder();
         strbfr.append("------level ");
     	strbfr.append(level);
         strbfr.append(" -----\n");
@@ -543,8 +543,8 @@ E:    	for (BridgeElement element: bridgeelements) {
     }
     
     public static String printTopologyBFT(List<BridgeMacLink> bft) {
-    	StringBuffer strbfr = new StringBuffer();
-    	for (BridgeMacLink link: bft) {
+        final StringBuilder strbfr = new StringBuilder();
+        for (BridgeMacLink link: bft) {
             strbfr.append("nodeid:[");
             strbfr.append(link.getNode().getId());
             strbfr.append("]:");
@@ -559,7 +559,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     }
 
     public static String printTopologyLink(BridgeMacLink link) {
-        StringBuffer strbfr = new StringBuffer();
+        final StringBuilder strbfr = new StringBuilder();
             strbfr.append("nodeid:[");
             strbfr.append(link.getNode().getId());
             strbfr.append("]:");

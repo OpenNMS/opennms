@@ -106,7 +106,7 @@ public class SnmpTableResultTest {
         }
         
         if (received.hasNext()) {
-            StringBuilder buf = new StringBuilder();
+            final StringBuilder buf = new StringBuilder();
             while(received.hasNext()) {
                 buf.append("Unexpected Row: ").append(received.next()).append('\n');
             }

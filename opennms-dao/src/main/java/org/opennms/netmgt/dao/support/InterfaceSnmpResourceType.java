@@ -219,8 +219,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             if (snmpInterface == null) {
                 label = intfName + " (*)";
             } else {
-                StringBuffer descr = new StringBuffer();
-                StringBuffer parenString = new StringBuffer();
+                final StringBuilder descr = new StringBuilder();
+                final StringBuilder parenString = new StringBuilder();
 
                 if (snmpInterface.getIfAlias() != null) {
                     parenString.append(snmpInterface.getIfAlias());

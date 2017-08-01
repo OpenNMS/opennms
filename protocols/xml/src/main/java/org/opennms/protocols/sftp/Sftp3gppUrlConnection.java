@@ -137,7 +137,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         }
 
         // Processing 3GPP File Type A (NE Mode)
-        StringBuffer sb = new StringBuffer("A");
+        final StringBuilder sb = new StringBuilder("A");
         sb.append(datef.format(new Date(timestamp)));
         sb.append(".");
         sb.append(timef.format(new Date(timestamp-step)));

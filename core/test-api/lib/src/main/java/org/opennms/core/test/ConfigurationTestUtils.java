@@ -219,7 +219,7 @@ public abstract class ConfigurationTestUtils extends Assert {
         Reader inputReader = getReaderForResource(obj, resource);
         BufferedReader bufferedReader = new BufferedReader(inputReader);
         
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         String line;
         while ((line = bufferedReader.readLine()) != null) {
