@@ -194,7 +194,7 @@ public class JasperReportService implements ReportService {
                                 if (defaultValues.containsKey(reportParm.getName()) && (defaultValues.get(reportParm.getName()) != null)) {
                                     intParm.setValue((Integer) defaultValues.get(reportParm.getName()));
                                 } else {
-                                    intParm.setValue(Integer.valueOf(0));
+                                    intParm.setValue(0);
                                 }
                                 intParms.add(intParm);
                                 continue;

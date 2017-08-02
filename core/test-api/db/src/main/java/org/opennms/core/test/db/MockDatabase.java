@@ -291,7 +291,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 EventParameterUtils.format(e),
                 e.getLogmsg() == null? null : e.getLogmsg().getContent()
         };
-        e.setDbid(eventId.intValue());
+        e.setDbid(eventId);
         update("insert into events (" +
                 "eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, " +
                 "nodeId, ipAddr, serviceId, systemId, " +
