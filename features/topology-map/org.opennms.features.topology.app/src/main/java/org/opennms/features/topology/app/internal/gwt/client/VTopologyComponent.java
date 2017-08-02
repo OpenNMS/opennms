@@ -252,9 +252,9 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
             JsArrayInteger p0 = (JsArrayInteger) JsArrayInteger.createArray();
             int x = tform.getX();
-            int oldCenterX = (int) Math.round(((width/2 - x) / tform.getScaleX()));
+            int oldCenterX = (int) Math.round((((double)width / 2d - (double)x) / tform.getScaleX()));
             int y = tform.getY();
-            int oldCenterY = (int) Math.round(((height/2 - y) / tform.getScaleY()));
+            int oldCenterY = (int) Math.round((((double)height / 2d - (double)y) / tform.getScaleY()));
             p0.push(oldCenterX);
             p0.push( oldCenterY );
             p0.push((int) (width / tform.getScaleX()));

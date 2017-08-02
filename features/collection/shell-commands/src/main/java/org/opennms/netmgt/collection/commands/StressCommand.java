@@ -229,7 +229,7 @@ public class StressCommand extends OsgiCommandSupport {
                 }
 
                 try {
-                    Thread.sleep(sleepTimeInSecondsBetweenIterations * 1000);
+                    Thread.sleep(sleepTimeInSecondsBetweenIterations * 1000L);
                 } catch (InterruptedException e) {
                     break;
                 }

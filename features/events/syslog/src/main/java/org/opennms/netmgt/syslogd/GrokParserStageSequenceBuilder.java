@@ -260,7 +260,7 @@ public abstract class GrokParserStageSequenceBuilder {
 			case secondFraction:
 				return (s,v) -> {
 					if (v >= 1000) {
-						s.message.setMillisecond(Math.round(v / 1000));
+						s.message.setMillisecond(Math.round(v / 1000f));
 					} else {
 						s.message.setMillisecond(v);
 					}

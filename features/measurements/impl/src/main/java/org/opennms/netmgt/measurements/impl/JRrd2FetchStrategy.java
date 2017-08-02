@@ -51,10 +51,10 @@ public class JRrd2FetchStrategy extends AbstractRrdBasedFetchStrategy {
             int maxrows, Map<Source, String> rrdsBySource,
             Map<String, Object> constants) throws RrdException {
 
-        final long startInSeconds = (long) Math.floor(start / 1000);
-        final long endInSeconds = (long) Math.floor(end / 1000);
+        final long startInSeconds = (long) Math.floor(start / 1000d);
+        final long endInSeconds = (long) Math.floor(end / 1000d);
 
-        long stepInSeconds = (long) Math.floor(step / 1000);
+        long stepInSeconds = (long) Math.floor(step / 1000d);
         // The step must be strictly positive
         if (stepInSeconds <= 0) {
             stepInSeconds = 1;
