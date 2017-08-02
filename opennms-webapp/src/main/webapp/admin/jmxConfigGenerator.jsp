@@ -43,5 +43,5 @@
   <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 
-<iframe id="vaadin-content" src="osgi/jmx-config-tool" frameborder="0" style="height:100%; width:100%;"></iframe>
+<iframe id="vaadin-content" src="admin/jmx-config-tool" frameborder="0" style="height:100%; width:100%;"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
