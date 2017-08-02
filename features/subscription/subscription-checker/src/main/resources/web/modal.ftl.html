@@ -2,12 +2,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="color:red;">Your Subscription has expired</h4>
+                <h4 class="modal-title" style="color:red;">Your Subscription Has Expired</h4>
             </div>
             <div class="modal-body">
 <#if userInAdminRole >
       <p>${adminMessage}</p>
-      <p>Subscription key: subscriptionGroupId: ${subscriptionGroupId}  subscriptionArtifactId: ${subscriptionArtifactId}  subscriptionVersion: ${subscriptionVersion}</p>
+      <p>Subscription key: groupId: ${subscriptionGroupId} | artifactId: ${subscriptionArtifactId} | version: ${subscriptionVersion}</p>
+      <div id="systemId-content"></div>
 <#else>
       <p>${userMessage}</p>
 </#if>
@@ -33,16 +34,38 @@
     	console.log('ackSubscriptionExpired:'+ sessionStorage.getItem('ackSubscriptionExpired'));
     	if (sessionStorage.getItem('ackSubscriptionExpired')===null){
         	var authenticated=false;
-        	$.get('licencemgr/rest/v1-0/licence-mgr/isauthenticated?productId=${subscriptionArtifactId}/${subscriptionVersion}', function(data,textStatus,jqXHR) {
-        		responseText=jqXHR.responseText;
-        	    console.log(responseText);
-        		if(responseText.includes('<isAuthenticated>true')) authenticated=true;
-        		console.log('is authenticated: '+authenticated);
-            	if(! authenticated){
-            		$('#subscription-checker-modal').modal('show');
-            	};
+        	$.get('licencemgr/rest/v1-0/licence-mgr/isauthenticated?productId=${subscriptionArtifactId}/${subscriptionVersion}')
+    	      .done( function(data,textStatus,jqXHR) {
+    		      responseText=jqXHR.responseText;
+    	          console.log('is authenticated response text' + responseText);
+    		      if(responseText.includes('<isAuthenticated>true')) authenticated=true;
+    		      console.log('is authenticated: '+authenticated);
+        	      if(! authenticated){
+        		     $('#subscription-checker-modal').modal('show');
+        	      }
+        	   })
+        	  .fail( function(jqXHR, textStatus, errorThrown) {
+        		  responseText=jqXHR.responseText;
+        		  console.log('fail textStatus:' +textStatus
+        				  +' errorThrown:'+errorThrown
+        				  +' response text:' + responseText);
+        		  $('#subscription-checker-modal').modal('show');
         	  });
-    	}
+           $.get('licencemgr/rest/v1-0/licence-mgr/getsystemid')
+  	         .done( function(data,textStatus,jqXHR) {
+  		         responseText=jqXHR.responseText;
+  		         systemId='unavailable'
+  	             console.log('system id response text' + responseText);
+  		         if(responseText.includes('<systemId>')) {
+  		        	start = responseText.indexOf('<systemId>')+'<systemId>'.length;
+  		        	end = responseText.indexOf('</systemId>')
+  		        	systemId=responseText.substr(start, end);
+  		        	console.log('systemId: '+systemId);
+  		        	$('#systemId-content').html('System Id: '+systemId);
+  		         }
+      	   });
+        	
+    	};
 
    		$('#subscription-checker-modal').on('shown.bs.modal', function () {
    		    $(this).find('.modal-dialog').css({height:'auto', 'max-height':'100%'});
