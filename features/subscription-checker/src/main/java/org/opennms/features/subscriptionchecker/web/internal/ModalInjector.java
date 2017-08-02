@@ -50,15 +50,21 @@ public class ModalInjector implements HtmlInjector {
 
     @Override
     public String inject(HttpServletRequest request) throws TemplateException, IOException {  
-        if (isPage("/opennms/admin/index.jsp", request)) {
-            return generateModalHtml(false);
-        } else if (m_stateManager.isEnabled() == null && isPage("/opennms/index.jsp", request) && isUserInAdminRole(request)) {
-            return generateModalHtml(true);
+        if (m_stateManager.isEnabled() == true && isPage("/opennms/index.jsp", request)) {
+            return generateModalHtml(isUserInAdminRole(request), 
+            		m_stateManager.getSubscriptionGroupId(),
+                	m_stateManager.getSubscriptionArtifactId(),
+                	m_stateManager.getSubscriptionVersion(),
+                	m_stateManager.getAdminMessage(),
+                	m_stateManager.getUserMessage()
+                	);
         }
         return null;
     }
 
-    protected static String generateModalHtml(boolean showOnLoad) throws IOException, TemplateException {
+    protected static String generateModalHtml(boolean userInAdminRole, String subscriptionGroupId, String subscriptionArtifactId, 
+    		String subscriptionVersion, String adminMessage, String userMessage) throws IOException, TemplateException {
+    	
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_21);
         ClassTemplateLoader ctl = new ClassTemplateLoader(ModalInjector.class, "/web");
         cfg.setTemplateLoader(ctl);
@@ -66,7 +72,15 @@ public class ModalInjector implements HtmlInjector {
         Template template = cfg.getTemplate("modal.ftl.html");
         // Build out model
         Map<String, Object> data = Maps.newHashMap();
-        data.put("showOnLoad", showOnLoad);
+        
+        data.put("userInAdminRole", userInAdminRole);
+        data.put("subscriptionGroupId", subscriptionGroupId);
+        data.put("subscriptionArtifactId", subscriptionArtifactId);
+        data.put("subscriptionVersion", subscriptionVersion);
+        
+        data.put("adminMessage", adminMessage);
+        data.put("userMessage", userMessage);
+        
         // Render to string
         Writer out = new StringWriter();
         template.process(data, out);

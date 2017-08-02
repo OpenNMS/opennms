@@ -31,46 +31,28 @@ package org.opennms.features.subscriptionchecker.internal;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 import org.opennms.core.utils.PropertiesCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 
 /**
  * Maintains state in cfg file:
- *   systemid=000-00-00-0000
- *   enabled=true
- *   acknowledged-by=admin
- *   acknowledged-at=13943454545
- *
- * Same file also holds:
- *   url=http://stats.opennms.org/datachoices/
- *   interval=86400000
- *
- * @author jwhite
  */
 public class StateManager {
     private static final Logger LOG = LoggerFactory.getLogger(StateManager.class);
 
     private static final String PROPERTIES_FILE_NAME = "org.opennms.features.subscriptionchecker.cfg";
-    private static final String ENABLED_KEY = "enabled";
-    private static final String SYSTEM_ID_KEY = "systemid";
-    private static final String ACKNOWLEDGED_BY_KEY = "acknowledged-by";
-    private static final String ACKNOWLEDGED_AT_KEY = "acknowledged-at";
+    private static final String ENABLED_KEY = "org.opennms.subscription.enabled";
+    private static final String SUBSCRIPTION_ARTIFACT_ID_KEY = "org.opennms.subscription.artifactid";
+    private static final String SUBSCRIPTION_GROUP_ID_KEY = "org.opennms.subscription.groupid";
+    private static final String SUBSCRIPTION_VERSION_KEY = "org.opennms.subscription.version";
+    private static final String SUBSCRIPTION_ADMIN_MESSAGE_KEY = "org.opennms.subscription.adminmessage";
+    private static final String SUBSCRIPTION_USER_MESSAGE_KEY = "org.opennms.subscription.usermessage";
 
-    private final List<StateChangeHandler> m_listeners = Lists.newArrayList();
     private final PropertiesCache m_propertiesCache = new PropertiesCache();
     private final File m_propertiesFile;
-
-    public static interface StateChangeHandler {
-        void onIsEnabledChanged(boolean isEnabled);
-    }
 
     public StateManager() {
         String opennmsHomeStr = System.getProperty("opennms.home");
@@ -81,37 +63,58 @@ public class StateManager {
         m_propertiesFile = Paths.get(opennmsHomeStr, "etc", PROPERTIES_FILE_NAME).toFile();
     }
 
-    public Boolean isEnabled() throws IOException {
+    public boolean isEnabled() throws IOException {
         final String enabled = m_propertiesCache.getProperty(m_propertiesFile, ENABLED_KEY);
-        return enabled == null ? null : Boolean.valueOf(enabled);
+        return enabled == null ? false : Boolean.valueOf(enabled);
     }
+    
+    public void setEnabled(boolean enabled) throws IOException {
+		m_propertiesCache.setProperty(m_propertiesFile, ENABLED_KEY, Boolean.toString(enabled));
+	}
+    
+    public String getSubscriptionArtifactId() throws IOException {
+		String artifactId=m_propertiesCache.getProperty(m_propertiesFile, SUBSCRIPTION_ARTIFACT_ID_KEY);
+		return (artifactId!=null) ? artifactId : SUBSCRIPTION_ARTIFACT_ID_KEY+ " not set in properties";
+	}
 
-    public void setEnabled(boolean enabled, String user) throws Exception {
-        m_propertiesCache.setProperty(m_propertiesFile, ENABLED_KEY, Boolean.valueOf(enabled).toString());
-        m_propertiesCache.setProperty(m_propertiesFile, ACKNOWLEDGED_BY_KEY, user == null ? "" : user);
-        m_propertiesCache.setProperty(m_propertiesFile, ACKNOWLEDGED_AT_KEY, new Date().toString());
-        for (StateChangeHandler listener : m_listeners) {
-            listener.onIsEnabledChanged(enabled);
-        }
-    }
+	public void setSubscriptionArtifactId(String subscriptionArtifactId) throws IOException {
+		m_propertiesCache.setProperty(m_propertiesFile, SUBSCRIPTION_ARTIFACT_ID_KEY, subscriptionArtifactId);
+	}
 
-    public String getOrGenerateSystemId() throws IOException {
-        String systemId = m_propertiesCache.getProperty(m_propertiesFile, SYSTEM_ID_KEY);
-        if (systemId == null) {
-            LOG.debug("No existing system id was found. Generating a new system id.");
-            systemId = UUID.randomUUID().toString();
-            m_propertiesCache.setProperty(m_propertiesFile, SYSTEM_ID_KEY, systemId);
-        }
-        return systemId;
-    }
+	public String getSubscriptionGroupId() throws IOException {
+		String subscriptionGroupId = m_propertiesCache.getProperty(m_propertiesFile, SUBSCRIPTION_GROUP_ID_KEY);
+		return (subscriptionGroupId!=null) ? subscriptionGroupId : SUBSCRIPTION_GROUP_ID_KEY+ " not set in properties";
+	}
 
-    public String getAndRegenerateSystemId() throws IOException {
-        String systemId = UUID.randomUUID().toString();
-        m_propertiesCache.setProperty(m_propertiesFile, SYSTEM_ID_KEY, systemId);
-        return systemId;
-    }
+	public void setSubscriptionGroupId(String subscriptionGroupId)throws IOException {
+		m_propertiesCache.setProperty(m_propertiesFile, SUBSCRIPTION_GROUP_ID_KEY, subscriptionGroupId);
+	}
 
-    public void onIsEnabledChanged(StateChangeHandler callback) {
-        m_listeners.add(Objects.requireNonNull(callback));
-    }
+	public String getSubscriptionVersion() throws IOException {
+		String subscriptionVersion = m_propertiesCache.getProperty(m_propertiesFile, SUBSCRIPTION_VERSION_KEY);
+		return (subscriptionVersion!=null) ? subscriptionVersion : SUBSCRIPTION_VERSION_KEY+ " not set in properties";
+	}
+
+	public void setSubscriptionVersion(String subscriptionVersion) throws IOException {
+		m_propertiesCache.setProperty(m_propertiesFile, SUBSCRIPTION_VERSION_KEY, subscriptionVersion);
+	}
+	
+	public String getAdminMessage() throws IOException {
+		String adminMessage = m_propertiesCache.getProperty(m_propertiesFile, SUBSCRIPTION_ADMIN_MESSAGE_KEY);
+		return (adminMessage!=null) ? adminMessage : SUBSCRIPTION_ADMIN_MESSAGE_KEY+ " not set in properties";
+	}
+
+	public void setAdminMessage(String adminMessage) throws IOException {
+		m_propertiesCache.setProperty(m_propertiesFile, SUBSCRIPTION_ADMIN_MESSAGE_KEY, adminMessage);
+	}
+
+	public String getUserMessage() throws IOException {
+		String userMessage = m_propertiesCache.getProperty(m_propertiesFile, SUBSCRIPTION_USER_MESSAGE_KEY);
+		return (userMessage!=null) ? userMessage : SUBSCRIPTION_USER_MESSAGE_KEY+ " not set in properties";
+	}
+
+	public void setUserMessage(String userMessage) throws IOException {
+		m_propertiesCache.setProperty(m_propertiesFile, SUBSCRIPTION_USER_MESSAGE_KEY, userMessage);
+	}
+
 }

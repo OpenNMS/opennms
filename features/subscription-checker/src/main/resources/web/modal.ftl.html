@@ -2,12 +2,15 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Your Meridian Subscription has expired</h4>
+                <h4 class="modal-title" style="color:red;">Your Subscription has expired</h4>
             </div>
             <div class="modal-body">
-                <p>Your Meridian Subscription has expired or has not been installed. If your subscription expires you can continue to use your 
-                current Meridian instance but you will not receive updates. Further more, OpenNMS support services will not be
-                applicable to this instance. To update your subscription please go to  <a target="_blank" href="https://opennms.com">OpenNMS Support</a>.<p>
+<#if userInAdminRole >
+      <p>${adminMessage}</p>
+      <p>Subscription key: subscriptionGroupId: ${subscriptionGroupId}  subscriptionArtifactId: ${subscriptionArtifactId}  subscriptionVersion: ${subscriptionVersion}</p>
+<#else>
+      <p>${userMessage}</p>
+</#if>
             </div>
             <div class="modal-footer">
                 <div id="textout"></div>
@@ -27,22 +30,30 @@
 <script type="text/javascript">
 (function(){
     $(document).ready(function() {
-
-    	var authenticated=false;
-    	$.get('licencemgr/rest/v1-0/licence-mgr/isauthenticated?productId=myproject/1.0-SNAPSHOT', function(data,textStatus,jqXHR) {
-    		responseText=jqXHR.responseText;
-    	    console.log(responseText);
-    		if(responseText.includes("<isAuthenticated>true")) authenticated=true;
-    		console.log(authenticated);
-        	if(! authenticated){
-        		$('#subscription-checker-modal').modal('show');
-        	};
-    	  });
+    	console.log('ackSubscriptionExpired:'+ sessionStorage.getItem('ackSubscriptionExpired'));
+    	if (sessionStorage.getItem('ackSubscriptionExpired')===null){
+        	var authenticated=false;
+        	$.get('licencemgr/rest/v1-0/licence-mgr/isauthenticated?productId=${subscriptionArtifactId}/${subscriptionVersion}', function(data,textStatus,jqXHR) {
+        		responseText=jqXHR.responseText;
+        	    console.log(responseText);
+        		if(responseText.includes('<isAuthenticated>true')) authenticated=true;
+        		console.log('is authenticated: '+authenticated);
+            	if(! authenticated){
+            		$('#subscription-checker-modal').modal('show');
+            	};
+        	  });
+    	}
 
    		$('#subscription-checker-modal').on('shown.bs.modal', function () {
    		    $(this).find('.modal-dialog').css({height:'auto', 'max-height':'100%'});
    			$('#subscription-checker-enable').focus();
  		});
+   		
+    	$('#subscription-checker-acknowledge').click(function() {
+    		sessionStorage.setItem('ackSubscriptionExpired',true);
+    		console.log('ackSubscriptionExpired set: '+ sessionStorage.getItem('ackSubscriptionExpired'));
+    	});
+    	
     });
 })();
 

@@ -1,7 +1,5 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-	       xsi:schemaLocation="
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+  xsi:schemaLocation="
                 http://www.osgi.org/xmlns/blueprint/v1.0.0
                 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
                 
@@ -9,29 +7,38 @@
                 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 ">
 
-    <cm:property-placeholder persistent-id="org.opennms.features.subscriptionchecker.cfg">
-        <cm:default-properties>
-            <cm:property name="checksubscription" value="true"/> 
-            <cm:property name="version" value="Meridian2017"/>
-        </cm:default-properties>
-    </cm:property-placeholder>
+  <cm:property-placeholder persistent-id="org.opennms.features.subscriptionchecker.cfg">
+    <cm:default-properties>
+      <cm:property name="org.opennms.subscription.enabled" value="true" />
+      <cm:property name="org.opennms.subscription.groupid" value="org.opennms.plugin" />
+      <cm:property name="org.opennms.subscription.artifactid" value="myproject" />
+      <cm:property name="org.opennms.subscription.version" value="1.0-SNAPSHOT" />
+      <cm:property name="org.opennms.subscription.usermessage" 
+        value="Your Meridian Subscription has expired or has not been installed. Ask your administrator to update the subscription." />
+      <cm:property name="org.opennms.subscription.adminmessage"
+        value="Your Meridian Subscription has expired or has not been installed. If your subscription expires you can continue to use your current Meridian instance but you will not receive updates. Further more, OpenNMS support services will not be applicable to this instance. To update your subscription please go to  &lt;a target=&quot;_blank&quot; href=&quot;https://opennms.com&quot; &gt; OpenNMS Support &lt;/a&gt; " />
+    </cm:default-properties>
+  </cm:property-placeholder>
 
-    <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" availability="mandatory"/>
-    <reference id="licenceService" interface="org.opennms.karaf.licencemgr.LicenceService" availability="mandatory"/>
+  <reference id="licenceService" interface="org.opennms.karaf.licencemgr.LicenceService" availability="mandatory" />
 
-    <!-- The state manager will manually pull properties from the configuration file -->
-    <bean id="stateManager" class="org.opennms.features.subscriptionchecker.internal.StateManager"/>
-    
-    <bean id="modalInjector" class="org.opennms.features.subscriptionchecker.web.internal.ModalInjector">
-        <property name="stateManager" ref="stateManager"/>
-    </bean>
-    <service interface="org.opennms.web.api.HtmlInjector" ref="modalInjector">
-        <service-properties>
-          <entry key="registration.export" value="true" />
-        </service-properties>
-    </service>
+  <!-- The state manager will manually pull properties from the configuration file -->
+  <bean id="stateManager" class="org.opennms.features.subscriptionchecker.internal.StateManager">
+    <property name="enabled" value="${org.opennms.subscription.enabled}" />
+    <property name="subscriptionGroupId" value="${org.opennms.subscription.groupid}" />
+    <property name="subscriptionArtifactId" value="${org.opennms.subscription.artifactid}" />
+    <property name="subscriptionVersion" value="${org.opennms.subscription.version}" />
+    <property name="userMessage" value="${org.opennms.subscription.usermessage}" />
+    <property name="adminMessage" value="${org.opennms.subscription.adminmessage}" />
+  </bean>
 
-
-
+  <bean id="modalInjector" class="org.opennms.features.subscriptionchecker.web.internal.ModalInjector">
+    <property name="stateManager" ref="stateManager" />
+  </bean>
+  <service interface="org.opennms.web.api.HtmlInjector" ref="modalInjector">
+    <service-properties>
+      <entry key="registration.export" value="true" />
+    </service-properties>
+  </service>
 
 </blueprint>
