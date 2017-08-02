@@ -47,9 +47,9 @@ public class EventConfMatcherTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
         eventConfDao = new DefaultEventConfDao();
-        eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/NMS-9496.events.xml")));
+        eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/matcher-test.events.xml")));
         eventConfDao.afterPropertiesSet();
-        Assert.assertEquals(3, eventConfDao.getAllEvents().size()); 
+        Assert.assertEquals(5, eventConfDao.getAllEvents().size());
     }
 
     @After
@@ -83,4 +83,35 @@ public class EventConfMatcherTest {
         Assert.assertEquals("Minor", event.getSeverity());
     }
 
+    /**
+     * NMS-9507: Verify that mask elements can be used to match
+     * event definitions, even when multiple event definitions
+     * with the same UEI are present.
+     */
+    @Test
+    public void canUseMaskVarbindsOnManyEventsWithSameUei() throws Exception {
+        EventBuilder eb = new EventBuilder("uei.opennms.org/mib2events/Enterprises/PaloAlto/Panorama/panGeneralGeneralTrap", "JUnit");
+        eb.setGeneric(6);
+        eb.setSpecific(600);
+        eb.setEnterpriseId(".1.3.6.1.4.1.25461.2.1.3.2");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.1",  "p1");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.2",  "p2");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.3",  "p3");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.4",  "p4");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.5",  "p5");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.6",  "p6");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.7",  "p7");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.8",  "p8");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.9",  "p9");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.10", "p10");
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.11", 4);
+        eb.addParam(".1.3.6.1.4.1.25461.2.1.3.2.1.12", "Management server shutting down");
+        Event event = eventConfDao.findByEvent(eb.getEvent());
+        Assert.assertEquals("Major", event.getSeverity());
+
+        eb.setParam(".1.3.6.1.4.1.25461.2.1.3.2.1.11", 2);
+        eb.setParam(".1.3.6.1.4.1.25461.2.1.3.2.1.12", "Management server started, everything is OK");
+        event = eventConfDao.findByEvent(eb.getEvent());
+        Assert.assertEquals("Cleared", event.getSeverity());
+    }
 }
