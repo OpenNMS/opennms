@@ -42,7 +42,7 @@
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="wallboardConfigUIFactory">
         <service-properties>
-            <entry key="alias" value="/wallboard-config"/>
+            <entry key="alias" value="/admin/wallboard-config"/>
         </service-properties>
     </service>
 

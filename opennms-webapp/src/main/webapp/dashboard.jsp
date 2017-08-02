@@ -47,6 +47,6 @@
     }
 %>
 
-<iframe name="dashboard" id="surveillance-view-ui" src="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
+<iframe name="dashboard" id="surveillance-view-ui" src="vaadin-surveillance-views?dashboard=true<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
