@@ -52,9 +52,11 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
+import org.opennms.web.rest.support.EventHelper;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -68,6 +70,9 @@ public class EventRestService extends OnmsRestService {
 
     @Autowired
     private EventDao m_eventDao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
 
     @Autowired
     private EventIpcManager m_eventForwarder;
@@ -271,12 +276,7 @@ public class EventRestService extends OnmsRestService {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response publishEvent(final org.opennms.netmgt.xml.event.Event event) {
-        if (event.getSource() == null) {
-            event.setSource("ReST");
-        }
-        if (event.getTime() == null) {
-            event.setTime(new Date());
-        }
+        EventHelper.updateEvent(event, m_nodeDao);
         m_eventForwarder.sendNow(event);
         return Response.noContent().build();
     }

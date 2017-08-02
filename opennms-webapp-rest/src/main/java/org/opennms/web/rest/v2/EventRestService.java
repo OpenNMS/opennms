@@ -29,7 +29,6 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,12 +47,14 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.support.EventHelper;
 import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -71,6 +72,9 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
 
     @Autowired
     private EventDao m_dao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
 
     @Override
     protected EventDao getDao() {
@@ -158,9 +162,7 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response create(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, Event event) {
-        if (event.getTime() == null) event.setTime(new Date());
-        if (event.getSource() == null) event.setSource("ReST");
-
+        EventHelper.updateEvent(event, m_nodeDao);
         sendEvent(event);
         return Response.noContent().build();
     }
