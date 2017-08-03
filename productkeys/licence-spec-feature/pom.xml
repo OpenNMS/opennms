@@ -1,0 +1,76 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>productkeys.parent</artifactId>
+    <version>21.0.0-SNAPSHOT</version>
+  </parent>
+  
+  <!-- Feature Definition -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${productGroupId}</groupId>
+  <artifactId>${productName}-licence-spec-feature</artifactId>
+  <name>${productName}.licence-spec-feature</name>
+  <version>${productVersion}</version>
+  <description>Feature definition for ${productName} Licence Specification</description>
+  <packaging>pom</packaging>
+
+  <build>
+
+    <plugins>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>1.2.0</version>
+        <executions>
+          <execution>
+            <id>features.xml</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate-features-xml</goal>
+            </goals>
+            <configuration>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>${productGroupId}</groupId>
+      <artifactId>${productName}.licence-spec</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+  
+  <!-- NOTE this overrides the normal public maven repository as licence specs should be separated and secured -->
+  <!-- Change this to match your repo for containing the licence specifications. -->
+  <!-- NOTE use maven settings.xml in production project NOT Url basic auth http://admin:admin123@localhost-->
+  <distributionManagement>
+    <repository>
+      <id>osgi-plugins-licence-specs</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs</url>
+    </repository>
+    <snapshotRepository>
+      <id>osgi-plugins-licence-specs-snapshots</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>

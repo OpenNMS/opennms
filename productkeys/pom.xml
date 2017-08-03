@@ -39,6 +39,7 @@
     <module>licence-authenticator</module>
     <module>product-descriptor</module>
     <module>feature</module>
+    <module>licence-spec-feature</module>
   </modules>
 
   <build>
