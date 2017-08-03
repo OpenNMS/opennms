@@ -193,6 +193,7 @@ include::text/operation/daemon-config-files/pollerd.adoc[]
 == Ticketing
 include::text/ticketing/introduction.adoc[]
 include::text/ticketing/jira.adoc[]
+include::text/ticketing/remedy.adoc[]
 
 [[ga-rmi]]
 == Enabling RMI
