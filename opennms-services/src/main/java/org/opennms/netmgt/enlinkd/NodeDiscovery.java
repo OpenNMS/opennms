@@ -107,11 +107,11 @@ public abstract class NodeDiscovery implements ReadyRunnable {
             sendSuspendedEvent(getNodeId());
         } else {
             sendStartEvent(getNodeId());
-            LOG.info( "run: node [{}], start collection.", 
-                      getNodeId());
+            LOG.info( "run: node [{}], start {} collection.", 
+                      getNodeId(), getName());
             runCollection();
-            LOG.info( "run: node [{}], end collection.", 
-                      getNodeId());
+            LOG.info( "run: node [{}], end {} collection.", 
+                      getNodeId(),getName());
             sendCompletedEvent(getNodeId());
         }
         m_runned = true;

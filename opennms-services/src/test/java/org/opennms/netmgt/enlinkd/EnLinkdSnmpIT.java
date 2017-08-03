@@ -147,7 +147,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testCdpInterfaceGetter() throws Exception {
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(RPict001_IP));
-        CdpInterfacePortNameGetter get = new CdpInterfacePortNameGetter(config,m_client,null);
+        CdpInterfacePortNameGetter get = new CdpInterfacePortNameGetter(config,m_client,null,0);
 
         assertEquals("FastEthernet0", get.getInterfaceNameFromCiscoCdpMib(1).toDisplayString());
         assertEquals("FastEthernet1", get.getInterfaceNameFromCiscoCdpMib(2).toDisplayString());
@@ -291,7 +291,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(TruthValue.FALSE, ospfElement.getOspfBdrRtrStatus());
         assertEquals(TruthValue.FALSE, ospfElement.getOspfASBdrRtrStatus());
 
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null);
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null,0);
 
         OspfElement ospfElementN = ipAddrTableGetter.get(ospfElement);
         assertEquals(InetAddress.getByName("192.168.100.246"), ospfElementN.getOspfRouterId());
@@ -363,7 +363,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             return;
         }
         
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null);
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null,0);
         for (OspfLink link: links) {
                 link = ipAddrTableGetter.get(link);
 			assertEquals(0, link.getOspfAddressLessIndex().intValue());
@@ -444,7 +444,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
                 
-        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
+        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null,0);
         
                 LldpLink link = new LldpLink();
                 link.setLldpLocalPortNum(1);
@@ -559,7 +559,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
 		
-    	final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
+    	final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null,0);
 		LldpLink link = new LldpLink();
 		link.setLldpLocalPortNum(9);
 		link = lldpLocPort.getLldpLink(link);
@@ -586,7 +586,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH2_IP));
                 
-        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
+        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null,0);
         LldpLink link = new LldpLink();
         link.setLldpLocalPortNum(1);
         link = lldpLocPort.getLldpLink(link);
@@ -637,7 +637,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         }
         final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,
                                                                     m_client,
-                                                                    null);
+                                                                    null,0);
 
         for (LldpLink link : links) {
             assertNotNull(link);

@@ -234,7 +234,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     protected synchronized void onStop() {
 
         LOG.info("stop: persisting forwarders");
-        m_queryMgr.persistForwarders();
+        try {
+            m_queryMgr.persistForwarders();
+        } catch (Exception e) {
+            LOG.warn("Failed to persist one or more forwarders. The resulting bridge topoplogy may be inconsistent.", e);
+        }
         LOG.info("stop: persisted forwarders");
               // Stop the scheduler
         LOG.info("stop: Stopping enhanced linkd scheduler");
@@ -380,16 +384,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         BroadcastDomain domain = m_queryMgr.getBroadcastDomain(nodeid);
         LOG.debug("deleteNode: {}, found broadcast domain: nodes {}, macs {}", nodeid, domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
         // must be calculated the topology for nodeid...
-        domain.getLock(this);
-        LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
-        domain.clearTopologyForBridge(nodeid);
-        LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
-        LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
-        m_queryMgr.store(domain,now);
-        LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
-        domain.removeBridge(nodeid);
-        domain.releaseLock(this);
-        
+        synchronized (domain) {
+            LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
+            domain.clearTopologyForBridge(nodeid);
+            LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
+            LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
+            m_queryMgr.store(domain,now);
+            LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
+            domain.removeBridge(nodeid);
+        }
         Node node = removeNode(nodeid);
 
         if (node == null) {
@@ -614,7 +617,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     	return m_linkdConfig.getMaxBft();
     }
     
-    public boolean collectBft(int nodeid) {
+    public synchronized boolean collectBft(int nodeid) {
     	if (getQueryManager().getUpdateBftMap().size()+m_bridgecollectionsscheduled.size() >= m_linkdConfig.getMaxBft() )
     		return false;
     	synchronized (m_bridgecollectionsscheduled) {
