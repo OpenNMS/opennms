@@ -117,23 +117,25 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
 
         // Root alias
         map.putAll(CriteriaBehaviors.NOTIFICATION_BEHAVIORS);
+        // Allow iplike queries on ipAddress
+        map.put("ipAddress", new IpLikeCriteriaBehavior("interfaceId"));
+
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.notification, CriteriaBehaviors.NOTIFICATION_BEHAVIORS));
+        // Allow iplike queries on notification.ipAddress
+        map.put(Aliases.notification.prop("ipAddress"), new IpLikeCriteriaBehavior("interfaceId"));
 
         // 1st level JOINs
-        map.putAll(CriteriaBehaviors.EVENT_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.event, CriteriaBehaviors.EVENT_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.node, CriteriaBehaviors.NODE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.serviceType, CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS));
 
         // 2nd level JOINs
-        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
-
-        // Allow iplike queries on notification.ipAddress
-        map.put("ipAddress", new IpLikeCriteriaBehavior("interfaceId"));
-        map.put(Aliases.notification.prop("ipAddress"), new IpLikeCriteriaBehavior("interfaceId"));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.distPoller, CriteriaBehaviors.DIST_POLLER_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.ipInterface, CriteriaBehaviors.IP_INTERFACE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.location, CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.snmpInterface, CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS));
 
         return map;
     }

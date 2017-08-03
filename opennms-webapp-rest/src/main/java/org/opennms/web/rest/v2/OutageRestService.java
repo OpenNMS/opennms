@@ -127,26 +127,26 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
 
         // Root alias
         map.putAll(CriteriaBehaviors.OUTAGE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.outage, CriteriaBehaviors.OUTAGE_BEHAVIORS));
 
         // 1st level JOINs
-        map.putAll(CriteriaBehaviors.MONITORED_SERVICE_BEHAVIORS);
-        // TODO: Add event criteria behaviors for these aliases
-        // serviceLostEvent
-        // serviceRegainedEvent 
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.monitoredService, CriteriaBehaviors.MONITORED_SERVICE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix("serviceLostEvent", CriteriaBehaviors.EVENT_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix("serviceRegainedEvent", CriteriaBehaviors.EVENT_BEHAVIORS));
 
         // 2nd level JOINs
-        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.distPoller, CriteriaBehaviors.DIST_POLLER_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.ipInterface, CriteriaBehaviors.IP_INTERFACE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.serviceType, CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS));
 
         // 3rd level JOINs
-        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.node, CriteriaBehaviors.NODE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.snmpInterface, CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS));
 
         // 4th level JOINs
-        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
-        //map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.location, CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
+        //map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
 
         return map;
     }

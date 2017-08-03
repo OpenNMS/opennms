@@ -61,7 +61,7 @@ public abstract class SearchProperties {
 	private static final Map<String,String> ONMS_SEVERITIES = Arrays.stream(OnmsSeverity.values()).collect(Collectors.toMap(s -> String.valueOf(s.getId()), OnmsSeverity::getLabel));
 
 	static final SortedSet<SearchProperty> ALARM_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
-		new SearchProperty("id", "ID", STRING),
+		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("alarmAckTime", "Acknowledged Time", TIMESTAMP),
 		new SearchProperty("alarmAckUser", "Acknowledging User", STRING),
 		new SearchProperty("alarmType", "Alarm Type", INTEGER, ImmutableMap.<String,String>builder()
@@ -140,7 +140,6 @@ public abstract class SearchProperties {
 		//new SearchProperty("longitude", "Longitude", FLOAT),
 		new SearchProperty("maintcontract", "Maintenance Contract", STRING),
 		new SearchProperty("maintContractExpiration", "Maintenance Contract Expiration", STRING),
-		new SearchProperty("maintContractNumber", "Maintenance Contract Number", STRING),
 		new SearchProperty("managedObjectInstance", "Managed Object Instance", STRING),
 		new SearchProperty("managedObjectType", "Managed Object Type", STRING),
 		new SearchProperty("manufacturer", "Manufacturer", STRING),
@@ -185,7 +184,7 @@ public abstract class SearchProperties {
 	static final SortedSet<SearchProperty> DIST_POLLER_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
 		new SearchProperty("label", "Label", STRING),
-		//new SearchProperty("lastUpdated", "Last Updated", TIMESTAMP),
+		new SearchProperty("lastUpdated", "Last Updated", TIMESTAMP),
 		new SearchProperty("location", "Monitoring Location", STRING)
 	}));
 
