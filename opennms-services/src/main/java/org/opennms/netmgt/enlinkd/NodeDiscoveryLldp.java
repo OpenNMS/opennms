@@ -85,22 +85,22 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
                           .execute()
                           .get();
         } catch (ExecutionException e) {
-                LOG.info("run: Agent error while scanning the lldpLocalGroup table", e);
+            LOG.info("run: node [{}]: ExecutionException: lldpLocalGroup: {}", 
+                     getNodeId(), e.getMessage());
                 return;
         } catch (final InterruptedException e) {
-                LOG.info("run: Lldp Linkd lldpLocalGroup table collection interrupted", e);
+            LOG.info("run: node [{}]: InterruptedException: lldpLocalGroup: {}", 
+                     getNodeId(), e.getMessage());
                 return;
         }
         
         if (lldpLocalGroup.getLldpLocChassisid() == null ) {
-    		LOG.info( "run: node[{}]: address {}. LLDP_MIB not supported",
-    				getNodeId(),
-    				getPrimaryIpAddressString());
+    		LOG.info( "run: node[{}]: LLDP_MIB not supported",
+    				getNodeId());
             return;
         } else {
-    		LOG.info( "run: node[{}]: address {}. lldp identifier : {}",
+    		LOG.info( "run: node[{}]: lldp identifier : {}",
     				getNodeId(),
-    				getPrimaryIpAddressString(),
     				lldpLocalGroup.getLldpElement());
         }
 
@@ -118,9 +118,8 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
             }
     
             if (lldpLocalGroup.getLldpLocSysname().equals(DW_NULL_SYSOID_ID) ) {
-        		LOG.info( "run: node[{}]: address {}. lldp identifier : {}. lldp not active for Dragon Wave Device.",
+        		LOG.info( "run: node[{}]: lldp identifier : {}. lldp not active for Dragon Wave Device.",
         				getNodeId(),
-        				getPrimaryIpAddressString(),
         				lldpLocalGroup.getLldpElement());
                 return;
             }
@@ -141,10 +140,12 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
                                   .execute()
                                   .get();
         } catch (ExecutionException e) {
-            LOG.error("run: collection execution failed, exiting",e);
+            LOG.info("run: node [{}]: ExecutionException: lldpRemTable: {}", 
+                     getNodeId(), e.getMessage());
             return;
         } catch (final InterruptedException e) {
-            LOG.error("run: collection interrupted, exiting",e);
+            LOG.info("run: node [{}]: InterruptedException: lldpRemTable: {}", 
+                     getNodeId(), e.getMessage());
             return;
         }
         
@@ -152,7 +153,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         final LldpLocPortGetter lldpLocPort = 
                 new LldpLocPortGetter(peer,
                                 m_linkd.getLocationAwareSnmpClient(),
-                                getLocation());
+                                getLocation(),getNodeId());
         for (LldpLink link: links)
             m_linkd.getQueryManager().store(getNodeId(),lldpLocPort.getLldpLink(link));
 
