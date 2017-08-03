@@ -324,7 +324,7 @@ public class AssetModel {
          */
         // Assert.isTrue(isColumnValid(columnName), "Column \"" + columnName + "\" is not a valid column name");
         
-        List<MatchingAsset> list = new ArrayList<MatchingAsset>();
+        List<MatchingAsset> list = new ArrayList<>();
 
         columnName = WebSecurityUtils.sanitizeDbColumnName(columnName);
 
@@ -357,7 +357,7 @@ public class AssetModel {
     }
 
     public static MatchingAsset[] searchNodesWithAssets() throws SQLException {
-        List<MatchingAsset> list = new ArrayList<MatchingAsset>();
+        List<MatchingAsset> list = new ArrayList<>();
 
         final DBUtils d = new DBUtils(AssetModel.class);
         try {
@@ -394,7 +394,7 @@ public class AssetModel {
      * @throws java.sql.SQLException if any.
      */
     protected static Asset[] rs2Assets(ResultSet rs) throws SQLException {
-        List<Asset> list = new ArrayList<Asset>();
+        List<Asset> list = new ArrayList<>();
 
         while (rs.next()) {
             Asset asset = new Asset();

@@ -421,7 +421,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
         public EventParms () {
             super();
         }
-        private List<OnmsEventParameter> m_eventParm = new ArrayList<OnmsEventParameter>();
+        private List<OnmsEventParameter> m_eventParm = new ArrayList<>();
         
         public EventParms(List<OnmsEventParameter> eventParm) {
             this.m_eventParm = eventParm;

@@ -51,7 +51,7 @@ public class TemporaryDatabaseHsqldb implements TemporaryDatabase, InitializingB
     private String m_testDatabase;
     private boolean m_populateSchema = false;
     private JdbcTemplate m_jdbcTemplate;
-    private Set<String> m_initializedUsers = new HashSet<String>();
+    private Set<String> m_initializedUsers = new HashSet<>();
 
     public TemporaryDatabaseHsqldb() {
         this(TEST_DB_NAME_PREFIX + System.currentTimeMillis());

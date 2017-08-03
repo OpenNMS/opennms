@@ -100,7 +100,7 @@ public class SystemDefinition {
      */
     public List<String> getRule() {
         if (rule == null) {
-            rule = new ArrayList<String>();
+            rule = new ArrayList<>();
         }
         return this.rule;
     }
@@ -133,7 +133,7 @@ public class SystemDefinition {
      */
     public List<String> getIncludeGroup() {
         if (includeGroup == null) {
-            includeGroup = new ArrayList<String>();
+            includeGroup = new ArrayList<>();
         }
         return this.includeGroup;
     }

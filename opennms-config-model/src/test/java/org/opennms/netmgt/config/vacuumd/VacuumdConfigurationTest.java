@@ -53,7 +53,7 @@ public class VacuumdConfigurationTest extends
 
         // A config with every option set
         VacuumdConfiguration vacuumdConfig;
-        List<Statement> statements = new ArrayList<Statement>();
+        List<Statement> statements = new ArrayList<>();
         Statement statement = new Statement(
                                             "INSERT 1000000 INTO bankaccount;",
                                             false);

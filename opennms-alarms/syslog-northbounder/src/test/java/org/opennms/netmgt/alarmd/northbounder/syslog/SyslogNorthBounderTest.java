@@ -226,7 +226,7 @@ public class SyslogNorthBounderTest {
 
         SyslogNorthbounderConfig config = dao.getConfig();
 
-        List<SyslogNorthbounder> nbis = new LinkedList<SyslogNorthbounder>();
+        List<SyslogNorthbounder> nbis = new LinkedList<>();
 
         for (SyslogDestination syslogDestination : config.getDestinations()) {
             SyslogNorthbounder nbi = new SyslogNorthbounder(dao, syslogDestination.getName());
@@ -235,7 +235,7 @@ public class SyslogNorthBounderTest {
         }
 
         int j = 7;
-        List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
+        List<NorthboundAlarm> alarms = new LinkedList<>();
 
         OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "p-brane");
         node.setForeignSource("TestGroup");
@@ -291,7 +291,7 @@ public class SyslogNorthBounderTest {
 
         BufferedReader r = new BufferedReader(new StringReader(m_logStream.readStream()));
 
-        List<String> messages = new LinkedList<String>();
+        List<String> messages = new LinkedList<>();
         String line = null;
 
         while ((line = r.readLine()) != null) {

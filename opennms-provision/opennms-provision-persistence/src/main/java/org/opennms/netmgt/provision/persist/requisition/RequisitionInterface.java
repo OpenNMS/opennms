@@ -65,10 +65,10 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
     //TODO Change these to be sets so that we don't have to verify duplicates in the lists
     @XmlElement(name="monitored-service")
-    protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
+    protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<>();
 
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
+    protected List<RequisitionCategory> m_categories = new ArrayList<>();
 
     @XmlAttribute(name="descr")
     protected String m_description;
@@ -113,7 +113,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      */
     public List<RequisitionMonitoredService> getMonitoredServices() {
         if (m_monitoredServices == null) {
-            m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
+            m_monitoredServices = new ArrayList<>();
         }
         return m_monitoredServices;
     }
@@ -211,7 +211,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      */
     public List<RequisitionCategory> getCategories() {
         if (m_categories == null) {
-            m_categories = new ArrayList<RequisitionCategory>();
+            m_categories = new ArrayList<>();
         }
         return m_categories;
     }

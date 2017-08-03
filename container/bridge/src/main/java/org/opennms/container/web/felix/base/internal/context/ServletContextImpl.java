@@ -99,7 +99,7 @@ public final class ServletContextImpl
             return null;
         }
 
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         while (paths.hasMoreElements()) {
             set.add((String) paths.nextElement());
         }

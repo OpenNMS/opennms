@@ -40,7 +40,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class CreateTypeStatement extends AbstractSqlStatement {
 
 	private String m_name;
-	private List<String> m_columns = new ArrayList<String>();
+	private List<String> m_columns = new ArrayList<>();
 	private Map<String,String> m_columnTypes = new HashMap<String,String>();
 
 	public CreateTypeStatement(final String name) {

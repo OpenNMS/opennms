@@ -206,7 +206,7 @@ public class SyslogEventForwarderTest {
 
         BufferedReader r = new BufferedReader(new StringReader(m_logStream.readStream()));
 
-        List<String> messages = new LinkedList<String>();
+        List<String> messages = new LinkedList<>();
         String line = null;
 
         while ((line = r.readLine()) != null) {

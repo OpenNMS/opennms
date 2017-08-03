@@ -135,7 +135,7 @@ public class CollectorListIT {
             String shellOutput = sshClient.getStdout();
             shellOutput = StringUtils.substringAfter(shellOutput, "collection:list-collectors");
             LOG.info("Collectors output: {}", shellOutput);
-            Set<String> collectors = new HashSet<String>();
+            Set<String> collectors = new HashSet<>();
             for (String collector : shellOutput.split("\\r?\\n")) {
                 if (StringUtils.isNotBlank(collector)) {
                     collectors.add(collector);

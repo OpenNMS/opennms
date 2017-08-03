@@ -40,7 +40,7 @@ public class WorkEffort {
 	private String m_name;
 	private long m_totalTime;
 	private long m_sectionCount;
-	private ThreadLocal<WorkDuration> m_pendingSection = new ThreadLocal<WorkDuration>();
+	private ThreadLocal<WorkDuration> m_pendingSection = new ThreadLocal<>();
 	
 	/**
 	 * <p>Constructor for WorkEffort.</p>

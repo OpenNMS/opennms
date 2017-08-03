@@ -108,7 +108,7 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
         // Track the jobs
         final Queue<DiscoveryJob> queue = new LinkedList<>(jobs);
         final AtomicInteger jobIndexTracker = new AtomicInteger();
-        final CompletableFuture<Void> future = new CompletableFuture<Void>();
+        final CompletableFuture<Void> future = new CompletableFuture<>();
 
         // Trigger the first job, which will automatically trigger the next job when complete
         triggerNextJobAsync(location, queue, jobIndexTracker, jobs.size(), taskId, future);

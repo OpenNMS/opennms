@@ -67,7 +67,7 @@ public class VmwareGroup implements java.io.Serializable {
 
     public VmwareGroup() {
         super();
-        this._attribList = new java.util.ArrayList<org.opennms.netmgt.config.vmware.vijava.Attrib>();
+        this._attribList = new java.util.ArrayList<>();
     }
 
     /**

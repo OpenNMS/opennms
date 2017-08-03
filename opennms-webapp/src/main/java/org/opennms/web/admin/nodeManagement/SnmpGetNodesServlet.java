@@ -82,7 +82,7 @@ public class SnmpGetNodesServlet extends HttpServlet {
 
     private List<SnmpManagedNode> getAllNodes(HttpSession userSession) throws SQLException {
         Connection connection = null;
-        List<SnmpManagedNode> allNodes = new ArrayList<SnmpManagedNode>();
+        List<SnmpManagedNode> allNodes = new ArrayList<>();
         int lineCount = 0;
 
         final DBUtils d = new DBUtils(getClass());

@@ -57,7 +57,7 @@ public abstract class PropertyUtils {
      * @return a {@link java.util.Collection} object.
      */
     public static Collection<String> getProperties(Object bean) {
-        Collection<String> props = new LinkedList<String>();
+        Collection<String> props = new LinkedList<>();
 
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
         for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {

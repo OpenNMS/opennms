@@ -132,7 +132,7 @@ public abstract class LoginModuleUtils {
     }
     
     public static Set<Principal> createPrincipals(final LoginHandler handler, final Collection<? extends GrantedAuthority> collection) {
-        final Set<Principal> principals = new HashSet<Principal>();
+        final Set<Principal> principals = new HashSet<>();
         for (final GrantedAuthority auth : collection) {
             final Set<Principal> ps = handler.createPrincipals(auth);
             LOG.debug("granted authority: {}, principals: {}", auth, ps.stream().map(p -> {return p.getName();}).toArray());

@@ -51,7 +51,7 @@ import org.springframework.util.Assert;
 
 public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor, String> implements LocationMonitorDao {
 
-    private Set<OnmsLocationSpecificStatus> m_statuses = new LinkedHashSet<OnmsLocationSpecificStatus>();
+    private Set<OnmsLocationSpecificStatus> m_statuses = new LinkedHashSet<>();
 
     @Override
     protected void generateId(final OnmsLocationMonitor mon) {
@@ -65,7 +65,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocation locationDefinition) {
-        final Set<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+        final Set<OnmsLocationMonitor> monitors = new HashSet<>();
         for (final OnmsLocationMonitor mon : findAll()) {
             if (mon.getLocation().equals(locationDefinition.getLocationName())) {
                 monitors.add(mon);
@@ -87,7 +87,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
                 ")", application);
 
          */
-        final Set<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+        final Set<OnmsLocationMonitor> monitors = new HashSet<>();
         for (final OnmsLocationSpecificStatus stat : getAllMostRecentStatusChanges()) {
             if (stat.getMonitoredService().getApplications().contains(application)) {
                 monitors.add(stat.getLocationMonitor());
@@ -174,12 +174,12 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
     }
 
     private Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesInCollection(final Collection<OnmsLocationSpecificStatus> sourceStatuses) {
-        final Set<StatusState> states = new LinkedHashSet<StatusState>();
+        final Set<StatusState> states = new LinkedHashSet<>();
         for (final OnmsLocationSpecificStatus status : sourceStatuses) {
             final StatusState state = new StatusState(status);
             states.add(state);
         }
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final StatusState state : states) {
             statuses.add(state.getStatus());
         }
@@ -193,7 +193,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(final Date startDate, final Date endDate) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : m_statuses) {
             final Date timestamp = status.getPollResult().getTimestamp();
             if (timestamp.getTime() == startDate.getTime() || timestamp.after(startDate)) {
@@ -205,7 +205,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getStatusChangesForLocationBetween(final Date startDate, final Date endDate, final String locationDefinitionName) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : getStatusChangesBetween(startDate, endDate)) {
             if (locationDefinitionName.equals(status.getLocationMonitor().getName())) {
                 statuses.add(status);
@@ -216,7 +216,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(final Date startDate, final Date endDate, final String applicationName) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : getStatusChangesBetween(startDate, endDate)) {
             for (final OnmsApplication app : status.getMonitoredService().getApplications()) {
                 if (applicationName.equals(app.getName())) {
@@ -230,7 +230,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetweenForApplications(final Date startDate, final Date endDate, final Collection<String> applicationNames) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : getStatusChangesBetween(startDate, endDate)) {
             boolean added = false;
             for (final OnmsApplication app : status.getMonitoredService().getApplications()) {
@@ -249,7 +249,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(final String locationName) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : getAllMostRecentStatusChanges()) {
             if (locationName.equals(status.getLocationMonitor().getName())) {
                 statuses.add(status);
@@ -260,7 +260,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
-        final Set<LocationMonitorIpInterface> ifaces = new HashSet<LocationMonitorIpInterface>();
+        final Set<LocationMonitorIpInterface> ifaces = new HashSet<>();
         for (final OnmsLocationSpecificStatus status : m_statuses) {
             if (status.getMonitoredService().getNodeId() == nodeId) {
                 ifaces.add(new LocationMonitorIpInterface(status.getLocationMonitor(), status.getMonitoredService().getIpInterface()));

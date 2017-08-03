@@ -94,7 +94,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     private JdbcTemplate jdbcTemplate; // this does not have a m_ per our naming conventions to make it similar to Spring.
 
-    private static Set<TemporaryDatabasePostgreSQL> s_toDestroy = new HashSet<TemporaryDatabasePostgreSQL>();
+    private static Set<TemporaryDatabasePostgreSQL> s_toDestroy = new HashSet<>();
 
     private static boolean s_shutdownHookInstalled = false;
 

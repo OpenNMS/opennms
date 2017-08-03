@@ -98,7 +98,7 @@ public class SnmpProtocolCollector implements ProtocolCollector {
 
         SnmpAgentConfig snmpAgentConfig = SnmpAgentConfig.parseProtocolConfigurationString(collectionJob.getProtocolConfiguration());
 
-        List<Collectable> trackers = new ArrayList<Collectable>();
+        List<Collectable> trackers = new ArrayList<>();
         for (final String metricObjId : collectionJob.getAllMetrics()) {
         	
         	SnmpObjId requestOid = SnmpObjId.get(metricObjId);

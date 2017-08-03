@@ -372,12 +372,12 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private D3Drag m_d3PanDrag;
 	private SVGGraphDrawer m_graphDrawer;
 	private SVGGraphDrawerNoTransition m_graphDrawerNoTransition;
-	private List<Element> m_selectedElements = new ArrayList<Element>();
+	private List<Element> m_selectedElements = new ArrayList<>();
 	private DragHandlerManager m_svgDragHandlerManager;
     private TopologyViewRenderer m_currentViewRender;
     private boolean initialized = false;
     private TopologyView<TopologyViewRenderer> m_topologyView;
-    private List<GraphUpdateListener> m_graphListenerList = new ArrayList<GraphUpdateListener>();
+    private List<GraphUpdateListener> m_graphListenerList = new ArrayList<>();
     private TopologyComponentServerRpc m_serverRpc;
 	private int m_width;
 	private int m_height;
@@ -630,7 +630,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 			public void call(GWTVertex vertex, int index) {
 			    if(D3.getEvent().getButton() != NativeEvent.BUTTON_RIGHT) {
 			    
-    			    final List<String> values = new ArrayList<String>();
+    			    final List<String> values = new ArrayList<>();
     			    final String[] vertexIds = m_dragObject.getDraggedVertices();
     			    D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME).each(new Handler<GWTVertex>() {
     

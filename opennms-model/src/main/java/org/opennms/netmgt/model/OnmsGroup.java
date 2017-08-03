@@ -51,7 +51,7 @@ public class OnmsGroup implements Serializable {
     private String m_comments;
 
     @XmlElement(name="user", required=false)
-    private List<String> m_users = new ArrayList<String>();
+    private List<String> m_users = new ArrayList<>();
 
     public OnmsGroup() { }
 
@@ -85,7 +85,7 @@ public class OnmsGroup implements Serializable {
 
     public void addUser(final String userName) {
         if (m_users == null) {
-            m_users = new ArrayList<String>();
+            m_users = new ArrayList<>();
         }
         m_users.add(userName.intern());
     }

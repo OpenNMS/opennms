@@ -66,7 +66,7 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
 
     /** The XML data collections list. */
     @XmlElement(name="xml-collection")
-    private List<XmlDataCollection> m_xmlDataCollections = new ArrayList<XmlDataCollection>();
+    private List<XmlDataCollection> m_xmlDataCollections = new ArrayList<>();
 
     /** The RRD Repository. */
     @XmlAttribute(name="rrdRepository")

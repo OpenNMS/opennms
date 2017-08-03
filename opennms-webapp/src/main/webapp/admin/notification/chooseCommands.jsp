@@ -176,7 +176,7 @@
         
         if (selectedOptions==null || selectedOptions.size()==0)
         {
-            selectedOptions = new ArrayList<String>();
+            selectedOptions = new ArrayList<>();
             selectedOptions.add("javaEmail");
         }
 

@@ -248,7 +248,7 @@ public class GraphResultsController extends AbstractController implements Initia
      * @return an array of {@link java.lang.String} objects.
      */
 	public String[] getSuggestedReports(ResourceId resourceId, String matching) {
-		List<String> metricList = new ArrayList<String>();
+		List<String> metricList = new ArrayList<>();
 		JexlEngine expressionParser = new JexlEngine();
 		try {
 		    ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(matching);
@@ -265,7 +265,7 @@ public class GraphResultsController extends AbstractController implements Initia
 		} catch (Exception e) {
 		}
 		if (!metricList.isEmpty()) {
-		    List<String> templates = new ArrayList<String>();
+		    List<String> templates = new ArrayList<>();
 		    for (PrefabGraph graph : m_graphResultsService.getAllPrefabGraphs(resourceId)) {
 		        boolean found = false;
 		        for (String c : graph.getColumns()) {

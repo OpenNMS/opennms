@@ -50,7 +50,7 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
 
     @Override
     public Set<String> getActiveForeignSourceNames() {
-    	final Set<String> fsNames = new TreeSet<String>();
+    	final Set<String> fsNames = new TreeSet<>();
         fsNames.addAll(m_requisitions.keySet());
         fsNames.addAll(m_foreignSources.keySet());
         return fsNames;

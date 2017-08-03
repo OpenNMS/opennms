@@ -74,7 +74,7 @@ public class JSNodeMarker extends Marker implements NodeMarker {
 
     public List<String> getTextPropertyNames() {
         final JsArrayString nativeNames = getNativePropertyNames(getJSObject());
-        final List<String> names = new ArrayList<String>();
+        final List<String> names = new ArrayList<>();
         for (int i = 0; i < nativeNames.length(); i++) {
             names.add(nativeNames.get(i));
         }
@@ -92,7 +92,7 @@ public class JSNodeMarker extends Marker implements NodeMarker {
     }-*/;
 
     public List<String> getCategoryList() {
-        final List<String> categories = new ArrayList<String>();
+        final List<String> categories = new ArrayList<>();
         final JsArrayString jsCategories = getCategories();
         for (int i = 0; i < jsCategories.length(); i++) {
             categories.add(jsCategories.get(i));

@@ -147,7 +147,7 @@ public class ExportAssetsServlet extends HttpServlet {
         // print a single line for each asset
         for (int i = 0; i < assets.length; i++) {
             Asset asset = assets[i];
-            ArrayList<String> entries = new ArrayList<String>();
+            ArrayList<String> entries = new ArrayList<>();
 
             entries.add(NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId()));
             entries.add(Integer.toString(asset.getNodeId()));

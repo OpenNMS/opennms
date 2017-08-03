@@ -121,7 +121,7 @@ public class JasperReportService implements ReportService {
      */
     @Override
     public List<ReportFormat> getFormats(String reportId) {
-        List<ReportFormat> formats = new ArrayList<ReportFormat>();
+        List<ReportFormat> formats = new ArrayList<>();
         formats.add(ReportFormat.PDF);
         formats.add(ReportFormat.CSV);
         return formats;
@@ -144,19 +144,19 @@ public class JasperReportService implements ReportService {
 
                     final JRParameter[] reportParms = jasperReport.getParameters();
 
-                    final List<ReportIntParm> intParms = new ArrayList<ReportIntParm>();
+                    final List<ReportIntParm> intParms = new ArrayList<>();
                     reportParameters.setIntParms(intParms);
 
-                    final List<ReportFloatParm> floatParms = new ArrayList<ReportFloatParm>();
+                    final List<ReportFloatParm> floatParms = new ArrayList<>();
                     reportParameters.setFloatParms(floatParms);
 
-                    final List<ReportDoubleParm> doubleParms = new ArrayList<ReportDoubleParm>();
+                    final List<ReportDoubleParm> doubleParms = new ArrayList<>();
                     reportParameters.setDoubleParms(doubleParms);
 
-                    final List<ReportStringParm> stringParms = new ArrayList<ReportStringParm>();
+                    final List<ReportStringParm> stringParms = new ArrayList<>();
                     reportParameters.setStringParms(stringParms);
 
-                    final List<ReportDateParm> dateParms = new ArrayList<ReportDateParm>();
+                    final List<ReportDateParm> dateParms = new ArrayList<>();
                     reportParameters.setDateParms(dateParms);
 
                     for (final JRParameter reportParm : reportParms) {

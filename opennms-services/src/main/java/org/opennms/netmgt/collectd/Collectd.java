@@ -227,7 +227,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private void installMessageSelectors() {
         // Add the EventListeners for the UEIs in which this service is
         // interested
-        List<String> ueiList = new ArrayList<String>();
+        List<String> ueiList = new ArrayList<>();
 
         // nodeGainedService
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
@@ -569,7 +569,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * @return a {@link java.util.Collection} object.
      */
     public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
-        Collection<CollectionSpecification> matchingPkgs = new LinkedList<CollectionSpecification>();
+        Collection<CollectionSpecification> matchingPkgs = new LinkedList<>();
 
         CollectdConfiguration collectdConfig = m_collectdConfigFactory.getCollectdConfig();
 
@@ -1006,7 +1006,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void rebuildScheduler() {
         // Register new collectors if necessary
-        Set<String> configuredCollectors = new HashSet<String>();
+        Set<String> configuredCollectors = new HashSet<>();
         for (Collector collector : m_collectdConfigFactory.getCollectdConfig().getCollectors()) {
             String svcName = collector.getService();
             configuredCollectors.add(svcName);
@@ -1023,7 +1023,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
         // Removing unused collectors if necessary
-        List<String> blackList = new ArrayList<String>();
+        List<String> blackList = new ArrayList<>();
         for (String collectorName : getCollectorNames()) {
             if (!configuredCollectors.contains(collectorName)) {
                 blackList.add(collectorName);

@@ -67,7 +67,7 @@ public class SnmpTrapConfig {
     private int destinationPort = 0;
 
     /** The parameters. */
-    private List<Parm> parameters = new ArrayList<Parm>();
+    private List<Parm> parameters = new ArrayList<>();
 
     /**
      * Gets the enterprise id.

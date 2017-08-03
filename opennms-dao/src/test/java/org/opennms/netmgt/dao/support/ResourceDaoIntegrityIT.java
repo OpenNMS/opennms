@@ -219,7 +219,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         String[] expectedResults = loadExpectedResults();
         for (Entry<ResourceId, OnmsResource> entry : visitor.resourcesById.entrySet()) {
             // Convert the attributes to strings and order them lexicographically
-            Set<String> attributeNames = new TreeSet<String>();
+            Set<String> attributeNames = new TreeSet<>();
             for (OnmsAttribute attribute : entry.getValue().getAttributes()) {
                 attributeNames.add(attribute.toString());
             }
@@ -240,7 +240,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     private static class ResourceCollector implements ResourceVisitor {
         private Map<ResourceId, OnmsResource> resourcesById = new TreeMap<>();
 
-        private Set<OnmsResourceType> resourceTypes = new HashSet<OnmsResourceType>();
+        private Set<OnmsResourceType> resourceTypes = new HashSet<>();
 
         @Override
         public void visit(OnmsResource resource) {

@@ -139,7 +139,7 @@ public class FindTopLevelResourcesTest {
      * no matter if storeByForeignSource is enabled or not.
      */
     private void execute_testFindTopLevelResources_discoveredNodes() throws Exception {
-        final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> nodes = new ArrayList<>();
 
         OnmsNode n1 = createNode(1, "node1", null, null, "10.0.0.1"); // Node on the DB with RRD Data
         nodes.add(n1);
@@ -203,7 +203,7 @@ public class FindTopLevelResourcesTest {
      */
     private void execute_testFindTopLevelResources_provisionedNodes(boolean storeByForeignSource) throws Exception {
         setStoreByForeignSource(storeByForeignSource);
-        final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> nodes = new ArrayList<>();
         final String foreignSource = "Junit";
 
         OnmsNode n1 = createNode(1, "node1", foreignSource, "node1", "10.0.0.1"); // Node on the DB with RRD Data with Response Time
@@ -302,7 +302,7 @@ public class FindTopLevelResourcesTest {
     private void execute_testFindTopLevelResources_hybridNodes(boolean storeByForeignSource) throws Exception {
         setStoreByForeignSource(storeByForeignSource);
         final String foreignSource = "Junit";
-        final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> nodes = new ArrayList<>();
 
         OnmsNode n1 = createNode(1, "node1", null, null, "10.0.0.1"); // Discovered node on the DB with RRD Data
         nodes.add(n1);

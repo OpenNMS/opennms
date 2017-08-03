@@ -97,7 +97,7 @@ public class SpectrumUtils {
     }
     
     public List<Varbindsdecode> translateAllEventTables(EventFormat ef, String eventTablePath) throws IOException {
-        List<Varbindsdecode> vbds = new ArrayList<Varbindsdecode>();
+        List<Varbindsdecode> vbds = new ArrayList<>();
         Pattern pat = Pattern.compile("^\\{\\s*T\\s+(\\w+)\\s+(\\d+)\\s*\\}");
         for (String token : ef.getSubstTokens()) {
             Matcher mat = pat.matcher(token);

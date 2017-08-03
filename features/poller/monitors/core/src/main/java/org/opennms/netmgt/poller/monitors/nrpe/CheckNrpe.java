@@ -141,7 +141,7 @@ public abstract class CheckNrpe {
 		@SuppressWarnings("unused")
         int timeout = DEFAULT_TIMEOUT;
 		String command = NrpePacket.HELLO_COMMAND;
-		LinkedList<String> arglist = new LinkedList<String>();
+		LinkedList<String> arglist = new LinkedList<>();
 		
 		for (int i = 0; i < argv.length; i++) {
 			if (argv[i].equals("-h")) {

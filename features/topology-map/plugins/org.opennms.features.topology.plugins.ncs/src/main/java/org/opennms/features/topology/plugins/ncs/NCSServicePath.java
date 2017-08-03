@@ -48,7 +48,7 @@ public class NCSServicePath {
     private NCSComponentRepository m_dao;
     private NodeDao m_nodeDao;
     private String m_nodeForeignSource;
-    private List<NCSVertex> m_vertices = new LinkedList<NCSVertex>();
+    private List<NCSVertex> m_vertices = new LinkedList<>();
     private String m_serviceForeignSource;
     private String m_deviceAForeignID;
     private String m_deviceZForeignID;
@@ -134,7 +134,7 @@ public class NCSServicePath {
     }
     
     public List<Edge> getEdges(){
-        List<Edge> edges = new ArrayList<Edge>();
+        List<Edge> edges = new ArrayList<>();
         
         if(m_vertices.size() >= 2) {
             String deviceA = m_vertices.get(0).getLabel();

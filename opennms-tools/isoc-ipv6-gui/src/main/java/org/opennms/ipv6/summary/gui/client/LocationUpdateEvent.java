@@ -32,7 +32,7 @@ import com.google.gwt.event.shared.GwtEvent;
 
 public class LocationUpdateEvent extends GwtEvent<LocationUpdateEventHandler> {
     
-    public static Type<LocationUpdateEventHandler> TYPE = new Type<LocationUpdateEventHandler>();
+    public static Type<LocationUpdateEventHandler> TYPE = new Type<>();
     
     private final String m_location;
     

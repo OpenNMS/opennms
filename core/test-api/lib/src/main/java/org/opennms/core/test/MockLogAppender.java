@@ -90,7 +90,7 @@ public class MockLogAppender {
      *
      */
     public static LoggingEvent[] getEventsGreaterOrEqual(final Level level) {
-        LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
+        LinkedList<LoggingEvent> matching = new LinkedList<>();
 
         synchronized (s_events) {
             for (final LoggingEvent event : s_events) {
@@ -110,7 +110,7 @@ public class MockLogAppender {
      * 
      */
     public static LoggingEvent[] getEventsAtLevel(final Level level) {
-        final LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
+        final LinkedList<LoggingEvent> matching = new LinkedList<>();
 
         synchronized (s_events) {
             for (final LoggingEvent event : s_events) {

@@ -106,7 +106,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     private OnmsProblemEventHandler errorHandler;
 
     /** The missing dependencies. */
-    private List<String> missingDependencies = new ArrayList<String>();
+    private List<String> missingDependencies = new ArrayList<>();
 
     /**
      * Instantiates a new JLIBSMI MIB parser.
@@ -139,7 +139,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         missingDependencies.clear();
 
         // Set UP the MIB Queue MIB to be parsed
-        List<URL> queue = new ArrayList<URL>();
+        List<URL> queue = new ArrayList<>();
         parser.getFileParserPhase().setInputUrls(queue);
 
         // Create a cache of filenames to do case-insensitive lookups
@@ -282,7 +282,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             return null;
         }
         final String color = System.getProperty("org.opennms.snmp.mib-compiler.default-graph-template.color", "#00ccff");
-        List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
+        List<PrefabGraph> graphs = new ArrayList<>();
         LOG.info("Generating graph templates for {}", module.getId());
         NameCutter cutter = new NameCutter();
         try {

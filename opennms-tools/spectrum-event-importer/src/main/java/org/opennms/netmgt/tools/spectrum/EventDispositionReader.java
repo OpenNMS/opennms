@@ -134,7 +134,7 @@ public class EventDispositionReader {
     }
     
     public List<EventDisposition> getEventDispositions() throws IOException {
-        List<EventDisposition> eventDispositions = new ArrayList<EventDisposition>();
+        List<EventDisposition> eventDispositions = new ArrayList<>();
         EventDisposition thisEventDisposition = null;
         TokenType lastToken = TokenType.none;
         

@@ -179,7 +179,7 @@ public class DefaultAckServiceIT implements InitializingBean {
         OnmsUserNotification un = new OnmsUserNotification();
         un.setUserId("admin");
         un.setNotification(notif);
-        Set<OnmsUserNotification> usersNotified = new HashSet<OnmsUserNotification>();
+        Set<OnmsUserNotification> usersNotified = new HashSet<>();
         usersNotified.add(un);
         notif.setUsersNotified(usersNotified);
         m_notifDao.save(notif);

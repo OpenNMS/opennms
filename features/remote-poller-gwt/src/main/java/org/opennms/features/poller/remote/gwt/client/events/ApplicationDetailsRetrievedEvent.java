@@ -42,7 +42,7 @@ import com.google.gwt.event.shared.GwtEvent;
 public class ApplicationDetailsRetrievedEvent extends GwtEvent<ApplicationDetailsRetrievedEventHandler> {
 
     /** Constant <code>TYPE</code> */
-    public final static Type<ApplicationDetailsRetrievedEventHandler> TYPE = new Type<ApplicationDetailsRetrievedEventHandler>();
+    public final static Type<ApplicationDetailsRetrievedEventHandler> TYPE = new Type<>();
     private ApplicationDetails m_applicationDetails;
 
     /**

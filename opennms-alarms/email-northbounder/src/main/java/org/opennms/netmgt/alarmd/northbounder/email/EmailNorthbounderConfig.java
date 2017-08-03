@@ -67,7 +67,7 @@ public class EmailNorthbounderConfig implements Serializable {
 
     /** The Email destination. */
     @XmlElement(name = "destination")
-    private List<EmailDestination> m_destinations = new ArrayList<EmailDestination>();
+    private List<EmailDestination> m_destinations = new ArrayList<>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)

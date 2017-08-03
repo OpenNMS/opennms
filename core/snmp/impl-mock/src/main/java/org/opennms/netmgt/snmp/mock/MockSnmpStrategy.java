@@ -121,7 +121,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
     public SnmpValue[] get(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids) {
         final PropertyOidContainer container = getOidContainer(agentConfig);
         if (container == null) return new SnmpValue[oids.length];
-        final List<SnmpValue> values = new ArrayList<SnmpValue>();
+        final List<SnmpValue> values = new ArrayList<>();
 
         for (final SnmpObjId oid : oids) {
     		values.add(container.findValueForOid(oid));
@@ -145,7 +145,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
     public SnmpValue[] getNext(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids) {
         final PropertyOidContainer oidContainer = getOidContainer(agentConfig);
         if (oidContainer == null) return null;
-        final List<SnmpValue> values = new ArrayList<SnmpValue>();
+        final List<SnmpValue> values = new ArrayList<>();
 
         for (final SnmpObjId oid : oids) {
             values.add(oidContainer.findNextValueForOid(oid));

@@ -90,7 +90,7 @@ public class AvailCalculatorTest {
 
 
     private Collection<OnmsMonitoredService> getServices() {
-        Collection<OnmsMonitoredService> svcs = new ArrayList<OnmsMonitoredService>();
+        Collection<OnmsMonitoredService> svcs = new ArrayList<>();
         svcs.add(m_svc);
         return svcs;
     }

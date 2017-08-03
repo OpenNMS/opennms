@@ -77,7 +77,7 @@ public class NCSHopCriteriaHistoryOperation implements HistoryOperation {
 	public Map<String, String> createHistory(GraphContainer graphContainer) {
 		Set<NCSHopCriteria> criteria = Criteria.getCriteriaForGraphContainer(graphContainer, NCSHopCriteria.class);
 		if (criteria.size() > 0) {
-			Set<String> retval = new TreeSet<String>();
+			Set<String> retval = new TreeSet<>();
 			for (NCSHopCriteria criterium : criteria) {
 				retval.add(criterium.getId());
 			}

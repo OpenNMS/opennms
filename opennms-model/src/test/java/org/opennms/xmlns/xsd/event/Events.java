@@ -99,7 +99,7 @@ public class Events {
      */
     public List<Event> getEvent() {
         if (event == null) {
-            event = new ArrayList<Event>();
+            event = new ArrayList<>();
         }
         return this.event;
     }

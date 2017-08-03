@@ -102,7 +102,7 @@ public class Correlation implements Serializable {
         super();
         setState("off");
         setPath("suppressDuplicates".intern());
-        this._cueiList = new java.util.ArrayList<java.lang.String>();
+        this._cueiList = new java.util.ArrayList<>();
     }
 
 

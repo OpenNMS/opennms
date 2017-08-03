@@ -40,9 +40,9 @@ import java.util.Set;
  */
 public class JdbcSet<E> extends AbstractSet<E> {
     
-    Set<E> m_added = new LinkedHashSet<E>();
-    Set<E> m_entries = new LinkedHashSet<E>();
-    Set<E> m_removed = new LinkedHashSet<E>();
+    Set<E> m_added = new LinkedHashSet<>();
+    Set<E> m_entries = new LinkedHashSet<>();
+    Set<E> m_removed = new LinkedHashSet<>();
     
     /**
      * <p>Constructor for JdbcSet.</p>

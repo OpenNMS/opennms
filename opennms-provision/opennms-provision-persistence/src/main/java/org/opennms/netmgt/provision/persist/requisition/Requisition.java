@@ -86,7 +86,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     
     @XmlElement(name="node")
-    protected List<RequisitionNode> m_nodes = new ArrayList<RequisitionNode>();
+    protected List<RequisitionNode> m_nodes = new ArrayList<>();
     
     @XmlAttribute(name="date-stamp")
     protected XMLGregorianCalendar m_dateStamp;
@@ -466,7 +466,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      */
     public void validate() throws ValidationException {
     	final Map<String,Integer> foreignSourceCounts = new HashMap<String,Integer>();
-    	final Set<String> errors = new HashSet<String>();
+    	final Set<String> errors = new HashSet<>();
 
     	for (final RequisitionNode node : m_nodes) {
     		final String foreignId = node.getForeignId();

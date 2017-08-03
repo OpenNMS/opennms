@@ -138,7 +138,7 @@ public class Service extends ServiceTemplate implements Cloneable {
         cloned.m_passiveServiceName = m_passiveServiceName;
         cloned.m_interval = m_interval;
         cloned.m_status = m_status;
-        cloned.m_parameters = new ArrayList<Parameter>();
+        cloned.m_parameters = new ArrayList<>();
         for (Parameter p : getParameters()) {
             cloned.m_parameters.add((Parameter) p.clone());
         }

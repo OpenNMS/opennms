@@ -99,7 +99,7 @@ public class Parms {
      */
     public List<Parm> getParm() {
         if (parm == null) {
-            parm = new ArrayList<Parm>();
+            parm = new ArrayList<>();
         }
         return this.parm;
     }

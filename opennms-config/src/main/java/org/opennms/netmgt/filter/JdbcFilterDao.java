@@ -264,7 +264,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     private List<InetAddress> getIPAddressList(final String rule, final boolean filterDeleted) throws FilterParseException {
-    	final List<InetAddress> resultList = new ArrayList<InetAddress>();
+    	final List<InetAddress> resultList = new ArrayList<>();
         String sqlString;
 
         LOG.debug("Filter.getIPAddressList({})", rule);

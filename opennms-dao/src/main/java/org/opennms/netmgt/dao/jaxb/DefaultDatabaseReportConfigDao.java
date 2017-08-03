@@ -113,7 +113,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractJaxbConfigDao<LocalR
     @Override
     public List<Report> getOnlineReports() {
         
-        List<Report> onlineReports = new ArrayList<Report>();
+        List<Report> onlineReports = new ArrayList<>();
         for(Report report : getContainer().getObject()) {
             if (report.isOnline()) {
                 onlineReports.add(report);

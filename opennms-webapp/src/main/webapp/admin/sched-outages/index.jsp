@@ -159,18 +159,18 @@
 			
 					PollerConfigFactory.init(); //Force init
 			
-					List<String> pollingOutages = new ArrayList<String>();
+					List<String> pollingOutages = new ArrayList<>();
 					for (final org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
 						pollingOutages.addAll(pkg.getOutageCalendars());
 					}
 			
 					ThreshdConfigFactory.init();
-					List<String> thresholdingOutages = new ArrayList<String>();
+					List<String> thresholdingOutages = new ArrayList<>();
 					for (final org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
 						thresholdingOutages.addAll(thisPackage.getOutageCalendars());
 					}
 			
-					List<String> collectionOutages = new ArrayList<String>();
+					List<String> collectionOutages = new ArrayList<>();
 					CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
 					for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
 						collectionOutages.addAll(thisPackage.getOutageCalendars());

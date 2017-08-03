@@ -57,7 +57,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
         m_expression = expression;
 
         JexlEngine expressionParser = new JexlEngine();
-        m_datasources = new ArrayList<String>();
+        m_datasources = new ArrayList<>();
         try {
             ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(m_expression.getExpression());
             LOG.trace("List of Variables on the Expression: {}", e.getVariables());

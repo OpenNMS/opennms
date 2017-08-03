@@ -379,7 +379,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     
     public Collection<Outage> getOutages(String criteria, Object... values) {
         String critSql = (criteria == null ? "" : " and "+criteria);
-        final List<Outage> outages = new LinkedList<Outage>();
+        final List<Outage> outages = new LinkedList<>();
         Querier loadExisting = new Querier(this, "select * from outages, ifServices, ipInterface, node, service where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = node.nodeId and ifServices.serviceId = service.serviceId"+critSql) {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -456,7 +456,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
      * @return
      */
     public Collection<Integer> findNoticesForEvent(Event event) {
-        final List<Integer> notifyIds = new LinkedList<Integer>();
+        final List<Integer> notifyIds = new LinkedList<>();
         Querier loadExisting = new Querier(this, "select notifyId from notifications where eventID = ?") {
             @Override
             public void processRow(ResultSet rs) throws SQLException {

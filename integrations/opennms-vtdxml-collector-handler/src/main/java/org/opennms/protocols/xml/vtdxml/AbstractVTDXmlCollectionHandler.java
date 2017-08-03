@@ -82,7 +82,7 @@ public abstract class AbstractVTDXmlCollectionHandler extends AbstractXmlCollect
     private String getResourceName(VTDNav resource, XmlGroup group) throws XPathParseException {
         // Processing multiple-key resource name.
         if (group.hasMultipleResourceKey()) {
-            List<String> keys = new ArrayList<String>();
+            List<String> keys = new ArrayList<>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
                 LOG.debug("getResourceName: getting key for resource's name using {}", key);
                 resource.push();

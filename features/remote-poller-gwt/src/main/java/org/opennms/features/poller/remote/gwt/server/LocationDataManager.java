@@ -60,7 +60,7 @@ import de.novanic.eventservice.service.EventExecutorService;
 public class LocationDataManager { //implements LocationStatusService {
     private static final Logger LOG = LoggerFactory.getLogger(LocationDataManager.class);
     private LocationDataService m_locationDataService;
-    private Set<String> m_activeApplications = new HashSet<String>();
+    private Set<String> m_activeApplications = new HashSet<>();
     private Timer m_timer = new Timer();
     /** Constant <code>PADDING_TIME=2000</code> */
     public static final int PADDING_TIME = 2000;
@@ -201,7 +201,7 @@ public class LocationDataManager { //implements LocationStatusService {
     
         // Every 5 minutes, update the application list too
         LOG.debug("pushing application updates");
-        final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
+        final Collection<ApplicationHandler> appHandlers = new ArrayList<>();
         final DefaultApplicationHandler applicationHandler = new DefaultApplicationHandler(getLocationDataService(), service, getActiveApplications());
         appHandlers.add(applicationHandler);
         getLocationDataService().handleAllApplications(appHandlers);

@@ -97,7 +97,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
-    private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<Integer>();
+    private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<>();
     /**
      * <p>
      * Constructor for EnhancedLinkd.
@@ -164,7 +164,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * @param nodeid
      */
     public List<NodeDiscovery> getSnmpCollections(Node node) {
-        List<NodeDiscovery> snmpcolls = new ArrayList<NodeDiscovery>();
+        List<NodeDiscovery> snmpcolls = new ArrayList<>();
         
         if (m_linkdConfig.useLldpDiscovery()) {
             LOG.info("getSnmpCollections: adding Lldp Discovery: {}",

@@ -102,8 +102,8 @@ public class ManageNodesServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
         List<ManagedInterface> allNodes = getManagedInterfacesFromSession(userSession);
-        List<String> interfaceList = new ArrayList<String>();
-        List<String> serviceList = new ArrayList<String>();
+        List<String> interfaceList = new ArrayList<>();
+        List<String> serviceList = new ArrayList<>();
 
         // the list of all interfaces marked as managed
         if(request.getParameterValues("interfaceCheck") != null) {
@@ -116,10 +116,10 @@ public class ManageNodesServlet extends HttpServlet {
         }
 
         // the list of interfaces that need to be put into the URL file
-        List<String> addToURL = new ArrayList<String>();
+        List<String> addToURL = new ArrayList<>();
 
-        List<String> unmanageInterfacesList = new ArrayList<String>();
-        List<String> manageInterfacesList = new ArrayList<String>();
+        List<String> unmanageInterfacesList = new ArrayList<>();
+        List<String> manageInterfacesList = new ArrayList<>();
 
         final DBUtils d = new DBUtils(getClass());
         try {

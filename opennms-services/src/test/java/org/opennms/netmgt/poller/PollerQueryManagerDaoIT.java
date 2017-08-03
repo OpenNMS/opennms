@@ -1091,7 +1091,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         MockInterface iface = m_network.addInterface(nodeid, ipAddr);
 		m_db.writeInterface(iface);
 		
-		List<MockService> services = new ArrayList<MockService>();
+		List<MockService> services = new ArrayList<>();
 		for(String svcName : svcNames) {
 		    MockService svc = m_network.addService(nodeid, ipAddr, svcName);
 		    m_db.writeService(svc);

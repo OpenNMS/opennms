@@ -64,7 +64,7 @@ package org.opennms.netmgt.config.xmpDataCollection;
 
     public XmpDatacollectionConfig() {
         super();
-        this._xmpCollectionList = new java.util.ArrayList<org.opennms.netmgt.config.xmpDataCollection.XmpCollection>();
+        this._xmpCollectionList = new java.util.ArrayList<>();
     }
 
 

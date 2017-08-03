@@ -1078,7 +1078,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         MockInterface iface = m_network.addInterface(nodeid, ipAddr);
         m_db.writeInterface(iface);
 
-        List<MockService> services = new ArrayList<MockService>();
+        List<MockService> services = new ArrayList<>();
         for(String svcName : svcNames) {
             MockService svc = m_network.addService(nodeid, ipAddr, svcName);
             m_db.writeService(svc);
@@ -1512,7 +1512,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Remove the reference to the lost service event from all of the outages,
         // and let's pretend that they weren't even there in the first place
-        Set<Integer> outageIds = new HashSet<Integer>();
+        Set<Integer> outageIds = new HashSet<>();
         for (OnmsOutage outage : m_outageDao.findAll()) {
             outage.setServiceLostEvent(null);
             m_outageDao.update(outage);

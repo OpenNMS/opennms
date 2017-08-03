@@ -281,7 +281,7 @@ public abstract class AbstractSyslogTestCase {
     protected void sendMessage(ContainerAlias alias, final String host, final int eventCount) throws IOException {
         final InetSocketAddress syslogAddr = testEnvironment.getServiceAddress(alias, 1514, "udp");
 
-        List<Integer> randomNumbers = new ArrayList<Integer>();
+        List<Integer> randomNumbers = new ArrayList<>();
 
         for (int i = 0; i < eventCount; i++) {
             int eventNum = Double.valueOf(Math.random() * 10000).intValue();

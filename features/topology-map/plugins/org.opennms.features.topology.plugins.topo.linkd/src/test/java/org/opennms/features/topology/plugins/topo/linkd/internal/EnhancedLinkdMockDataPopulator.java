@@ -276,7 +276,7 @@ public class EnhancedLinkdMockDataPopulator {
         node8.setLldpElement(new LldpElement(node8, "node8ChassisId", "mode8SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode8(node8);
 
-        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        List<OnmsNode> nodes = new ArrayList<>();
         nodes.add(node1);
         nodes.add(node2);
         nodes.add(node3);
@@ -340,7 +340,7 @@ public class EnhancedLinkdMockDataPopulator {
         dli81.setId(10081);
         dli18.setId(10018);
 
-        List<LldpLink> links = new ArrayList<LldpLink>();
+        List<LldpLink> links = new ArrayList<>();
 
         links.add(dli12);
         links.add(dli21);
@@ -374,7 +374,7 @@ public class EnhancedLinkdMockDataPopulator {
         ospfLink12.setId(10112);
         ospfLink21.setId(10121);
 
-        List<OspfLink> ospfLinks = new ArrayList<OspfLink>();
+        List<OspfLink> ospfLinks = new ArrayList<>();
         ospfLinks.add(ospfLink12);
         ospfLinks.add(ospfLink21);
         setOspfLinks(ospfLinks);
@@ -401,7 +401,7 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     private List<OnmsIpInterface> getList(Set<OnmsIpInterface> ipset) {
-        List<OnmsIpInterface> ips = new ArrayList<OnmsIpInterface>();
+        List<OnmsIpInterface> ips = new ArrayList<>();
         for (OnmsIpInterface ip: ipset) {
             ips.add(ip);
         }
@@ -678,14 +678,14 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public List<LldpElement> getLldpElements() {
-        List<LldpElement> lldpelements = new ArrayList<LldpElement>();
+        List<LldpElement> lldpelements = new ArrayList<>();
         for (OnmsNode node: m_nodes) 
             lldpelements.add(node.getLldpElement());
         return lldpelements;
     }
     
     public List<OnmsIpInterface> getOnmsIpInterfaces() {
-        List<OnmsIpInterface> elements = new ArrayList<OnmsIpInterface>();
+        List<OnmsIpInterface> elements = new ArrayList<>();
         for (OnmsNode node: m_nodes) 
             elements.addAll(node.getIpInterfaces());
         return elements;
@@ -693,7 +693,7 @@ public class EnhancedLinkdMockDataPopulator {
     }
     
     public List<OnmsSnmpInterface> getOnmsSnmpInterfaces() {
-        List<OnmsSnmpInterface> elements = new ArrayList<OnmsSnmpInterface>();
+        List<OnmsSnmpInterface> elements = new ArrayList<>();
         for (OnmsNode node: m_nodes) 
             elements.addAll(node.getSnmpInterfaces());
         return elements;

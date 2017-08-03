@@ -66,13 +66,13 @@ public class AccessPointMonitorConfig implements Serializable, Comparable<Access
     private long m_packageScanInterval;
 
     @XmlElement(name = "service-template")
-    private List<ServiceTemplate> m_serviceTemplates = new ArrayList<ServiceTemplate>();
+    private List<ServiceTemplate> m_serviceTemplates = new ArrayList<>();
 
     @XmlElement(name = "package")
-    private List<Package> m_packages = new ArrayList<Package>();
+    private List<Package> m_packages = new ArrayList<>();
 
     @XmlElement(name = "monitor")
-    private List<Monitor> m_monitors = new ArrayList<Monitor>();
+    private List<Monitor> m_monitors = new ArrayList<>();
 
     public AccessPointMonitorConfig() {
 

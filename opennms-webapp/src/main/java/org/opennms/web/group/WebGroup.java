@@ -45,9 +45,9 @@ public class WebGroup {
     private String m_name;
     private String m_comments;
 
-    private List<String> m_dutySchedules = new ArrayList<String>();
-    private List<String> m_authorizedCategories = new ArrayList<String>();
-    private List<String> m_users = new ArrayList<String>();
+    private List<String> m_dutySchedules = new ArrayList<>();
+    private List<String> m_authorizedCategories = new ArrayList<>();
+    private List<String> m_users = new ArrayList<>();
     
     /**
      * <p>Constructor for WebGroup.</p>

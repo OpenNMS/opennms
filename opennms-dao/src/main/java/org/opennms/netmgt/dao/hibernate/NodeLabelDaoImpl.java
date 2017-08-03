@@ -276,8 +276,8 @@ public class NodeLabelDaoImpl implements NodeLabel{
             method = DEFAULT_SELECT_METHOD;
         }
 
-        List<InetAddress> ipv4AddrList = new ArrayList<InetAddress>();
-        List<String> ipHostNameList = new ArrayList<String>();
+        List<InetAddress> ipv4AddrList = new ArrayList<>();
+        List<String> ipHostNameList = new ArrayList<>();
 
         final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsIpInterface.class)
         .setAliases(Arrays.asList(new Alias[] {

@@ -70,7 +70,7 @@ public class GroupXSet implements java.io.Serializable {
     private List<NodeSet> nodeSetList;
 
     public GroupXSet() {
-        this.nodeSetList = new ArrayList<NodeSet>();
+        this.nodeSetList = new ArrayList<>();
     }
 
     /**

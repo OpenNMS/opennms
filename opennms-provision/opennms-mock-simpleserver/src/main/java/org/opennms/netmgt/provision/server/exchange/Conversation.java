@@ -69,7 +69,7 @@ public class Conversation {
         
     }
     
-    private final List<Exchange> m_conversation = new ArrayList<Exchange>();
+    private final List<Exchange> m_conversation = new ArrayList<>();
     private Exchange m_errorExchange = new ErrorExchange();
     
     /**

@@ -39,10 +39,10 @@ import java.util.List;
 public class UpgradeHelper {
 
     /** The executed list. */
-    public static List<String> executed = new ArrayList<String>();
+    public static List<String> executed = new ArrayList<>();
 
     /** The rolled-back list. */
-    public static List<String> rolledback = new ArrayList<String>();
+    public static List<String> rolledback = new ArrayList<>();
 
     /**
      * Gets the executed List.

@@ -437,7 +437,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
     
     private List<SnmpMinimalPollInterface> getSnmpMinimalPollInterface() {
         
-        List<SnmpMinimalPollInterface> mifaces = new ArrayList<SnmpMinimalPollInterface>();
+        List<SnmpMinimalPollInterface> mifaces = new ArrayList<>();
         
         for (OnmsSnmpInterface iface: getSnmpinterfaces()) {
             mifaces.add(getMinimalFromOnmsSnmpInterface(iface));

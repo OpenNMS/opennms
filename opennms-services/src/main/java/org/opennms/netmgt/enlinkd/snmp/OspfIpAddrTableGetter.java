@@ -89,7 +89,7 @@ public class OspfIpAddrTableGetter extends SnmpGetter {
 
 	private List<SnmpValue> get(InetAddress addr) {
 		SnmpObjId instance = SnmpObjId.get(addr.getHostAddress());
-		List<SnmpObjId> oids = new ArrayList<SnmpObjId>();
+		List<SnmpObjId> oids = new ArrayList<>();
 		oids.add(SnmpObjId.get(IPADENT_IFINDEX, instance));
 		oids.add(SnmpObjId.get(IPADENT_NETMASK, instance));
 		

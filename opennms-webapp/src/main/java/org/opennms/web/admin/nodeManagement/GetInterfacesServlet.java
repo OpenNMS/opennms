@@ -106,7 +106,7 @@ public class GetInterfacesServlet extends HttpServlet {
      */
     private List<ManagedInterface> getInterfaces(HttpSession userSession, int nodeId) throws SQLException {
         Connection connection = null;
-        List<ManagedInterface> allInterfaces = new ArrayList<ManagedInterface>();
+        List<ManagedInterface> allInterfaces = new ArrayList<>();
         int lineCount = 0;
 
         final DBUtils d = new DBUtils(getClass());

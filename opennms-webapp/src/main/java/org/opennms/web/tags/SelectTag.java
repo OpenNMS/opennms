@@ -96,7 +96,7 @@ public class SelectTag<T> extends SimpleTagSupport {
     }
 
     public void setElements(T[] elements) {
-        List<T> elementsToAdd = new ArrayList<T>();
+        List<T> elementsToAdd = new ArrayList<>();
         for (T eachElement : elements) {
             elementsToAdd.add(eachElement);
         }
@@ -104,7 +104,7 @@ public class SelectTag<T> extends SimpleTagSupport {
     }
 
     private void setElements(List<T> elements) {
-        m_elements = new ArrayList<T>();
+        m_elements = new ArrayList<>();
         if (elements == null) return;
         m_elements.addAll(elements);
     }
@@ -126,7 +126,7 @@ public class SelectTag<T> extends SimpleTagSupport {
 
 
         // prepare output
-        List<T> viewElements = new ArrayList<T>();
+        List<T> viewElements = new ArrayList<>();
         if (m_elements != null) {
             viewElements.addAll(m_elements);
         }
@@ -158,7 +158,7 @@ public class SelectTag<T> extends SimpleTagSupport {
 
     private SelectTagHandler<T> getSelectTagHandler() {
         if (m_selectTagHandler == null){
-            DefaultSelectTagHandler<T> defaultSelectTagHandler = new DefaultSelectTagHandler<T>();
+            DefaultSelectTagHandler<T> defaultSelectTagHandler = new DefaultSelectTagHandler<>();
             defaultSelectTagHandler.setDefaultText(m_defaultText);
             return defaultSelectTagHandler;
         }

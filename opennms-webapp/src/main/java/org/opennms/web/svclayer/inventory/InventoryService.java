@@ -247,8 +247,8 @@ public class InventoryService implements InitializingBean {
         LOG.debug("getRancidNode start");
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
         String rancidName = (String)nodeModel.get("id"); 
-        List<RancidNodeWrapper> ranlist = new ArrayList<RancidNodeWrapper>();
-        List<BucketItem> bucketlist = new ArrayList<BucketItem>();
+        List<RancidNodeWrapper> ranlist = new ArrayList<>();
+        List<BucketItem> bucketlist = new ArrayList<>();
         // Group list 
         RWSResourceList groups;
         try {
@@ -332,7 +332,7 @@ public class InventoryService implements InitializingBean {
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
         String rancidName = (String)nodeModel.get("id"); 
 
-        List<BucketItem> bucketlist = new ArrayList<BucketItem>();
+        List<BucketItem> bucketlist = new ArrayList<>();
         try {
             RWSBucket bucket = RWSClientApi.getBucket(m_cp, rancidName);
             nodeModel.put("bucketexist", true);
@@ -372,7 +372,7 @@ public class InventoryService implements InitializingBean {
             return nodeModel;
         }
         
-        List<InventoryWrapper> ranlist = new ArrayList<InventoryWrapper>();
+        List<InventoryWrapper> ranlist = new ArrayList<>();
         
         List<String> grouplist = groups.getResource();
         Iterator<String> iter2 = grouplist.iterator();
@@ -432,7 +432,7 @@ public class InventoryService implements InitializingBean {
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
         String rancidName = (String)nodeModel.get("id"); 
 
-        List<InventoryWrapper> ranlist = new ArrayList<InventoryWrapper>();
+        List<InventoryWrapper> ranlist = new ArrayList<>();
             
         RancidNode rn;
         try {

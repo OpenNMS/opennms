@@ -252,7 +252,7 @@ public class AggregationTest {
     public static class SinkModuleWithIdentityAggregate extends AbstractSinkModule<UDPPacketLog, UDPPacketLog> {
         @Override
         public AggregationPolicy<UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
-            return new IdentityAggregationPolicy<UDPPacketLog>();
+            return new IdentityAggregationPolicy<>();
         }
     }
 

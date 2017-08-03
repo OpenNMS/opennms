@@ -156,7 +156,7 @@ public class SupportController extends AbstractController implements Initializin
         results.setUsername(rt.getUsername());
         results.setQueue(queue.getName());
 
-        List<CustomField> customFields = new ArrayList<CustomField>();
+        List<CustomField> customFields = new ArrayList<>();
         customFields.add(new CustomField(m_configDao.getVersionFieldName(), "Version " + Vault.getProperty("version.display"), false));
         customFields.add(new CustomField(m_configDao.getOSFieldName(), System.getProperty("os.name")+" "+System.getProperty("os.version")+" ("+System.getProperty("os.arch")+")", false));
         

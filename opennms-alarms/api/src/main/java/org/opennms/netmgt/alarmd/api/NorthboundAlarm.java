@@ -676,7 +676,7 @@ public class NorthboundAlarm implements Preservable, Serializable {
     /** The event parameters collection. */
     @XmlElementWrapper(name="parameters")
     @XmlElement(name="parameter")
-    private List<OnmsEventParameter> m_eventParametersCollection = new ArrayList<OnmsEventParameter>();
+    private List<OnmsEventParameter> m_eventParametersCollection = new ArrayList<>();
 
     /** The preserved flag. */
     @XmlElement(name="preserved", defaultValue="false")

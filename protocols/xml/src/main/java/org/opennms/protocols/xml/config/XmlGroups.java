@@ -52,7 +52,7 @@ public class XmlGroups implements Serializable, Cloneable {
 
     /** The XML groups list. */
     @XmlElement(name="xml-group", required=true)
-    private List<XmlGroup> m_xmlGroups = new ArrayList<XmlGroup>();
+    private List<XmlGroup> m_xmlGroups = new ArrayList<>();
 
     /**
      * Instantiates a new XML source.

@@ -28,7 +28,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class AbstractListenerManager<T> extends ServiceTracker<T, T> {
 
-    private List<T> allContextListeners = new ArrayList<T>();
+    private List<T> allContextListeners = new ArrayList<>();
 
     private final Object lock;
 

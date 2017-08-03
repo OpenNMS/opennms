@@ -127,7 +127,7 @@ public class Maskelement {
      */
     public List<String> getMevalue() {
         if (mevalue == null) {
-            mevalue = new ArrayList<String>();
+            mevalue = new ArrayList<>();
         }
         return this.mevalue;
     }

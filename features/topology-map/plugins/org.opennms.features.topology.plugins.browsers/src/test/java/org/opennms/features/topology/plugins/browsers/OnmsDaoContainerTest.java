@@ -47,7 +47,7 @@ public class OnmsDaoContainerTest {
         MockTransactionTemplate transactionTemplate = new MockTransactionTemplate();
         transactionTemplate.afterPropertiesSet();
 
-        List<OnmsAlarm> alarmList = new ArrayList<OnmsAlarm>();
+        List<OnmsAlarm> alarmList = new ArrayList<>();
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(102);
         alarmList.add(alarm);

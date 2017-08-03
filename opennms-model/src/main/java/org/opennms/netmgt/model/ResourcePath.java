@@ -51,7 +51,7 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
     private static final Pattern SANITIZE_PATH_PATTERN = Pattern.compile("[^a-zA-Z0-9.-]");
     private static final String SANITIZE_PATH_PLACEHOLDER = "_";
 
-    private final List<String> m_elements = new ArrayList<String>();
+    private final List<String> m_elements = new ArrayList<>();
 
     public ResourcePath(String... path) {
         for (String el : path) {

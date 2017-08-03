@@ -108,7 +108,7 @@ public class SimpleUDPServer {
     private Thread m_serverThread = null;
     private int m_timeout;
     private DatagramSocket m_socket;
-    private List<Exchange> m_conversation = new ArrayList<Exchange>();
+    private List<Exchange> m_conversation = new ArrayList<>();
     private int m_port = DEFAULT_TEST_PORT;
     private InetAddress m_testInetAddress;
 

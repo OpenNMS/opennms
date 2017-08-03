@@ -66,7 +66,7 @@ public class PersistenceSelectorStrategy implements StrategyDefinition, Serializ
      * configuration information
      */
     @XmlElement(name="parameter", type=org.opennms.netmgt.config.datacollection.Parameter.class)
-    private List<Parameter> m_parameters = new ArrayList<Parameter>();
+    private List<Parameter> m_parameters = new ArrayList<>();
 
     public PersistenceSelectorStrategy() {
         super();

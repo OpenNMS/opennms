@@ -89,9 +89,9 @@ public class AlarmFeed extends AbstractFeed {
         feed.setDescription("OpenNMS Alarms");
         feed.setLink(getUrlBase() + "alarm/list.htm");
 
-        List<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<SyndEntry> entries = new ArrayList<>();
 
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
         if (this.getRequest().getParameter("node") != null) {
             Integer nodeId = WebSecurityUtils.safeParseInt(this.getRequest().getParameter("node"));
             filters.add(new NodeFilter(nodeId, getServletContext()));

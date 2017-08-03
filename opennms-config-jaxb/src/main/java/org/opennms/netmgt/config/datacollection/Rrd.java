@@ -61,7 +61,7 @@ public class Rrd implements Serializable {
      * Round Robin Archive definitions
      */
     @XmlElement(name="rra")
-    private List<String> m_rras = new ArrayList<String>();
+    private List<String> m_rras = new ArrayList<>();
 
 
     public Rrd() {

@@ -153,12 +153,12 @@ public class JMXCollectorTest {
         BeanInfo beanInfo = new BeanInfo();
         beanInfo.setObjectName(mBeansObjectName);
 
-        List<String> attributes = new ArrayList<String>();
+        List<String> attributes = new ArrayList<>();
         attributes.add("CollectionCount");
         attributes.add("LastGcInfo");
         beanInfo.setAttributes(attributes);
 
-        List<String> compositeAttributes = new ArrayList<String>();
+        List<String> compositeAttributes = new ArrayList<>();
         compositeAttributes.add("LastGcInfo");
         beanInfo.setCompositeAttributes(compositeAttributes);
 

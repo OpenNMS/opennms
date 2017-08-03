@@ -36,7 +36,7 @@ import java.util.List;
 @XmlRootElement(name = "remoteRepositoryConfig")
 public class RemoteRepositoryConfig {
 
-    private List<RemoteRepositoryDefinition> m_repositoryList = new ArrayList<RemoteRepositoryDefinition>();
+    private List<RemoteRepositoryDefinition> m_repositoryList = new ArrayList<>();
 
     private String jasperReportsVersion;
     

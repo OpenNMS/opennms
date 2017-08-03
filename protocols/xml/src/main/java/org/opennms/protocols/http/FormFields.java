@@ -88,7 +88,7 @@ public class FormFields extends JaxbListWrapper<FormField> {
      */
     @XmlTransient
     public UrlEncodedFormEntity getEntity() throws UnsupportedEncodingException {
-        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        List<NameValuePair> nvps = new ArrayList<>();
         for (FormField field : this) {
             nvps.add(new BasicNameValuePair(field.getName(), field.getValue()));
         }

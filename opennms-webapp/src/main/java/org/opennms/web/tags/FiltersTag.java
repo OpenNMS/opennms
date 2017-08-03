@@ -105,7 +105,7 @@ public class FiltersTag extends TagSupport {
     }
 
     private List<Filter> getFilters() {
-        if (parameters == null || parameters.getFilters() == null) return new ArrayList<Filter>();
+        if (parameters == null || parameters.getFilters() == null) return new ArrayList<>();
         return parameters.getFilters();
 
     }

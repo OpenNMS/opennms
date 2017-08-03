@@ -88,13 +88,13 @@ public final class Main {
 
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
-        List<Invoke> invokes = new ArrayList<Invoke>();
+        List<Invoke> invokes = new ArrayList<>();
         invokes.add((Invoke)CastorUtils.unmarshal(Invoke.class, new StringReader("<invoke at=\"start\" pass=\"0\" method=\"init\"/>")));
         invokes.add((Invoke)CastorUtils.unmarshal(Invoke.class, new StringReader("<invoke at=\"start\" pass=\"1\" method=\"start\"/>")));
         invokes.add((Invoke)CastorUtils.unmarshal(Invoke.class, new StringReader("<invoke at=\"status\" pass=\"0\" method=\"status\"/>")));
         invokes.add((Invoke)CastorUtils.unmarshal(Invoke.class, new StringReader("<invoke at=\"stop\" pass=\"0\" method=\"stop\"/>")));
 
-        List<Service> services = new ArrayList<Service>();
+        List<Service> services = new ArrayList<>();
 
         Invoker invoker = new Invoker();
         invoker.setServer(server);

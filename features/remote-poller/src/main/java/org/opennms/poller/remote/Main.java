@@ -373,7 +373,7 @@ public class Main implements Runnable {
 
         LOG.info("location name = {}", m_locationName);
 
-        List<String> configs = new ArrayList<String>();
+        List<String> configs = new ArrayList<>();
         configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-" + m_uri.getScheme() + ".xml");
         configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml");
 

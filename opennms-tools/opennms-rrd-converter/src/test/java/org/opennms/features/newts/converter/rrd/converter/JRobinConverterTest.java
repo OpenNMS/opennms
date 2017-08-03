@@ -483,7 +483,7 @@ public class JRobinConverterTest {
   
         RrdDatabase sourceDatabase = new RrdDatabase(source);
         RrdDatabase fullDatabase = new RrdDatabase(full);
-        List<RrdDatabase> datasources = new ArrayList<RrdDatabase>();
+        List<RrdDatabase> datasources = new ArrayList<>();
         datasources.add(sourceDatabase);
         datasources.add(fullDatabase);
 
@@ -562,7 +562,7 @@ public class JRobinConverterTest {
         createMockVariationRrds(null);
         RrdDatabase overlappingDatabase = new RrdDatabase(new RrdDb(m_overlapping, true));
         RrdDatabase variationDatabase = new RrdDatabase(new RrdDb(m_variation, true));
-        List<RrdDatabase> datasources = new ArrayList<RrdDatabase>();
+        List<RrdDatabase> datasources = new ArrayList<>();
         datasources.add(overlappingDatabase);
         datasources.add(variationDatabase);
 

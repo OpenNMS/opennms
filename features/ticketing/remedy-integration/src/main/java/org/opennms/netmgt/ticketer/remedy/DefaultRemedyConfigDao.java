@@ -116,7 +116,7 @@ public class DefaultRemedyConfigDao {
 	}
 
 	List<String> getTargetGroups() {
-		List<String> targetGroups=new ArrayList<String>();
+		List<String> targetGroups=new ArrayList<>();
 		if (getProperties().containsKey("remedy.targetgroups")) {
 			for (String group: 	getProperties().getString("remedy.targetgroups").split(":")) {
 				targetGroups.add(group);

@@ -60,7 +60,7 @@ public class SnmpTableResult implements RowResultFactory {
         m_columns = columns;
         m_rowResultFactory = (rowResultFactory == null ? this : rowResultFactory);
 
-        m_finishedColumns = new ArrayList<SnmpObjId>();
+        m_finishedColumns = new ArrayList<>();
         m_pendingData = new TreeMap<SnmpInstId,SnmpRowResult>();
     }
     

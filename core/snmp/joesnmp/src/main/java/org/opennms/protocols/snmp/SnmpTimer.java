@@ -46,7 +46,7 @@ class SnmpTimer extends Object {
     /**
      * The list of runnable objects (stored as TimeoutElement)
      */
-    private List<TimeoutElement> m_list = new LinkedList<TimeoutElement>();
+    private List<TimeoutElement> m_list = new LinkedList<>();
 
     /**
      * The thread doing the scheduling
@@ -107,7 +107,7 @@ class SnmpTimer extends Object {
          */
         @Override
         public void run() {
-            LinkedList<Runnable> toRun = new LinkedList<Runnable>();
+            LinkedList<Runnable> toRun = new LinkedList<>();
             while (true) {
                 //
                 // synchronize on the object
@@ -220,7 +220,7 @@ class SnmpTimer extends Object {
     SnmpTimer() {
         m_exit = false;
         m_sync = new Object();
-        m_list = new LinkedList<TimeoutElement>();
+        m_list = new LinkedList<>();
         m_thread = new Thread(new Scheduler(), "SnmpTimer");
 
         m_thread.start();

@@ -210,7 +210,7 @@ public class AgentConfigurationResource implements InitializingBean {
             }
         }
 
-        final List<AgentResponse> responses = new ArrayList<AgentResponse>();
+        final List<AgentResponse> responses = new ArrayList<>();
 
         for (final OnmsMonitoredService service : services) {
             final InetAddress ipAddress = service.getIpAddress();

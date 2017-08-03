@@ -47,8 +47,8 @@ public class SnmpTableResultTest {
     private SnmpTableResult m_tableResult;
     private TestRowCallback m_rowCallback;
     private SnmpObjId[] m_columns;
-    private List<SnmpRowResult> m_anticipatedRows = new ArrayList<SnmpRowResult>();
-    private List<SnmpRowResult> m_receivedRows = new ArrayList<SnmpRowResult>();
+    private List<SnmpRowResult> m_anticipatedRows = new ArrayList<>();
+    private List<SnmpRowResult> m_receivedRows = new ArrayList<>();
 
     private class TestRowCallback implements RowCallback {
         private int m_rowCount = 0;

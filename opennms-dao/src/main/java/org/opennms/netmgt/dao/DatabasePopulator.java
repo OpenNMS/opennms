@@ -163,7 +163,7 @@ public class DatabasePopulator {
     
     private boolean m_populateInSeparateTransaction = true;
     private boolean m_resetInSeperateTransaction = true;
-    private final List<Extension> extensions = new ArrayList<Extension>();
+    private final List<Extension> extensions = new ArrayList<>();
     
     private Map<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>> daoRegistry = new HashMap<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>>();
     

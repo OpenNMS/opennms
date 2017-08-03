@@ -274,7 +274,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
             LOG.debug("getTokenizedColumns: processing string: {}", targetString);
             
-            List<String> tokens = new ArrayList<String>();
+            List<String> tokens = new ArrayList<>();
             int count = 0;
             while (matcher.find()) {
                 count++;

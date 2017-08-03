@@ -58,9 +58,9 @@ public class InventoryElement2RP implements java.io.Serializable {
     private java.util.List<TupleRP> tupleRPList;
 
     public InventoryElement2RP() {
-        this.inventoryMemoryRPList = new java.util.ArrayList<InventoryMemoryRP>();
-        this.inventorySoftwareRPList = new java.util.ArrayList<InventorySoftwareRP>();
-        this.tupleRPList = new java.util.ArrayList<TupleRP>();
+        this.inventoryMemoryRPList = new java.util.ArrayList<>();
+        this.inventorySoftwareRPList = new java.util.ArrayList<>();
+        this.tupleRPList = new java.util.ArrayList<>();
     }
 
     /**

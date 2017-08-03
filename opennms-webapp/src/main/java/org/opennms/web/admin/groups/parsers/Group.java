@@ -80,7 +80,7 @@ public class Group implements Cloneable {
 
         m_groupName = "";
         m_groupComments = "";
-        m_users = new ArrayList<String>();
+        m_users = new ArrayList<>();
         m_groupInfo = new GroupInfo();
     }
 

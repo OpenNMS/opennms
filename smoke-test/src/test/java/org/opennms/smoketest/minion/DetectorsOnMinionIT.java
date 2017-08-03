@@ -97,7 +97,7 @@ public class DetectorsOnMinionIT {
         RestClient client = new RestClient(opennmsHttp);
 
         Requisition requisition = new Requisition("foreignSource");
-        List<RequisitionInterface> interfaces = new ArrayList<RequisitionInterface>();
+        List<RequisitionInterface> interfaces = new ArrayList<>();
         RequisitionInterface requisitionInterface = new RequisitionInterface();
         requisitionInterface.setIpAddr(LOCALHOST);
         requisitionInterface.setManaged(true);

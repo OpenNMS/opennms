@@ -99,8 +99,8 @@ public class BarChart implements java.io.Serializable {
     private ChartBackgroundColor chartBackgroundColor;
 
     public BarChart() {
-        this.subTitleList = new java.util.ArrayList<SubTitle>();
-        this.seriesDefList = new java.util.ArrayList<SeriesDef>();
+        this.subTitleList = new java.util.ArrayList<>();
+        this.seriesDefList = new java.util.ArrayList<>();
     }
 
     /**

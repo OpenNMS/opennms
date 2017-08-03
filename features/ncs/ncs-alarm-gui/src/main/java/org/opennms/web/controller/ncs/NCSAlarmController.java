@@ -94,7 +94,7 @@ public class NCSAlarmController {
 
         // handle the filter parameters
         String[] filterStrings = request.getParameterValues("filter");
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
                 Filter filter = AlarmUtil.getFilter(filterStrings[i], getServletContext());

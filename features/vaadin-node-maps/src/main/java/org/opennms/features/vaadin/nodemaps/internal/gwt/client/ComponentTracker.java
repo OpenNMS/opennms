@@ -40,7 +40,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 public class ComponentTracker {
     private final Logger LOG = Logger.getLogger(getClass().getName());
     private OpenNMSEventManager m_eventManager;
-    private Set<String> m_expectedComponents = new HashSet<String>();
+    private Set<String> m_expectedComponents = new HashSet<>();
 
     public ComponentTracker(final OpenNMSEventManager eventManager) {
         m_eventManager = eventManager;

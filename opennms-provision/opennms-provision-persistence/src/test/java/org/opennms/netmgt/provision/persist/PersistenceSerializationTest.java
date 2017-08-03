@@ -98,7 +98,7 @@ public class PersistenceSerializationTest {
         XMLGregorianCalendar cal = DatatypeFactory.newInstance().newXMLGregorianCalendar("2009-02-25T12:45:38.800-05:00");
         fs.setDateStamp(cal);
 
-        List<PluginConfig> detectors = new ArrayList<PluginConfig>();
+        List<PluginConfig> detectors = new ArrayList<>();
         final PluginConfig detector = new PluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
         detector.addParameter("type", "cheese");
         detector.addParameter("density", "soft");
@@ -106,7 +106,7 @@ public class PersistenceSerializationTest {
         detectors.add(detector);
         fs.setDetectors(detectors);
 
-        List<PluginConfig> policies = new ArrayList<PluginConfig>();
+        List<PluginConfig> policies = new ArrayList<>();
         PluginConfig policy = new PluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
         policy.addParameter("label", "~^[a-z]$");
         policy.addParameter("category", "Lower-Case-Nodes");

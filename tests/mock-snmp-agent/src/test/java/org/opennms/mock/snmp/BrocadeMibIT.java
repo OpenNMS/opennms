@@ -146,7 +146,7 @@ public class BrocadeMibIT  {
             m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("brocadeTestData1.properties"), str(InetAddressUtils.ONE_TWENTY_SEVEN) + "/0");
         }
 
-        m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
+        m_requestedVarbinds = new ArrayList<>();
     }
     
     @After

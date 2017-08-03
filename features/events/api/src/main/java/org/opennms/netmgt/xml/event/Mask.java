@@ -74,7 +74,7 @@ public class Mask implements Serializable {
 
     public Mask() {
         super();
-        this._maskelementList = new java.util.ArrayList<org.opennms.netmgt.xml.event.Maskelement>();
+        this._maskelementList = new java.util.ArrayList<>();
     }
 
 

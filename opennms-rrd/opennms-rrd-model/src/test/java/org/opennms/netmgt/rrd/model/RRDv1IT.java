@@ -145,11 +145,11 @@ public class RRDv1IT {
         Assert.assertEquals("tempA", multimetric.getDataSource(0).getName());
         Assert.assertEquals("tempB", multimetric.getDataSource(1).getName());
         multimetric.getRras().stream().flatMap(rra -> rra.getRows().stream()).forEach(row -> {
-            List<Double> values = new ArrayList<Double>();
+            List<Double> values = new ArrayList<>();
             row.getValues().forEach(d -> values.add(Double.NaN));
             row.setValues(values);
         });
-        List<RRDv1> singleMetricArray = new ArrayList<RRDv1>();
+        List<RRDv1> singleMetricArray = new ArrayList<>();
         RRDv1 tempA = JaxbUtils.unmarshal(RRDv1.class, new File("src/test/resources/rrd-tempA-jrb.xml"));
         Assert.assertNotNull(tempA);
         Assert.assertEquals("tempA", tempA.getDataSource(0).getName());

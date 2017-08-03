@@ -161,7 +161,7 @@ public class PluginParameter implements Serializable, Comparable<PluginParameter
      * @return a {@link java.util.Set} object.
      */
     public Set<String> getAvailableParameterKeys() {
-        Set<String> keys = new TreeSet<String>();
+        Set<String> keys = new TreeSet<>();
         if (m_parent != null) {
             try {
                 PluginWrapper pw = new PluginWrapper(m_parent.getPluginClass());

@@ -194,7 +194,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
             notif.m_txtMsg = onmsNotification.getTextMsg();
 
             // Add the OnmsUserNotifications as NoticeSentTo instances
-            final List<NoticeSentTo> sentToList = new ArrayList<NoticeSentTo>();
+            final List<NoticeSentTo> sentToList = new ArrayList<>();
             for (OnmsUserNotification userNotified : onmsNotification.getUsersNotified()) {
                 NoticeSentTo newSentTo = new NoticeSentTo();
                 newSentTo.setUserId(userNotified.getUserId());
@@ -244,7 +244,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
     @Transactional
     @Override
     public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
-        List<Notification> notifications = new ArrayList<Notification>();
+        List<Notification> notifications = new ArrayList<>();
         List<OnmsNotification> onmsNotifs = m_notificationDao.findMatching(getOnmsCriteria(criteria));
 
         for (OnmsNotification notif : onmsNotifs) {

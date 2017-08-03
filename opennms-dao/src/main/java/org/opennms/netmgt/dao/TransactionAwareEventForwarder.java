@@ -178,7 +178,7 @@ public class TransactionAwareEventForwarder implements EventForwarder, Initializ
             return eventsHolder.getPendingEvents();
         }
 
-        List<Log> pendingEvents = new LinkedList<Log>();
+        List<Log> pendingEvents = new LinkedList<>();
 
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             PendingEventsHolder holderToUse = eventsHolder;

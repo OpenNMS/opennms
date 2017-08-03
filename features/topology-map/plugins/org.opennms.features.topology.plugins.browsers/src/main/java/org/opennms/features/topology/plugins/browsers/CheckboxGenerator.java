@@ -51,8 +51,8 @@ public class CheckboxGenerator implements ColumnGenerator, ItemSetChangeListener
 	private static final long serialVersionUID = 2L;
 
 	private final String m_valueProperty;
-	protected final Set<CheckBox> m_checkboxes = new HashSet<CheckBox>();
-	protected Set<Integer> m_selectedCheckboxes = new TreeSet<Integer>();
+	protected final Set<CheckBox> m_checkboxes = new HashSet<>();
+	protected Set<Integer> m_selectedCheckboxes = new TreeSet<>();
 	protected Set<Integer> m_notSelectedCheckboxes = new TreeSet<Integer>(); //Explizit not set
 	private boolean m_selectAll = false;
 

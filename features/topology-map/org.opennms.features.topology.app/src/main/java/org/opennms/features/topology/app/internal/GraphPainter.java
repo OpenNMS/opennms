@@ -67,12 +67,12 @@ public class GraphPainter implements GraphVisitor {
 	private final IconRepositoryManager m_iconRepoManager;
 	private final Layout m_layout;
 	private final TopologyComponentState m_componentState;
-    private final List<SharedVertex> m_vertices = new ArrayList<SharedVertex>();
-    private final List<SharedEdge> m_edges = new ArrayList<SharedEdge>();
+    private final List<SharedVertex> m_vertices = new ArrayList<>();
+    private final List<SharedEdge> m_edges = new ArrayList<>();
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
     private final Map<VertexRef,Status> m_statusMap = new HashMap<VertexRef, Status>();
     private final Map<EdgeRef,Status> m_edgeStatusMap = new HashMap<EdgeRef, Status>();
-    private Set<VertexRef> m_focusVertices = new HashSet<VertexRef>();
+    private Set<VertexRef> m_focusVertices = new HashSet<>();
 
 
     GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, TopologyComponentState componentState) {

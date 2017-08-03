@@ -68,7 +68,7 @@ public class CategoryHopCriteria extends VertexHopCriteria implements SearchCrit
 	private GraphContainer graphContainer;
 
 	public static class CategoryVertex extends AbstractVertex implements GroupRef {
-		private Set<VertexRef> m_children = new HashSet<VertexRef>();
+		private Set<VertexRef> m_children = new HashSet<>();
 
         public CategoryVertex(String namespace, String id, String label) {
 			super(namespace, id, label);

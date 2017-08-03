@@ -148,7 +148,7 @@ public class EventDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testGetEventsAfterDate() {
-        List<String> ueiList = new ArrayList<String>();
+        List<String> ueiList = new ArrayList<>();
         ueiList.add("uei/1"); // dummy
         ueiList.add("uei/2"); // dummy
         m_eventDao.getEventsAfterDate(ueiList, new Date()); // we just want to ensure that no exception is thrown :)

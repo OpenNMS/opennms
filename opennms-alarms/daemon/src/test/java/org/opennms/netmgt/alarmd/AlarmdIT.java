@@ -96,7 +96,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     public class MockNorthbounder implements Northbounder {
 
         private boolean m_startCalled = false;
-        private List<NorthboundAlarm> m_alarms = new ArrayList<NorthboundAlarm>();
+        private List<NorthboundAlarm> m_alarms = new ArrayList<>();
 
         @Override
         public void start() throws NorthbounderException {
@@ -273,7 +273,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         MockUtil.println("counterColumn is: "+counterColumn+", expected "+numberOfAlarmsToReduce);
         assertEquals(1, rowCount);
         if (numberOfAlarmsToReduce != counterColumn) {
-            final List<Integer> reducedEvents = new ArrayList<Integer>();
+            final List<Integer> reducedEvents = new ArrayList<>();
             m_jdbcTemplate.query("select eventid from events where alarmID is not null", new RowCallbackHandler() {
                 @Override
                 public void processRow(ResultSet rs) throws SQLException {
@@ -282,7 +282,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             });
             Collections.sort(reducedEvents);
 
-            final List<Integer> nonReducedEvents = new ArrayList<Integer>();
+            final List<Integer> nonReducedEvents = new ArrayList<>();
             m_jdbcTemplate.query("select eventid from events where alarmID is null", new RowCallbackHandler() {
                 @Override
                 public void processRow(ResultSet rs) throws SQLException {
@@ -472,7 +472,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             data.setAlarmType(1);
             data.setReductionKey(reductionKey);
             
-            List<UpdateField> fields = new ArrayList<UpdateField>();
+            List<UpdateField> fields = new ArrayList<>();
             
             UpdateField field = new UpdateField();
             field.setFieldName("logMsg");
@@ -501,7 +501,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             data.setAlarmType(1);
             data.setReductionKey(reductionKey);
             
-            List<UpdateField> fields = new ArrayList<UpdateField>();
+            List<UpdateField> fields = new ArrayList<>();
             
             UpdateField field = new UpdateField();
             field.setFieldName("logMsg");
@@ -529,7 +529,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             data.setAlarmType(1);
             data.setReductionKey(reductionKey);
             
-            List<UpdateField> fields = new ArrayList<UpdateField>();
+            List<UpdateField> fields = new ArrayList<>();
             
             UpdateField field = new UpdateField();
             field.setFieldName("Severity");

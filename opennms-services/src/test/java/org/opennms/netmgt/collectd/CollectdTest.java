@@ -128,7 +128,7 @@ public class CollectdTest {
 
         // Mock the FilterDao without using EasyMockUtils so that it can be verified separately
         m_filterDao = EasyMock.createMock(FilterDao.class);
-        List<InetAddress> allIps = new ArrayList<InetAddress>();
+        List<InetAddress> allIps = new ArrayList<>();
         allIps.add(addr("192.168.1.1"));
         allIps.add(addr("192.168.1.2"));
         allIps.add(addr("192.168.1.3"));
