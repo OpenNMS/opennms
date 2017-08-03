@@ -20,15 +20,15 @@
     
   <!-- packageingDescriptor describes the packaging of this feature. This gives an locator for the Karaf kar or rpm -->
   <!-- in which this feature was packaged for delivery. Null or empty if no packaging described. -->
-  <packageingDescriptor>Not Defined</packageingDescriptor>
+  <packageingDescriptor>Internal</packageingDescriptor>
 	
   <organization>OpenNMS Project</organization>
-  <productDescription>TODO complete product description for ${productName}</productDescription>
+  <productDescription>Authentication key for ${productName}</productDescription>
   <productName>${productName}</productName>
-  <productUrl>http:\\opennms.co.uk</productUrl>
+  <productUrl>https://www.opennms.com/meridian/</productUrl>
   <licenceKeyRequired>true</licenceKeyRequired>
-  <licenceType>See Plugin Documentation for ELUA</licenceType>
+  <licenceType>AGPL</licenceType>
   
   <!-- a plugin marked as a system plugin will not be removable by the plugin manager -->
-  <systemPlugin>false</systemPlugin>
+  <systemPlugin>true</systemPlugin>
 </product>

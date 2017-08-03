@@ -29,7 +29,7 @@
   <!-- (Definition: licensor n. a person who gives another a license, particularly -->
   <!-- a private party doing so, such as a business giving someone a license to sell its product) -->
   <!-- This is populate as part of the licence spec by the vendor of the licenced module -->
-  <licensor>OpenNMS UK</licensor>
+  <licensor>OpenNMS Group Inc.</licensor>
 
 
   <!-- maxSizeSystemIds is the maximum number of systemId's which can be included in the systemIds list. -->
@@ -72,10 +72,10 @@
   <!-- by the vendor of the licenced module. -->
   <!-- The values are populated when a new licence is generated -->
   <options>
-    <option>
-      <description>this is the description of option 1</description>
-      <name>option1</name>
-      <value></value>
-    </option>
+<!--     <option> -->
+<!--       <description>this is the description of option 1</description> -->
+<!--       <name>option1</name> -->
+<!--       <value></value> -->
+<!--     </option> -->
   </options>
 </licenceMetadata>

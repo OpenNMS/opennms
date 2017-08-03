@@ -110,7 +110,7 @@
     <dependency>
       <groupId>org.opennms.plugins</groupId>
       <artifactId>org.opennms.plugin.licencemanager</artifactId>
-      <version>${org.opennms.plugin.licencemanager.version}</version>
+      <version>${licencemanagerVersion}</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>

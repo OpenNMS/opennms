@@ -135,6 +135,9 @@
             <!-- IFTTT Integration -->
             <repository>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}/xml/features</repository>
             
+            <!-- Product Keys (Used by Subscription Checker)-->
+            <repository>mvn:org.opennms/productkeys.feature/${project.version}/xml/features</repository>
+            
             <!-- Subscription Checker -->
             <repository>mvn:org.opennms.features/subscription-checker/${project.version}/xml/features</repository>
 
@@ -338,6 +341,9 @@
 
             <!-- IFTTT Integration -->
             <feature>ifttt-integration</feature>
+            
+            <!-- Product Keys (Used by Subscription Checker)-->
+            <repository>productkeys.feature</repository>
             
             <!-- Subscription Checker -->
             <feature>subscription-checker</feature>
@@ -755,6 +761,13 @@
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>productkeys.feature</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

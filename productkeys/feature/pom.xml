@@ -5,7 +5,7 @@
     <artifactId>productkeys.parent</artifactId>
     <version>21.0.0-SNAPSHOT</version>
   </parent>
-  
+
   <!-- Feature Definition -->
   <modelVersion>4.0.0</modelVersion>
   <artifactId>productkeys.feature</artifactId>
@@ -27,6 +27,13 @@
               <goal>generate-features-xml</goal>
             </goals>
             <configuration>
+              <!-- so that licence manager feature starts before this module -->
+              <repositories>
+                <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${licencemanagerVersion}/xml/features</repository>
+              </repositories>
+              <features>
+                <feature>org.opennms.plugin.licencemanager</feature>
+              </features>
             </configuration>
           </execution>
         </executions>
