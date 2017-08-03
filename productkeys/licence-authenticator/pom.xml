@@ -1,16 +1,18 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.opennms.authenticator</groupId>
+    <groupId>org.opennms</groupId>
     <artifactId>productkeys.parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
 
   <!-- LicenceAuthenticator -->
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>productkeys.licence-authenticator</artifactId>
-  <name>productkeys.licence-authenticator</name>
-  <description>Licence Authenticator for productkeys</description>
+  <groupId>${productGroupId}</groupId>
+  <artifactId>${productName}.licence-authenticator</artifactId>
+  <version>${productVersion}</version>
+  <name>${productName}.licence-authenticator</name>
+  <description>Licence Authenticator for ${productName}</description>
   <packaging>bundle</packaging>
 
   <build>

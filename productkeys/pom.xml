@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.authenticator</groupId>
+  <groupId>org.opennms</groupId>
   <artifactId>productkeys.parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>21.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>productkeys.parent</name>
   <description>productkeys Parent Project</description>
@@ -15,10 +15,14 @@
     <!-- Note must set project.artifactId explicitly as karaf-pluginmanager-archetypeexpression is re-evaluated in each sub module !! -->
     <!-- <productId>org.opennms.plugins/karaf-pluginmanager-archetype/1.1.0-SNAPSHOT</productId> -->
     <!-- <productId>org.opennms.plugins/org.opennms.co.uk.newfeature/1.1.0-SNAPSHOT</productId> -->
-    <productId>productkeys/${project.version}</productId>
-    <productName>productkeys</productName>
+
+    <productName>Meridian2017</productName>
+    <productVersion>1.0.0-SNAPSHOT</productVersion>
+    <productId>${productName}/${productVersion}</productId>
+    <productGroupId>org.opennms.authenticator</productGroupId>
+
     <!-- <licenceClassPath>org.opennms.co.uk.newfeature</licenceClassPath> -->
-    <licenceClassPath>org.opennms.plugins.productkeys.key</licenceClassPath>
+    <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath>
     
     <!-- If this pom is generated from the karaf-pluginmanager-archetype, this value initially matches the archetype's version -->
     <org.opennms.plugin.licencemanager.version>1.1.0-SNAPSHOT</org.opennms.plugin.licencemanager.version>
