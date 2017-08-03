@@ -111,6 +111,7 @@
 
     <!-- new structure -->
     <module>dependencies</module>
+    <module>productkeys</module>
     <module>core</module>
     <module>container</module>
     <module>features</module>

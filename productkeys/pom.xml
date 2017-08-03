@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <!-- <parent> -->
+  <!-- <groupId>org.opennms</groupId> -->
+  <!-- <artifactId>opennms</artifactId> -->
+  <!-- <version>21.0.0-SNAPSHOT</version> -->
+  <!-- </parent> -->
+
+  <!-- note you cannot set the org.opennms parent pom because opennms depencencies use <version> which changes in child projects -->
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>productkeys.parent</artifactId>
-  <version>21.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <version>21.0.0-SNAPSHOT</version>
   <name>productkeys.parent</name>
   <description>productkeys Parent Project</description>
 
@@ -12,26 +20,20 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <!-- Note must set project.artifactId explicitly as karaf-pluginmanager-archetypeexpression is re-evaluated in each sub module !! -->
-    <!-- <productId>org.opennms.plugins/karaf-pluginmanager-archetype/1.1.0-SNAPSHOT</productId> -->
-    <!-- <productId>org.opennms.plugins/org.opennms.co.uk.newfeature/1.1.0-SNAPSHOT</productId> -->
-
     <productName>Meridian2017</productName>
     <productVersion>1.0.0-SNAPSHOT</productVersion>
     <productId>${productName}/${productVersion}</productId>
     <productGroupId>org.opennms.authenticator</productGroupId>
 
-    <!-- <licenceClassPath>org.opennms.co.uk.newfeature</licenceClassPath> -->
     <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath>
-    
-    <!-- If this pom is generated from the karaf-pluginmanager-archetype, this value initially matches the archetype's version -->
+
     <org.opennms.plugin.licencemanager.version>1.1.0-SNAPSHOT</org.opennms.plugin.licencemanager.version>
 
     <slf4jVersion>1.7.7</slf4jVersion>
-    <karafVersion>2.4.0</karafVersion>
+
   </properties>
-  
-  <!-- REMOVE THESE MODULES AND ONLY USE THE DEFAULT PROFILE DEFINITIONS BELOW    -->
+
+  <!-- REMOVE THESE MODULES AND ONLY USE THE DEFAULT PROFILE DEFINITIONS BELOW -->
   <!-- THE ARTEFACT GENERATOR CANNOT BE PREVENTED FROM ADDING THESE AUTOMATICALLY -->
   <modules>
     <module>licence-generator</module>
@@ -43,7 +45,7 @@
   </modules>
 
   <build>
-      
+
     <pluginManagement>
       <plugins>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
@@ -64,7 +66,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute/>
+                    <execute />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -101,10 +103,10 @@
                   </pluginExecutionFilter>
                   <action>
                     <!-- <execute/> -->
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
-               <pluginExecution>
+                <pluginExecution>
                   <pluginExecutionFilter>
                     <groupId>org.opennms.maven.plugins</groupId>
                     <artifactId>features-maven-plugin</artifactId>
@@ -114,7 +116,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -134,9 +136,75 @@
           <version>1.8</version>
         </plugin>
 
+        <plugin>
+          <groupId>org.opennms.maven.plugins</groupId>
+          <artifactId>features-maven-plugin</artifactId>
+          <version>1.2.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.9</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.9.1</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+          <configuration>
+            <target>1.8</target>
+            <source>1.8</source>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>2.5.3</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.3.2</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+
       </plugins>
     </pluginManagement>
   </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>4.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.compendium</artifactId>
+        <version>4.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <profiles>
     <profile>
@@ -230,7 +298,7 @@
   </pluginRepositories>
 
   <!-- Change this to match your repo for the licenced product modules (i.e. plugins containing the authenticator) -->
-  <!-- NOTE use maven settings.xml in production project NOT Url basic auth http://admin:admin123@localhost-->
+  <!-- NOTE use maven settings.xml in production project NOT Url basic auth http://admin:admin123@localhost -->
   <distributionManagement>
     <repository>
       <id>osgi-plugins</id>

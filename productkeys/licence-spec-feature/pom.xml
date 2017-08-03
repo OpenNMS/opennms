@@ -9,7 +9,7 @@
   <!-- Feature Definition -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>${productGroupId}</groupId>
-  <artifactId>${productName}-licence-spec-feature</artifactId>
+  <artifactId>${productName}.licence-spec-feature</artifactId>
   <name>${productName}.licence-spec-feature</name>
   <version>${productVersion}</version>
   <description>Feature definition for ${productName} Licence Specification</description>
@@ -21,7 +21,6 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0</version>
         <executions>
           <execution>
             <id>features.xml</id>

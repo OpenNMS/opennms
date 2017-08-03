@@ -8,11 +8,9 @@
   
   <!-- Feature Definition -->
   <modelVersion>4.0.0</modelVersion>
-  <groupId>${productGroupId}</groupId>
-  <artifactId>${productName}</artifactId>
-  <name>${productName}</name>
-  <version>${productVersion}</version>
-  <description>Feature definition for ${productName}</description>
+  <artifactId>productkeys.feature</artifactId>
+  <name>productkeys.feature</name>
+  <description>${project.artifactId} Containing Feature definition for ${productName}/${productVersion}</description>
   <packaging>pom</packaging>
 
   <build>
@@ -21,7 +19,6 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0</version>
         <executions>
           <execution>
             <id>features.xml</id>
@@ -42,12 +39,12 @@
     <dependency>
       <groupId>${productGroupId}</groupId>
       <artifactId>${productName}.licence-authenticator</artifactId>
-      <version>${project.version}</version>
+      <version>${productVersion}</version>
     </dependency>
     <dependency>
       <groupId>${productGroupId}</groupId>
       <artifactId>${productName}.product-descriptor</artifactId>
-      <version>${project.version}</version>
+      <version>${productVersion}</version>
     </dependency>
   </dependencies>
   <pluginRepositories>
