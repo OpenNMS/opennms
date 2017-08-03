@@ -1,0 +1,192 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.opennms.authenticator</groupId>
+    <artifactId>productkeys.parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <!-- LicenceSpec -->
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>productkeys.licence-spec</artifactId>
+  <name>productkeys.licence-spec</name>
+  <description>LicenceSpec for ${productName}}</description>
+  <packaging>bundle</packaging>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.9</version>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>${productName}.licence-generator</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                  <classifier>sources</classifier>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/generated-licence/java</outputDirectory>
+                  <includes>**/*LicenceSpec*.java</includes>
+                  <excludes>**/*.xml</excludes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>${productName}.licence-generator</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                  <classifier>sources</classifier>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/generated-licence/resources</outputDirectory>
+                  <includes>**/licenceSpecBlueprint.xml,**/licenceMetadataSpec.xml,**/productSpec.xml</includes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.9.1</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-licence/java</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-resource</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/generated-licence/resources</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <target>1.6</target>
+          <source>1.6</source>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.5.3</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+
+            <Import-Package>
+              *
+            </Import-Package>
+            <!-- <Import-Package> -->
+            <!-- org.apache.felix.service.command, -->
+            <!-- * -->
+            <!-- </Import-Package> -->
+          </instructions>
+        </configuration>
+      </plugin>
+
+      <!-- generates feature definition for the licence specification -->
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>1.2.0</version>
+        <executions>
+          <execution>
+            <id>features.xml</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate-features-xml</goal>
+            </goals>
+            <configuration>
+              <bundles>
+                <bundle>mvn:${project.groupId}/${productName}.licence-spec/${project.version}</bundle>
+              </bundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>org.opennms.plugin.licencemanager</artifactId>
+      <version>${org.opennms.plugin.licencemanager.version}</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Note these dependencies match org.apache.karaf.shell.console 2.2.11 -->
+    <!-- Version may need altered for OpenNMS -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
+  <!-- NOTE this overrides the normal public maven repository as licence specs should be separated and secured -->
+  <!-- Change this to match your repo for containing the licence specifications. -->
+  <!-- NOTE use maven settings.xml in production project NOT Url basic auth http://admin:admin123@localhost-->
+  <distributionManagement>
+    <repository>
+      <id>osgi-plugins-licence-specs</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs</url>
+    </repository>
+    <snapshotRepository>
+      <id>osgi-plugins-licence-specs-snapshots</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>

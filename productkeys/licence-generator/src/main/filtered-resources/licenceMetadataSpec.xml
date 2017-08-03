@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<licenceMetadata>
+
+  <!-- productId is expected to contain the name of the product in the form <name>/<version> -->
+  <!-- The productId is used as the feature name for installing into Karaf the top level feature -->
+  <!-- definition of the licensed product such that the feature can be installed using -->
+  <!-- features:install name/version (version is optional) (Karaf 2.4.0) -->
+  <!-- Karaf features can reference dependent features with a range of versions -->
+  <!-- e.g. feature version="[2.5.6,4)" -->
+  <!-- so this allows us to have a single licence which can cover a range of releases of the -->
+  <!-- feature which implements the product. -->
+  <productId>${productId}</productId>
+
+  <!-- featureRepository is expected to contain the url of the features repository -->
+  <!-- which describes the Karaf feature using the concatenated form -->
+  <!-- <groupId>/<artifactId>/<version>/xml/features -->
+  <!-- such that the repository can be installed using features:addurl (Karaf 2.4.0) -->
+  <!-- e.g. features:addurl mvn:org.apache.camel/camel-example-osgi/2.10.0/xml/features -->
+  <featureRepository>mvn:${groupId}/${productName}/${project.version}/xml/features</featureRepository>
+
+
+  <!-- licensee - the name & address of the person / organisation who is granted the licence -->
+  <!-- (Definition licensee n. a person (organisation) given a license by -->
+  <!-- government or under a private agreement) -->
+  <!-- This is populate when a new licence is generated -->
+  <licensee></licensee>
+
+  <!-- licensor - the name / address of the person / organisation granting the licence -->
+  <!-- (Definition: licensor n. a person who gives another a license, particularly -->
+  <!-- a private party doing so, such as a business giving someone a license to sell its product) -->
+  <!-- This is populate as part of the licence spec by the vendor of the licenced module -->
+  <licensor>OpenNMS UK</licensor>
+
+
+  <!-- maxSizeSystemIds is the maximum number of systemId's which can be included in the systemIds list. -->
+  <!-- This is used by the shopping cart to limit the number of systems to which licences can be applied. -->
+  <!-- The actual number of systemId entries in systemId's must be <= maxSizeSystemIds for the licence to authenticate. -->
+  <!-- If maxSizeSystemIds==0 then no systemId's should be included in the list and the licence will -->
+  <!-- authenticate with any and all systemIds, -->
+  <maxSizeSystemIds>5</maxSizeSystemIds>
+
+  <!-- systemIds is a list of unique systemId's for which this licence is valid. -->
+  <!-- a systemId is expected to contain the unique identifier of the system on which which the licensed artifact -->
+  <!-- will be installed. The systemId is terminated with a CRC32 checksum separated by a - symbol systemId-CRC32 -->
+  <!-- each licence id entry must be surrounded by the systemId /systemId tags -->
+  <!-- Leave Empty - This should be populated by the shopping cart when a new licence is generated -->
+  <systemIds>
+    <systemId>REPLACE_ME_WITH_SYSTEM_ID</systemId>
+  </systemIds>
+
+  <!-- startDate - the date from which the licence will be valid -->
+  <!-- Leave Blank - This is populated automatically when a new licence is generated -->
+  <startDate></startDate>
+
+  <!-- expiryDate - the date on which the licence will expire. -->
+  <!-- If Null (and duration is null) there is no expiry date. -->
+  <!-- Leave Blank - This is populated when a new licence is generated -->
+  <!-- format is XML date e.g. 2015-01-07T15:10:45.138Z -->
+  <expiryDate></expiryDate>
+
+  <!-- duration - alternative to expiry date. Duration of licence in days. -->
+  <!-- If null (and expiryDate is null) there is no expiry date. -->
+  <!-- If duration =0, there is no expiry date. -->
+  <!-- If both defined, duration has precedence over expiryDate. -->
+  <!-- Leave Blank - This is populated when a new licence is generated -->
+  <duration></duration>
+
+  <!-- licence options - Each option contains a name/value pair and a description field. -->
+  <!-- This is intended to grant/restrict access to particular features -->
+  <!-- The definition and interpretation of each option is defined by the licenced module -->
+  <!-- If used, the names and definitions are populated as part of the licence spec -->
+  <!-- by the vendor of the licenced module. -->
+  <!-- The values are populated when a new licence is generated -->
+  <options>
+    <option>
+      <description>this is the description of option 1</description>
+      <name>option1</name>
+      <value></value>
+    </option>
+  </options>
+</licenceMetadata>

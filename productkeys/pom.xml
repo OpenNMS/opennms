@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.authenticator</groupId>
+  <artifactId>productkeys.parent</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>productkeys.parent</name>
+  <description>productkeys Parent Project</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- Note must set project.artifactId explicitly as karaf-pluginmanager-archetypeexpression is re-evaluated in each sub module !! -->
+    <!-- <productId>org.opennms.plugins/karaf-pluginmanager-archetype/1.1.0-SNAPSHOT</productId> -->
+    <!-- <productId>org.opennms.plugins/org.opennms.co.uk.newfeature/1.1.0-SNAPSHOT</productId> -->
+    <productId>productkeys/${project.version}</productId>
+    <productName>productkeys</productName>
+    <!-- <licenceClassPath>org.opennms.co.uk.newfeature</licenceClassPath> -->
+    <licenceClassPath>org.opennms.plugins.productkeys.key</licenceClassPath>
+    
+    <!-- If this pom is generated from the karaf-pluginmanager-archetype, this value initially matches the archetype's version -->
+    <org.opennms.plugin.licencemanager.version>1.1.0-SNAPSHOT</org.opennms.plugin.licencemanager.version>
+
+    <slf4jVersion>1.7.7</slf4jVersion>
+    <karafVersion>2.4.0</karafVersion>
+  </properties>
+  
+  <!-- REMOVE THESE MODULES AND ONLY USE THE DEFAULT PROFILE DEFINITIONS BELOW    -->
+  <!-- THE ARTEFACT GENERATOR CANNOT BE PREVENTED FROM ADDING THESE AUTOMATICALLY -->
+  <modules>
+    <module>licence-generator</module>
+    <module>licence-spec</module>
+    <module>licence-authenticator</module>
+    <module>product-descriptor</module>
+    <module>feature</module>
+  </modules>
+
+  <build>
+      
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <versionRange>[1.0,)</versionRange>
+                    <goals>
+                      <goal>java</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute/>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <versionRange>[1.0,)</versionRange>
+                    <goals>
+                      <goal>add-source</goal>
+                      <goal>add-test-source</goal>
+                      <goal>add-resource</goal>
+                      <goal>add-test-resource</goal>
+                      <goal>maven-version</goal>
+                      <goal>parse-version</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute>
+                      <runOnConfiguration>true</runOnConfiguration>
+                      <runOnIncremental>true</runOnIncremental>
+                    </execute>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[2.0,)</versionRange>
+                    <goals>
+                      <goal>copy-dependencies</goal>
+                      <goal>unpack</goal>
+                      <goal>unpack-dependencies</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <!-- <execute/> -->
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+               <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.opennms.maven.plugins</groupId>
+                    <artifactId>features-maven-plugin</artifactId>
+                    <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                    <goals>
+                      <goal>generate-features-xml</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.8</version>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>generateLicence</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <echo>*****************************************************</echo>
+                    <echo>PROFILE GENERATING LICENCE (-P generateLicence )     </echo>
+                    <echo>Note: This build will generate new licence modules   </echo>
+                    <echo>for this project and install them in maven.          </echo>
+                    <echo>Ideally you should only do this once so that you     </echo>
+                    <echo>dont need to install a new licence during testing    </echo>
+                    <echo>*****************************************************</echo>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <modules>
+        <module>licence-generator</module>
+        <module>licence-spec</module>
+        <module>licence-authenticator</module>
+        <module>product-descriptor</module>
+        <module>feature</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>default-not-generating-licence</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <echo>*****************************************************</echo>
+                    <echo>DEFAULT BUILD - NOT GENERATING LICENCE               </echo>
+                    <echo>Note: this build will fail if licence modules have   </echo>
+                    <echo>not previously been generated and installed in maven.</echo>
+                    <echo>To generate the licence modules run with profile:    </echo>
+                    <echo>mvn clean install -P generateLicence                 </echo>
+                    <echo>*****************************************************</echo>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <modules>
+        <module>feature</module>
+      </modules>
+    </profile>
+  </profiles>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <!-- Change this to match your repo for the licenced product modules (i.e. plugins containing the authenticator) -->
+  <!-- NOTE use maven settings.xml in production project NOT Url basic auth http://admin:admin123@localhost-->
+  <distributionManagement>
+    <repository>
+      <id>osgi-plugins</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins</url>
+    </repository>
+    <snapshotRepository>
+      <id>osgi-plugins-snapshots</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>
