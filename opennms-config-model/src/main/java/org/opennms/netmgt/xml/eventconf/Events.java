@@ -355,6 +355,8 @@ public class Events implements Serializable {
     private void indexEventsByUei() {
         m_eventsByUei.clear();
 
+        final Set<String> ueisWithManyEventDefinitions = new HashSet<>();
+
         // Build a map of UEI to Event definition
         forEachEvent((e) -> {
             final String uei = e.getUei();
@@ -362,9 +364,15 @@ public class Events implements Serializable {
                 // Skip events with no UEI
                 return;
             }
-            // Don't overwrite existing keys, first one wins
-            m_eventsByUei.putIfAbsent(uei, e);
+
+            if (m_eventsByUei.putIfAbsent(uei, e) != null) {
+                // Keep trap of the UEIs that have many event definitions
+                ueisWithManyEventDefinitions.add(uei);
+            }
         });
+
+        // Remove UEIs for which there are many event definitions
+        ueisWithManyEventDefinitions.forEach(m_eventsByUei::remove);
 
         // Now remove event definitions from the index if any
         // mask elements from any other event definitions match

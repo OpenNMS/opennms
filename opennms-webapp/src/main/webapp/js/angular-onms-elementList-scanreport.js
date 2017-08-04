@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var MODULE_NAME = 'onmsList.scanreport';
+	var MODULE_NAME = 'onms.elementList.scanreport';
 
 	// $filters that can be used to create human-readable versions of filter values
 	angular.module('scanReportListFilters', [ 'onmsListFilters' ])
@@ -64,13 +64,13 @@
 	});
 
 	// ScanReport list module
-	angular.module(MODULE_NAME, [ 'ngResource', 'onmsList', 'scanReportListFilters' ])
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'scanReportListFilters' ])
 
 	.directive('scanReportLogs', function($window) {
 		return {
-			controller: function($log, $scope, ScanReportLogs) {
+			controller: function($log, $scope, scanReportLogFactory) {
 				$scope.$watch('report', function(report) {
-					var response = ScanReportLogs.query({
+					var response = scanReportLogFactory.query({
 						id: report.id
 					}, 
 					function() {
@@ -100,7 +100,7 @@
 			scope: {
 				report: '='
 			},
-			templateUrl: 'js/angular-onmsList-scanreportlogs.html',
+			templateUrl: 'js/angular-onms-elementList-scanreportlogs.html',
 			transclude: true
 		};
 	})
@@ -114,75 +114,15 @@
 			scope: {
 				report: '='
 			},
-			templateUrl: 'js/angular-onmsList-scanreportdetails.html',
+			templateUrl: 'js/angular-onms-elementList-scanreportdetails.html',
 			transclude: true
 		};
-	})
-
-	.factory('ScanReportLogs', function($resource, $log, $http, $location) {
-		return $resource(BASE_REST_URL + '/scanreports/:id/logs', { id: '@id' },
-			{
-				'query': { 
-					method: 'GET',
-					transformResponse: function(data, headers, status) {
-						var ret;
-						switch(status) {
-							case 302: // refresh on redirect
-								$window.location.href = $location.absUrl();
-								ret = {};
-								break;
-							case 204: // no content
-								ret = {};
-								break;
-							default:
-								ret = {text:data};
-						}
-						//$log.debug('$resource(logs) returning: ' + angular.toJson(ret));
-						return ret;
-					}
-				}
-			}
-		);
-	})
-
-	/**
-	 * ScanReport REST $resource
-	 */
-	.factory('ScanReports', function($resource, $log, $http, $location) {
-		return $resource(BASE_REST_URL + '/scanreports/:id', { id: '@id' },
-			{
-				'query': { 
-					method: 'GET',
-					isArray: true,
-					// Append a transformation that will unwrap the item array
-					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data['scan-report']) ? data['scan-report'] : [ data['scan-report'] ];
-						}
-					})
-				},
-				'update': { 
-					method: 'PUT'
-				}
-			}
-		);
 	})
 
 	/**
 	 * ScanReport list controller
 	 */
-	.controller('ScanReportListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'ScanReports', function($scope, $location, $window, $log, $filter, ScanReports) {
+	.controller('ScanReportListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'scanReportFactory', function($scope, $location, $window, $log, $filter, scanReportFactory) {
 		$log.debug('ScanReportListCtrl initializing...');
 
 		$scope.selectedScanReport = {};
@@ -200,7 +140,7 @@
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
 			// Fetch all of the items
-			ScanReports.query(
+			scanReportFactory.query(
 				{
 					_s: $scope.$parent.query.searchParam, // FIQL search
 					limit: $scope.$parent.query.limit,
@@ -239,7 +179,7 @@
 
 		// Save an item by using $resource.$update
 		$scope.$parent.update = function(item) {
-			var saveMe = ScanReports.get({id: item.id}, function() {
+			var saveMe = scanReportFactory.get({id: item.id}, function() {
 				saveMe.label = item.label;
 				saveMe.location = item.location;
 				saveMe.properties = item.properties;
@@ -265,7 +205,7 @@
 		};
 
 		$scope.$parent.deleteItem = function(item) {
-			var saveMe = ScanReports.get({id: item.id}, function() {
+			var saveMe = scanReportFactory.get({id: item.id}, function() {
 				if ($window.confirm('Are you sure you want to remove scan report \"' + item.id + '\"?')) {
 					saveMe.$delete({id: item.id}, function() {
 						$scope.refresh();
