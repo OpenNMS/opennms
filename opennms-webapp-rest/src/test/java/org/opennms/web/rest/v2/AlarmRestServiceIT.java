@@ -34,7 +34,6 @@ import java.util.Date;
 
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -59,6 +58,9 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -623,6 +625,51 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     /**
+     * Test searching and ordering by every {@link SearchProperty} listed in
+     * {@link SearchProperties#ALARM_SERVICE_PROPERTIES}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testAllSearchParameters() throws Exception {
+        String url = "/alarms";
+        for (SearchProperty prop : SearchProperties.ALARM_SERVICE_PROPERTIES) {
+            System.err.println("Testing " + prop.id);
+            switch(prop.type) {
+            case FLOAT:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==1.0;%s!=1.0", prop.id, prop.id)), 204);
+                break;
+            case INTEGER:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==1;%s!=1", prop.id, prop.id)), 204);
+                break;
+            case IP_ADDRESS:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==127.0.0.1;%s!=127.0.0.1", prop.id, prop.id)), 204);
+                break;
+            case LONG:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==1;%s!=1", prop.id, prop.id)), 204);
+                break;
+            case STRING:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==A;%s!=A", prop.id, prop.id)), 204);
+                break;
+            case TIMESTAMP:
+                sendRequest(GET, url, parseParamData(String.format(
+                    "_s=%s==%s;%s!=%s", 
+                    prop.id, 
+                    CriteriaBehaviors.SEARCH_DATE_FORMAT.format(new Date(0)),
+                    prop.id, 
+                    CriteriaBehaviors.SEARCH_DATE_FORMAT.format(new Date(0))
+                )), 204);
+                break;
+            default:
+                throw new IllegalArgumentException();
+            }
+            if (prop.orderBy) {
+                sendRequest(GET, url, parseParamData("orderBy=" + prop.id), 200);
+            }
+        }
+    }
+
+    /**
      * Test {@code orderBy} for properties of {@link OnmsServiceType}.
      * 
      * @throws Exception
@@ -723,7 +770,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventDisplay("Y");
         event.setEventHost("127.0.0.1");
         event.setEventLog("Y");
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("JUnit");
         event.setEventTime(new Date());
         event.setEventUei(eventUei);
@@ -737,7 +784,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(node);
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");

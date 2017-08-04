@@ -359,7 +359,7 @@ The codename for 1.9.7 is _Naqara_.
 
 * Debian Startup Script hides important Debian Specific Error Output (Issue http://issues.opennms.org/browse/NMS-3411[NMS-3411])
 * Remove c3p0 dependencies from installer code so we can change the DB connection pooling implementation (Issue http://issues.opennms.org/browse/NMS-4388[NMS-4388])
-* Increase servicename in table service in the core schema to accomodate services with names longer than 32 characters (Issue http://issues.opennms.org/browse/NMS-4477[NMS-4477])
+* Increase servicename in table service in the core schema to accommodate services with names longer than 32 characters (Issue http://issues.opennms.org/browse/NMS-4477[NMS-4477])
 * All Event creation should use the EventBuilder (Issue http://issues.opennms.org/browse/NMS-4489[NMS-4489])
 * Get rid of PostgreSQL-specific calls in installation/upgrade tools. (Upgrade to Liquibase 2.0) (Issue http://issues.opennms.org/browse/NMS-4496[NMS-4496])
 * OnmsMonitoredService getIpAddress returns a String rather than an InetAddress (Issue http://issues.opennms.org/browse/NMS-4507[NMS-4507])
