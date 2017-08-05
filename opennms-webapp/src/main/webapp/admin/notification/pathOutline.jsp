@@ -179,7 +179,7 @@
         <div class="form-group">
           <label for="input_initialDelay" class="control-label col-sm-2">Initial Delay:</label>
           <div class="col-sm-10">
-            <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay().orElse(null))%>
+            <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay().orElse("0s"))%>
           </div>
         </div>
         <div class="form-group">
