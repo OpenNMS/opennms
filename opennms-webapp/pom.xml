@@ -1022,6 +1022,11 @@
       <artifactId>angular-bootstrap-checkbox</artifactId>
       <version>0.5.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>angular-animate</artifactId>
+      <version>1.5.8</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>
