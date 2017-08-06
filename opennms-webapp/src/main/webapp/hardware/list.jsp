@@ -110,8 +110,8 @@
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
   <jsp:param name="breadcrumb" value="Hardware Inventory" />
-  <jsp:param name="link" value='<link type="text/css" href="lib/jquery-treegrid/css/jquery.treegrid.css" rel="stylesheet" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-treegrid/js/jquery.treegrid.js"></script>' />
+  <jsp:param name="link" value='<link type="text/css" href="webjars/jquery-treegrid/0.3.0/css/jquery.treegrid.css" rel="stylesheet" />' />
+  <jsp:param name="script" value='<script type="text/javascript" src="webjars/jquery-treegrid/0.3.0/js/jquery.treegrid.js"></script>' />
 </jsp:include>
 
 <br/>

@@ -21,7 +21,6 @@
     "flot-saveas": "https://github.com/j-white/flot-saveas.git#v1.0.0",
     "flot-datatable": "https://github.com/j-white/flot-datatable.git#v1.0.6",
     "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM",
-    "jquery-treegrid": "0.3.0",
     "jquery-ui": "1.12.0",
     "requirejs": "2.2.0",
     "ionicons": "2.0.1",
@@ -53,13 +52,6 @@
     "flot-saveas": {
       "main": [
         "*.js"
-      ]
-    },
-    "jquery-treegrid": {
-      "main": [
-        "js/jquery.treegrid.js",
-        "css/**",
-        "img/**"
       ]
     },
     "jquery-ui": {
