@@ -27,7 +27,6 @@
     "jquery-treegrid": "0.3.0",
     "jquery-ui": "1.12.0",
     "requirejs": "2.2.0",
-    "font-awesome": "4.6.3",
     "ionicons": "2.0.1",
     "jquery-sparkline": "2.1.3",
     "leaflet": "1.0.2",
@@ -37,12 +36,6 @@
     "bootstrap-sass-official": {
       "main": [
         "assets/**"
-      ]
-    },
-    "font-awesome": {
-      "main": [
-        "css/font-awesome.css",
-        "fonts/**"
       ]
     },
     "flot": {

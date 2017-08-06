@@ -88,7 +88,7 @@
   <c:if test="${param.nostyles != 'true' }">
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>lib/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>webjars/font-awesome/4.6.3/css/font-awesome.css" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
   </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
