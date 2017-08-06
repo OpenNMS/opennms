@@ -1042,6 +1042,16 @@
       <artifactId>angular-loading-bar</artifactId>
       <version>0.9.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>angular-resource</artifactId>
+      <version>1.5.8</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>angular-route</artifactId>
+      <version>1.5.8</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

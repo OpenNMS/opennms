@@ -39,7 +39,7 @@
     <jsp:param name="breadcrumb" value="<%= title %>" />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-resource/1.5.8/angular-resource.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-route/angular-route.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-route/1.5.8/angular-route.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-bootstrap/2.1.3/ui-bootstrap-tpls.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-bootstrap-checkbox/0.5.1/angular-bootstrap-checkbox.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
