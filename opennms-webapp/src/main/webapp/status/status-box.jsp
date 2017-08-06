@@ -45,7 +45,7 @@
     String javaScriptArrayContent = String.join(", ", graphKeyList);
 %>
 
-<link href="lib/c3/c3.css" rel="stylesheet" type="text/css">
+<link href="webjars/c3/0.4.11/c3.css" rel="stylesheet" type="text/css">
 <style>
 
     #chart-content {

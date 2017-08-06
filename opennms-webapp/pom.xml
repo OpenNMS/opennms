@@ -947,6 +947,11 @@
       <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>c3</artifactId>
+      <version>0.4.11</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>
