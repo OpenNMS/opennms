@@ -35,7 +35,7 @@
 	<jsp:param name="title" value="Monitoring Locations" />
 	<jsp:param name="headTitle" value="Monitoring Locations" />
 	<jsp:param name="breadcrumb" value="Monitoring Locations" />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />

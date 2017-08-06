@@ -37,7 +37,7 @@
     <jsp:param name="title" value="<%= title %>" />
     <jsp:param name="headTitle" value="<%= title %>" />
     <jsp:param name="breadcrumb" value="<%= title %>" />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-route/angular-route.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />

@@ -3,7 +3,7 @@
         session="true"
 %>
 
-<script type="text/javascript" src="lib/angular/angular.js"></script>
+<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>
 <script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script type="text/javascript" src="js/onms-search/app.js"></script>
 

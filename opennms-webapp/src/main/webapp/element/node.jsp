@@ -275,7 +275,7 @@
   <jsp:param name="enableExtJS" value="false"/>
 
   <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="js/onms-interfaces/styles.css" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="js/onms-interfaces/app.js"></script>' />
 </jsp:include>

@@ -42,7 +42,7 @@
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-loading-bar/build/loading-bar.css" />' />
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
 
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-cookies/angular-cookies.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />

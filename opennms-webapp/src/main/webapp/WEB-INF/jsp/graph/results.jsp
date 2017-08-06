@@ -50,7 +50,7 @@
     <c:param name="renderGraphs" value="true" />
 
     <c:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
-    <c:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+    <c:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
     <c:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
     <c:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
     <c:param name="script" value='<script type="text/javascript" src="js/onms-ksc/add-to-ksc.js"></script>' />

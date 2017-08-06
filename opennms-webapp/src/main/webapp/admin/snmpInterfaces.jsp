@@ -50,7 +50,7 @@
 	<jsp:param name="breadcrumb" value="Select SNMP Interfaces" />
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' /> 
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="js/onms-interfaces/styles.css" />' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/onms-interfaces/config.js"></script>' />
