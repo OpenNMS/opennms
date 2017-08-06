@@ -57,10 +57,10 @@
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>" />
   <jsp:param name="breadcrumb" value="Choose" />
-  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
+  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="webjars/angular-growl-v2/build/angular-growl.css" />' />
   <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-bootstrap/2.1.3/ui-bootstrap-tpls.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-growl-v2/build/angular-growl.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="webjars/underscore/1.8.3/underscore.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="js/onms-resources/app.js"></script>' />
 </jsp:include>

@@ -40,7 +40,7 @@
     <jsp:param name="location" value="admin" />
 
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-loading-bar/build/loading-bar.css" />' />
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
+    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="webjars/angular-growl-v2/build/angular-growl.css" />' />
 
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
@@ -50,7 +50,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-animate/1.5.8/angular-animate.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-loading-bar/build/loading-bar.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-growl-v2/build/angular-growl.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/ip-address/dist/ip-address-globals.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/bootbox/4.4.0/bootbox.js"></script>' />
 

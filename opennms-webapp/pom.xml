@@ -1032,6 +1032,11 @@
       <artifactId>angular-cookies</artifactId>
       <version>1.5.8</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>angular-growl-v2</artifactId>
+      <version>0.7.9</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>
