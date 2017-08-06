@@ -555,7 +555,7 @@ public class DatabasePopulator {
         event.setEventLog("Y");
         event.setEventLogMsg("Test Event Log Message");
         event.setEventParms("testParm=HelloWorld(string,text)");
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("test");
         event.setEventTime(new Date(1437061537105L));
         event.setEventUei("uei.opennms.org/test");
@@ -595,7 +595,7 @@ public class DatabasePopulator {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_node1);
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");

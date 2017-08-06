@@ -245,7 +245,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public BsmAdminPage(final OpenNMSSeleniumTestCase testCase) {
             this.testCase = Objects.requireNonNull(testCase);
-            this.bsmAdminUrl = testCase.getBaseUrl() + "opennms/osgi/bsm-admin-page";
+            this.bsmAdminUrl = testCase.getBaseUrl() + "opennms/admin/bsm-admin-page";
         }
 
         public BsmAdminPage open() {

@@ -42,13 +42,13 @@
 
     <service id="eventsAdminService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="eventAdminApplicationFactory">
         <service-properties>
-            <entry key="alias" value="/admin-events" />
+            <entry key="alias" value="/admin/admin-events" />
         </service-properties>
     </service>
 
     <service id="snmpCollectionsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="snmpCollectionAdminApplicationFactory">
         <service-properties>
-            <entry key="alias" value="/admin-snmp-collections" />
+            <entry key="alias" value="/admin/admin-snmp-collections" />
         </service-properties>
     </service>
 

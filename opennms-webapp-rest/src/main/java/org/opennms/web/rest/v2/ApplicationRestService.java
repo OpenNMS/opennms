@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.SortedSet;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
@@ -37,6 +38,8 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.v1.support.OnmsApplicationList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +87,11 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     @Override
     protected JaxbListWrapper<OnmsApplication> createListWrapper(Collection<OnmsApplication> list) {
         return new OnmsApplicationList(list);
+    }
+
+    @Override
+    protected SortedSet<SearchProperty> getQueryProperties() {
+        return SearchProperties.APPLICATION_SERVICE_PROPERTIES;
     }
 
     @Override

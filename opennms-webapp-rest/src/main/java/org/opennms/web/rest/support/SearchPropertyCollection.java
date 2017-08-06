@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,23 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.snmp;
+package org.opennms.web.rest.support;
 
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import java.util.Collection;
+import java.util.List;
 
-public class Dot1dBasePortIfIndexGetter extends SnmpGetter {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-    public final static SnmpObjId DOT1DBASE_PORT_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.2");
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+import org.opennms.core.config.api.JaxbListWrapper;
 
-    public Dot1dBasePortIfIndexGetter(SnmpAgentConfig peer,LocationAwareSnmpClient client, String location,Integer nodeid) {
-        super(peer, client,location,nodeid);
+@XmlRootElement(name="searchProperties")
+@JsonRootName("searchProperties")
+public class SearchPropertyCollection extends JaxbListWrapper<SearchProperty> {
+    private static final long serialVersionUID = 1L;
+
+    public SearchPropertyCollection() { super(); }
+    public SearchPropertyCollection(final Collection<? extends SearchProperty> items) {
+        super(items);
     }
 
-    public SnmpValue get(Integer bridgeport) {
-        return get(DOT1DBASE_PORT_IFINDEX,bridgeport);                
+    @XmlElement(name="searchProperty")
+    @JsonProperty("searchProperty")
+    public List<SearchProperty> getObjects() {
+        return super.getObjects();
     }
-
 }
