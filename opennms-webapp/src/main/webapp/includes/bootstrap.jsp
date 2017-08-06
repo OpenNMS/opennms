@@ -142,7 +142,7 @@
 </c:if>
 
   <c:if test="${param.useionicons == 'true'}">
-    <link rel="stylesheet" href="<%= baseHref %>lib/ionicons/css/ionicons.css"/>
+    <link rel="stylesheet" href="<%= baseHref %>webjars/ionicons/2.0.1/css/ionicons.css"/>
   </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">

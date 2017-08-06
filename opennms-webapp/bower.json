@@ -21,7 +21,6 @@
     "flot-saveas": "https://github.com/j-white/flot-saveas.git#v1.0.0",
     "flot-datatable": "https://github.com/j-white/flot-datatable.git#v1.0.6",
     "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM",
-    "ionicons": "2.0.1",
     "leaflet": "1.0.2",
     "leaflet.markercluster" : "1.0.0"
   },
