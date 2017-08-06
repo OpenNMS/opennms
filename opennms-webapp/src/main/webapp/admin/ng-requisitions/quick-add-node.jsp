@@ -43,7 +43,7 @@
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="webjars/angular-growl-v2/build/angular-growl.css" />' />
 
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-resource/1.5.8/angular-resource.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-cookies/1.5.8/angular-cookies.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-route/angular-route.js"></script>' />

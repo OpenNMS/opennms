@@ -2,7 +2,6 @@
   "name": "opennms",
   "dependencies": {
     "angular-route": "1.5.8",
-    "angular-resource": "1.5.8",
     "angular-sanitize": "1.5.8",
     "angular-bootstrap": "2.1.3",
     "bootstrap-sass-official": "3.3.1",
