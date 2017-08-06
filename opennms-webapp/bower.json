@@ -14,7 +14,6 @@
     "bootbox": "4.4.0",
     "bootstrap": "3.3.1",
     "bootstrap-sass-official": "3.3.1",
-    "d3": "3.5.17",
     "ip-address": "5.8.2",
     "flot": "~0.8.3",
     "flot-axislabels": "https://github.com/j-white/flot-axislabels.git#0d6ae9a79338",
@@ -44,11 +43,6 @@
       "main": [
         "css/font-awesome.css",
         "fonts/**"
-      ]
-    },
-    "d3": {
-      "main": [
-        "d3.*.js"
       ]
     },
     "flot": {

@@ -128,7 +128,7 @@
 
 <c:if test="${param.usebackshift == 'true'}">
   <%-- This allows pages to explicitely use Backshift instead of relying on graph.js (which may not use Backshift) --%>
-  <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>webjars/d3/3.5.17/d3.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.js"></script>
