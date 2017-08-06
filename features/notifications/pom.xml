@@ -12,6 +12,5 @@
   <name>OpenNMS :: Features :: Notification</name>
   <modules>
     <module>ticket-strategy</module>
-    <module>twilio-sms-strategy</module>
   </modules>
 </project>

@@ -321,7 +321,6 @@
             <feature>tsrm-troubleticketer</feature>
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
-            <feature>twilio-sms-strategy</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
@@ -749,13 +748,6 @@
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.commands</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.notifications</groupId>
-      <artifactId>twilio-sms-strategy</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
