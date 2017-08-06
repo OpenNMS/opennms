@@ -52,7 +52,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-loading-bar/build/loading-bar.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/ip-address/dist/ip-address-globals.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/bootbox/bootbox.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/bootbox/4.4.0/bootbox.js"></script>' />
 
     <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/app-quickaddnode.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/RequisitionInterface.js"></script>' />
