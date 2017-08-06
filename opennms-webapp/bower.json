@@ -1,7 +1,6 @@
 {
   "name": "opennms",
   "dependencies": {
-    "angular-bootstrap-checkbox": "0.5.1",
     "angular-animate": "1.5.8",
     "angular-cookies": "1.5.8",
     "angular-growl-v2": "0.7.9",
