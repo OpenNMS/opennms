@@ -987,6 +987,11 @@
       <artifactId>jquery-ui</artifactId>
       <version>1.12.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>jquery-sparkline</artifactId>
+      <version>2.1.3</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

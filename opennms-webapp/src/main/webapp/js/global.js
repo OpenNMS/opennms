@@ -25,7 +25,7 @@ if (typeof requirejs === "function") {
       jquery: '../webjars/jquery/2.2.4/dist/jquery',
       'jquery-ui' : '../webjars/jquery-ui/1.12.0/jquery-ui',
       'jquery-ui-treemap' : '../js/jquery.ui.treemap',
-      'jquery-sparkline' : '../js/jquery.sparkline.min',
+      'jquery-sparkline' : '../webjars/jquery-sparkline/2.1.3/jquery.sparkline.min',
       'leaflet' : 'leaflet/dist/leaflet-src',
       'markercluster' : 'leaflet.markercluster/dist/leaflet.markercluster-src'
     },
