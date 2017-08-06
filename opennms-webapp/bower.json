@@ -21,7 +21,6 @@
     "flot-saveas": "https://github.com/j-white/flot-saveas.git#v1.0.0",
     "flot-datatable": "https://github.com/j-white/flot-datatable.git#v1.0.6",
     "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM",
-    "jquery-ui": "1.12.0",
     "requirejs": "2.2.0",
     "ionicons": "2.0.1",
     "jquery-sparkline": "2.1.3",
@@ -52,12 +51,6 @@
     "flot-saveas": {
       "main": [
         "*.js"
-      ]
-    },
-    "jquery-ui": {
-      "main": [
-        "jquery-ui.js",
-        "themes/base/**"
       ]
     },
     "leaflet": {

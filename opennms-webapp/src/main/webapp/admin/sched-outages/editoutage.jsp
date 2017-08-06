@@ -610,8 +610,8 @@ Could not find an outage to edit because no outage name parameter was specified 
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="<a href='admin/sched-outages/index.jsp'>Scheduled Outages</a>" />
 	<jsp:param name="breadcrumb" value="Edit" />
-    <jsp:param name="link" value='<link type="text/css" href="lib/jquery-ui/themes/base/all.css" rel="stylesheet" />' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/jquery-ui.js"></script>' />
+    <jsp:param name="link" value='<link type="text/css" href="webjars/jquery-ui/1.12.0/themes/base/all.css" rel="stylesheet" />' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/jquery-ui/1.12.0/jquery-ui.js"></script>' />
 </jsp:include>
 
 <style type="text/css">

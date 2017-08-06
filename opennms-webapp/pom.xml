@@ -982,6 +982,11 @@
       <artifactId>jquery-treegrid</artifactId>
       <version>0.3.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>jquery-ui</artifactId>
+      <version>1.12.0</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>
