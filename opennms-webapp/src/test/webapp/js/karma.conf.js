@@ -16,7 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       // Third-party libraries
-      'src/main/webapp/lib/jquery/dist/jquery.js',
+      'http://localhost:8080/opennms/webjars/jquery/2.2.4/dist/jquery.js',
       'http://localhost:8080/opennms/webjars/underscore/1.8.3/underscore.js',
       'http://localhost:8080/opennms/webjars/bootstrap/3.3.1/dist/js/bootstrap.js',
       'src/main/webapp/lib/angular/angular.js',

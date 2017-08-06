@@ -101,7 +101,7 @@
   </c:if>
 
     <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>webjars/jquery/2.2.4/dist/jquery.js"></script>
     <script type="text/javascript" src="<%= baseHref %>webjars/bootstrap/3.3.1/dist/js/bootstrap.js"></script>
 
     <c:if test="${param.storageAdmin == 'true'}">
