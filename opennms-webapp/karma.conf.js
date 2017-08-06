@@ -17,7 +17,7 @@ module.exports = function(config) {
     files: [
       // Third-party libraries
       'src/main/webapp/lib/jquery/dist/jquery.js',
-      'src/main/webapp/lib/underscore/underscore.js',
+      'http://localhost:8080/opennms/webjars/underscore/1.8.3/underscore.js',
       'src/main/webapp/lib/bootstrap/dist/js/bootstrap.js',
       'src/main/webapp/lib/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
