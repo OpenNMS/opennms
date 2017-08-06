@@ -51,7 +51,7 @@
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
 
     <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="webjars/bootstrap/3.3.1/dist/js/bootstrap.js"></script>
 
     <title>RTC Console</title>
 </head>

@@ -18,7 +18,7 @@ module.exports = function(config) {
       // Third-party libraries
       'src/main/webapp/lib/jquery/dist/jquery.js',
       'http://localhost:8080/opennms/webjars/underscore/1.8.3/underscore.js',
-      'src/main/webapp/lib/bootstrap/dist/js/bootstrap.js',
+      'http://localhost:8080/opennms/webjars/bootstrap/3.3.1/dist/js/bootstrap.js',
       'src/main/webapp/lib/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'src/main/webapp/lib/angular-resource/angular-resource.js',

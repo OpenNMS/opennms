@@ -967,6 +967,11 @@
       <artifactId>underscore</artifactId>
       <version>1.8.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>bootstrap</artifactId>
+      <version>3.3.1</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

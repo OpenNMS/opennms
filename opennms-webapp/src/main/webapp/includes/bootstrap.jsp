@@ -102,7 +102,7 @@
 
     <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
     <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>webjars/bootstrap/3.3.1/dist/js/bootstrap.js"></script>
 
     <c:if test="${param.storageAdmin == 'true'}">
       <script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
