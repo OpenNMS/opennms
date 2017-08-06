@@ -97,7 +97,7 @@
   </c:forEach>
 
   <c:if test="${param.norequirejs != 'true' && param.usebackshift != 'true' }">
-    <script type="text/javascript" src="<%= baseHref %>lib/requirejs/require.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>webjars/requirejs/2.2.0/require.js"></script>
   </c:if>
 
     <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
