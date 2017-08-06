@@ -44,10 +44,10 @@
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-bootstrap-checkbox/0.5.1/angular-bootstrap-checkbox.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="status/js/angular-status.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-loading-bar/build/loading-bar.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-loading-bar/0.9.0/build/loading-bar.js"></script>' />
 </jsp:include>
 
-<link rel='stylesheet' type='text/css' href='lib/angular-loading-bar/build/loading-bar.css' />
+<link rel='stylesheet' type='text/css' href='webjars/angular-loading-bar/0.9.0/build/loading-bar.css' />
 <link rel="stylesheet" type="text/css" href="status/css/style.css" />
 <ng-include src="'status/views/<%= type %>.html'"></ng-include>
 

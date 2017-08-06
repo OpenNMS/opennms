@@ -1,7 +1,6 @@
 {
   "name": "opennms",
   "dependencies": {
-    "angular-loading-bar": "0.9.0",
     "angular-route": "1.5.8",
     "angular-resource": "1.5.8",
     "angular-sanitize": "1.5.8",

@@ -27,7 +27,7 @@ module.exports = function(config) {
       'src/main/webapp/lib/angular-route/angular-route.js',
       'http://localhost:8080/opennms/webjars/angular-animate/1.5.8/angular-animate.js',
       'src/main/webapp/lib/angular-bootstrap/ui-bootstrap-tpls.js',
-      'src/main/webapp/lib/angular-loading-bar/build/loading-bar.js',
+      'http://localhost:8080/opennms/webjars/angular-loading-bar/0.9.0/build/loading-bar.js',
       'http://localhost:8080/opennms/webjars/angular-growl-v2/build/angular-growl.js',
       // OpenNMS applications (expected to be subdirectories inside 'js')
       'src/main/webapp/js/**/*.js',
