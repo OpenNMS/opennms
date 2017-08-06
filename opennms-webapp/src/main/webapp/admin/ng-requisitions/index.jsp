@@ -45,7 +45,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular/1.5.8/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-resource/1.5.8/angular-resource.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-cookies/1.5.8/angular-cookies.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-sanitize/1.5.8/angular-sanitize.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-route/1.5.8/angular-route.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-animate/1.5.8/angular-animate.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />

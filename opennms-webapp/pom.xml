@@ -1052,6 +1052,11 @@
       <artifactId>angular-route</artifactId>
       <version>1.5.8</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>angular-sanitize</artifactId>
+      <version>1.5.8</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

@@ -23,7 +23,7 @@ module.exports = function(config) {
       'node_modules/angular-mocks/angular-mocks.js',
       'http://localhost:8080/opennms/webjars/angular-resource/1.5.8/angular-resource.js',
       'http://localhost:8080/opennms/webjars/angular-cookies/1.5.8/angular-cookies.js',
-      'src/main/webapp/lib/angular-sanitize/angular-sanitize.js',
+      'http://localhost:8080/opennms/webjars/angular-sanitize/1.5.8/angular-sanitize.js',
       'http://localhost:8080/opennms/webjars/angular-route/1.5.8/angular-route.js',
       'http://localhost:8080/opennms/webjars/angular-animate/1.5.8/angular-animate.js',
       'src/main/webapp/lib/angular-bootstrap/ui-bootstrap-tpls.js',
