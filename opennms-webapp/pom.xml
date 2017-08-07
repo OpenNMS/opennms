@@ -1062,6 +1062,11 @@
       <artifactId>flot</artifactId>
       <version>0.8.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>flot.tooltip</artifactId>
+      <version>0.8.5</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

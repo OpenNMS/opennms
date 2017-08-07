@@ -239,7 +239,7 @@ GraphContainers = (function () {
                'jquery.flot.canvas'    : window.onmsGraphContainers.baseHref + 'webjars/flot/0.8.3/jquery.flot.canvas',
                'jquery.flot.legend'    : window.onmsGraphContainers.baseHref + 'lib/flot-legend/jquery.flot.legend.min',
                'jquery.flot.axislabels': window.onmsGraphContainers.baseHref + 'lib/flot-axislabels/jquery.flot.axislabels',
-               'jquery.flot.tooltip'   : window.onmsGraphContainers.baseHref + 'lib/flot.tooltip/js/jquery.flot.tooltip',
+               'jquery.flot.tooltip'   : window.onmsGraphContainers.baseHref + 'webjars/flot.tooltip/0.8.5/js/jquery.flot.tooltip',
                'jquery.flot.saveas'    : window.onmsGraphContainers.baseHref + 'lib/flot-saveas/jquery.flot.saveas',
                'jquery.flot.navigate'  : window.onmsGraphContainers.baseHref + 'lib/flot-navigate/jquery.flot.navigate',
                'jquery.flot.datatable' : window.onmsGraphContainers.baseHref + 'lib/flot-datatable/jquery.flot.datatable.min'
