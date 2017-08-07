@@ -6,7 +6,7 @@ The current corporate sponsor of OpenNMS is The OpenNMS Group, which also owns t
 OpenNMS is a derivative work, containing both original code, included code and modified code that was published under the GNU General Public License.
 Please see the source for detailed copyright notices, but some notable copyright owners are listed below:
 
-- Copyright © 2002-2013 The OpenNMS Group, Inc.
+- Copyright © 2002-2017 The OpenNMS Group, Inc.
 - Original code base for OpenNMS version 1.0.0 Copyright © 1999-2001 Oculan Corporation.
 - Mapping code Copyright © 2003 Networked Knowledge Systems, Inc.
 - ScriptD code Copyright © 2003 Tavve Software Company.
