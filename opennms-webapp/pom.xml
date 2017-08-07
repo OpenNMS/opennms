@@ -1077,6 +1077,11 @@
       <artifactId>leaflet.markercluster</artifactId>
       <version>1.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>ip-address</artifactId>
+      <version>5.8.2</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>
