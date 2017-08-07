@@ -48,7 +48,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-sanitize/1.5.8/angular-sanitize.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-route/1.5.8/angular-route.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-animate/1.5.8/angular-animate.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-bootstrap/2.1.3/ui-bootstrap-tpls.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-loading-bar/0.9.0/build/loading-bar.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="webjars/angular-growl-v2/build/angular-growl.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/ip-address/dist/ip-address-globals.js"></script>' />
