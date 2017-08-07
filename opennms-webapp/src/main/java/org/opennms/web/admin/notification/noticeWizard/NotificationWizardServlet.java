@@ -216,7 +216,7 @@ public class NotificationWizardServlet extends HttpServlet {
         ruleString = stripServices(ruleString);
         ruleString = checkParens(ruleString);
 
-        final StringBuffer rule = new StringBuffer(ruleString);
+        final StringBuilder rule = new StringBuilder(ruleString);
 
         final String[] services = request.getParameterValues("services");
         if (services != null) {
@@ -515,7 +515,7 @@ public class NotificationWizardServlet extends HttpServlet {
 
     // FIXME: Is this a duplicate of a similar method elsewhere?
     private String makeQueryString(final Map<String, Object> map) {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         String separator = "?";
 
         for (final Map.Entry<String, Object> entry : map.entrySet()) {
@@ -537,7 +537,7 @@ public class NotificationWizardServlet extends HttpServlet {
     }
 
     private static String toSingleQuote(final String rule) {
-        final StringBuffer buffer = new StringBuffer(rule);
+        final StringBuilder buffer = new StringBuilder(rule);
 
         for (int i = 0; (i < buffer.length()); i++) {
             if ((i < buffer.length() - 5) && (buffer.substring(i, i + 6).equals("&quot;"))) {

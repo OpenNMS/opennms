@@ -583,7 +583,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
         //
         // assume two digit ids, plus one dot(.) per id.
         //
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         buf.ensureCapacity(m_data.length * 3);
 
         for (int x = 0; x < m_data.length; x++) {

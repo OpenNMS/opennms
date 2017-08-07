@@ -68,7 +68,7 @@ public class EventDisposition {
     }
     
     public String toString() {
-        StringBuilder bldr = new StringBuilder("EventDisposition [");
+        final StringBuilder bldr = new StringBuilder("EventDisposition [");
         bldr.append("eventCode: ").append(m_eventCode).append("; ");
         bldr.append("logEvent: ").append(m_logEvent).append("; ");
         bldr.append("eventSeverity: ").append(m_eventSeverity).append("; ");

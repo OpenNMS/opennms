@@ -144,7 +144,7 @@ public class Day {
 
     private String ownerString(List<Owner> owners) {
         boolean first = true;
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         for (Owner owner : owners) {
             if (first) {
                 first = false;

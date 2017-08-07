@@ -172,7 +172,7 @@ public class PopulatedTemporaryDatabaseITCase extends
         m_installerDb.setOutputStream(new PrintStream(m_outputStream));
     }
     
-    public void setInsertData(boolean insertData) throws Exception {
+    public void setInsertData(boolean insertData) {
         m_insertData = insertData;
     }
     

@@ -64,7 +64,7 @@ public abstract class AutoAction {
      * @return the formatted string
      */
     public static String format(Autoaction[] autoacts, int sz) {
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         boolean first = true;
 
         for (int index = 0; index < autoacts.length; index++) {

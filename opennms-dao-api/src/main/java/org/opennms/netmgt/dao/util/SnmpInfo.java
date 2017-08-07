@@ -66,7 +66,7 @@ public abstract class SnmpInfo {
         }
 
         // id
-        StringBuffer snmpStr = new StringBuffer(info.getId());
+        final StringBuilder snmpStr = new StringBuilder(info.getId());
 
         // id text
         if (info.getIdtext() != null) {

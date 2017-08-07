@@ -218,7 +218,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		
                 @Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder("CiscoPingEntry: [ciscoPingSerialNumber=");
+			final StringBuilder sb = new StringBuilder("CiscoPingEntry: [ciscoPingSerialNumber=");
 			sb.append(m_ciscoPingSerialNumber).append(",");
 			sb.append("ciscoPingProtocol=").append(m_ciscoPingProtocol).append(",");
 			sb.append("ciscoPingAddress=").append(m_ciscoPingAddress).append(",");

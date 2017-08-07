@@ -53,7 +53,7 @@ public class MattermostNotificationStrategy extends AbstractSlackCompatibleNotif
     
     @Override
 	protected String formatWebhookErrorResponse(int statusCode, String contents) {
-    	StringBuilder bldr = new StringBuilder("Response code: ");
+    	final StringBuilder bldr = new StringBuilder("Response code: ");
     	bldr.append(statusCode);
     	
     	JSONObject errorJson = new JSONObject();
@@ -80,7 +80,7 @@ public class MattermostNotificationStrategy extends AbstractSlackCompatibleNotif
 
     @Override
 	protected String decorateMessageSubject(String subject) {
-    	StringBuilder bldr = new StringBuilder("#### ");
+    	final StringBuilder bldr = new StringBuilder("#### ");
     	bldr.append(subject).append("\n");
     	return bldr.toString();
     }

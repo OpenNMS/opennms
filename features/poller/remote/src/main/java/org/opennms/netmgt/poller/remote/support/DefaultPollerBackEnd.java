@@ -931,7 +931,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             // Otherwise send the unsuccessful event
             int total = 0;
             int failed = 0;
-            StringBuffer failedPollResults = new StringBuffer();
+            final StringBuilder failedPollResults = new StringBuilder();
             for (ScanReportPollResult result : report.getPollResults()) {
                 total++;
                 if (!result.getPollStatus().isAvailable()) {

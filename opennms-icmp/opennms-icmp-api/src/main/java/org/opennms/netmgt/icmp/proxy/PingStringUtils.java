@@ -79,7 +79,7 @@ public class PingStringUtils {
     }
 
     public static String renderSummary(PingSummary summary) {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         PingSummaryCalculator calculator = new PingSummaryCalculator(summary.getSequences());
         builder.append("\n");
         builder.append(String.format("--- %s ping statistics ---", summary.getRequest().getInetAddress()));

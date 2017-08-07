@@ -301,7 +301,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                     String title = getMibName() + "::" + groupName + "::" + v.getId();
                     String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
                     String descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");
-                    StringBuffer sb = new StringBuffer();
+                    final StringBuilder sb = new StringBuilder();
                     sb.append("--title=\"").append(title).append("\" \\\n");
                     sb.append(" DEF:var={rrd1}:").append(alias).append(":AVERAGE \\\n");
                     sb.append(" LINE1:var").append(color).append(":\"").append(v.getId()).append("\" \\\n");
@@ -547,7 +547,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @return the trap event UEI
      */
     protected String getTrapEventUEI(Notification trap, String ueibase) {
-        StringBuffer buf = new StringBuffer(ueibase);
+        final StringBuilder buf = new StringBuilder(ueibase);
         if (! ueibase.endsWith("/")) {
             buf.append("/");
         }
@@ -562,7 +562,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @return the trap event label
      */
     protected String getTrapEventLabel(Notification trap) {
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         buf.append(trap.getModule().getId());
         buf.append(" defined trap event: ");
         buf.append(trap.getId());
@@ -578,7 +578,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     protected Logmsg getTrapEventLogmsg(Notification trap) {
         Logmsg msg = new Logmsg();
         msg.setDest(LogDestType.LOGNDISPLAY);
-        final StringBuffer dbuf = new StringBuffer();
+        final StringBuilder dbuf = new StringBuilder();
         dbuf.append("<p>");
         dbuf.append("\n");
         dbuf.append("\t").append(trap.getId()).append(" trap received\n");
@@ -606,7 +606,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         // FIXME There a lot of detail here (like removing the last \n) that can go away when we don't need to match mib2opennms exactly
         final String descrStartingNewlines = description.replaceAll("^", "\n<p>");
         final String descrEndingNewlines = descrStartingNewlines.replaceAll("$", "</p>\n");
-        final StringBuffer dbuf = new StringBuffer(descrEndingNewlines);
+        final StringBuilder dbuf = new StringBuilder(descrEndingNewlines);
         if (dbuf.charAt(dbuf.length() - 1) == '\n') {
             dbuf.deleteCharAt(dbuf.length() - 1); // delete the \n at the end
         }

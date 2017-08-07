@@ -389,7 +389,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
 
         @Override
         public String toString() {
-            StringBuffer buffer = new StringBuffer();
+            final StringBuilder buffer = new StringBuilder();
             buffer.append(super.toString());
             buffer.append(": client URL: ");
             return buffer.toString();
@@ -474,7 +474,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
         URI uriWithQueryString = null;
         List<NameValuePair> queryParams = buildRequestParameters(collectorAgent);
         try {
-            StringBuffer query = new StringBuffer();
+            final StringBuilder query = new StringBuilder();
             query.append(URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8));
             if (uri.getQuery() != null && !uri.getQuery().trim().isEmpty()) {
                 if (query.length() > 0) {

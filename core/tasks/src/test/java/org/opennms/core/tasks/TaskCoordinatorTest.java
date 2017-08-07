@@ -80,7 +80,7 @@ public class TaskCoordinatorTest {
 
         coordinator.setExecutors(executors);
 
-        StringBuffer result = new StringBuffer();
+        final StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < numberOfTasks; i++) {
             final int count = i;

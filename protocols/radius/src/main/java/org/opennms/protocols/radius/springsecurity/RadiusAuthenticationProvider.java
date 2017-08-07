@@ -284,7 +284,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         for (String role : rolesArray) {
             authorities.add(new SimpleGrantedAuthority(role));
         }
-            StringBuffer readRoles = new StringBuffer();
+            final StringBuilder readRoles = new StringBuilder();
             for (GrantedAuthority authority : authorities) {
                 readRoles.append(authority.toString()+", ");
             }

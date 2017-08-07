@@ -93,7 +93,7 @@ public abstract class CheckNsc {
         }
 
         /* whatever's left gets merged into "arg1&arg2&arg3" */
-        StringBuffer clientParams = new StringBuffer();
+        final StringBuilder clientParams = new StringBuilder();
         if (!arguments.isEmpty()) {
         	for (Iterator<String> i = arguments.iterator(); i.hasNext(); ) {
         		clientParams.append(i.next());

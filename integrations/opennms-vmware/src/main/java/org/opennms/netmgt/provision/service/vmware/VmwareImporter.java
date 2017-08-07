@@ -346,7 +346,7 @@ public class VmwareImporter {
          */
 
         String powerState = "unknown";
-        StringBuffer vmwareTopologyInfo = new StringBuffer();
+        final StringBuilder vmwareTopologyInfo = new StringBuilder();
 
         // putting parents to topology information
         ManagedEntity parentEntity = managedEntity.getParent();

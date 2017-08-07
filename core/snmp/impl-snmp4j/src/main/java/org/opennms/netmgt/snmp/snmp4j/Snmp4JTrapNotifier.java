@@ -128,7 +128,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
 
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder("[");
+			final StringBuilder sb = new StringBuilder("[");
 			sb.append("Version=").append(getVersion())
 				.append(", Agent-Addr=").append(getTrapAddress().getHostAddress())
 				.append(", Length=").append(getPduLength())
@@ -310,7 +310,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
 
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder("[");
+			final StringBuilder sb = new StringBuilder("[");
 			sb.append("Version=").append(getVersion())
 				.append(", Source-Addr=").append(getTrapAddress().getHostAddress())
 				.append(", Length=").append(getPduLength())

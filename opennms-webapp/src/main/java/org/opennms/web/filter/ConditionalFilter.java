@@ -94,7 +94,7 @@ public abstract class ConditionalFilter implements Filter {
             return m_filters[0].getDescription();
         }
         
-        StringBuilder buf = new StringBuilder(TYPE);
+        final StringBuilder buf = new StringBuilder(TYPE);
         buf.append("=");
         buf.append(m_conditionType);
         for(Filter filter : m_filters) {
@@ -116,7 +116,7 @@ public abstract class ConditionalFilter implements Filter {
             return m_filters[0].getParamSql();
         }
         
-        StringBuilder buf = new StringBuilder("( ");
+        final StringBuilder buf = new StringBuilder("( ");
         for(int i = 0; i < m_filters.length; i++){
             if (i != 0) {
                 buf.append(m_conditionType);
@@ -139,7 +139,7 @@ public abstract class ConditionalFilter implements Filter {
             return m_filters[0].getSql();
         }
         
-        StringBuilder buf = new StringBuilder("( ");
+        final StringBuilder buf = new StringBuilder("( ");
         for(int i = 0; i < m_filters.length; i++){
             if (i != 0) {
                 buf.append(m_conditionType);
@@ -162,7 +162,7 @@ public abstract class ConditionalFilter implements Filter {
             return m_filters[0].getTextDescription();
         }
         
-        StringBuilder buf = new StringBuilder("( ");
+        final StringBuilder buf = new StringBuilder("( ");
         for(int i = 0; i < m_filters.length; i++){
             if (i != 0) {
                 buf.append(m_conditionType);

@@ -716,7 +716,7 @@ public class Installer {
      */
     public void checkServerXmlOldOpennmsContext() throws Exception {
         String search_regexp = "(?ms).*<Context\\s+path=\"/opennms\".*";
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
 
         File f = new File(m_webappdir + File.separator + ".."
                 + File.separator + "conf" + File.separator + "server.xml");
@@ -888,7 +888,7 @@ public class Installer {
         System.out.print("- setting tomcat4 user to 'root'... ");
 
         BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8));
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
         String line;
 
         while ((line = r.readLine()) != null) {
@@ -1127,7 +1127,7 @@ public class Installer {
         }
 
         if (isRequired) {
-            StringBuffer buf = new StringBuffer();
+            final StringBuilder buf = new StringBuilder();
             for (final String pathEntry : System.getProperty("java.library.path").split(File.pathSeparator)) {
                 buf.append(" ");
                 buf.append(pathEntry);

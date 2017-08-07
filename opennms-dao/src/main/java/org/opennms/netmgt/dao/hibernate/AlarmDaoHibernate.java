@@ -68,7 +68,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         if (nodeIds.isEmpty()) {
             return Collections.emptyList();
         }
-        StringBuilder sql = new StringBuilder();
+        final StringBuilder sql = new StringBuilder();
         //count(*) - count(alarm.alarmAckTime) counts only the unacknowledged alarms
         sql.append("SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary( node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), (count(*) - count(alarm.alarmAckTime)) ) ");
         sql.append("FROM OnmsAlarm AS alarm ");
@@ -119,7 +119,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         sql.append(" alarm.lastEventTime\n");
         sql.append("ORDER BY\n");
         sql.append(" alarm.lastEventTime DESC limit 1");*/
-        StringBuilder sql = new StringBuilder();
+        final StringBuilder sql = new StringBuilder();
         sql.append("SELECT new org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary( LEAST(s.id, t.id), GREATEST(s.id, t.id), alarm.uei)\n");
         sql.append("FROM LldpLink as s\n");
         sql.append("LEFT JOIN org.opennms.netmgt.model.LldpLink as t\n");
@@ -145,7 +145,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     /** {@inheritDoc} */
     @Override
     public List<AlarmSummary> getNodeAlarmSummaries() {
-        StringBuilder sql = new StringBuilder();
+        final StringBuilder sql = new StringBuilder();
         sql.append("SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary(node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), count(*)) ");
         sql.append("FROM OnmsAlarm AS alarm ");
         sql.append("LEFT JOIN alarm.node AS node ");

@@ -136,7 +136,7 @@ public class SelectTag<T> extends SimpleTagSupport {
         viewElements.add(0, null); // "" empty at the beginning of the line
 
         // create output
-        StringBuffer optionsBuffer = new StringBuffer();
+        final StringBuilder optionsBuffer = new StringBuilder();
         for (T eachElement : viewElements) {
             optionsBuffer.append(getOption(eachElement, m_selected));
         }

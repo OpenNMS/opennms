@@ -283,7 +283,7 @@ public class MockLogAppender {
             return;
         }
 
-        StringBuffer message = new StringBuffer("Log messages at or greater than the log level ").append(level).append(" received:");
+        final StringBuilder message = new StringBuilder("Log messages at or greater than the log level ").append(level).append(" received:");
 
         for (final LoggingEvent event : events) {
             message.append("\n\t[").append(event.getLevel()).append("] ")

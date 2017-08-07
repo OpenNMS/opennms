@@ -92,7 +92,7 @@
 
 					    	List<Filter> queryElements = callback.parse(current.getFilter());
 					    	
-					    	StringBuilder buf = new StringBuilder("<ul class=\"list-unstyled\">"); 
+					    	final StringBuilder buf = new StringBuilder("<ul class=\"list-unstyled\">"); 
 					    	for(Filter queryElement : queryElements) {
 					    	    buf.append("<li>");
 					    		buf.append(queryElement.getTextDescription());

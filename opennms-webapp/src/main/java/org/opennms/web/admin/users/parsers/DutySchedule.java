@@ -352,7 +352,7 @@ public class DutySchedule implements Cloneable {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         // put in abbreviations for the days of the week
         for (int i = 0; i < DAY_NAMES.length; i++) {

@@ -32,16 +32,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Vector;
-
-import liquibase.resource.ResourceAccessor;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+
+import liquibase.resource.ResourceAccessor;
 
 public class SpringResourceAccessor implements ResourceAccessor {
     private static final Logger LOG = LoggerFactory.getLogger(SpringResourceAccessor.class);
@@ -62,10 +63,9 @@ public class SpringResourceAccessor implements ResourceAccessor {
     /** {@inheritDoc} */
     @Override
     public Enumeration<URL> getResources(final String packageName) throws IOException {
-    	final Vector<URL> tmp = new Vector<URL>();
-        tmp.add(getResource(packageName).getURL());
+        final List<URL> tmp = Collections.singletonList(getResource(packageName).getURL());
         LOG.debug("resources for {}: {}", packageName, tmp);
-        return tmp.elements();
+        return Collections.enumeration(tmp);
     }
 
     /**

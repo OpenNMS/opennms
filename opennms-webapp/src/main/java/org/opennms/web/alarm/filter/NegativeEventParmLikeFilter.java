@@ -42,7 +42,7 @@ public class NegativeEventParmLikeFilter extends NoSubstringFilter {
     public String getTextDescription() {
         String strippedType = getValue().replace("(string,text)", "");
         String[] parms = strippedType.split("=");
-        StringBuffer buffer = new StringBuffer(parms[0] + " is not \"");
+        final StringBuilder buffer = new StringBuilder(parms[0] + " is not \"");
         buffer.append(parms[parms.length - 1]);
         buffer.append("\"");
 

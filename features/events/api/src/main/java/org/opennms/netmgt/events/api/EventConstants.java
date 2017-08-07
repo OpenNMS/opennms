@@ -1180,7 +1180,7 @@ public abstract class EventConstants {
 	}
 	
 	public static String toHexString(byte[] data) {
-		final StringBuffer b = new StringBuffer();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < data.length; ++i) {
 			final int x = (int) data[i] & 0xff;
 			if (x < 16) b.append("0");
@@ -1235,7 +1235,7 @@ public abstract class EventConstants {
         } else if (XML_ENCODING_MAC_ADDRESS.equals(encoding)) {
             if (value instanceof SnmpValue) {
                 SnmpValue snmpValue = (SnmpValue)value;
-                StringBuffer macAddress = new StringBuffer();
+                final StringBuilder macAddress = new StringBuilder();
                 byte[] bytes = snmpValue.getBytes();
                 for (int i = 0; i < bytes.length; i++) {
                     if (i > 0) macAddress.append(":");

@@ -112,7 +112,7 @@ public class KarafExtender {
         filterFeatures(featuresBoot);
 
         // Build a comma separated list of our Maven repositories
-        StringBuilder mavenReposSb = new StringBuilder();
+        final StringBuilder mavenReposSb = new StringBuilder();
         for (Repository repository : repositories) {
             if (mavenReposSb.length() != 0) {
                 mavenReposSb.append(",");

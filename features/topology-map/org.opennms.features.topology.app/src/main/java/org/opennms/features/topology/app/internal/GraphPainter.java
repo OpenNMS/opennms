@@ -135,7 +135,7 @@ public class GraphPainter implements GraphVisitor {
 	}
 
     private String getVertexStyle(Vertex vertex, boolean selected) {
-        StringBuilder style = new StringBuilder();
+        final StringBuilder style = new StringBuilder();
         style.append("vertex");
         if(selected) {
             style.append(" selected");

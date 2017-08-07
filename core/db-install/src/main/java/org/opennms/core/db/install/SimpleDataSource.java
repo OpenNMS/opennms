@@ -251,7 +251,7 @@ public class SimpleDataSource implements DataSource {
      */
     @Override
     public String toString() {
-        StringBuffer props = new StringBuffer();
+        final StringBuilder props = new StringBuilder();
         if (m_properties.isEmpty()) {
             props.append(" none");
         } else {

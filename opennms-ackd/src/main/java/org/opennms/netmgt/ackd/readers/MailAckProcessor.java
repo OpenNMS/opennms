@@ -331,7 +331,7 @@ class MailAckProcessor implements AckProcessor {
 
     @SuppressWarnings("unchecked")
     private static String createLog(final Message msg) {
-        StringBuilder bldr = new StringBuilder();
+        final StringBuilder bldr = new StringBuilder();
         Enumeration<Header> allHeaders;
         try {
             allHeaders = msg.getAllHeaders();

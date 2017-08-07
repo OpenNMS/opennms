@@ -324,7 +324,7 @@ public class MibObject implements Collectable {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         // Build the buffer
         buffer.append("\n   group:    ").append(m_groupName);

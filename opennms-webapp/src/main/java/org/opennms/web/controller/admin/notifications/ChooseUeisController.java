@@ -87,7 +87,7 @@ public class ChooseUeisController extends AbstractController {
     private String buildEventSelect(Notification notice) throws IOException,
             FileNotFoundException {
         List<Event> events = m_eventConfDao.getEventsByLabel();
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         List<String> excludeList = getExcludeList();
         TreeMap<String, String> sortedMap = new TreeMap<String, String>();

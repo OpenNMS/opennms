@@ -1116,15 +1116,15 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
 		anticipator.anticipateAllServices(svc1);
 
-        StringBuffer didNotOccur = new StringBuffer();
+		final StringBuilder didNotOccur = new StringBuilder();
 		for (MockService service : anticipator.waitForAnticipated(10000)) {
-		    didNotOccur.append(service.toString());
+			didNotOccur.append(service.toString());
 		}
-        StringBuffer unanticipatedStuff = new StringBuffer();
-        for (MockService service : anticipator.unanticipatedPolls()) {
-            unanticipatedStuff.append(service.toString());
-        }
-		
+		final StringBuilder unanticipatedStuff = new StringBuilder();
+		for (MockService service : anticipator.unanticipatedPolls()) {
+			unanticipatedStuff.append(service.toString());
+		}
+
 		assertEquals(unanticipatedStuff.toString(), "", didNotOccur.toString());
 
 		anticipateDown(svc1);

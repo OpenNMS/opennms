@@ -416,7 +416,7 @@ public class IPAddress implements Comparable<IPAddress> {
          *   num->num   => ":num"    num->gap   => "::"
          *   gap->num   => "num"     gap->gap   => ""
          */
-        StringBuilder buf = new StringBuilder(39);
+        final StringBuilder buf = new StringBuilder(39);
         boolean lastWasNumber = false;
         for (int i = 0; i < hextets.length; i++) {
             final boolean thisIsNumber = hextets[i] >= 0;

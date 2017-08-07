@@ -322,7 +322,7 @@ public class InstallerDb {
      * @return a {@link java.lang.String} object.
      */
     public static String cleanText(final List<String> list) {
-    	final StringBuffer s = new StringBuffer();
+        final StringBuilder s = new StringBuilder();
 
         for (final String l : list) {
             s.append(l.replaceAll("\\s+", " "));
@@ -553,7 +553,7 @@ public class InstallerDb {
         	}
         	
         	final BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, StandardCharsets.UTF_8));
-        	final StringBuffer createFunction = new StringBuffer();
+        	final StringBuilder createFunction = new StringBuilder();
         	String line;
         	while ((line = in.readLine()) != null) {
         		createFunction.append(line).append("\n");
@@ -611,8 +611,8 @@ public class InstallerDb {
         File[] list = new File(m_storedProcedureDirectory).listFiles(m_sqlFilter);
 
         for (final File element : list) {
-        	final LinkedList<String> drop = new LinkedList<String>();
-            final StringBuffer create = new StringBuffer();
+            final LinkedList<String> drop = new LinkedList<>();
+            final StringBuilder create = new StringBuilder();
             String line;
 
             m_out.print("\n  - " + element.getName() + "... ");
@@ -730,7 +730,7 @@ public class InstallerDb {
     	final Statement st = getConnection().createStatement();
         ResultSet rs;
 
-        final StringBuffer ct = new StringBuffer();
+        final StringBuilder ct = new StringBuilder();
         for (final int columnType : columnTypes) {
             ct.append(" " + columnType);
         }
@@ -896,11 +896,11 @@ public class InstallerDb {
     public Table getTableFromSQL(String tableName) throws Exception {
     	final Table table = new Table();
 
-    	final LinkedList<Column> columns = new LinkedList<Column>();
-    	final LinkedList<Constraint> constraints = new LinkedList<Constraint>();
+    	final LinkedList<Column> columns = new LinkedList<>();
+    	final LinkedList<Constraint> constraints = new LinkedList<>();
 
         boolean parens = false;
-        StringBuffer accumulator = new StringBuffer();
+        StringBuilder accumulator = new StringBuilder();
 
         final String create = getTableCreateFromSQL(tableName);
         for (int i = 0; i <= create.length(); i++) {
@@ -962,7 +962,7 @@ public class InstallerDb {
                     }
                 }
 
-                accumulator = new StringBuffer();
+                accumulator = new StringBuilder();
             } else {
                 accumulator.append(c);
             }

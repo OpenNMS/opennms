@@ -118,7 +118,7 @@ public class RadixTreeNodeImpl<T> implements RadixTreeNode<T> {
 
 	@Override
 	public String toStringWithPrefix(String prefix) {
-		StringBuffer value = new StringBuffer();
+		final StringBuilder value = new StringBuilder();
 		value.append(content == null ? "" : content.toString()).append("\n");
 		for (RadixTreeNode<T> child : children) {
 			value.append(prefix).append(child.toStringWithPrefix(prefix + TO_STRING_INDENT));

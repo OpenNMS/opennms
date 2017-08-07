@@ -361,7 +361,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	}
 	
 	private String getServiceNames(Set<Integer> serviceIds) {
-	    StringBuilder buf = new StringBuilder();
+	    final StringBuilder buf = new StringBuilder();
 	    
 	    boolean first = true;
 	    for(Integer serviceId : serviceIds) {

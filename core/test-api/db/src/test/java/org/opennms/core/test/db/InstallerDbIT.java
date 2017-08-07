@@ -1749,7 +1749,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
             Pattern p = Pattern.compile(replacement[0]);
             Matcher m = p.matcher(partialSQL);
             if (!m.find()) {
-                StringBuffer error = new StringBuffer();
+                final StringBuilder error = new StringBuilder();
                 error.append("Could not find a match for pattern '"
                         + p.toString() + "'");
                 if (containsUnescapedParens(p.toString())) {

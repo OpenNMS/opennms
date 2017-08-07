@@ -76,7 +76,7 @@ public class Duration implements Comparable<Duration>{
     public String toString() {
         if (0 == millis()) return "0ms";
         
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
 
         long millis = millis();
         millis = appendUnit(buf, millis, 24*60*60*1000, "d");

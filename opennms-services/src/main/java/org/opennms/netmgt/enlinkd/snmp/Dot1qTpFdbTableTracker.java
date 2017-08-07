@@ -131,7 +131,7 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
 		 */
 		public String getDot1qTpFdbAddress() {
 			int[] identifiers = getInstance().getIds();
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			for (int i = identifiers.length-6; i<identifiers.length; i++) {
                 if (identifiers[i] >= 16 ) {
                     sb.append(Integer.toHexString(identifiers[i]));

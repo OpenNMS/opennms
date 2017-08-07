@@ -120,7 +120,7 @@ public class RrdRepository {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(m_rrdBaseDir)
             .append('[')
             .append("Step:").append(m_step).append(',')

@@ -96,7 +96,7 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
 
     private final MeasurementsService measurementsService;
 
-    public GenericInfoPanelItemProvider(NodeDao nodeDao, MeasurementsService measurementsService) throws InstantiationException, IllegalAccessException {
+    public GenericInfoPanelItemProvider(NodeDao nodeDao, MeasurementsService measurementsService) {
         this.jinjava = withClassLoaderFix(Jinjava::new);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.measurementsService = Objects.requireNonNull(measurementsService);
