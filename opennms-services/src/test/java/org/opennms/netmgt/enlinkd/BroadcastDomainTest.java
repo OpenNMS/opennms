@@ -80,17 +80,6 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testLock() throws Exception {
-        Object locker = new Object();
-        Object notlocker = new Object();
-        BroadcastDomain domain = new BroadcastDomain();
-        assertTrue(domain.getLock(locker));
-        assertTrue(!domain.getLock(notlocker));
-        assertTrue(!domain.releaseLock(notlocker));
-        assertTrue(domain.releaseLock(locker));
-    }
-
-    @Test
     public void testOneBridgeOnePortOneMac() throws Exception {
         OneBridgeOnePortOneMacTopology topology = new OneBridgeOnePortOneMacTopology();
 
@@ -619,7 +608,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
-
+        domain.hierarchySetUp(domain.getBridge(topology.nodeAId));
         topology.check(ndbt.getDomain());
     }
 
@@ -642,6 +631,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
+        domain.hierarchySetUp(domain.getBridge(topology.nodeAId));
 
         topology.check(ndbt.getDomain());
     }
@@ -667,6 +657,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
+        domain.hierarchySetUp(domain.getBridge(topology.nodeAId));
         topology.check(ndbt.getDomain());
 
     }

@@ -307,18 +307,18 @@ div.v-table-header-wrap {
   background: white;
 }
 .gwt-SuggestBoxPopup .suggestPopupTopCenter {
-  background: url(../images/chrome/hborder.png) repeat-x;
+  background: url(/opennms/images/chrome/hborder.png) repeat-x;
 }
 .gwt-SuggestBoxPopup .suggestPopupBottomCenter {
-  background: url(../images/chrome/hborder.png) repeat-x 0px -4px;
-  -background: url(../images/chrome/hborder_ie6.png) repeat-x 0px -4px;
+  background: url(/opennms/images/chrome/hborder.png) repeat-x 0px -4px;
+  -background: url(/opennms/images/chrome/hborder_ie6.png) repeat-x 0px -4px;
 }
 .gwt-SuggestBoxPopup .suggestPopupMiddleLeft {
-  background: url(../images/chrome/vborder.png) repeat-y;
+  background: url(/opennms/images/chrome/vborder.png) repeat-y;
 }
 .gwt-SuggestBoxPopup .suggestPopupMiddleRight {
-  background: url(../images/chrome/vborder.png) repeat-y -4px 0px;
-  -background: url(../images/chrome/vborder_ie6.png) repeat-y -4px 0px;
+  background: url(/opennms/images/chrome/vborder.png) repeat-y -4px 0px;
+  -background: url(/opennms/images/chrome/vborder_ie6.png) repeat-y -4px 0px;
 }
 .gwt-SuggestBoxPopup .suggestPopupTopLeftInner {
   width: 5px;
@@ -341,20 +341,20 @@ div.v-table-header-wrap {
   zoom: 1;
 }
 .gwt-SuggestBoxPopup .suggestPopupTopLeft {
-  background: url(../images/chrome/corner.png) no-repeat 0px -23px;
-  -background: url(../images/chrome/corner_ie6.png) no-repeat 0px -23px;
+  background: url(/opennms/images/chrome/corner.png) no-repeat 0px -23px;
+  -background: url(/opennms/images/chrome/corner_ie6.png) no-repeat 0px -23px;
 }
 .gwt-SuggestBoxPopup .suggestPopupTopRight {
-  background: url(../images/chrome/corner.png) no-repeat -5px -23px;
-  -background: url(../images/chrome/corner_ie6.png) no-repeat -5px -23px;
+  background: url(/opennms/images/chrome/corner.png) no-repeat -5px -23px;
+  -background: url(/opennms/images/chrome/corner_ie6.png) no-repeat -5px -23px;
 }
 .gwt-SuggestBoxPopup .suggestPopupBottomLeft {
-  background: url(../images/chrome/corner.png) no-repeat 0px -28px;
-  -background: url(../images/chrome/corner_ie6.png) no-repeat 0px -28px;
+  background: url(/opennms/images/chrome/corner.png) no-repeat 0px -28px;
+  -background: url(/opennms/images/chrome/corner_ie6.png) no-repeat 0px -28px;
 }
 .gwt-SuggestBoxPopup .suggestPopupBottomRight {
-  background: url(../images/chrome/corner.png) no-repeat -5px -28px;
-  -background: url(../images/chrome/corner_ie6.png) no-repeat -5px -28px;
+  background: url(/opennms/images/chrome/corner.png) no-repeat -5px -28px;
+  -background: url(/opennms/images/chrome/corner_ie6.png) no-repeat -5px -28px;
 }
 * html .gwt-SuggestBoxPopup .suggestPopupTopLeftInner {
   width: 5px;

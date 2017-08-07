@@ -64,7 +64,7 @@
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="surveillanceViewsConfigUIFactory">
         <service-properties>
-            <entry key="alias" value="/vaadin-surveillance-views-config"/>
+            <entry key="alias" value="/admin/vaadin-surveillance-views-config"/>
         </service-properties>
     </service>
 
