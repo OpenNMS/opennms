@@ -1,0 +1,68 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+[[ga-notifications-strategy-twilio]]
+==== Twilio SMS Notifications
+
+_{opennms-product-name}_ can send notices via SMS / MMS using the link:https://www.twilio.com/[Twilio] link:https://www.twilio.com/docs/api/rest/sending-messages[messaging API].
+You must have a Twilio account with one or more link:https://www.twilio.com/console/phone-numbers/incoming[phone numbers], and an link:https://www.twilio.com/console/sms/dev-tools/api-keys[API key] must be available for _{opennms-product-name}_ to use.
+In theory you may use a short code in place of a phone number, but this use case has not been tested.
+
+First install the Twilio protocol support package:
+
+[source, shell]
+----
+{apt-get,yum} install {opennms-package-base-name}-plugin-protocol-twilio
+----
+
+Now, add the following bit of XML to the `notificationCommands.xml` configuration file (no customization should be needed):
+
+[source, xml]
+----
+<command binary="false">
+  <name>twilioSMS</name>
+  <execute>org.opennms.protocols.twilio.notifd.TwilioSmsNotificationStrategy</execute>
+  <comment>class for sending SMS / MMS via Twilio for notifications</comment>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+Then create a new file called `twilio.properties` in the `opennms.properties.d` directory with the following contents (customizing values as appropriate):
+
+[source, properties]
+----
+# Your Twilio account SID
+org.opennms.protocols.twilio.accountSid = AC7bf6746882564883b7817a01d34ba90c
+
+# The SID of a valid Twilio API key for your Twilio account
+org.opennms.protocols.twilio.authSid = SKefb5b988d8004d5d97571232fff70dac
+
+# The secret corresponding to the API key SID above
+org.opennms.protocols.twilio.authToken = N03ea588a99543b08f8d09651c6e41bA
+
+# A valid phone number on your Twilio account
+org.opennms.protocols.twilio.fromNumber = +12125551212
+----
+
+Restart OpenNMS so that the `twilio.properties` file will be loaded. Your new `twilioSMS` notification command is now available for use in a destination path.
+
+===== Additional Options
+The following table lists optional properties that you may use in `twilio.properties` to customize your Twilio SMS / MMS notifications.
+
+IMPORTANT: To improve the layout, the property names have been shortened to their final component; you must prepend `org.opennms.protocols.twilio.` when using them.
+
+.Additional parameters for the Twilio notification strategy
+[options="header, autowidth"]
+|===
+| Parameter          | Description                                                                     | Required | Default value   | Example
+| `messagingService` | The SID of a https://www.twilio.com/console/sms/services[Messaging Service] to use in place of `fromNumber`  | optional | none        | `MG19f9401f3ffc41d388f370c7f7cdf7ee`
+| `validityPeriod`   | The queuing validity period, in seconds, for messages sent via Twilio. Should be at least 5.                 | optional | API default | `14400`
+|===
+
+For more information on using the various Twilio platform APIs, see link:https://www.twilio.com/docs/[Twilio's docs site].

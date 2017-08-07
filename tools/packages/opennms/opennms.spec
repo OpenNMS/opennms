@@ -241,6 +241,8 @@ Requires(pre):	%{name}-plugin-protocol-nsclient
 Requires:	%{name}-plugin-protocol-nsclient
 Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
+Requires(pre):	%{name}-plugin-protocol-twilio
+Requires:	%{name}-plugin-protocol-twilio
 Requires(pre):	%{name}-plugin-protocol-xmp
 Requires:	%{name}-plugin-protocol-xmp
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
@@ -448,6 +450,19 @@ Requires:	%{name}-core = %{version}-%{release}
 %description plugin-protocol-radius
 The RADIUS protocol plugin provides a provisioning detector, capsd plugin, poller
 monitor, and Spring Security authorization mechanism for RADIUS.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-protocol-twilio
+Summary:	Twilio messaging support
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-protocol-twilio
+The Twilio protocol plugin provides a notification strategy for SMS/ MMS via the Twilio API.
 
 %{extrainfo}
 %{extrainfo2}
@@ -703,6 +718,7 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'opennms-vtdxml-collector-handler' | \
 	grep -v 'provisioning-adapter' | \
 	grep -v 'vtd-xml' | \
+	grep -v 'twilio' | \
 	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/system ! -type d | \
@@ -875,13 +891,9 @@ rm -rf %{buildroot}
 %{instprefix}/lib/jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
 
-%files plugin-protocol-xmp
+%files plugin-protocol-twilio
 %defattr(664 root root 775)
-%config(noreplace) %{instprefix}/etc/xmp*.xml
-%{instprefix}/lib/org.opennms.protocols.xmp-*.jar
-%{instprefix}/lib/xmp-*.jar
-%{sharedir}/etc-pristine/xmp*.xml
-%{sharedir}/xsds/xmp*.xsd
+%{instprefix}/lib/opennms-twilio-notification-strategy-*.jar
 
 %files plugin-collector-juniper-tca
 %defattr(664 root root 775)

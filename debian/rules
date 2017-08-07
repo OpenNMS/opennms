@@ -124,11 +124,11 @@ install: build
 	##
 	## Setup the protocol packages
 	##
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/usr/share/opennms/contrib
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/etc/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/var/lib/opennms/etc-pristine
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/var/lib/opennms/xsds
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,twilio,xmp}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,twilio,xmp}/usr/share/opennms/contrib
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,twilio,xmp}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,twilio,xmp}/var/lib/opennms/etc-pristine
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,twilio,xmp}/var/lib/opennms/xsds
 	
 	# Setup Juniper TCA collector
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/usr/share/java/opennms
@@ -180,6 +180,9 @@ install: build
 	mv debian/temp/lib/vtd-xml-*.jar                                                           debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-vtdxml-collector-handler-*.jar                                  debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
 	
+	# Twilio
+	mv debian/temp/lib/opennms-twilio-notification-strategy-*.jar                              debian/opennms-plugin-protocol-twilio/usr/share/java/opennms/
+
 	# XMP
 	mv debian/temp/lib/xmp-*.jar                                                               debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
 	mv debian/temp/lib/org.opennms.protocols.xmp-*.jar                                         debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
