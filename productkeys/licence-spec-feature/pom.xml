@@ -60,15 +60,14 @@
   
   <!-- NOTE this overrides the normal public maven repository as licence specs should be separated and secured -->
   <!-- Change this to match your repo for containing the licence specifications. -->
-  <!-- NOTE use maven settings.xml in production project NOT Url basic auth http://admin:admin123@localhost-->
   <distributionManagement>
     <repository>
       <id>osgi-plugins-licence-specs</id>
-      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs</url>
+      <url>${licenceSpecRepo}</url>
     </repository>
     <snapshotRepository>
       <id>osgi-plugins-licence-specs-snapshots</id>
-      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs-snapshots</url>
+      <url>${licenceSpecSnapshotRepo}</url>
     </snapshotRepository>
   </distributionManagement>
 
