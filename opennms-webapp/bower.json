@@ -8,7 +8,6 @@
     "flot-saveas": "https://github.com/j-white/flot-saveas.git#v1.0.0",
     "flot-datatable": "https://github.com/j-white/flot-datatable.git#v1.0.6",
     "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM",
-    "leaflet": "1.0.2",
     "leaflet.markercluster" : "1.0.0"
   },
   "overrides": {
@@ -32,14 +31,6 @@
         "*.js"
       ]
     },
-    "leaflet": {
-      "main": [
-        "dist/images/**",
-        "dist/leaflet-src.js",
-        "dist/leaflet-src.map",
-        "dist/leaflet.css"
-      ]
-    }
   },
   "resolutions": {
     "bootstrap": "3.3.1",

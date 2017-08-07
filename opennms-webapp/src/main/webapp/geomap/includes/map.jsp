@@ -53,7 +53,7 @@
 %>
 
 <link rel="stylesheet" href="<%= baseHref %>css/geomap.css" />
-<link rel="stylesheet" href="<%= baseHref %>lib/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="<%= baseHref %>webjars/leaflet/1.0.2/dist/leaflet.css" />
 <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
 
