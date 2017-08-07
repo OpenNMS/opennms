@@ -322,4 +322,5 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
     private boolean isTicketerPluginEnabled() {
         return "true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"));
     }
+
 }
