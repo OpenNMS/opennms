@@ -56,7 +56,7 @@ public class LazyChildResourceLoader implements LazyList.Loader<OnmsResource> {
         Preconditions.checkNotNull(m_parent, "parent attribute");
         // Gather the lists of children from all the available resource types and merge them
         // into a single list
-        List<OnmsResource> children = getAvailableResourceTypes().parallelStream()
+        List<OnmsResource> children = getAvailableResourceTypes().stream()
                 .map(t -> t.getResourcesForParent(m_parent))
                 .flatMap(rs -> rs.stream())
                 .collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class LazyChildResourceLoader implements LazyList.Loader<OnmsResource> {
     }
 
     private Collection<OnmsResourceType> getAvailableResourceTypes() {
-        return m_resourceDao.getResourceTypes().parallelStream()
+        return m_resourceDao.getResourceTypes().stream()
                 .filter(t -> t.isResourceTypeOnParent(m_parent))
                 .collect(Collectors.toList());
     }

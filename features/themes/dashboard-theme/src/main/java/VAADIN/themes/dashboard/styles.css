@@ -147,7 +147,7 @@
 .v-table-row-alarm-minor .v-table-cell-content-bright,
 .v-table-row-alarm-minor-noack .v-table-cell-content-bright
 {
-    background-image: url(../../../images/bgMinor.png);
+    background-image: url(/opennms/images/bgMinor.png);
 }
 
 .v-table-row-alarm-critical,
@@ -168,7 +168,7 @@
 .v-table-row-alarm-critical .v-table-cell-content-bright,
 .v-table-row-alarm-critical-noack .v-table-cell-content-bright
 {
-    background-image: url(../../../images/bgCritical.png);
+    background-image: url(/opennms/images/bgCritical.png);
 }
 
 .v-table-row-alarm-major,
@@ -189,7 +189,7 @@
 .v-table-row-alarm-major .v-table-cell-content-bright,
 .v-table-row-alarm-major-noack .v-table-cell-content-bright
 {
-    background-image: url(../../../images/bgMajor.png);
+    background-image: url(/opennms/images/bgMajor.png);
 }
 
 .v-table-row-alarm-warning,
@@ -210,7 +210,7 @@
 .v-table-row-alarm-warning .v-table-cell-content-bright,
 .v-table-row-alarm-warning-noack .v-table-cell-content-bright
 {
-    background-image: url(../../../images/bgWarning.png);
+    background-image: url(/opennms/images/bgWarning.png);
 }
 
 .v-table-row-alarm-indeterminate,
@@ -231,7 +231,7 @@
 .v-table-row-alarm-indeterminate .v-table-cell-content-bright,
 .v-table-row-alarm-indeterminate-noack .v-table-cell-content-bright
 {
-    background-image: url(../../../images/bgIndeterminate.png);
+    background-image: url(/opennms/images/bgIndeterminate.png);
 }
 
 .v-table-row-alarm-normal,
@@ -252,7 +252,7 @@
 .v-table-row-alarm-normal .v-table-cell-content-bright,
 .v-table-row-alarm-normal-noack .v-table-cell-content-bright
 {
-    background-image: url(../../../images/bgNormal.png);
+    background-image: url(/opennms/images/bgNormal.png);
 }
 
 .v-table-row-alarm-cleared,
@@ -273,7 +273,7 @@
 .v-table-row-alarm-cleared .v-table-cell-content-bright,
 .v-table-row-alarm-cleared-noack .v-table-cell-content-bright
 {
-    background-image: url(../../../images/bgCleared.png);
+    background-image: url(/opennms/images/bgCleared.png);
 }
 
 /*  --------------------------------------------------
