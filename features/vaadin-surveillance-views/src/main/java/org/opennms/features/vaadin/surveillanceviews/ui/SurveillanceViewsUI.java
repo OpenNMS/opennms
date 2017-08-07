@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,7 +50,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @SuppressWarnings("serial")
 @Theme("opennms")
 @Title("OpenNMS Surveillance Views")
-@JavaScript({"../../../lib/jquery/dist/jquery.js","../../../lib/bootstrap/dist/js/bootstrap.js"})
+@JavaScript({"../../../webjars/jquery/2.2.4/dist/jquery.js","../../../lib/bootstrap/dist/js/bootstrap.js"})
 public class SurveillanceViewsUI extends UI {
     /**
      * the logger instance
