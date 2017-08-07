@@ -1072,6 +1072,11 @@
       <artifactId>leaflet</artifactId>
       <version>1.0.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>leaflet.markercluster</artifactId>
+      <version>1.0.0</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>
