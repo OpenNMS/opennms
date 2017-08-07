@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <!-- <parent> -->
+  <!-- <groupId>org.opennms</groupId> -->
+  <!-- <artifactId>opennms</artifactId> -->
+  <!-- <version>21.0.0-SNAPSHOT</version> -->
+  <!-- </parent> -->
+
+  <!-- note you cannot set the org.opennms parent pom because opennms depencencies use <version> which changes in child projects -->
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms</groupId>
+  <artifactId>productkeys.parent</artifactId>
+  <packaging>pom</packaging>
+  <version>21.0.0-SNAPSHOT</version>
+  <name>productkeys.parent</name>
+  <description>productkeys Parent Project</description>
+
+  <properties>
+    <productName>Meridian2017</productName>
+    <productVersion>1.0.0-SNAPSHOT</productVersion>
+    <productId>${productName}/${productVersion}</productId>
+    <productGroupId>org.opennms.authenticator</productGroupId>
+    <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath>
+    <licencemanagerVersion>1.1.0-SNAPSHOT</licencemanagerVersion>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <slf4jVersion>1.7.7</slf4jVersion>
+
+  </properties>
+
+  <modules>
+    <module>licence-generator</module>
+    <module>licence-spec</module>
+    <module>licence-authenticator</module>
+    <module>product-descriptor</module>
+    <module>feature</module>
+    <module>licence-spec-feature</module>
+  </modules>
+
+  <build>
+
+
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <versionRange>[1.0,)</versionRange>
+                    <goals>
+                      <goal>java</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute />
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <versionRange>[1.0,)</versionRange>
+                    <goals>
+                      <goal>add-source</goal>
+                      <goal>add-test-source</goal>
+                      <goal>add-resource</goal>
+                      <goal>add-test-resource</goal>
+                      <goal>maven-version</goal>
+                      <goal>parse-version</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute>
+                      <runOnConfiguration>true</runOnConfiguration>
+                      <runOnIncremental>true</runOnIncremental>
+                    </execute>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[2.0,)</versionRange>
+                    <goals>
+                      <goal>copy-dependencies</goal>
+                      <goal>unpack</goal>
+                      <goal>unpack-dependencies</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <!-- <execute/> -->
+                    <ignore />
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.opennms.maven.plugins</groupId>
+                    <artifactId>features-maven-plugin</artifactId>
+                    <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                    <goals>
+                      <goal>generate-features-xml</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.8</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.opennms.maven.plugins</groupId>
+          <artifactId>features-maven-plugin</artifactId>
+          <version>1.2.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.9</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.9.1</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+          <configuration>
+            <target>1.8</target>
+            <source>1.8</source>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>2.5.3</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.3.2</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>properties-maven-plugin</artifactId>
+          <version>1.0.0</version>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>4.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.compendium</artifactId>
+        <version>4.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4jVersion}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- <profiles> -->
+  <!-- <profile> -->
+  <!-- <id>generateLicence</id> -->
+  <!-- <activation> -->
+  <!-- <activeByDefault>false</activeByDefault> -->
+  <!-- </activation> -->
+  <!-- <properties> -->
+  <!-- <productName>Meridian2017</productName> -->
+  <!-- <productVersion>1.0.0-SNAPSHOT</productVersion> -->
+  <!-- <productId>${productName}/${productVersion}</productId> -->
+  <!-- <productGroupId>org.opennms.authenticator</productGroupId> -->
+  <!-- <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath> -->
+  <!-- </properties> -->
+  <!-- <build> -->
+  <!-- <plugins> -->
+  <!-- <plugin> -->
+  <!-- <artifactId>maven-antrun-plugin</artifactId> -->
+  <!-- <executions> -->
+  <!-- <execution> -->
+  <!-- <phase>verify</phase> -->
+  <!-- <goals> -->
+  <!-- <goal>run</goal> -->
+  <!-- </goals> -->
+  <!-- <configuration> -->
+  <!-- <target> -->
+  <!-- <echo>*****************************************************</echo> -->
+  <!-- <echo>PROFILE GENERATING LICENCE (-P generateLicence ) </echo> -->
+  <!-- <echo>Note: This build will generate new licence modules </echo> -->
+  <!-- <echo>for this project and install them in maven. </echo> -->
+  <!-- <echo>Ideally you should only do this once so that you </echo> -->
+  <!-- <echo>dont need to install a new licence during testing </echo> -->
+  <!-- <echo>*****************************************************</echo> -->
+  <!-- </target> -->
+  <!-- </configuration> -->
+  <!-- </execution> -->
+  <!-- </executions> -->
+  <!-- </plugin> -->
+  <!-- </plugins> -->
+  <!-- </build> -->
+  <!-- <modules> -->
+  <!-- <module>licence-generator</module> -->
+  <!-- <module>licence-spec</module> -->
+  <!-- <module>licence-authenticator</module> -->
+  <!-- <module>product-descriptor</module> -->
+  <!-- <module>feature</module> -->
+  <!-- <module>licence-spec-feature</module> -->
+  <!-- </modules> -->
+  <!-- </profile> -->
+  <!-- <profile> -->
+  <!-- <id>default-not-generating-licence</id> -->
+  <!-- <activation> -->
+  <!-- <activeByDefault>true</activeByDefault> -->
+  <!-- </activation> -->
+  <!-- <properties> -->
+  <!-- <productName>Meridian2017</productName> -->
+  <!-- <productVersion>1.0.0-SNAPSHOT</productVersion> -->
+  <!-- <productId>${productName}/${productVersion}</productId> -->
+  <!-- <productGroupId>org.opennms.authenticator</productGroupId> -->
+  <!-- <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath> -->
+  <!-- </properties> -->
+  <!-- <build> -->
+  <!-- <plugins> -->
+  <!-- <plugin> -->
+  <!-- <artifactId>maven-antrun-plugin</artifactId> -->
+  <!-- <executions> -->
+  <!-- <execution> -->
+  <!-- <phase>verify</phase> -->
+  <!-- <goals> -->
+  <!-- <goal>run</goal> -->
+  <!-- </goals> -->
+  <!-- <configuration> -->
+  <!-- <target> -->
+  <!-- <echo>*****************************************************</echo> -->
+  <!-- <echo>DEFAULT BUILD - NOT GENERATING LICENCE </echo> -->
+  <!-- <echo>Note: this build will fail if licence modules have </echo> -->
+  <!-- <echo>not previously been generated and installed in maven.</echo> -->
+  <!-- <echo>To generate the licence modules run with profile: </echo> -->
+  <!-- <echo>mvn clean install -P generateLicence </echo> -->
+  <!-- <echo>*****************************************************</echo> -->
+  <!-- </target> -->
+  <!-- </configuration> -->
+  <!-- </execution> -->
+  <!-- </executions> -->
+  <!-- </plugin> -->
+  <!-- </plugins> -->
+  <!-- </build> -->
+  <!-- <modules> -->
+  <!-- <module>licence-generator</module> -->
+  <!-- <module>licence-spec</module> -->
+  <!-- <module>licence-authenticator</module> -->
+  <!-- <module>product-descriptor</module> -->
+  <!-- <module>feature</module> -->
+  <!-- <module>licence-spec-feature</module> -->
+  <!-- </modules> -->
+  <!-- </profile> -->
+  <!-- </profiles> -->
+
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <!-- This setting should match the OpenNMS main pom.xml -->
+  <distributionManagement>
+    <repository>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>${opennms-repo-ref}</url>
+    </repository>
+    <snapshotRepository>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>${opennms-snapshots-ref}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>

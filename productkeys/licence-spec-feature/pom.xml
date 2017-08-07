@@ -4,6 +4,7 @@
     <groupId>org.opennms</groupId>
     <artifactId>productkeys.parent</artifactId>
     <version>21.0.0-SNAPSHOT</version>
+    <relativePath>../pom-exec.xml</relativePath>
   </parent>
   
   <!-- Feature Definition -->
