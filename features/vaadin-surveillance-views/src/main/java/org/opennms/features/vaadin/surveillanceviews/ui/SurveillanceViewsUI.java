@@ -50,7 +50,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @SuppressWarnings("serial")
 @Theme("opennms")
 @Title("OpenNMS Surveillance Views")
-@JavaScript({"../../../webjars/jquery/2.2.4/dist/jquery.js","../../../lib/bootstrap/dist/js/bootstrap.js"})
+@JavaScript({"../../../webjars/jquery/2.2.4/dist/jquery.js","../../../webjars/bootstrap/3.3.1/dist/js/bootstrap.js"})
 public class SurveillanceViewsUI extends UI {
     /**
      * the logger instance
