@@ -3,14 +3,14 @@
 # Maven Repository where the generated licence specification will be deployed
 # The generated licence authenticator will be deployed in the normal opennms repo
 # NOTE use maven settings.xml in production for passwords project NOT Url basic auth http://admin:admin123@localhost
-xlicenceSpecRepo=http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs
-xlicenceSpecSnapshotRepo=http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs-snapshots
+licenceSpecRepo=http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs
+licenceSpecSnapshotRepo=http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs-snapshots
 
 # Product name, version and groupId for generated licence artifacts
 # The licence will be accessed using the featureId subscriptionName/subscriptionVersion
-subscriptionName=Meridian2017XXX
+subscriptionName=Meridian2017
 subscriptionVersion=1.1.0-SNAPSHOT
-subscriptionGroupId=org.opennms.authenticatorXXX
+subscriptionGroupId=org.opennms.authenticator
 subscriptionCheckEnabled=true
 
 # Subscription licence will be regenerated on each build. 
