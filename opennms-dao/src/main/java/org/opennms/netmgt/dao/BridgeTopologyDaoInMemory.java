@@ -31,7 +31,6 @@ package org.opennms.netmgt.dao;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -148,14 +147,18 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
 
         //start bridge bridge link parsing
         for (BridgeBridgeLink link : bridgeBridgeLinkDao.findAll()) {
-            LOG.debug("getAllPersisted: Parsing BridgeBridgeLink: {}", link.printTopology());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getAllPersisted: Parsing BridgeBridgeLink: {}", link.printTopology());
+            }
             boolean  segmentnotfound = true;
             for (SharedSegment bblsegment : bblsegments) {
                 if (bblsegment.containsPort(link.getDesignatedNode().getId(),
                                              link.getDesignatedPort())) {
                     bblsegment.add(link);
                     segmentnotfound=false;
-                    LOG.debug("getAllPersisted: found Bridge Bridge Link Shared Segment: {}", bblsegment.printTopology());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: found Bridge Bridge Link Shared Segment: {}", bblsegment.printTopology());
+                    }
                     break;
                 }
             }
@@ -164,7 +167,9 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
                 bblsegment.add(link);
                 bblsegment.setDesignatedBridge(link.getDesignatedNode().getId());
                 bblsegments.add(bblsegment);
-                LOG.debug("getAllPersisted: created new Bridge Bridge Link Shared Segment: {}", bblsegment.printTopology());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getAllPersisted: created new Bridge Bridge Link Shared Segment: {}", bblsegment.printTopology());
+                }
             }
             // set up domains
             if (rootnodetodomainnodemap.containsKey(link.getDesignatedNode().getId())) {
@@ -174,11 +179,18 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
                                                                                          rootnodetodomainnodemap.remove(
                                                                                                                      link.getNode().getId()));
                 }
-                LOG.debug("getAllPersisted: designated {} is root, dependency set: {}",link.getDesignatedNode().getId(),rootnodetodomainnodemap.get(link.getDesignatedNode().getId()) );
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getAllPersisted: designated {} is root, dependency set: {}",
+                              link.getDesignatedNode().getId(),
+                              rootnodetodomainnodemap.get(
+                                                          link.getDesignatedNode().getId()) );
+                }
             } else if (rootnodetodomainnodemap.containsKey(link.getNode().getId())) {
                 Set<Integer> dependentsnode= rootnodetodomainnodemap.remove(link.getNode().getId());
                 dependentsnode.add(link.getNode().getId());
-                LOG.debug("getAllPersisted: node {} is root, dependency set: {}",link.getNode().getId(),dependentsnode );
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getAllPersisted: node {} is root, dependency set: {}",link.getNode().getId(),dependentsnode );
+                }
                 Integer rootdesignated=null;
                 for (Integer rootid: rootnodetodomainnodemap.keySet()) {
                     if (rootnodetodomainnodemap.get(rootid).contains(link.getDesignatedNode().getId())) {
@@ -187,17 +199,23 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
                     }
                 }
                 if (rootdesignated != null) {
-                    LOG.debug("getAllPersisted: node {} found root: {}",link.getNode().getId(),rootdesignated );
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: node {} found root: {}",link.getNode().getId(),rootdesignated );
+                    }
                     dependentsnode.add(link.getDesignatedNode().getId());
                     rootnodetodomainnodemap.get(rootdesignated).addAll(dependentsnode);
-                    LOG.debug("getAllPersisted: node {} found root: {}, dependency set: {}",link.getNode().getId(),
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: node {} found root: {}, dependency set: {}",link.getNode().getId(),
                               rootdesignated, 
                               rootnodetodomainnodemap.get(rootdesignated));
+                    }
                 } else {
                     rootnodetodomainnodemap.put(link.getDesignatedNode().getId(), dependentsnode);
-                    LOG.debug("getAllPersisted: node {} created root: {}, dependency set: {}",link.getNode().getId(),
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: node {} created root: {}, dependency set: {}",link.getNode().getId(),
                               link.getDesignatedNode().getId(), 
                               rootnodetodomainnodemap.get(link.getDesignatedNode().getId()));
+                    }
                 }
             } else {
                 Integer rootdesignated=null;
@@ -209,19 +227,20 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
                 }
                 if (rootdesignated != null) {
                     rootnodetodomainnodemap.get(rootdesignated).add(link.getNode().getId());
-                    LOG.debug("getAllPersisted: designatednode {} found root: {}, dependency set: {}",link.getDesignatedNode().getId(),
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: designatednode {} found root: {}, dependency set: {}",link.getDesignatedNode().getId(),
                               rootdesignated, 
                               rootnodetodomainnodemap.get(rootdesignated));
+                    }
                 } else {
                     rootnodetodomainnodemap.put(link.getDesignatedNode().getId(), new HashSet<Integer>());
                     rootnodetodomainnodemap.get(link.getDesignatedNode().getId()).add(link.getNode().getId());                
-                    LOG.debug("getAllPersisted: designatednode {} : {}",link.getDesignatedNode().getId(),rootnodetodomainnodemap.get(link.getDesignatedNode().getId()) );
-                    // FIXME: Check if node is a child of some other and manage exception :-)
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: designatednode {} : {}",link.getDesignatedNode().getId(),rootnodetodomainnodemap.get(link.getDesignatedNode().getId()) );
+                    }// FIXME: Check if node is a child of some other and manage exception :-)
                 }
             }
         }
-        
-        
         LOG.debug("getAllPersisted: bridge topology set: {}", rootnodetodomainnodemap );
         
         
@@ -232,14 +251,18 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
         Map<String,List<BridgeMacLink>> mactobridgeportbbl = new HashMap<String, List<BridgeMacLink>>();
 BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
             link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
-            LOG.debug("getAllPersisted: Parsing BridgeMacLink: {}", link.printTopology());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getAllPersisted: Parsing BridgeMacLink: {}", link.printTopology());
+            }
             for (SharedSegment bblsegment: bblsegments) {
                 if (bblsegment.containsPort(link.getNode().getId(),
                                          link.getBridgePort())) {
                     if (!mactobridgeportbbl.containsKey(link.getMacAddress())) {
                         mactobridgeportbbl.put(link.getMacAddress(), new ArrayList<BridgeMacLink>());
                     }
-                    LOG.debug("getAllPersisted: Found BridgeBridgeLink Segment: {}", bblsegment.printTopology());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: Found BridgeBridgeLink Segment: {}", bblsegment.printTopology());
+                    }
                     mactobridgeportbbl.get(link.getMacAddress()).add(link);
                     continue BML;
                 }
@@ -261,14 +284,18 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
                                             link.getBridgePort())) {
                     bmlsegment.add(link);
                     
-                    LOG.debug("getAllPersisted: found Bridge Mac Link Shared Segment: {}", bmlsegment.printTopology());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: found Bridge Mac Link Shared Segment: {}", bmlsegment.printTopology());
+                    }
                     continue BML;
                 }
             }
             SharedSegment bmlsegment = new SharedSegment();
             bmlsegment.add(link);
             bmlsegment.setDesignatedBridge(link.getNode().getId());
-            LOG.debug("getAllPersisted: created new Bridge Mac Link Shared Segment: {}", bmlsegment.printTopology());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getAllPersisted: created new Bridge Mac Link Shared Segment: {}", bmlsegment.printTopology());
+            }
             bmlsegments.add(bmlsegment);
         }
 
@@ -277,14 +304,20 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
             LOG.debug("getAllPersisted: assigning mac {} to Bridge Bridge Link Shared Segment",macaddress);
             
             for (SharedSegment segment : bblsegments) {
-                LOG.debug("getAllPersisted: parsing Bridge Bridge Link Shared Segment {}",segment.printTopology());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getAllPersisted: parsing Bridge Bridge Link Shared Segment {}",segment.printTopology());
+                }
                 List<BridgeMacLink> bblfoundonsegment = new ArrayList<BridgeMacLink>();
                 for (BridgeMacLink link : mactobridgeportbbl.get(macaddress)) {
-                    LOG.debug("getAllPersisted: parsing Bridge Mac Link {}",link.printTopology());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: parsing Bridge Mac Link {}",link.printTopology());
+                    }
                     if (segment.containsPort(link.getNode().getId(),
                                                     link.getBridgePort())) {
                         bblfoundonsegment.add(link);
-                        LOG.debug("getAllPersisted: adding Bridge Mac Link {}",link.printTopology());
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("getAllPersisted: adding Bridge Mac Link {}",link.printTopology());
+                        }
                    }
                 }
                 if (bblfoundonsegment.size() == segment.getBridgePortsOnSegment().size()) {
@@ -302,7 +335,9 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
             domain.addBridge(new Bridge(rootnode));
             for (Integer nodeid: rootnodetodomainnodemap.get(rootnode))
                 domain.addBridge(new Bridge(nodeid));
-            LOG.debug("getAllPersisted: created new Broadcast Domain: {}", domain.getBridgeNodesOnDomain());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getAllPersisted: created new Broadcast Domain: {}", domain.getBridgeNodesOnDomain());
+            }
             domains.add(domain);
         }
         
@@ -334,7 +369,9 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
         }
 
         for (BroadcastDomain domain: domains) {
-            LOG.info("getAllPersisted: loading root Broadcast Domain: {}", domain.getBridgeNodesOnDomain());
+            if (LOG.isDebugEnabled()) {
+                LOG.info("getAllPersisted: loading root Broadcast Domain: {}", domain.getBridgeNodesOnDomain());
+            }
             domain.loadTopologyRoot();
         }
         return domains;
