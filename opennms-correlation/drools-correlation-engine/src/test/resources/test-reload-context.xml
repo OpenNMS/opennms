@@ -10,14 +10,16 @@
     <context:annotation-config />
 
     <bean id="droolsCorrelationEngineBuilderConfigurationResource" class="java.lang.String">
-        <constructor-arg value="file:src/test/opennms-home/etc/drools-engine.xml" />
+        <constructor-arg value="file:target/opennms-home/etc/drools-engine.xml" />
     </bean>
 
     <bean id="droolsCorrelationEngineBuilderConfigurationDirectory" class="java.lang.String">
-        <constructor-arg value="file:src/test/opennms-home/etc/drools-engine.d" />
+        <constructor-arg value="file:target/opennms-home/etc/drools-engine.d" />
     </bean>
 
-    <bean name="correlator" class="org.opennms.netmgt.correlation.drools.MockCorrelator" />
+    <bean id="correlator" class="org.opennms.netmgt.correlation.Correlator">
+	  <property name="eventIpcManager" ref="eventIpcManager" />
+    </bean>
 
 	<bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 

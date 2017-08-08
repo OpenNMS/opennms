@@ -1,0 +1,40 @@
+package org.opennms.netmgt.correlation.drools;
+
+import java.util.Date;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.xml.event.Event;
+
+global java.lang.String PROVISIONING_GROUP;
+global java.lang.String SERVICE_NAME;
+global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+
+rule "first down event received"
+	when
+		$e : Event(uei == "uei.opennms.org/nodes/nodeLostService", service == SERVICE_NAME)
+	then
+		println("Hello " + PROVISIONING_GROUP + "!!");
+end
+
+rule "create a file"
+	when
+		$e : Event(uei == "uei.opennms.org/junit/myTestEvent")
+	then
+		createFile($e); 
+end
+
+function void println(String msg) {
+	System.out.println(new Date() + " : " + msg);
+}
+
+function void createFile(Event e) {
+  try {
+    Files.write(Paths.get("target/sample-file.txt"), e.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+  }catch (Exception ex) {
+    println("something wrong happened. " + e);
+  }
+}
