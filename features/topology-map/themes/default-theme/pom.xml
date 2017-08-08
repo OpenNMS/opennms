@@ -29,6 +29,21 @@
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>d3</artifactId>
+            <version>3.5.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>leaflet</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>ionicons</artifactId>
+            <version>2.0.1</version>
+       </dependency>
     </dependencies>
 
     <build>
@@ -39,6 +54,48 @@
         </resources>
         
         <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-d3</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.webjars.bower</groupId>
+                  <artifactId>d3</artifactId>
+                  <version>3.5.17</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.webjars.bower</groupId>
+                  <artifactId>leaflet</artifactId>
+                  <version>1.0.2</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.webjars.bower</groupId>
+                  <artifactId>ionicons</artifactId>
+                  <version>2.0.1</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <includes>**/css/**,**/fonts/**,README,readme.md</includes>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/wars</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.7</version>
@@ -53,7 +110,7 @@
                             <outputDirectory>${basedir}/target/javascript/VAADIN/themes/topo_default/js</outputDirectory>
                              <resources>
                                  <resource>
-                                     <directory>../../../../opennms-webapp/src/main/webapp/lib/d3</directory>
+                                     <directory>${project.build.directory}/wars/META-INF/resources/webjars/d3/3.5.17</directory>
                                      <includes>
                                         <include>d3.js</include>
                                     </includes>
@@ -71,7 +128,7 @@
                             <outputDirectory>${basedir}/target/javascript/VAADIN/themes/topo_default/leaflet</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>../../../../opennms-webapp/src/main/webapp/lib/leaflet/dist</directory>
+                                    <directory>${project.build.directory}/wars/META-INF/resources/webjars/leaflet/1.0.2/dist</directory>
                                     <includes>
                                         <include>leaflet-src.js</include>
                                         <include>leaflet.css</include>
@@ -90,7 +147,7 @@
                             <outputDirectory>${basedir}/target/javascript/VAADIN/themes/topo_default/ionicons</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>../../../../opennms-webapp/src/main/webapp/lib/ionicons</directory>
+                                    <directory>${project.build.directory}/wars/META-INF/resources/webjars/ionicons/2.0.1</directory>
                                 </resource>
                             </resources>
                         </configuration>
