@@ -1,4 +1,5 @@
 # This file sets the properties for generating and saving licence keys
+# Rename to productkeys.properties and fill in default values for build to work
 
 # Maven Repository where the generated licence specification will be deployed
 # The generated licence authenticator will be deployed in the normal opennms repo
