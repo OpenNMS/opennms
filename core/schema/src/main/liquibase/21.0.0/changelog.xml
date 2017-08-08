@@ -91,4 +91,18 @@
                              referencedTableName="events"
                              referencedColumnNames="eventid" />
   </changeSet>
+
+  <changeSet id="21.0.0-event-parameters-remove-column" author="cpape">
+    <preConditions onFail="CONTINUE">
+      <sqlCheck expectedResult="t">
+        SELECT EXISTS (
+          SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='events' AND column_name='eventparms'
+        );
+      </sqlCheck>
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(eventid) FROM events WHERE eventparms IS NOT NULL;
+      </sqlCheck>
+    </preConditions>
+    <dropColumn tableName="events" columnName="eventparms"/>
+  </changeSet>
 </databaseChangeLog>

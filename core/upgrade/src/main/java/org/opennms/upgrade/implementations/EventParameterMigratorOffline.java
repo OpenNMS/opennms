@@ -67,6 +67,7 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void preExecute() throws OnmsUpgradeException {
+        ;
         // check for eventparms column
     }
 
@@ -83,50 +84,65 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
         long eventCount = 0, parameterCount = 0;
 
         try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
-            connection.setAutoCommit(false);
-            try (final Statement selectStatement = connection.createStatement();
-                 final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO event_parameters (eventid, name, value, type) VALUES  (?,?,?,?)");
-                 final PreparedStatement nullifyStatement = connection.prepareStatement("UPDATE events SET eventparms=NULL WHERE eventid=?")) {
-                try (final ResultSet resultSet = selectStatement.executeQuery("SELECT eventid, eventparms FROM events WHERE eventparms IS NOT NULL")) {
-                    while (resultSet.next()) {
-                        final Integer eventId = resultSet.getInt("eventid");
-                        final String eventParms = resultSet.getString("eventparms");
-                        final List<Parm> parmList = EventParameterUtils.decode(eventParms);
 
-                        if (parmList != null) {
-                            Map<String, Parm> parmMap = parmList.stream().collect(
-                                    Collectors.toMap(Parm::getParmName, Function.identity(), (p1,p2)->p1));
+            final Statement preMigrationStatement = connection.createStatement();
+            final ResultSet preMigrationResultSet = preMigrationStatement.executeQuery("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='events' AND column_name='eventparms')");
 
-                            for (Map.Entry<String, Parm> entry : parmMap.entrySet()) {
-                                insertStatement.setInt(1, eventId);
-                                insertStatement.setString(2, entry.getValue().getParmName());
-                                insertStatement.setString(3, entry.getValue().getValue().getContent());
-                                insertStatement.setString(4, entry.getValue().getValue().getType());
-                                insertStatement.execute();
+            if (preMigrationResultSet.next() && Boolean.TRUE.equals(preMigrationResultSet.getBoolean(1))) {
+                connection.setAutoCommit(false);
 
-                                nullifyStatement.setInt(1, eventId);
-                                nullifyStatement.execute();
-                                parameterCount++;
+                try (final Statement selectStatement = connection.createStatement();
+                     final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO event_parameters (eventid, name, value, type) VALUES  (?,?,?,?)");
+                     final PreparedStatement nullifyStatement = connection.prepareStatement("UPDATE events SET eventparms=NULL WHERE eventid=?")) {
+                    try (final ResultSet resultSet = selectStatement.executeQuery("SELECT eventid, eventparms FROM events WHERE eventparms IS NOT NULL")) {
+                        while (resultSet.next()) {
+                            final Integer eventId = resultSet.getInt("eventid");
+                            final String eventParms = resultSet.getString("eventparms");
+                            final List<Parm> parmList = EventParameterUtils.decode(eventParms);
+
+                            if (parmList != null) {
+                                Map<String, Parm> parmMap = parmList.stream().collect(
+                                        Collectors.toMap(Parm::getParmName, Function.identity(), (p1, p2) -> p1));
+
+                                for (Map.Entry<String, Parm> entry : parmMap.entrySet()) {
+                                    insertStatement.setInt(1, eventId);
+                                    insertStatement.setString(2, entry.getValue().getParmName());
+                                    insertStatement.setString(3, entry.getValue().getValue().getContent());
+                                    insertStatement.setString(4, entry.getValue().getValue().getType());
+                                    insertStatement.execute();
+
+                                    nullifyStatement.setInt(1, eventId);
+                                    nullifyStatement.execute();
+                                    parameterCount++;
+                                }
+                            }
+
+                            eventCount++;
+
+                            if (eventCount % 10000 == 0) {
+                                log("Processed %d eventparms entries, %d event parameters inserted...\n", eventCount, parameterCount);
+                                connection.commit();
                             }
                         }
 
-                        eventCount++;
-
-                        if (eventCount % 10000 == 0) {
-                            log("Processed %d eventparms entries, %d event parameters inserted...\n", eventCount, parameterCount);
-                        }
+                        log("Processed %d eventparms entries, %d event parameters inserted...\n", eventCount, parameterCount);
                     }
-
-                    log("Processed %d eventparms entries, %d event parameters inserted...\n", eventCount, parameterCount);
+                } catch (SQLException e) {
+                    connection.rollback();
+                    connection.setAutoCommit(true);
+                    throw e;
                 }
-            } catch(SQLException e) {
-                connection.rollback();
-                connection.setAutoCommit(true);
-                throw e;
-            }
 
-            connection.commit();
-            connection.setAutoCommit(true);
+                connection.commit();
+                connection.setAutoCommit(true);
+
+                log("Rows migrated. Dropping column 'eventparms'...\n");
+
+                final Statement postMigrationStatement = connection.createStatement();
+                postMigrationStatement.execute("ALTER TABLE events DROP COLUMN eventparms");
+            } else {
+                log("Column 'eventparms' already dropped. Nothing left to do!\n");
+            }
         } catch (Throwable e) {
             throw new OnmsUpgradeException("Can't move event parameters to table: " + e.getMessage(), e);
         }
