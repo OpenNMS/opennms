@@ -1056,64 +1056,6 @@
         <artifactId>cxf-xjc-plugin</artifactId>
         <version>${cxfXjcVersion}</version>
       </plugin>
-      
-      <!--reading in product keys file to generate subscription -->
-      <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <inherited>false</inherited>
-        <executions>
-            <execution>
-                <phase>validate</phase>
-                <goals>
-                    <goal>execute</goal>
-                </goals>
-                <configuration>
-                    <providerSelection>2.0</providerSelection>
-                    <source><![CDATA[
-                   log.info("Starting gmaven-plugin Groovy script to import properties");
-                   import java.io.FileInputStream;
-                   import java.io.File;
-                   
-		           String PRODUCT_KEYS_FILENAME_PROPERTY = "productKeysFile";
-
-		           java.util.Properties newProperties = new java.util.Properties();
-
-		           String p = project.properties.getProperty(PRODUCT_KEYS_FILENAME_PROPERTY);
-
-		           if (p == null) {
-		           	log.error("Property not defined in pom: "
-		           			+ PRODUCT_KEYS_FILENAME_PROPERTY);
-		           } else {
-		           	File f = new File(p);
-		           	if (!f.exists()) {
-		           		log.warn("Properties File " + f.getAbsolutePath()
-		           				+ " does not exist. Not loading extra properties.");
-			           } else {
-			           	log.info("Loading additional build properties from "+ f.getAbsolutePath());
-			           	FileInputStream input;
-		           		try {
-			           		input = new FileInputStream(p);
-			           		newProperties.load(input);
-			           	} catch (Exception e) {
-			           		log.error("problem loading properties file ",e);
-			           	}
-
-		           		for (String key : newProperties.stringPropertyNames()) {
-		           			String value = newProperties.getProperty(key);
-		           			log.info("   adding maven property: " + key + "="
-		           					+ value + " replacing: "
-		           					+ project.properties.setProperty(key, value));
-		           		}
-
-		           	}
-		           }
-                   ]]>
-                </source>
-                </configuration>
-            </execution>
-        </executions>
-      </plugin>
     </plugins>
  </build>
 
@@ -1439,10 +1381,7 @@
     <featuremanagerVersion>1.1.0-SNAPSHOT</featuremanagerVersion>
     
     <!-- subscription properties -->
-    <!-- name of file containing substitute subscription properties -->
-    <productKeysFile>productkeys.properties</productKeysFile>
-    
-    <!-- These default subscription properties will be replaced by the properties in productKeysFile -->
+    <!-- These default subscription properties will be replaced by the properties in productkeys.properties -->
     <!-- Subscription name, version and groupId for generated subscription artifacts -->
     <!-- The licence will be accessed using the featureId subscriptionName/subscriptionVersion -->
     <defaultSubscriptionName>horizon</defaultSubscriptionName>

@@ -13,33 +13,97 @@
 
   <modelVersion>4.0.0</modelVersion>
 
+  <properties>
+    <!-- opennms/productkeys -->
+    <productKeysFile>${project.basedir}/../productkeys.properties</productKeysFile>
+  </properties>
+
   <build>
     <plugins>
+
+      <!--reading in product keys file to generate subscription -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
-        <version>1.0.0</version>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <inherited>false</inherited>
         <executions>
           <execution>
             <phase>initialize</phase>
             <goals>
-              <goal>read-project-properties</goal>
+              <goal>execute</goal>
             </goals>
             <configuration>
-              <files>
-                <file>../productkeys.properties</file>
-              </files>
+              <providerSelection>2.0</providerSelection>
+              <source><![CDATA[
+                   log.info("Starting gmaven-plugin Groovy script to import properties");
+                   import java.io.FileInputStream;
+                   import java.io.File;
+                   
+               String PRODUCT_KEYS_FILENAME_PROPERTY = "productKeysFile";
+
+               java.util.Properties newProperties = new java.util.Properties();
+
+               String p = project.properties.getProperty(PRODUCT_KEYS_FILENAME_PROPERTY);
+
+               if (p == null) {
+                log.error("Property not defined in pom: "
+                    + PRODUCT_KEYS_FILENAME_PROPERTY);
+               } else {
+                File f = new File(p);
+                if (!f.exists()) {
+                  log.warn("Properties File " + f.getAbsolutePath()
+                      + " does not exist. Not loading extra properties.");
+                 } else {
+                  log.info("Loading additional build properties from "+ f.getAbsolutePath());
+                  FileInputStream input;
+                  try {
+                    input = new FileInputStream(p);
+                    newProperties.load(input);
+                  } catch (Exception e) {
+                    log.error("problem loading properties file ",e);
+                  }
+
+                  for (String key : newProperties.stringPropertyNames()) {
+                    String value = newProperties.getProperty(key);
+                    log.info("   adding maven property: " + key + "="
+                        + value + " replacing: "
+                        + project.properties.setProperty(key, value));
+                  }
+
+                }
+               }
+                   ]]>
+              </source>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
+      <!-- <plugin> -->
+      <!-- <groupId>org.codehaus.mojo</groupId> -->
+      <!-- <artifactId>properties-maven-plugin</artifactId> -->
+      <!-- <version>1.0.0</version> -->
+      <!-- <executions> -->
+      <!-- <execution> -->
+      <!-- <phase>initialize</phase> -->
+      <!-- <goals> -->
+      <!-- <goal>read-project-properties</goal> -->
+      <!-- </goals> -->
+      <!-- <configuration> -->
+      <!-- <files> -->
+      <!-- <file>../productkeys.properties</file> -->
+      <!-- </files> -->
+      <!-- </configuration> -->
+      <!-- </execution> -->
+      <!-- </executions> -->
+      <!-- </plugin> -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>1.6.0</version>
         <executions>
           <execution>
-            <phase>initialize</phase>
+            <phase>generate-sources</phase>
             <goals>
               <goal>exec</goal>
             </goals>
