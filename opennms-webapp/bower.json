@@ -6,7 +6,7 @@
     "flot-legend": "https://github.com/opennms/flot-legend.git#v2.0.0",
     "flot-saveas": "https://github.com/j-white/flot-saveas.git#v1.0.0",
     "flot-datatable": "https://github.com/j-white/flot-datatable.git#v1.0.6",
-    "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM",
+    "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM"
   },
   "overrides": {
     "bootstrap-sass-official": {
@@ -28,7 +28,7 @@
       "main": [
         "*.js"
       ]
-    },
+    }
   },
   "resolutions": {
     "bootstrap": "3.3.1",
