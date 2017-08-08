@@ -125,11 +125,15 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
             for (final Event event : events.getEventCollection()) {
                 if (event.getNodeid() == 0) {
                     final Parm foreignSource = event.getParm("_foreignSource");
-                    final Parm foreignId = event.getParm("_foreignId");
-                    if (foreignSource != null && foreignSource.getValue() != null && foreignId != null && foreignId.getValue() != null) {
-                        final OnmsNode node = getNodeDao().findByForeignId(foreignSource.getValue().getContent(), foreignId.getValue().getContent());
-                        if (node != null) {
-                            event.setNodeid(Long.parseLong(node.getId().toString()));
+                    if (foreignSource != null && foreignSource.getValue() != null) {
+                        final Parm foreignId = event.getParm("_foreignId");
+                        if (foreignId != null && foreignId.getValue() != null) {
+                            final OnmsNode node = getNodeDao().findByForeignId(foreignSource.getValue().getContent(), foreignId.getValue().getContent());
+                            if (node != null) {
+                                event.setNodeid(node.getId().longValue());
+                            } else {
+                                LOG.warn("Can't find node associated with foreignSource {} and foreignId {}", foreignSource, foreignId);
+                            }
                         }
                     }
                 }
