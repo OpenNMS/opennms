@@ -8,7 +8,7 @@
 :numbered!:
 
 = OpenNMS Meridian Release Notes
-:author: Copyright (c) 2015 The OpenNMS Group, Inc.
+:author: Copyright (c) 2017 The OpenNMS Group, Inc.
 :revnumber: OpenNMS Meridian v{opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:

@@ -54,6 +54,7 @@
 <%@page import="org.opennms.web.outage.filter.LostServiceDateBeforeFilter"%>
 <%@page import="org.opennms.web.outage.filter.RegainedServiceDateAfterFilter"%>
 <%@page import="org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter"%>
+<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -155,7 +156,7 @@
           <!-- node -->
           <td class="noWrap">
             <% if(outages[i].getNodeId() != 0 ) { %>             
-              <% String longLabel  = outages[i].getNodeLabel(); %>
+              <% String longLabel  = WebSecurityUtils.sanitizeString(outages[i].getNodeLabel()); %>
               <% String shortLabel = ElementUtil.truncateLabel(longLabel, 32); %>
               <a href="element/node.jsp?node=<%=outages[i].getNodeId()%>" title="<%=longLabel%>"><%=shortLabel%></a>
               <% Filter nodeFilter = new NodeFilter(outages[i].getNodeId(), getServletContext()); %>

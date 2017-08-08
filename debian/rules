@@ -261,6 +261,7 @@ install: build
 	install -d -m 755 debian/opennms-common/var/lib/opennms/xsds
 	mv debian/temp/share/xsds/* debian/opennms-common/var/lib/opennms/xsds/
 	find debian/opennms-common/etc/opennms -type f -execdir chmod 644 {} \;
+	chmod 640 debian/opennms-common/etc/opennms/users.xml
 	
 	# move karaf stuff to common
 	mv debian/temp/{data,deploy,system} debian/opennms-common/usr/share/opennms/
