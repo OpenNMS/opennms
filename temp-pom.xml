@@ -107,49 +107,49 @@
   </scm>
   <modules>
     <!-- build -->
-    <module>checkstyle</module>
+<!--     <module>checkstyle</module> -->
 
     <!-- new structure -->
     <module>dependencies</module>
     <module>productkeys</module>
-    <module>core</module>
-    <module>container</module>
+<!--     <module>core</module> -->
+<!--     <module>container</module> -->
     <module>features</module>
-    <module>integrations</module>
-    <module>protocols</module>
-    <module>tests</module>
-    <module>integration-tests</module>
+<!--     <module>integrations</module> -->
+<!--     <module>protocols</module> -->
+<!--     <module>tests</module> -->
+<!--     <module>integration-tests</module> -->
 
-    <!-- old structure -->
-    <module>opennms-util</module>
-    <module>opennms-bootstrap</module>
-    <module>opennms-model</module>
-    <module>opennms-ackd</module>
-    <module>opennms-alarms</module>
-    <module>opennms-config-tester</module>
-    <module>opennms-dao-api</module>
-    <module>opennms-dao</module>
-    <module>opennms-dao-minion</module>
-    <module>opennms-dao-mock</module>
-    <module>opennms-icmp</module>
-    <module>opennms-javamail</module>
-    <module>opennms-rrd</module>
-    <module>opennms-config-api</module>
-    <module>opennms-config-jaxb</module>
-    <module>opennms-config</module>
-    <module>opennms-config-model</module>
-    <module>opennms-provision</module>
-    <module>opennms-enterprise-reporting</module>
-    <module>opennms-services</module>
-    <module>opennms-jetty</module>
-    <module>opennms-correlation</module>
-    <module>opennms-reporting</module>
-    <module>opennms-web-api</module>
-    <module>opennms-web-dependencies</module>
-    <module>opennms-webapp</module>
-    <module>opennms-webapp-rest</module>
-    <module>opennms-wmi</module>
-    <module>opennms-asterisk</module>
+<!--     old structure -->
+<!--     <module>opennms-util</module> -->
+<!--     <module>opennms-bootstrap</module> -->
+<!--     <module>opennms-model</module> -->
+<!--     <module>opennms-ackd</module> -->
+<!--     <module>opennms-alarms</module> -->
+<!--     <module>opennms-config-tester</module> -->
+<!--     <module>opennms-dao-api</module> -->
+<!--     <module>opennms-dao</module> -->
+<!--     <module>opennms-dao-minion</module> -->
+<!--     <module>opennms-dao-mock</module> -->
+<!--     <module>opennms-icmp</module> -->
+<!--     <module>opennms-javamail</module> -->
+<!--     <module>opennms-rrd</module> -->
+<!--     <module>opennms-config-api</module> -->
+<!--     <module>opennms-config-jaxb</module> -->
+<!--     <module>opennms-config</module> -->
+<!--     <module>opennms-config-model</module> -->
+<!--     <module>opennms-provision</module> -->
+<!--     <module>opennms-enterprise-reporting</module> -->
+<!--     <module>opennms-services</module> -->
+<!--     <module>opennms-jetty</module> -->
+<!--     <module>opennms-correlation</module> -->
+<!--     <module>opennms-reporting</module> -->
+<!--     <module>opennms-web-api</module> -->
+<!--     <module>opennms-web-dependencies</module> -->
+<!--     <module>opennms-webapp</module> -->
+<!--     <module>opennms-webapp-rest</module> -->
+<!--     <module>opennms-wmi</module> -->
+<!--     <module>opennms-asterisk</module> -->
   </modules>
   <build>
   <extensions>
@@ -1223,7 +1223,7 @@
       However, we need to set the default in a profile (NMS-8838).
     <runPingTests>true</runPingTests> -->
 
-    <build.skip.tarball>false</build.skip.tarball>
+    <build.skip.tarball>true</build.skip.tarball>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

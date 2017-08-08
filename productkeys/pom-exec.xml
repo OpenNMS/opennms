@@ -17,11 +17,13 @@
   <description>productkeys Parent Project</description>
 
   <properties>
-    <productName>Meridian2017</productName>
-    <productVersion>1.0.0-SNAPSHOT</productVersion>
+    <!-- these properties are substituted -->
+    <productName>productNameNotSet</productName>
+    <productVersion>9.9.9-SNAPSHOT</productVersion>
     <productId>${productName}/${productVersion}</productId>
     <productGroupId>org.opennms.authenticator</productGroupId>
     <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath>
+    
     <licencemanagerVersion>1.1.0-SNAPSHOT</licencemanagerVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -39,7 +41,34 @@
   </modules>
 
   <build>
-
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <echo>*****************************************************</echo>
+                <echo>GENERATING NEW LICENCE</echo>
+                <echo>   productName:    ${productName}</echo>
+                <echo>   productVersion: ${productVersion}</echo>
+                <echo>   productGroupId: ${productGroupId}</echo>
+                <echo>   licenceSpecRepo: ${licenceSpecRepo} </echo>
+                <echo>   licenceSpecSnapshotRepo: ${licenceSpecSnapshotRepo} </echo>
+                <echo>   opennms-repo-ref: ${opennms-repo-ref} </echo>
+                <echo>   opennms-snapshots-ref: ${opennms-snapshots-ref} </echo>
+                <echo>*****************************************************</echo>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
 
     <pluginManagement>
       <plugins>

@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <!-- <parent> -->
-  <!-- <groupId>org.opennms</groupId> -->
-  <!-- <artifactId>opennms</artifactId> -->
-  <!-- <version>21.0.0-SNAPSHOT</version> -->
-  <!-- </parent> -->
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>opennms</artifactId>
+    <version>21.0.0-SNAPSHOT</version>
+  </parent>
 
   <groupId>org.opennms</groupId>
   <artifactId>productkeys.executor</artifactId>
   <packaging>pom</packaging>
-  <version>21.0.0-SNAPSHOT</version>
-  <name>productkeys.executor</name>
-
-
-  <!-- note you cannot set the org.opennms parent pom because opennms depencencies use <version> which changes in child projects -->
+  <name>OpenNMS :: ProductKeys :: Generator</name>
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -31,7 +27,7 @@
             </goals>
             <configuration>
               <files>
-                <file>productkeys.properties</file>
+                <file>../productkeys.properties</file>
               </files>
             </configuration>
           </execution>
@@ -57,12 +53,14 @@
             <argument>${project.basedir}/pom-exec.xml</argument>
             <argument>clean</argument>
             <argument>install</argument>
-            <argument>-DproductName=${myProductName}</argument>
-            <argument>-DproductVersion=${myProductVersion}</argument>
-            <argument>-DproductGroupId=${myProductGroupId}</argument>
+            <argument>-DproductName=${subscriptionName}</argument>
+            <argument>-DproductVersion=${subscriptionVersion}</argument>
+            <argument>-DproductGroupId=${subscriptionGroupId}</argument>
 
             <argument>-Dopennms-repo-ref=scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/maven2</argument>
             <argument>-Dopennms-snapshots-ref=scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/snapshots</argument>
+            <argument>-DlicenceSpecRepo=${licenceSpecRepo}</argument>
+            <argument>-DlicenceSpecSnapshotRepo=${licenceSpecSnapshotRepo}</argument>
           </arguments>
         </configuration>
 

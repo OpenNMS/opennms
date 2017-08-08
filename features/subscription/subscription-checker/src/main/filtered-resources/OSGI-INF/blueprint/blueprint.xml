@@ -9,10 +9,10 @@
 
   <cm:property-placeholder persistent-id="org.opennms.features.subscriptionchecker.cfg">
     <cm:default-properties>
-      <cm:property name="org.opennms.subscription.enabled" value="true" />
-      <cm:property name="org.opennms.subscription.groupid" value="org.opennms.plugin" />
-      <cm:property name="org.opennms.subscription.artifactid" value="myproject" />
-      <cm:property name="org.opennms.subscription.version" value="1.0-SNAPSHOT" />
+      <cm:property name="org.opennms.subscription.enabled" value="${subscriptionCheckEnabled}" />
+      <cm:property name="org.opennms.subscription.groupid" value="${subscriptionGroupId}" />
+      <cm:property name="org.opennms.subscription.artifactid" value="${subscriptionName}" />
+      <cm:property name="org.opennms.subscription.version" value="${subscriptionVersion}" />
       <cm:property name="org.opennms.subscription.usermessage" 
         value="Your Meridian Subscription has expired or has not been installed. Ask your administrator to update the subscription." />
       <cm:property name="org.opennms.subscription.adminmessage"
