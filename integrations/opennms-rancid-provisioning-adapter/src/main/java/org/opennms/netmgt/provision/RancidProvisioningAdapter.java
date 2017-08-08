@@ -159,7 +159,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private void getRancidCategories() {
-        
+        if (!isAdapterConfigured()) {
+            LOG.info("RANCID is not configured. Skipping category initialization.");
+            return;
+        }
+
         try {
             m_rancid_categories = RWSClientApi.getRWSResourceDeviceTypesPatternList(m_cp).getResource();
         } catch (RancidApiException e) {
@@ -178,6 +182,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private void buildRancidNodeMap() {
+        if (!isAdapterConfigured()) {
+            LOG.info("RANCID is not configured.  Skipping node map generation.");
+            return;
+        }
+
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
         m_onmsNodeRancidNodeMap = new ConcurrentHashMap<Integer, RancidNode>(nodes.size());
         m_onmsNodeIpMap = new ConcurrentHashMap<Integer, String>(nodes.size());
@@ -214,6 +223,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (! isAdapterConfigured()) {
             return;
         }
+
         LOG.debug("doAdd: adding nodeid: {}", nodeId);
 
         final OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
@@ -274,6 +284,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (! isAdapterConfigured()) {
             return;
         }
+
         LOG.debug("doUpdate: updating nodeid: {}", nodeId);
             
         RancidNode rLocalNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
@@ -433,6 +444,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (! isAdapterConfigured()) {
             return;
         }
+
         LOG.debug("doNodeConfigChanged: nodeid: {}", nodeId);
         if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
             updateConfiguration(nodeId,m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)),cp, retry);

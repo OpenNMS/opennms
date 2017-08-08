@@ -396,7 +396,7 @@ sub cmd_interface {
 		my $xml = get_element('interface');
 		my $root = $xml->root;
 		$root->{'att'}->{'ip-addr'} = $ip;
-		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/ " . URI::Escape::uri_escape_utf8($foreign_id) . "/interfaces", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/" . URI::Escape::uri_escape_utf8($foreign_id) . "/interfaces", $root);
 	} elsif (is_remove($command)) {
 		remove($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip);
 	} elsif (is_set($command)) {

@@ -48,6 +48,11 @@ public class InterfaceLevelResource implements Resource {
     }
 
     @Override
+    public String getLabel(CollectionResource resource) {
+        return m_ifName;
+    }
+
+    @Override
     public NodeLevelResource getParent() {
         return m_node;
     }
@@ -71,4 +76,5 @@ public class InterfaceLevelResource implements Resource {
     public String toString() {
         return String.format("InterfaceLevelResource[node=%s, ifName=%s]", m_node, m_ifName);
     }
+
 }

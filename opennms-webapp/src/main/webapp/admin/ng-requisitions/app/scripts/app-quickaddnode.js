@@ -12,7 +12,8 @@
     'ngAnimate',
     'ui.bootstrap',
     'angular-growl',
-    'angular-loading-bar'
+    'angular-loading-bar',
+    'ngSanitize'
   ])
 
   .config(['$routeProvider', function ($routeProvider) {
