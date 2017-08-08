@@ -10,17 +10,8 @@
 					<label>Add Filter:</label>
 					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
 						<div class="form-group">
-						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'notifyId'">
-							<option value="notifyId">ID</option>
-							<option value="event.id">Event ID</option>
-							<option value="event.eventSeverity">Event Severity</option>
-							<option value="pageTime">Sent Time</option>
-							<option value="answeredBy">Responder</option>
-							<option value="respondTime">Response Time</option>
-							<option value="node.id">Node ID</option>
-							<option value="node.label">Node Label</option>
-							<option value="ipAddress">IP Address</option>
-							<option value="serviceType.name">Service</option>
+						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'notifyId'" ng-change="updateClauseValue(clause.property)">
+							<option ng-repeat="property in searchProperties" value="{{::property.id}}">{{::property.name}}</option>
 						</select>
 						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
@@ -30,8 +21,13 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'pageTime' &amp;&amp; clause.property !== 'respondTime'" />
-						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'pageTime' || clause.property === 'respondTime'"/>
+						<span ng-if="clauseValues.length === 0">
+							<input class="form-control" type="datetime-local"    ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'TIMESTAMP'"/>
+							<input class="form-control" type="text"              ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'STRING'"/>
+							<input class="form-control" type="number"            ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'INTEGER' || getSearchProperty(clause.property).type === 'LONG'"/>
+							<input class="form-control" type="number" step="any" ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'FLOAT'"/>
+						</span>
+						<select class="form-control" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
 						</div>
 						<br/><br/>
 						<button class="btn btn-default" type="submit">Submit</button>
@@ -90,13 +86,13 @@
 			<button type="button" class="btn btn-default {{getSearchClause(unackClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(ackClause, unackClause)">Unacknowledged</button>
 			<button type="button" class="btn btn-default {{(getSearchClause(ackClause) == null &amp;&amp; getSearchClause(unackClause) == null) ? 'active' : ''}}" ng-click="removeSearchClauses([getSearchClause(ackClause), getSearchClause(unackClause)])">All</button>
 		</div>
-		<span ng-hide="query.searchClauses.length == 0">
+		<span ng-hide="query.searchClauses.length == 0 || !searchPropertiesLoaded">
 			<span ng-repeat="clause in query.searchClauses" ng-if="!clauseEquals(clause, ackClause) &amp;&amp; !clauseEquals(clause, unackClause)">
 				<div class="btn-group" style="margin:3px;">
 					<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
-						{{clause.property | property}}
+						{{clause.property | property : searchProperties}}
 						{{clause.operator | operator : clause.value}}
-						{{clause.value | value : clause.property}}
+						{{clause.value | value : searchProperties : clause.property}}
 						&nbsp;
 						<i class="fa fa-close"></i>
 					</button>
@@ -227,12 +223,12 @@
 				<tr ng-repeat-start="item in items" class="{{getSeverityClass(item.severity)}}">
 					<td class="text-nowrap" style="line-height:24px;" rowspan="2">
 						<input type="checkbox" ng-checked="selectedNotifications.indexOf(item.id) >= 0" ng-click="toggleNotificationSelection(item.id)"/>
-						{{item.id}}
+						{{::item.id}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'notifyId',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'notifyId',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;" rowspan="2">
-						{{item.eventId}}
+						{{::item.eventId}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'event.id',operator:'EQ',value:item.eventId})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'event.id',operator:'NE',value:item.eventId})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
@@ -244,49 +240,49 @@
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.pageTime | isNotEmpty">
-							{{item.pageTime | date:'MMM d, yyyy h:mm:ss a'}}
+							{{::item.pageTime | date:'MMM d, yyyy h:mm:ss a'}}
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'pageTime',operator:'GE',value:item.pageTime})"><i class="fa fa-toggle-left fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'pageTime',operator:'LE',value:item.pageTime})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.answeredBy | isNotEmpty">
-							{{item.answeredBy}}
+							{{::item.answeredBy}}
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'answeredBy',operator:'EQ',value:item.answeredBy})"><i class="fa fa-plus-square-o fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'answeredBy',operator:'NE',value:item.answeredBy})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.respondTime | isNotEmpty">
-							{{item.respondTime | date:'MMM d, yyyy h:mm:ss a'}}
+							{{::item.respondTime | date:'MMM d, yyyy h:mm:ss a'}}
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'respondTime',operator:'GE',value:item.respondTime})"><i class="fa fa-toggle-left fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'respondTime',operator:'LE',value:item.respondTime})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.nodeLabel !== null">
-							<a href="element/node.jsp?node={{item.nodeId}}" title="{{item.nodeLabel}}">{{item.nodeLabel}}</a>
+							<a href="element/node.jsp?node={{::item.nodeId}}" title="{{::item.nodeLabel}}">{{::item.nodeLabel}}</a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.id',operator:'EQ',value:item.nodeId})"><i class="fa fa-plus-square-o fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.id',operator:'NE',value:item.nodeId})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.ipAddress | isNotEmpty">
-							<a href="element/interface.jsp?node={{item.nodeId}}&amp;intf={{item.ipAddress}}">{{item.ipAddress}}</a>
+							<a href="element/interface.jsp?node={{::item.nodeId}}&amp;intf={{::item.ipAddress}}">{{::item.ipAddress}}</a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'ipAddress',operator:'EQ',value:item.ipAddress})"><i class="fa fa-plus-square-o fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'ipAddress',operator:'NE',value:item.ipAddress})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.serviceType !== null &amp;&amp; item.serviceType.name !== null">
-							<a href="element/service.jsp?node={{item.nodeId}}&amp;intf={{item.ipAddress}}&amp;service={{item.serviceType.id}}">{{item.serviceType.name}}</a>
+							<a href="element/service.jsp?node={{::item.nodeId}}&amp;intf={{::item.ipAddress}}&amp;service={{::item.serviceType.id}}">{{::item.serviceType.name}}</a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'serviceType.name',operator:'EQ',value:item.serviceType.name})"><i class="fa fa-plus-square-o fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'serviceType.name',operator:'NE',value:item.serviceType.name})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</span>
 					</td>
 				</tr>
 				<tr ng-repeat-end class="{{getSeverityClass(item.severity)}}">
-					<td colspan="6">{{item.textMessage}}</td>
+					<td colspan="6">{{::item.textMessage}}</td>
 				</tr>
 			</tbody>
 		</table>

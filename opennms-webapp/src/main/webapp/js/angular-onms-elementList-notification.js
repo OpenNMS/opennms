@@ -3,48 +3,44 @@
 
 	var MODULE_NAME = 'onms.elementList.notification';
 
+	function getSearchProperty(searchProperties, id) {
+		for (var i = 0; i < searchProperties.length; i++) {
+			if (searchProperties[i].id === id) {
+				return searchProperties[i];
+			}
+		}
+		return {};
+	}
+
 	// $filters that can be used to create human-readable versions of filter values
 	angular.module('notificationListFilters', [ 'onmsListFilters' ])
 	.filter('property', function() {
-		return function(input) {
-			switch (input) {
-			case 'notifyId':
-				return 'ID';
-			case 'event.id':
-				return 'Event ID';
-			case 'event.eventSeverity':
-				return 'Event Severity';
-			case 'pageTime':
-				return 'Sent Time';
-			case 'answeredBy':
-				return 'Responder';
-			case 'respondTime':
-				return 'Response Time';
-			case 'node.id':
-				return 'Node ID';
-			case 'node.label':
-				return 'Node Label';
-			// TODO: ipAddress doesn't work because it is type InetAddress
-			case 'ipAddress':
-				return 'IP Address';
-			case 'serviceType.name':
-				return 'Service';
-			}
-			// If no match, return the input
-			return input;
+		return function(input, searchProperties) {
+			var property = getSearchProperty(searchProperties, input);
+			return property.name || '';
 		}
 	})
 	.filter('value', function($filter) {
-		return function(input, property) {
-			switch (property) {
-			case 'pageTime':
-			case 'respondTime':
-				// Return the date in our preferred format
-				return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+		return function(input, searchProperties, propertyId) {
+			var property = getSearchProperty(searchProperties, propertyId);
+			switch (property.type) {
+			case 'TIMESTAMP':
+				if (input === '0') {
+					return "null";
+				} else {
+					// Return the date in our preferred format
+					return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+				}
 			}
+
 			if (input === '\u0000') {
 				return "null";
 			}
+
+			if (property.values && property.values[input]) {
+				return property.values[input];
+			}
+
 			return input;
 		}
 	});
@@ -80,6 +76,9 @@
 		 * Array that will hold the currently selected notification IDs.
 		 */
 		$scope.selectedNotifications = [];
+
+		$scope.searchProperties = [];
+		$scope.searchPropertiesLoaded = false;
 
 		/**
 		 * Toggle the selected state for one notification ID.
@@ -126,6 +125,7 @@
 		// Set the default sort and set it on $scope.$parent.query
 		$scope.$parent.defaults.orderBy = 'notifyId';
 		$scope.$parent.query.orderBy = 'notifyId';
+		$scope.clauseValues = [];
 
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
@@ -196,7 +196,57 @@
 			return severity.substr(0,1).toUpperCase() + severity.substr(1).toLowerCase();
 		}
 
-		// Refresh the item list;
+		$scope.getSearchProperty = function(id) {
+			return getSearchProperty($scope.searchProperties, id);
+		}
+
+		$scope.getSearchPropertyValues = function(id) {
+			var values = getSearchProperty($scope.searchProperties, id).values || {};
+			var retval = [];
+			var keys = Object.keys(values);
+			for (var i = 0; i < keys.length; i++) {
+				retval.push({
+					id: keys[i],
+					name: values[keys[i]]
+				});
+			}
+			return retval;
+		}
+
+		$scope.updateClauseValue = function(id) {
+			$scope.clauseValues = $scope.getSearchPropertyValues(id);
+			// If the search property has enumerated values...
+			if ($scope.clauseValues.length > 0) {
+				// Set the selected value to the first value in the list
+				$scope.clause.value = $scope.clauseValues[0].id;
+			} else {
+				// Otherwise erase the value
+				$scope.clause.value = '';
+			}
+		}
+
+		notificationFactory.queryProperties(
+			{}, 
+			function(value, headers) {
+				$scope.searchProperties = value;
+				$scope.searchPropertiesLoaded = true;
+			},
+			function(response) {
+				switch(response.status) {
+				case 404:
+					return input;
+					break;
+				case 401:
+				case 403:
+					// Handle session timeout by reloading page completely
+					$window.location.href = $location.absUrl();
+					break;
+				}
+				// TODO: Handle 500 Server Error?
+			}
+		);
+
+		// Refresh the item list
 		$scope.$parent.refresh();
 
 		$log.debug('NotificationListCtrl initialized');
