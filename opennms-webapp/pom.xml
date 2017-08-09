@@ -484,6 +484,7 @@
                 <phase>generate-resources</phase>
                 <configuration>
                   <arguments>start</arguments>
+                  <karmaConfPath>src/test/webapp/js/karma.conf.js</karmaConfPath>
                 </configuration>
               </execution>
             </executions>
