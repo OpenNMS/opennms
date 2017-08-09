@@ -23,18 +23,29 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jasig.maven</groupId>
+        <groupId>nl.geodienstencentrum.maven</groupId>
         <artifactId>sass-maven-plugin</artifactId>
-        <version>${sass.maven.plugin.version}</version>
+        <version>2.25</version>
         <executions>
           <execution>
-            <goals><goal>update-stylesheets</goal></goals>
-            <phase>generate-resources</phase>
+            <goals>
+              <goal>update-stylesheets</goal>
+            </goals>
+            <phase>process-sources</phase>
           </execution>
         </executions>
         <configuration>
-          <sassSourceDirectory>${basedir}/src/main/scss</sassSourceDirectory>
-          <destination>${project.build.directory}/${project.build.finalName}/css</destination>
+          <resources>
+            <resource>
+              <source>
+                <directory>${project.build.directory}/sources-sass</directory>
+                <includes>
+                  <include>**/*.scss</include>
+                </includes>
+              </source>
+              <destination>${project.build.directory}/${project.build.finalName}/css</destination>
+            </resource>
+          </resources>
         </configuration>
       </plugin>
       <plugin>
@@ -43,20 +54,74 @@
         <executions>
           <execution>
             <phase>test-compile</phase>
-            <goals><goal>copy</goal></goals>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.dependencies</groupId>
+                  <artifactId>jaxb-dependencies</artifactId>
+                  <type>pom</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${basedir}/target/endorsed</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-bootstrap-sass-official</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.webjars.bower</groupId>
+                  <artifactId>bootstrap</artifactId>
+                  <version>3.3.1</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.webjars.bower</groupId>
+                  <artifactId>bootstrap-sass-official</artifactId>
+                  <version>3.3.1</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/sources-sass</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <artifactItems>
-            <artifactItem>
-              <groupId>org.opennms.dependencies</groupId>
-              <artifactId>jaxb-dependencies</artifactId>
-              <type>pom</type>
-              <overWrite>false</overWrite>
-              <outputDirectory>${basedir}/target/endorsed</outputDirectory>
-            </artifactItem>
-          </artifactItems>
-        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-sass</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>src/main/scss</directory>
+                  <includes>
+                    <include>**/*.scss</include>
+                  </includes>
+                </resource>
+              </resources>
+              <outputDirectory>${project.build.directory}/sources-sass</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
@@ -970,6 +1035,11 @@
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>bootstrap</artifactId>
+      <version>3.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>bootstrap-sass-official</artifactId>
       <version>3.3.1</version>
     </dependency>
     <dependency>

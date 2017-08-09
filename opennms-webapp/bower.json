@@ -1,7 +1,6 @@
 {
   "name": "opennms",
   "dependencies": {
-    "bootstrap-sass-official": "3.3.1",
     "flot-axislabels": "https://github.com/j-white/flot-axislabels.git#0d6ae9a79338",
     "flot-legend": "https://github.com/opennms/flot-legend.git#v2.0.0",
     "flot-saveas": "https://github.com/j-white/flot-saveas.git#v1.0.0",
@@ -9,11 +8,6 @@
     "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM"
   },
   "overrides": {
-    "bootstrap-sass-official": {
-      "main": [
-        "assets/**"
-      ]
-    },
     "flot-axislabels": {
       "main": [
         "*.js"

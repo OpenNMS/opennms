@@ -18,7 +18,8 @@ Bootstrap Theme Specific Stylesheet
  *  15.0 - Miscellaneous and Workarounds
  */
 
-@import "../webapp/lib/bootstrap-sass-official/assets/stylesheets/bootstrap/_variables.scss";
+
+@import "../META-INF/resources/webjars/bootstrap-sass-official/3.3.1/assets/stylesheets/_variables.scss";
 @import "properties.scss";
 @import "severities.scss";
 
