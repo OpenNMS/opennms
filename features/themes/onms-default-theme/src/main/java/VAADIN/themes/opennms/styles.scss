@@ -2,7 +2,7 @@
 @import "../reindeer/legacy-styles.css";
 
 $icon-font-path: "bootstrap/dist/fonts/" !default;
-@import "../../../../../../../../../opennms-webapp/src/main/scss/bootstrap.scss";
+@import "../../../../../opennms-webapp/src/main/scss/bootstrap.scss";
 
 /* Reset these to their default value - the Vaadin elements do no display properly otherwise */
 * {
@@ -11,7 +11,7 @@ $icon-font-path: "bootstrap/dist/fonts/" !default;
   box-sizing: content-box;
 }
 
-@import "../../../../../../../../../opennms-webapp/src/main/scss/opennms-theme.scss";
+@import "../../../../../opennms-webapp/src/main/scss/opennms-theme.scss";
 
 .root-layout {
   padding-top: 65px;
