@@ -297,15 +297,25 @@ public class EngineConfiguration implements Serializable {
 
 	public CorrelationEngine[] constructEngines(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager, MetricRegistry metricRegistry) {
 		
-		LOG.info("Creating drools engins for configuration {}.", basePath);
+		LOG.info("Creating drools engines for configuration {}.", basePath);
 
 		List<CorrelationEngine> engineList = new ArrayList<CorrelationEngine>();
 		for (final RuleSet ruleSet : getRuleSet()) {
-			LOG.debug("Constucting engind for ruleset {} in configuration {}.", ruleSet.getName(), basePath);
+			LOG.debug("Constucting engine for ruleset {} in configuration {}.", ruleSet.getName(), basePath);
 			engineList.add(ruleSet.constructEngine(basePath, appContext, eventIpcManager, metricRegistry));
 	    }
 	    
 	    return engineList.toArray(new CorrelationEngine[0]);
 	}
+
+	public CorrelationEngine constructEngine(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager, MetricRegistry metricRegistry, String engineName) {
+            for (final RuleSet ruleSet : getRuleSet()) {
+                if (ruleSet.getName().equals(engineName)) {
+                    LOG.debug("Constucting engine for ruleset {} in configuration {}.", ruleSet.getName(), basePath);
+                    return ruleSet.constructEngine(basePath, appContext, eventIpcManager, metricRegistry);
+                }
+            }
+            return null;
+        }
 
 }
