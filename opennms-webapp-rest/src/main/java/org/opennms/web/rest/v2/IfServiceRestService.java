@@ -31,7 +31,7 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -121,7 +121,7 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     }
 
     @Override
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.IF_SERVICE_SERVICE_PROPERTIES;
     }
 

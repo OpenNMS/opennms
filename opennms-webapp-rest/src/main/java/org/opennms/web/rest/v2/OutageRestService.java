@@ -31,7 +31,7 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
@@ -117,7 +117,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
     }
 
     @Override
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.OUTAGE_SERVICE_PROPERTIES;
     }
 

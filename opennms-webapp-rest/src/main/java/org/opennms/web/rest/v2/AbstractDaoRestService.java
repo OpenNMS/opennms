@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
@@ -149,7 +149,7 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
      * 
      * @return
      */
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return Collections.emptySortedSet();
     }
 
@@ -255,7 +255,7 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
     @Path("properties")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getProperties(@QueryParam("q") final String query) {
-        SortedSet<SearchProperty> props = getQueryProperties();
+        Set<SearchProperty> props = getQueryProperties();
         if (props != null && props.size() > 0) {
             return Response.ok(new SearchPropertyCollection(props.stream().filter(s -> {
                 // If there is a query string...
@@ -279,7 +279,7 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
     @Path("properties/{property}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getPropertyValues(@PathParam("property") final String property, @QueryParam("q") final String query) {
-        SortedSet<SearchProperty> props = getQueryProperties();
+        Set<SearchProperty> props = getQueryProperties();
         // Find the property with the matching ID
         Optional<SearchProperty> prop = props.stream().filter(p -> p.id.equals(property)).findAny();
         if (prop.isPresent()) {

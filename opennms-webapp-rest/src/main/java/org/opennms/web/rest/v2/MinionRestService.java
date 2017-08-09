@@ -29,7 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.SecurityContext;
@@ -105,7 +105,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
     }
 
     @Override
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.MINION_SERVICE_PROPERTIES;
     }
 

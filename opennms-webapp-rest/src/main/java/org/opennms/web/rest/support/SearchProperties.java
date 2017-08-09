@@ -36,6 +36,7 @@ import static org.opennms.web.rest.support.SearchProperty.SearchPropertyType.STR
 import static org.opennms.web.rest.support.SearchProperty.SearchPropertyType.TIMESTAMP;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -221,9 +222,9 @@ public abstract class SearchProperties {
 		// This field has an unusual format with fields from the eventconf
 		new SearchProperty("eventSnmp", "SNMP", STRING),
 		new SearchProperty("eventSnmpHost", "SNMP Host", STRING),
-		new SearchProperty("eventSource", "Event Source", STRING),
+		new SearchProperty("eventSource", "Source", STRING),
 		new SearchProperty("eventSuppressedCount", "Suppressed Count", INTEGER),
-		new SearchProperty("eventTime", "Event Time", TIMESTAMP),
+		new SearchProperty("eventTime", "Time", TIMESTAMP),
 		new SearchProperty("eventTTicket", "Trouble Ticket ID", STRING),
 		new SearchProperty("eventTTicketState", "Trouble Ticket State", INTEGER, ImmutableMap.<String,String>builder()
 			// Can also be null, but that's probably not useful for searching
@@ -269,7 +270,7 @@ public abstract class SearchProperties {
 		new SearchProperty("latitude", "Latitude", FLOAT),
 		new SearchProperty("longitude", "Longitude", FLOAT),
 		new SearchProperty("monitoringArea", "Monitoring Area", STRING),
-		new SearchProperty("priority", "Priority in UI", INTEGER)
+		new SearchProperty("priority", "UI Priority", INTEGER)
 	}));
 
 	static final SortedSet<SearchProperty> MINION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
@@ -285,7 +286,7 @@ public abstract class SearchProperties {
 		new SearchProperty("createTime", "Creation Time", TIMESTAMP),
 		new SearchProperty("foreignId", "Foreign ID", STRING),
 		new SearchProperty("foreignSource", "Foreign Source", STRING),
-		new SearchProperty("label", "Node Label", STRING),
+		new SearchProperty("label", "Label", STRING),
 		new SearchProperty("labelSource", "Label Source", STRING, ImmutableMap.<String,String>builder()
 			.put(String.valueOf(NodeLabelSource.ADDRESS.value()), "IP Address")
 			.put(String.valueOf(NodeLabelSource.HOSTNAME.value()), "Hostname")
@@ -348,25 +349,25 @@ public abstract class SearchProperties {
 
 	static final SortedSet<SearchProperty> SNMP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty("id", "ID", INTEGER),
-		new SearchProperty("ifAdminStatus", "Admin status", INTEGER),
-		new SearchProperty("ifIndex", "Interface index", INTEGER),
-		new SearchProperty("ifOperStatus", "Operational status", INTEGER),
-		new SearchProperty("ifSpeed", "Bits-per-second Interface Speed", LONG),
+		new SearchProperty("ifAdminStatus", "Admin Status", INTEGER),
+		new SearchProperty("ifIndex", "Interface Index", INTEGER),
+		new SearchProperty("ifOperStatus", "Operational Status", INTEGER),
+		new SearchProperty("ifSpeed", "Interface Speed (Bits per second)", LONG),
 		new SearchProperty("lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty("lastSnmpPoll", "Last SNMP Interface Poll", TIMESTAMP),
 		new SearchProperty("netMask", "Network Mask", IP_ADDRESS)
 	}));
 
-	public static final SortedSet<SearchProperty> ALARM_SERVICE_PROPERTIES;
-	public static final SortedSet<SearchProperty> APPLICATION_SERVICE_PROPERTIES;
-	public static final SortedSet<SearchProperty> EVENT_SERVICE_PROPERTIES;
-	public static final SortedSet<SearchProperty> IF_SERVICE_SERVICE_PROPERTIES;
-	public static final SortedSet<SearchProperty> MINION_SERVICE_PROPERTIES;
-	public static final SortedSet<SearchProperty> LOCATION_SERVICE_PROPERTIES;
-	//public static final SortedSet<SearchProperty> NODE_SERVICE_PROPERTIES;
-	public static final SortedSet<SearchProperty> NOTIFICATION_SERVICE_PROPERTIES;
-	public static final SortedSet<SearchProperty> OUTAGE_SERVICE_PROPERTIES;
-	public static final SortedSet<SearchProperty> SCAN_REPORT_SERVICE_PROPERTIES;
+	public static final Set<SearchProperty> ALARM_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> APPLICATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> EVENT_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> IF_SERVICE_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> MINION_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> LOCATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	//public static final Set<SearchProperty> NODE_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> NOTIFICATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> OUTAGE_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> SCAN_REPORT_SERVICE_PROPERTIES = new LinkedHashSet<>();
 
 	/**
 	 * Prepend a join alias to the property ID for each {@link SearchProperty}.
@@ -375,8 +376,8 @@ public abstract class SearchProperties {
 	 * @param properties
 	 * @return
 	 */
-	static final Set<SearchProperty> withAliasPrefix(Aliases alias, Set<SearchProperty> properties) {
-		return withAliasPrefix(alias, properties, SearchProperty.DEFAULT_ORDER_BY);
+	static final Set<SearchProperty> withAliasPrefix(Aliases alias, String namePrefix, Set<SearchProperty> properties) {
+		return withAliasPrefix(alias, namePrefix, properties, SearchProperty.DEFAULT_ORDER_BY);
 	}
 
 	/**
@@ -387,8 +388,14 @@ public abstract class SearchProperties {
 	 * @param orderBy
 	 * @return
 	 */
-	private static final SortedSet<SearchProperty> withAliasPrefix(Aliases alias, Set<SearchProperty> properties, boolean orderBy) {
-		return new TreeSet<>(properties.stream().map(p -> { return new SearchProperty(alias.prop(p.id), p.name, p.type, orderBy, p.values); }).collect(Collectors.toSet()));
+	private static final SortedSet<SearchProperty> withAliasPrefix(Aliases alias, String namePrefix, Set<SearchProperty> properties, boolean orderBy) {
+		return new TreeSet<>(properties.stream().map(p -> { return new SearchProperty(
+			alias.prop(p.id),
+			namePrefix == null ? p.name : namePrefix + ": " + p.name,
+			p.type,
+			orderBy,
+			p.values
+		); }).collect(Collectors.toSet()));
 	}
 
 	/**
@@ -398,91 +405,87 @@ public abstract class SearchProperties {
 	 * @param properties
 	 * @return
 	 */
-	private static final Set<SearchProperty> withAliasPrefix(String alias, Set<SearchProperty> properties) {
-		return properties.stream().map(p -> { return new SearchProperty(alias + "." + p.id, p.name, p.type, p.values); }).collect(Collectors.toSet());
+	private static final Set<SearchProperty> withAliasPrefix(String alias, String namePrefix, Set<SearchProperty> properties) {
+		return properties.stream().map(p -> { return new SearchProperty(
+			alias + "." + p.id,
+			namePrefix == null ? p.name : namePrefix + ": " + p.name,
+			p.type,
+			p.values
+		); }).collect(Collectors.toSet());
 	}
 
 	static {
-		ALARM_SERVICE_PROPERTIES = new TreeSet<>();
 		// Root prefix
 		ALARM_SERVICE_PROPERTIES.addAll(ALARM_PROPERTIES);
-		//ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.alarm, ALARM_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, CATEGORY_PROPERTIES, false));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, DIST_POLLER_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix("lastEvent", EVENT_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, LOCATION_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+		//ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.alarm, "Alarm", ALARM_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix("lastEvent", "Last Event", EVENT_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
 
-		APPLICATION_SERVICE_PROPERTIES = new TreeSet<>();
 		// Root prefix
 		APPLICATION_SERVICE_PROPERTIES.addAll(APPLICATION_PROPERTIES);
 
-		EVENT_SERVICE_PROPERTIES = new TreeSet<>();
 		// Root prefix
 		EVENT_SERVICE_PROPERTIES.addAll(EVENT_PROPERTIES);
 		//EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.event, EVENT_PROPERTIES));
-		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.alarm, ALARM_PROPERTIES));
-		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
-		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, CATEGORY_PROPERTIES, false));
-		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, DIST_POLLER_PROPERTIES));
-		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
-		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, LOCATION_PROPERTIES));
-		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
-		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
-		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.alarm, "Alarm", ALARM_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
 
-		IF_SERVICE_SERVICE_PROPERTIES = new TreeSet<>();
 		// Root prefix
 		IF_SERVICE_SERVICE_PROPERTIES.addAll(IF_SERVICE_PROPERTIES);
 		//IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.monitoredService, IF_SERVICE_PROPERTIES));
-		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
-		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
-		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, LOCATION_PROPERTIES));
-		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
-		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
-		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
+		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
 
-		MINION_SERVICE_PROPERTIES = new TreeSet<>();
 		// Root prefix
 		MINION_SERVICE_PROPERTIES.addAll(MINION_PROPERTIES);
 
-		LOCATION_SERVICE_PROPERTIES = new TreeSet<>();
 		// Root prefix
 		LOCATION_SERVICE_PROPERTIES.addAll(LOCATION_PROPERTIES);
 
-		NOTIFICATION_SERVICE_PROPERTIES = new TreeSet<>();
 		// Root prefix
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(NOTIFICATION_PROPERTIES);
 		//NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.notification, NOTIFICATION_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, CATEGORY_PROPERTIES, false));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, DIST_POLLER_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.event, EVENT_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, LOCATION_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.event, "Event", EVENT_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
 
-		OUTAGE_SERVICE_PROPERTIES = new TreeSet<>();
 		// Root prefix
 		OUTAGE_SERVICE_PROPERTIES.addAll(OUTAGE_PROPERTIES);
 		//OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.outage, OUTAGE_PROPERTIES));
-		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, ASSET_RECORD_PROPERTIES));
-		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, DIST_POLLER_PROPERTIES));
-		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, IP_INTERFACE_PROPERTIES));
-		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, LOCATION_PROPERTIES));
-		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
-		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceLostEvent", EVENT_PROPERTIES));
-		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceRegainedEvent", EVENT_PROPERTIES));
-		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, SERVICE_TYPE_PROPERTIES));
-		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, SNMP_INTERFACE_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceLostEvent", "Service Lost Event", EVENT_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceRegainedEvent", "Service Regained Event", EVENT_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
 
-		SCAN_REPORT_SERVICE_PROPERTIES = new TreeSet<>();
 		// Root prefix
 		SCAN_REPORT_SERVICE_PROPERTIES.addAll(SCAN_REPORT_PROPERTIES);
 	}
