@@ -44,7 +44,7 @@ public class RpcTargetHelper {
 
     protected static final String LOCATION_KEY = "location";
     protected static final String SYSTEM_ID_KEY = "system-id";
-    protected static final String USE_FOREIGN_IS_AS_SYSTEM_ID_KEY = "use-foreign-id-as-system-id";
+    protected static final String USE_FOREIGN_ID_AS_SYSTEM_ID_KEY = "use-foreign-id-as-system-id";
 
     @Autowired(required=false)
     private NodeDao nodeDao;
@@ -116,7 +116,7 @@ public class RpcTargetHelper {
 
             // Override using the foreign-id, if the flag is set, and we have
             // all of the necessary bits
-            if (Boolean.TRUE.toString().equalsIgnoreCase(getStringAttribute(USE_FOREIGN_IS_AS_SYSTEM_ID_KEY))
+            if (Boolean.TRUE.toString().equalsIgnoreCase(getStringAttribute(USE_FOREIGN_ID_AS_SYSTEM_ID_KEY))
                     && nodeId != null && nodeDao != null) {
                 final OnmsNode node = nodeDao.get(nodeId);
                 if (node != null && node.getForeignId() != null) {

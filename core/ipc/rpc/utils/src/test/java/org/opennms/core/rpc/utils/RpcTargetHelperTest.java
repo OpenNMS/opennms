@@ -95,7 +95,7 @@ public class RpcTargetHelperTest {
     public void canUseForeignIdAsSystemId() {
         final Map<String, Object> attributes = new HashMap<>();
         attributes.put(RpcTargetHelper.SYSTEM_ID_KEY, "yy");
-        attributes.put(RpcTargetHelper.USE_FOREIGN_IS_AS_SYSTEM_ID_KEY, Boolean.TRUE.toString());
+        attributes.put(RpcTargetHelper.USE_FOREIGN_ID_AS_SYSTEM_ID_KEY, Boolean.TRUE.toString());
 
         final OnmsNode node = mock(OnmsNode.class);
         when(node.getForeignId()).thenReturn("aa");
