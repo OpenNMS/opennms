@@ -193,6 +193,8 @@ public class MinionHeartbeatOutageIT {
         );
 
         // Make sure that the expected events are present
+
+        /*
         assertEquals(1, DaoUtils.countMatchingCallable(
             getDaoFactory().getDao(EventDaoHibernate.class),
             new CriteriaBuilder(OnmsEvent.class)
@@ -202,6 +204,20 @@ public class MinionHeartbeatOutageIT {
             .like("eventParms", String.format("%%%s=%s%%", EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, "MINION"))
             .toCriteria()
             ).call().intValue()
+        );
+        */
+
+        assertEquals(1,
+            getDaoFactory().getDao(EventDaoHibernate.class).findMatching(
+                new CriteriaBuilder(OnmsEvent.class)
+                    .eq("eventUei", EventConstants.MONITORING_SYSTEM_ADDED_UEI).toCriteria()).stream()
+                    .filter(e -> e.getEventParameters().stream()
+                            .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_TYPE.equals(p.getName()) && OnmsMonitoringSystem.TYPE_MINION.equals(p.getValue())))
+                    .filter(e -> e.getEventParameters().stream()
+                            .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_ID.equals(p.getName()) && "00000000-0000-0000-0000-000000ddba11".equals(p.getValue())))
+                    .filter(e -> e.getEventParameters().stream()
+                            .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_LOCATION.equals(p.getName()) && "MINION".equals(p.getValue())))
+                    .count()
         );
 
         assertEquals(0, DaoUtils.countMatchingCallable(
