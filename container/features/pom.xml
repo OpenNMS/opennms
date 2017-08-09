@@ -343,7 +343,7 @@
             <feature>ifttt-integration</feature>
             
             <!-- Product Keys (Used by Subscription Checker)-->
-            <repository>productkeys.feature</repository>
+            <feature>productkeys.feature</feature>
             
             <!-- Subscription Checker -->
             <feature>subscription-checker</feature>

@@ -14,10 +14,10 @@
   <packaging>pom</packaging>
   <version>21.0.0-SNAPSHOT</version>
   <name>productkeys.parent</name>
-  <description>productkeys Parent Project</description>
+  <description>OpenNMS :: ProductKeys :: Generator :: Parent</description>
 
   <properties>
-    <!-- these properties are substituted -->
+    <!-- these properties are substituted by calling script -->
     <productName>productNameNotSet</productName>
     <productVersion>9.9.9-SNAPSHOT</productVersion>
     <productId>${productName}/${productVersion}</productId>

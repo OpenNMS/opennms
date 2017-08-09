@@ -15,6 +15,7 @@
   </properties>
 
   <modules>
+    <module>productkeys</module>
     <module>subscription-checker</module>
   </modules>
 </project>
