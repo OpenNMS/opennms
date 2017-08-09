@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <global>
+        <security>
+            <doNotOverride>logmsg</doNotOverride>
+            <doNotOverride>operaction</doNotOverride>
+            <doNotOverride>autoaction</doNotOverride>
+            <doNotOverride>tticket</doNotOverride>
+            <doNotOverride>script</doNotOverride>
+        </security>
+    </global>
+</events>
