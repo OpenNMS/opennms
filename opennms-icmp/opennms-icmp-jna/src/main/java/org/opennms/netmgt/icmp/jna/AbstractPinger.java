@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.icmp.jna;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,13 +88,13 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
         m_thread = null;
     }
 
-    public void closeSocket() {
+    public void closeSocket() throws IOException {
         if (getPingSocket() != null) {
             getPingSocket().close();
         }
     }
 
-    abstract public void ping(T addr, int identifier, int sequenceNumber, long threadId, long count, long interval, int packetSize) throws InterruptedException;
+    abstract public void ping(T addr, int identifier, int sequenceNumber, long threadId, long count, long interval, int packetSize) throws InterruptedException, IOException;
 
     public void addPingReplyListener(PingReplyListener listener) {
         m_listeners.add(listener);

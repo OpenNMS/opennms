@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,12 @@
 
 package org.opennms.jicmp.standalone;
 
+import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
 import org.opennms.jicmp.ip.ICMPPacket.Type;
@@ -61,7 +62,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
             packet.setType(Type.EchoRequest);
             packet.getContentBuffer().putLong(System.nanoTime());
             packet.getContentBuffer().putLong(System.nanoTime());
-            getPingSocket().send(packet.toDatagramPacket(InetAddress.getLocalHost()));
+            getPingSocket().send(packet.toDatagramPacket(InetAddressUtils.getLocalHostAddress()));
         }
     }
     
@@ -101,7 +102,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
     }
     
     @Override
-    public PingReplyMetric ping(final Inet4Address addr, final int id, final int sequenceNumber, final int count, final long interval) throws InterruptedException {
+    public PingReplyMetric ping(final Inet4Address addr, final int id, final int sequenceNumber, final int count, final long interval) throws InterruptedException, IOException {
         PingReplyMetric metric = new PingReplyMetric(count, interval);
         addPingReplyListener(metric);
         final NativeDatagramSocket socket = getPingSocket();

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,7 @@ package org.opennms.jicmp.jna;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.net.UnknownHostException;
+import java.net.SocketException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +40,6 @@ import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-/**
- * NativeDatagramSocket
- *
- * @author brozow
- */
 public abstract class NativeDatagramSocket implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NativeDatagramSocket.class);
 
@@ -75,12 +70,14 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     // platform-specific  :/
     // public static final int IPV6_TCLASS = 36;
 
+    private static ThreadLocal<String> m_classPrefix = new ThreadLocal<>();
+
     public NativeDatagramSocket() {
         if (AF_INET6 == -1) {
             throw new UnsupportedPlatformException(System.getProperty("os.name"));
         }
     }
-    
+
     public static NativeDatagramSocket create(final int family, final int protocol, final int listenPort) throws Exception {
         final String implClassName = NativeDatagramSocket.getImplementationClassName(family);
         LOG.debug("{}({}, {}, {})", implClassName, family, protocol, listenPort);
@@ -98,15 +95,18 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     private static String getClassPackage() {
         return NativeDatagramSocket.class.getPackage().getName();
     }
-    
+
     private static String getClassPrefix() {
-        return Platform.isWindows() ? "Win32" 
-              : Platform.isSolaris() ? "Sun" 
-              : (Platform.isMac() || Platform.isFreeBSD() || Platform.isOpenBSD()) ? "BSD" 
-              : "Unix";
+        if (m_classPrefix.get() == null) {
+            m_classPrefix.set(Platform.isWindows() ? "Win32" 
+                            : Platform.isSolaris() ? "Sun" 
+                            : (Platform.isMac() || Platform.isFreeBSD() || Platform.isOpenBSD()) ? "BSD" 
+                            : "Unix");
+        }
+        return m_classPrefix.get();
     }
 
-    private static String getFamilyPrefix(int family) {
+    private static String getFamilyPrefix(final int family) {
         if (AF_INET == family) {
             return "V4";
         } else if (AF_INET6 == family) {
@@ -115,13 +115,13 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
             throw new IllegalArgumentException("Unsupported Protocol Family: "+ family);
         }
     }
-    
+
     private static String getImplementationClassName(int family) {
-        return NativeDatagramSocket.getClassPackage()+
-            "."+
-            NativeDatagramSocket.getClassPrefix()+
-            NativeDatagramSocket.getFamilyPrefix(family)+
-            "NativeSocket";
+        return new StringBuffer(NativeDatagramSocket.getClassPackage())
+                .append(".")
+                .append(NativeDatagramSocket.getClassPrefix())
+                .append(NativeDatagramSocket.getFamilyPrefix(family))
+                .append("NativeSocket").toString();
     }
 
     public native String strerror(int errnum);
@@ -130,20 +130,26 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     public void allowFragmentation(final int level, final int option_name, final boolean frag) throws IOException {
         final int socket = getSock();
         if (socket < 0) {
-            throw new IOException("Invalid socket!");
+            throw new SocketException("Invalid socket!");
         }
         final IntByReference dontfragment = new IntByReference(frag == true? 0 : 1);
         try {
             setsockopt(socket, level, option_name, dontfragment.getPointer(), Pointer.SIZE);
         } catch (final LastErrorException e) {
-            throw new IOException("setsockopt: " + strerror(e.getErrorCode()));
+            throw translateException(e);
         }
     }
 
     public abstract int getSock();
     public abstract void allowFragmentation(boolean frag) throws IOException;
     public abstract void setTrafficClass(int tc) throws IOException;
-    public abstract int receive(NativeDatagramPacket p) throws UnknownHostException;
-    public abstract int send(NativeDatagramPacket p);
-    public abstract void close();
+    public abstract int receive(NativeDatagramPacket p) throws IOException;
+    public abstract int send(NativeDatagramPacket p) throws IOException;
+    public abstract void close() throws IOException;
+
+    protected abstract IOException translateException(final LastErrorException e);
+
+    public String getError(final LastErrorException e) {
+        return this.strerror(e.getErrorCode());
+    }
 }

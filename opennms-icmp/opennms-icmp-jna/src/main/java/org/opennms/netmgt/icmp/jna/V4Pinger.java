@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.icmp.jna;
 
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -97,7 +98,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
     }
     
     @Override
-    public void ping(final Inet4Address addr, final int identifier, final int sequenceNumber, final long threadId, final long count, final long interval, final int packetSize) throws InterruptedException {
+    public void ping(final Inet4Address addr, final int identifier, final int sequenceNumber, final long threadId, final long count, final long interval, final int packetSize) throws InterruptedException, IOException {
         final NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
             final V4PingRequest request = new V4PingRequest(identifier, i, threadId,packetSize);

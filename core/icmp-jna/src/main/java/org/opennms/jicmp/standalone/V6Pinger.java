@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.jicmp.standalone;
 
+import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -100,7 +101,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
     }
     
     @Override
-    public PingReplyMetric ping(final Inet6Address addr, final int id, final int sequenceNumber, final int count, final long interval) throws InterruptedException {
+    public PingReplyMetric ping(final Inet6Address addr, final int id, final int sequenceNumber, final int count, final long interval) throws InterruptedException, IOException {
         final PingReplyMetric metric = new PingReplyMetric(count, interval);
         addPingReplyListener(metric);
         final NativeDatagramSocket socket = getPingSocket();

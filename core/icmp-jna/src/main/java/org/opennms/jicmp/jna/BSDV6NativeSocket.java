@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,12 +37,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-/**
- * UnixNativeSocketFactory
- *
- * @author brozow
- */
-public class BSDV6NativeSocket extends NativeDatagramSocket {
+public class BSDV6NativeSocket extends BSDNativeSocket {
 
 	static {
 		Native.register((String)null);
@@ -65,12 +60,12 @@ public class BSDV6NativeSocket extends NativeDatagramSocket {
 	public native int close(int socket) throws LastErrorException;
 
 	@Override
-	public void setTrafficClass(final int tc) throws LastErrorException {
+	public void setTrafficClass(final int tc) throws IOException {
 	    final IntByReference tc_ptr = new IntByReference(tc);
 	    try {
 	        setsockopt(getSock(), IPPROTO_IPV6, IPV6_TCLASS, tc_ptr.getPointer(), Pointer.SIZE);
 	    } catch (final LastErrorException e) {
-	        throw new RuntimeException("setsockopt: " + strerror(e.getErrorCode()));
+	        throw translateException(e);
 	    }
 	}
 
@@ -80,7 +75,8 @@ public class BSDV6NativeSocket extends NativeDatagramSocket {
         }
 
 	@Override
-	public int receive(final NativeDatagramPacket p) {
+	public int receive(final NativeDatagramPacket p) throws IOException {
+	    try {
 		final bsd_sockaddr_in6 in_addr = new bsd_sockaddr_in6();
 		final int[] szRef = new int[] { in_addr.size() };
 		final int socket = getSock();
@@ -94,21 +90,32 @@ public class BSDV6NativeSocket extends NativeDatagramSocket {
 		p.setPort(in_addr.getPort());
 
 		return n;
+	    } catch (final LastErrorException e) {
+	        throw translateException(e);
+	    }
 	}
 
 	@Override
-	public int send(final NativeDatagramPacket p) {
+	public int send(final NativeDatagramPacket p) throws IOException {
+	    try {
 		final ByteBuffer buf = p.getContent();
 		final bsd_sockaddr_in6 destAddr = new bsd_sockaddr_in6(p.getAddress(), p.getPort());
 		final int socket = getSock();
 		SocketUtils.assertSocketValid(socket);
 		return sendto(socket, buf, buf.remaining(), 0, destAddr, destAddr.size());
+            } catch (final LastErrorException e) {
+                throw translateException(e);
+	    }
 	}
 
 	@Override
-	public void close() {
+	public void close() throws IOException {
+	    try {
 		close(m_sock);
 		m_sock = -1;
+            } catch (final LastErrorException e) {
+                throw translateException(e);
+            }
 	}
 
 	@Override

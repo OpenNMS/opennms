@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,8 +32,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
 
-import java.net.InetAddress;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.opennms.core.utils.InetAddressUtils;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Native;
@@ -109,7 +110,6 @@ public class ByteBufferTest {
          *  attempt to decode a string from a byte buffer without
          *  accessing the byte array that may or may NOT be behind it
          */
-        
         ByteBuffer buf = StandardCharsets.US_ASCII.encode("OpenNMS!");
         
         String decoded = StandardCharsets.US_ASCII.decode(buf).toString();
@@ -119,6 +119,7 @@ public class ByteBufferTest {
     
     @Test(timeout=30000)
     public void testPassing() throws Exception {
+        assumeTrue(Boolean.getBoolean("runPingTests"));
         if (Platform.isMac() || Platform.isFreeBSD() || Platform.isOpenBSD()) {
             printf("sockaddr_in is incompatible with bsd_sockaddr_in\n");
             return;
@@ -140,9 +141,8 @@ public class ByteBufferTest {
 
             socket = socket(NativeDatagramSocket.PF_INET, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP);
 
-            sockaddr_in destAddr = new sockaddr_in(InetAddress.getLocalHost(), port);
+            sockaddr_in destAddr = new sockaddr_in(InetAddressUtils.getLocalHostAddress(), port);
             sendto(socket, buf, buf.remaining(), 0, destAddr, destAddr.size());
-
 
             sockaddr_in in_addr = new sockaddr_in();
             IntByReference szRef = new IntByReference(in_addr.size());

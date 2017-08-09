@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,7 +29,6 @@
 package org.opennms.jicmp.jna;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
@@ -38,12 +37,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-/**
- * UnixNativeSocketFactory
- *
- * @author brozow
- */
-public class SunV6NativeSocket extends NativeDatagramSocket {
+public class SunV6NativeSocket extends SunNativeSocket {
 
     static {
         Native.register((String)null);
@@ -52,7 +46,7 @@ public class SunV6NativeSocket extends NativeDatagramSocket {
     private static final int IPV6_TCLASS = 0x26;
     private final int m_sock;
 
-    public SunV6NativeSocket(int family, int type, int protocol, final int listenPort) throws Exception {
+    public SunV6NativeSocket(final int family, final int type, final int protocol, final int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
         final sun_sockaddr_in6 in_addr = new sun_sockaddr_in6(listenPort);
         bind(m_sock, in_addr, in_addr.size());
@@ -71,12 +65,12 @@ public class SunV6NativeSocket extends NativeDatagramSocket {
     public native int close(int socket) throws LastErrorException;
 
     @Override
-    public void setTrafficClass(final int tc) throws LastErrorException {
+    public void setTrafficClass(final int tc) throws LastErrorException, IOException {
         final IntByReference tc_ptr = new IntByReference(tc);
         try {
             setsockopt(getSock(), IPPROTO_IPV6, IPV6_TCLASS, tc_ptr.getPointer(), Pointer.SIZE);
         } catch (final LastErrorException e) {
-            throw new RuntimeException("setsockopt: " + strerror(e.getErrorCode()));
+            throw translateException(e);
         }
     }
 
@@ -86,30 +80,42 @@ public class SunV6NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int receive(NativeDatagramPacket p) throws UnknownHostException {
-        sun_sockaddr_in6 in_addr = new sun_sockaddr_in6();
-        int[] szRef = new int[] { in_addr.size() };
-        
-        ByteBuffer buf = p.getContent();
-        
-        int n = recvfrom(getSock(), buf, buf.capacity(), 0, in_addr, szRef);
-        p.setLength(n);
-        p.setAddress(in_addr.getAddress());
-        p.setPort(in_addr.getPort());
-        
-        return n;
+    public int receive(final NativeDatagramPacket p) throws IOException {
+        try {
+            final sun_sockaddr_in6 in_addr = new sun_sockaddr_in6();
+            final int[] szRef = new int[] { in_addr.size() };
+
+            final ByteBuffer buf = p.getContent();
+
+            final int n = recvfrom(getSock(), buf, buf.capacity(), 0, in_addr, szRef);
+            p.setLength(n);
+            p.setAddress(in_addr.getAddress());
+            p.setPort(in_addr.getPort());
+
+            return n;
+        } catch (final LastErrorException e) {
+            throw translateException(e);
+        }
     }
 
     @Override
-    public int send(NativeDatagramPacket p) {
-        ByteBuffer buf = p.getContent();
-        sun_sockaddr_in6 destAddr = new sun_sockaddr_in6(p.getAddress(), p.getPort());
-        return sendto(getSock(), buf, buf.remaining(), 0, destAddr, destAddr.size());
+    public int send(final NativeDatagramPacket p) throws IOException {
+        try {
+            final ByteBuffer buf = p.getContent();
+            final sun_sockaddr_in6 destAddr = new sun_sockaddr_in6(p.getAddress(), p.getPort());
+            return sendto(getSock(), buf, buf.remaining(), 0, destAddr, destAddr.size());
+        } catch (final LastErrorException e) {
+            throw translateException(e);
+        }
     }
 
     @Override
-    public void close() {
-        close(getSock());
+    public void close() throws IOException {
+        try {
+            close(getSock());
+        } catch (final LastErrorException e) {
+            throw translateException(e);
+        }
     }
 
     @Override

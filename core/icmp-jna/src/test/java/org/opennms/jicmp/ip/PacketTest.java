@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,10 +33,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.jicmp.ip.ICMPPacket.Type;
 import org.opennms.jicmp.ip.IPPacket.Protocol;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
@@ -83,8 +83,8 @@ public class PacketTest {
         assertThat(pkt.getHeaderLength(), is(equalTo(20)));
         assertThat(pkt.getTimeToLive(), is(equalTo(128)));
         assertThat(pkt.getProtocol(), is(equalTo(Protocol.ICMP)));
-        assertThat(pkt.getSourceAddress(), is(equalTo(InetAddress.getByName("127.0.0.1"))));
-        assertThat(pkt.getDestinationAddress(), is(equalTo(InetAddress.getByName("127.0.0.1"))));
+        assertThat(pkt.getSourceAddress(), is(equalTo(InetAddressUtils.addr("127.0.0.1"))));
+        assertThat(pkt.getDestinationAddress(), is(equalTo(InetAddressUtils.addr("127.0.0.1"))));
         
         // payload 64 bytes: ICMP header (8 bytes) followed by byte values 1, 2, 3, ... 55, 56 
         ByteBuffer payload = pkt.getPayload();
@@ -154,9 +154,9 @@ public class PacketTest {
             assertThat(bytes[8+i], is(equalTo((byte)i)));
         }
         
-        NativeDatagramPacket pkt = echoRequest.toDatagramPacket(InetAddress.getByName("127.0.0.1"));
+        NativeDatagramPacket pkt = echoRequest.toDatagramPacket(InetAddressUtils.addr("127.0.0.1"));
         
-        assertThat(pkt.getAddress(), is(equalTo(InetAddress.getByName("127.0.0.1"))));
+        assertThat(pkt.getAddress(), is(equalTo(InetAddressUtils.addr("127.0.0.1"))));
         assertThat(pkt.getPort(), is(equalTo(0)));
         
         ByteBuffer data = pkt.getContent();

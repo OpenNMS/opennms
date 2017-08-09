@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.*;
 
 import java.net.InetAddress;
 
@@ -54,7 +55,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         "classpath:/META-INF/opennms/test/detectors.xml",
         "classpath:/META-INF/opennms/detectors.xml"
 })
-public class IcmpDetectorTest {
+public class IcmpDetectorIT {
 
     @Autowired
     private IcmpDetectorFactory m_detectorFactory;
@@ -66,12 +67,12 @@ public class IcmpDetectorTest {
 
     @Before
     public void setUp() throws Exception {
+        assumeTrue(Boolean.getBoolean("runPingTests"));
         MockLogAppender.setupLogging();
         getPingerFactory().reset();
     }
 
     @Test(timeout=20000)
-    @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorSuccessJni() throws Exception {
         getPingerFactory().setInstance(0, true, new JniPinger());
         m_icmpDetector = m_detectorFactory.createDetector();
@@ -87,7 +88,6 @@ public class IcmpDetectorTest {
     }
 
     @Test(timeout=20000)
-    @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorFailJni() throws Exception {
         getPingerFactory().setInstance(0, true, new JniPinger());
         m_icmpDetector = m_detectorFactory.createDetector();
@@ -95,7 +95,6 @@ public class IcmpDetectorTest {
     }
 
     @Test(timeout=20000)
-    @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorSuccess() throws Exception {
         getPingerFactory().setInstance(0, true, new JnaPinger());
         m_icmpDetector = m_detectorFactory.createDetector();
@@ -111,7 +110,6 @@ public class IcmpDetectorTest {
     }
 
     @Test(timeout=20000)
-    @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorFail() throws Exception {
         getPingerFactory().setInstance(0, true, new JnaPinger());
         m_icmpDetector = m_detectorFactory.createDetector();

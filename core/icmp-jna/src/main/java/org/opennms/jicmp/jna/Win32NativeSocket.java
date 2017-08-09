@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,45 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.jicmp.standalone;
+package org.opennms.jicmp.jna;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
-import org.opennms.jicmp.ip.ICMPEchoPacket;
-import org.opennms.jicmp.jna.NativeDatagramPacket;
-import org.opennms.jicmp.jna.NativeDatagramSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class V4PingRequest extends ICMPEchoPacket {
-    
-    public V4PingRequest() {
-        super(64);
-        setType(Type.EchoRequest);
-        setCode(0);
-    }
-    
-    public V4PingRequest(int id, int seqNum) {
-        super(64);
-        setType(Type.EchoRequest);
-        setCode(0);
-        setIdentifier(id);
-        setSequenceNumber(seqNum);
-        ByteBuffer buf = getContentBuffer();
-        for(int b = 0; b < 56; b++) {
-            buf.put((byte)b);
-        }
-    }
+import com.sun.jna.LastErrorException;
+
+public abstract class Win32NativeSocket extends NativeDatagramSocket {
+    private static final Logger LOG = LoggerFactory.getLogger(Win32NativeSocket.class);
+
+    private boolean[] logged = new boolean[256];
 
     @Override
-    public NativeDatagramPacket toDatagramPacket(InetAddress destinationAddress) {
-        ByteBuffer contentBuffer = getContentBuffer();
-        contentBuffer.putLong(V4PingReply.COOKIE);
-        contentBuffer.putLong(System.nanoTime());
-        return super.toDatagramPacket(destinationAddress);
+    protected IOException translateException(final LastErrorException e) {
+        final int errorCode = e.getErrorCode();
+
+        IOException ret = new IOException(e.getMessage());
+        switch (errorCode) {
+        default:
+            if (!logged[errorCode]) {
+                LOG.warn("Unhandled errno {}={}", errorCode, this.strerror(errorCode), e);
+                logged[errorCode] = true;
+            }
+            break;
+        }
+        if (ret != null) {
+            ret.initCause(e);
+        }
+        LOG.debug("translate: returning {}", ret, ret);
+        return ret;
     }
 
-    public void send(NativeDatagramSocket socket, InetAddress addr) throws IOException {
-        socket.send(toDatagramPacket(addr));
-    }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.jicmp.standalone;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
@@ -63,7 +64,7 @@ class V6PingRequest extends ICMPv6EchoPacket {
         return super.toDatagramPacket(destinationAddress);
     }
 
-    public void send(NativeDatagramSocket socket, InetAddress addr) {
+    public void send(NativeDatagramSocket socket, InetAddress addr) throws IOException {
         socket.send(toDatagramPacket(addr));
     }
 }

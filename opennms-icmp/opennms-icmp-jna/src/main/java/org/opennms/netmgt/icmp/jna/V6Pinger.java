@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.icmp.jna;
 
+import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -106,7 +107,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
     }
     
     @Override
-    public void ping(final Inet6Address addr, final int identifier, final int sequenceNumber, final long threadId, final long count, final long interval, final int packetSize) throws InterruptedException {
+    public void ping(final Inet6Address addr, final int identifier, final int sequenceNumber, final long threadId, final long count, final long interval, final int packetSize) throws InterruptedException, IOException {
         final NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
             final V6PingRequest request = new V6PingRequest(identifier, i, threadId,packetSize);

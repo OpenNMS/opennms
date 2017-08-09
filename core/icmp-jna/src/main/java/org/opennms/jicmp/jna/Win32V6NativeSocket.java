@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,19 +29,13 @@
 package org.opennms.jicmp.jna;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Native;
 
-/**
- * UnixNativeSocketFactory
- *
- * @author brozow
- */
-public class Win32V6NativeSocket extends NativeDatagramSocket {
+public class Win32V6NativeSocket extends Win32NativeSocket {
     
     static {
         Native.register((String)null);
@@ -49,7 +43,7 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
 
     private final int m_sock;
 
-    public Win32V6NativeSocket(int family, int type, int protocol, final int listenPort) throws Exception {
+    public Win32V6NativeSocket(final int family, final int type, final int protocol, final int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
         final sockaddr_in6 addr_in = new sockaddr_in6(listenPort);
         bind(m_sock, addr_in, addr_in.size());
@@ -76,30 +70,42 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int receive(NativeDatagramPacket p) throws UnknownHostException {
-        sockaddr_in6 in_addr = new sockaddr_in6();
-        int[] szRef = new int[] { in_addr.size() };
-        
-        ByteBuffer buf = p.getContent();
-        
-        int n = recvfrom(getSock(), buf, buf.capacity(), 0, in_addr, szRef);
-        p.setLength(n);
-        p.setAddress(in_addr.getAddress());
-        p.setPort(in_addr.getPort());
-        
-        return n;
+    public int receive(final NativeDatagramPacket p) throws IOException {
+        try {
+            final sockaddr_in6 in_addr = new sockaddr_in6();
+            final int[] szRef = new int[] { in_addr.size() };
+
+            final ByteBuffer buf = p.getContent();
+
+            final int n = recvfrom(getSock(), buf, buf.capacity(), 0, in_addr, szRef);
+            p.setLength(n);
+            p.setAddress(in_addr.getAddress());
+            p.setPort(in_addr.getPort());
+
+            return n;
+        } catch (final LastErrorException e) {
+            throw translateException(e);
+        }
     }
 
     @Override
-    public int send(NativeDatagramPacket p) {
-        ByteBuffer buf = p.getContent();
-        sockaddr_in6 destAddr = new sockaddr_in6(p.getAddress(), p.getPort());
-        return sendto(getSock(), buf, buf.remaining(), 0, destAddr, destAddr.size());
+    public int send(final NativeDatagramPacket p) throws IOException {
+        try {
+            final ByteBuffer buf = p.getContent();
+            final sockaddr_in6 destAddr = new sockaddr_in6(p.getAddress(), p.getPort());
+            return sendto(getSock(), buf, buf.remaining(), 0, destAddr, destAddr.size());
+        } catch (final LastErrorException e) {
+            throw translateException(e);
+        }
     }
 
     @Override
-    public void close() {
-        closesocket(getSock());
+    public void close() throws IOException {
+        try {
+            closesocket(getSock());
+        } catch (final LastErrorException e) {
+            throw translateException(e);
+        }
     }
 
     @Override

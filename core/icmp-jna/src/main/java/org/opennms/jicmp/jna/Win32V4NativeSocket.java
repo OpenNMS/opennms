@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,12 +35,7 @@ import java.nio.ByteBuffer;
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Native;
 
-/**
- * UnixNativeSocketFactory
- *
- * @author brozow
- */
-public class Win32V4NativeSocket extends NativeDatagramSocket {
+public class Win32V4NativeSocket extends Win32NativeSocket {
     
     static {
         Native.register((String)null);
@@ -48,7 +43,7 @@ public class Win32V4NativeSocket extends NativeDatagramSocket {
 
     private final int m_sock;
 
-    public Win32V4NativeSocket(int family, int type, int protocol, final int listenPort) throws Exception {
+    public Win32V4NativeSocket(final int family, final int type, final int protocol, final int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
         final sockaddr_in addr_in = new sockaddr_in(listenPort);
         bind(m_sock, addr_in, addr_in.size());
@@ -64,8 +59,12 @@ public class Win32V4NativeSocket extends NativeDatagramSocket {
 
     public native int closesocket(int socket) throws LastErrorException;
 
-    public int close(int socket) throws LastErrorException {
-        return closesocket(socket);
+    public int close(int socket) throws IOException {
+        try {
+            return closesocket(socket);
+        } catch (final LastErrorException e) {
+            throw translateException(e);
+        }
     }
 
     @Override
@@ -74,7 +73,7 @@ public class Win32V4NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public void setTrafficClass(final int tc) throws LastErrorException {
+    public void setTrafficClass(final int tc) throws IOException {
         // it appears that IP_TOS and IPV6_TCLASS do not exist in Win32 anymore
     }
 
@@ -84,29 +83,37 @@ public class Win32V4NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int receive(NativeDatagramPacket p) {
-        sockaddr_in in_addr = new sockaddr_in();
-        int[] szRef = new int[] { in_addr.size() };
-        
-        ByteBuffer buf = p.getContent();
-        
-        int n = recvfrom(getSock(), buf, buf.capacity(), 0, in_addr, szRef);
-        p.setLength(n);
-        p.setAddress(in_addr.getAddress());
-        p.setPort(in_addr.getPort());
-        
-        return n;
+    public int receive(final NativeDatagramPacket p) throws IOException {
+        try {
+            final sockaddr_in in_addr = new sockaddr_in();
+            final int[] szRef = new int[] { in_addr.size() };
+
+            final ByteBuffer buf = p.getContent();
+
+            final int n = recvfrom(getSock(), buf, buf.capacity(), 0, in_addr, szRef);
+            p.setLength(n);
+            p.setAddress(in_addr.getAddress());
+            p.setPort(in_addr.getPort());
+
+            return n;
+        } catch (final LastErrorException e) {
+            throw translateException(e);
+        }
     }
 
     @Override
-    public int send(NativeDatagramPacket p) {
-        sockaddr_in destAddr = new sockaddr_in(p.getAddress(), p.getPort());
-        ByteBuffer buf = p.getContent();
-        return sendto(getSock(), buf, buf.remaining(), 0, destAddr, destAddr.size());
+    public int send(final NativeDatagramPacket p) throws IOException {
+        try {
+            final sockaddr_in destAddr = new sockaddr_in(p.getAddress(), p.getPort());
+            final ByteBuffer buf = p.getContent();
+            return sendto(getSock(), buf, buf.remaining(), 0, destAddr, destAddr.size());
+        } catch (final LastErrorException e) {
+            throw translateException(e);
+        }
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
         close(getSock());
     }
 

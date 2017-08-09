@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.icmp.jna;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
@@ -113,7 +114,7 @@ class V4PingRequest extends ICMPEchoPacket {
         return super.toDatagramPacket(destinationAddress);
     }
 
-    public void send(NativeDatagramSocket socket, InetAddress addr) {
+    public void send(NativeDatagramSocket socket, InetAddress addr) throws IOException {
         socket.send(toDatagramPacket(addr));
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.jicmp.standalone;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +89,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
         m_thread = null;
     }
 
-    public void closeSocket() {
+    public void closeSocket() throws IOException {
         if (getPingSocket() != null) {
             getPingSocket().close();
         }
@@ -98,13 +99,13 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
         return m_listeners;
     }
 
-    abstract public PingReplyMetric ping(T addr, int id, int sequenceNumber, int count, long interval) throws InterruptedException;
+    abstract public PingReplyMetric ping(T addr, int id, int sequenceNumber, int count, long interval) throws InterruptedException, IOException;
 
     public void addPingReplyListener(PingReplyListener listener) {
         m_listeners.add(listener);
     }
 
-     PingReplyMetric ping(T addr4)  throws InterruptedException {
+     PingReplyMetric ping(T addr4)  throws InterruptedException, IOException {
         Thread t = new Thread(this);
         t.start();
         return ping(addr4, 1234, 1, 10, 1000);
