@@ -14,9 +14,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-        <!-- opennms/features/subscription/subscription-checker -->
+    <!-- opennms/features/subscription/subscription-checker -->
     <productKeysFile>${project.basedir}/../../../productkeys.properties</productKeysFile>
   </properties>
+
+  <modules>
+    <module>feature</module>
+  </modules>
 
   <build>
     <plugins>
@@ -158,6 +162,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>1.6.0</version>
+        <inherited>false</inherited>
         <executions>
           <execution>
             <phase>generate-sources</phase>
@@ -177,7 +182,7 @@
             <argument>-DproductName=${subscriptionName}</argument>
             <argument>-DproductVersion=${subscriptionVersion}</argument>
             <argument>-DproductGroupId=${subscriptionGroupId}</argument>
-            
+
             <argument>-DregenerateSubscription=${regenerateSubscription}</argument>
 
             <argument>-Dopennms-repo-ref=scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/maven2</argument>
