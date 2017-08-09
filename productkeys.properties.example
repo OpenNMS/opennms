@@ -15,7 +15,7 @@ subscriptionGroupId=org.opennms.authenticator
 subscriptionCheckEnabled=true
 
 # Subscription licence will be regenerated on each build. 
-# Set this false once you have a permanent licence generated
+# Set this false once you have a permanent licence generated and deployed to a repo
 regenerateSubscription=true
 
 #org.opennms.subscription.groupid=org.opennms.plugin
