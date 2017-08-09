@@ -73,6 +73,10 @@ public class MultiEngineBuilder implements InitializingBean {
         public void tearDown() {
             // pass
         }
+
+        @Override
+        public void reloadConfig() {
+        }
         
     }
     

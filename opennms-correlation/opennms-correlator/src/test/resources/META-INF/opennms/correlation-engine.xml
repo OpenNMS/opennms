@@ -4,6 +4,7 @@
         http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
 
 	<bean name="testEngine" class="org.opennms.netmgt.correlation.TestEngine">
+		<property name="correlator" ref="correlator" />
 		<property name="eventIpcManager" ref="eventIpcManager"/>
 		<property name="scheduler">
 			<bean class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean" />
