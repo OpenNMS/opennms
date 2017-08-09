@@ -253,7 +253,7 @@ public class TerminalTest {
 
 	@Test
 	public void testToString() {
-		StringBuilder expected = new StringBuilder();
+		final StringBuilder expected = new StringBuilder();
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 80; j++) {
 				expected.append(" ");

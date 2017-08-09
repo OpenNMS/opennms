@@ -31,7 +31,6 @@ package org.opennms.core.utils;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -122,7 +121,7 @@ public abstract class StringUtils {
     private static class CommandArrayGenerator {
         private final ArrayList<String> m_segments = new ArrayList<String>();
         private boolean m_isInQuotes = false;
-        private StringBuffer m_segmentBuffer = new StringBuffer();
+        private StringBuilder m_segmentBuffer = new StringBuilder();
 
         public CommandArrayGenerator(String s) {
             if (s == null) {
@@ -165,7 +164,7 @@ public abstract class StringUtils {
             // Reset the segment if the buffer is not empty
             if (m_segmentBuffer.length() > 0) {
                 m_segments.add(m_segmentBuffer.toString());
-                m_segmentBuffer = new StringBuffer();
+                m_segmentBuffer = new StringBuilder();
             }
         }
 
@@ -222,7 +221,7 @@ public abstract class StringUtils {
      * Uses the Xalan javax.transform classes to indent an XML string properly
      * so that it is easier to read.
      */
-    public static String prettyXml(String xml) throws UnsupportedEncodingException, TransformerException {
+    public static String prettyXml(String xml) throws TransformerException {
         StringWriter out = new StringWriter();
 
         TransformerFactory transFactory = TransformerFactory.newInstance();

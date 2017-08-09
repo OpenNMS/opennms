@@ -117,7 +117,7 @@ public class AlertMapping {
     
     public String getTrapOid() {
         String[] oidComponents = getAlertCodeOidComponents();
-        StringBuilder trapOidBuilder = new StringBuilder("");
+        final StringBuilder trapOidBuilder = new StringBuilder("");
         for (int i = 0; i < (oidComponents.length - 2); i++) {
             trapOidBuilder.append(".").append(oidComponents[i]);
         }

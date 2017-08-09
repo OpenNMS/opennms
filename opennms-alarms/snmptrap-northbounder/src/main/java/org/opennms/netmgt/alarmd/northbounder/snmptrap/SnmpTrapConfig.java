@@ -315,7 +315,7 @@ public class SnmpTrapConfig {
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer("SnmpTrapConfig[")
+        final StringBuilder sb = new StringBuilder("SnmpTrapConfig[")
                 .append("enterpriseId=").append(enterpriseId)
                 .append(", generic=").append(generic)
                 .append(", specific=").append(specific)

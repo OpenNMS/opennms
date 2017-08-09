@@ -202,7 +202,7 @@ public class EventAnticipator implements EventListener {
             int anticipatedSize,
             int unanticipatedSize) {
 
-        StringBuffer problems = new StringBuffer();
+        final StringBuilder problems = new StringBuilder();
 
         Collection<Event> missingEvents = waitForAnticipated(wait);
 
@@ -245,7 +245,7 @@ public class EventAnticipator implements EventListener {
     }
 
     private static String listEvents(String prefix, Collection<Event> events) {
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
 
         for (final Event event : events) {
             b.append(prefix);

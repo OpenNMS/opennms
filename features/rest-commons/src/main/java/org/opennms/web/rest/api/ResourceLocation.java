@@ -50,7 +50,7 @@ public class ResourceLocation {
 
     private void setPath(String... path) {
         Objects.requireNonNull(path);
-        StringBuilder pathBuilder = new StringBuilder();
+        final StringBuilder pathBuilder = new StringBuilder();
         for (String eachPath : path) {
             pathBuilder.append(eachPath);
             if (!eachPath.endsWith("/")) {
@@ -62,7 +62,7 @@ public class ResourceLocation {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(version.getContextPath());
+        final StringBuilder builder = new StringBuilder(version.getContextPath());
         builder.append(path);
         String pathString = builder.toString();
         if (pathString.endsWith("/")) {

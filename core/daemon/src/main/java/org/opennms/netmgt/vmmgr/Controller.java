@@ -318,7 +318,7 @@ public class Controller {
 
         VirtualMachine vm = null;
 
-        StringBuffer vmNames = new StringBuffer();
+        final StringBuilder vmNames = new StringBuilder();
         boolean first = true;
 
         // Use the Attach API to enumerate all of the JVMs that are running as the same

@@ -140,7 +140,7 @@ public class ImportAssetsServlet extends HttpServlet {
                 }
             }
 
-            StringBuffer messageText = new StringBuffer();
+            final StringBuilder messageText = new StringBuilder();
             messageText.append("Successfully imported ").append(assets.size()).append(" asset");
             if (assets.size() > 1) {
                 messageText.append("s");

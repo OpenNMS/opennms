@@ -156,8 +156,8 @@ public class AssetGraphMLProvider implements EventListener {
 	 */
 	public synchronized void regenerateAllAssetTopologies(){
 		GeneratorConfigList configList = assetGraphDefinitionRepository.getAllConfigDefinitions();
-		StringBuffer logmsg = new StringBuffer("Regenerating All Asset Topologies succeeded for providerIds: ");
-		StringBuffer errmsg = new StringBuffer("Regenerate All Asset Topologies failed for providerIds: ");
+		final StringBuilder logmsg = new StringBuilder("Regenerating All Asset Topologies succeeded for providerIds: ");
+		final StringBuilder errmsg = new StringBuilder("Regenerate All Asset Topologies failed for providerIds: ");
 		boolean failed=false;
 		for(GeneratorConfig config : configList.getConfigs()){
 			final String providerId = config.getProviderId();

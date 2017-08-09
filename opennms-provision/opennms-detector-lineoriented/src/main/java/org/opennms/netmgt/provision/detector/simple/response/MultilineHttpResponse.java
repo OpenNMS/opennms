@@ -89,7 +89,7 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
     }
 
     private String getResponseListAsString(final Object[] array) {
-        final StringBuffer retVal = new StringBuffer();
+        final StringBuilder retVal = new StringBuilder();
         for(int i = 0; i < array.length; i++){
             retVal.append((String)array[i]);
         }

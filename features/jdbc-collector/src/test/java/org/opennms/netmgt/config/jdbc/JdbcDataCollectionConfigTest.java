@@ -145,7 +145,7 @@ public class JdbcDataCollectionConfigTest {
         JaxbUtils.marshal(jdcc, objectXML);
 
         // Read the example XML from src/test/resources
-        StringBuffer exampleXML = new StringBuffer();
+        final StringBuilder exampleXML = new StringBuilder();
         File jdbcCollectionConfig = new File(ClassLoader.getSystemResource("jdbc-datacollection-config.xml").getFile());
         assertTrue("jdbc-datacollection-config.xml is readable", jdbcCollectionConfig.canRead());
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(jdbcCollectionConfig), StandardCharsets.UTF_8));
@@ -182,8 +182,7 @@ public class JdbcDataCollectionConfigTest {
     }
     
     @SuppressWarnings("unchecked")
-    private DetailedDiff getDiff(StringWriter objectXML,
-            StringBuffer exampleXML) throws SAXException, IOException {
+    private DetailedDiff getDiff(StringWriter objectXML, StringBuilder exampleXML) throws SAXException, IOException {
         DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(exampleXML.toString(), objectXML.toString()));
         List<Difference> allDifferences = myDiff.getAllDifferences();
         if (allDifferences.size() > 0) {

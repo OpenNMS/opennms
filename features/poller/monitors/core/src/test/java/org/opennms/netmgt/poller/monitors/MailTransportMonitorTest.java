@@ -124,7 +124,7 @@ public class MailTransportMonitorTest {
     public void testLoadXmlProperties() throws InvalidPropertiesFormatException, IOException {
         Properties props = new Properties();
         
-        StringBuffer reader = new StringBuffer().append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") 
+        final StringBuilder reader = new StringBuilder().append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") 
                 .append("<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n") 
                 .append("<properties>\n") 
                 .append("<comment>Hi</comment>\n") 

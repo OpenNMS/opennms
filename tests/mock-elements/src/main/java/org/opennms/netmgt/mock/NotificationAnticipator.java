@@ -149,7 +149,7 @@ public class NotificationAnticipator {
 
     public void verifyAnticipated(long lastNotifyTime, long waitTime,
             long sleepTime) {
-        StringBuffer problems = new StringBuffer();
+        final StringBuilder problems = new StringBuilder();
 
         long totalWaitTime = Math.max(0, lastNotifyTime + waitTime
                 - System.currentTimeMillis());
@@ -196,7 +196,7 @@ public class NotificationAnticipator {
 
     private static String listNotifications(String prefix,
             Collection<?> notifications) {
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
 
         for (Object o : notifications) {
             MockNotification notification;

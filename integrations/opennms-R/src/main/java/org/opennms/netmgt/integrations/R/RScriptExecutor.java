@@ -138,7 +138,7 @@ public class RScriptExecutor {
 
         // Convert the input matrix to a CSV string which will be passed to the script via stdin.
         // The table may be large, so we try and avoid writing it to disk
-        StringBuilder inputTableAsCsv;
+        final StringBuilder inputTableAsCsv;
         try {
             inputTableAsCsv = toCsv(input.getTable());
         } catch (IOException e) {

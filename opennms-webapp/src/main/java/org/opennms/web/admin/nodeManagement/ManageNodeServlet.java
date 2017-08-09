@@ -258,7 +258,7 @@ public class ManageNodeServlet extends HttpServlet {
     /**
      */
     private static void manageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
-        StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
+        final StringBuilder query = new StringBuilder("UPDATE ipinterface SET isManaged = ");
         query.append("'M'").append(" WHERE ipaddr IN (");
 
         for (int i = 0; i < interfaces.size(); i++) {
@@ -278,7 +278,7 @@ public class ManageNodeServlet extends HttpServlet {
     /**
      */
     private static void unmanageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
-        StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
+        final StringBuilder query = new StringBuilder("UPDATE ipinterface SET isManaged = ");
         query.append("'F'").append(" WHERE ipaddr IN (");
 
         for (int i = 0; i < interfaces.size(); i++) {

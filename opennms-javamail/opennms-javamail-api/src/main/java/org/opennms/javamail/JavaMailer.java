@@ -345,7 +345,7 @@ public class JavaMailer {
      * @return
      */
     private String createSendLogMsg() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append("\n\tTo: ");
         sb.append(getTo());
         sb.append("\n\tFrom: ");

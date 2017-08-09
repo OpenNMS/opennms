@@ -206,7 +206,7 @@ abstract public class XmlTest<T> {
     }
 
     @Test
-    public void marshalJaxbUnmarshalJaxb() throws Exception {
+    public void marshalJaxbUnmarshalJaxb() {
         final String xml = marshalToXmlWithJaxb();
         final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
         LOG.debug("Sample object: {}\n\nJAXB object: {}", getSampleObject(), obj);

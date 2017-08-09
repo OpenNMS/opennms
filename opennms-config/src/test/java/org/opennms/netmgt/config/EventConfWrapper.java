@@ -64,7 +64,7 @@ public class EventConfWrapper {
     
     @Override
     public String toString() {
-    		StringBuffer b = new StringBuffer("Event: ");
+    		final StringBuilder b = new StringBuilder("Event: ");
     		if (m_event.getAutoacknowledge() != null) {
     			b.append(" Autoacknowledge: " + m_event.getAutoacknowledge() + "\n");
     		}

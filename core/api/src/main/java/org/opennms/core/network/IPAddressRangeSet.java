@@ -97,7 +97,7 @@ public class IPAddressRangeSet implements Iterable<IPAddressRange> {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
 
         buf.append("[");
         boolean first = true;

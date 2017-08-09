@@ -125,7 +125,7 @@ public class NotificationTask extends Thread {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer("Send ");
+        final StringBuilder buffer = new StringBuilder("Send ");
 
         if (m_commands == null) {
             buffer.append("Null Commands");

@@ -90,7 +90,7 @@ public class Bridge {
     }
     
     public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+        final StringBuilder strbfr = new StringBuilder();
         strbfr.append("bridge:[");
         strbfr.append(m_id);
         strbfr.append("], isrootbridge:");

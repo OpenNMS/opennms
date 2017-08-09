@@ -156,7 +156,7 @@ public class AggregateStatus implements SurveillanceStatus {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(m_label == null ? "null" : m_label);
+        final StringBuilder sb = new StringBuilder(m_label == null ? "null" : m_label);
         sb.append(": ");
         sb.append(m_downNodes == null ? -1 : m_downNodes.size());
         sb.append(" down of ");

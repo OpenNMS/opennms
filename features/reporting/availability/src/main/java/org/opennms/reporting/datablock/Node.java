@@ -494,7 +494,7 @@ public class Node extends StandardNamedObject {
      */
     @Override
     public String toString() {
-        StringBuffer retVal = new StringBuffer();
+        final StringBuilder retVal = new StringBuilder();
         String nl = System.getProperty("line.separator");
 
         retVal.append(nl).append(nl).append("Nodeid : ").append(getName()).append(nl).append("Interfaces");

@@ -120,7 +120,7 @@ public class SyslogNorthBounderTest {
     class StringOutputStream extends OutputStream {
 
         /** The string buffer. */
-        StringBuilder m_buf = new StringBuilder(MESSAGE_LENGTH);
+        final StringBuilder m_buf = new StringBuilder(MESSAGE_LENGTH);
 
         /* (non-Javadoc)
          * @see java.io.OutputStream#write(int)

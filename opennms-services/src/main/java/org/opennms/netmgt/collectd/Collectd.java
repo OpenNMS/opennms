@@ -483,7 +483,7 @@ public class Collectd extends AbstractServiceDaemon implements
         try {
         
         Collection<CollectionSpecification> matchingSpecs = getSpecificationsForInterface(iface, svcName);
-        StringBuffer sb;
+        StringBuilder sb;
         
         LOG.debug("scheduleInterface: found {} matching specs for interface: {}", matchingSpecs.size(), iface);
 
@@ -535,7 +535,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
                 LOG.debug("scheduleInterface: {}/{} collection, scheduled", iface, svcName);
             } catch (CollectionInitializationException e) {
-                sb = new StringBuffer();
+                sb = new StringBuilder();
                 sb.append("scheduleInterface: Unable to schedule ");
                 sb.append(iface);
                 sb.append('/');
@@ -628,11 +628,11 @@ public class Collectd extends AbstractServiceDaemon implements
 
         String svcName = spec.getServiceName();
         String pkgName = spec.getPackageName();
-        StringBuffer sb;
+        StringBuilder sb;
         boolean isScheduled = false;
         
         if (LOG.isDebugEnabled()) {
-            sb = new StringBuffer();
+            sb = new StringBuilder();
             sb.append("alreadyScheduled: determining if interface: ");
             sb.append(iface);
             sb.append(" is already scheduled.");
@@ -652,7 +652,7 @@ public class Collectd extends AbstractServiceDaemon implements
         }
 
         if (LOG.isDebugEnabled()) {
-            sb = new StringBuffer();
+            sb = new StringBuilder();
             sb.append("alreadyScheduled: interface ");
             sb.append(iface);
             sb.append("already scheduled check: ");

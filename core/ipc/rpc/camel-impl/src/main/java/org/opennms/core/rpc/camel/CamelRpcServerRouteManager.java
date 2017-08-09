@@ -61,7 +61,7 @@ public class CamelRpcServerRouteManager {
 
     private final Map<RpcModule<RpcRequest,RpcResponse>, String> routeIdsByModule = new ConcurrentHashMap<>();
 
-    public CamelRpcServerRouteManager(CamelContext context, MinionIdentity identity) throws Exception {
+    public CamelRpcServerRouteManager(CamelContext context, MinionIdentity identity) {
         this.context = Objects.requireNonNull(context);
         this.identity = Objects.requireNonNull(identity);
     }

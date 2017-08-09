@@ -110,7 +110,7 @@ public class TcpRrdStrategyTest {
                             PerformanceDataProtos.PerformanceDataReadings messages = PerformanceDataProtos.PerformanceDataReadings.parseFrom(socket.getInputStream());
                             LOG.debug("Number of messages in current packet: " + messages.getMessageCount());
                             for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
-                                StringBuffer values = new StringBuffer();
+                                final StringBuilder values = new StringBuilder();
                                 values.append("{ ");
                                 for (int i = 0; i < message.getDblValueCount(); i++) {
                                     if (i != 0) { values.append(", "); }

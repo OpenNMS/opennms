@@ -67,4 +67,5 @@ public interface CorrelationEngineRegistrar {
      */
     CorrelationEngine findEngineByName(String name);
 
+    void removeCorrelationEngine(String name);
 }

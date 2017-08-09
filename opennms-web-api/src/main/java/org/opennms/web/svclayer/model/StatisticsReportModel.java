@@ -96,7 +96,7 @@ public class StatisticsReportModel {
         public String getResourceParentLabel() {
             Assert.notNull(m_resource, "the resource must be set before calling this method");
             
-            StringBuffer buffer = new StringBuffer();
+            final StringBuilder buffer = new StringBuilder();
             
             OnmsResource parent = m_resource.getParent();
             while (parent != null) {

@@ -128,7 +128,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @Path("participants")
     public String getParticipants(){
         List<OnmsNode> nodes = m_nodeDao.findAll();
-        StringBuffer retVal = new StringBuffer();
+        final StringBuilder retVal = new StringBuilder();
         
         retVal.append("{\"participants\":[");
         for(int i  = 0; i < nodes.size(); i++) {

@@ -451,7 +451,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected static String getQueryString(final Map<?,?> parameters) {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
 
         try {
             for (final Entry<?,?> entry : parameters.entrySet()) {

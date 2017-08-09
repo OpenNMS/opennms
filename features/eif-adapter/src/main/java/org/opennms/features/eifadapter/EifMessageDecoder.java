@@ -68,7 +68,7 @@ public class EifMessageDecoder extends MessageToMessageDecoder<ByteBuf> implemen
         if ( buffer.toString().contains("<START>>") && buffer.toString().contains(";END") ) {
             int eifStart = buffer.indexOf("<START>>");
             int eifEnd = buffer.lastIndexOf(";END");
-            StringBuilder eif = new StringBuilder(buffer.substring(eifStart,eifEnd+4));
+            final StringBuilder eif = new StringBuilder(buffer.substring(eifStart,eifEnd+4));
             buffer.delete(eifStart,eifEnd+4);
             List<Event> e = EifParser.translateEifToOpenNMS(nodeDao, eif);
             if (e != null) {

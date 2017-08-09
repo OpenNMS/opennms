@@ -109,7 +109,7 @@ public class V1TrapInformation extends TrapInformation {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("[");
+		final StringBuilder sb = new StringBuilder("[");
 		sb.append("Version=").append(getVersion())
 			.append(", Agent-Addr=").append(getTrapAddress().getHostAddress())
 			.append(", Length=").append(getPduLength())

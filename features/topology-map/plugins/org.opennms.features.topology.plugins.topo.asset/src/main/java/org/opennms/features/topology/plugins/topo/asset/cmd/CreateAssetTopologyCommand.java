@@ -87,7 +87,7 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 		StringWriter generatorConfigString = new StringWriter();
 		JAXB.marshal(generatorConfig, generatorConfigString);
 
-		StringBuffer msg = new StringBuffer("Creating Asset Topology from configuration:");
+		final StringBuilder msg = new StringBuilder("Creating Asset Topology from configuration:");
 		msg.append(generatorConfigString.toString());
 		System.out.println(msg.toString());
 

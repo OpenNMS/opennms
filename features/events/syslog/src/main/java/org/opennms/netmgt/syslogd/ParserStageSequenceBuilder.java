@@ -69,7 +69,7 @@ public class ParserStageSequenceBuilder {
 	private static class ParserStageState {
 		public final ByteBuffer buffer;
 
-		private StringBuffer accumulatedValue = null;
+		private StringBuilder accumulatedValue = null;
 		private AtomicInteger accumulatedSize = null;
 
 		// Only used by MatchMonth
@@ -88,9 +88,9 @@ public class ParserStageSequenceBuilder {
 			return accessAccumulatedSize().get();
 		}
 
-		private final StringBuffer accessAccumulatedValue() {
+		private final StringBuilder accessAccumulatedValue() {
 			if (accumulatedValue == null) {
-				accumulatedValue = new StringBuffer();
+				accumulatedValue = new StringBuilder();
 			}
 			return accumulatedValue;
 		}
@@ -362,7 +362,7 @@ public class ParserStageSequenceBuilder {
 		}
 
 		protected static String getAccumulatedValue(ParserStageState state) {
-			StringBuffer accumulatedValue = state.accumulatedValue;
+			final StringBuilder accumulatedValue = state.accumulatedValue;
 			if (accumulatedValue == null) {
 				return null;
 			} else {

@@ -121,7 +121,7 @@ public class JmsDestination implements Destination {
         super();
         m_destinationType = destinationType;
         m_destination = destination;
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(m_destinationType.toString()).append(":").append(m_destination);
         m_destinationName = sb.toString();
     }
