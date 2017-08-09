@@ -870,6 +870,7 @@
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
             <runPingTests>${runPingTests}</runPingTests>
+            <skipIpv6Tests>${skipIpv6Tests}</skipIpv6Tests>
             <proxy.port>${proxy.port}</proxy.port>
           </systemPropertyVariables>
           <forkCount>1</forkCount>
