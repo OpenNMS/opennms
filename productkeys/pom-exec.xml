@@ -23,52 +23,14 @@
     <productId>${productName}/${productVersion}</productId>
     <productGroupId>org.opennms.authenticator</productGroupId>
     <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath>
-    
+
     <licencemanagerVersion>1.1.0-SNAPSHOT</licencemanagerVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <slf4jVersion>1.7.7</slf4jVersion>
-
   </properties>
 
-  <modules>
-    <module>licence-generator</module>
-    <module>licence-spec</module>
-    <module>licence-authenticator</module>
-    <module>product-descriptor</module>
-    <module>feature</module>
-    <module>licence-spec-feature</module>
-  </modules>
-
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <inherited>false</inherited>
-        <executions>
-          <execution>
-            <phase>verify</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <echo>*****************************************************</echo>
-                <echo>GENERATING NEW LICENCE</echo>
-                <echo>   productName:    ${productName}</echo>
-                <echo>   productVersion: ${productVersion}</echo>
-                <echo>   productGroupId: ${productGroupId}</echo>
-                <echo>   licenceSpecRepo: ${licenceSpecRepo} </echo>
-                <echo>   licenceSpecSnapshotRepo: ${licenceSpecSnapshotRepo} </echo>
-                <echo>   opennms-repo-ref: ${opennms-repo-ref} </echo>
-                <echo>   opennms-snapshots-ref: ${opennms-snapshots-ref} </echo>
-                <echo>*****************************************************</echo>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
 
     <pluginManagement>
       <plugins>
@@ -236,102 +198,103 @@
     </dependencies>
   </dependencyManagement>
 
-  <!-- <profiles> -->
-  <!-- <profile> -->
-  <!-- <id>generateLicence</id> -->
-  <!-- <activation> -->
-  <!-- <activeByDefault>false</activeByDefault> -->
-  <!-- </activation> -->
-  <!-- <properties> -->
-  <!-- <productName>Meridian2017</productName> -->
-  <!-- <productVersion>1.0.0-SNAPSHOT</productVersion> -->
-  <!-- <productId>${productName}/${productVersion}</productId> -->
-  <!-- <productGroupId>org.opennms.authenticator</productGroupId> -->
-  <!-- <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath> -->
-  <!-- </properties> -->
-  <!-- <build> -->
-  <!-- <plugins> -->
-  <!-- <plugin> -->
-  <!-- <artifactId>maven-antrun-plugin</artifactId> -->
-  <!-- <executions> -->
-  <!-- <execution> -->
-  <!-- <phase>verify</phase> -->
-  <!-- <goals> -->
-  <!-- <goal>run</goal> -->
-  <!-- </goals> -->
-  <!-- <configuration> -->
-  <!-- <target> -->
-  <!-- <echo>*****************************************************</echo> -->
-  <!-- <echo>PROFILE GENERATING LICENCE (-P generateLicence ) </echo> -->
-  <!-- <echo>Note: This build will generate new licence modules </echo> -->
-  <!-- <echo>for this project and install them in maven. </echo> -->
-  <!-- <echo>Ideally you should only do this once so that you </echo> -->
-  <!-- <echo>dont need to install a new licence during testing </echo> -->
-  <!-- <echo>*****************************************************</echo> -->
-  <!-- </target> -->
-  <!-- </configuration> -->
-  <!-- </execution> -->
-  <!-- </executions> -->
-  <!-- </plugin> -->
-  <!-- </plugins> -->
-  <!-- </build> -->
-  <!-- <modules> -->
-  <!-- <module>licence-generator</module> -->
-  <!-- <module>licence-spec</module> -->
-  <!-- <module>licence-authenticator</module> -->
-  <!-- <module>product-descriptor</module> -->
-  <!-- <module>feature</module> -->
-  <!-- <module>licence-spec-feature</module> -->
-  <!-- </modules> -->
-  <!-- </profile> -->
-  <!-- <profile> -->
-  <!-- <id>default-not-generating-licence</id> -->
-  <!-- <activation> -->
-  <!-- <activeByDefault>true</activeByDefault> -->
-  <!-- </activation> -->
-  <!-- <properties> -->
-  <!-- <productName>Meridian2017</productName> -->
-  <!-- <productVersion>1.0.0-SNAPSHOT</productVersion> -->
-  <!-- <productId>${productName}/${productVersion}</productId> -->
-  <!-- <productGroupId>org.opennms.authenticator</productGroupId> -->
-  <!-- <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath> -->
-  <!-- </properties> -->
-  <!-- <build> -->
-  <!-- <plugins> -->
-  <!-- <plugin> -->
-  <!-- <artifactId>maven-antrun-plugin</artifactId> -->
-  <!-- <executions> -->
-  <!-- <execution> -->
-  <!-- <phase>verify</phase> -->
-  <!-- <goals> -->
-  <!-- <goal>run</goal> -->
-  <!-- </goals> -->
-  <!-- <configuration> -->
-  <!-- <target> -->
-  <!-- <echo>*****************************************************</echo> -->
-  <!-- <echo>DEFAULT BUILD - NOT GENERATING LICENCE </echo> -->
-  <!-- <echo>Note: this build will fail if licence modules have </echo> -->
-  <!-- <echo>not previously been generated and installed in maven.</echo> -->
-  <!-- <echo>To generate the licence modules run with profile: </echo> -->
-  <!-- <echo>mvn clean install -P generateLicence </echo> -->
-  <!-- <echo>*****************************************************</echo> -->
-  <!-- </target> -->
-  <!-- </configuration> -->
-  <!-- </execution> -->
-  <!-- </executions> -->
-  <!-- </plugin> -->
-  <!-- </plugins> -->
-  <!-- </build> -->
-  <!-- <modules> -->
-  <!-- <module>licence-generator</module> -->
-  <!-- <module>licence-spec</module> -->
-  <!-- <module>licence-authenticator</module> -->
-  <!-- <module>product-descriptor</module> -->
-  <!-- <module>feature</module> -->
-  <!-- <module>licence-spec-feature</module> -->
-  <!-- </modules> -->
-  <!-- </profile> -->
-  <!-- </profiles> -->
+  <profiles>
+    <profile>
+      <id>generateLicence</id>
+      <activation>
+        <!-- <activeByDefault>true</activeByDefault> -->
+        <property>
+          <name>regenerateSubscription</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <inherited>false</inherited>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <echo>*****************************************************</echo>
+                    <echo>GENERATING NEW LICENCE</echo>
+                    <echo> productName: ${productName}</echo>
+                    <echo> productVersion: ${productVersion}</echo>
+                    <echo> productGroupId: ${productGroupId}</echo>
+                    <echo> licenceSpecRepo: ${licenceSpecRepo} </echo>
+                    <echo> licenceSpecSnapshotRepo: ${licenceSpecSnapshotRepo} </echo>
+                    <echo> opennms-repo-ref: ${opennms-repo-ref} </echo>
+                    <echo> opennms-snapshots-ref: ${opennms-snapshots-ref} </echo>
+                    <echo>*****************************************************</echo>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+      <modules>
+        <module>licence-generator</module>
+        <module>licence-spec</module>
+        <module>licence-authenticator</module>
+        <module>product-descriptor</module>
+        <module>feature</module>
+        <module>licence-spec-feature</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>default-not-generating-licence</id>
+      <activation>
+        <!-- <activeByDefault>false</activeByDefault> -->
+        <property>
+          <name>regenerateSubscription</name>
+          <value>!true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <inherited>false</inherited>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <echo>*****************************************************</echo>
+                    <echo>NOT GENERATING LICENCE </echo>
+                    <echo>Note: this build will fail if licence modules have </echo>
+                    <echo>not previously been generated and installed in maven.</echo>
+                    <echo>To generate the licence modules run with profile: </echo>
+                    <echo>mvn clean install -P generateLicence </echo>
+                    <echo>*****************************************************</echo>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <modules>
+        <!-- <module>licence-generator</module> -->
+        <!-- <module>licence-spec</module> -->
+        <!-- <module>licence-authenticator</module> -->
+        <!-- <module>product-descriptor</module> -->
+        <!-- <module>feature</module> -->
+        <!-- <module>licence-spec-feature</module> -->
+      </modules>
+    </profile>
+  </profiles>
 
   <pluginRepositories>
     <pluginRepository>

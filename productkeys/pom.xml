@@ -101,6 +101,33 @@
                       }
 
                     }
+                    
+                    List<String> goals = session.getGoals();
+
+                    String goalStr="";
+                    if(goals.contains("install")) goalStr="install";
+                    if(goals.contains("deploy")) goalStr="deploy";
+
+                    log.info("   adding new maven property: goalStr="
+                            + goalStr + " replacing: "
+                            + project.properties.setProperty("goalStr", goalStr));
+                    
+                    String userPropertiesStr="";
+                    for (String key : session.getUserProperties().stringPropertyNames()) {
+                      userVariablesStr=userPropertiesStr+" -D"+key+"="+session.getUserProperties().getProperty(key);
+                    }
+                    log.info("   adding new maven property: userPropertiesStr="
+                            + userPropertiesStr + " replacing: "
+                            + project.properties.setProperty("userPropertiesStr", userPropertiesStr));
+                    
+                    String systemPropertiesStr="";
+                    for (String key : session.getSystemProperties().stringPropertyNames()) {
+                      userVariablesStr=systemPropertiesStr+" -D"+key+"="+session.getUserProperties().getProperty(key);
+                    }
+                    log.info("   adding new maven property: systemPropertiesStr="
+                            + systemPropertiesStr + " replacing: "
+                            + project.properties.setProperty("systemPropertiesStr", systemPropertiesStr));
+                    
                    }
                    ]]>
               </source>
@@ -146,10 +173,12 @@
             <argument>-f</argument>
             <argument>${project.basedir}/pom-exec.xml</argument>
             <argument>clean</argument>
-            <argument>install</argument>
+            <argument>${goalStr}</argument> <!-- install, deploy or empty -->
             <argument>-DproductName=${subscriptionName}</argument>
             <argument>-DproductVersion=${subscriptionVersion}</argument>
             <argument>-DproductGroupId=${subscriptionGroupId}</argument>
+            
+            <argument>-DregenerateSubscription=${regenerateSubscription}</argument>
 
             <argument>-Dopennms-repo-ref=scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/maven2</argument>
             <argument>-Dopennms-snapshots-ref=scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/snapshots</argument>
