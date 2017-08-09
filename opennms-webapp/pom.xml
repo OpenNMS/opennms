@@ -79,17 +79,11 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.webjars.bower</groupId>
-                  <artifactId>bootstrap</artifactId>
-                  <version>3.3.1</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.webjars.bower</groupId>
                   <artifactId>bootstrap-sass-official</artifactId>
                   <version>3.3.1</version>
                   <type>jar</type>
                   <overWrite>false</overWrite>
+                  <includes>**/_*.scss</includes>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/sources-sass</outputDirectory>
