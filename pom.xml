@@ -1391,8 +1391,6 @@
     <!-- If regenerateSubscription=true a new subscription licence spec will be regenerated on each build.  -->
     <!-- Set this false once you have a permanent licence generated and deployed -->
     <defaultRegenerateSubscription>true</defaultRegenerateSubscription>
-    <licenceSpecSnapshotRepo>NOT_SET</licenceSpecSnapshotRepo>
-    <licenceSpecRepo>NOT_SET</licenceSpecRepo>
 
   </properties>
 

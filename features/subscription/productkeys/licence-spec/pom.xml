@@ -171,11 +171,11 @@
   <distributionManagement>
     <repository>
       <id>osgi-plugins-licence-specs</id>
-      <url>${licenceSpecRepo}</url>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs</url>
     </repository>
     <snapshotRepository>
       <id>osgi-plugins-licence-specs-snapshots</id>
-      <url>${licenceSpecSnapshotRepo}</url>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs-snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 

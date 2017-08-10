@@ -6,7 +6,7 @@
     <version>21.0.0-SNAPSHOT</version>
     <relativePath>../pom-exec.xml</relativePath>
   </parent>
-  
+
   <!-- Feature Definition -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>${productGroupId}</groupId>
@@ -30,6 +30,9 @@
               <goal>generate-features-xml</goal>
             </goals>
             <configuration>
+              <bundles>
+                <bundle>mvn:${productGroupId}/${productName}.licence-spec/${productVersion}</bundle>
+              </bundles>
             </configuration>
           </execution>
         </executions>
@@ -39,11 +42,13 @@
   </build>
 
   <dependencies>
-    <dependency>
-      <groupId>${productGroupId}</groupId>
-      <artifactId>${productName}.licence-spec</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+    <!-- dont use dependency to generate feature because it creates -->
+    <!-- unresolvable dependencies in maven because of productName properties -->
+    <!-- <dependency> -->
+    <!-- <groupId>${productGroupId}</groupId> -->
+    <!-- <artifactId>${productName}.licence-spec</artifactId> -->
+    <!-- <version>${project.version}</version> -->
+    <!-- </dependency> -->
   </dependencies>
   <pluginRepositories>
     <pluginRepository>
@@ -58,17 +63,17 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </pluginRepository>
   </pluginRepositories>
-  
+
   <!-- NOTE this overrides the normal public maven repository as licence specs should be separated and secured -->
   <!-- Change this to match your repo for containing the licence specifications. -->
   <distributionManagement>
     <repository>
       <id>osgi-plugins-licence-specs</id>
-      <url>${licenceSpecRepo}</url>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs</url>
     </repository>
     <snapshotRepository>
       <id>osgi-plugins-licence-specs-snapshots</id>
-      <url>${licenceSpecSnapshotRepo}</url>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs-snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 
