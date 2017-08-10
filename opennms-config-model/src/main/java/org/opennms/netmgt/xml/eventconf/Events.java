@@ -231,7 +231,17 @@ public class Events implements Serializable {
 
             m_loadedEventFiles.put(eventFile, events);
         }
-    }
+
+		// Re-order the loaded event files to match the order specified in the root configuration
+		final Map<String, Events> orderedAndLoadedEventFiles = new LinkedHashMap<>();
+		for (String eventFile : m_eventFiles) {
+			final Events loadedEvents = m_loadedEventFiles.get(eventFile);
+			if (loadedEvents != null) {
+				orderedAndLoadedEventFiles.put(eventFile, loadedEvents);
+			}
+		}
+		m_loadedEventFiles = orderedAndLoadedEventFiles;
+	}
 
     public boolean isSecureTag(final String tag) {
         return m_global == null ? false : m_global.isSecureTag(tag);
