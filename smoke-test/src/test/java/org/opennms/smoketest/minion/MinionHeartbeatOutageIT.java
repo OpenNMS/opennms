@@ -210,6 +210,7 @@ public class MinionHeartbeatOutageIT {
         assertEquals(1,
             getDaoFactory().getDao(EventDaoHibernate.class).findMatching(
                 new CriteriaBuilder(OnmsEvent.class)
+                    .alias("eventParameters", "eventParameters")
                     .eq("eventUei", EventConstants.MONITORING_SYSTEM_ADDED_UEI).toCriteria()).stream()
                     .filter(e -> e.getEventParameters().stream()
                             .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_TYPE.equals(p.getName()) && OnmsMonitoringSystem.TYPE_MINION.equals(p.getValue())))
