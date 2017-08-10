@@ -1,0 +1,9 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <uei>uei.opennms.org/test/order</uei>
+        <event-label>order</event-label>
+        <descr>order</descr>
+        <logmsg dest="logndisplay">order</logmsg>
+        <severity>Critical</severity>
+    </event>
+</events>
