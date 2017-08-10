@@ -18,7 +18,7 @@ Admin users are presented with more information which they can use to generate a
 The information required to generate a valid licence are the subscription artifactId/version and the subscription systemId. 
 Once generated a licence key can be cut from the generation site and pasted into the licence manager and the system will be authenticated.
 
-Please note that at present bacause this is a system feature after installation you need to restart OpenNMS for the licence to take effect. 
+Please note that at present because this is a system feature after installation you need to restart OpenNMS for the licence to take effect. 
 Alternatively in the OpenNMS karaf consol type
 ----
 feature:stop subcription.feature
@@ -81,7 +81,7 @@ status 400
 status 200 
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <replyMessage>
-  <replyComment>Licence is not authenticated for productId=productId/productVersionT</replyComment>
+  <replyComment>Licence is not authenticated for productId=productId/productVersion</replyComment>
   <productId>productId/productVersion</productId>
   <isAuthenticated>false</isAuthenticated>
 </replyMessage>
@@ -123,7 +123,7 @@ If the productkeys.properties file is not present, a new licence will be generat
 (This is actually useful for verifying the licence tool chain is still working). 
 However, the licence artifacts should ideally be generated and fixed early in the release process.
 
-The productkeys.properties file contains the following properties (see also the productkeys.properties.example in the toep level /opennms folder).
+The productkeys.properties file contains the following properties (see also the productkeys.properties.example in the top level /opennms folder).
 ----
 # This file sets the properties for generating and saving licence keys
 
@@ -140,7 +140,6 @@ regenerateSubscription=true
 ----
 This file replaces the corresponding properties in the master /opennms/pom.xml
 ----
-...
     <!-- subscription properties -->
     <!-- These default subscription properties will be replaced by the properties in productkeys.properties -->
     <!-- Subscription name, version and groupId for generated subscription artifacts -->
@@ -155,10 +154,10 @@ This file replaces the corresponding properties in the master /opennms/pom.xml
     <defaultRegenerateSubscription>true</defaultRegenerateSubscription>
 ----
 
-* If subscriptionCheckEnabled=true/false the corresponding default property will be set in the subscription-checker blueprint.xml
+* If subscriptionCheckEnabled=true/false the corresponding default property will be set in the subscription-checker blueprint.xml (See above).
 * If regenerateSubscription=true/false this will turn on or off the generation of keys. Set to false once the keys have been generated and deployed to the maven repos.
 
-The pom.xml uses the gmaven plugin to read in the productkeys.properties file (if present) which defines the name and version of the generated licence.
+The productkeys pom.xml uses the gmaven plugin to read in the productkeys.properties file (if present) which defines the name and version of the generated licence.
 It then forks a maven build using pom-exec.xml which generates the artifacts. 
 (Forking a separate pom is used because the naming and versioning of the generated licence artifacts do not follow the OpenNMS naming and release numbering and inheriting these projects from an OpenNMS pom causes confusion in the OpenNMS build)
   
@@ -167,8 +166,8 @@ It then forks a maven build using pom-exec.xml which generates the artifacts.
 * licence-spec - packages the private licence keys and licence metadata in a bundle. This is deployed in a PRIVATE repository.
 * licence-spec-feature - defines a feature referencing the licence spec making it easier to install in karaf. This is deployed in a PRIVATE repository.
 
-* licence-authenticator - packages the public key in an authenticator bundle which will not start without a valid licence installed in the OpenNMS licence manager
-* product-descriptor - provides some extra metadata to describe the feature in the OpenNMS plugin manager
+* licence-authenticator - packages the public key in an authenticator bundle which will not start without a valid licence installed in the OpenNMS licence manager.
+* product-descriptor - provides some extra metadata to describe the feature in the OpenNMS plugin manager.
 
 * feature - provides a generic feature definition called productkeys.feature which is referenced by the rest of the OpenNMS build system. 
 
@@ -178,7 +177,7 @@ org.apache.karaf.features.cfg
 ----
 
 An example productkeys.feature file is shown below. 
-We can see that while always being called productkeys.feature, it nevertheless references whichever licence artifacts are named in productkeys.properties
+We can see that while always being called productkeys.feature, it nevertheless references whichever licence artifacts were named in productkeys.properties during the build.
 ----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features name="productkeys.feature" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
@@ -211,10 +210,10 @@ You should set this up before trying to deploy licence artifacts.
 
 === Recommended build process
 
-This all sounds very complicated but in fact the build process is quite simple:
+This may all sound quite complicated but in fact the build process is quite simple:
 
-1. Create your new branch and build as normal until ready to deploy artifacts
-2. Make sure you set up a separate private repository and credentials for the licence-spec and licence-spec-feature pom.xml
-3. Create a unique productkeys.properties file with regenerateSubscription=true (and version which is not SNAPSHOT)
-4. Generate and deploy the licence
-5. set productkeys.properties regenerateSubscription=false and never regenerate licence keys again for this release.
+1. Create your new branch and build as normal until ready to deploy artifacts.
+2. Make sure you set up a separate private repository and credentials for the licence-spec and licence-spec-feature pom.xml.
+3. Create a unique productkeys.properties file with regenerateSubscription=true (and a version which is not SNAPSHOT).
+4. Generate and deploy the licence.
+5. Set productkeys.properties regenerateSubscription=false and never regenerate licence keys again for this release.
