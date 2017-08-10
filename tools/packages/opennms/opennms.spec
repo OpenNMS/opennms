@@ -751,7 +751,7 @@ rm -rf %{buildroot}
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{logdir}
-%attr(640,root,root)	%{instprefix}/etc/users.xml
+%attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
 
@@ -942,6 +942,13 @@ if [ "$1" = 0 ]; then
   if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
     rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
   fi
+fi
+
+%pre -p /bin/bash core
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+if [ -e "${ROOT_INST}/etc/users.xml" ]; then
+	chmod 640 "${ROOT_INST}/etc/users.xml"
 fi
 
 %post -p /bin/bash core
