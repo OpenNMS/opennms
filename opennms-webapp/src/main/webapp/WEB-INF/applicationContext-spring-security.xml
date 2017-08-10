@@ -127,6 +127,9 @@
     <intercept-url pattern="/dashboard/**" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/coreweb/**" access="ROLE_USER,ROLE_DASHBOARD" />
     
+        <!-- ReST URL's for OSGi plugin manger to allow all users to test if subscription authenticated -->
+    <intercept-url pattern="/licencemgr/rest/v1-0/licence-mgr/isauthenticated*" access="ROLE_USER,ROLE_DASHBOARD,ROLE_REST,ROLE_ADMIN"/>
+    
     <!-- ReST URL's for OSGi plugin manger restricted to admin and ReST users-->
     <intercept-url pattern="/licencemgr/**" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/featuremgr/**" access="ROLE_REST,ROLE_ADMIN"/>
