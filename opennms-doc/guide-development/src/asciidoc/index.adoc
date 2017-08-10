@@ -85,5 +85,8 @@ include::text/amqp/event_receiver.adoc[]
 include::text/amqp/alarm_northbounder.adoc[]
 include::text/amqp/custom_processors.adoc[]
 
+== Generating Subscriptions and Licences
+include::text/subscription/introduction.adoc[]
+
 == Design and Styleguidelines
 include::text/reporting/jasperreport-styleguide.adoc[]

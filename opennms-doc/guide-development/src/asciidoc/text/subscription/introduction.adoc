@@ -1,0 +1,220 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+=== Overview
+
+The _{opennms-product-name}_  _Plugin Manager_ provides a unified interface for managing the lifecycle of optional _OSGi_ plugins installed in _{opennms-product-name}_. The _Plugin Manager_ is described in more detail in the Admin guide.
+Plugins can require an associated licence key to be installed before they will run. 
+In the case of the OpenNMS Meridian distribution, this licence mechanism is also used to validate that a user has a current subscription for Meridian updates.
+
+If a user logs in to a system which does not have a valid subscription licence installed, they will be presented with a banner modal (pop-up) which reminds them that their subscription has expired.
+The banner can be acknowledged and will disappear for the duration of the user session and the system will continue to operate as normal.
+However the banner will reappear every time a user logs in until a valid subscription licence is installed.
+
+Normal users are presented with a generic banner telling them to contact their system administrator to fix the issue.
+
+Admin users are presented with more information which they can use to generate a _{opennms-product-name}_ subscription through their account on the OpenNMS Inc web site. 
+The information required to generate a valid licence are the subscription artifactId/version and the subscription systemId. 
+Once generated a licence key can be cut from the generation site and pasted into the licence manager and the system will be authenticated.
+
+Please note that at present bacause this is a system feature after installation you need to restart OpenNMS for the licence to take effect. 
+Alternatively in the OpenNMS karaf consol type
+----
+feature:stop subcription.feature
+feature:start subcription.feature
+----
+Depending upon the commercial arrangements, the subscription systemId can be unique for each _{opennms-product-name}_  _Plugin Manager_ system or could be replicated across several systems as a site wide systemId with a site wide licence
+(please note that this subscription systemId is set in the _{opennms-product-name}_  _Plugin Manager_ UI and is not the same as the UUID based systemId used elsewhere).
+
+=== How it works
+
+The _Plugin Manager_ licence system essentially relies on a public / private key mechanism.
+The public key is shipped with the licenced plugin and the private key is kept secret and only used by a shopping cart to generate licences.
+Within the _{opennms-product-name}_ build both the public and private keys can be generated as determined by a top level file called productkeys.properties
+
+The source for _{opennms-product-name}_ modules implementing the subscription authentication mechanism are all contained in the 'subscription' parent project.
+----
+/opennms
+   productkeys.properties
+
+/opennms/features/subscription
+   src/main/script/subscriptionPropertiesScript.groovy
+   
+   subscription-checker
+
+   productkeys
+       licence-generator
+       licence-spec 
+       licence-spec-feature
+       licence-authenticator 
+       product-descriptor 
+       feature
+       pom-exec.xml 
+       pom.xml         
+----
+The subscription project contains two sub modules subscription-checker and productkeys.
+
+Both of these projects get their configuration either from default values in the top parent pom.xml or from a file called 'productkeys.properties' in the top level /opennms folder.
+
+The properties are processed and made available to the underlying projects using a gmaven plugin with a common groovy script 'subscriptionPropertiesScript.groovy'
+
+Placing a productkeys.properties file in the /opennms folder allows the release process to create and reference a unique set of licence licence keys only once. 
+This will be described further in the section on build process.
+
+==== Subscription checker
+The subscription-checker is very similar to the _{opennms-product-name}_ 'datachoices' feature which also drives a modal on login.
+The subscription-checker makes a rest call to the licence manager to find out if the subscription is valid.
+----
+http://localhost:8980/opennms/licencemgr/rest/v1-0/licence-mgr/isauthenticated?productId=productId/productVersion (e.g. Horizon2017/1.0.0-SNAPSHOT)
+----
+The licence manager will return one of 3 messages depending on whether the licence is installed and / or authenticated.
+----
+status 400
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<errorMessage>
+  <status>400</status>
+  <message>Licence not installed for productId=productId/productVersion</message>
+  <code>0</code>
+</errorMessage>
+
+status 200 
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<replyMessage>
+  <replyComment>Licence is not authenticated for productId=productId/productVersionT</replyComment>
+  <productId>productId/productVersion</productId>
+  <isAuthenticated>false</isAuthenticated>
+</replyMessage>
+
+status 200 
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<replyMessage>
+  <replyComment>Licence is authenticated for productId=productId/productVersion</replyComment>
+  <productId>productId/productVersion</productId>
+  <isAuthenticated>true</isAuthenticated>
+</replyMessage>
+----
+These replies are used to animate the response.
+
+The subscription-checker uses default properties (hard wired at build time) in it's blueprint.xml to determine which productId/productVersion it is targeting.
+
+These default properties can be overridden in the configuration file 'etc/org.opennms.features.subscriptionchecker.cfg':
+----
+org.opennms.subscription.enabled=true
+org.opennms.subscription.groupid=org.opennms.authenticator
+org.opennms.subscription.artifactid=Meridian2017
+org.opennms.subscription.version=1.0.0-SNAPSHOT
+org.opennms.subscription.usermessage=Your Meridian Subscription has expired ...
+org.opennms.subscription.adminmessage=Your Meridian Subscription has expired ...
+----
+Note that the property org.opennms.subscription.enabled=true/false enables or permanently disables the pop-up subscription messages. 
+This should be set false in a non-subscription release (i.e. horizon)
+
+==== productkeys
+The productkeys project contains all the sub modules used to create and validate a set of licence keys.
+
+It is important to understand that the public and private key artifacts should only be generated once and stored securely for a released product.
+Once generated, they should be referenced but not regenerated on each subsequent build of the product (even during development).
+Further more, the keys (and subscriptions) should also continue to be valid for future point releases of the product. 
+This requires that the naming and versioning of the productkeys artifacts should be independent of the name and version of the OpenNMS project referencing them.
+
+For this reason, a separate productkeys.properties file is used to fix the version of the keys used in releases.
+If the productkeys.properties file is not present, a new licence will be generated on every build. 
+(This is actually useful for verifying the licence tool chain is still working). 
+However, the licence artifacts should ideally be generated and fixed early in the release process.
+
+The productkeys.properties file contains the following properties (see also the productkeys.properties.example in the toep level /opennms folder).
+----
+# This file sets the properties for generating and saving licence keys
+
+# Product name, version and groupId for generated licence artifacts
+# The licence will be accessed using the featureId subscriptionName/subscriptionVersion
+subscriptionName=Meridian2017
+subscriptionVersion=1.0.0-SNAPSHOT
+subscriptionGroupId=org.opennms.authenticator
+subscriptionCheckEnabled=true
+
+# Subscription licence will be regenerated on each build. 
+# Set this false once you have a permanent licence generated and deployed to a repo
+regenerateSubscription=true
+----
+This file replaces the corresponding properties in the master /opennms/pom.xml
+----
+...
+    <!-- subscription properties -->
+    <!-- These default subscription properties will be replaced by the properties in productkeys.properties -->
+    <!-- Subscription name, version and groupId for generated subscription artifacts -->
+    <!-- The licence will be accessed using the featureId subscriptionName/subscriptionVersion -->
+    <defaultSubscriptionName>horizon</defaultSubscriptionName>
+    <defaultSubscriptionVersion>${project.version}</defaultSubscriptionVersion>
+    <defaultSubscriptionGroupId>org.opennms.authenticator</defaultSubscriptionGroupId>
+    <defaultSubscriptionCheckEnabled>true</defaultSubscriptionCheckEnabled>
+
+    <!-- If regenerateSubscription=true a new subscription licence spec will be regenerated on each build.  -->
+    <!-- Set this false once you have a permanent licence generated and deployed -->
+    <defaultRegenerateSubscription>true</defaultRegenerateSubscription>
+----
+
+* If subscriptionCheckEnabled=true/false the corresponding default property will be set in the subscription-checker blueprint.xml
+* If regenerateSubscription=true/false this will turn on or off the generation of keys. Set to false once the keys have been generated and deployed to the maven repos.
+
+The pom.xml uses the gmaven plugin to read in the productkeys.properties file (if present) which defines the name and version of the generated licence.
+It then forks a maven build using pom-exec.xml which generates the artifacts. 
+(Forking a separate pom is used because the naming and versioning of the generated licence artifacts do not follow the OpenNMS naming and release numbering and inheriting these projects from an OpenNMS pom causes confusion in the OpenNMS build)
+  
+* licence-generator - generates the public and private keys and licence and product metadata as transient artifacts.
+
+* licence-spec - packages the private licence keys and licence metadata in a bundle. This is deployed in a PRIVATE repository.
+* licence-spec-feature - defines a feature referencing the licence spec making it easier to install in karaf. This is deployed in a PRIVATE repository.
+
+* licence-authenticator - packages the public key in an authenticator bundle which will not start without a valid licence installed in the OpenNMS licence manager
+* product-descriptor - provides some extra metadata to describe the feature in the OpenNMS plugin manager
+
+* feature - provides a generic feature definition called productkeys.feature which is referenced by the rest of the OpenNMS build system. 
+
+The licence-authenticator and product-descriptor projects are both packaged in  _{opennms-product-name}_ and the productkeys.feature is used to start the subscription modules by reference in
+----
+org.apache.karaf.features.cfg
+----
+
+An example productkeys.feature file is shown below. 
+We can see that while always being called productkeys.feature, it nevertheless references whichever licence artifacts are named in productkeys.properties
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="productkeys.feature" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/1.1.0-SNAPSHOT/xml/features</repository>
+    <feature name="productkeys.feature" version="21.0.0-SNAPSHOT" description="OpenNMS :: Features :: ProductKeys :: Feature">
+        <details>productkeys.feature Containing Feature definition for OpenNMS subscription</details>
+        <feature>org.opennms.plugin.licencemanager</feature>
+        <bundle>mvn:org.opennms.authenticator/Meridian2017.licence-authenticator/1.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opennms.authenticator/Meridian2017.product-descriptor/1.0.0-SNAPSHOT</bundle>
+    </feature>
+</features>
+----
+ 
+Note that when deploying artifacts, the licence-spec and licence-spec-feature pom.xml reference a different private maven repository. 
+You should set this up before trying to deploy licence artifacts.
+----
+  <!-- NOTE this overrides the normal public maven repository as licence specs should be separated and secured -->
+  <!-- Change this to match your repo for containing the licence specifications. -->
+  <distributionManagement>
+    <repository>
+      <id>osgi-plugins-licence-specs</id>
+      <url>whatever your private repo is...</url>
+    </repository>
+    <snapshotRepository>
+      <id>osgi-plugins-licence-specs-snapshots</id>
+      <url>whatever your private repo is...</url>
+    </snapshotRepository>
+  </distributionManagement>
+----
+
+=== Recommended build process
+
+This all sounds very complicated but in fact the build process is quite simple:
+
+1. Create your new branch and build as normal until ready to deploy artifacts
+2. Make sure you set up a separate private repository and credentials for the licence-spec and licence-spec-feature pom.xml
+3. Create a unique productkeys.properties file with regenerateSubscription=true (and version which is not SNAPSHOT)
+4. Generate and deploy the licence
+5. set productkeys.properties regenerateSubscription=false and never regenerate licence keys again for this release.

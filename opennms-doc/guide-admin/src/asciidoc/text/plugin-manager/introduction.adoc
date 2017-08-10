@@ -5,7 +5,7 @@
 With the introduction of __Karaf__ as an __OSGi__ application container, _{opennms-product-name}_ now has the ability to install or upgrade features on top of a running instance of _{opennms-product-name}_.
 In addition, the new distributed _OSGi_ architecture allows an _{opennms-product-name}_ system to be deployed as multiple software modules each running in their own __Karaf__ instance.
 
-The _{opennms-product-name}_ Plugin Manager_ provides a unified interface for managing the lifecycle of optional _OSGi_ plugins installed in _{opennms-product-name}_ or in any _Karaf_ instances which it manages.
+The _{opennms-product-name}_  _Plugin Manager_ provides a unified interface for managing the lifecycle of optional _OSGi_ plugins installed in _{opennms-product-name}_ or in any _Karaf_ instances which it manages.
 This need not be limited to _Karaf_ instances running _{opennms-product-name}_ but can also be used to deploy modules to _Karaf_ instances running user applications.
 
 In addition to managing the installation of _OSGi_ features, the _Plugin Manager_ also allows the installation of licence keys which can be used to enable features for a particular instance of _{opennms-product-name}_.
