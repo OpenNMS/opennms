@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.UnknownHostException;
@@ -123,7 +124,7 @@ public class TcpMonitorTest {
     @Test
     @JUnitHttpServer(port=10342)
     public void testLocalhostIPv6Connection() throws UnknownHostException {
-        if (Boolean.getBoolean("skipIpv6Tests")) return;
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();

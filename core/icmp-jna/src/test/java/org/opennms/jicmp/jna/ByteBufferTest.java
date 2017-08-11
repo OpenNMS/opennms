@@ -29,6 +29,7 @@
 package org.opennms.jicmp.jna;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 import static org.hamcrest.CoreMatchers.*;
 
 import java.net.InetAddress;
@@ -67,7 +68,8 @@ public class ByteBufferTest {
     
     @Test
     public void testWrap() throws Exception {
-        
+        assumeTrue(Boolean.getBoolean("runPingTests"));
+
         String msg = "OpenNMS!";
         
         byte[] data = msg.getBytes("US-ASCII");
