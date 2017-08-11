@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import java.net.InetAddress;
 
@@ -57,7 +56,6 @@ public class IcmpDetectorTest {
     
     @Before
     public void setUp() throws Exception {
-        assumeTrue(Boolean.getBoolean("runPingTests"));
         MockLogAppender.setupLogging();
     }
     

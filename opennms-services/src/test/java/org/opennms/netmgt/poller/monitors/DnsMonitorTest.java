@@ -251,7 +251,6 @@ public class DnsMonitorTest {
     
     @Test
     public void testDnsJavaWithDnsServer() throws TextParseException, UnknownHostException {
-        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         final Lookup l = new Lookup("example.com", Type.AAAA);
         // make sure we use a temporary cache so don't get results from a previously cached query
         // from another test
@@ -277,7 +276,6 @@ public class DnsMonitorTest {
     @Test
     @JUnitDNSServer(port=9153, zones={})
     public void testNoAnswer() throws Exception {
-        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         final Lookup l = new Lookup("example.com", Type.AAAA);
         // make sure we use a temporary cache so don't get results from a previously cached query
         // from another test

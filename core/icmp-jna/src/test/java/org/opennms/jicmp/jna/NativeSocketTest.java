@@ -30,7 +30,6 @@ package org.opennms.jicmp.jna;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -63,7 +62,6 @@ public class NativeSocketTest {
 
     @Before
     public void setUp() throws Exception {
-        assumeTrue(Boolean.getBoolean("runPingTests"));
         m_server = new Server(7777);
         m_server.start();
         m_server.waitForStart();

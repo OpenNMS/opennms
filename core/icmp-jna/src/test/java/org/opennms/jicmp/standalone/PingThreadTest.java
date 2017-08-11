@@ -50,7 +50,7 @@ public class PingThreadTest {
     
     @Before
     public void setUp() throws Exception {
-        assumeTrue(Boolean.getBoolean("runPingTests"));
+        assumeTrue(Platform.isMac());
     }
 
     @After
