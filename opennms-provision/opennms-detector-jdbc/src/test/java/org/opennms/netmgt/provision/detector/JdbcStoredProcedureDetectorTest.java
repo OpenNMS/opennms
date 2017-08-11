@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -47,7 +46,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.detector.JdbcTestUtils.DSInfo;
 import org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetector;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,12 +65,13 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class JdbcStoredProcedureDetectorTest implements InitializingBean {
-
     @Autowired
     public JdbcStoredProcedureDetector m_detector;
 
     @Autowired
     public DataSource m_dataSource;
+
+    private DSInfo m_info;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -79,62 +79,52 @@ public class JdbcStoredProcedureDetectorTest implements InitializingBean {
     }
 
     @Before
-    public void setUp() throws SQLException{
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
         String createSchema = "CREATE SCHEMA test";
         String createProcedure = "CREATE FUNCTION test.isRunning () RETURNS bit AS 'BEGIN RETURN 1; END;' LANGUAGE 'plpgsql';";
 
-        String url = null;
-        String username = null;
-        Connection conn = null;
-        try {
-            conn = m_dataSource.getConnection();
-            DatabaseMetaData metaData = conn.getMetaData();
-            url = metaData.getURL();
-            username = metaData.getUserName();
+        final Connection conn = m_dataSource.getConnection();
 
-            Statement createStmt = conn.createStatement();
-            createStmt.executeUpdate(createSchema);
-            createStmt.close();
+        final Statement createStmt = conn.createStatement();
+        createStmt.executeUpdate(createSchema);
+        createStmt.close();
 
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(createProcedure);
-            stmt.close();
+        final Statement stmt = conn.createStatement();
+        stmt.executeUpdate(createProcedure);
+        stmt.close();
 
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            if (conn != null) {
-                conn.close();
-            }
-        }
+        conn.close();
 
-        m_detector.setDbDriver("org.postgresql.Driver");
-        m_detector.setPort(5432);
-        m_detector.setUrl(url);
-        m_detector.setUser(username);
-        m_detector.setPassword("");
+        m_info = JdbcTestUtils.getDataSourceInfo(m_dataSource);
+        JdbcTestUtils.setInfo(m_detector, m_info);
         m_detector.setStoredProcedure("isRunning");
 
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() throws SQLException {
+        final Connection conn = m_dataSource.getConnection();
 
+        final Statement createStmt = conn.createStatement();
+        createStmt.executeUpdate("DROP SCHEMA test CASCADE");
+        createStmt.close();
+
+        conn.close();
     }
 
     @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.init();
-        assertTrue("JDBCStoredProcedureDetector should work", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
+        assertTrue("JDBCStoredProcedureDetector should work", m_detector.isServiceDetected(m_info.getHost()));
     }
 
     @Test(timeout=20000)
     public void testStoredProcedureFail() throws UnknownHostException{
         m_detector.setStoredProcedure("bogus");
         m_detector.init();
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
+        assertFalse(m_detector.isServiceDetected(m_info.getHost()));
     }
 
     @Test(timeout=20000)
@@ -142,7 +132,7 @@ public class JdbcStoredProcedureDetectorTest implements InitializingBean {
         m_detector.setUser("wrongUserName");
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")) );
+        assertFalse(m_detector.isServiceDetected(m_info.getHost()) );
     }
 
 
@@ -151,6 +141,6 @@ public class JdbcStoredProcedureDetectorTest implements InitializingBean {
         m_detector.setSchema("defaultSchema");
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")) );
+        assertFalse(m_detector.isServiceDetected(m_info.getHost()) );
     }
 }
