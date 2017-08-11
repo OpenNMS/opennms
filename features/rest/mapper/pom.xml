@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>org.opennms.features.bsm</groupId>
-    <artifactId>org.opennms.features.bsm.rest</artifactId>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>org.opennms.features.rest</artifactId>
     <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.opennms.features.bsm.rest.api</artifactId>
+  <groupId>org.opennms.features.rest</groupId>
+  <artifactId>org.opennms.features.rest.mapper</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS :: Features :: BSM :: ReST :: API</name>
+  <name>OpenNMS :: Features :: REST :: Mapper</name>
+
   <build>
     <plugins>
       <plugin>
@@ -24,58 +26,61 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <descriptors>
-            <descriptor>src/assembly/xsds.xml</descriptor>
-          </descriptors>
-          <tarLongFileMode>posix</tarLongFileMode>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstructVersion}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
-    <!-- All of this projects dependencies should have either a 'provided' or 'test' scope, since
-         this .jar gets pull into jetty-webapps/opennmns/WEB-INF/lib -->
     <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.service.api</artifactId>
-      <version>${project.version}</version>
-    <scope>provided</scope>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.rest</groupId>
-      <artifactId>org.opennms.features.rest.common</artifactId>
+      <artifactId>org.opennms.features.rest.model</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <scope>provided</scope>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-jdk8</artifactId>
+      <version>${mapstructVersion}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <!-- Test Dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.xml</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
 </project>

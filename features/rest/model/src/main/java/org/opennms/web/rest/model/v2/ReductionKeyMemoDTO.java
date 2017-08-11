@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,24 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2;
+package org.opennms.web.rest.model.v2;
 
-import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
-/**
- * Abstract class for use by V2 endpoints that do not support DTOs.
- *
- * See {@link AbstractDaoRestServiceWithDTO} for more details.
- *
- */
-public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extends Serializable> extends AbstractDaoRestServiceWithDTO<T,T,Q,K,I> {
+@XmlRootElement(name="reductionKeyMemo")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ReductionKeyMemoDTO extends MemoDTO {
 
-    public T mapEntityToDTO(T entity) {
-        return entity;
+    @XmlElement(name="reductionkey")
+    private String reductionKey;
+
+    public String getReductionKey() {
+        return reductionKey;
     }
 
-    public T mapDTOToEntity(T dto) {
-        return dto;
+    public void setReductionKey(String reductionKey) {
+        this.reductionKey = reductionKey;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ReductionKeyMemoDTO that = (ReductionKeyMemoDTO) o;
+        return Objects.equals(reductionKey, that.reductionKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), reductionKey);
+    }
 }
