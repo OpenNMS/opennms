@@ -111,11 +111,6 @@ public class MockEventWriter implements EventProcessor, InitializingBean {
 
     @Override
     public void process(Log eventLog) throws EventProcessorException {
-        process(eventLog, false);
-    }
-
-    @Override
-    public void process(Log eventLog, boolean synchronous) throws EventProcessorException {
         if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
             for (Event event : eventLog.getEvents().getEvent()) {
                 process(event);

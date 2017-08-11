@@ -33,7 +33,7 @@ import org.opennms.netmgt.xml.event.Log;
 
 /**
  * Event processor interface.  Classes that want to modify or react to
- * events within eventd implement this interface and are dependency
+ * events within Eventd implement this interface and are dependency
  * injected into the eventProcessors List in EventHandler.
  * 
  * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
@@ -43,5 +43,4 @@ public interface EventProcessor {
 
     void process(final Log eventLog) throws EventProcessorException;
 
-    void process(final Log eventLog, boolean synchronous) throws EventProcessorException;
 }

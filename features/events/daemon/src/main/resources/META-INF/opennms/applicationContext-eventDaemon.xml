@@ -197,10 +197,10 @@
         <!-- <bean ref="eventParmRegexFilter"/> -->
 
         <!-- Expand the event parms -->
-        <bean ref="eventExpander" method="process(org.opennms.netmgt.xml.event.Log)"/>
+        <bean ref="eventExpander"/>
 
         <!-- Write the event into the database -->
-        <bean ref="eventWriter" method="process(org.opennms.netmgt.xml.event.Log)"/>
+        <bean ref="eventWriter"/>
 
         <!-- Broadcast the event over the messaging channel -->
         <split>
