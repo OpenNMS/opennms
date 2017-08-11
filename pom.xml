@@ -888,7 +888,7 @@
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.6.2</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -1321,6 +1321,7 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.16</minaVersion>
+    <mapstructVersion>1.2.0.CR1</mapstructVersion>
     <minionKarafVersion>4.0.5</minionKarafVersion>
     <newtsVersion>1.4.3</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>

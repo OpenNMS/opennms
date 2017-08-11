@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,25 +25,47 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.web.rest.model.v2;
 
-package org.opennms.web.rest.v2;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import java.io.Serializable;
+@XmlRootElement(name="parameter")
+@XmlAccessorType(XmlAccessType.NONE)
+public class EventParameterDTO {
 
-/**
- * Abstract class for use by V2 endpoints that do not support DTOs.
- *
- * See {@link AbstractDaoRestServiceWithDTO} for more details.
- *
- */
-public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extends Serializable> extends AbstractDaoRestServiceWithDTO<T,T,Q,K,I> {
+    @XmlAttribute(name="name")
+    private String name;
 
-    public T mapEntityToDTO(T entity) {
-        return entity;
+    @XmlAttribute(name="value")
+    private String value;
+
+    @XmlAttribute(name="type")
+    private String type;
+
+    public String getName() {
+        return name;
     }
 
-    public T mapDTOToEntity(T dto) {
-        return dto;
+    public void setName(String name) {
+        this.name = name;
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }
