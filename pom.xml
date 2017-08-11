@@ -1386,7 +1386,7 @@
     <defaultSubscriptionName>horizon</defaultSubscriptionName>
     <defaultSubscriptionVersion>${project.version}</defaultSubscriptionVersion>
     <defaultSubscriptionGroupId>org.opennms.authenticator</defaultSubscriptionGroupId>
-    <defaultSubscriptionCheckEnabled>true</defaultSubscriptionCheckEnabled>
+    <defaultSubscriptionCheckEnabled>false</defaultSubscriptionCheckEnabled>
 
     <!-- If regenerateSubscription=true a new subscription licence spec will be regenerated on each build.  -->
     <!-- Set this false once you have a permanent licence generated and deployed -->
