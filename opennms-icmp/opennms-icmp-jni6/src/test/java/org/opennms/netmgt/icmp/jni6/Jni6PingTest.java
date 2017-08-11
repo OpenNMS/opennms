@@ -73,7 +73,7 @@ public class Jni6PingTest extends TestCase {
     }
 
     private boolean isRunTest() {
-        return Boolean.parseBoolean(System.getProperty(getRunTestProperty()));
+        return !Boolean.getBoolean("skipIpv6Tests") && Boolean.getBoolean(getRunTestProperty());
     }
 
     private String getRunTestProperty() {
@@ -261,4 +261,3 @@ public class Jni6PingTest extends TestCase {
         System.out.print(sb);
     }
 }
-    

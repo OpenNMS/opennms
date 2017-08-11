@@ -111,6 +111,9 @@ public class JnaPingTest extends TestCase {
     }
 
     public void testSinglePingIPv6() throws Exception {
+        if (Boolean.getBoolean("skipIpv6Tests")) {
+            return;
+        }
         singlePingGood(m_ipv6goodHost);
     }
     
@@ -187,6 +190,9 @@ public class JnaPingTest extends TestCase {
     }
 
     public void testPingCallbackTimeoutIPv6() throws Exception {
+        if (Boolean.getBoolean("skipIpv6Tests")) {
+            return;
+        }
         pingCallbackTimeout(m_ipv6badHost);
     }
 
@@ -209,6 +215,9 @@ public class JnaPingTest extends TestCase {
     }
 
     public void testSinglePingFailureIPv6() throws Exception {
+        if (Boolean.getBoolean("skipIpv6Tests")) {
+            return;
+        }
         assertNull(s_jnaPinger.ping(m_ipv6badHost));
     }
 
@@ -217,6 +226,9 @@ public class JnaPingTest extends TestCase {
     }
 
     public void testParallelPingIPv6() throws Exception {
+        if (Boolean.getBoolean("skipIpv6Tests")) {
+            return;
+        }
         parallelPingGood(m_ipv6goodHost);
     }
 
@@ -237,6 +249,9 @@ public class JnaPingTest extends TestCase {
     }
 
     public void testParallelPingFailureIPv6() throws Exception {
+        if (Boolean.getBoolean("skipIpv6Tests")) {
+            return;
+        }
         parallelPingFailure(m_ipv6badHost);
     }
 
