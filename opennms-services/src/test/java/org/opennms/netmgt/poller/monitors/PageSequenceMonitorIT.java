@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -418,6 +419,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRequireIPv6() throws Exception {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
