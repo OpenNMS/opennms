@@ -49,7 +49,7 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.jasig.maven</groupId>
+                <groupId>nl.geodienstencentrum.maven</groupId>
                 <artifactId>sass-maven-plugin</artifactId>
                 <version>${sass.maven.plugin.version}</version>
                 <executions>
@@ -78,7 +78,7 @@
                             <pluginExecutions>
                                 <pluginExecution>
                                     <pluginExecutionFilter>
-                                        <groupId>org.jasig.maven</groupId>
+                                        <groupId>nl.geodienstencentrum.maven</groupId>
                                         <artifactId>sass-maven-plugin</artifactId>
                                         <versionRange>[${sass.maven.plugin.version},)</versionRange>
                                         <goals>
