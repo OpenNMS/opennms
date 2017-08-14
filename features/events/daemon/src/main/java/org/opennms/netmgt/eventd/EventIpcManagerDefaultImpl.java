@@ -247,7 +247,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             LOG.debug("sending: {}", eventLog);
         }
 
-        m_eventHandler.handle(eventLog);
+        m_eventHandler.handleAsync(eventLog);
     }
 
     @Override
@@ -272,7 +272,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Logging.withPrefix(Eventd.LOG4J_CATEGORY, new Runnable() {
             @Override
             public void run() {
-                m_eventHandler.handle(eventLog, true);
+                m_eventHandler.handleSync(eventLog);
             }
         });
     }

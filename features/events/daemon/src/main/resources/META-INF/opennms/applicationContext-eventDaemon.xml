@@ -74,6 +74,7 @@
   <!-- Handle events by submitting them to a Camel endpoint -->
   <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
     <constructor-arg value="seda:submitEvent"/>
+    <constructor-arg value="direct:submitEvent"/>
     <constructor-arg ref="eventdMetricRegistry"/>
   </bean>
 
@@ -165,9 +166,16 @@
         <process ref="xmlEventProcessor"/>
     </route>
 
-    <route id="submitEvent">
+    <route id="submitEventAsync">
       <from uri="seda:submitEvent?size={{eventIpcManagerHandlerQueueLength}}&amp;concurrentConsumers={{eventIpcManagerHandlerPoolSize}}" />
+      <setHeader headerName="OpenNMSEventdAsyncEventSubmission">
+        <simple>true</simple>
+      </setHeader>
+      <to uri="direct:submitEvent"/>
+    </route>
 
+    <route id="submitEvent">
+      <from uri="direct:submitEvent" />
       <to uri="bean:org.opennms.netmgt.events.api.support.EventLogSplitter?method=splitEventLogs"/>
 
       <split>
@@ -213,15 +221,28 @@
             </when>
             <otherwise>
               <log loggingLevel="DEBUG" message="Event ID ${body.getDbid()} to be broadcasted: ${body.getUei()}"/>
-              <to uri="seda:broadcastEvent"/>
+              <choice>
+                <when>
+                  <simple>${header.OpenNMSEventdAsyncEventSubmission} == 'true'</simple>
+                  <to uri="seda:broadcastEvent"/>
+                </when>
+                <otherwise>
+                  <to uri="direct:broadcastEvent"/>
+                </otherwise>
+              </choice>
             </otherwise>
           </choice>
         </split>
       </split>
     </route>
 
+    <route id="broadcastEventAsync">
+      <from uri="seda:broadcastEvent?size={{eventIpcManagerHandlerQueueLength}}&amp;concurrentConsumers={{eventIpcManagerHandlerPoolSize}}" />
+      <to uri="direct:broadcastEvent"/>
+    </route>
+
     <route id="broadcastEvent">
-      <from uri="seda:broadcastEvent?concurrentConsumers=4"/>
+      <from uri="direct:broadcastEvent"/>
       <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
       <!--
         Set the UEI as a message header so that we can

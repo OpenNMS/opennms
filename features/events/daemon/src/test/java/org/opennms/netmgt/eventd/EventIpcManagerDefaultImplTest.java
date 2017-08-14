@@ -466,12 +466,12 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
          * delegates to {@link #handle(Log)}.
          */
         @Override
-        public void handle(Log eventLog, boolean synchronous) {
-            handle(eventLog);
+        public void handleAsync(Log eventLog) {
+            handleSync(eventLog);
         }
 
         @Override
-        public void handle(Log eventLog) {
+        public void handleSync(Log eventLog) {
             lastThreadId.set(Thread.currentThread().getId());
             semaphore.release();
         }
@@ -497,7 +497,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         Event e = bldr.getEvent();
 
         threadRecordingEventHandler.acquire();
-        // Async: When invoking sendNow, the Runnable should be ran from thread other than the callers
+        // Async: When invoking sendNow, the Runnable should be run from thread other than the callers
         m_manager.sendNow(e);
         // Wait to acquire the semaphore released by the thread
         threadRecordingEventHandler.acquire();
@@ -506,7 +506,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         assertNotEquals(Thread.currentThread().getId(), threadRecordingEventHandler.getThreadId());
 
         threadRecordingEventHandler.acquire();
-        // Sync: When invoking sendNowSync, the Runnable should be ran from the callers thread
+        // Sync: When invoking sendNowSync, the Runnable should be run from the callers thread
         m_manager.sendNowSync(e);
         assertEquals(Thread.currentThread().getId(), threadRecordingEventHandler.getThreadId());
         threadRecordingEventHandler.acquire();
@@ -519,12 +519,12 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
 
         EventHandler handler = new EventHandler() {
             @Override
-            public void handle(Log eventLog, boolean synchronous) {
-                handle(eventLog);
+            public void handleAsync(Log eventLog) {
+                handleSync(eventLog);
             }
 
             @Override
-            public void handle(Log eventLog) {
+            public void handleSync(Log eventLog) {
                 try {
                     Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
                 } catch (InterruptedException e) {
@@ -723,7 +723,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         };
 
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
-        DefaultEventHandlerImpl handler = new DefaultEventHandlerImpl("seda:submitEvent", m_registry);
+        DefaultEventHandlerImpl handler = new DefaultEventHandlerImpl("seda:submitEvent", "direct:submitEvent", m_registry);
         manager.setEventHandler(handler);
         manager.afterPropertiesSet();
 

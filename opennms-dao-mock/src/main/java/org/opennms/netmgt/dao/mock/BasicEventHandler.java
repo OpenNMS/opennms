@@ -63,12 +63,12 @@ public class BasicEventHandler implements EventHandler {
 	}
 
 	@Override
-	public void handle(Log eventLog) {
-		handle(eventLog, false);
+	public void handleAsync(Log eventLog) {
+		handleSync(eventLog);
 	}
 
 	@Override
-	public void handle(Log eventLog, boolean synchronous) {
+	public void handleSync(Log eventLog) {
 		for (Log event : EventLogSplitter.splitEventLogs(eventLog)) {
 			for (final EventProcessor eventProcessor : m_eventProcessors) {
 				try {

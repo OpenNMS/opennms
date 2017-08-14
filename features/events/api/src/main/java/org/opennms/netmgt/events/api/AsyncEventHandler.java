@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.events.api;
 
+import org.apache.camel.InOnly;
+import org.opennms.netmgt.xml.event.Log;
+
 /**
  * <p>EventHandler interface.</p>
  *
@@ -35,5 +38,13 @@ package org.opennms.netmgt.events.api;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public interface EventHandler extends AsyncEventHandler, SyncEventHandler {
+public interface AsyncEventHandler {
+    /**
+     * Create a Runnable to handle the passed-in event Log.
+     *
+     * @param eventLog events to be processed
+     * @return a ready-to-run Runnable that will process the events
+     */
+	@InOnly
+    void handleAsync(Log eventLog);
 }

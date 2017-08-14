@@ -33,8 +33,9 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.camel.Produce;
-import org.opennms.core.camel.DefaultDispatcher;
+import org.opennms.netmgt.events.api.AsyncEventHandler;
 import org.opennms.netmgt.events.api.EventHandler;
+import org.opennms.netmgt.events.api.SyncEventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -45,8 +46,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 /**
- * The EventHandler builds Runnables that essentially do all the work on an
- * incoming event.
+ * The EventHandler creates and sends messages that essentially do all the
+ * work on an incoming event.
  *
  * Operations done on an incoming event are handled by the List of injected
  * EventProcessors, in the order in which they are given in the list.  If any
@@ -55,33 +56,38 @@ import com.codahale.metrics.Timer;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class DefaultEventHandlerImpl extends DefaultDispatcher implements EventHandler {
+public class DefaultEventHandlerImpl implements EventHandler {
 
-    @Produce(property="endpointUri")
-    EventHandler m_proxy;
+    @Produce(property="asyncEndpointUri")
+    AsyncEventHandler m_asyncProxy;
+
+    @Produce(property="syncEndpointUri")
+    SyncEventHandler m_syncProxy;
 
     private final Timer processTimer;
 
     private final Histogram logSizes;
 
+    private final String m_asyncEndpointUri;
+
+    private final String m_syncEndpointUri;
+
     /**
      * <p>Constructor for DefaultEventHandlerImpl.</p>
      */
-    public DefaultEventHandlerImpl(final String endpointUri, final MetricRegistry registry) {
-        super(endpointUri);
+    public DefaultEventHandlerImpl(final String asyncEndpointUri, final String syncEndpointUri, final MetricRegistry registry) {
+        m_asyncEndpointUri = asyncEndpointUri;
+        m_syncEndpointUri = syncEndpointUri;
         processTimer = Objects.requireNonNull(registry).timer("eventlogs.process");
         logSizes = registry.histogram("eventlogs.sizes");
     }
 
-    /**
-     * Process the received events. For each event, use the EventExpander to
-     * look up matching eventconf entry and load info from that match, expand
-     * event parms, add event to database and send event to appropriate
-     * listeners.
-     */
-    @Override
-    public void handle(Log m_eventLog) {
-        handle(m_eventLog, false);
+    public String getAsyncEndpointUri() {
+        return m_asyncEndpointUri;
+    }
+
+    public String getSyncEndpointUri() {
+        return m_syncEndpointUri;
     }
 
     /**
@@ -91,8 +97,23 @@ public class DefaultEventHandlerImpl extends DefaultDispatcher implements EventH
      * listeners.
      */
     @Override
-    public void handle(Log m_eventLog, boolean synchronous) {
-        Events events = m_eventLog.getEvents();
+    public void handleAsync(Log eventLog) {
+        handle(eventLog, false);
+    }
+
+    /**
+     * Process the received events. For each event, use the EventExpander to
+     * look up matching eventconf entry and load info from that match, expand
+     * event parms, add event to database and send event to appropriate
+     * listeners.
+     */
+    @Override
+    public void handleSync(Log eventLog) {
+        handle(eventLog, true);
+    }
+
+    private void handle(Log eventLog, boolean sync) {
+        Events events = eventLog.getEvents();
         if (events == null || events.getEventCount() <= 0) {
             // no events to process
             return;
@@ -100,9 +121,11 @@ public class DefaultEventHandlerImpl extends DefaultDispatcher implements EventH
 
         logSizes.update(events.getEventCount());
         try (Timer.Context context = processTimer.time()) {
-            // TODO: Figure out how to invoke this synchronously
-            // based on value of 'synchronous'
-            m_proxy.handle(m_eventLog);
+            if (sync) {
+                m_syncProxy.handleSync(eventLog);
+            } else {
+                m_asyncProxy.handleAsync(eventLog);
+            }
         }
     }
 
