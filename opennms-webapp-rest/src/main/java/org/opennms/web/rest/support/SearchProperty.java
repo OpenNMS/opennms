@@ -33,12 +33,30 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * @author Seth
  */
 @XmlRootElement(name="property")
 public class SearchProperty implements Comparable<SearchProperty> {
+
+	public static class PrefixableValue {
+		private final String prefix;
+		private final String value;
+		public PrefixableValue(final String prefix, final String value) {
+			this.prefix = prefix;
+			this.value = value;
+		}
+
+		public String getPrefix() {
+			return prefix;
+		}
+
+		public String getValue() {
+			return value;
+		}
+	}
 
 	public static final boolean DEFAULT_ORDER_BY = true;
 
@@ -53,28 +71,48 @@ public class SearchProperty implements Comparable<SearchProperty> {
 
 	public SearchProperty() {}
 
-	public SearchProperty(String id, String name, SearchPropertyType type) {
-		this(id, name, type, null);
+	public SearchProperty(Class<?> entityClass, String id, String name, SearchPropertyType type) {
+		this(entityClass, id, name, type, null);
 	}
 
-	public SearchProperty(String id, String name, SearchPropertyType type, boolean orderBy) {
-		this(id, name, type, orderBy, null);
+	protected SearchProperty(Class<?> entityClass, String id, String name, SearchPropertyType type, boolean orderBy) {
+		this(entityClass, id, name, type, orderBy, null);
 	}
 
-	public SearchProperty(String id, String name, SearchPropertyType type, Map<String,String> values) {
-		this(id, name, type, DEFAULT_ORDER_BY, values);
+	public SearchProperty(Class<?> entityClass, String id, String name, SearchPropertyType type, Map<String,String> values) {
+		this(entityClass, id, name, type, DEFAULT_ORDER_BY, values);
 	}
 
-	public SearchProperty(String id, String name, SearchPropertyType type, boolean orderBy, Map<String,String> values) {
-		this.id = id;
-		this.name = name;
+	public SearchProperty(Class<?> entityClass, String id, String name, SearchPropertyType type, boolean orderBy, Map<String,String> values) {
+		this(entityClass, new PrefixableValue(null, id), new PrefixableValue(null, name), type, orderBy, values);
+	}
+
+	public SearchProperty(Class<?> entityClass, PrefixableValue id, PrefixableValue name, SearchPropertyType type, Map<String, String> values) {
+		this(entityClass, id, name, type, DEFAULT_ORDER_BY, values);
+	}
+
+	public SearchProperty(Class<?> entityClass, PrefixableValue id, PrefixableValue name, SearchPropertyType type, boolean orderBy, Map<String,String> values) {
+		this.entityClass = entityClass;
+		this.idWithPrefix = id;
+		this.id = (id.prefix == null ? id.value : id.prefix + "." + id.value);
+		this.nameWithPrefix = name;
+		this.name = (name.prefix == null ? name.value : name.prefix + ": " + name.value);
 		this.type = type;
 		this.orderBy = orderBy;
 		this.values = values;
 	}
 
+	@XmlTransient
+	public Class<?> entityClass;
+
+	@XmlTransient
+	public PrefixableValue idWithPrefix;
+
 	@XmlAttribute
 	public String id;
+
+	@XmlTransient
+	public PrefixableValue nameWithPrefix;
 
 	@XmlAttribute
 	public String name;

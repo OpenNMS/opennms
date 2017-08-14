@@ -28,12 +28,18 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.opennms.web.rest.support.CriteriaBehaviors.SEARCH_DATE_FORMAT;
+
 import java.io.Serializable;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -62,6 +68,10 @@ import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchConditionVisitor;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -73,14 +83,21 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
+import org.opennms.web.rest.support.DateCollection;
+import org.opennms.web.rest.support.FloatCollection;
+import org.opennms.web.rest.support.IntegerCollection;
+import org.opennms.web.rest.support.LongCollection;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.support.SearchPropertyCollection;
+import org.opennms.web.rest.support.StringCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
@@ -107,6 +124,9 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
     @Autowired
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
+
+    @Autowired
+    private SessionFactory m_sessionFactory;
 
     private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -275,21 +295,113 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
         }
     }
 
-    @GET
-    @Path("properties/{property}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getPropertyValues(@PathParam("property") final String property, @QueryParam("q") final String query) {
-        Set<SearchProperty> props = getQueryProperties();
-        // Find the property with the matching ID
-        Optional<SearchProperty> prop = props.stream().filter(p -> p.id.equals(property)).findAny();
-        if (prop.isPresent()) {
+    private static class HibernateListCallback<T> implements HibernateCallback<List<T>> {
+        private final SearchProperty property;
+        private final String query;
+
+        public HibernateListCallback(final SearchProperty property, final String query) {
+            this.property = property;
+            this.query = query;
+        }
+
+        @Override
+        public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
+            final Query hql;
+            // TODO: Add limit?
+            // TODO: Sort by count?
+
             // If there is a query string...
             if (query != null && query.length() > 0) {
-                // TODO TODO
-                return Response.status(Status.NOT_FOUND).build();
+                hql = session.createQuery(
+                    String.format(
+                        "select distinct %s from %s where lower(%s) like :query order by %s",
+                        property.idWithPrefix.getValue(),
+                        property.entityClass.getSimpleName(),
+                        property.idWithPrefix.getValue(),
+                        property.idWithPrefix.getValue()
+                    )
+                );
+                hql.setParameter("query", "%" + query.toLowerCase() + "%");
             } else {
-                // TODO TODO
-                return Response.status(Status.NOT_FOUND).build();
+                hql = session.createQuery(
+                    String.format(
+                        "select distinct %s from %s order by %s",
+                        property.idWithPrefix.getValue(),
+                        property.entityClass.getSimpleName(),
+                        property.idWithPrefix.getValue()
+                    )
+                );
+            }
+
+            @SuppressWarnings("unchecked")
+            List<T> list = (List<T>)hql.list();
+            return list;
+        }
+    };
+
+    @GET
+    @Path("properties/{propertyId}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getPropertyValues(@PathParam("propertyId") final String propertyId, @QueryParam("q") final String query) {
+        Set<SearchProperty> props = getQueryProperties();
+        // Find the property with the matching ID
+        Optional<SearchProperty> prop = props.stream().filter(p -> p.id.equals(propertyId)).findAny();
+        if (prop.isPresent()) {
+            SearchProperty property = prop.get();
+            if (property.values != null && property.values.size() > 0) {
+                final Set<String> validValues;
+                if (query != null && query.length() > 0) {
+                    validValues = property.values.keySet().stream().filter(v -> v.contains(query)).collect(Collectors.toSet());
+                } else {
+                    validValues = property.values.keySet();
+                }
+
+                switch(property.type) {
+                case FLOAT:
+                    return Response.ok(new FloatCollection(validValues.stream().map(Float::parseFloat).collect(Collectors.toList()))).build();
+                case INTEGER:
+                    return Response.ok(new IntegerCollection(validValues.stream().map(Integer::parseInt).collect(Collectors.toList()))).build();
+                case LONG:
+                    return Response.ok(new LongCollection(validValues.stream().map(Long::parseLong).collect(Collectors.toList()))).build();
+                case IP_ADDRESS:
+                case STRING:
+                    return Response.ok(new StringCollection(validValues)).build();
+                case TIMESTAMP:
+                    return Response.ok(new DateCollection(validValues.stream().map(v -> {
+                        try {
+                            return SEARCH_DATE_FORMAT.get().parse(v);
+                        } catch (ParseException e) {
+                            LOG.error("Invalid date in value list: " + v, e);
+                            return null;
+                        }
+                    })
+                    // Filter out invalid null values
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList()))).build();
+                default:
+                    return Response.noContent().build();
+                }
+            }
+
+            switch(property.type) {
+            case FLOAT:
+                List<Float> floats = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Float>(property, query));
+                return Response.ok(new FloatCollection(floats)).build();
+            case INTEGER:
+                List<Integer> ints = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Integer>(property, query));
+                return Response.ok(new IntegerCollection(ints)).build();
+            case LONG:
+                List<Long> longs = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Long>(property, query));
+                return Response.ok(new LongCollection(longs)).build();
+            case IP_ADDRESS:
+            case STRING:
+                List<String> strings = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<String>(property, query));
+                return Response.ok(new StringCollection(strings)).build();
+            case TIMESTAMP:
+                List<Date> dates = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Date>(property, query));
+                return Response.ok(new DateCollection(dates)).build();
+            default:
+                return Response.noContent().build();
             }
         } else {
             // 404
