@@ -15,9 +15,10 @@
   <!-- mvn:<groupId>/<artifactId>/<version>/xml/features -->
   <!-- such that the repository can be installed using features:addurl (Karaf 2.4.0) -->
   <!-- e.g. features:addurl mvn:org.apache.camel/camel-example-osgi/2.10.0/xml/features -->
-  <featureRepository>mvn:${groupId}/${productName}/${project.version}/xml/features</featureRepository>
   
-    
+  <!-- using opennms features repository as this is what will be used for internal plugins in real system -->
+  <featureRepository>mvn:org.opennms.karaf/opennms/${project.parent.version}/xml/features</featureRepository>
+  
   <!-- packageingDescriptor describes the packaging of this feature. This gives an locator for the Karaf kar or rpm -->
   <!-- in which this feature was packaged for delivery. Null or empty if no packaging described. -->
   <packageingDescriptor>Internal</packageingDescriptor>
@@ -30,5 +31,5 @@
   <licenceType>AGPL</licenceType>
   
   <!-- a plugin marked as a system plugin will not be removable by the plugin manager -->
-  <systemPlugin>true</systemPlugin>
+  <systemPlugin>false</systemPlugin>
 </product>

@@ -16,7 +16,9 @@
   <!-- <groupId>/<artifactId>/<version>/xml/features -->
   <!-- such that the repository can be installed using features:addurl (Karaf 2.4.0) -->
   <!-- e.g. features:addurl mvn:org.apache.camel/camel-example-osgi/2.10.0/xml/features -->
-  <featureRepository>mvn:${groupId}/${productName}/${project.version}/xml/features</featureRepository>
+  
+  <!-- using opennms features repository as this is what will be used for internal plugins in real system -->
+  <featureRepository>mvn:org.opennms.karaf/opennms/${project.parent.version}/xml/features</featureRepository>
 
 
   <!-- licensee - the name & address of the person / organisation who is granted the licence -->

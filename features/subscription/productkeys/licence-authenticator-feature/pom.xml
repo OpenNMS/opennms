@@ -1,0 +1,88 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>productkeys.parent</artifactId>
+    <version>21.0.0-SNAPSHOT</version>
+    <relativePath>../pom-exec.xml</relativePath>
+  </parent>
+
+  <!-- Feature Definition -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${productGroupId}</groupId>
+  <artifactId>${productName}</artifactId>
+  <name>OpenNMS :: Features :: ${productName} :: Subscription</name>
+  <version>${productVersion}</version>
+  <description>Feature definition for ${productName} Subscription</description>
+  <packaging>pom</packaging>
+
+  <build>
+
+    <plugins>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>features.xml</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate-features-xml</goal>
+            </goals>
+            <configuration>
+              <!-- so that licence manager feature starts before this module -->
+              <repositories>
+                <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${licencemanagerVersion}/xml/features</repository>
+              </repositories>
+              <features>
+                <feature>org.opennms.plugin.licencemanager</feature>
+              </features>
+              <bundles>
+                <bundle>mvn:${productGroupId}/${productName}.licence-authenticator/${productVersion}</bundle>
+                <bundle>mvn:${productGroupId}/${productName}.product-descriptor/${productVersion}</bundle>
+              </bundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+  </build>
+
+  <dependencies>
+    <!-- dont use dependency to generate feature because it creates -->
+    <!-- unresolvable dependencies in maven because of productName properties -->
+    <!-- <dependency> -->
+    <!-- <groupId>${productGroupId}</groupId> -->
+    <!-- <artifactId>${productName}.licence-spec</artifactId> -->
+    <!-- <version>${project.version}</version> -->
+    <!-- </dependency> -->
+  </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <!-- NOTE this overrides the normal public maven repository as licence specs should be separated and secured -->
+  <!-- Change this to match your repo for containing the licence specifications. -->
+  <distributionManagement>
+    <repository>
+      <id>osgi-plugins-licence-specs</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs</url>
+    </repository>
+    <snapshotRepository>
+      <id>osgi-plugins-licence-specs-snapshots</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>

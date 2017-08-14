@@ -249,7 +249,7 @@
         <module>licence-spec</module>
         <module>licence-authenticator</module>
         <module>product-descriptor</module>
-        <!-- <module>feature</module> -->
+        <module>licence-authenticator-feature</module>
         <module>licence-spec-feature</module>
       </modules>
     </profile>
