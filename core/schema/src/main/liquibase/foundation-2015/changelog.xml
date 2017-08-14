@@ -6,7 +6,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
   <!-- Fix for issue NMS-9550 -->
-  <changeSet author="agalue" id="20.0.2-changeDataTypeOfReasonToText">
+  <changeSet author="agalue" id="foundation2015-changeDataTypeOfReasonToText">
     <modifyDataType tableName="location_specific_status_changes" columnName="reason" newDataType="text"/>
 
     <rollback>
