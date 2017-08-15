@@ -23,7 +23,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>nl.geodienstencentrum.maven</groupId>
+        <groupId>org.jasig.maven</groupId>
         <artifactId>sass-maven-plugin</artifactId>
         <version>${sass.maven.plugin.version}</version>
         <executions>
@@ -337,7 +337,7 @@
     						</pluginExecution>
     						<pluginExecution>
     							<pluginExecutionFilter>
-    								<groupId>nl.geodienstencentrum.maven</groupId>
+    								<groupId>org.jasig.maven</groupId>
     								<artifactId>sass-maven-plugin</artifactId>
     								<versionRange>[${sass.maven.plugin.version},)</versionRange>
     								<goals><goal>update-stylesheets</goal></goals>
