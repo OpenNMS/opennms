@@ -100,7 +100,7 @@
               <name>transientFeature</name>
               <outputFile>${project.build.directory}/temp-features/features.xml</outputFile>
               <bundles>
-                <!-- include specific product descriptor bundles here for inclusion in the productSpecList.xml-->
+                <!-- include specific product descriptor bundles here for inclusion in the productSpecList.xml -->
                 <!-- <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle> -->
                 <bundle>mvn:org.opennms/productkeys.descriptor/${project.version}</bundle>
               </bundles>
@@ -131,7 +131,7 @@
       </plugin>
 
 
-      <!-- create a local repository of features to parse for product descriptor productDescriptor.xml files  -->
+      <!-- create a local repository of features to parse for product descriptor productDescriptor.xml files -->
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
@@ -152,7 +152,7 @@
 
                 <!-- Please define the features containing the plugin product descriptors which -->
                 <!-- you want to include in the 'available plugins' list here -->
-                
+
                 <!-- <descriptor>mvn:${project.groupId}/${productName}/${project.version}/xml/features</descriptor> -->
                 <descriptor>mvn:org.opennms.plugins/alarm-change-notifier/${project.version}/xml/features</descriptor>
                 <descriptor>mvn:org.opennms.plugins/opennms-es-rest/${project.version}/xml/features</descriptor>
@@ -287,6 +287,34 @@
   </build>
 
   <dependencies>
+    <!-- here to guarantee build after these features -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>productkeys.feature</artifactId>
+      <version>${project.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>alarm-change-notifier</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>opennms-es-rest</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>productkeys.feature</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+    </dependency>
 
   </dependencies>
 
