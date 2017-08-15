@@ -27,10 +27,8 @@
  *******************************************************************************/
 package org.opennms.minion.core.impl;
 
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 import java.util.Objects;
 
 import org.apache.http.HttpEntity;
@@ -55,7 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonObject;
 
 public class ScvEnabledRestClientImpl implements RestClient {
     public static final Logger LOG = LoggerFactory.getLogger(ScvEnabledRestClientImpl.class);
@@ -122,10 +120,9 @@ public class ScvEnabledRestClientImpl implements RestClient {
             final HttpEntity entity = response.getEntity();
             final String json = EntityUtils.toString(entity);
             final Gson g = new Gson();
-            final Type type = new TypeToken<Map<String, String>>(){}.getType();
             try {
-                final Map<String, String> info = g.fromJson(json, type);
-                return info.get(VERSION_KEY);
+                final JsonObject info = g.fromJson(json, JsonObject.class);
+                return info.get(VERSION_KEY).getAsString();
             } catch (IllegalStateException e) {
                 throw new IllegalStateException("Failed to parse JSON: " + json, e);
             }
