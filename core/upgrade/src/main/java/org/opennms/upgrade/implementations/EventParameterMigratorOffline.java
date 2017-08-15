@@ -35,8 +35,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.events.api.EventParameterUtils;
@@ -101,8 +99,7 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
                             final List<Parm> parmList = EventParameterUtils.decode(eventParms);
 
                             if (parmList != null) {
-                                Map<String, Parm> parmMap = parmList.stream().collect(
-                                        Collectors.toMap(Parm::getParmName, Function.identity(), (p1, p2) -> p1));
+                                final Map<String, Parm> parmMap = EventParameterUtils.normalize(parmList);
 
                                 for (Map.Entry<String, Parm> entry : parmMap.entrySet()) {
                                     insertStatement.setInt(1, eventId);
@@ -146,65 +143,5 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
         } catch (Throwable e) {
             throw new OnmsUpgradeException("Can't move event parameters to table: " + e.getMessage(), e);
         }
-/*
-        try {
-            Connection connection = null;
-            final DBUtils dbUtils = new DBUtils(getClass());
-
-            try {
-                connection = DataSourceFactory.getInstance().getConnection();
-                connection.setAutoCommit(false);
-                dbUtils.watch(connection);
-
-                Statement selectStatement = connection.createStatement();
-                dbUtils.watch(selectStatement);
-
-                ResultSet resultSet = selectStatement.executeQuery("SELECT eventid, eventparms FROM events");
-                dbUtils.watch(resultSet);
-
-                PreparedStatement insertParameter = connection.prepareStatement("INSERT INTO event_parameters (eventid, name, value, type) VALUES  (?,?,?,?)");
-                dbUtils.watch(insertParameter);
-
-                long eventCount = 0, parameterCount = 0;
-
-                while (resultSet.next()) {
-
-                    Integer eventId = resultSet.getInt("eventid");
-                    String eventParms = resultSet.getString("eventparms");
-
-                    List<Parm> parmList = EventParameterUtils.decode(eventParms);
-
-                    if (parmList != null) {
-                        for (Parm parm : parmList) {
-                            insertParameter.setInt(1, eventId);
-                            insertParameter.setString(2, parm.getParmName());
-                            insertParameter.setString(3, parm.getValue().getContent());
-                            insertParameter.setString(4, parm.getValue().getType());
-                            insertParameter.execute();
-                            parameterCount++;
-                        }
-                    }
-
-                    eventCount++;
-
-                    if (eventCount % 10000 == 0) {
-                        log("Processed %d event(s) and inserted %d event parameter(s)...\n", eventCount, parameterCount);
-                    }
-                }
-
-                log("Processed %d event(s) and inserted %d event parameter(s)...\n", eventCount, parameterCount);
-
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-
-                throw new OnmsUpgradeException("Can't move event parameters to table " + e.getMessage(), e);
-            } finally {
-                dbUtils.cleanUp();
-            }
-        } catch (Throwable e) {
-            throw new OnmsUpgradeException("Can't move event parameters to table " + e.getMessage(), e);
-        }
-        */
     }
 }
