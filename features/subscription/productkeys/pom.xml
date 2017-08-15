@@ -19,7 +19,8 @@
   </properties>
 
   <modules>
-    <module>feature</module>
+    <module>productkeys-descriptor</module>
+    <module>productkeys-feature</module>
   </modules>
 
   <build>

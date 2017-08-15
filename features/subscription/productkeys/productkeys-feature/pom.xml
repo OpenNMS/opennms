@@ -54,15 +54,19 @@
               <goal>generate-features-xml</goal>
             </goals>
             <configuration>
-              <!-- so that licence manager feature starts before this module -->
+
               <repositories>
                 <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${licencemanagerVersion}/xml/features</repository>
                 <repository>mvn:org.opennms.authenticator/${subscriptionName}/${subscriptionVersion}/xml/features</repository>
               </repositories>
               <features>
+                <!-- so that licence manager feature starts before this module -->
                 <feature>org.opennms.plugin.licencemanager</feature>
                 <feature>${subscriptionName}</feature>
               </features>
+              <bundles>
+                <bundle>mvn:${project.groupId}/productkeys.descriptor/${project.version}</bundle>
+              </bundles>
             </configuration>
           </execution>
         </executions>
