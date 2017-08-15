@@ -29,7 +29,8 @@
 package org.opennms.core.rpc.camel;
 
 public interface CamelRpcConstants {
-    static String JMS_QUEUE_PREFIX = "RPC";
-    static String JMS_QUEUE_NAME_HEADER = "JmsQueueName";
-    static String CAMEL_JMS_REQUEST_TIMEOUT_HEADER = "CamelJmsRequestTimeout";
+    static final String JMS_QUEUE_PREFIX = "RPC";
+    static final String JMS_QUEUE_NAME_HEADER = "JmsQueueName";
+    static final String CAMEL_JMS_REQUEST_TIMEOUT_HEADER = "CamelJmsRequestTimeout";
+    static final String JMS_SYSTEM_ID_HEADER = "SystemId";
 }

@@ -59,6 +59,9 @@ public class WalkCommand extends OsgiCommandSupport {
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String m_systemId = null;
+
     @Argument(index = 0, name = "host", description = "Hostname or IP Address of the system to walk", required = true, multiValued = false)
     String m_host;
 
@@ -75,6 +78,7 @@ public class WalkCommand extends OsgiCommandSupport {
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
             .withDescription("snmp:walk")
             .withLocation(m_location)
+            .withSystemId(m_systemId)
             .execute();
 
         while (true) {

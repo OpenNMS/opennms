@@ -57,6 +57,8 @@ public class RequisitionRequestBuilderImpl implements RequisitionRequestBuilder 
 
     private String location;
 
+    private String systemId;
+
     private Long ttlInMs;
  
     public RequisitionRequestBuilderImpl(LocationAwareRequisitionClientImpl client) {
@@ -66,6 +68,12 @@ public class RequisitionRequestBuilderImpl implements RequisitionRequestBuilder 
     @Override
     public RequisitionRequestBuilder withLocation(String location) {
         this.location = location;
+        return this;
+    }
+
+    @Override
+    public RequisitionRequestBuilder withSystemId(String systemId) {
+        this.systemId = systemId;
         return this;
     }
 
@@ -115,6 +123,9 @@ public class RequisitionRequestBuilderImpl implements RequisitionRequestBuilder 
         if (location != null) {
             request.setLocation(location);
         }
+
+        // Direct the request to the given system
+        request.setSystemId(systemId);
 
         // Attempt to use the TTL from the parameter map if set
         if (parameters.containsKey(TTL_PARAMETER_NAME)) {

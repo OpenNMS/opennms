@@ -52,7 +52,10 @@ public class PingCommand extends OsgiCommandSupport {
     private LocationAwarePingClient locationAwarePingClient;
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
-    String m_location = "Default";
+    String m_location;
+
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String m_systemId;
 
     @Option (name="-c", aliases = "--count", description="number of requests")
     int m_count = 1;
@@ -80,6 +83,7 @@ public class PingCommand extends OsgiCommandSupport {
 
         final CompletableFuture<PingSummary> future = locationAwarePingClient.ping(byName)
             .withLocation(m_location)
+            .withSystemId(m_systemId)
             .withNumberOfRequests(m_count)
             .withProgressCallback(callback).execute();
 

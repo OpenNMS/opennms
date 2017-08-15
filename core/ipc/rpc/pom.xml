@@ -16,6 +16,7 @@
     <module>camel-impl</module>
     <module>mock-impl</module>
     <module>shell-commands</module>
+    <module>utils</module>
     <module>xml</module>
   </modules>
 </project>
