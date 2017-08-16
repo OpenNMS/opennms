@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -62,6 +63,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.style.ToStringCreator;
 
@@ -408,7 +410,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	@XmlElementWrapper(name="parameters")
 	@XmlElement(name="parameter")
-	@OneToMany(mappedBy="event")
+	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
 	public List<OnmsEventParameter> getEventParameters() {
 	    return this.m_eventParameters;
 	}
@@ -418,7 +420,9 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	}
 
 	public void setEventParametersFromEvent(final Event event) {
-		this.m_eventParameters = event.getParmCollection().stream().map(p -> new OnmsEventParameter(this, p)).collect(Collectors.toList());
+		this.m_eventParameters = EventParameterUtils.normalize(event.getParmCollection()).values().stream()
+				.map(p -> new OnmsEventParameter(this, p))
+				.collect(Collectors.toList());
 	}
 
 	/**

@@ -59,7 +59,7 @@
   </changeSet>
   <changeSet id="21.0.0-event-parameters" author="fooker">
     <createTable tableName="event_parameters">
-      <column name="eventid" type="INTEGER">
+      <column name="eventID" type="INTEGER">
         <constraints nullable="false"/>
       </column>
       <column name="name" type="VARCHAR(256)">
@@ -73,24 +73,24 @@
       </column>
     </createTable>
     <addPrimaryKey tableName="event_parameters"
-                   columnNames="eventid,name"
+                   columnNames="eventID,name"
                    constraintName="pk_eventParameters" />
     <addForeignKeyConstraint baseTableName="event_parameters" baseColumnNames="eventid"
                              constraintName="fk_eventParametersEventID"
                              referencedTableName="events"
-                             referencedColumnNames="eventid"
+                             referencedColumnNames="eventID"
                              onDelete="CASCADE"/>
 
     <dropColumn tableName="alarms" columnName="eventparms" />
     <addColumn tableName="alarms">
-      <column name="eventparametersrefid" type="INTEGER">
+      <column name="eventParametersRefId" type="INTEGER">
         <constraints nullable="true"/>
       </column>
     </addColumn>
-    <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="eventparametersrefid"
+    <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="eventParametersRefId"
                              constraintName="fk_alarmsEventParametersRefId"
                              referencedTableName="events"
-                             referencedColumnNames="eventid"
+                             referencedColumnNames="eventID"
                              onDelete="RESTRICT"/>
   </changeSet>
 
@@ -102,7 +102,7 @@
         );
       </sqlCheck>
       <sqlCheck expectedResult="0">
-        SELECT COUNT(eventid) FROM events WHERE eventparms IS NOT NULL;
+        SELECT COUNT(eventID) FROM events WHERE eventparms IS NOT NULL;
       </sqlCheck>
     </preConditions>
     <dropColumn tableName="events" columnName="eventparms"/>

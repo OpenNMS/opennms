@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.xml.event.Parm;
 
 /**
@@ -59,22 +60,23 @@ public class OnmsEventParameter implements Serializable {
 
     private static final long serialVersionUID = 4530678411898489175L;
 
-    public class OnmsEventParameterId implements Serializable {
+    public static class OnmsEventParameterId implements Serializable {
         private OnmsEvent event;
         private String name;
 
-        public OnmsEventParameterId(OnmsEvent event, String name) {
+        public OnmsEventParameterId() {
+        }
+
+        public OnmsEventParameterId(final OnmsEvent event, final String name) {
             this.event = event;
             this.name = name;
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (obj == null) { return false; }
             if (!(obj instanceof OnmsEventParameterId)) { return false; }
-            if (!super.equals(obj)) {
-                return false;
-            }
+
             return Objects.equals(this.event, ((OnmsEventParameterId) obj).event) &&
                    Objects.equals(this.name, ((OnmsEventParameterId) obj).name);
         }
@@ -133,7 +135,7 @@ public class OnmsEventParameter implements Serializable {
     public OnmsEventParameter(OnmsEvent event, Parm parm) {
         this.event = event;
         name = parm.getParmName();
-        value = parm.getValue().getContent();
+        value = EventDatabaseConstants.escape(parm.getValue().getContent(), EventDatabaseConstants.NAME_VAL_DELIM);
         type = parm.getValue().getType();
     }
 
@@ -143,7 +145,7 @@ public class OnmsEventParameter implements Serializable {
                               final String type) {
         this.event = event;
         this.name = name;
-        this.value = value;
+        this.value = EventDatabaseConstants.escape(value, EventDatabaseConstants.NAME_VAL_DELIM);
         this.type = type;
     }
 
@@ -170,7 +172,7 @@ public class OnmsEventParameter implements Serializable {
      * @return the value
      */
     public String getValue() {
-        return value;
+        return EventDatabaseConstants.escape(value, EventDatabaseConstants.NAME_VAL_DELIM);
     }
 
     /**
@@ -188,7 +190,7 @@ public class OnmsEventParameter implements Serializable {
      * @param value the new value
      */
     public void setValue(String value) {
-        this.value = value;
+        this.value = EventDatabaseConstants.escape(value, EventDatabaseConstants.NAME_VAL_DELIM);
     }
 
     /**
