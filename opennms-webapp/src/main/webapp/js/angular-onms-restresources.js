@@ -9,10 +9,38 @@
 
 	/**
 	 * Function used to append an extra transformer to the default $http transforms.
+	 * 
+	 * @param defaultTransform Existing response transformer(s)
+	 * @param transform New transformer to append to the end of the list
 	 */
 	function appendTransform(defaultTransform, transform) {
 		defaultTransform = angular.isArray(defaultTransform) ? defaultTransform : [ defaultTransform ];
 		return defaultTransform.concat(transform);
+	}
+
+	/**
+	 * Ensure that the REST responses are always returned as arrays
+	 * 
+	 * @param data HTTP response
+	 * @param headers HTTP response headers
+	 * @param status HTTP response status code
+	 * @param key Name of the key where values are stored in {@code data}
+	 */
+	function arrayify(data, headers, status, key) {
+		// TODO: Figure out how to handle session timeouts that redirect to 
+		// the login screen
+		/*
+		if (status === 302) {
+			$window.location.href = $location.absUrl();
+			return [];
+		}
+		*/
+		if (status === 204) { // No content
+			return [];
+		} else {
+			// Always return the data as an array
+			return angular.isArray(data[key]) ? data[key] : [ data[key] ];
+		}
 	}
 
 	// REST $resource module
@@ -29,45 +57,28 @@
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.alarm) ? data.alarm : [ data.alarm ];
-						}
+						return arrayify(data, headers, status, 'alarm');
 					})
 				},
 				'update': { 
 					method: 'PUT'
 				},
-				'queryProperties': { 
+				'queryProperties': {
 					url: BASE_REST_URL + '/alarms/properties',
 					method: 'GET',
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.searchProperty) ? data.searchProperty : [ data.searchProperty ];
-						}
+						return arrayify(data, headers, status, 'searchProperty');
+					})
+				},
+				'queryPropertyValues': {
+					url: BASE_REST_URL + '/alarms/properties/:id',
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the item array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						return arrayify(data, headers, status, 'value');
 					})
 				}
 			}
@@ -85,24 +96,29 @@
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.event) ? data.event : [ data.event ];
-						}
+						return arrayify(data, headers, status, 'event');
 					})
 				},
 				'update': { 
 					method: 'PUT'
+				},
+				'queryProperties': {
+					url: BASE_REST_URL + '/events/properties',
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the item array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						return arrayify(data, headers, status, 'searchProperty');
+					})
+				},
+				'queryPropertyValues': {
+					url: BASE_REST_URL + '/events/properties/:id',
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the item array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						return arrayify(data, headers, status, 'value');
+					})
 				}
 			}
 		);
@@ -117,20 +133,7 @@
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.minion) ? data.minion : [ data.minion ];
-						}
+						return arrayify(data, headers, status, 'minion');
 					})
 				},
 				'update': { 
@@ -149,24 +152,48 @@
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.location) ? data.location : [ data.location ];
-						}
+						return arrayify(data, headers, status, 'location');
 					})
 				},
 				'update': { 
 					method: 'PUT'
+				}
+			}
+		);
+	})
+
+	// OnmsNode REST $resource
+	.factory('nodeFactory', function($resource, $log, $http, $location) {
+		return $resource(BASE_REST_URL + '/nodes/:id', { id: '@id' },
+			{
+				'query': { 
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the item array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						return arrayify(data, headers, status, 'node');
+					})
+				},
+				'update': { 
+					method: 'PUT'
+				},
+				'queryProperties': {
+					url: BASE_REST_URL + '/nodes/properties',
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the item array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						return arrayify(data, headers, status, 'searchProperty');
+					})
+				},
+				'queryPropertyValues': {
+					url: BASE_REST_URL + '/nodes/properties/:id',
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the item array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						return arrayify(data, headers, status, 'value');
+					})
 				}
 			}
 		);
@@ -181,20 +208,7 @@
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.notification) ? data.notification : [ data.notification ];
-						}
+						return arrayify(data, headers, status, 'notification');
 					})
 				},
 				'update': { 
@@ -206,20 +220,7 @@
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.searchProperty) ? data.searchProperty : [ data.searchProperty ];
-						}
+						return arrayify(data, headers, status, 'searchProperty');
 					})
 				},
 				'queryPropertyValues': {
@@ -228,20 +229,7 @@
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.value) ? data.value : [ data.value ];
-						}
+						return arrayify(data, headers, status, 'value');
 					})
 				}
 			}
@@ -257,24 +245,29 @@
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data.outage) ? data.outage : [ data.outage ];
-						}
+						return arrayify(data, headers, status, 'outage');
 					})
 				},
 				'update': { 
 					method: 'PUT'
+				},
+				'queryProperties': {
+					url: BASE_REST_URL + '/outages/properties',
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the item array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						return arrayify(data, headers, status, 'searchProperty');
+					})
+				},
+				'queryPropertyValues': {
+					url: BASE_REST_URL + '/outages/properties/:id',
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the item array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						return arrayify(data, headers, status, 'value');
+					})
 				}
 			}
 		);
@@ -315,20 +308,7 @@
 					isArray: true,
 					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
-						// TODO: Figure out how to handle session timeouts that redirect to 
-						// the login screen
-						/*
-						if (status === 302) {
-							$window.location.href = $location.absUrl();
-							return [];
-						}
-						*/
-						if (status === 204) { // No content
-							return [];
-						} else {
-							// Always return the data as an array
-							return angular.isArray(data['scan-report']) ? data['scan-report'] : [ data['scan-report'] ];
-						}
+						return arrayify(data, headers, status, 'scan-report');
 					})
 				},
 				'update': { 
