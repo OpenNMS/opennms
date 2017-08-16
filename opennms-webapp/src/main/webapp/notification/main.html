@@ -23,9 +23,15 @@
 						</select>
 						<span ng-if="clauseValues.length === 0">
 							<input class="form-control" type="datetime-local"    ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'TIMESTAMP'"/>
-							<input class="form-control" type="text"              ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'STRING'"/>
+							<input class="form-control" type="text"              ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'STRING'"
+								placeholder="Type to search..."
+								uib-typeahead="value for value in getSearchPropertyMatches(clause.property, $viewValue)"
+							/>
 							<input class="form-control" type="number"            ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'INTEGER' || getSearchProperty(clause.property).type === 'LONG'"/>
 							<input class="form-control" type="number" step="any" ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'FLOAT'"/>
+							<span ng-show="loadingSearchProperties">
+								<i class="fa fa-spinner fa-spin fa-lg fa-fw"/>
+							</span>
 						</span>
 						<select class="form-control" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
 						</div>

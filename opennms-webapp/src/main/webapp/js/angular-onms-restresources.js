@@ -200,7 +200,7 @@
 				'update': { 
 					method: 'PUT'
 				},
-				'queryProperties': { 
+				'queryProperties': {
 					url: BASE_REST_URL + '/notifications/properties',
 					method: 'GET',
 					isArray: true,
@@ -219,6 +219,28 @@
 						} else {
 							// Always return the data as an array
 							return angular.isArray(data.searchProperty) ? data.searchProperty : [ data.searchProperty ];
+						}
+					})
+				},
+				'queryPropertyValues': {
+					url: BASE_REST_URL + '/notifications/properties/:id',
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the item array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						// TODO: Figure out how to handle session timeouts that redirect to 
+						// the login screen
+						/*
+						if (status === 302) {
+							$window.location.href = $location.absUrl();
+							return [];
+						}
+						*/
+						if (status === 204) { // No content
+							return [];
+						} else {
+							// Always return the data as an array
+							return angular.isArray(data.value) ? data.value : [ data.value ];
 						}
 					})
 				}

@@ -46,12 +46,12 @@
 	});
 
 	// Notification list module
-	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'notificationListFilters' ])
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'notificationListFilters', 'ui.bootstrap', 'ngSanitize' ])
 
 	/**
 	 * Notification list controller
 	 */
-	.controller('NotificationListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'notificationFactory', function($scope, $http, $location, $window, $log, $filter, notificationFactory) {
+	.controller('NotificationListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', '$q', 'notificationFactory', function($scope, $http, $location, $window, $log, $filter, $q, notificationFactory) {
 		$log.debug('NotificationListCtrl initializing...');
 
 		/**
@@ -210,6 +210,41 @@
 					name: values[keys[i]]
 				});
 			}
+			return retval;
+		}
+
+		$scope.loadingSearchProperties = false;
+		$scope.getSearchPropertyMatches = function(id, query) {
+			var loading = $q.defer();
+			loading.promise.then(
+				function() {
+					$scope.loadingSearchProperties = false;
+				},
+				function() {},
+				function() {
+					$scope.loadingSearchProperties = true;
+				}
+			);
+
+			var timeout = setTimeout(function() {
+				loading.notify("Loading search properties");
+			}, 200);
+
+			var retval = notificationFactory.queryPropertyValues({ id: id, q: query }, function(value, headers) {
+				return value;
+			}).$promise;
+
+			retval.then(
+				function() {
+					clearTimeout(timeout);
+					loading.resolve("Loaded search properties");
+				},
+				function() {
+					clearTimeout(timeout);
+					loading.resolve("Failed to load search properties");
+				}
+			);
+
 			return retval;
 		}
 
