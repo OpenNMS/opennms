@@ -74,98 +74,98 @@ public class SearchPropertiesToAsciidocTest {
 	public void generateAsciidoc() throws Exception {
 		System.out.println(String.format(HEADER_FORMAT, "alarm", "Alarm"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.alarm, null, ALARM_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "application", "Application"));
 		for (SearchProperty prop : APPLICATION_PROPERTIES) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		// Expand the first column width here to accommodate long property names
 		System.out.println(String.format(HEADER_FORMAT, "asset", "Asset").replace("2m,1,3", "3m,1,3"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.assetRecord, null, ASSET_RECORD_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "category", "Category"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.category, null, CATEGORY_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "distPoller", "Distributed Poller"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.distPoller, null, DIST_POLLER_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "event", "Event"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.event, null, EVENT_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "ifService", "Interface Service"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.monitoredService, null, IF_SERVICE_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "ipInterface", "IP Interface"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.ipInterface, null, IP_INTERFACE_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "location", "Monitoring Location"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.location, null, LOCATION_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "minion", "Minion"));
 		for (SearchProperty prop : MINION_PROPERTIES) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "node", "Node"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.node, null, NODE_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "notification", "Notification"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.notification, null, NOTIFICATION_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "outage", "Outage"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.outage, null, OUTAGE_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "scanReport", "Scan Report"));
 		for (SearchProperty prop : SCAN_REPORT_PROPERTIES) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "serviceType", "Service Type"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.serviceType, null, SERVICE_TYPE_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
 		System.out.println(String.format(HEADER_FORMAT, "snmpInterface", "SNMP Interface"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.snmpInterface, null, SNMP_INTERFACE_PROPERTIES)) {
-			System.out.println(String.format(ROW_FORMAT, prop.id, toPrettyType(prop.type), nameAndValues(prop)));
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 	}

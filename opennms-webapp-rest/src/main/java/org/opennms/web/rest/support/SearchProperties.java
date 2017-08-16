@@ -62,7 +62,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.web.rest.support.SearchProperty.PrefixableValue;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -92,7 +91,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAlarm.class, "firstAutomationTime", "First Automation Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "firstEventTime", "First Event Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "ifIndex", "SNMP Interface Index", INTEGER),
-		new SearchProperty(OnmsAlarm.class, "ipAddr", "IP Address", IP_ADDRESS),
+		new SearchPropertyBuilder().entityClass(OnmsAlarm.class).id("ipAddr").name("IP Address").type(IP_ADDRESS).iplike(true).build(),
 		new SearchProperty(OnmsAlarm.class, "lastAutomationTime", "Last Automation Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "lastEventTime", "Last Event Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "logMsg", "Log Message", STRING),
@@ -249,7 +248,7 @@ public abstract class SearchProperties {
 		),
 		new SearchProperty(OnmsEvent.class, "eventUei", "UEI", STRING),
 		new SearchProperty(OnmsEvent.class, "ifIndex", "ifIndex", INTEGER),
-		new SearchProperty(OnmsEvent.class, "ipAddr", "IP Address", IP_ADDRESS)
+		new SearchPropertyBuilder().entityClass(OnmsEvent.class).id("ipAddr").name("IP Address").type(IP_ADDRESS).iplike(true).build(),
 	}));
 
 	static final SortedSet<SearchProperty> IF_SERVICE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
@@ -333,7 +332,7 @@ public abstract class SearchProperties {
 	static final SortedSet<SearchProperty> NOTIFICATION_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty(OnmsNotification.class, "notifyId", "ID", INTEGER),
 		new SearchProperty(OnmsNotification.class, "answeredBy", "Answered By", STRING),
-		new SearchProperty(OnmsNotification.class, "ipAddress", "IP Address", IP_ADDRESS),
+		new SearchPropertyBuilder().entityClass(OnmsNotification.class).id("ipAddress").name("IP Address").type(IP_ADDRESS).iplike(true).build(),
 		new SearchProperty(OnmsNotification.class, "numericMsg", "Numeric Message", STRING),
 		new SearchProperty(OnmsNotification.class, "pageTime", "Page Time", TIMESTAMP),
 		new SearchProperty(OnmsNotification.class, "queueId", "Queue ID", STRING),
@@ -406,10 +405,17 @@ public abstract class SearchProperties {
 	private static final SortedSet<SearchProperty> withAliasPrefix(Aliases alias, String namePrefix, Set<SearchProperty> properties, boolean orderBy) {
 		return new TreeSet<>(properties.stream().map(p -> { return new SearchProperty(
 			p.entityClass,
-			new PrefixableValue(alias.toString(), p.idWithPrefix.getValue()),
-			new PrefixableValue(namePrefix, p.nameWithPrefix.getValue()),
+			alias.toString(), 
+			p.id,
+			namePrefix, 
+			p.name,
 			p.type,
-			orderBy, p.values
+			orderBy,
+			// IPLIKE queries are only valid on root aliases
+			// so always reset this value to 'false' when adding
+			// prefixes
+			SearchProperty.DEFAULT_IPLIKE,
+			p.values
 		); }).collect(Collectors.toSet()));
 	}
 
@@ -423,9 +429,16 @@ public abstract class SearchProperties {
 	private static final Set<SearchProperty> withAliasPrefix(String alias, String namePrefix, Set<SearchProperty> properties) {
 		return properties.stream().map(p -> { return new SearchProperty(
 			p.entityClass,
-			new PrefixableValue(alias, p.idWithPrefix.getValue()),
-			new PrefixableValue(namePrefix, p.nameWithPrefix.getValue()),
+			alias,
+			p.id,
+			namePrefix,
+			p.name,
 			p.type,
+			SearchProperty.DEFAULT_ORDER_BY,
+			// IPLIKE queries are only valid on root aliases
+			// so always reset this value to 'false' when adding
+			// prefixes
+			SearchProperty.DEFAULT_IPLIKE,
 			p.values
 		); }).collect(Collectors.toSet());
 	}

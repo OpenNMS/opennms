@@ -646,29 +646,29 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testAllSearchParameters() throws Exception {
         String url = "/alarms";
         for (SearchProperty prop : SearchProperties.ALARM_SERVICE_PROPERTIES) {
-            System.err.println("Testing " + prop.id);
+            System.err.println("Testing " + prop.getId());
             switch(prop.type) {
             case FLOAT:
-                sendRequest(GET, url, parseParamData(String.format("_s=%s==1.0;%s!=1.0", prop.id, prop.id)), 204);
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==1.0;%s!=1.0", prop.getId(), prop.getId())), 204);
                 break;
             case INTEGER:
-                sendRequest(GET, url, parseParamData(String.format("_s=%s==1;%s!=1", prop.id, prop.id)), 204);
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==1;%s!=1", prop.getId(), prop.getId())), 204);
                 break;
             case IP_ADDRESS:
-                sendRequest(GET, url, parseParamData(String.format("_s=%s==127.0.0.1;%s!=127.0.0.1", prop.id, prop.id)), 204);
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==127.0.0.1;%s!=127.0.0.1", prop.getId(), prop.getId())), 204);
                 break;
             case LONG:
-                sendRequest(GET, url, parseParamData(String.format("_s=%s==1;%s!=1", prop.id, prop.id)), 204);
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==1;%s!=1", prop.getId(), prop.getId())), 204);
                 break;
             case STRING:
-                sendRequest(GET, url, parseParamData(String.format("_s=%s==A;%s!=A", prop.id, prop.id)), 204);
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==A;%s!=A", prop.getId(), prop.getId())), 204);
                 break;
             case TIMESTAMP:
                 sendRequest(GET, url, parseParamData(String.format(
                     "_s=%s==%s;%s!=%s", 
-                    prop.id, 
+                    prop.getId(), 
                     CriteriaBehaviors.SEARCH_DATE_FORMAT.get().format(new Date(0)),
-                    prop.id, 
+                    prop.getId(), 
                     CriteriaBehaviors.SEARCH_DATE_FORMAT.get().format(new Date(0))
                 )), 204);
                 break;
@@ -676,7 +676,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 throw new IllegalArgumentException();
             }
             if (prop.orderBy) {
-                sendRequest(GET, url, parseParamData("orderBy=" + prop.id), 200);
+                sendRequest(GET, url, parseParamData("orderBy=" + prop.getId()), 200);
             }
         }
     }

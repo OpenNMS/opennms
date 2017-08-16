@@ -31,6 +31,7 @@ package org.opennms.web.rest.v2;
 import static org.opennms.web.rest.support.CriteriaBehaviors.SEARCH_DATE_FORMAT;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
@@ -315,10 +317,10 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
                 hql = session.createQuery(
                     String.format(
                         "select distinct %s from %s where lower(%s) like :query order by %s",
-                        property.idWithPrefix.getValue(),
+                        property.id,
                         property.entityClass.getSimpleName(),
-                        property.idWithPrefix.getValue(),
-                        property.idWithPrefix.getValue()
+                        property.id,
+                        property.id
                     )
                 );
                 hql.setParameter("query", "%" + query.toLowerCase() + "%");
@@ -326,9 +328,9 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
                 hql = session.createQuery(
                     String.format(
                         "select distinct %s from %s order by %s",
-                        property.idWithPrefix.getValue(),
+                        property.id,
                         property.entityClass.getSimpleName(),
-                        property.idWithPrefix.getValue()
+                        property.id
                     )
                 );
             }
@@ -345,7 +347,7 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
     public Response getPropertyValues(@PathParam("propertyId") final String propertyId, @QueryParam("q") final String query) {
         Set<SearchProperty> props = getQueryProperties();
         // Find the property with the matching ID
-        Optional<SearchProperty> prop = props.stream().filter(p -> p.id.equals(propertyId)).findAny();
+        Optional<SearchProperty> prop = props.stream().filter(p -> p.getId().equals(propertyId)).findAny();
         if (prop.isPresent()) {
             SearchProperty property = prop.get();
             if (property.values != null && property.values.size() > 0) {
@@ -394,6 +396,8 @@ public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extend
                 List<Long> longs = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Long>(property, query));
                 return Response.ok(new LongCollection(longs)).build();
             case IP_ADDRESS:
+                List<InetAddress> addresses = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<InetAddress>(property, query));
+                return Response.ok(new StringCollection(addresses.stream().map(InetAddressUtils::str).collect(Collectors.toList()))).build();
             case STRING:
                 List<String> strings = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<String>(property, query));
                 return Response.ok(new StringCollection(strings)).build();
