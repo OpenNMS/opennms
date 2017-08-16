@@ -12,8 +12,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.plugins</groupId>
   <artifactId>internal-plugins-descriptor</artifactId>
-  <description>Module to generate list of internal plugins which can be installed</description>
+  <description>Module to generate list of internal plugins which can be installed locally</description>
   <packaging>bundle</packaging>
+  <name>OpenNMS :: Features :: Internal Plugins Descriptor</name>
 
   <properties>
     <!-- these properties define the productSpec.xml variables -->
@@ -290,9 +291,9 @@
     <!-- here to guarantee build after these features -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>productkeys.feature</artifactId>
+      <artifactId>productkeys.descriptor</artifactId>
       <version>${project.version}</version>
-      <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.plugins</groupId>
@@ -300,6 +301,7 @@
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>features</classifier>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.plugins</groupId>
@@ -307,6 +309,7 @@
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>features</classifier>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -314,6 +317,7 @@
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>features</classifier>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>
