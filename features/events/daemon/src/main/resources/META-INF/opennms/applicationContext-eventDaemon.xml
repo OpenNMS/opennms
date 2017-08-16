@@ -86,6 +86,7 @@
       </list>
     </property>
     <property name="logEventSummaries" ref="shouldLogEventSummaries" />
+    <property name="nodeDao" ref="nodeDao" />
   </bean>
 
   <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">

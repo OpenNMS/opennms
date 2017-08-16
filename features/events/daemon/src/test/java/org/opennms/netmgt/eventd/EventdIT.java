@@ -176,6 +176,32 @@ public class EventdIT implements InitializingBean {
         assertEquals("service ID for event", serviceId, m_eventDao.findMatching(cb.toCriteria()).get(0).getServiceType().getId());
     }
 
+    @Test(timeout=30000)
+    public void testNMS8919() throws Exception {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsEvent.class);
+        cb.eq("eventUei", EventConstants.FORCE_RESCAN_EVENT_UEI);
+        assertEquals(0, m_eventDao.countMatching(cb.toCriteria()));
+
+        OnmsNode node = m_databasePopulator.getNode1();
+        assertNotNull(node);
+
+        final EventBuilder e = new EventBuilder(EventConstants.FORCE_RESCAN_EVENT_UEI, "JUnit");
+        e.addParam("_foreignSource", "imported:");
+        e.addParam("_foreignId", "1");
+        e.setLogDest("logndisplay");
+        e.setLogMessage("forcing rescan");
+        final Event event = e.getEvent();
+        m_eventdIpcMgr.sendNow(event);
+
+        while(m_eventDao.countMatching(cb.toCriteria()) < 1) {
+            Thread.sleep(SLEEP_TIME);
+        }
+
+        final List<OnmsEvent> matching = m_eventDao.findMatching(cb.toCriteria());
+        System.err.println("matching = " + matching);
+        assertEquals(1, matching.size());
+        assertEquals(new Integer(1), matching.get(0).getNodeId());
+    }
 
     /**
      * @param reductionKey
