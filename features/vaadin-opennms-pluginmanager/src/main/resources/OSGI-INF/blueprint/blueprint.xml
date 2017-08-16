@@ -59,7 +59,7 @@
   <!-- plugin manager service -->
   <service ref="pluginManagerImpl" interface="org.opennms.features.pluginmgr.PluginManager" />
      
-  <bean id="pluginManagerImpl" class="org.opennms.features.pluginmgr.PluginManagerImpl" init-method="init" destroy-method="close">
+  <bean id="pluginManagerImpl" class="org.opennms.features.pluginmgr.PluginManagerImpl" init-method="load" destroy-method="close">
     <!-- setting defaults if no pluginManifestData.xml -->
     <property name="fileUri" value="${pluginModelfileUri}" />
     <property name="pluginServerUsername" value="${pluginServerUsername}" />
