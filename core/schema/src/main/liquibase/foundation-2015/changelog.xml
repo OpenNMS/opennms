@@ -7,10 +7,10 @@
 
   <!-- Fix for issue NMS-9550 -->
   <changeSet author="agalue" id="foundation2015-changeDataTypeOfReasonToText">
-    <modifyDataType tableName="location_specific_status_changes" columnName="statusReason" newDataType="text"/>
+    <modifyDataType tableName="location_specific_status_changes" columnName="statusreason" newDataType="text"/>
 
     <rollback>
-      <modifyDataType tableName="location_specific_status_changes" columnName="statusReason" newDataType="varchar(255)"/>
+      <modifyDataType tableName="location_specific_status_changes" columnName="statusreason" newDataType="varchar(255)"/>
     </rollback>
   </changeSet>
 
