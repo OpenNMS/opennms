@@ -1,19 +1,18 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.opennms</groupId>
+    <groupId>org.opennms.features.productkeys</groupId>
     <artifactId>productkeys.parent</artifactId>
     <version>21.0.0-SNAPSHOT</version>
     <relativePath>../pom-exec.xml</relativePath>
   </parent>
 
-  <!-- ProductDescriptor -->
+  <!-- LicenceSpec -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>${productGroupId}</groupId>
-  <artifactId>${productName}.product-descriptor</artifactId>
-  <name>${productName}.product-descriptor</name>
+  <artifactId>${productName}.licence-spec</artifactId>
+  <name>${productName}.licence-spec</name>
   <version>${productVersion}</version>
-  <description>ProductDescriptor for ${productName}</description>
+  <description>LicenceSpec for ${productName}</description>
   <packaging>bundle</packaging>
 
   <build>
@@ -38,8 +37,19 @@
                   <type>jar</type>
                   <classifier>sources</classifier>
                   <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/generated-licence/java</outputDirectory>
+                  <includes>**/*LicenceSpec*.java</includes>
+                  <excludes>**/*.xml</excludes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>${productName}.licence-generator</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                  <classifier>sources</classifier>
+                  <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/generated-licence/resources</outputDirectory>
-                  <includes>**/productDescriptorBlueprint.xml,**/productSpec.xml</includes>
+                  <includes>**/licenceSpecBlueprint.xml,**/licenceMetadataSpec.xml,**/productSpec.xml</includes>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -93,6 +103,7 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+
             <Import-Package>
               *
             </Import-Package>
@@ -104,9 +115,30 @@
         </configuration>
       </plugin>
 
+      <!-- generates feature definition for the licence specification -->
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>features.xml</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate-features-xml</goal>
+            </goals>
+            <configuration>
+              <bundles>
+                <bundle>mvn:${project.groupId}/${productName}.licence-spec/${project.version}</bundle>
+              </bundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
 
   </build>
+
   <dependencies>
     <dependency>
       <groupId>org.opennms.plugins</groupId>
@@ -133,5 +165,18 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+  
+  <!-- NOTE this overrides the normal public maven repository as licence specs should be separated and secured -->
+  <!-- Change this to match your repo for containing the licence specifications. -->
+  <distributionManagement>
+    <repository>
+      <id>osgi-plugins-licence-specs</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs</url>
+    </repository>
+    <snapshotRepository>
+      <id>osgi-plugins-licence-specs-snapshots</id>
+      <url>http://admin:admin123@localhost:28081/nexus/content/repositories/osgi-plugins-licence-specs-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>

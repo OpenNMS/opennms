@@ -14,7 +14,7 @@
 
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
+  <groupId>org.opennms.features.productkeys</groupId>
   <artifactId>productkeys.parent</artifactId>
   <packaging>pom</packaging>
   <version>21.0.0-SNAPSHOT</version>
@@ -27,9 +27,9 @@
     <productVersion>9.9.9-SNAPSHOT</productVersion>
     <productId>${productName}/${productVersion}</productId>
     <productGroupId>org.opennms.authenticator</productGroupId>
-    <licenceClassPath>org.opennms.plugins.${productName}.key</licenceClassPath>
+    <licenceClassPath>org.opennms.features.productkeys.${productName}.key</licenceClassPath>
 
-    <licencemanagerVersion>1.1.0-SNAPSHOT</licencemanagerVersion>
+    <licencemanagerVersion>99.99.99-SNAPSHOT</licencemanagerVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <slf4jVersion>1.7.7</slf4jVersion>
@@ -231,10 +231,6 @@
                     <echo> productName: ${productName}</echo>
                     <echo> productVersion: ${productVersion}</echo>
                     <echo> productGroupId: ${productGroupId}</echo>
-                    <echo> licenceSpecRepo: ${licenceSpecRepo} </echo>
-                    <echo> licenceSpecSnapshotRepo: ${licenceSpecSnapshotRepo} </echo>
-                    <echo> opennms-repo-ref: ${opennms-repo-ref} </echo>
-                    <echo> opennms-snapshots-ref: ${opennms-snapshots-ref} </echo>
                     <echo>*****************************************************</echo>
                   </target>
                 </configuration>
@@ -314,6 +310,7 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </pluginRepository>
   </pluginRepositories>
+  
   <!-- This setting should match the OpenNMS main pom.xml -->
   <distributionManagement>
     <repository>

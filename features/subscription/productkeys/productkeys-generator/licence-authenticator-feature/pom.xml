@@ -1,7 +1,7 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.opennms</groupId>
+    <groupId>org.opennms.features.productkeys</groupId>
     <artifactId>productkeys.parent</artifactId>
     <version>21.0.0-SNAPSHOT</version>
     <relativePath>../pom-exec.xml</relativePath>
@@ -10,10 +10,10 @@
   <!-- Feature Definition -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>${productGroupId}</groupId>
-  <artifactId>${productName}.licence-spec-feature</artifactId>
-  <name>${productName}.licence-spec-feature</name>
+  <artifactId>${productName}</artifactId>
+  <name>OpenNMS :: Features :: ${productName} :: Subscription</name>
   <version>${productVersion}</version>
-  <description>Feature definition for ${productName} Licence Specification</description>
+  <description>Feature definition for ${productName} Subscription</description>
   <packaging>pom</packaging>
 
   <build>
@@ -30,8 +30,16 @@
               <goal>generate-features-xml</goal>
             </goals>
             <configuration>
+              <!-- so that licence manager feature starts before this module -->
+              <repositories>
+                <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${licencemanagerVersion}/xml/features</repository>
+              </repositories>
+              <features>
+                <feature>org.opennms.plugin.licencemanager</feature>
+              </features>
               <bundles>
-                <bundle>mvn:${productGroupId}/${productName}.licence-spec/${productVersion}</bundle>
+                <bundle>mvn:${productGroupId}/${productName}.licence-authenticator/${productVersion}</bundle>
+                <bundle>mvn:${productGroupId}/${productName}.product-descriptor/${productVersion}</bundle>
               </bundles>
             </configuration>
           </execution>

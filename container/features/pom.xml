@@ -136,7 +136,7 @@
             <repository>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}/xml/features</repository>
             
             <!-- Product Keys (Used by Subscription Checker)-->
-            <repository>mvn:org.opennms/productkeys.feature/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features.productkeys/productkeys.feature/${project.version}/xml/features</repository>
             
             <!-- Subscription Checker -->
             <repository>mvn:org.opennms.features/subscription-checker/${project.version}/xml/features</repository>
@@ -766,7 +766,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features.productkeys</groupId>
       <artifactId>productkeys.feature</artifactId>
       <version>${project.version}</version>
       <type>pom</type>

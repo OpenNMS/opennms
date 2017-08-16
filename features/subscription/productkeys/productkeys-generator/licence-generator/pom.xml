@@ -1,61 +1,75 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.opennms</groupId>
+    <groupId>org.opennms.features.productkeys</groupId>
     <artifactId>productkeys.parent</artifactId>
     <version>21.0.0-SNAPSHOT</version>
     <relativePath>../pom-exec.xml</relativePath>
   </parent>
 
-  <!-- LicenceAuthenticator -->
+  <!-- Licence Generator -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>${productGroupId}</groupId>
-  <artifactId>${productName}.licence-authenticator</artifactId>
+  <artifactId>${productName}.licence-generator</artifactId>
+  <name>${productName}.licence-generator</name>
   <version>${productVersion}</version>
-  <name>${productName}.licence-authenticator</name>
-  <description>Licence Authenticator for ${productName}</description>
-  <packaging>bundle</packaging>
+  <description>Licence Generator for ${productName}</description>
+  <packaging>jar</packaging>
 
   <build>
     <plugins>
-
+      <!-- copy and process the productSpec and licenceMetadataSpec for this project -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack</id>
-            <phase>generate-sources</phase>
+            <id>filter-resources</id>
+            <phase>generate-resources</phase>
             <goals>
-              <goal>unpack</goal>
+              <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>${productName}.licence-generator</artifactId>
-                  <version>${project.version}</version>
-                  <type>jar</type>
-                  <classifier>sources</classifier>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.build.directory}/generated-licence/java</outputDirectory>
-                  <includes>**/*LicenceAuthenticator*.java</includes>
-                  <excludes>**/*.xml</excludes>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>${productName}.licence-generator</artifactId>
-                  <version>${project.version}</version>
-                  <type>jar</type>
-                  <classifier>sources</classifier>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.build.directory}/generated-licence/resources</outputDirectory>
-                  <includes>**/licenceAuthenticatorBlueprint.xml</includes>
-                </artifactItem>
-              </artifactItems>
+              <outputDirectory>${project.build.directory}/filtered-resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/filtered-resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
+      </plugin>
+ 
+    
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>org.opennms.karaf.licencemanager.generate.LicenceArtifactsGenerator</mainClass>
+          <includePluginDependencies>true</includePluginDependencies>
+          <arguments>
+            <!-- LicenceArtifactsGenerator(String productId, String basePackage, String outputDirectory) -->
+            <argument>${productId}</argument>
+            <argument>${licenceClassPath}</argument>
+            <argument>${project.build.directory}/generated-licence</argument>
+          </arguments>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.opennms.plugins</groupId>
+            <artifactId>org.opennms.plugin.licencemanager</artifactId>
+            <version>${licencemanagerVersion}</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <plugin>
@@ -85,6 +99,9 @@
                 <resource>
                   <directory>${project.build.directory}/generated-licence/resources</directory>
                 </resource>
+                <resource>
+                  <directory>${project.build.directory}/filtered-resources</directory>
+                </resource>
               </resources>
             </configuration>
           </execution>
@@ -97,33 +114,37 @@
       </plugin>
 
       <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- this is a transient artifact and should NEVER be deployed to a repository -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
         <configuration>
-          <instructions>
-            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Import-Package>
-              *
-            </Import-Package>
-            <!-- <Import-Package> -->
-            <!-- org.apache.felix.service.command, -->
-            <!-- * -->
-            <!-- </Import-Package> -->
-          </instructions>
+          <skip>true</skip>
         </configuration>
       </plugin>
 
     </plugins>
 
   </build>
+
   <dependencies>
     <dependency>
       <groupId>org.opennms.plugins</groupId>
       <artifactId>org.opennms.plugin.licencemanager</artifactId>
       <version>${licencemanagerVersion}</version>
-      <type>jar</type>
       <scope>provided</scope>
     </dependency>
     <!-- Note these dependencies match org.apache.karaf.shell.console 2.2.11 -->

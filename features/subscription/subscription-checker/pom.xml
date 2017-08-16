@@ -6,7 +6,7 @@
     <groupId>org.opennms.features</groupId>
     <version>21.0.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.opennms.features</groupId>
+
   <artifactId>subscription-checker</artifactId>
   <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: Subscription Checker</name>

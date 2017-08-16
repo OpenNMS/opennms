@@ -103,7 +103,7 @@
               <bundles>
                 <!-- include specific product descriptor bundles here for inclusion in the productSpecList.xml -->
                 <!-- <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle> -->
-                <bundle>mvn:org.opennms/productkeys.descriptor/${project.version}</bundle>
+                <bundle>mvn:org.opennms.features.productkeys/productkeys.descriptor/${project.version}</bundle>
               </bundles>
             </configuration>
           </execution>
@@ -290,7 +290,7 @@
   <dependencies>
     <!-- here to guarantee build after these features -->
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features.productkeys</groupId>
       <artifactId>productkeys.descriptor</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
@@ -312,7 +312,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features.productkeys</groupId>
       <artifactId>productkeys.feature</artifactId>
       <version>${project.version}</version>
       <type>xml</type>
