@@ -89,7 +89,8 @@
     <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="eventparametersrefid"
                              constraintName="fk_alarmsEventParametersRefId"
                              referencedTableName="events"
-                             referencedColumnNames="eventid" />
+                             referencedColumnNames="eventid"
+                             onDelete="RESTRICT"/>
   </changeSet>
 
   <changeSet id="21.0.0-event-parameters-remove-column" author="cpape">
