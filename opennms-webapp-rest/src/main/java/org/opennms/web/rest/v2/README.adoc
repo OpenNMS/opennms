@@ -44,7 +44,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | alarm.description | String | Description
 | alarm.firstAutomationTime | Timestamp | First Automation Time
 | alarm.firstEventTime | Timestamp | First Event Time
-| alarm.id | String | ID
+| alarm.id | Integer | ID
 | alarm.ifIndex | Integer | SNMP Interface Index
 | alarm.ipAddr | IP Address | IP Address
 | alarm.lastAutomationTime | Timestamp | Last Automation Time
@@ -124,7 +124,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | assetRecord.lease | String | Lease
 | assetRecord.leaseExpires | String | Lease Expires
 | assetRecord.maintContractExpiration | String | Maintenance Contract Expiration
-| assetRecord.maintContractNumber | String | Maintenance Contract Number
 | assetRecord.maintcontract | String | Maintenance Contract
 | assetRecord.managedObjectInstance | String | Managed Object Instance
 | assetRecord.managedObjectType | String | Managed Object Type
@@ -176,6 +175,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | Name | Type | Description
 | distPoller.id | Integer | ID
 | distPoller.label | String | Label
+| distPoller.lastUpdated | Timestamp | Last Updated
 | distPoller.location | String | Monitoring Location
 |===
 
@@ -227,7 +227,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 `7`: Critical
 | event.eventSnmp | String | SNMP
 | event.eventSnmpHost | String | SNMP Host
-| event.eventSource | String | Event Source
+| event.eventSource | String | Source
 | event.eventSuppressedCount | Integer | Suppressed Count
 | event.eventTTicket | String | Trouble Ticket ID
 | event.eventTTicketState | Integer | Trouble Ticket State
@@ -235,7 +235,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 `0`: Off
 
 `1`: On
-| event.eventTime | Timestamp | Event Time
+| event.eventTime | Timestamp | Time
 | event.eventUei | String | UEI
 | event.id | Integer | ID
 | event.ifIndex | Integer | ifIndex
@@ -302,7 +302,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | location.locationName | String | ID
 | location.longitude | Float | Longitude
 | location.monitoringArea | String | Monitoring Area
-| location.priority | Integer | Priority in UI
+| location.priority | Integer | UI Priority
 |===
 
 [[minionProperties]]
@@ -326,7 +326,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | node.foreignId | String | Foreign ID
 | node.foreignSource | String | Foreign Source
 | node.id | Integer | ID
-| node.label | String | Node Label
+| node.label | String | Label
 | node.labelSource | String | Label Source
 
 `A`: IP Address
@@ -412,10 +412,10 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 |===
 | Name | Type | Description
 | snmpInterface.id | Integer | ID
-| snmpInterface.ifAdminStatus | Integer | Admin status
-| snmpInterface.ifIndex | Integer | Interface index
-| snmpInterface.ifOperStatus | Integer | Operational status
-| snmpInterface.ifSpeed | Long | Bits-per-second Interface Speed
+| snmpInterface.ifAdminStatus | Integer | Admin Status
+| snmpInterface.ifIndex | Integer | Interface Index
+| snmpInterface.ifOperStatus | Integer | Operational Status
+| snmpInterface.ifSpeed | Long | Interface Speed (Bits per second)
 | snmpInterface.lastCapsdPoll | Timestamp | Last Provisioning Scan
 | snmpInterface.lastSnmpPoll | Timestamp | Last SNMP Interface Poll
 | snmpInterface.netMask | IP Address | Network Mask
