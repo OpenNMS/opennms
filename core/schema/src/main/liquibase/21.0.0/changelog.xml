@@ -74,21 +74,21 @@
     </createTable>
     <addPrimaryKey tableName="event_parameters"
                    columnNames="eventid,name"
-                   constraintName="pk_eventParameters" />
+                   constraintName="pk_eventparameters" />
     <addForeignKeyConstraint baseTableName="event_parameters" baseColumnNames="eventid"
-                             constraintName="fk_eventParametersEventID"
+                             constraintName="fk_eventparameterseventid"
                              referencedTableName="events"
                              referencedColumnNames="eventid"
                              onDelete="CASCADE"/>
 
     <dropColumn tableName="alarms" columnName="eventparms" />
     <addColumn tableName="alarms">
-      <column name="eventParametersRefId" type="INTEGER">
+      <column name="eventparametersrefid" type="INTEGER">
         <constraints nullable="true"/>
       </column>
     </addColumn>
-    <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="eventParametersRefId"
-                             constraintName="fk_alarmsEventParametersRefId"
+    <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="eventparametersrefid"
+                             constraintName="fk_alarmseventparametersrefid"
                              referencedTableName="events"
                              referencedColumnNames="eventid"
                              onDelete="RESTRICT"/>
