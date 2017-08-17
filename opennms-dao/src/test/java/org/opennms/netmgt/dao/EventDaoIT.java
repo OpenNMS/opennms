@@ -125,7 +125,6 @@ public class EventDaoIT implements InitializingBean {
         event.setIpAddr(iface.getIpAddress());
         event.setEventParameters(Lists.newArrayList(
                 new OnmsEventParameter(event, "label", "node", "string"),
-                new OnmsEventParameter(event, "label", "node", "string"),
                 new OnmsEventParameter(event, "ds", "(memAvailReal + memCached) / memTotalReal * 100.0", "string"),
                 new OnmsEventParameter(event, "description", "(memAvailReal + memCached) / memTotalReal * 100.0", "string"),
                 new OnmsEventParameter(event, "value", "4.7", "string"),
