@@ -59,7 +59,7 @@
   </changeSet>
   <changeSet id="21.0.0-event-parameters" author="fooker">
     <createTable tableName="event_parameters">
-      <column name="eventID" type="INTEGER">
+      <column name="eventid" type="INTEGER">
         <constraints nullable="false"/>
       </column>
       <column name="name" type="VARCHAR(256)">
@@ -73,12 +73,12 @@
       </column>
     </createTable>
     <addPrimaryKey tableName="event_parameters"
-                   columnNames="eventID,name"
+                   columnNames="eventid,name"
                    constraintName="pk_eventParameters" />
     <addForeignKeyConstraint baseTableName="event_parameters" baseColumnNames="eventid"
                              constraintName="fk_eventParametersEventID"
                              referencedTableName="events"
-                             referencedColumnNames="eventID"
+                             referencedColumnNames="eventid"
                              onDelete="CASCADE"/>
 
     <dropColumn tableName="alarms" columnName="eventparms" />
@@ -90,7 +90,7 @@
     <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="eventParametersRefId"
                              constraintName="fk_alarmsEventParametersRefId"
                              referencedTableName="events"
-                             referencedColumnNames="eventID"
+                             referencedColumnNames="eventid"
                              onDelete="RESTRICT"/>
   </changeSet>
 
@@ -102,7 +102,7 @@
         );
       </sqlCheck>
       <sqlCheck expectedResult="0">
-        SELECT COUNT(eventID) FROM events WHERE eventparms IS NOT NULL;
+        SELECT COUNT(eventid) FROM events WHERE eventparms IS NOT NULL;
       </sqlCheck>
     </preConditions>
     <dropColumn tableName="events" columnName="eventparms"/>
