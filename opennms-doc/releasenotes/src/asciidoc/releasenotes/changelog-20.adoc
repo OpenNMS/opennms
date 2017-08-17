@@ -1,6 +1,44 @@
 [[release-20-changelog]]
 === Changelog
 
+[[releasenotes-changelog-20.0.2]]
+==== Release 20.0.2
+
+Release 20.0.2 is the latest stable release of OpenNMS.
+It contains a number of important bug fixes and a few small new enhancements.
+For a high-level overview of what's changed in OpenNMS 20, see link:http://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-20[What's New in OpenNMS 20].
+
+The codename for 20.0.2 is _link:http://fifth-element.wikia.com/wiki/Ruby_Rhod[Ruby Rhod]_.
+
+===== Bug
+
+* noSuchInstance causing problems during provision scan (Issue http://issues.opennms.org/browse/NMS-8046[NMS-8046])
+* Security issue for all admin vaadin applications exposed as OSGI Service (Issue http://issues.opennms.org/browse/NMS-8431[NMS-8431])
+* Updating assets/categories through ReST affects Forced Unmanaged services. (Issue http://issues.opennms.org/browse/NMS-8879[NMS-8879])
+* Fix CORS section to include /api/* besides /rest  (Issue http://issues.opennms.org/browse/NMS-9133[NMS-9133])
+* enlinkd thread throws StackOverflowError (Issue http://issues.opennms.org/browse/NMS-9464[NMS-9464])
+* SQL injection in DefaultSurveillanceViewService (Issue http://issues.opennms.org/browse/NMS-9476[NMS-9476])
+* "query" parameter allows SQL injection (Issue http://issues.opennms.org/browse/NMS-9478[NMS-9478])
+* Using maskelements based on nodeID (and maybe other fields) to match event definition doesn't work (Issue http://issues.opennms.org/browse/NMS-9496[NMS-9496])
+* EnhancedLinked blocks service startup (Issue http://issues.opennms.org/browse/NMS-9505[NMS-9505])
+* Using varbind to match event definition doesn't work (when using the same UEI in many definitions) (Issue http://issues.opennms.org/browse/NMS-9507[NMS-9507])
+* ConcurrentModificationException thrown by Statsd (Issue http://issues.opennms.org/browse/NMS-9511[NMS-9511])
+* Update copyright date in docs (Issue http://issues.opennms.org/browse/NMS-9516[NMS-9516])
+* Document supported products and versions for Remedy integration (Issue http://issues.opennms.org/browse/NMS-9538[NMS-9538])
+* Microsoft IE and Edge doesn't like relative path on Angular apps (Issue http://issues.opennms.org/browse/NMS-9542[NMS-9542])
+* Possible FileDescriptor Leak in Provisiond (Issue http://issues.opennms.org/browse/NMS-9545[NMS-9545])
+* initial-delay="null" when adding a new destination path (Issue http://issues.opennms.org/browse/NMS-9548[NMS-9548])
+* Eventd does not respect event configuration order when reloading (Issue http://issues.opennms.org/browse/NMS-9551[NMS-9551])
+* users.xml being overwritten on installation (Issue http://issues.opennms.org/browse/NMS-9573[NMS-9573])
+
+===== Enhancement
+
+* Make an automation to clear pathOutage alarms (Issue http://issues.opennms.org/browse/NMS-8857[NMS-8857])
+* Reload Drools configuration without restart OpenNMS (Issue http://issues.opennms.org/browse/NMS-9290[NMS-9290])
+* Add support for retrieving the SNMPv2 agent address from a specific varbind (Issue http://issues.opennms.org/browse/NMS-9449[NMS-9449])
+* Check LOG printTopology (Issue http://issues.opennms.org/browse/NMS-9561[NMS-9561])
+
+
 [[releasenotes-changelog-20.0.1]]
 ==== Release 20.0.1
 
