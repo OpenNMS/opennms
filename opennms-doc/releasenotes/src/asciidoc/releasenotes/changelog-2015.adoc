@@ -1,11 +1,30 @@
 [releasenotes-2015]
 === OpenNMS Meridian 2015
 
+[releasenotes-changelog-Meridian-2015.1.6]
+==== Release Meridian-2015.1.6
+
+Release 2015.1.6 is the seventh release of OpenNMS Meridian 2015.  It contains a few bug fixes.
+The codename for 2015.1.6 is _MVT_.
+
+===== Bug
+
+* collectd does not unschedule deleted nodes (Issue http://issues.opennms.org/browse/NMS-5105[NMS-5105])
+* Security issue for all admin vaadin applications exposed as OSGI Service (Issue http://issues.opennms.org/browse/NMS-8431[NMS-8431])
+* XSS vulnerability on node error page (Issue http://issues.opennms.org/browse/NMS-9354[NMS-9354])
+* XSS vulnerability with application names (Issue http://issues.opennms.org/browse/NMS-9355[NMS-9355])
+* NullPointerException during nodeScan on devices with broken IP-MIB::ipAddressIfIndex (Issue http://issues.opennms.org/browse/NMS-9415[NMS-9415])
+* "query" parameter allows SQL injection (Issue http://issues.opennms.org/browse/NMS-9478[NMS-9478])
+* Fix ownership of users.xml (Issue http://issues.opennms.org/browse/NMS-9493[NMS-9493])
+* Update copyright date in docs (Issue http://issues.opennms.org/browse/NMS-9516[NMS-9516])
+* users.xml being overwritten on installation (Issue http://issues.opennms.org/browse/NMS-9573[NMS-9573])
+
+
 [releasenotes-changelog-Meridian-2015.1.5]
 ==== Release Meridian-2015.1.5
 
 Release 2015.1.5 is the sixth release of OpenNMS Meridian 2015.  It contains a few bug fixes and minor enhancements.
-The codename for 2015.1.3 is _NT_.
+The codename for 2015.1.5 is _NT_.
 
 ===== Bug
 
@@ -32,7 +51,7 @@ The codename for 2015.1.3 is _NT_.
 ==== Release Meridian-2015.1.4
 
 Release 2015.1.4 is the fifth release of OpenNMS Meridian 2015.  It contains a few bug fixes and minor enhancements.
-The codename for 2015.1.3 is _ULAST_.
+The codename for 2015.1.4 is _ULAST_.
 
 ===== Bug
 
