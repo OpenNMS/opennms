@@ -218,6 +218,7 @@ public class MinionHeartbeatOutageIT {
                             .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_ID.equals(p.getName()) && "00000000-0000-0000-0000-000000ddba11".equals(p.getValue())))
                     .filter(e -> e.getEventParameters().stream()
                             .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_LOCATION.equals(p.getName()) && "MINION".equals(p.getValue())))
+                    .distinct()
                     .count()
         );
 
