@@ -794,7 +794,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @XmlElementWrapper(name="parameters")
     @XmlElement(name="parameter")
     public List<OnmsEventParameter> getEventParameters() {
-        return m_eventParametersRef.getEventParameters();
+        return m_eventParametersRef != null ? m_eventParametersRef.getEventParameters() : null;
     }
 
     public void setEventParametersRef(final OnmsEvent event) {
