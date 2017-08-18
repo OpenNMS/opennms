@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,6 +52,8 @@ import junit.framework.TestCase;
  */
 public class C3P0ConnectionFactoryTest extends TestCase {
     public void testMarshalDataSourceFromConfig() throws Exception {
+        if (Boolean.getBoolean("skipConnectionTests")) return;
+
         C3P0ConnectionFactory factory1 = null;
         C3P0ConnectionFactory factory2 = null;
         
