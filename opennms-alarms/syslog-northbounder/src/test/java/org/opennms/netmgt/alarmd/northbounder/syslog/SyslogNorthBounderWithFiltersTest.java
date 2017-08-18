@@ -40,15 +40,17 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
-
 import org.springframework.core.io.FileSystemResource;
+
+import com.google.common.collect.Lists;
 
 /**
  * Tests the Syslog North Bound Interface with filters.
@@ -114,6 +116,10 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setCounter(1);
         onmsAlarm.setLogMsg("Interface Down");
+        onmsAlarm.setEventParametersRef(new OnmsEvent() {{
+            this.setEventParameters(Lists.newArrayList(
+                    new OnmsEventParameter(this, "owner", "agalue", "String")));
+        }});
         NorthboundAlarm nbAlarm = new NorthboundAlarm(onmsAlarm);
         List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
         alarms.add(nbAlarm);
