@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,8 +30,7 @@ package org.opennms.core.test.db;
 
 import java.util.Date;
 
-public class PopulatedTemporaryDatabaseTestCaseTest extends
-        PopulatedTemporaryDatabaseTestCase {
+public class PopulatedTemporaryDatabaseTestCaseTest extends PopulatedTemporaryDatabaseTestCase {
 
     /**
      * Can we properly initialize the TestCase (including loading the database)?

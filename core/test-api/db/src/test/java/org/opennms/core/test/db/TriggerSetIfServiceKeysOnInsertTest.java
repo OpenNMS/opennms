@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,9 +36,13 @@ import junit.framework.AssertionFailedError;
 
 import org.opennms.test.ThrowableAnticipator;
 
-public class TriggerSetIfServiceKeysOnInsertTest extends
-        PopulatedTemporaryDatabaseTestCase {
+public class TriggerSetIfServiceKeysOnInsertTest extends PopulatedTemporaryDatabaseTestCase {
 
+    @Override
+    protected void setUp() throws Exception {
+        this.setSetupIpLike(true);
+        super.setUp();
+    }
 
     public void testSetIfServiceIdInOutage() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
