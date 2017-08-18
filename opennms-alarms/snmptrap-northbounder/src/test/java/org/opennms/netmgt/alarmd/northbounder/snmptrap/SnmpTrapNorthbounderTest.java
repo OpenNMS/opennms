@@ -34,6 +34,8 @@ import java.util.Collections;
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -41,6 +43,8 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.springframework.core.io.FileSystemResource;
 
 import org.junit.Assert;
+
+import com.google.common.collect.Lists;
 
 /**
  * The Test Class for SnmpTrapNorthbounder.
@@ -97,6 +101,11 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
+        onmsAlarm.setEventParametersRef(new OnmsEvent() {{
+            this.setEventParameters(Lists.newArrayList(
+                    new OnmsEventParameter(this, "alarmId", "10", "Int32"),
+                    new OnmsEventParameter(this, "alarmMessage", "this is a test", "string")));
+        }});
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
         Assert.assertEquals(2, alarm.getEventParametersCollection().size());
 

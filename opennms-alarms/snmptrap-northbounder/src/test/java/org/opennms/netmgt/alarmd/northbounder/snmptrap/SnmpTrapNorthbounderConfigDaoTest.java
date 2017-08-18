@@ -42,6 +42,8 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -49,6 +51,8 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.io.FileSystemResource;
+
+import com.google.common.collect.Lists;
 
 /**
  * The Test Class for SnmpTrapNorthbounderConfigDao.
@@ -240,6 +244,12 @@ public class SnmpTrapNorthbounderConfigDaoTest {
         onmsAlarm.setNode(node);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
         onmsAlarm.setLogMsg("everything is good");
+        onmsAlarm.setEventParametersRef(new OnmsEvent() {{
+            this.setEventParameters(Lists.newArrayList(
+                    new OnmsEventParameter(this, "alarmId", "99", "Int32"),
+                    new OnmsEventParameter(this, "alarmMessage", "this is just a test", "String"),
+                    new OnmsEventParameter(this, "forwardAlarmToUserSnmpTrap", "true", "String")));
+        }});
 
         // Build a test northbound alarm
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
