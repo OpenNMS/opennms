@@ -31,13 +31,16 @@ package org.opennms.netmgt.dao.hibernate;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
@@ -208,6 +211,30 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 return collection;
                             }
                         }).list();
+            }
+        });
+    }
+
+    public List<OnmsAlarm> getAlarmsForEventParameters(final Map<String, String> eventParameters) {
+        final StringBuffer hqlStringBuffer = new StringBuffer("From OnmsAlarm a where ");
+        for (int i = 0; i < eventParameters.size(); i++) {
+            if (i > 0) {
+                hqlStringBuffer.append(" and ");
+            }
+            hqlStringBuffer.append("exists (select p.event from OnmsEventParameter p where a.eventParametersRef=p.event and p.name like :name" + i + " and p.value like :value" + i + ")");
+        }
+
+        return (List<OnmsAlarm>) getHibernateTemplate().executeFind(new HibernateCallback<List<OnmsEvent>>() {
+            @Override
+            public List<OnmsEvent> doInHibernate(Session session) throws HibernateException, SQLException {
+                Query q = session.createQuery(hqlStringBuffer.toString());
+                int i = 0;
+                for (final Map.Entry<String, String> entry : eventParameters.entrySet()) {
+                    q = q.setParameter("name" + i, entry.getKey()).setParameter("value" + i, entry.getValue());
+                    i++;
+                }
+
+                return q.list();
             }
         });
     }
