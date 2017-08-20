@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
@@ -81,7 +82,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Autowired
     AlarmRepository m_daoAlarmRepo;
-    
+
     @Autowired
     ApplicationContext m_appContext;
     
@@ -321,15 +322,48 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         List<OnmsEvent> events = m_dbPopulator.getEventDao().findAll();
         assertNotNull(events);
 
-        OnmsEvent event = events.get(0);
-        event.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter(event, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
-                new OnmsEventParameter(event, "user", "rtc", "string"),
-                new OnmsEventParameter(event, "passwd", "rtc", "string"),
-                new OnmsEventParameter(event, "catlabel", "Network Interfaces", "string")));
-        m_dbPopulator.getEventDao().saveOrUpdate(event);
+        final OnmsEvent event1 = new OnmsEvent();
+        event1.setDistPoller(m_dbPopulator.getDistPollerDao().whoami());
+        event1.setEventCreateTime(new Date(1436881548292L));
+        event1.setEventTime(new Date(1436881548292L));
+        event1.setEventCreateTime(new Date(1437061537126L));
+        event1.setEventDescr("This is the description of a test event.");
+        event1.setEventDisplay("Y");
+        event1.setEventHost("127.0.0.1");
+        event1.setEventLog("Y");
+        event1.setEventLogMsg("Test Event Log Message");
+        event1.setEventSeverity(1);
+        event1.setEventSource("test");
+        event1.setEventTime(new Date(1437061537105L));
+        event1.setEventUei("uei.opennms.org/test");
+        event1.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
+        event1.setNode(m_dbPopulator.getNode1());
+        event1.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
+        event1.setEventParameters(Lists.newArrayList(
+                new OnmsEventParameter(event1, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
+                new OnmsEventParameter(event1, "user", "rtc", "string"),
+                new OnmsEventParameter(event1, "passwd", "rtc", "string"),
+                new OnmsEventParameter(event1, "catlabel", "Network Interfaces", "string")));
+        m_dbPopulator.getEventDao().saveOrUpdate(event1);
+        m_dbPopulator.getEventDao().flush();
 
-        OnmsEvent event2 = events.get(1);
+        final OnmsEvent event2 = new OnmsEvent();
+        event2.setDistPoller(m_dbPopulator.getDistPollerDao().whoami());
+        event2.setEventCreateTime(new Date(1436881548292L));
+        event2.setEventTime(new Date(1436881548292L));
+        event2.setEventCreateTime(new Date(1437061537126L));
+        event2.setEventDescr("This is the description of a test event.");
+        event2.setEventDisplay("Y");
+        event2.setEventHost("127.0.0.1");
+        event2.setEventLog("Y");
+        event2.setEventLogMsg("Test Event Log Message");
+        event2.setEventSeverity(1);
+        event2.setEventSource("test");
+        event2.setEventTime(new Date(1437061537105L));
+        event2.setEventUei("uei.opennms.org/test");
+        event2.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
+        event2.setNode(m_dbPopulator.getNode1());
+        event2.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
         event2.setEventParameters(Lists.newArrayList(
                 new OnmsEventParameter(event2, "componentType", "serviceElement", "string"),
                 new OnmsEventParameter(event2, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
@@ -337,17 +371,18 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
                 new OnmsEventParameter(event2, "passwd", "rtc", "string"),
                 new OnmsEventParameter(event2, "catlabel", "Network Interfaces", "string")));
         m_dbPopulator.getEventDao().saveOrUpdate(event2);
+        m_dbPopulator.getEventDao().flush();
         
         OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
         assertNotNull(poller);
         
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm.setLastEvent(event);
+        alarm.setLastEvent(event1);
         alarm.setSeverityId(3);
         alarm.setDistPoller(poller);
         alarm.setCounter(100);
-        alarm.setEventParametersRef(event);
+        alarm.setEventParametersRef(event1);
         
         AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
         alarmDao.save(alarm);
