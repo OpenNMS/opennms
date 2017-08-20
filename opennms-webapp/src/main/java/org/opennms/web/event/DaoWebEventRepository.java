@@ -55,6 +55,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Maps;
+
 /**
  * <p>DaoWebEventRepository class.</p>
  * 
@@ -201,7 +203,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         event.operatorAction = onmsEvent.getEventOperAction();
         event.operatorActionMenuText = onmsEvent.getEventOperActionMenuText();
         event.operatorInstruction = onmsEvent.getEventOperInstruct();
-        event.parms = onmsEvent.getEventParameters().stream().collect(Collectors.toMap(OnmsEventParameter::getName, OnmsEventParameter::getValue));
+        event.parms = onmsEvent.getEventParameters()==null ? Maps.newHashMap() : onmsEvent.getEventParameters().stream().collect(Collectors.toMap(OnmsEventParameter::getName, OnmsEventParameter::getValue));
         event.serviceID = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getId() : 0;
         event.serviceName = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getName() : "";
         event.severity = OnmsSeverity.get(onmsEvent.getEventSeverity());
