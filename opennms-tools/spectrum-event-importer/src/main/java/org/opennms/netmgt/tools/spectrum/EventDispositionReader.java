@@ -180,7 +180,8 @@ public class EventDispositionReader {
             }
             
             if (lastToken == TokenType.logEvent) {
-                if (m_tokenizer.nextToken() == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches("^\\d+$")) {
+            	int nextTtype = m_tokenizer.nextToken();
+                if (nextTtype == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches("^\\d+$")) {
 					LOG.trace(
 							"Found event severity {} for event-code {} on line {}",
 							m_tokenizer.sval,
@@ -188,6 +189,15 @@ public class EventDispositionReader {
 							m_tokenizer.lineno());
                     thisEventDisposition.setEventSeverity(Integer.valueOf(m_tokenizer.sval));
                     lastToken = TokenType.eventSeverity;
+                } else if (nextTtype == StreamTokenizer.TT_EOL || nextTtype == StreamTokenizer.TT_EOF) {
+                	LOG.trace(
+                			"Found EOL or EOF in the event-severity position for event-code {} on line {}. Setting severity to -1 and proceeding.",
+                			thisEventDisposition.getEventCode(),
+                			m_tokenizer.lineno());
+                	thisEventDisposition.setEventSeverity(-1);
+                	eventDispositions.add(thisEventDisposition);
+                	lastToken = TokenType.eventSeverity;
+                	break;
                 } else {
 					LOG.error(
 							"Found a token [{}] following an event-severity token [{}] on line {} of {} that does not appear to be an event severity",
