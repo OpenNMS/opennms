@@ -615,10 +615,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             link.setNode(node);
             effectiveBFT.put(new BridgeMacLinkHash(link), link);
         }
-        m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+        synchronized (m_nodetoBroadcastDomainMap) {
+            m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+        }
     }
 
-    public Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
+    public synchronized Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
         return m_nodetoBroadcastDomainMap;
     }
     
@@ -652,13 +654,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public synchronized boolean hasUpdatedBft(int nodeid) {
-        return m_nodetoBroadcastDomainMap.containsKey(nodeid);
+    public boolean hasUpdatedBft(int nodeid) {
+        synchronized (m_nodetoBroadcastDomainMap) {
+            return m_nodetoBroadcastDomainMap.containsKey(nodeid);            
+        }
+
     }
     
     @Override
-    public synchronized List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
-        return m_nodetoBroadcastDomainMap.remove(nodeid);
+    public List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
+        synchronized (m_nodetoBroadcastDomainMap) {
+            return m_nodetoBroadcastDomainMap.remove(nodeid);
+        }
     }
 
     @Override
@@ -669,6 +676,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     @Override
     public void store(BroadcastDomain domain, Date now) {
         for (SharedSegment segment : domain.getTopology()) {
+            //FIXME why I can have a segment without a designated port?
+            if (!segment.hasDesignatedBridgeport())
+                continue;
             for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
                 link.setBridgeBridgeLinkLastPollTime(new Date());
                 saveBridgeBridgeLink(link);

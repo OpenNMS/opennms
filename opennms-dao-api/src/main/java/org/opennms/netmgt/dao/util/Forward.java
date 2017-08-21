@@ -69,7 +69,7 @@ public abstract class Forward {
      * @return the formatted string
      */
     public static String format(org.opennms.netmgt.xml.event.Forward[] forwards, int sz) {
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         boolean first = true;
 
         for (int index = 0; index < forwards.length; index++) {

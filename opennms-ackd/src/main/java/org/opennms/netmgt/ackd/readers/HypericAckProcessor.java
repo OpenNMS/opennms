@@ -212,7 +212,7 @@ public class HypericAckProcessor implements AckProcessor {
 
         @Override
         public String toString() {
-            StringBuffer retval = new StringBuffer();
+            final StringBuilder retval = new StringBuilder();
             retval.append("{ ");
             retval.append("id: ").append(String.valueOf(alertId)).append(", ");
             retval.append("fixed: ").append(String.valueOf(isFixed)).append(", ");
@@ -477,7 +477,7 @@ public class HypericAckProcessor implements AckProcessor {
 
         for (int i = 0; i < alertIds.size(); i++) {
             // Construct the query string for the HTTP operation
-            StringBuffer alertIdString = new StringBuffer();
+            final StringBuilder alertIdString = new StringBuilder();
             alertIdString.append("?");
             for (int j = 0; (j < ALERTS_PER_HTTP_TRANSACTION) && (i < alertIds.size()); j++,i++) {
                 if (j > 0) alertIdString.append("&");
@@ -559,7 +559,7 @@ public class HypericAckProcessor implements AckProcessor {
             }
         } else {
             // Try to pull in the HTTP response to give the user a better idea of what went wrong
-            StringBuffer errorContent = new StringBuffer();
+            final StringBuilder errorContent = new StringBuilder();
             LineNumberReader lineReader = new LineNumberReader(reader);
             try {
                 String line;

@@ -35,6 +35,7 @@ import java.io.File;
 import java.util.concurrent.Executors;
 
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
+import org.opennms.core.rpc.utils.RpcTargetHelper;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -66,6 +67,7 @@ public abstract class CollectorTestUtils {
         final MockRpcClientFactory rpcClientFactory = new MockRpcClientFactory();
         final LocationAwareCollectorClientImpl locationAwareCollectorClient = new LocationAwareCollectorClientImpl(rpcClientFactory);
         locationAwareCollectorClient.setRpcModule(collectorClientRpcModule);
+        locationAwareCollectorClient.setRpcTargetHelper(new RpcTargetHelper());
         locationAwareCollectorClient.afterPropertiesSet();
         return locationAwareCollectorClient;
     }

@@ -87,7 +87,7 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
 
     public List<LldpLink> findLinksForIds(List<Integer> linkIds) {
 
-        StringBuilder sql = new StringBuilder();
+        final StringBuilder sql = new StringBuilder();
         sql.append("FROM LldpLink lldplink ");
         if(linkIds.size() == 1){
             sql.append("where lldplink.id = " + linkIds.get(0) + " ");

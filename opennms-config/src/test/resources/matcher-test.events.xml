@@ -1,0 +1,289 @@
+<?xml version="1.0"?>
+<events>
+
+   <global>
+      <security>
+         <doNotOverride>logmsg</doNotOverride>
+         <doNotOverride>operaction</doNotOverride>
+         <doNotOverride>autoaction</doNotOverride>
+         <doNotOverride>tticket</doNotOverride>
+         <doNotOverride>script</doNotOverride>
+      </security>
+   </global>
+
+   <event>
+      <mask>
+         <maskelement>
+            <mename>uei</mename>
+            <mevalue>uei.opennms.org/threshold/highThresholdExceeded</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>nodeid</mename>
+            <mevalue>~10[123]</mevalue>
+            <mevalue>110</mevalue>			
+         </maskelement>
+      </mask>
+    <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
+    <event-label>OpenNMS-defined threshold event: highThresholdExceeded</event-label>
+    <descr>
+      &lt;p&gt;High threshold exceeded for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on vendor recommendations,
+                        tempered with real-world experience in working
+                        deployments.&lt;/p&gt; &lt;p&gt;This specific event
+                        indicates that a high threshold was exceeded.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      High threshold exceeded for IronPort (%interface%) - CPU %parm[value]%, Threshold %parm[threshold]%
+	</logmsg>
+    <severity>Critical</severity>
+    <operinstruct>Call Linux People</operinstruct>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+  </event>
+
+   <event>
+      <mask>
+         <maskelement>
+            <mename>uei</mename>
+            <mevalue>uei.opennms.org/threshold/highThresholdExceeded</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>nodeid</mename>
+            <mevalue>~20[123]</mevalue>
+            <mevalue>210</mevalue>			
+         </maskelement>
+      </mask>
+    <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
+    <event-label>OpenNMS-defined threshold event: highThresholdExceeded</event-label>
+    <descr>
+      &lt;p&gt;High threshold exceeded for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on vendor recommendations,
+                        tempered with real-world experience in working
+                        deployments.&lt;/p&gt; &lt;p&gt;This specific event
+                        indicates that a high threshold was exceeded.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      High threshold exceeded for IronPort (%interface%) - CPU %parm[value]%, Threshold %parm[threshold]%
+	</logmsg>
+    <severity>Major</severity>
+    <operinstruct>Call Windows People</operinstruct>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+  </event>
+
+   <event>
+    <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
+    <event-label>OpenNMS-defined threshold event: highThresholdExceeded</event-label>
+    <descr>
+      &lt;p&gt;High threshold exceeded for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on vendor recommendations,
+                        tempered with real-world experience in working
+                        deployments.&lt;/p&gt; &lt;p&gt;This specific event
+                        indicates that a high threshold was exceeded.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      High threshold exceeded for IronPort (%interface%) - CPU %parm[value]%, Threshold %parm[threshold]%
+	</logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+  </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.25461.2.1.3.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>600</mevalue>
+            </maskelement>
+            <varbind>
+                <vbnumber>12</vbnumber>
+                <vbvalue>Management server shutting down</vbvalue>
+            </varbind>
+        </mask>
+        <uei>uei.opennms.org/mib2events/Enterprises/PaloAlto/Panorama/panGeneralGeneralTrap</uei>
+        <event-label>PAN-TRAPS defined trap event: panGeneralGeneralTrap</event-label>
+        <descr>&lt;p>General system event&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+
+            panReceiveTime&lt;/b>&lt;/td>&lt;td>
+            %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSerial&lt;/b>&lt;/td>&lt;td>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panEventType&lt;/b>&lt;/td>&lt;td>
+            %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panEventSubType&lt;/b>&lt;/td>&lt;td>
+            %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panVsys&lt;/b>&lt;/td>&lt;td>
+            %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSeqno&lt;/b>&lt;/td>&lt;td>
+            %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panActionflags&lt;/b>&lt;/td>&lt;td>
+            %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemEventId&lt;/b>&lt;/td>&lt;td>
+            %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemObject&lt;/b>&lt;/td>&lt;td>
+            %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemModule&lt;/b>&lt;/td>&lt;td>
+            %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemSeverity&lt;/b>&lt;/td>&lt;td>
+            %parm[#11]%;&lt;/td>&lt;td>&lt;p>
+            unused(0)
+            informational(1)
+            low(2)
+            medium(3)
+            high(4)
+            critical(5)
+            &lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemDescription&lt;/b>&lt;/td>&lt;td>
+            %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+        <logmsg dest="logndisplay">%parm[#12]%</logmsg>
+        <severity>Major</severity>
+        <varbindsdecode>
+            <parmid>parm[#11]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unused"/>
+            <decode varbindvalue="1" varbinddecodedstring="informational"/>
+            <decode varbindvalue="2" varbinddecodedstring="low"/>
+            <decode varbindvalue="3" varbinddecodedstring="medium"/>
+            <decode varbindvalue="4" varbinddecodedstring="high"/>
+            <decode varbindvalue="5" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.25461.2.1.3.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>600</mevalue>
+            </maskelement>
+            <varbind>
+                <vbnumber>12</vbnumber>
+                <vbvalue>~^Management server started.*</vbvalue>
+            </varbind>
+        </mask>
+        <uei>uei.opennms.org/mib2events/Enterprises/PaloAlto/Panorama/panGeneralGeneralTrap</uei>
+        <event-label>PAN-TRAPS defined trap event: panGeneralGeneralTrap</event-label>
+        <descr>&lt;p>General system event&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+
+            panReceiveTime&lt;/b>&lt;/td>&lt;td>
+            %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSerial&lt;/b>&lt;/td>&lt;td>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panEventType&lt;/b>&lt;/td>&lt;td>
+            %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panEventSubType&lt;/b>&lt;/td>&lt;td>
+            %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panVsys&lt;/b>&lt;/td>&lt;td>
+            %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSeqno&lt;/b>&lt;/td>&lt;td>
+            %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panActionflags&lt;/b>&lt;/td>&lt;td>
+            %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemEventId&lt;/b>&lt;/td>&lt;td>
+            %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemObject&lt;/b>&lt;/td>&lt;td>
+            %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemModule&lt;/b>&lt;/td>&lt;td>
+            %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemSeverity&lt;/b>&lt;/td>&lt;td>
+            %parm[#11]%;&lt;/td>&lt;td>&lt;p>
+            unused(0)
+            informational(1)
+            low(2)
+            medium(3)
+            high(4)
+            critical(5)
+            &lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            panSystemDescription&lt;/b>&lt;/td>&lt;td>
+            %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+        <logmsg dest="logndisplay">%parm[#12]%</logmsg>
+        <severity>Cleared</severity>
+        <varbindsdecode>
+            <parmid>parm[#11]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unused"/>
+            <decode varbindvalue="1" varbinddecodedstring="informational"/>
+            <decode varbindvalue="2" varbinddecodedstring="low"/>
+            <decode varbindvalue="3" varbinddecodedstring="medium"/>
+            <decode varbindvalue="4" varbinddecodedstring="high"/>
+            <decode varbindvalue="5" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+</events>

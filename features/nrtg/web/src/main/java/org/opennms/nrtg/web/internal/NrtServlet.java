@@ -83,7 +83,7 @@ public class NrtServlet extends HttpServlet {
 
         BufferedReader r = null;
         try {
-            StringBuilder results = new StringBuilder();
+            final StringBuilder results = new StringBuilder();
             r = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + templateName)));
 
             String line;

@@ -179,7 +179,7 @@ public class OutageSummary implements Comparable<OutageSummary>, Serializable {
      */
     @Override
     public String toString() {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("<OutageSummary: ");
         buffer.append(this.nodeId);
         buffer.append(":");

@@ -41,6 +41,7 @@ import javax.servlet.ServletContext;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.InterfaceFilter;
 import org.opennms.web.outage.filter.NodeFilter;
@@ -50,6 +51,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates all querying functionality for outages.
+ *
+ * @deprecated Use an injected {@link OutageDao} implementation instead
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
@@ -115,7 +118,7 @@ public class OutageFactory extends Object {
         final DBUtils d = new DBUtils(OutageFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(OUTAGEID) AS OUTAGECOUNT FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND OUTAGES.SERVICEID=IFSERVICES.SERVICEID " + "LEFT OUTER JOIN SERVICE ON OUTAGES.SERVICEID=SERVICE.SERVICEID " + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.NOTIFYID " + "WHERE (NODE.NODETYPE != 'D' AND IPINTERFACE.ISMANAGED != 'D' AND IFSERVICES.STATUS != 'D') " + "AND ");
+            final StringBuilder select = new StringBuilder("SELECT COUNT(OUTAGEID) AS OUTAGECOUNT FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND OUTAGES.SERVICEID=IFSERVICES.SERVICEID " + "LEFT OUTER JOIN SERVICE ON OUTAGES.SERVICEID=SERVICE.SERVICEID " + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.NOTIFYID " + "WHERE (NODE.NODETYPE != 'D' AND IPINTERFACE.ISMANAGED != 'D' AND IFSERVICES.STATUS != 'D') " + "AND ");
             select.append(outageType.getClause());
 
             for (Filter filter : filters) {
@@ -261,7 +264,7 @@ public class OutageFactory extends Object {
         final DBUtils d = new DBUtils(OutageFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT OUTAGES.*, NODE.NODELABEL, NODE.LOCATION, IPINTERFACE.IPHOSTNAME, SERVICE.SERVICENAME, NOTIFICATIONS.NOTIFYID, NOTIFICATIONS.ANSWEREDBY FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND OUTAGES.SERVICEID=IFSERVICES.SERVICEID " + "LEFT OUTER JOIN SERVICE ON OUTAGES.SERVICEID=SERVICE.SERVICEID " + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.EVENTID " + "WHERE (NODE.NODETYPE != 'D' AND IPINTERFACE.ISMANAGED != 'D' AND IFSERVICES.STATUS != 'D') " + "AND ");
+            final StringBuilder select = new StringBuilder("SELECT OUTAGES.*, NODE.NODELABEL, NODE.LOCATION, IPINTERFACE.IPHOSTNAME, SERVICE.SERVICENAME, NOTIFICATIONS.NOTIFYID, NOTIFICATIONS.ANSWEREDBY FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND OUTAGES.SERVICEID=IFSERVICES.SERVICEID " + "LEFT OUTER JOIN SERVICE ON OUTAGES.SERVICEID=SERVICE.SERVICEID " + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.EVENTID " + "WHERE (NODE.NODETYPE != 'D' AND IPINTERFACE.ISMANAGED != 'D' AND IFSERVICES.STATUS != 'D') " + "AND ");
             select.append(outType.getClause());
 
             for (Filter filter : filters) {
@@ -555,8 +558,7 @@ public class OutageFactory extends Object {
      * @throws java.sql.SQLException if any.
      */
     protected static Outage[] rs2Outages(ResultSet rs) throws SQLException {
-        Outage[] outages = null;
-        List<Outage> list = new ArrayList<Outage>();
+        List<Outage> list = new ArrayList<>();
 
         // FIXME: Don't reuse the "element" variable for multiple objects.
         while (rs.next()) {
@@ -619,9 +621,7 @@ public class OutageFactory extends Object {
             list.add(outage);
         }
 
-        outages = list.toArray(new Outage[list.size()]);
-
-        return outages;
+        return list.toArray(new Outage[list.size()]);
     }
 
 }

@@ -239,7 +239,7 @@ public class RangeChunkerTest {
 	 */
 	private static void printJobs(List<DiscoveryJob> jobs) {
 		jobs.stream().forEach(job -> {
-			final StringBuffer buffer = new StringBuffer();
+			final StringBuilder buffer = new StringBuilder();
 			final AtomicInteger depth = new AtomicInteger(0);
 			job.toString().chars().forEach(c -> {
 				switch(c) {

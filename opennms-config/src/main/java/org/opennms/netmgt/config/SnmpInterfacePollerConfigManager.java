@@ -310,7 +310,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @return a {@link java.util.List} object.
      */
     public List<InetAddress> getIpList(Package pkg) {
-        final StringBuffer filterRules = new StringBuffer();
+        final StringBuilder filterRules = new StringBuilder();
         if (pkg.getFilter().getContent().isPresent()) {
             filterRules.append(pkg.getFilter().getContent().get());
         }

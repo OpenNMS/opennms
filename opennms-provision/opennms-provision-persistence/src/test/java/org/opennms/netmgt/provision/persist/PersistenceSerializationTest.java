@@ -152,7 +152,7 @@ public class PersistenceSerializationTest {
         m.marshal(fsw, objectXML);
 
         // Read the example XML from src/test/resources
-        StringBuffer exampleXML = new StringBuffer();
+        final StringBuilder exampleXML = new StringBuilder();
         File foreignSources = new File(ClassLoader.getSystemResource("foreign-sources.xml").getFile());
         assertTrue("foreign-sources.xml is readable", foreignSources.canRead());
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(foreignSources), StandardCharsets.UTF_8));
@@ -178,8 +178,7 @@ public class PersistenceSerializationTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static DetailedDiff getDiff(StringWriter objectXML,
-            StringBuffer exampleXML) throws SAXException, IOException {
+    private static DetailedDiff getDiff(StringWriter objectXML, StringBuilder exampleXML) throws SAXException, IOException {
         DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(exampleXML.toString(), objectXML.toString()));
         List<Difference> allDifferences = myDiff.getAllDifferences();
         if (allDifferences.size() > 0) {

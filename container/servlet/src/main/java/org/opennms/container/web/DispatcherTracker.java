@@ -100,7 +100,7 @@ public final class DispatcherTracker
     }
 
     private static Filter createFilter(BundleContext context, String filter, ServletContext servletContext) throws Exception {
-        StringBuffer str = new StringBuffer();
+        final StringBuilder str = new StringBuilder();
         str.append("(&(").append(Constants.OBJECTCLASS).append("=");
         str.append(javax.servlet.Filter.class.getName()).append(")");
         str.append(filter != null ? filter : DEFAULT_FILTER).append(")");

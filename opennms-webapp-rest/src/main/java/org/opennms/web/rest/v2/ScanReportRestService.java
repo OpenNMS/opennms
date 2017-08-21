@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.SortedSet;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -43,6 +44,8 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ScanReportDao;
 import org.opennms.netmgt.model.ScanReport;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.v1.support.ScanReportList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -89,6 +92,11 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Sca
     @Override
     protected JaxbListWrapper<ScanReport> createListWrapper(Collection<ScanReport> list) {
         return new ScanReportList(list);
+    }
+
+    @Override
+    protected SortedSet<SearchProperty> getQueryProperties() {
+        return SearchProperties.SCAN_REPORT_SERVICE_PROPERTIES;
     }
 
     @GET

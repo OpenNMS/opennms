@@ -37,6 +37,8 @@ public interface RequisitionRequestBuilder {
 
     RequisitionRequestBuilder withLocation(String location);
 
+    RequisitionRequestBuilder withSystemId(String systemId);
+
     RequisitionRequestBuilder withRequisitionProviderType(String type);
 
     RequisitionRequestBuilder withRequisitionProvider(RequisitionProvider provider);

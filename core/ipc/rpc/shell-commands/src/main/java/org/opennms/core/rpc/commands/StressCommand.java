@@ -54,6 +54,9 @@ public class StressCommand extends OsgiCommandSupport {
     @Option(name = "-l", aliases = "--location", description = "Location")
     String location = null;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String systemId = null;
+
     @Option(name = "-t", aliases = "--ttl", description = "Time to live (miliseconds)")
     Long ttlInMs;
 
@@ -136,6 +139,7 @@ public class StressCommand extends OsgiCommandSupport {
         request.setId(System.currentTimeMillis());
         request.setMessage(message);
         request.setLocation(location);
+        request.setSystemId(systemId);
         request.setTimeToLiveMs(ttlInMs);
         request.setDelay(delay);
         request.shouldThrow(shouldThrow);

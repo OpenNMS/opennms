@@ -119,7 +119,7 @@ public class FtpResponse {
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         int i;
         sb.append(m_code);
 

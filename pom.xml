@@ -943,6 +943,7 @@
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
             <runPingTests>${runPingTests}</runPingTests>
+            <skipIpv6Tests>${skipIpv6Tests}</skipIpv6Tests>
             <proxy.port>${proxy.port}</proxy.port>
             <opennms.version>${project.version}</opennms.version>
             <!-- <opennms.unit.test>true</opennms.unit.test> -->
@@ -1327,9 +1328,9 @@
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.8.2</log4j2Version>
-    <minaVersion>2.0.13</minaVersion>
+    <minaVersion>2.0.16</minaVersion>
     <minionKarafVersion>${karafVersion}</minionKarafVersion>
-    <netty4Version>4.0.45.Final</netty4Version>
+    <netty4Version>4.1.9.Final</netty4Version>
     <newtsVersion>1.4.3</newtsVersion>
     <paxExamVersion>4.9.2</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
@@ -1702,6 +1703,11 @@
       <dependency>
         <groupId>org.opennms.core.ipc.rpc</groupId>
         <artifactId>org.opennms.core.ipc.rpc.commands</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.ipc.rpc</groupId>
+        <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

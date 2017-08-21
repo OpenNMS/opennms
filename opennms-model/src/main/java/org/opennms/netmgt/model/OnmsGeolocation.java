@@ -195,7 +195,7 @@ public class OnmsGeolocation implements Serializable {
     }
 
     public String asAddressString() {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
 
         if (hasText(this.getAddress1())) {
             sb.append(this.getAddress1());

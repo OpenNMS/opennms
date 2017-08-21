@@ -54,7 +54,7 @@ public abstract class EventParameterUtils {
         }
 
         boolean first = true;
-        StringBuffer parmbuf = new StringBuffer();
+        final StringBuilder parmbuf = new StringBuilder();
 
         for (final Parm parm : event.getParmCollection()) {
             if (parm.getParmName() != null && parm.getValue() != null && parm.getValue().getContent() != null) {
@@ -93,7 +93,7 @@ public abstract class EventParameterUtils {
         type = (type != null ? type.trim() : empty);
         encoding = (encoding != null ? encoding.trim() : empty);
 
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         buf.append(name);
         buf.append(EventDatabaseConstants.NAME_VAL_DELIM);
         buf.append(value);

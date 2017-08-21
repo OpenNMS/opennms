@@ -122,7 +122,7 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
         final INameEnvironment env = new INameEnvironment() {
             @Override
             public NameEnvironmentAnswer findType(char[][] compoundTypeName) {
-                StringBuilder result = new StringBuilder();
+                final StringBuilder result = new StringBuilder();
                 String sep = "";
                 for (int i = 0; i < compoundTypeName.length; i++) {
                     result.append(sep);
@@ -134,7 +134,7 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
 
             @Override
             public NameEnvironmentAnswer findType(char[] typeName, char[][] packageName) {
-                StringBuilder result = new StringBuilder();
+                final StringBuilder result = new StringBuilder();
                 String sep = "";
                 for (int i = 0; i < packageName.length; i++) {
                     result.append(sep);
@@ -231,7 +231,7 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
 
             @Override
             public boolean isPackage(char[][] parentPackageName, char[] packageName) {
-                StringBuilder result = new StringBuilder();
+                final StringBuilder result = new StringBuilder();
                 String sep = "";
                 if (parentPackageName != null) {
                     for (int i = 0; i < parentPackageName.length; i++) {
@@ -431,7 +431,7 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
         }
 
         public String getFormattedProblems() {
-            StringBuilder problemBuilder = new StringBuilder();
+            final StringBuilder problemBuilder = new StringBuilder();
 
             for (int u = 0; u < units.length; u++) {
                 String sourceCode = units[u].getSourceCode();

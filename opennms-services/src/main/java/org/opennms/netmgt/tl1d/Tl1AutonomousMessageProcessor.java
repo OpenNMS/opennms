@@ -155,7 +155,7 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
         message.getId().setRawMessage(line);
         message.getId().setAlarmCode(idParser.nextToken());
         message.getId().setAlarmTag(idParser.nextToken());
-        StringBuilder bldr = new StringBuilder();
+        final StringBuilder bldr = new StringBuilder();
         while(idParser.hasMoreTokens()) {
             bldr.append(idParser.nextToken());
             bldr.append(" ");
@@ -230,7 +230,7 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
         
         //build other params.
         //This needs to be configurable or able to override.
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         while (autoBlockParser.hasMoreTokens())
         {
             sb.append(autoBlockParser.nextToken()).append(",");

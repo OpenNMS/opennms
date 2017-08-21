@@ -210,7 +210,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         String starttime = Long.toString(start / 1000);
         String endtime = Long.toString(end / 1000);
 
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         buf.append(commandPrefix);
         buf.append(" ");
         buf.append(title);
@@ -308,7 +308,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
         String[] rrds = getRrdNames(graph.getResource(), graph.getPrefabGraph().getColumns());
 
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         buf.append(commandPrefix);
         buf.append(" ");
         buf.append(prefabGraph.getCommand());

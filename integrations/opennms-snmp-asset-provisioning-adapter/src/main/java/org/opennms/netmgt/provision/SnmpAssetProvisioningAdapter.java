@@ -232,7 +232,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	}
 
 	protected static String formatPropertiesAsString(final Properties props) {
-	    final StringBuffer propertyValues = new StringBuffer();
+		final StringBuilder propertyValues = new StringBuilder();
 		for (final Map.Entry<Object, Object> entry : props.entrySet()) {
 			propertyValues.append("  ");
 			propertyValues.append(entry.getKey().toString());

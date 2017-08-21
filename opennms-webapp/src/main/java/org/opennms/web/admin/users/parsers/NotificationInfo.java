@@ -335,7 +335,7 @@ public class NotificationInfo implements Cloneable {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("email             = " + m_email + "\n");
         buffer.append("xmpp              = " + m_xmppAddress + "\n");

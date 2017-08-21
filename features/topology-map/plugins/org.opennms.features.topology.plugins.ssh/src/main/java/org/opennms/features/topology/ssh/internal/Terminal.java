@@ -227,7 +227,7 @@ public class Terminal {
 	//
 
 	private String utf8_decode(String d) {
-		StringBuilder o = new StringBuilder();
+		final StringBuilder o = new StringBuilder();
 		byte[] bytes = d.getBytes();
 		for (char c : d.toCharArray()) {
 			if (utf8_units_count != utf8_units_received) {
@@ -1447,7 +1447,7 @@ public class Terminal {
 	}
 
 	public synchronized String dump() throws InterruptedException {
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		int prev_attr = -1;
 		int cx = Math.min(this.cx, width - 1);
 		int cy = this.cy;
@@ -1510,7 +1510,7 @@ public class Terminal {
 
         @Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				sb.append((char) (screen[y * width + x] & 0xffff));

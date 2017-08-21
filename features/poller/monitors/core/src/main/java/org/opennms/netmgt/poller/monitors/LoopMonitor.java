@@ -51,7 +51,7 @@ public class LoopMonitor extends AbstractServiceMonitor {
         final LoopPlugin lp = new LoopPlugin();
         boolean isAvailable = lp.isProtocolSupported(svc.getAddress(), parameters);
         int status = (isAvailable ? PollStatus.SERVICE_AVAILABLE : PollStatus.SERVICE_UNAVAILABLE);
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append("LoopMonitor configured with is-supported =  ");
         sb.append(ParameterMap.getKeyedString(parameters, "is-supported", "false"));
         sb.append(" for ip-match: ");

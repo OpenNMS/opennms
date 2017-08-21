@@ -111,7 +111,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     /**
      * Method used to convert an integer bits-per-second value to a more
      * readable vale using commonly recognized abbreviation for network
-     * interface speeds. Feel free to expand it as necessary to accomodate
+     * interface speeds. Feel free to expand it as necessary to accommodate
      * different values.
      *
      * @param ifSpeed
@@ -169,7 +169,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     }
 
     protected static String getNodeTooltipDefaultText(String ip, String label, boolean isManaged, String location,NodeType nodeType) {
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append(label);
         tooltipText.append(": ");

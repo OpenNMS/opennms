@@ -582,7 +582,7 @@ public class FilterParserTest {
 	}
 
 	public static String nodelistToString(List<OnmsNode> nodelist){
-		StringBuilder sb= new StringBuilder("nodeList:{ ");
+		final StringBuilder sb= new StringBuilder("nodeList:{ ");
 		for (OnmsNode node:nodelist){
 			sb.append("["+node.getId()+"] ");
 		}

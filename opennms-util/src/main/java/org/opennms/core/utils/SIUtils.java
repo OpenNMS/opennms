@@ -52,7 +52,7 @@ public abstract class SIUtils {
     /**
      * Method used to convert an integer bits-per-second value to a more
      * readable vale using commonly recognized abbreviation for network
-     * interface speeds. Feel free to expand it as necessary to accomodate
+     * interface speeds. Feel free to expand it as necessary to accommodate
      * different values.
      *
      * @param ifSpeed

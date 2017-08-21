@@ -50,6 +50,9 @@ public class PingSweepCommand extends OsgiCommandSupport {
     @Option(name = "-l", aliases = "--location", description = "location")
     String m_location;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String m_systemId;
+
     @Option(name = "-r", aliases = "--retries", description = "number of retries")
     int m_retries = PingConstants.DEFAULT_RETRIES;
 
@@ -84,6 +87,7 @@ public class PingSweepCommand extends OsgiCommandSupport {
 
         final CompletableFuture<PingSweepSummary> future = locationAwarePingClient.sweep()
                 .withLocation(m_location)
+                .withSystemId(m_systemId)
                 .withRange(begin, end, m_retries, m_timeout, TimeUnit.MILLISECONDS)
                 .withPacketSize(m_packetsize)
                 .withPacketsPerSecond(m_packetsPerSecond)

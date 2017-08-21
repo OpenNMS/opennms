@@ -98,45 +98,48 @@
   <http pattern="/webstart/**" security="none"/>
 
   <!-- Only one <http> section can match the implicit '/**' pattern -->
-  <http pattern="/**" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
-    <intercept-url pattern="/" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/favicon.ico" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/logoff.jsp" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/login.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/accessDenied.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/css/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/svg/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/js/global.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/lib/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/images/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/admin/ng-requisitions/**" access="ROLE_PROVISION,ROLE_ADMIN" />
-    <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_PROVISION,ROLE_ADMIN" />
-    <intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
-    <intercept-url pattern="/**/mib-compiler" access="ROLE_ADMIN" />
-    <intercept-url pattern="/**/admin-*" access="ROLE_ADMIN" />
-    <intercept-url pattern="/rtc/post/**" access="ROLE_RTC" />
-    <intercept-url pattern="/element/rescan.jsp" access="ROLE_ADMIN" />
+  <http pattern="/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
+    <intercept-url pattern="/" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/favicon.ico" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/logoff.jsp" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/login.jsp*" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/accessDenied.jsp*" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/css/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/svg/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/js/global.js" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/lib/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/images/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+
+    <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
+    <intercept-url pattern="/rest/snmpConfig/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
+    <intercept-url pattern="/admin/**" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/**/mib-compiler" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/**/admin-*" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/rtc/post/**" access="hasAnyRole('ROLE_RTC')" />
+    <intercept-url pattern="/element/rescan.jsp" access="hasAnyRole('ROLE_ADMIN')" />
     
-    <intercept-url pattern="/frontpage.htm" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/dashboard.jsp" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/osgi/vaadin-surveillance-views/**" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/osgi/VAADIN/**" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/gwt.js" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/surveillanceservice.gwt" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/graph/graph.png" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/dashboard/**" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/coreweb/**" access="ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/frontpage.htm" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/dashboard.jsp" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/VAADIN/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/gwt.js" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/surveillanceservice.gwt" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/graph/graph.png" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/dashboard/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/coreweb/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     
     <!-- ReST URL's for OSGi plugin manger restricted to admin and ReST users-->
-    <intercept-url pattern="/licencemgr/**" access="ROLE_REST,ROLE_ADMIN"/>
-    <intercept-url pattern="/featuremgr/**" access="ROLE_REST,ROLE_ADMIN"/>
-    <intercept-url pattern="/pluginmgr/**" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/licencemgr/**" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/featuremgr/**" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/pluginmgr/**" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+
+    <!-- DO NOT ALLOW ACCESS TO /osgi -->
+    <intercept-url pattern="/osgi/**" access="denyAll" />
     
-    <intercept-url pattern="/**" access="ROLE_USER" />
+    <intercept-url pattern="/**" access="hasAnyRole('ROLE_USER')" />
     
     <!-- NrtCollection -->
-    <intercept-url pattern="/amq/*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    
+    <intercept-url pattern="/amq/*" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+
     <!--Commented out for custom authentication filter<form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" />-->
     <http-basic />
     <logout logout-success-url="/" />

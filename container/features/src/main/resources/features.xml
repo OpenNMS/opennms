@@ -412,6 +412,7 @@
     <feature name="opennms-core-camel" description="OpenNMS :: Core :: Camel" version="${project.version}">
       <feature>camel-core</feature>
       <feature>camel-http</feature>
+      <feature>camel-netty4</feature>
 
       <feature>opennms-core</feature>
 
@@ -564,6 +565,7 @@
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-core-camel</feature>
       <feature>camel-blueprint</feature>
+      <feature>camel-jms</feature>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}</bundle>
     </feature>
 
@@ -579,6 +581,7 @@
       <feature>javax.mail</feature>
       <feature>opennms-core-camel</feature>
       <feature>camel-blueprint</feature>
+      <feature>camel-jms</feature>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel-impl/${project.version}</bundle>
@@ -625,6 +628,7 @@
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
       <feature version="[4.2,4.3)">spring</feature>
 
+      <feature>camel-core</feature>
       <feature>commons-lang3</feature>
       <feature>jaxb</feature>
 
@@ -652,6 +656,7 @@
     </feature>
 
     <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
+      <feature>camel-netty4</feature>
       <feature>commons-beanutils</feature>
       <feature version="${guavaVersion}">guava</feature>
       <feature>spring-dm</feature>

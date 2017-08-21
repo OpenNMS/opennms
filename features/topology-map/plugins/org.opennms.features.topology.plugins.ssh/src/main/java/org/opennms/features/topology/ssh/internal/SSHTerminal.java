@@ -190,7 +190,7 @@ public class SSHTerminal extends AbstractComponent {
 					byte[] buf = new byte[8192];
 					int l = out.read(buf);
 					InputStreamReader r = new InputStreamReader(new ByteArrayInputStream(buf, 0, l));
-					StringBuilder sb = new StringBuilder();
+					final StringBuilder sb = new StringBuilder();
 					for (;;) {
 						int c = r.read();
 						if (c == -1) {

@@ -100,7 +100,7 @@ public class WmiAgentConfig {
      */
     @Override
     public String toString() {
-        StringBuffer buff = new StringBuffer("AgentConfig[");
+        final StringBuilder buff = new StringBuilder("AgentConfig[");
         buff.append("Address: "+m_Address);
         buff.append(", Password: "+String.valueOf(m_Password)); //use valueOf to handle null values of m_password
         buff.append(", Timeout: "+m_Timeout);

@@ -50,6 +50,9 @@ public class ShowImport extends OsgiCommandSupport {
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String location;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String systemId;
+
     @Option(name = "-t", aliases = "--ttl", description = "Time to live", required = false, multiValued = false)
     Long ttlInMs;
 
@@ -70,6 +73,7 @@ public class ShowImport extends OsgiCommandSupport {
                 .withRequisitionProviderType(type)
                 .withParameters(parse(parameters))
                 .withLocation(location)
+                .withSystemId(systemId)
                 .withTimeToLive(ttlInMs)
                 .execute();
 

@@ -231,7 +231,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         assertEquals(null, onmsNode.getForeignId());
         assertEquals("my-custom-location", onmsNode.getLocation().getLocationName());
 
-        final StringBuffer errorMsg = new StringBuffer();
+        final StringBuilder errorMsg = new StringBuilder();
         //Verify ipinterface count
         for (final OnmsIpInterface iface : getInterfaceDao().findAll()) {
             errorMsg.append(iface.toString());
@@ -292,7 +292,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         assertEquals("Testie", onmsNode.getForeignSource());
         assertEquals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, onmsNode.getLocation().getLocationName());
 
-        final StringBuffer errorMsg = new StringBuffer();
+        final StringBuilder errorMsg = new StringBuilder();
         //Verify ipinterface count
         for (final OnmsIpInterface iface : getInterfaceDao().findAll()) {
             errorMsg.append(iface.toString());

@@ -68,7 +68,7 @@ public abstract class Correlation {
 
         String outstr = out.toString();
         if (outstr.length() >= sz) {
-            StringBuffer buf = new StringBuffer(outstr);
+            final StringBuilder buf = new StringBuilder(outstr);
 
             buf.setLength(sz - 4);
             buf.append(EventDatabaseConstants.VALUE_TRUNCATE_INDICATOR);

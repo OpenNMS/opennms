@@ -193,7 +193,7 @@ public class V2TrapInformation extends TrapInformation {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("[");
+		final StringBuilder sb = new StringBuilder("[");
 		sb.append("Version=").append(getVersion())
 			.append(", Source-Address=").append(getTrapAddress().getHostAddress())
 			.append(", Length=").append(getPduLength())

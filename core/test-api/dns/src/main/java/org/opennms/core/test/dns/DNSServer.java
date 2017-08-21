@@ -677,7 +677,7 @@ public class DNSServer {
      * anything. Currently this only happens if this is an AXFR request over
      * TCP.
      */
-    byte[] generateReply(final Message query, final byte[] in, final int length, final Socket s) throws IOException {
+    byte[] generateReply(final Message query, final byte[] in, final int length, final Socket s) {
         final Header header = query.getHeader();
         int maxLength;
         int flags = 0;

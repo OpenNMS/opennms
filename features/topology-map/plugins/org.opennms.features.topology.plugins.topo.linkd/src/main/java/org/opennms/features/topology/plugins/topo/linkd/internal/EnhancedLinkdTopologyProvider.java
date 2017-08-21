@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,8 +38,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-
-import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -462,7 +459,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         m_loadManualLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "manual"));
     }
 
-    private void loadCompleteTopology() throws MalformedURLException, JAXBException {
+    private void loadCompleteTopology() {
         try{
             resetContainer();
         } catch (Exception e){
@@ -1052,10 +1049,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         final Timer.Context context = m_loadFullTimer.time();
         try {
             loadCompleteTopology();
-        } catch (MalformedURLException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (JAXBException e) {
-            LOG.error(e.getMessage(), e);
         } finally {
             context.stop();
         }
@@ -1065,7 +1058,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             Vertex source, Vertex target,
             List<OnmsIpInterface> targetInterfaces,
             Map<Integer, List<OnmsSnmpInterface>> snmpmap) {
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append("Bridge Layer2");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
@@ -1110,7 +1103,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     private String getEdgeTooltipText(String mac, Vertex target, List<OnmsIpInterface> ipifaces) {
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append("Bridge Layer2");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
@@ -1136,7 +1129,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
 
     private String getEdgeTooltipText(BridgePort port, Vertex target, Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(port.getBridgePortIfIndex(), target,snmpmap);
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append("Bridge Layer2");
@@ -1164,7 +1157,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private String getEdgeTooltipText(LinkDetail<?> linkDetail,Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
 
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         Vertex source = linkDetail.getSource();
         Vertex target = linkDetail.getTarget();
         OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(linkDetail.getSourceIfIndex(), source,snmpmap);

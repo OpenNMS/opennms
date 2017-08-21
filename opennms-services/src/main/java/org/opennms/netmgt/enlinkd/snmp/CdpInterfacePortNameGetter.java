@@ -42,8 +42,8 @@ public class CdpInterfacePortNameGetter extends SnmpGetter {
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
-    public CdpInterfacePortNameGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location) {
-        super(peer, client,location);
+    public CdpInterfacePortNameGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location, Integer nodeid) {
+        super(peer, client,location,nodeid);
     }
 
     public CdpLink get(CdpLink link) {

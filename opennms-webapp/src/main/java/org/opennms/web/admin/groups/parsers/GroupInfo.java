@@ -223,7 +223,7 @@ public class GroupInfo {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("name     = " + m_groupName + "\n");
         buffer.append("comments = " + m_groupComments + "\n");

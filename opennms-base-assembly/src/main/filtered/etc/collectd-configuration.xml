@@ -130,18 +130,15 @@
         </service>
 
         <service name="JMX-Minion" interval="300000" user-defined="false" status="on">
-            <parameter key="port" value="1299"/>
+            <parameter key="port" value="18980"/>
             <parameter key="retry" value="2"/>
             <parameter key="timeout" value="3000"/>
-            <parameter key="urlPath" value="/karaf-minion"/>
-            <parameter key="factory" value="PASSWORD-CLEAR"/>
-            <parameter key="username" value="admin"/>
-            <parameter key="password" value="admin"/>
             <parameter key="rrd-base-name" value="java"/>
             <parameter key="collection" value="jmx-minion"/>
             <parameter key="thresholding-enabled" value="true"/>
             <parameter key="ds-name" value="jmx-minion"/>
             <parameter key="friendly-name" value="jmx-minion"/>
+            <parameter key="use-foreign-id-as-system-id" value="true" />
         </service>
 
         <service name="JMX-Kafka" interval="300000" user-defined="false" status="on">

@@ -57,6 +57,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -75,6 +76,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,9 +93,10 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
+        "classpath:/overrideEventdPort.xml",
         "classpath:/syslogdTest.xml"
 })
-@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
+@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=ADVANCED" })
 @JUnitTemporaryDatabase
 public class SyslogdLoadIT implements InitializingBean {
 
@@ -111,7 +114,11 @@ public class SyslogdLoadIT implements InitializingBean {
     private Eventd m_eventd;
 
     @Autowired
-    private SyslogdConfigFactory m_config;
+    private SyslogdConfig m_config;
+
+    @Autowired
+    @Qualifier("eventdPort")
+    private int m_eventdPort;
 
     @Autowired
     private MockMessageDispatcherFactory<SyslogConnection, SyslogMessageLogDTO> m_messageDispatcherFactory;
@@ -409,8 +416,8 @@ public class SyslogdLoadIT implements InitializingBean {
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
     }
 
-    private static EventProxy createEventProxy() throws UnknownHostException {
-        return new TcpEventProxy(new InetSocketAddress(InetAddressUtils.ONE_TWENTY_SEVEN, 5837), TcpEventProxy.DEFAULT_TIMEOUT);
+    private EventProxy createEventProxy() throws UnknownHostException {
+        return new TcpEventProxy(new InetSocketAddress(InetAddressUtils.ONE_TWENTY_SEVEN, m_eventdPort), TcpEventProxy.DEFAULT_TIMEOUT);
     }
 
     public static class EventCounter implements EventListener {

@@ -53,7 +53,7 @@ public class Win32ServiceMonitor extends SnmpMonitor {
 		String serviceName = ParameterMap.getKeyedString(parameters, "service-name", DEFAULT_SERVICE_NAME);
 		int snLength = serviceName.length();
 		
-		StringBuffer serviceOidBuf = new StringBuffer(SV_SVC_OPERATING_STATE_OID);
+		final StringBuilder serviceOidBuf = new StringBuilder(SV_SVC_OPERATING_STATE_OID);
 		serviceOidBuf.append(".").append(Integer.toString(snLength));
 		for (byte thisByte : serviceName.getBytes()) {
 			serviceOidBuf.append(".").append(Byte.toString(thisByte));

@@ -35,7 +35,7 @@ public class AlarmCellStyleRenderer {
 
     public String getStyle(Integer severityObject, boolean acknowledged) {
         int severity = severityObject == null ? OnmsSeverity.INDETERMINATE.getId() : severityObject.intValue();
-        StringBuffer retVal = new StringBuffer();
+        final StringBuilder retVal = new StringBuilder();
         
         if (OnmsSeverity.CLEARED.getId() == severity) {
         } else if (OnmsSeverity.CRITICAL.getId() == severity) {

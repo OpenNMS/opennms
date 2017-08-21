@@ -33,13 +33,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.IfIndexFilter;
 import org.opennms.web.event.filter.InterfaceFilter;
@@ -50,6 +52,8 @@ import org.opennms.web.filter.Filter;
 
 /**
  * Encapsulates all querying functionality for events.
+ * 
+ * @deprecated Use an injected {@link EventDao} implementation instead
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
@@ -86,7 +90,7 @@ public class EventFactory {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
+            final StringBuilder select = new StringBuilder("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (Filter filter : filters) {
@@ -138,7 +142,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
+            final StringBuilder select = new StringBuilder("SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (Filter filter : filters) {
@@ -317,7 +321,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("" +
+            final StringBuilder select = new StringBuilder("" +
                     "          SELECT events.*, node.nodelabel, service.servicename, " +
                     "                 monitoringsystems.id AS systemId, " + 
                     "                 monitoringsystems.label AS systemLabel, " +
@@ -455,7 +459,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS WHERE ");
+            final StringBuilder select = new StringBuilder("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             select.append(" AND NODEID=?");
@@ -877,7 +881,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, monitoringsystems.location AS location FROM events LEFT JOIN monitoringsystems ON events.systemid=monitoringsystems.id WHERE monitoringsystems.type='OpenNMS' AND systemLabel=?");
+            final StringBuilder select = new StringBuilder("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, monitoringsystems.location AS location FROM events LEFT JOIN monitoringsystems ON events.systemid=monitoringsystems.id WHERE monitoringsystems.type='OpenNMS' AND systemLabel=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND EVENTACKUSER IS NULL");
@@ -961,7 +965,7 @@ public class EventFactory {
         }
 
         if (eventIds.length > 0) {
-            StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=?");
+            final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=?");
             update.append(" WHERE EVENTID IN (");
             update.append(eventIds[0]);
 
@@ -1016,7 +1020,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE");
+        final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE");
         update.append(getAcknowledgeTypeClause(AcknowledgeType.UNACKNOWLEDGED));
 
         for (Filter filter : filters) {
@@ -1117,7 +1121,7 @@ public class EventFactory {
         }
 
         if (eventIds.length > 0) {
-            StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL");
+            final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL");
             update.append(" WHERE EVENTID IN (");
             update.append(eventIds[0]);
 
@@ -1154,7 +1158,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE");
+        final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE");
         update.append(getAcknowledgeTypeClause(AcknowledgeType.ACKNOWLEDGED));
 
         for (Filter filter : filters) {
@@ -1212,8 +1216,7 @@ public class EventFactory {
      * @throws java.sql.SQLException if any.
      */
     protected static Event[] rs2Events(ResultSet rs) throws SQLException {
-        Event[] events = null;
-        Vector<Event> vector = new Vector<Event>();
+        List<Event> vector = new ArrayList<>();
 
         while (rs.next()) {
             Event event = new Event();
@@ -1281,16 +1284,10 @@ public class EventFactory {
             event.location = rs.getString("location");
             event.systemId = rs.getString("systemId");
 
-            vector.addElement(event);
+            vector.add(event);
         }
 
-        events = new Event[vector.size()];
-
-        for (int i = 0; i < events.length; i++) {
-            events[i] = vector.elementAt(i);
-        }
-
-        return events;
+        return vector.toArray(new Event[vector.size()]);
     }
 
     /**

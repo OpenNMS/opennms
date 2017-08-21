@@ -40,8 +40,16 @@
       <artifactId>org.opennms.core.api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>

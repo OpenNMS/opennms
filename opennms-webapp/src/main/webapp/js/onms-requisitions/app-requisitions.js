@@ -17,7 +17,7 @@
   ])
 
   .constant("Configuration", {
-    'baseHref': 'admin/ng-requisitions/index.jsp'
+    'baseHref': getBaseHref() + 'admin/ng-requisitions/index.jsp'
   })
 
   .config(['$routeProvider', function ($routeProvider) {

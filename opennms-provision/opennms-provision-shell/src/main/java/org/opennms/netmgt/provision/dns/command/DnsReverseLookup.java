@@ -46,6 +46,9 @@ public class DnsReverseLookup extends OsgiCommandSupport {
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String m_systemId;
+
     @Argument(index = 0, name = "ipAddress", description = "ip-address", required = true, multiValued = false)
     String ipAddress;
 
@@ -53,7 +56,7 @@ public class DnsReverseLookup extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        final CompletableFuture<String> future = client.reverseLookup(InetAddressUtils.addr(ipAddress), m_location);
+        final CompletableFuture<String> future = client.reverseLookup(InetAddressUtils.addr(ipAddress), m_location, m_systemId);
         while (true) {
             try {
                 try {

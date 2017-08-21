@@ -82,7 +82,7 @@ public class NsclientClient implements Client<NsclientRequest, NsclientPacket> {
                 LOG.debug("sendRequest: {}: {}", request.getFormattedCommand(), response.getResponse());
                 isAServer = true;
             } catch (NsclientException e) {
-                StringBuffer message = new StringBuffer();
+                final StringBuilder message = new StringBuilder();
                 message.append("sendRequest: Check failed... NsclientManager returned exception: ");
                 message.append(e.getMessage());
                 message.append(" : ");

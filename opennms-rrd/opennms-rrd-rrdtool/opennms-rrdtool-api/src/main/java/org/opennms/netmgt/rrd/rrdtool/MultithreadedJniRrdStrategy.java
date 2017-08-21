@@ -125,7 +125,6 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
      * RRD files takes place. The passed in rrd is actually an rrd command
      * string containing updates. This method executes this command.
      *
-     * @param rrd a {@link java.lang.StringBuffer} object.
      * @throws java.lang.Exception if any.
      */
     @Override

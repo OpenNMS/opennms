@@ -226,7 +226,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      */
     @Override
     public String getStats() {
-        StringBuffer retval = new StringBuffer();
+        final StringBuilder retval = new StringBuilder();
         for (RrdStrategy<?, ?> strategy : m_strategies) {
             retval.append(strategy.getStats());
             retval.append("\n");

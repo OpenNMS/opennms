@@ -28,15 +28,8 @@
 
 package org.opennms.netmgt.eventd;
 
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.EventdServiceManager;
-import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -94,11 +87,6 @@ public final class Eventd extends AbstractServiceDaemon {
     private EventdServiceManager m_eventdServiceManager;
 
     /**
-     * All handlers that can receive events to be started/stopped with Eventd.
-     */
-    private final List<EventReceiver> m_eventReceivers = Collections.synchronizedList(new ArrayList<>());
-
-    /**
      * Constuctor creates the localhost address(to be used eventually when
      * eventd originates events during correlation) and the broadcast queue
      */
@@ -122,12 +110,6 @@ public final class Eventd extends AbstractServiceDaemon {
      */
     @Override
     protected void onStart() {
-        for (EventReceiver eventReceiver : m_eventReceivers) {
-            eventReceiver.start();
-        }
-        
-        LOG.debug("Listener threads started");
-
         LOG.debug("Eventd running");
     }
 
@@ -136,18 +118,10 @@ public final class Eventd extends AbstractServiceDaemon {
      */
     @Override
     protected void onStop() {
-        LOG.debug("calling shutdown on tcp/udp listener threads");
-
-        // Stop listener threads
-        for (EventReceiver eventReceiver : m_eventReceivers) {
-            eventReceiver.stop();
-        }
-
         if (m_receiver != null) {
             m_receiver.close();
         }
-
-        LOG.debug("shutdown on tcp/udp listener threads returned");
+        LOG.debug("Eventd stopped");
     }
 
     /**
@@ -186,24 +160,4 @@ public final class Eventd extends AbstractServiceDaemon {
         m_receiver = receiver;
     }
 
-    /**
-     * <p>getEventReceivers</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    public Collection<EventReceiver> getEventReceivers() {
-        return Collections.unmodifiableList(m_eventReceivers);
-    }
-
-    /**
-     * <p>setEventReceivers</p>
-     *
-     * @param eventReceivers a {@link java.util.Collection} object.
-     */
-    public void setEventReceivers(Collection<EventReceiver> eventReceivers) {
-        synchronized(m_eventReceivers) {
-            m_eventReceivers.clear();
-            m_eventReceivers.addAll(eventReceivers);
-        }
-    }
 }
