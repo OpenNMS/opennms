@@ -98,6 +98,7 @@ public abstract class AlarmUtil extends Object {
         criteria.createAlias("distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("lastEvent", "lastEvent", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("eventParametersRef", "eventParametersRef", OnmsCriteria.LEFT_JOIN);
 
         alarmCriteria.visit(new AlarmCriteriaVisitor<RuntimeException>() {
 
