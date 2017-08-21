@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd;
 
+import org.hibernate.Hibernate;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -145,6 +146,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
         ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
         ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
+
+        Hibernate.initialize(alarm.getEventParameters());
 
         return new OnmsAlarmAndLifecycleEvent(alarm, ebldr.getEvent());
     }
