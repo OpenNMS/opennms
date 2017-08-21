@@ -41,3 +41,14 @@ The following _Security Roles_ are available:
 . Use *Add* and *Remove* to assign or remove the *Security Role* from the *User*
 . Click *Finish* to persist and apply the Changes
 . *Logout* and *Login* to apply the new _Security Role_ settings
+
+.How to add custom rules
+
+* Create a file called `$OPENNMS_HOME/etc/security-roles.properties`.
+* Add a property called `roles`, and for its value, a comma separated list of the custom roles, for example:
+```
+roles=operator,stage
+```
+* After following the procedure to associate the security roles with users, the new custom roles will be available as shown on the following image:
+
+image:webui/users/custom-roles.png[]
