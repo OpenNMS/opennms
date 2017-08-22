@@ -28,9 +28,20 @@
 
 package org.opennms.protocols.radius.detector;
 
+import org.opennms.netmgt.provision.support.BasicDetector;
+import org.opennms.netmgt.provision.support.Client;
+import org.opennms.netmgt.provision.support.RequestBuilder;
+import org.opennms.netmgt.provision.support.ResponseValidator;
+import org.opennms.protocols.radius.detector.client.CompositeAttributeLists;
+import org.opennms.protocols.radius.detector.client.RadiusDetectorClient;
+import org.opennms.protocols.radius.utils.RadiusUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.jradius.client.auth.CHAPAuthenticator;
 import net.jradius.client.auth.EAPMD5Authenticator;
 import net.jradius.client.auth.EAPMSCHAPv2Authenticator;
+import net.jradius.client.auth.EAPTTLSAuthenticator;
 import net.jradius.client.auth.MSCHAPv1Authenticator;
 import net.jradius.client.auth.MSCHAPv2Authenticator;
 import net.jradius.client.auth.PAPAuthenticator;
@@ -44,22 +55,13 @@ import net.jradius.packet.AccessReject;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeList;
 
-import org.opennms.netmgt.provision.support.BasicDetector;
-import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.RequestBuilder;
-import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.opennms.protocols.radius.detector.client.RadiusDetectorClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * <p>RadiusAuthDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-
-public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacket>{
+public class RadiusAuthDetector extends BasicDetector<CompositeAttributeLists, RadiusPacket>{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthDetector.class);
 
@@ -101,6 +103,21 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
      * Default NAS_ID
      */
     public static final String DEFAULT_NAS_ID = "opennms";
+
+    /**
+     * 
+     * Default inner auht protocol for ttls
+     */
+    public static final String DEFAULT_TTLS_INNER_AUTH_TYPE= "pap";
+
+    /**
+     * 
+     * Default inner identity
+     */
+    public static final String DEFAULT_INNER_IDENTITY= "Inner-OpenNMS";
+    
+    
+    
     
     private int m_authport = DEFAULT_AUTH_PORT;
     private int m_acctport = DEFAULT_ACCT_PORT;
@@ -109,6 +126,8 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
     private String m_nasid = DEFAULT_NAS_ID;
     private String m_user = DEFAULT_USER;
     private String m_password = DEFAULT_PASSWORD;
+    private String m_ttlsInnerAuthType = DEFAULT_TTLS_INNER_AUTH_TYPE;
+	private String m_InnerIdentity = DEFAULT_INNER_IDENTITY;
     
     /**
      * Default constructor
@@ -130,10 +149,17 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
     /** {@inheritDoc} */
     @Override
     public void onInit() {
-        send(request(getNasID(), getUser(), getPassword()), expectValidResponse(AccessAccept.class, AccessChallenge.class, AccessReject.class));
+    	RequestBuilder<CompositeAttributeLists> request;
+		if (! RadiusUtils.isEAPTTLS(getAuthType())){
+    		request = request(getNasID(), getUser(), getPassword());
+    	} else {
+    		request = request(getNasID(), getUser(), getPassword(),getInnerIdentity(),getTtlsInnerAuthType());
+    	}
+        send(request, expectValidResponse(AccessAccept.class, AccessChallenge.class, AccessReject.class));
     }
     
-    /**
+
+	/**
      * @return
      */
     private static ResponseValidator<RadiusPacket> expectValidResponse(final Class<?> accept, final Class<?> challenge, final Class<?> reject) {
@@ -148,26 +174,42 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
         };
     }
 
-    private static RequestBuilder<AttributeList> request(final String nasID, final String user, final String password) {
+    private static RequestBuilder<CompositeAttributeLists> request(final String nasID, final String user, final String password) {
     	LOG.debug("request: nasID = {}, user = {}, password = {}", nasID, user, password);
     	
-        return new RequestBuilder<AttributeList>() {
+        return new RequestBuilder<CompositeAttributeLists>() {
 
             @Override
-            public AttributeList getRequest() {
+            public CompositeAttributeLists getRequest() {
     	    	final AttributeList attributes = new AttributeList();
     	    	attributes.add(new Attr_UserName(user));
     	    	attributes.add(new Attr_NASIdentifier(nasID));
     	    	attributes.add(new Attr_UserPassword(password));
-    	    	return attributes;
+    	    	return new CompositeAttributeLists(attributes);
             }
             
         };
     }
+
+    private RequestBuilder<CompositeAttributeLists> request(String nasID, String user, String password, String innerIdentity,
+	    String ttlsInnerAuthType) {
+        LOG.debug("request: nasID = {}, user = {}, password = {}, innerIdentity = {}, ttlsInnerAuthType = {}", 
+        		nasID, user, password,innerIdentity,ttlsInnerAuthType);
+        RequestBuilder<CompositeAttributeLists> outerRequest = request(nasID,user,password);
+	    return new RequestBuilder<CompositeAttributeLists>() {
+            @Override
+            public CompositeAttributeLists getRequest() {
+            	CompositeAttributeLists parameters = outerRequest.getRequest();
+                parameters.addToInner(new Attr_UserName(innerIdentity));
+                parameters.setTunneledAuthType(ttlsInnerAuthType);
+                return parameters;
+            }
+	    };
+	}
     
     /** {@inheritDoc} */
     @Override
-    protected Client<AttributeList, RadiusPacket> getClient() {
+    protected Client<CompositeAttributeLists, RadiusPacket> getClient() {
     	final RadiusDetectorClient rdc = new RadiusDetectorClient();
         rdc.setAuthport(getAuthPort());
         rdc.setAcctPort(getAcctPort());
@@ -263,6 +305,8 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
     		auth = new EAPMD5Authenticator();
     	} else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
     		auth = new EAPMSCHAPv2Authenticator();
+    	} else if (RadiusUtils.isEAPTTLS(authType)) {
+    		auth = new EAPTTLSAuthenticator();
     	} else {
     		auth = null;
     	}
@@ -322,5 +366,41 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
     public String getPassword() {
         return m_password;
     }
+
+    /**
+     * <p>get</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getTtlsInnerAuthType() {
+	    return m_ttlsInnerAuthType;
+	}
+
+    /**
+     * <p>setTtlsInnerAuthType</p>
+     *
+     * @param ttlsInnerAuthType a {@link java.lang.String} object.
+     */
+	public void setTtlsInnerAuthType(String ttlsInnerAuthType) {
+	    m_ttlsInnerAuthType = ttlsInnerAuthType;
+	}
+
+    /**
+     * <p>getInnerIdentity</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+	public String getInnerIdentity() {
+	    return m_InnerIdentity;
+	}
+
+    /**
+     * <p>setInnerIdentity</p>
+     *
+     * @param innerIdentity a {@link java.lang.String} object.
+     */
+	public void setInnerIdentity(String innerIdentity) {
+	    m_InnerIdentity = innerIdentity;
+	}
 	
 }
