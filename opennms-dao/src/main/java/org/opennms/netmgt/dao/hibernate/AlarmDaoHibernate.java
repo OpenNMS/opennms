@@ -221,7 +221,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
             if (i > 0) {
                 hqlStringBuffer.append(" and ");
             }
-            hqlStringBuffer.append("exists (select p.event from OnmsEventParameter p where a.eventParametersRef=p.event and p.name like :name" + i + " and p.value like :value" + i + ")");
+            hqlStringBuffer.append("exists (select p.event from OnmsEventParameter p where a.eventParametersRef=p.event and p.name = :name" + i + " and p.value like :value" + i + ")");
         }
 
         return (List<OnmsAlarm>) getHibernateTemplate().executeFind(new HibernateCallback<List<OnmsEvent>>() {
