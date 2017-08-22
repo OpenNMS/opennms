@@ -37,7 +37,7 @@ import org.opennms.web.filter.SQLType;
 
 public class EventParmLikeFilter extends OneArgFilter<String> {
 
-    public static final String TYPE = "prmmatchany";
+    public static final String TYPE = "parmmatchany";
 
     private final String key;
 
