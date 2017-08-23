@@ -65,8 +65,20 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void preExecute() throws OnmsUpgradeException {
-        ;
-        // check for eventparms column
+        try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
+            final Statement preExecutionStatement = connection.createStatement();
+            try (final ResultSet preExecutionResultSet = preExecutionStatement.executeQuery("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='events' AND column_name='eventparms')")) {
+                preExecutionResultSet.next();
+                if (!preExecutionResultSet.getBoolean(1)) {
+                    throw new OnmsUpgradeException("The column 'eventParms' does not exists anymore");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new OnmsUpgradeException("Error checking for column 'eventParms'", e);
+            }
+        } catch (SQLException e) {
+            throw new OnmsUpgradeException("Error opening database connection", e);
+        }
     }
 
     @Override
