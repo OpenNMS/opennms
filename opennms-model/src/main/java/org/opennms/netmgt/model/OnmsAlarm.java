@@ -170,9 +170,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private OnmsEvent m_lastEvent;
     
     /** persistent field */
-    private OnmsEvent m_eventParametersRef;
-
-    /** persistent field */
     private String m_managedObjectInstance;
     
     /** persistent field */
@@ -783,22 +780,11 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         }
     }
 
-    @XmlTransient
-    @ManyToOne()
-    @JoinColumn(name="eventParametersRefId")
-    public OnmsEvent getEventParametersRef() {
-            return m_eventParametersRef;
-    }
-
     @Transient
     @XmlElementWrapper(name="parameters")
     @XmlElement(name="parameter")
     public List<OnmsEventParameter> getEventParameters() {
-        return m_eventParametersRef != null ? m_eventParametersRef.getEventParameters() : null;
-    }
-
-    public void setEventParametersRef(final OnmsEvent event) {
-        this.m_eventParametersRef = event;
+        return m_lastEvent != null ? m_lastEvent.getEventParameters() : null;
     }
 
     public Optional<OnmsEventParameter> findEventParameter(final String name) {

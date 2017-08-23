@@ -1087,7 +1087,6 @@ create table alarms (
     qosAlarmState           VARCHAR(31),
     ifIndex                 INTEGER,
     clearKey                VARCHAR(256),
-    eventParametersRefId    INTEGER, CONSTRAINT fk_alarmsEventParametersRefId FOREIGN KEY (eventParametersRefId) REFERENCES events (eventID) ON DELETE RESTRICT,
     stickymemo              INTEGER, CONSTRAINT fk_stickyMemo FOREIGN KEY (stickymemo) REFERENCES memos (id) ON DELETE CASCADE
 );
 

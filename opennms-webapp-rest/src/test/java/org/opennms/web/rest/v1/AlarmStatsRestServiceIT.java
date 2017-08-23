@@ -255,7 +255,6 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_databasePopulator.getNode1());
         alarm.setDescription("This is a test alarm");
-        alarm.setEventParametersRef(event);
         alarm.setLogMsg("this is a test alarm log message");
         alarm.setCounter(1);
         alarm.setIpAddr(InetAddressUtils.UNPINGABLE_ADDRESS);

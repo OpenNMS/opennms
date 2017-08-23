@@ -244,7 +244,7 @@ public class SnmpTrapNorthbounderConfigDaoTest {
         onmsAlarm.setNode(node);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
         onmsAlarm.setLogMsg("everything is good");
-        onmsAlarm.setEventParametersRef(new OnmsEvent() {{
+        onmsAlarm.setLastEvent(new OnmsEvent() {{
             this.setEventParameters(Lists.newArrayList(
                     new OnmsEventParameter(this, "alarmId", "99", "Int32"),
                     new OnmsEventParameter(this, "alarmMessage", "this is just a test", "String"),

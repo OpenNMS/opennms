@@ -793,7 +793,6 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setSeverity(severity);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
-        alarm.setEventParametersRef(event);
         alarm.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
         m_databasePopulator.getAlarmDao().save(alarm);
         m_databasePopulator.getAlarmDao().flush();

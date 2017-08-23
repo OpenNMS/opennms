@@ -204,7 +204,7 @@ public class HypericAckProcessorIT implements InitializingBean {
                 new OnmsEventParameter(event, "resource.resourceType.name", "covalentEAMPlatform", "string")));
 
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setEventParametersRef(event);
+        alarm.setLastEvent(event);
 
         /*
         OnmsAlarm alarm = createMock(OnmsAlarm.class);

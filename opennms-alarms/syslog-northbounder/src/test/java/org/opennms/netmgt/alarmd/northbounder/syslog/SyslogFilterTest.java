@@ -56,7 +56,7 @@ public class SyslogFilterTest {
                 new OnmsEventParameter(event, "passwd", "0nmsRules", "string")));
 
         OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setEventParametersRef(event);
+        onmsAlarm.setLastEvent(event);
         onmsAlarm.setUei("uei.opennms.org/junit/test");
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
         SyslogFilter filter = new SyslogFilter("test", "uei matches '^uei\\.opennms\\.org.*' and parameters['user'] == 'agalue'", "localhost");

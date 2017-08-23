@@ -128,7 +128,7 @@ public class EmailNorthbounderTest {
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
-        onmsAlarm.setEventParametersRef(new OnmsEvent() {{
+        onmsAlarm.setLastEvent(new OnmsEvent() {{
             this.setEventParameters(Lists.newArrayList(
                     new OnmsEventParameter(this, "alarmId", "10", "Int32"),
                     new OnmsEventParameter(this, "alarmMessage", "this is a test", "string")));
@@ -180,7 +180,7 @@ public class EmailNorthbounderTest {
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
-        onmsAlarm.setEventParametersRef(new OnmsEvent() {{
+        onmsAlarm.setLastEvent(new OnmsEvent() {{
             this.setEventParameters(Lists.newArrayList(
                     new OnmsEventParameter(this, "alarmId", "10", "Int32"),
                     new OnmsEventParameter(this, "alarmMessage", "this is a test", "string")));

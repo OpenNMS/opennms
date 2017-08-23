@@ -607,7 +607,6 @@ public class DatabasePopulator {
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
-        alarm.setEventParametersRef(event);
         alarm.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return alarm;
     }

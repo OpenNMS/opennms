@@ -82,16 +82,6 @@
                              onDelete="CASCADE"/>
 
     <dropColumn tableName="alarms" columnName="eventparms" />
-    <addColumn tableName="alarms">
-      <column name="eventparametersrefid" type="INTEGER">
-        <constraints nullable="true"/>
-      </column>
-    </addColumn>
-    <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="eventparametersrefid"
-                             constraintName="fk_alarmseventparametersrefid"
-                             referencedTableName="events"
-                             referencedColumnNames="eventid"
-                             onDelete="RESTRICT"/>
   </changeSet>
 
   <changeSet id="21.0.0-event-parameters-remove-column" author="cpape">

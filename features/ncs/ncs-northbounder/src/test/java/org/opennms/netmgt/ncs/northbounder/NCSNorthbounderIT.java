@@ -164,7 +164,7 @@ public class NCSNorthbounderIT {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(alarmId);
         alarm.setUei("uei.opennms.org/test/httpNorthBounder");
-        alarm.setEventParametersRef(event);
+        alarm.setLastEvent(event);
         alarm.setAlarmType((alarmId+1) % 2 + 1);
 
         return new NorthboundAlarm(alarm);

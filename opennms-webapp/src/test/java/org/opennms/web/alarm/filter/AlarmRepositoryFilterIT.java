@@ -378,7 +378,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm.setSeverityId(3);
         alarm.setDistPoller(poller);
         alarm.setCounter(100);
-        alarm.setEventParametersRef(event1);
+        alarm.setLastEvent(event1);
         
         AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
         alarmDao.save(alarm);
@@ -390,7 +390,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm2.setSeverityId(3);
         alarm2.setDistPoller(poller);
         alarm2.setCounter(100);
-        alarm2.setEventParametersRef(event2);
+        alarm2.setLastEvent(event2);
         
         alarmDao.save(alarm2);
         alarmDao.flush();
@@ -466,7 +466,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm.setSeverityId(3);
         alarm.setDistPoller(poller);
         alarm.setCounter(100);
-        alarm.setEventParametersRef(event1);
+        alarm.setLastEvent(event1);
         
         AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
         alarmDao.save(alarm);
@@ -478,7 +478,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm2.setSeverityId(3);
         alarm2.setDistPoller(poller);
         alarm2.setCounter(100);
-        alarm2.setEventParametersRef(event2);
+        alarm2.setLastEvent(event2);
         
         alarmDao.save(alarm2);
         alarmDao.flush();

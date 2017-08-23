@@ -27,8 +27,6 @@
       SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid 
     UNION 
       SELECT eventid FROM notifications WHERE eventid = events.eventid
-    UNION
-      SELECT eventParametersRefId FROM alarms WHERE eventParametersRefId = events.eventid)
     AND eventtime &lt; now() - interval '6 weeks';
   </statement>
     

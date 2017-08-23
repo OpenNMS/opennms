@@ -116,7 +116,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setCounter(1);
         onmsAlarm.setLogMsg("Interface Down");
-        onmsAlarm.setEventParametersRef(new OnmsEvent() {{
+        onmsAlarm.setLastEvent(new OnmsEvent() {{
             this.setEventParameters(Lists.newArrayList(
                     new OnmsEventParameter(this, "owner", "agalue", "String")));
         }});

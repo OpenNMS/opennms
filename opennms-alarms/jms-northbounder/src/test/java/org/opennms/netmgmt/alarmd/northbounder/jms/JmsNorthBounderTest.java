@@ -227,7 +227,7 @@ public class JmsNorthBounderTest {
                             new OnmsEventParameter(event, "foreignId", "space-0256012012000038", "string"),
                             new OnmsEventParameter(event, "reason", "Aborting node scan : Agent timed out while scanning the system table", "string"),
                             new OnmsEventParameter(event, ".1.3.6.1.4.1.2636.3.18.1.7.1.2.732", "207795895", "TimeTicks")));
-                    onmsAlarm.setEventParametersRef(event);
+                    onmsAlarm.setLastEvent(event);
                 }
                 NorthboundAlarm a = new NorthboundAlarm(onmsAlarm);
 
@@ -477,7 +477,7 @@ public class JmsNorthBounderTest {
             alarm.setFirstEventTime(new Date(0));
             alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setIpAddr(ia);
-            alarm.setEventParametersRef(event);
+            alarm.setLastEvent(event);
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
             alarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(1).getId());
             NorthboundAlarm a = new NorthboundAlarm(alarm);
@@ -596,7 +596,7 @@ public class JmsNorthBounderTest {
             alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setFirstEventTime(new Date(0));
             alarm.setIpAddr(ia);
-            alarm.setEventParametersRef(event);
+            alarm.setLastEvent(event);
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
             alarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(1).getId());
             NorthboundAlarm a = new NorthboundAlarm(alarm);
