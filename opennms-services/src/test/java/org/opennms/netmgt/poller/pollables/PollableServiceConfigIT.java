@@ -80,7 +80,7 @@ import com.google.common.collect.Lists;
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
 })
-public class PollableServiceConfigTest {
+public class PollableServiceConfigIT {
 
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
