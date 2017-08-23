@@ -46,7 +46,7 @@ public class EventParmLikeFilter extends OneArgFilter<String> {
     }
 
     public EventParmLikeFilter(String key, String value) {
-        super(TYPE, SQLType.STRING, "eventParametersRefId", "eventParametersRef." + key, value);
+        super(TYPE, SQLType.STRING, "lastEventId", "lastEvent." + key, value);
         this.key = key;
     }
 
