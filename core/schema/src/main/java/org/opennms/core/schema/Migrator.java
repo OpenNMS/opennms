@@ -28,15 +28,22 @@
 
 package org.opennms.core.schema;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,6 +76,8 @@ public class Migrator {
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
     public static final float POSTGRES_MIN_VERSION = 7.4f;
     public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.9f;
+
+    private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
@@ -350,16 +359,20 @@ public class Migrator {
      * @throws org.opennms.core.schema.MigrationException if any.
      */
     public boolean databaseExists(final Migration migration) throws MigrationException {
+        return databaseExists(migration.getDatabaseName());
+    }
+
+    public boolean databaseExists(String databaseName) throws MigrationException {
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            rs = st.executeQuery("SELECT datname from pg_database WHERE datname = '" + migration.getDatabaseName() + "'");
+            rs = st.executeQuery("SELECT datname from pg_database WHERE datname = '" + databaseName + "'");
             if (rs.next()) {
                 final String datname = rs.getString("datname");
-                if (datname != null && datname.equalsIgnoreCase(migration.getDatabaseName())) {
+                if (datname != null && datname.equalsIgnoreCase(databaseName)) {
                     return true;
                 } else {
                     return false;
@@ -433,6 +446,287 @@ public class Migrator {
             throw new MigrationException("an error occurred creating the OpenNMS database", e);
         } finally {
             cleanUpDatabase(c, null, st, rs);
+        }
+    }
+
+    /**
+     * <p>checkUnicode</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
+    public void checkUnicode(final Migration migration) throws Exception {
+        LOG.info("checking if database \"" + migration.getDatabaseName() + "\" is unicode");
+
+        Statement st = null;
+        ResultSet rs = null;
+        Connection c = null;
+
+        try {
+                c = m_adminDataSource.getConnection();
+                st = c.createStatement();
+                rs = st.executeQuery("SELECT encoding FROM pg_database WHERE LOWER(datname)='" + migration.getDatabaseName().toLowerCase() + "'");
+                if (rs.next()) {
+                    if (rs.getInt(1) == 5 || rs.getInt(1) == 6) {
+                        return;
+                    }
+                }
+
+                throw new MigrationException("OpenNMS requires a Unicode database.  Please delete and recreate your\ndatabase and try again.");
+        } finally {
+            cleanUpDatabase(c, null, st, rs);
+        }
+    }
+
+    /**
+     * <p>databaseSetUser</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
+    public void databaseSetUser(final Migration m_migration) throws MigrationException {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        Connection c = null;
+
+        try {
+            c = m_adminDataSource.getConnection();
+
+            final String[] tableTypes = {"TABLE"};
+            rs = c.getMetaData().getTables(null, "public", "%", tableTypes);
+
+            final HashSet<String> objects = new HashSet<String>();
+            while (rs.next()) {
+                objects.add(rs.getString("TABLE_NAME"));
+            }
+            st = c.prepareStatement("ALTER TABLE ? OWNER TO ?");
+            for (final String objName : objects) {
+                st.setString(1, objName);
+                st.setString(2, m_migration.getDatabaseUser());
+                st.execute();
+            }
+        } catch (SQLException e) {
+            throw new MigrationException("an error occurred setting table ownership", e);
+        } finally {
+            cleanUpDatabase(c, null, st, rs);
+        }
+    }
+
+    /**
+     * <p>vacuumDatabase</p>
+     *
+     * @param full a boolean.
+     * @throws java.sql.SQLException if any.
+     */
+    public void vacuumDatabase(final boolean full) throws MigrationException {
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            c = m_dataSource.getConnection();
+
+            st = c.createStatement();
+            LOG.info("optimizing database (VACUUM ANALYZE)");
+            st.execute("VACUUM ANALYZE");
+
+            if (full) {
+                LOG.info("recovering database disk space (VACUUM FULL)");
+                st.execute("VACUUM FULL");
+            }
+        } catch (SQLException e) {
+            throw new MigrationException("an error occurred vacuuming the databse", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+    }
+
+    /**
+     * <p>updateIplike</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
+    public void updateIplike() throws MigrationException {
+
+        boolean insert_iplike = !isIpLikeUsable();
+
+        if (insert_iplike) {
+            dropExistingIpLike();
+
+            if (!installCIpLike("foo")) {
+                setupPlPgsqlIplike();
+            }
+        }
+
+        // XXX This error is generated from Postgres if eventtime(text)
+        // does not exist:
+        // ERROR: function eventtime(text) does not exist
+        LOG.info("checking for stale eventtime.so references");
+        Connection c = null;
+        Statement st = null;
+        try {
+            c = m_dataSource.getConnection();
+            st = c.createStatement();
+            st.execute("DROP FUNCTION eventtime(text)");
+        } catch (final SQLException e) {
+            /*
+             * SQL Status code: 42883: ERROR: function %s does not exist
+             */
+            if (e.toString().indexOf("does not exist") != -1
+                    || "42883".equals(e.getSQLState())) {
+            } else {
+                throw new MigrationException("error checking for stale eventtime.so references", e);
+            }
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+    }
+
+    /**
+     * <p>isIpLikeUsable</p>
+     *
+     * @return a boolean.
+     */
+    public boolean isIpLikeUsable() throws MigrationException {
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            LOG.info("checking if iplike is usable");
+            c = m_dataSource.getConnection();
+            st = c.createStatement();
+
+            try {
+                st.execute("SELECT IPLIKE('127.0.0.1', '*.*.*.*')");
+            } catch (final SQLException selectException) {
+                return false;
+            }
+
+            st.close();
+
+            LOG.info("checking if iplike supports IPv6");
+            st = c.createStatement();
+            st.execute("SELECT IPLIKE('fe80:0000:5ab0:35ff:feee:cecd', 'fe80:*::cecd')");
+        } catch (final SQLException e) {
+            throw new MigrationException("error checking if iplike is usable", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+
+        return true;
+    }
+
+    private boolean installCIpLike(String pgIplikeLocation) throws MigrationException {
+        if (pgIplikeLocation == null) {
+            LOG.info("Skipped inserting C iplike function (location of iplike function not set)");
+            return false;
+        }
+
+        LOG.info("inserting C iplike function");
+
+        Statement st = null;
+        Connection c = null;
+
+        try {
+            c  = m_dataSource.getConnection();
+            st = c.createStatement();
+            try {
+                st.execute("CREATE FUNCTION iplike(text,text) RETURNS bool " + "AS '" + pgIplikeLocation + "' LANGUAGE 'c' WITH(isstrict)");
+                return true;
+            } catch (final SQLException e) {
+                return false;
+            }
+        } catch (final SQLException e) {
+            throw new MigrationException("error installing C iplike function", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+    }
+
+    private void dropExistingIpLike() throws MigrationException {
+        Connection c = null;
+        Statement st = null;
+
+        LOG.info("removing existing iplike definition (if any)");
+        try {
+            c = m_dataSource.getConnection();
+            st = c.createStatement();
+            st.execute("DROP FUNCTION iplike(text,text)");
+        } catch (final SQLException dropException) {
+            if (dropException.toString().contains("does not exist")
+                    || "42883".equals(dropException.getSQLState())) {
+            } else {
+                throw new MigrationException("could not remove existing iplike definition (if it exists)", dropException);
+            }
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+    }
+
+    /**
+     * <p>setupPlPgsqlIplike</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
+    public void setupPlPgsqlIplike() throws MigrationException {
+        LOG.info("inserting PL/pgSQL iplike function");
+
+        InputStream sqlfile = null;
+        final StringBuffer createFunction = new StringBuffer();
+        try {
+            sqlfile = getClass().getResourceAsStream(IPLIKE_SQL_RESOURCE);
+            if (sqlfile == null) {
+                throw new MigrationException("unable to locate " + IPLIKE_SQL_RESOURCE);
+            }
+
+            final BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, StandardCharsets.UTF_8));
+            String line;
+            while ((line = in.readLine()) != null) {
+                createFunction.append(line).append("\n");
+            }
+        } catch (final IOException e) {
+            throw new MigrationException("error reading PL/pgSQL iplike function from file " + IPLIKE_SQL_RESOURCE, e);
+        } finally {
+            // don't forget to close the input stream
+            try {
+                if (sqlfile != null) {
+                    sqlfile.close();
+                }
+            } catch (final IOException e) {
+                // purposefully eat it so we don't hide any exceptions that occurred earlier (and matter more)
+            }
+        }
+
+        Connection c = null;
+        Statement st = null;
+        try {
+            c = m_dataSource.getConnection();
+            st = c.createStatement();
+
+            st.execute(createFunction.toString());
+        } catch (final SQLException e) {
+            throw new MigrationException("could not insert PL/pgSQL iplike function", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+    }
+
+    /**
+     * <p>databaseRemoveDB</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
+    public void databaseRemoveDB(Migration migration) throws MigrationException {
+        LOG.info("removing database '" + migration.getDatabaseName());
+
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            c = m_adminDataSource.getConnection();
+            st = c.createStatement();
+            st.execute("DROP DATABASE \"" + migration.getDatabaseName() + "\"");
+        } catch (SQLException e) {
+            throw new MigrationException("could not remove database " + migration.getDatabaseName(), e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
         }
     }
 

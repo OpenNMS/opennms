@@ -60,7 +60,6 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.DataSourceConfigurationFactory;
-import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.schema.ExistingResourceAccessor;
@@ -129,8 +128,6 @@ public class Installer {
 
     String m_required_options = "At least one of -d, -i, -s, -y, -C, or -T is required.";
 
-    private InstallerDb m_installerDb = new InstallerDb();
-
     private static final String OPENNMS_DATA_SOURCE_NAME = "opennms";
 
     private static final String ADMIN_DATA_SOURCE_NAME = "opennms-admin";
@@ -172,13 +169,13 @@ public class Installer {
             final DataSource ds = new SimpleDataSource(dsConfig);
             is.close();
 
-            m_installerDb.setForce(m_force);
-            m_installerDb.setIgnoreNotNull(m_ignore_not_null);
-            m_installerDb.setNoRevert(m_do_not_revert);
-            m_installerDb.setAdminDataSource(adminDs);
-            m_installerDb.setPostgresOpennmsUser(dsConfig.getUserName());
-            m_installerDb.setDataSource(ds);
-            m_installerDb.setDatabaseName(dsConfig.getDatabaseName());
+//            m_installerDb.setForce(m_force);
+//            m_installerDb.setIgnoreNotNull(m_ignore_not_null);
+//            m_installerDb.setNoRevert(m_do_not_revert);
+//            m_installerDb.setAdminDataSource(adminDs);
+//            m_installerDb.setPostgresOpennmsUser(dsConfig.getUserName());
+//            m_installerDb.setDataSource(ds);
+//            m_installerDb.setDatabaseName(dsConfig.getDatabaseName());
 
             m_migrator.setDataSource(ds);
             m_migrator.setAdminDataSource(adminDs);
@@ -240,7 +237,7 @@ public class Installer {
             // OLDINSTALL m_installerDb.readTables();
         }
 
-        m_installerDb.disconnect();
+        //m_installerDb.disconnect();
         if (doDatabase) {
             m_migrator.validateDatabaseVersion();
 
@@ -256,7 +253,7 @@ public class Installer {
         }
 
         if (doDatabase) {
-            m_installerDb.checkUnicode();
+            m_migrator.checkUnicode(m_migration);
         }
         
         handleConfigurationChanges();
@@ -265,8 +262,8 @@ public class Installer {
         context.setClassLoader(Bootstrap.loadClasses(new File(m_opennms_home), true));
 
         if (m_update_database) {
-            m_installerDb.databaseSetUser();
-            m_installerDb.disconnect();
+            m_migrator.databaseSetUser(m_migration);
+            //m_installerDb.disconnect();
 
             for (final Resource resource : context.getResources("classpath*:/changelog.xml")) {
                 System.out.println("- Running migration for changelog: " + resource.getDescription());
@@ -280,7 +277,7 @@ public class Installer {
         }
 
         if (m_do_vacuum) {
-            m_installerDb.vacuumDatabase(m_do_full_vacuum);
+            m_migrator.vacuumDatabase(m_do_full_vacuum);
         }
 
         if (m_install_webapp) {
@@ -292,18 +289,13 @@ public class Installer {
         }
 
         if (m_update_iplike) {
-            m_installerDb.updateIplike();
+            m_migrator.updateIplike();
         }
 
         if (m_update_database && m_remove_database) {
-            m_installerDb.disconnect();
-            m_installerDb.databaseRemoveDB();
+            m_migrator.databaseRemoveDB(m_migration);
         }
 
-        if (doDatabase) {
-            m_installerDb.disconnect();
-        }
-        
         if (m_update_database) {
             createConfiguredFile();
         }
@@ -422,15 +414,15 @@ public class Installer {
             m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
         }
 
-        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
-
-        if (pg_lib_dir != null) {
-            m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir + File.separator + "plpgsql");
-            m_installerDb.setPostgresIpLikeLocation(pg_lib_dir + File.separator + "iplike");
-        }
-
-        m_installerDb.setStoredProcedureDirectory(m_etc_dir);
-        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
+//        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
+//
+//        if (pg_lib_dir != null) {
+//            m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir + File.separator + "plpgsql");
+//            m_installerDb.setPostgresIpLikeLocation(pg_lib_dir + File.separator + "iplike");
+//        }
+//
+//        m_installerDb.setStoredProcedureDirectory(m_etc_dir);
+//        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
     }
 
     private void loadEtcPropertiesFile(final String propertiesFile) throws IOException {
@@ -602,7 +594,7 @@ public class Installer {
         m_update_unicode = m_commandLine.hasOption("U");
         m_do_vacuum = m_commandLine.hasOption("v");
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
-        m_installerDb.setDebug(m_commandLine.hasOption("x"));
+        //m_installerDb.setDebug(m_commandLine.hasOption("x"));
         if (m_commandLine.hasOption("x")) {
         	m_migrator.enableDebug();
         }
@@ -624,10 +616,10 @@ public class Installer {
      */
     public void verifyFilesAndDirectories() throws FileNotFoundException {
         if (m_update_database) {
-            verifyFileExists(true,  m_installerDb.getStoredProcedureDirectory(),
+            verifyFileExists(true,  m_etc_dir,
                              "SQL directory", "install.etc.dir property");
 
-            verifyFileExists(false, m_installerDb.getCreateSqlLocation(),
+            verifyFileExists(false, m_etc_dir + File.separator + "create.sql",
                              "create.sql", "install.etc.dir property");
         }
 

@@ -28,10 +28,6 @@
 
 package org.opennms.core.test.db;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,14 +47,12 @@ import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.postgresql.xa.PGXADataSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
-import org.springframework.util.StringUtils;
 
 /**
  * 
@@ -84,10 +78,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     private PGXADataSource m_xaDataSource;
     private PGXADataSource m_adminXaDataSource;
 
-    private InstallerDb m_installerDb;
-
-    private boolean m_setupIpLike = true;
-
     private boolean m_populateSchema = false;
 
     private boolean m_destroyed = false;
@@ -105,6 +95,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     private String m_testDetails = "?";
 
     private String m_blame = null;
+
+    public static final String INTEGRATION_TEST_TEMPLATE_DB_NAME = "opennms_integration_test_template";
 
     public TemporaryDatabasePostgreSQL() throws Exception {
         this(null);
@@ -159,55 +151,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         failIfUnitTest();
 
         setupDatabase();
-
-        if (m_populateSchema) {
-            initializeDatabase();
-        }
-    }
-
-    private void initializeDatabase() throws TemporaryDatabaseException {
-        m_installerDb = new InstallerDb();
-        try {
-
-            // Create a ByteArrayOutputSteam to effectively throw away output.
-            resetOutputStream();
-            m_installerDb.setDatabaseName(getTestDatabase());
-            m_installerDb.setDataSource(getDataSource());
-            
-            m_installerDb.setAdminDataSource(getAdminDataSource());
-            m_installerDb.setPostgresOpennmsUser(m_adminUser);
-
-            m_installerDb.setCreateSqlLocation(getCreateSqlLocation());
-
-            m_installerDb.setStoredProcedureDirectory(getStoredProcDirectory());
-
-            // installerDb.setDebug(true);
-
-            m_installerDb.readTables();
-
-            m_installerDb.createSequences();
-            m_installerDb.updatePlPgsql();
-            m_installerDb.addStoredProcedures();
-
-            if (isSetupIpLike()) {
-                if (!m_installerDb.isIpLikeUsable()) {
-                    m_installerDb.setupPlPgsqlIplike();
-                }
-            }
-
-            m_installerDb.createTables();
-            m_installerDb.createViews();
-            m_installerDb.insertData();
-        } catch (final Exception e) {
-            throw new TemporaryDatabaseException("Error while initializing up database.", e);
-        } finally {
-            try {
-                m_installerDb.closeConnection();
-            } catch (final SQLException e) {
-                throw new TemporaryDatabaseException("An error occurred while closing the installer's database connection.", e);
-            }
-        }
-
     }
 
     protected String getStoredProcDirectory() {
@@ -216,88 +159,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     protected String getCreateSqlLocation() {
         return ConfigurationTestUtils.getFileForConfigFile("create.sql").getAbsolutePath();
-    }
-
-    public boolean isSetupIpLike() {
-        return m_setupIpLike;
-    }
-
-    public void setSetupIpLike(boolean setupIpLike) {
-        m_setupIpLike = setupIpLike;
-    }
-
-    protected File findIpLikeLibrary() {
-        File topDir = ConfigurationTestUtils.getTopProjectDirectory();
-
-        File ipLikeDir = new File(topDir, "opennms-iplike");
-        assertTrue("iplike directory exists at ../opennms-iplike: " + ipLikeDir.getAbsolutePath(), ipLikeDir.exists());
-
-        File[] ipLikePlatformDirs = ipLikeDir.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if (file.getName().matches("opennms-iplike-.*") && file.isDirectory()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-        assertTrue("expecting at least one opennms iplike platform directory in " + ipLikeDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikePlatformDirs.length > 0);
-
-        File ipLikeFile = null;
-        for (File ipLikePlatformDir : ipLikePlatformDirs) {
-            assertTrue("iplike platform directory does not exist but was listed in directory listing: " + ipLikePlatformDir.getAbsolutePath(), ipLikePlatformDir.exists());
-
-            File ipLikeTargetDir = new File(ipLikePlatformDir, "target");
-            if (!ipLikeTargetDir.exists() || !ipLikeTargetDir.isDirectory()) {
-                // Skip this one
-                continue;
-            }
-
-            File[] ipLikeFiles = ipLikeTargetDir.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    if (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
-            assertFalse("expecting zero or one iplike file in " + ipLikeTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikeFiles, ", "), ipLikeFiles.length > 1);
-
-            if (ipLikeFiles.length == 1) {
-                ipLikeFile = ipLikeFiles[0];
-            }
-
-        }
-
-        assertNotNull("Could not find iplike shared object in a target directory in any of these directories: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikeFile);
-
-        return ipLikeFile;
-    }
-
-    private void assertNotNull(String string, Object o) {
-        if (o == null) {
-            throw new IllegalStateException(string);
-        }
-    }
-
-    private void assertFalse(String string, boolean b) {
-        if (b) {
-            throw new IllegalStateException(string);
-        }
-    }
-
-    private void assertTrue(String string, boolean b) {
-        if (!b) {
-            throw new IllegalStateException(string);
-        }
-    }
-
-    private void resetOutputStream() {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        m_installerDb.setOutputStream(new PrintStream(outputStream));
     }
 
     public void setupDatabase() throws TemporaryDatabaseException {
@@ -363,7 +224,11 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         Statement st = null;
         try {
             st = adminConnection.createStatement();
-            st.execute("CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'");
+            if (m_populateSchema) {
+                st.execute("CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + TemporaryDatabasePostgreSQL.INTEGRATION_TEST_TEMPLATE_DB_NAME + " OWNER opennms");
+            } else {
+                st.execute("CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'");
+            }
         } catch (final SQLException e) {
             throw new TemporaryDatabaseException("Failed to create Unicode test database " + getTestDatabase(), e);
         } finally {
@@ -742,7 +607,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             .append("url", m_url)
             .append("testDatabase", m_testDatabase)
             .append("useExisting", m_useExisting)
-            .append("setupIpLike", m_setupIpLike)
+//            .append("setupIpLike", m_setupIpLike)
             .append("populateSchema", m_populateSchema)
             .append("dataSource", m_dataSource)
             .append("adminDataSource", m_adminDataSource)
