@@ -70,6 +70,7 @@
 	<include file="1.14.0/changelog.xml"/>
 	<include file="14.0.3/changelog.xml"/>
 	<include file="14.0.4/changelog.xml"/>
+	<include file="foundation-2015/changelog.xml"/>
 	<include file="1.15.1/changelog.xml"/>
 	<include file="1.15.2/changelog.xml"/>
 	<include file="16.0.4/changelog.xml"/>
@@ -78,8 +79,6 @@
 	<include file="19.0.0/changelog.xml"/>
 	<include file="19.1.0/changelog.xml"/>
 	<include file="19.1.1/changelog.xml"/>
-
-	<include file="foundation-2015/changelog.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
