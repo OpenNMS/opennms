@@ -61,7 +61,7 @@ public class EventMapperTest {
     private EventMapper eventMapper;
 
     @Test
-    public void canMapAlarm() {
+    public void canMapEvent() {
         Event eventConf = new Event();
         eventConf.setUei("some-uei");
         eventConf.setEventLabel("some-label");
