@@ -28,6 +28,12 @@
 
 package org.opennms.web.rest.support;
 
+import static org.opennms.web.rest.support.CriteriaValueConverters.DATE_CONVERTER;
+import static org.opennms.web.rest.support.CriteriaValueConverters.FLOAT_CONVERTER;
+import static org.opennms.web.rest.support.CriteriaValueConverters.INET_ADDRESS_CONVERTER;
+import static org.opennms.web.rest.support.CriteriaValueConverters.INT_CONVERTER;
+import static org.opennms.web.rest.support.CriteriaValueConverters.LONG_CONVERTER;
+
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -37,7 +43,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 
@@ -114,58 +119,57 @@ public abstract class CriteriaBehaviors {
     public static final Map<String,CriteriaBehavior<?>> SNMP_INTERFACE_BEHAVIORS = new HashMap<>();
 
     static {
-        ALARM_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
-        ALARM_BEHAVIORS.put("alarmAckTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        ALARM_BEHAVIORS.put("alarmType", new CriteriaBehavior<Integer>(Integer::parseInt));
-        ALARM_BEHAVIORS.put("counter", new CriteriaBehavior<Integer>(Integer::parseInt));
-        ALARM_BEHAVIORS.put("firstAutomationTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        ALARM_BEHAVIORS.put("firstEventTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        ALARM_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(Integer::parseInt));
-        ALARM_BEHAVIORS.put("ipAddr", new CriteriaBehavior<InetAddress>(InetAddressUtils::addr));
-        ALARM_BEHAVIORS.put("lastAutomationTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        ALARM_BEHAVIORS.put("lastEventTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        ALARM_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        ALARM_BEHAVIORS.put("alarmAckTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        ALARM_BEHAVIORS.put("alarmType", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        ALARM_BEHAVIORS.put("counter", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        ALARM_BEHAVIORS.put("firstAutomationTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        ALARM_BEHAVIORS.put("firstEventTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        ALARM_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        ALARM_BEHAVIORS.put("ipAddr", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
+        ALARM_BEHAVIORS.put("lastAutomationTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        ALARM_BEHAVIORS.put("lastEventTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
         ALARM_BEHAVIORS.put("severity", new CriteriaBehavior<OnmsSeverity>(OnmsSeverity::get));
-        ALARM_BEHAVIORS.put("suppressedTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        ALARM_BEHAVIORS.put("suppressedUntil", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        ALARM_BEHAVIORS.put("suppressedTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        ALARM_BEHAVIORS.put("suppressedUntil", new CriteriaBehavior<Date>(DATE_CONVERTER));
         ALARM_BEHAVIORS.put("troubleTicketState", new CriteriaBehavior<TroubleTicketState>(TroubleTicketState::valueOf));
-        ALARM_BEHAVIORS.put("x733ProbableCause", new CriteriaBehavior<Integer>(Integer::parseInt));
+        ALARM_BEHAVIORS.put("x733ProbableCause", new CriteriaBehavior<Integer>(INT_CONVERTER));
 
-        ASSET_RECORD_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
-        ASSET_RECORD_BEHAVIORS.put("lastModifiedDate", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        ASSET_RECORD_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        ASSET_RECORD_BEHAVIORS.put("lastModifiedDate", new CriteriaBehavior<Date>(DATE_CONVERTER));
         //ASSET_RECORD_BEHAVIORS.put("geolocation", ???);
 
-        DIST_POLLER_BEHAVIORS.put("lastUpdated", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        DIST_POLLER_BEHAVIORS.put("lastUpdated", new CriteriaBehavior<Date>(DATE_CONVERTER));
 
-        EVENT_BEHAVIORS.put("eventAckTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        EVENT_BEHAVIORS.put("eventCreateTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        EVENT_BEHAVIORS.put("eventSeverity", new CriteriaBehavior<Integer>(Integer::parseInt));
-        EVENT_BEHAVIORS.put("eventSuppressedCount", new CriteriaBehavior<Integer>(Integer::parseInt));
-        EVENT_BEHAVIORS.put("eventTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        EVENT_BEHAVIORS.put("eventTTicketState", new CriteriaBehavior<Integer>(Integer::parseInt));
-        EVENT_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
-        EVENT_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(Integer::parseInt));
-        EVENT_BEHAVIORS.put("ipAddr", new CriteriaBehavior<InetAddress>(InetAddressUtils::addr));
+        EVENT_BEHAVIORS.put("eventAckTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        EVENT_BEHAVIORS.put("eventCreateTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        EVENT_BEHAVIORS.put("eventSeverity", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        EVENT_BEHAVIORS.put("eventSuppressedCount", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        EVENT_BEHAVIORS.put("eventTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        EVENT_BEHAVIORS.put("eventTTicketState", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        EVENT_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        EVENT_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        EVENT_BEHAVIORS.put("ipAddr", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
 
-        IP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
-        IP_INTERFACE_BEHAVIORS.put("ipLastCapsdPoll", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        IP_INTERFACE_BEHAVIORS.put("ipAddress", new CriteriaBehavior<InetAddress>(InetAddressUtils::addr));
+        IP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        IP_INTERFACE_BEHAVIORS.put("ipLastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        IP_INTERFACE_BEHAVIORS.put("ipAddress", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
 
-        MONITORED_SERVICE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
-        MONITORED_SERVICE_BEHAVIORS.put("ifindex", new CriteriaBehavior<Integer>(Integer::parseInt));
-        MONITORED_SERVICE_BEHAVIORS.put("lastFail", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        MONITORED_SERVICE_BEHAVIORS.put("lastGood", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        MONITORED_SERVICE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        MONITORED_SERVICE_BEHAVIORS.put("lastFail", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        MONITORED_SERVICE_BEHAVIORS.put("lastGood", new CriteriaBehavior<Date>(DATE_CONVERTER));
 
-        MONITORING_LOCATION_BEHAVIORS.put("latitude", new CriteriaBehavior<Float>(Float::parseFloat));
-        MONITORING_LOCATION_BEHAVIORS.put("longitude", new CriteriaBehavior<Float>(Float::parseFloat));
-        MONITORING_LOCATION_BEHAVIORS.put("priority", new CriteriaBehavior<Long>(Long::parseLong));
+        MONITORING_LOCATION_BEHAVIORS.put("latitude", new CriteriaBehavior<Float>(FLOAT_CONVERTER));
+        MONITORING_LOCATION_BEHAVIORS.put("longitude", new CriteriaBehavior<Float>(FLOAT_CONVERTER));
+        MONITORING_LOCATION_BEHAVIORS.put("priority", new CriteriaBehavior<Long>(LONG_CONVERTER));
         //MONITORING_LOCATION_BEHAVIORS.put("tags", ???);
 
-        NODE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
-        NODE_BEHAVIORS.put("createTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        NODE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        NODE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        NODE_BEHAVIORS.put("createTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        NODE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
 
         // Add aliases with join conditions when joining in the many-to-many node-to-category relationship
-        CriteriaBehavior<Integer> categoryId = new CriteriaBehavior<Integer>(Aliases.category.prop("id"), Integer::parseInt, (b,v,c,w) -> {
+        CriteriaBehavior<Integer> categoryId = new CriteriaBehavior<Integer>(Aliases.category.prop("id"), INT_CONVERTER, (b,v,c,w) -> {
             // Add a categories alias that only matches the specified value
             // TODO: This should work but Hibernate is generating invalid SQL for this criteria
             //b.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq(Aliases.category.prop("id"), v), Restrictions.isNull(Aliases.category.prop("id"))));
@@ -228,24 +232,24 @@ public abstract class CriteriaBehaviors {
         categoryDescription.setSkipProperty(true);
         NODE_CATEGORY_BEHAVIORS.put("description", categoryDescription);
 
-        NOTIFICATION_BEHAVIORS.put("notifyId", new CriteriaBehavior<Integer>(Integer::parseInt));
-        NOTIFICATION_BEHAVIORS.put("pageTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        NOTIFICATION_BEHAVIORS.put("respondTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        NOTIFICATION_BEHAVIORS.put("notifyId", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        NOTIFICATION_BEHAVIORS.put("pageTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        NOTIFICATION_BEHAVIORS.put("respondTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
 
-        OUTAGE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
-        OUTAGE_BEHAVIORS.put("ifLostService", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        OUTAGE_BEHAVIORS.put("ifRegainedService", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        OUTAGE_BEHAVIORS.put("suppressTime", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        OUTAGE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        OUTAGE_BEHAVIORS.put("ifLostService", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        OUTAGE_BEHAVIORS.put("ifRegainedService", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        OUTAGE_BEHAVIORS.put("suppressTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
 
-        SERVICE_TYPE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
+        SERVICE_TYPE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
 
-        SNMP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
-        SNMP_INTERFACE_BEHAVIORS.put("ifAdminStatus", new CriteriaBehavior<Integer>(Integer::parseInt));
-        SNMP_INTERFACE_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(Integer::parseInt));
-        SNMP_INTERFACE_BEHAVIORS.put("ifOperStatus", new CriteriaBehavior<Integer>(Integer::parseInt));
-        SNMP_INTERFACE_BEHAVIORS.put("ifSpeed", new CriteriaBehavior<Long>(Long::parseLong));
-        SNMP_INTERFACE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        SNMP_INTERFACE_BEHAVIORS.put("lastSnmpPoll", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        SNMP_INTERFACE_BEHAVIORS.put("netMask", new CriteriaBehavior<InetAddress>(InetAddressUtils::addr));
+        SNMP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("ifAdminStatus", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("ifOperStatus", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("ifSpeed", new CriteriaBehavior<Long>(LONG_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("lastSnmpPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("netMask", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
     }
 }
