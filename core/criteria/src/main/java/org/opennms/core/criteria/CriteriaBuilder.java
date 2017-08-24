@@ -119,10 +119,14 @@ public class CriteriaBuilder {
         return alias(associationPath, alias, JoinType.LEFT_JOIN);
     }
 
+    public CriteriaBuilder alias(final Alias alias) {
+        m_aliasBuilder.alias(alias);
+        return this;
+    }
+
     public CriteriaBuilder alias(final String associationPath, final String alias) {
         return alias(associationPath, alias, JoinType.LEFT_JOIN);
     }
-
 
     public CriteriaBuilder createAlias(final String associationPath, final String alias) {
         return alias(associationPath, alias);
