@@ -87,12 +87,10 @@
   <changeSet id="21.0.0-event-parameters-remove-column" author="cpape">
     <preConditions onFail="CONTINUE">
       <sqlCheck expectedResult="t">
-        SELECT EXISTS (
-          SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='events' AND column_name='eventparms'
-        );
+        SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'events') AND attname = 'eventparms')
       </sqlCheck>
-      <sqlCheck expectedResult="0">
-        SELECT COUNT(eventid) FROM events WHERE eventparms IS NOT NULL;
+      <sqlCheck expectedResult="f">
+        SELECT EXISTS (SELECT 1 FROM events WHERE eventparms IS NOT NULL LIMIT 1);
       </sqlCheck>
     </preConditions>
     <dropColumn tableName="events" columnName="eventparms"/>
