@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Features Remote Poller (JNLP)</name>
+  <name>OpenNMS :: Features :: Remote Poller :: JNLP</name>
   <url>http://maven.apache.org</url>
   <properties>
     <webstartPluginVersion>1.0-beta-7-ONMS-20140424</webstartPluginVersion>
@@ -142,8 +142,31 @@
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
-                  <templateFilename>app.vm</templateFilename>
+                  <inputTemplate>app.vm</inputTemplate>
                   <outputFilename>app.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>org.opennms.features</groupId>
+                      <artifactId>org.opennms.features.remote-poller</artifactId>
+                      <version>${project.version}</version>
+                      <mainClass>org.opennms.poller.remote.Main</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </execution>
+          <execution>
+            <id>scan-report</id>
+            <goals>
+              <goal>jnlp-download-servlet</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <jnlpFiles>
+                <jnlpFile>
+                  <inputTemplate>scan-report.vm</inputTemplate>
+                  <outputFilename>scan-report.jnlp</outputFilename>
                   <jarResources>
                     <jarResource>
                       <groupId>org.opennms.features</groupId>
@@ -165,7 +188,7 @@
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
-                  <templateFilename>headless.vm</templateFilename>
+                  <inputTemplate>headless.vm</inputTemplate>
                   <outputFilename>headless.jnlp</outputFilename>
                   <jarResources>
                     <jarResource>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -72,9 +72,10 @@ public class CustomReportController extends AbstractController implements Initia
 //        int report_index = getReportFactory().getWorkingReportIndex();      
 //        String number_graphs[] = {"1", "2", "3", "4", "5", "6"};
         
-        ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
-        for (int i = 0; i < report.getGraphCount(); i++) { 
-            Graph current_graph = report.getGraph(i); 
+        ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphs().size());
+        for (int i = 0; i < report.getGraphs().size(); i++) { 
+            final int index = i;
+            Graph current_graph = report.getGraphs().get(index); 
             PrefabGraph display_graph = getResourceService().getPrefabGraph(current_graph.getGraphtype());
             
             OnmsResource resource = getKscReportService().getResourceFromGraph(current_graph);
@@ -89,9 +90,9 @@ public class CustomReportController extends AbstractController implements Initia
 
         ModelAndView modelAndView = new ModelAndView("KSC/customReport");
 
-        modelAndView.addObject("showTimeSpan", report.getShow_timespan_button());
-        modelAndView.addObject("showGraphType", report.getShow_graphtype_button());
-        modelAndView.addObject("graphsPerLine", report.getGraphs_per_line());
+        modelAndView.addObject("showTimeSpan", report.getShowTimespanButton().orElse(null));
+        modelAndView.addObject("showGraphType", report.getShowGraphtypeButton().orElse(null));
+        modelAndView.addObject("graphsPerLine", report.getGraphsPerLine().orElse(0));
         
         modelAndView.addObject("title", report.getTitle());
         modelAndView.addObject("resultSets", resultSets);

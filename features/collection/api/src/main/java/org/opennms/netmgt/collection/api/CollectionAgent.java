@@ -89,7 +89,14 @@ public interface CollectionAgent extends NetworkInterface<InetAddress> {
      * @return a {@link java.lang.String} object.
      */
     String getForeignId();
-    
+
+    /**
+     * <p>getLocationName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getLocationName();
+
     /**
      * <p>getStorageDir</p>
      * 

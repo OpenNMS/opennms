@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,8 +36,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,24 +48,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.translator.Assignment;
 import org.opennms.netmgt.config.translator.EventTranslationSpec;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.translator.Mapping;
-import org.opennms.netmgt.config.translator.Translation;
 import org.opennms.netmgt.config.translator.Value;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -115,13 +115,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * 
      */
-    private EventTranslatorConfigFactory(String configFile, DataSource dbConnFactory) throws IOException, MarshalException, ValidationException {
+    private EventTranslatorConfigFactory(String configFile, DataSource dbConnFactory) throws IOException{
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
@@ -138,19 +134,20 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *
      * @param rdr a {@link java.io.Reader} object.
      * @param dbConnFactory a {@link javax.sql.DataSource} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException 
      */
-    public EventTranslatorConfigFactory(InputStream rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
+    public EventTranslatorConfigFactory(InputStream rdr, DataSource dbConnFactory) throws IOException {
         unmarshall(rdr, dbConnFactory);
     }
 
-    private synchronized void unmarshall(InputStream stream, DataSource dbConnFactory) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, stream);
-        m_dbConnFactory = dbConnFactory;
+    private synchronized void unmarshall(InputStream stream, DataSource dbConnFactory) throws IOException {
+        try(final Reader reader = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(EventTranslatorConfiguration.class, reader);
+            m_dbConnFactory = dbConnFactory;
+        }
     }
 
-    private synchronized void unmarshall(InputStream stream) throws MarshalException, ValidationException {
+    private synchronized void unmarshall(InputStream stream) throws IOException {
         unmarshall(stream, null);
     }
 
@@ -185,18 +182,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.lang.ClassNotFoundException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.sql.SQLException if any.
      * @throws java.beans.PropertyVetoException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException  {
+    public static synchronized void init() throws IOException, ClassNotFoundException, SQLException, PropertyVetoException  {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -215,18 +206,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.lang.ClassNotFoundException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.sql.SQLException if any.
      * @throws java.beans.PropertyVetoException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException {
+    public static synchronized void reload() throws IOException, ClassNotFoundException, SQLException, PropertyVetoException {
         m_singleton = null;
         m_loaded = false;
 
@@ -282,15 +267,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
 
     private List<String> getTranslationUEIs() {
-        Translation translation = getConfig().getTranslation();
-        if (translation == null)
-            return Collections.emptyList();
-
-        List<String> ueis = new ArrayList<String>();
-        for (EventTranslationSpec event : translation.getEventTranslationSpecCollection()) {
-            ueis.add(event.getUei());
-        }
-        return ueis;
+        return getConfig().getEventTranslationSpecs().parallelStream().map(ets -> {
+            return ets.getUei();
+        }).distinct().collect(Collectors.toList());
     }
 
     static class TranslationFailedException extends RuntimeException {
@@ -329,11 +308,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
 
     private List<TranslationSpec> constructTranslationSpecs() {
-        List<TranslationSpec> specs = new ArrayList<TranslationSpec>();
-        for (EventTranslationSpec eventTrans : m_config.getTranslation().getEventTranslationSpecCollection()) {
-            specs.add(new TranslationSpec(eventTrans));
-        }
-        return specs;
+        return getConfig().getEventTranslationSpecs().parallelStream().map(ets -> {
+            return new TranslationSpec(ets);
+        }).collect(Collectors.toList());
     }
 
     class TranslationSpec {
@@ -365,10 +342,10 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         private List<TranslationMapping> constructTranslationMappings() {
             if (m_spec.getMappings() == null) return Collections.emptyList();
 
-            List<Mapping> mappings = m_spec.getMappings().getMappingCollection();
+            final List<Mapping> mappings = m_spec.getMappings();
 
             List<TranslationMapping> transMaps = new ArrayList<TranslationMapping>(mappings.size());
-            for (Mapping mapping : mappings) {
+            for (final Mapping mapping : mappings) {
                 TranslationMapping transMap = new TranslationMapping(mapping);
                 transMaps.add(transMap);
             }
@@ -437,7 +414,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             clonedEvent.setSeverity(null);
             /* the reasoning for alarmData and severity also applies to description (see NMS-4038). */
             clonedEvent.setDescr(null);
-            if (!m_mapping.isPreserveSnmpData()) { // NMS-8374
+            if (!m_mapping.getPreserveSnmpData()) { // NMS-8374
                 clonedEvent.setSnmp(null);
             }
             return clonedEvent;
@@ -456,7 +433,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         private List<AssignmentSpec> constructAssignmentSpecs() {
             Mapping mapping = getMapping();
             List<AssignmentSpec> assignments = new ArrayList<AssignmentSpec>();
-            for (Assignment assign : mapping.getAssignmentCollection()) {
+            for (Assignment assign : mapping.getAssignments()) {
                 AssignmentSpec assignSpec = 
                         ("parameter".equals(assign.getType()) ? 
                             (AssignmentSpec)new ParameterAssignmentSpec(assign) :
@@ -602,7 +579,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
         @Override
         public boolean matches(Event e) {
-            if (m_constant.getMatches() != null) {
+            if (m_constant.getMatches().isPresent()) {
                 LOG.warn("ConstantValueSpec.matches: matches not allowed for constant value.");
                 throw new IllegalStateException("Illegal to use matches with constant type values");
             }
@@ -648,7 +625,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
         private List<ValueSpec> constructNestedValues() {
             List<ValueSpec> nestedValues = new ArrayList<ValueSpec>();
-            for (Value val : m_val.getValueCollection()) {
+            for (Value val : m_val.getValues()) {
                 nestedValues.add(EventTranslatorConfigFactory.this.getValueSpec(val));
             }
             return nestedValues;
@@ -744,12 +721,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
                 return false;
             }
 
-            if (m_val.getMatches() == null) {
+            if (!m_val.getMatches().isPresent()) {
                 LOG.debug("AttributeValueSpec.matches: Event attributeValue: {} matches because pattern is null", attributeValue);
                 return true;
             }
 
-            Pattern p = Pattern.compile(m_val.getMatches());
+            Pattern p = Pattern.compile(m_val.getMatches().get());
             Matcher m = p.matcher(attributeValue);
 
             LOG.debug("AttributeValueSpec.matches: Event attributeValue: {} {} pattern: {}", attributeValue, (m.matches()? "matches" : "doesn't match"), m_val.getMatches());
@@ -762,25 +739,26 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
         @Override
         public String getResult(Event srcEvent) {
-            if (m_val.getMatches() == null) return m_val.getResult();
+            if (!m_val.getMatches().isPresent()) return m_val.getResult();
 
             String attributeValue = getAttributeValue(srcEvent);
 
             if (attributeValue == null) {
-                throw new TranslationFailedException("failed to match null against '"+m_val.getMatches()+"' for attribute "+getAttributeName());
+                throw new TranslationFailedException("failed to match null against '"+m_val.getMatches().get()+"' for attribute "+getAttributeName());
             }
 
-            Pattern p = Pattern.compile(m_val.getMatches());
+            Pattern p = Pattern.compile(m_val.getMatches().get());
             final Matcher m = p.matcher(attributeValue);
-            if (!m.matches())
-                throw new TranslationFailedException("failed to match "+attributeValue+" against '"+m_val.getMatches()+"' for attribute "+getAttributeName());
+            if (!m.matches()) {
+                throw new TranslationFailedException("failed to match "+attributeValue+" against '"+m_val.getMatches().get()+"' for attribute "+getAttributeName());
+            }
 
             MatchTable matches = new MatchTable(m);
 
             return PropertiesUtils.substitute(m_val.getResult(), matches);
         }
 
-        public String getAttributeName() { return m_val.getName(); }
+        public String getAttributeName() { return m_val.getName().orElse(null); }
 
 
         abstract public String getAttributeValue(Event e);

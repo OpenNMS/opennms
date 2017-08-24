@@ -6,10 +6,10 @@
         xmlns:util="http://www.springframework.org/schema/util"
         xmlns:cxf="http://cxf.apache.org/core"
         xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
                 http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
                 http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
@@ -19,6 +19,9 @@
     <!-- JAXB Serialization @Provider classes -->
     <bean id="lenientJaxbProvider"     class="org.opennms.web.rest.support.ValidatingMessageBodyReader"/>
     <bean id="jaxbProvider"            class="org.apache.cxf.jaxrs.provider.JAXBElementProvider"/>
+
+    <bean id="noSuchElementProvider"   class="org.opennms.web.rest.support.NoSuchElementProvider"/>
+    <bean id="errorResponseProvider"   class="org.opennms.web.rest.support.ErrorResponseProvider"/>
 
     <!-- JSON Serialization @Provider classes -->
     <!-- Jettison JSON provider -->

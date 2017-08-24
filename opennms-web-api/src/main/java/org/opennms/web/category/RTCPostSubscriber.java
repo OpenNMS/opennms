@@ -31,8 +31,6 @@ package org.opennms.web.category;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
@@ -64,10 +62,8 @@ public class RTCPostSubscriber {
      * <p>Constructor for RTCPostSubscriber.</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public RTCPostSubscriber() throws IOException, MarshalException, ValidationException {
+    public RTCPostSubscriber() throws IOException {
         m_proxy = Util.createEventProxy();
     }
 
@@ -207,8 +203,6 @@ public class RTCPostSubscriber {
      *
      * @param viewName a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     public static void subscribeAll(final String viewName) {
@@ -230,8 +224,8 @@ public class RTCPostSubscriber {
                         // create a JMS connection to subscribe
                         final RTCPostSubscriber subscriber = new RTCPostSubscriber();
 
-                        for (final Section section : view.getSectionCollection()) {
-                            for (final String categoryName : section.getCategoryCollection()) {
+                        for (final Section section : view.getSections()) {
+                            for (final String categoryName : section.getCategories()) {
                                 subscriber.subscribe(categoryName);
                                 LOG.info("Sent subscription event to RTC for category: {}",  categoryName);
                             }

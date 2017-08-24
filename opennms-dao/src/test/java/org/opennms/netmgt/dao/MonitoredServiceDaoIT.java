@@ -36,13 +36,18 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +60,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -94,6 +98,20 @@ public class MonitoredServiceDaoIT implements InitializingBean {
     }
 
     @Test
+    public void testFindAllServices() {
+        final List<OnmsMonitoredService> allSvcs = m_monitoredServiceDao.findAllServices();
+        assertTrue(allSvcs.size() > 1);
+        for (OnmsMonitoredService ifservice: allSvcs) {
+            assertNotNull(ifservice.getIpInterface());
+            assertNotNull(ifservice.getIpInterface().getNode());
+            assertNotNull(ifservice.getIpAddress());
+            assertNotNull(ifservice.getNodeId());
+            assertNotNull(ifservice.getServiceType());
+        }
+        
+    }
+
+    @Test
     @Transactional
     public void testGetByCompositeId() {
         final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
@@ -102,6 +120,24 @@ public class MonitoredServiceDaoIT implements InitializingBean {
         final OnmsMonitoredService monSvc2 = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), monSvc.getIfIndex(), monSvc.getServiceId());
         assertNotNull(monSvc2);
 
+    }
+
+    /**
+     * This test exposes a bug in Hibernate: it is not applying join conditions
+     * correctly to the many-to-many service-to-application relationship.
+     * 
+     * This issue is documented in NMS-9470. If we upgrade Hibernate, we should
+     * recheck this issue to see if it is fixed.
+     * 
+     * @see https://issues.opennms.org/browse/NMS-9470
+     */
+    @Test
+    @Transactional
+    @Ignore("Ignore until Hibernate can be upgraded and this can be rechecked")
+    public void testCriteriaBuilderWithApplicationAlias() {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsMonitoredService.class);
+        cb.alias("applications", "application", JoinType.LEFT_JOIN, Restrictions.eq("application.name", "HelloWorld"));
+        m_monitoredServiceDao.findMatching(cb.toCriteria());
     }
 
 }

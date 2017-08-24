@@ -50,9 +50,9 @@ public class AckdConfigurationTest extends XmlTestNoCastor<AckdConfiguration> {
         ReaderSchedule schedule = new ReaderSchedule(60L, "s");
         List<Parameter> parameters = new ArrayList<Parameter>(1);
         parameters.add(new Parameter("readmail-config", "localhost"));
-        Reader reader = new Reader("JavaMailReader", false, schedule,
-                                   parameters);
-        Readers readers = new Readers(reader);
+        Reader reader = new Reader("JavaMailReader", false, schedule, parameters);
+        final List<Reader> readers = new ArrayList<>();
+        readers.add(reader);
         AckdConfiguration ackdConfig = new AckdConfiguration(
                                                              true,
                                                              "~^ack$",

@@ -35,6 +35,7 @@ import static org.easymock.EasyMock.matches;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
+import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
@@ -67,6 +68,8 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.FileAnticipator;
@@ -84,6 +87,8 @@ public class SnmpAttributeTest {
     private RrdStrategy<Object, Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
 
     private ResourceStorageDao m_resourceStorageDao = m_mocks.createMock(ResourceStorageDao.class);
+
+    private LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 
     @Before
     public void setUp() throws IOException {
@@ -161,7 +166,7 @@ public class SnmpAttributeTest {
         m_mocks.replayAll();
 
         SnmpCollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
-        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig());
+        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig(), m_locationAwareSnmpClient);
         NodeResourceType resourceType = new NodeResourceType(agent, snmpCollection);
         NodeInfo nodeInfo = resourceType.getNodeInfo();
         
@@ -174,7 +179,7 @@ public class SnmpAttributeTest {
 
         NumericAttributeType attributeType = new NumericAttributeType(resourceType, snmpCollection.getName(), mibObject, new AttributeGroupType("foo", AttributeGroupType.IF_TYPE_IGNORE));
 
-        attributeType.storeResult(new SnmpCollectionSet(agent, snmpCollection), null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), snmpValue));
+        attributeType.storeResult(new SnmpCollectionSet(agent, snmpCollection, m_locationAwareSnmpClient), null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), snmpValue));
 
         RrdRepository repository = createRrdRepository();
         repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:2016"));
@@ -204,7 +209,7 @@ public class SnmpAttributeTest {
         String longValue = "49197860";
         testPersisting(
             new Double(longValue).toString(),
-            new Snmp4JValueFactory().getOctetString(longValue.getBytes("UTF-8"))
+            new Snmp4JValueFactory().getOctetString(longValue.getBytes(StandardCharsets.UTF_8))
         );
     }
 

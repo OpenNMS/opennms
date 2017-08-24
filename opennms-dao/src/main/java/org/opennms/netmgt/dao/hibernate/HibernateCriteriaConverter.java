@@ -59,6 +59,7 @@ import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.BaseRestrictionVisitor;
 import org.opennms.core.criteria.restrictions.BetweenRestriction;
+import org.opennms.core.criteria.restrictions.EqPropertyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.GeRestriction;
 import org.opennms.core.criteria.restrictions.GtRestriction;
@@ -76,6 +77,8 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.RestrictionVisitor;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.opennms.netmgt.dao.api.CriteriaConverter;
+
+import com.google.common.base.Strings;
 
 public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCriteria> {
     public org.hibernate.Criteria convert(final Criteria criteria, final Session session) {
@@ -160,6 +163,11 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
              * @see http://issues.opennms.org/browse/NMS-7830
              */
             if (m_distinct) {
+                /*
+                 * This technique is documented in the comments at:
+                 * 
+                 * @see http://floledermann.blogspot.com/2007/10/solving-hibernate-criterias-distinct.html?showComment=1262701416137#c529514229952853263
+                 */
                 m_criteria.setProjection(Projections.distinct(Projections.id()));
 
                 final DetachedCriteria newCriteria = DetachedCriteria.forClass(m_class);
@@ -175,10 +183,18 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             return m_criteria;
         }
 
+        /**
+         * If {@code rootAlias} is null, then Hibernate will use a default
+         * alias of {@code this}.
+         */
         @Override
-        public void visitClass(final Class<?> clazz) {
+        public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
             m_class = clazz;
-            m_criteria = DetachedCriteria.forClass(clazz);
+            if (rootAlias == null) {
+                m_criteria = DetachedCriteria.forClass(clazz);
+            } else {
+                m_criteria = DetachedCriteria.forClass(clazz, rootAlias);
+            }
         }
 
         @Override
@@ -342,6 +358,11 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
         }
 
         @Override
+        public void visitEqProperty(final EqPropertyRestriction restriction) {
+            m_criterions.add(org.hibernate.criterion.Restrictions.eqProperty(restriction.getAttribute(), restriction.getValue().toString()));
+        }
+
+        @Override
         public void visitNe(final NeRestriction restriction) {
             m_criterions.add(org.hibernate.criterion.Restrictions.ne(restriction.getAttribute(), restriction.getValue()));
         }
@@ -459,7 +480,12 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         @Override
         public void visitIplike(final IplikeRestriction restriction) {
-            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction("iplike({alias}.ipAddr, ?)", (String) restriction.getValue(), STRING_TYPE));
+            String attribute = restriction.getAttribute();
+            if (Strings.isNullOrEmpty(attribute)) {
+                attribute = "ipAddr";
+            }
+            final String sql = String.format("ipLike({alias}.%s, ?)", attribute);
+            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(sql, restriction.getValue(), STRING_TYPE));
         }
     }
 }

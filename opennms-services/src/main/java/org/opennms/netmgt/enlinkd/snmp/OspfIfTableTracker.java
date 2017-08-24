@@ -83,30 +83,19 @@ public class OspfIfTableTracker extends TableTracker {
 	        return getValue(OSPF_ADDRESS_LESS_IF).toInt();
 	    }
 	    
-		public OspfLink getOspfLink(
-				OspfIpAddrTableGetter ipAddrTableGetter) {
-		
-            LOG.info( "getOspfLink: row ospf ip address: {}", str(getOspfIpAddress()));
-            LOG.info( "getOspfLink: row ospf address less ifindex: {}", getOspfAddressLessIf());
 
-            OspfLink link = new OspfLink();
-            link.setOspfIpAddr(getOspfIpAddress());
-            link.setOspfAddressLessIndex(getOspfAddressLessIf());
-            
-			return ipAddrTableGetter.get(link);
-		}
-
-		public OspfLink getOspfLink() {
+	public OspfLink getOspfLink() {
 		
-            LOG.info( "getOspfLink: row ospf ip address: {}", str(getOspfIpAddress()));
-            LOG.info( "getOspfLink: row ospf address less ifindex: {}", getOspfAddressLessIf());
+            LOG.debug( "getOspfLink: ospf ip address: {}, address less ifindex {}", 
+                       str(getOspfIpAddress()),
+                       getOspfAddressLessIf());
 
             OspfLink link = new OspfLink();
             link.setOspfIpAddr(getOspfIpAddress());
             link.setOspfAddressLessIndex(getOspfAddressLessIf());
             return link;
 
-		}
+	}
 
     }
     

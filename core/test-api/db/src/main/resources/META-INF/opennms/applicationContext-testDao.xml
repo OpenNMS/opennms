@@ -5,8 +5,8 @@
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
@@ -15,12 +15,11 @@
   <!--
   <onmsgi:reference id="dataSource" interface="javax.sql.DataSource"/>
   <onmsgi:reference id="jdbcTemplate" interface="org.springframework.jdbc.core.JdbcOperations" />
-  <onmsgi:reference id="simpleJdbcTemplate" interface="org.springframework.jdbc.core.simple.SimpleJdbcOperations" />
   -->
 
   <bean id="temporaryDatabase" class="org.opennms.core.test.db.TemporaryDatabaseHsqldb">
     <property name="dataSource" ref="dataSource" />
-    <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
   </bean>
 
   <!-- Set the HSQLDB datasource as the XADataSource -->

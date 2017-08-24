@@ -228,7 +228,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 			ossDao.init();  // initialises the node and alarm caches
 			initialised=true;
 		} catch (Throwable ex){
-		throw new UndeclaredThrowableException(ex, this.getClass().getSimpleName()+"init() problem initialising class");
+		throw new UndeclaredThrowableException(ex, this.getClass().getSimpleName()+".init() problem initialising class");
 	}
 		
 // TODO remove

@@ -30,10 +30,13 @@ package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -42,6 +45,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 /**
  * The EventHandler builds Runnables that essentially do all the work on an
@@ -62,31 +69,43 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
 
     private boolean m_logEventSummaries;
 
+    private final Timer processTimer;
+
+    private final Histogram logSizes;
+
+    private NodeDao m_nodeDao;
+
     /**
      * <p>Constructor for DefaultEventHandlerImpl.</p>
      */
-    public DefaultEventHandlerImpl() {
-    }
-    
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.eventd.EventHandler#createRunnable(org.opennms.netmgt.xml.event.Log)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public EventHandlerRunnable createRunnable(Log eventLog) {
-        return new EventHandlerRunnable(eventLog);
+    public DefaultEventHandlerImpl(MetricRegistry registry) {
+        processTimer = Objects.requireNonNull(registry).timer("eventlogs.process");
+        logSizes = registry.histogram("eventlogs.sizes");
     }
 
-    public class EventHandlerRunnable implements Runnable {
+    @Override
+    public EventHandlerRunnable createRunnable(Log eventLog) {
+        return new EventHandlerRunnable(eventLog, false);
+    }
+
+    @Override
+    public EventHandlerRunnable createRunnable(Log eventLog, boolean synchronous) {
+        return new EventHandlerRunnable(eventLog, synchronous);
+    }
+
+    private class EventHandlerRunnable implements Runnable {
         /**
          * log of events
          */
         private final Log m_eventLog;
 
-        public EventHandlerRunnable(Log eventLog) {
+        private final boolean m_synchronous;
+
+        public EventHandlerRunnable(Log eventLog, boolean synchronous) {
             Assert.notNull(eventLog, "eventLog argument must not be null");
             
             m_eventLog = eventLog;
+            m_synchronous = synchronous;
         }
         
         /**
@@ -104,7 +123,22 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
             }
 
             for (final Event event : events.getEventCollection()) {
-                if (getLogEventSummaries() && LOG.isInfoEnabled()) {
+                if (event.getNodeid() == 0) {
+                    final Parm foreignSource = event.getParm("_foreignSource");
+                    if (foreignSource != null && foreignSource.getValue() != null) {
+                        final Parm foreignId = event.getParm("_foreignId");
+                        if (foreignId != null && foreignId.getValue() != null) {
+                            final OnmsNode node = getNodeDao().findByForeignId(foreignSource.getValue().getContent(), foreignId.getValue().getContent());
+                            if (node != null) {
+                                event.setNodeid(node.getId().longValue());
+                            } else {
+                                LOG.warn("Can't find node associated with foreignSource {} and foreignId {}", foreignSource, foreignId);
+                            }
+                        }
+                    }
+                }
+
+                if (LOG.isInfoEnabled() && getLogEventSummaries()) {
                     LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}", event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(), getPrettyParms(event));
                 }
 
@@ -132,10 +166,13 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     }
                     LOG.debug("}");
                 }
+            }
 
+            try (Timer.Context context = processTimer.time()) {
                 for (final EventProcessor eventProcessor : m_eventProcessors) {
                     try {
-                        eventProcessor.process(m_eventLog.getHeader(), event);
+                        eventProcessor.process(m_eventLog, m_synchronous);
+                        logSizes.update(events.getEventCount());
                     } catch (EventProcessorException e) {
                         LOG.warn("Unable to process event using processor {}; not processing with any later processors.", eventProcessor, e);
                         break;
@@ -191,5 +228,13 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
     
     public void setLogEventSummaries(final boolean logEventSummaries) {
         m_logEventSummaries = logEventSummaries;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
     }
 }

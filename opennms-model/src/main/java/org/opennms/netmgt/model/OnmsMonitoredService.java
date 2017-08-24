@@ -63,6 +63,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -109,9 +110,9 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
 
     private Set<OnmsApplication> m_applications = new LinkedHashSet<OnmsApplication>();
 
-	private static final Map<String, String> STATUS_MAP;
-	
-	static {
+    public static final Map<String, String> STATUS_MAP;
+
+    static {
         STATUS_MAP = new HashMap<String, String>();
         STATUS_MAP.put("A", "Managed");
         STATUS_MAP.put("U", "Unmanaged");
@@ -348,7 +349,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     @XmlIDREF
-    @JsonIgnore
+    @JsonBackReference
     @XmlElement(name="ipInterfaceId")
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="ipInterfaceId")

@@ -6,12 +6,12 @@
     <relativePath>../topology-map/poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>vaadin-snmp-events-and-metrics</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Admin UI for SNMP Events and Metrics</name>
+  <name>OpenNMS :: Features :: SNMP Events and Metrics Admin UI</name>
   <description>
     OpenNMS Vaadin Administration UI for handling SNMP related configuration files for events and data collection.
   </description>
@@ -46,68 +46,17 @@
       </plugin>
     </plugins>
   </build>
- 
-  <repositories>
-    <repository>
-      <id>vaadin-snapshots</id>
-      <releases><enabled>false</enabled></releases>
-      <snapshots><enabled>true</enabled></snapshots>
-      <url>http://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
-    </repository>
-    <repository>
-      <id>vaadin-addons</id>
-      <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
-    </repository>
-    <repository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
-    </repository>
-    <repository>
-      <id>opennms-snapshots</id>
-      <name>OpenNMS Snapshot Maven Repository</name>
-      <snapshots><enabled>true</enabled></snapshots>
-      <releases><enabled>false</enabled></releases>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>codehaus-snapshots</id>
-      <snapshots><enabled>true</enabled></snapshots>
-      <releases><enabled>false</enabled></releases>
-      <url>http://maven.opennms.org/content/repositories/codehaus-snapshots/</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>vaadin-snapshots</id>
-      <snapshots><enabled>true</enabled></snapshots>
-      <releases><enabled>false</enabled></releases>
-      <url>http://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
-    </pluginRepository>
-  </pluginRepositories>
-
     <dependencies>
-
-        <!-- OSGi Dependencies -->
+        <!-- Vaadin and OSGI dependencies -->
         <dependency>
-            <groupId>org.opennms.vaadin-extender</groupId>
-            <artifactId>service</artifactId>
-        </dependency>
-        <dependency> <!-- Required by pax/vaadin -->
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>servlet-dependencies</artifactId>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Vaadin Dependencies -->
-        <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
+            <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.themes</groupId>

@@ -49,6 +49,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -62,7 +63,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -116,7 +116,7 @@ public class UserNotificationDaoIT implements InitializingBean {
         event.setEventDisplay("Y");
         event.setEventLogGroup("event dao test log group");
         event.setEventLogMsg("event dao test log msg");
-        event.setEventSeverity(7);
+        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
         event.setEventSource("EventDaoTest");
         event.setEventTime(new Date());
         event.setEventUei("uei://org/opennms/test/UserNotificationDaoTest");

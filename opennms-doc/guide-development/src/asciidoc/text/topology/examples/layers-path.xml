@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+    <key id="breadcrumb-strategy" for="graphml" attr.name="breadcrumb-strategy" attr.type="string"></key>
+    <key id="label" for="all" attr.name="label" attr.type="string"></key>
+    <key id="description" for="graph" attr.name="description" attr.type="string"></key>
+    <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
+    <key id="focus-strategy" for="graph" attr.name="focus-strategy" attr.type="string"></key>
+    <key id="focus-ids" for="graph" attr.name="focus-ids" attr.type="string"></key>
+    <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"></key>
+    <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
+    <data key="label">Breadcrumb Example</data>
+    <data key="breadcrumb-strategy">SHORTEST_PATH_TO_ROOT</data>
+    <graph id="L1">
+        <data key="label">Layer 1</data>
+        <data key="namespace">acme:layer1</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="preferred-layout">Circle Layout</data>
+        <node id="a1">
+            <data key="label">A1</data>
+        </node>
+        <node id="a2">
+            <data key="label">A2</data>
+        </node>
+        <edge id="a1_b3" source="a1" target="b3"/>
+        <edge id="a1_b4" source="a1" target="b4"/>
+        <edge id="a2_b1" source="a2" target="b1"/>
+        <edge id="a2_b2" source="a2" target="b2"/>
+    </graph>
+    <graph id="L2">
+        <data key="label">Layer 2</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="namespace">acme:layer2</data>
+        <data key="preferred-layout">Circle Layout</data>
+        <data key="semantic-zoom-level">0</data>
+        <node id="b1">
+            <data key="label">B1</data>
+        </node>
+        <node id="b2">
+            <data key="label">B2</data>
+        </node>
+        <node id="b3">
+            <data key="label">B3</data>
+        </node>
+        <node id="b4">
+            <data key="label">B4</data>
+        </node>
+        <edge id="b1_c2" source="b1" target="c2"/>
+        <edge id="b2_c1" source="b2" target="c1"/>
+        <edge id="b3_c3" source="b3" target="c3"/>
+    </graph>
+    <graph id="Layer 3">
+        <data key="label">Layer 3</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="description">Layer 3</data>
+        <data key="namespace">acme:layer3</data>
+        <data key="preferred-layout">Grid Layout</data>
+        <data key="semantic-zoom-level">1</data>
+        <node id="c1">
+            <data key="label">C1</data>
+        </node>
+        <node id="c2">
+            <data key="label">C2</data>
+        </node>
+        <node id="c3">
+            <data key="label">C3</data>
+        </node>
+        <node id="c4">
+            <data key="label">C4</data>
+        </node>
+        <node id="c5">
+            <data key="label">C5</data>
+        </node>
+        <node id="c6">
+            <data key="label">C6</data>
+        </node>
+        <edge id="c1_c4" source="c1" target="c4"/>
+        <edge id="c1_c5" source="c1" target="c5"/>
+        <edge id="c4_c5" source="c4" target="c5"/>
+    </graph>
+</graphml>

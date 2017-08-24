@@ -33,6 +33,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
+import org.apache.http.client.methods.HttpGet;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -52,6 +56,33 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     private void gotoPage() {
         adminPage();
         findElementByLink("Configure SNMP Community Names by IP Address").click();
+    }
+
+    @Test
+    public void verifyLocationDropdown() throws IOException, InterruptedException {
+        boolean created = false;
+        try {
+            HttpGet httpGet = new HttpGet(buildUrl("/api/v2/monitoringLocations/count"));
+            ResponseData response = getRequest(httpGet);
+            long locationCount = Long.parseLong(response.getResponseText());
+
+            // Verify location drop downs
+            Assert.assertEquals(new Select(findElementById("lookup_location")).getOptions().size(), locationCount);
+            Assert.assertEquals(new Select(findElementById("location")).getOptions().size(), locationCount);
+
+            // create new location
+            sendPost("/api/v2/monitoringLocations", "<location location-name=\"Test\" monitoring-area=\"test\" priority=\"100\"/>", 201);
+            created = true;
+
+            // verify
+            gotoPage();
+            Assert.assertEquals(new Select(findElementById("lookup_location")).getOptions().size(), locationCount + 1);
+            Assert.assertEquals(new Select(findElementById("location")).getOptions().size(), locationCount + 1);
+        } finally {
+            if (created) {
+                sendDelete("/api/v2/monitoringLocations/Test", 204);
+            }
+        }
     }
 
     /**

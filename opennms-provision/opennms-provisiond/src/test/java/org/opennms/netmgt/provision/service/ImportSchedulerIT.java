@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,6 @@ import static org.junit.Assert.fail;
 import java.util.Calendar;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -41,21 +40,28 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerListener;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -86,6 +92,9 @@ public class ImportSchedulerIT implements InitializingBean {
     @Autowired
     ProvisiondConfigurationDao m_dao;
 
+    @Autowired
+    MockEventIpcManager m_mockEventIpcManager;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -101,8 +110,8 @@ public class ImportSchedulerIT implements InitializingBean {
         
         RequisitionDef def = m_dao.getDefs().get(0);
         
-        JobDetail detail = new JobDetail("test", ImportScheduler.JOB_GROUP, ImportJob.class, false, false, false);
-        detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource());
+        JobDetail detail = new JobDetailImpl("test", ImportScheduler.JOB_GROUP, ImportJob.class, false, false);
+        detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource().orElse(null));
         detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
 
         
@@ -120,7 +129,7 @@ public class ImportSchedulerIT implements InitializingBean {
         
         final MyBoolWrapper callTracker = new MyBoolWrapper();
         
-        m_importScheduler.getScheduler().addTriggerListener(new TriggerListener() {
+        m_importScheduler.getScheduler().getListenerManager().addTriggerListener(new TriggerListener() {
             
             
             @Override
@@ -129,7 +138,7 @@ public class ImportSchedulerIT implements InitializingBean {
             }
 
             @Override
-            public void triggerComplete(Trigger trigger, JobExecutionContext context, int triggerInstructionCode) {
+            public void triggerComplete(Trigger trigger, JobExecutionContext context, Trigger.CompletedExecutionInstruction triggerInstructionCode) {
                 LOG.info("triggerComplete called on trigger listener");
                 callTracker.setCalled(true);
             }
@@ -167,8 +176,7 @@ public class ImportSchedulerIT implements InitializingBean {
         Calendar testCal = Calendar.getInstance();
         testCal.add(Calendar.SECOND, 5);
         
-        Trigger trigger = new SimpleTrigger("test", ImportScheduler.JOB_GROUP, testCal.getTime());
-        trigger.addTriggerListener("TestTriggerListener");
+        SimpleTriggerImpl trigger = new SimpleTriggerImpl("test", ImportScheduler.JOB_GROUP, testCal.getTime());
         m_importScheduler.getScheduler().scheduleJob(detail, trigger);
         m_importScheduler.start();
         
@@ -180,16 +188,40 @@ public class ImportSchedulerIT implements InitializingBean {
         //TODO: need to fix the interrupted exception that occurs in the provisioner
         
     }
-    
+
     @Test
-    @Ignore
-    public void dwRemoveCurrentJobsFromSchedule() throws SchedulerException {
-        fail("Not yet implemented");
+    public void buildImportSchedule() throws SchedulerException, InterruptedException {
+        // Add a simple definition to the configuration that attempts
+        // to import a non existent file every 5 seconds
+        RequisitionDef def = new RequisitionDef();
+        // Every 5 seconds
+        def.setCronSchedule("*/5 * * * * ? *");
+        def.setImportName("test");
+        def.setImportUrlResource("file:///tmp/should-not-exist.xml");
+        def.setRescanExisting(Boolean.FALSE.toString());
+
+        m_dao.getConfig().setRequisitionDefs(Lists.newArrayList(def));
+
+        // The import should start, and then fail
+        EventAnticipator anticipator = m_mockEventIpcManager.getEventAnticipator();
+        EventBuilder builder = new EventBuilder(EventConstants.IMPORT_STARTED_UEI, "Provisiond");
+        anticipator.anticipateEvent(builder.getEvent());
+
+        builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "Provisiond");
+        anticipator.anticipateEvent(builder.getEvent());
+
+        // Go
+        m_importScheduler.buildImportSchedule();
+        m_importScheduler.start();
+
+        // Verify
+        anticipator.waitForAnticipated(10*1000);
+        anticipator.verifyAnticipated();
     }
 
     @Test
     @Ignore
-    public void dwBuildImportSchedule() {
+    public void dwRemoveCurrentJobsFromSchedule() {
         fail("Not yet implemented");
     }
 

@@ -37,7 +37,6 @@ import java.util.Set;
 
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
-import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -101,7 +100,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         
         statusView.setName(statusViewName);
         statusView.setColumnName(view.getColumnName());
-        statusView.setColumnValue(view.getColumnValue());
+        statusView.setColumnValue(view.getColumnValue().orElse(null));
         statusView.setTableName(view.getTableName());
         
         Set<AggregateStatusDefinition> statusDefs =
@@ -113,10 +112,8 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
     private Set<AggregateStatusDefinition> getAggregateStatusDefinitionsForView(View view) {
         Set<AggregateStatusDefinition> statusDefs = new LinkedHashSet<AggregateStatusDefinition>();
-        List<RowDef> rowDefs = view.getRows().getRowDefCollection();
-        
         //Loop over the defined site status rows
-        for (RowDef rowDef : rowDefs) {
+        for (RowDef rowDef : view.getRows()) {
             AggregateStatusDefinition def = new AggregateStatusDefinition();
             def.setName(rowDef.getLabel());
             def.setReportCategory(rowDef.getReportCategory());
@@ -133,7 +130,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
         
         //Loop over the defined categories and create model categories (OnmsCategory)
-        List<Category> cats = rowDef.getCategoryCollection();
+        List<Category> cats = rowDef.getCategories();
         for (Category cat : cats) {
             OnmsCategory category = m_categoryDao.findByName(cat.getName());
             
@@ -330,9 +327,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     private RowDef getRowDef(View view, String rowLabel) {
-        Rows rows = view.getRows();
-        Collection<RowDef> rowDefs = rows.getRowDefCollection();
-        for (RowDef rowDef : rowDefs) {
+        for (final RowDef rowDef : view.getRows()) {
             if (rowDef.getLabel().equals(rowLabel)) {
                 return rowDef;
             }

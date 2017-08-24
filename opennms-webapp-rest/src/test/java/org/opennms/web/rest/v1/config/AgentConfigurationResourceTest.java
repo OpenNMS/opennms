@@ -58,7 +58,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
-import org.opennms.web.rest.v1.config.AgentConfigurationResource;
 import org.springframework.core.io.ClassPathResource;
 
 @RunWith(BlockJUnit4ClassRunner.class)
@@ -98,10 +97,11 @@ public class AgentConfigurationResourceTest {
         final List<InetAddress> addresses = Arrays.asList(oneNinetyTwo);
         m_filterDao.setActiveIPAddressList(addresses);
 
-        final OnmsNode node = new OnmsNode("foo");
+        final OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setForeignSource("foo");
         node.setForeignId("bar");
+        node.setLabel("foo");
         node.setSysObjectId(".1.2.3.4.5");
         final OnmsIpInterface iface = new OnmsIpInterface(oneNinetyTwo, node);
         final OnmsServiceType serviceType = new OnmsServiceType("SNMP");
@@ -117,8 +117,10 @@ public class AgentConfigurationResourceTest {
         final List<AgentResponse> agentResponses = (List<AgentResponse>)entity;
         System.err.println(agentResponses);
         assertEquals(1, agentResponses.size());
-        assertEquals(oneNinetyTwo, agentResponses.get(0).getAddress());
-        assertEquals(1161, agentResponses.get(0).getPort().intValue());
+        assertTrue(agentResponses.get(0).getAddress().isPresent());
+        assertEquals(oneNinetyTwo, agentResponses.get(0).getAddress().get());
+        assertTrue(agentResponses.get(0).getPort().isPresent());
+        assertEquals(1161, agentResponses.get(0).getPort().get().intValue());
         assertEquals(".1.2.3.4.5", agentResponses.get(0).getParameters().get("sysObjectId"));
         assertEquals("1", agentResponses.get(0).getParameters().get("nodeId"));
         assertEquals("foo", agentResponses.get(0).getParameters().get("foreignSource"));
@@ -153,15 +155,16 @@ public class AgentConfigurationResourceTest {
     }
     
     private static final class TestSnmpConfigDao implements SnmpAgentConfigFactory {
-        @Override
-        public SnmpAgentConfig getAgentConfig(final InetAddress address) {
-            return new SnmpAgentConfig(address, getDefaults());
-        }
 
         private static SnmpConfiguration getDefaults() {
             final SnmpConfiguration config = new SnmpConfiguration();
             config.setPort(1161);
             return config;
+        }
+
+        @Override
+        public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
+            return new SnmpAgentConfig(address, getDefaults());
         }
     }
 }

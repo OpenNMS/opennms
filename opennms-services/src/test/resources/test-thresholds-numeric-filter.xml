@@ -4,8 +4,7 @@
 	<group name="generic-snmp" rrdRepository="${install.share.dir}/rrd/snmp/">
 		<threshold type="high" ds-type="hrStorageIndex" value="30.0"
 			rearm="25.0" trigger="1" ds-label="hrStorageDescr" ds-name="hrStorageUsed">
-			<resource-filter field="hrStorageSize">^\d{1,9}\.\d+$
-			</resource-filter>
+			<resource-filter field="hrStorageSize">^\d{1,9}\.\d+$</resource-filter>
 		</threshold>
 	</group>
 

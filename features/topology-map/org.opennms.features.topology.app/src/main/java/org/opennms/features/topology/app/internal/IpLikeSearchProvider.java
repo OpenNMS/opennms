@@ -32,6 +32,7 @@ package org.opennms.features.topology.app.internal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -40,16 +41,14 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.support.HistoryAwareSearchProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
-import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.support.IpLikeHopCriteria;
-import org.opennms.features.topology.app.internal.support.IpLikeHopCriteriaFactory;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,19 +66,19 @@ import org.slf4j.LoggerFactory;
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  *
  */
-public class IpLikeSearchProvider extends AbstractSearchProvider implements SearchProvider {
+public class IpLikeSearchProvider extends AbstractSearchProvider implements HistoryAwareSearchProvider {
+
+	private final static String CONTRIBUTES_TO_NAMESPACE = "nodes";
 
 	private static Logger LOG = LoggerFactory.getLogger(IpLikeSearchProvider.class);
 	
-    private IpInterfaceDao m_ipInterfaceDao;
-    private IpLikeHopCriteriaFactory m_ipLikeHopFactory;
+	private IpInterfaceProvider ipInterfaceProvider;
 
     private static final Pattern m_iplikePattern = Pattern.compile("^[0-9?,\\-*]*\\.[0-9?,\\-*]*\\.[0-9?,\\-*]*\\.[0-9?,\\-*]*$");
 
-	public IpLikeSearchProvider(IpInterfaceDao ipInterfaceDao) {
-    	m_ipInterfaceDao = ipInterfaceDao;
-    	m_ipLikeHopFactory = new IpLikeHopCriteriaFactory(m_ipInterfaceDao);
-    }
+    public IpLikeSearchProvider(IpInterfaceProvider ipInterfaceProvider) {
+    	this.ipInterfaceProvider = Objects.requireNonNull(ipInterfaceProvider);
+	}
 
     @Override
     public String getSearchProviderNamespace() {
@@ -88,7 +87,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
 
     @Override
     public boolean contributesTo(String namespace) {
-        return "nodes".equals(namespace);
+        return CONTRIBUTES_TO_NAMESPACE.equals(namespace);
     }
 
     /**
@@ -112,7 +111,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
     	
     	CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
     	
-		bldr.iplike("ipAddress", queryString).orderBy("ipAddress", true);
+		bldr.iplike("ipAddr", queryString).orderBy("ipAddress", true);
 		Criteria dbQueryCriteria = bldr.toCriteria();
 		List<OnmsIpInterface> ips;
 		
@@ -124,16 +123,17 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
 		//Utils class might be a good place to have a static method that validates the query string
 		//since it seems to do something very similar in its matches method.
         try {
-            ips = m_ipInterfaceDao.findMatching(dbQueryCriteria);
+			ips = ipInterfaceProvider.findMatching(dbQueryCriteria);
             if (ips.size() == 0) {
                 return results;
             } else {
                 if (isIpLikeQuery(queryString)) {
                     LOG.debug("SearchProvider->query: adding IPLIKE search spec '{}' to the search results.", queryString);
-                    SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString, queryString);
-                    searchResult.setCollapsed(false);
-                    searchResult.setCollapsible(true);
-                    results.add(searchResult);
+                    SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString,
+							queryString, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
+                    if (!results.contains(searchResult)) {
+						results.add(searchResult);
+					}
                 }
             }
 
@@ -153,8 +153,10 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
                     continue IPLOOP;
 
                 } else {
-                    results.add(createSearchResult(ip, queryString));
-
+                	SearchResult searchResult = createSearchResult(ip, queryString);
+                	if (!results.contains(searchResult)) {
+						results.add(searchResult);
+					}
                 }
             }
             LOG.info("SearchProvider->query: found: '{}' IP interfaces.", ips.size());
@@ -165,13 +167,12 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
         }
 		
 		LOG.info("SearchProvider->query: built search result with {} results.", results.size());
-		
+
         return results;
     }
 
 	private SearchResult createSearchResult(String ip, String queryString) {
-		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip, queryString);
-		result.setCollapsible(true);
+		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip, queryString, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
 		return result;
 	}
 
@@ -207,7 +208,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return supportsPrefix("iplike=", searchPrefix);
+        return supportsPrefix(IpLikeHopCriteria.NAMESPACE+"=", searchPrefix);
     }
 
     //FIXME so that the focus button works.???
@@ -226,14 +227,12 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
     
     @Override
     public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-    	// TODO Auto-generated method stub
     	LOG.debug("SearchProvider->onCenterSearchResult: called with search result: '{}'", searchResult);
     	super.onCenterSearchResult(searchResult, graphContainer);
     }
     
     @Override
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-    	// TODO Auto-generated method stub
     	LOG.debug("SearchProvider->onFocusSearchResult: called with search result: '{}'", searchResult);
     	super.onFocusSearchResult(searchResult, operationContext);
 
@@ -254,10 +253,8 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
 	@Override
 	public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
     	LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
-		
-		IpLikeHopCriteria criterion = m_ipLikeHopFactory.createCriteria(searchResult.getLabel());
-		String id = searchResult.getId();
-		criterion.setId(id);
+
+		IpLikeHopCriteria criterion = createCriteria(searchResult);
 		container.addCriteria(criterion);
 		
         LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
@@ -278,10 +275,10 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
 	@Override
 	public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
     	LOG.debug("SearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
-		org.opennms.features.topology.api.topo.Criteria criterian = findCriterion(searchResult.getId(), container);
+		org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(), container);
 		
-		if (criterian != null) {
-			container.removeCriteria(criterian);
+		if (criterion != null) {
+			container.removeCriteria(criterion);
 		}
 		logCriteriaInContainer(container);
 	}
@@ -298,14 +295,18 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
         
 	}
 
+	@Override
+	public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(SearchResult input) {
+		IpLikeHopCriteria criteria = createCriteria(input);
+		return criteria;
+	}
+
 	private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {
 		
 		org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
 		for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
 			if (criterion instanceof IpLikeHopCriteria) {
-				
 				String id = ((IpLikeHopCriteria) criterion).getId();
-				
 				if (id.equals(resultId)) {
 					return criterion;
 				}
@@ -313,17 +314,18 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
 		}
 		return null;
 	}
-	
 
     private static CollapsibleCriteria getMatchingCriteriaById(GraphContainer graphContainer, String id) {
         CollapsibleCriteria[] criteria = VertexHopGraphProvider.getCollapsibleCriteriaForContainer(graphContainer);
-        for (CollapsibleCriteria criterium : criteria) {
-            if (criterium.getId().equals(id)) {
-                return criterium;
+        for (CollapsibleCriteria criterion : criteria) {
+            if (criterion.getId().equals(id)) {
+                return criterion;
             }
         }
         return null;
     }
-	
-	
+
+	private IpLikeHopCriteria createCriteria(SearchResult searchResult) {
+		return new IpLikeHopCriteria(searchResult, this.ipInterfaceProvider);
+	}
 }

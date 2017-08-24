@@ -26,6 +26,54 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
+    <name>OpenNMS:Name=Alarmd</name>
+    <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
+    <attribute>
+      <name>LoggingPrefix</name>
+      <value type="java.lang.String">alarmd</value>
+    </attribute>
+    <attribute>
+      <name>SpringContext</name>
+      <value type="java.lang.String">alarmdContext</value>
+    </attribute>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+    <name>OpenNMS:Name=Bsmd</name>
+    <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
+    <attribute>
+      <name>LoggingPrefix</name>
+      <value type="java.lang.String">bsmd</value>
+    </attribute>
+    <attribute>
+      <name>SpringContext</name>
+      <value type="java.lang.String">bsmdContext</value>
+    </attribute>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+    <name>OpenNMS:Name=Ticketer</name>
+    <class-name>org.opennms.netmgt.ticketd.jmx.TroubleTicketer</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service enabled="false">
+    <name>OpenNMS:Name=Correlator</name>
+    <class-name>org.opennms.netmgt.correlation.jmx.Correlator</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
     <name>OpenNMS:Name=Trapd</name>
     <class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -115,14 +163,6 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
-    <name>OpenNMS:Name=Ticketer</name>
-    <class-name>org.opennms.netmgt.ticketd.jmx.TroubleTicketer</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
     <name>OpenNMS:Name=Collectd</name>
     <class-name>org.opennms.netmgt.collectd.jmx.Collectd</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -203,22 +243,6 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
-    <name>OpenNMS:Name=Alarmd</name>
-    <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
-    <attribute>
-      <name>LoggingPrefix</name>
-      <value type="java.lang.String">alarmd</value>
-    </attribute>
-    <attribute>
-      <name>SpringContext</name>
-      <value type="java.lang.String">alarmdContext</value>
-    </attribute>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
     <name>OpenNMS:Name=Ackd</name>
     <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
     <attribute>
@@ -237,14 +261,6 @@ maintained
   <service>
     <name>OpenNMS:Name=JettyServer</name>
     <class-name>org.opennms.netmgt.jetty.jmx.JettyServer</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="false">
-    <name>OpenNMS:Name=Correlator</name>
-    <class-name>org.opennms.netmgt.correlation.jmx.Correlator</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>

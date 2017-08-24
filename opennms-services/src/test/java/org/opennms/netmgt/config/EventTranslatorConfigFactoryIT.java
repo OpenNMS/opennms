@@ -30,12 +30,12 @@ package org.opennms.netmgt.config;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.OpenNMSITCase;
 import org.opennms.netmgt.mock.OutageAnticipator;
@@ -50,7 +50,6 @@ public class EventTranslatorConfigFactoryIT extends OpenNMSITCase {
     private MockEventIpcManager m_eventMgr;
     private String m_passiveStatusConfiguration = getStandardConfig();
     private EventTranslatorConfigFactory m_config;
-    private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
 
 
@@ -64,11 +63,10 @@ public class EventTranslatorConfigFactoryIT extends OpenNMSITCase {
 
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(true);
 
-        InputStream rdr = new ByteArrayInputStream(m_passiveStatusConfiguration.getBytes("UTF-8"));
+        InputStream rdr = new ByteArrayInputStream(m_passiveStatusConfiguration.getBytes(StandardCharsets.UTF_8));
         m_config = new EventTranslatorConfigFactory(rdr, m_db);
         EventTranslatorConfigFactory.setInstance(m_config);
 
@@ -94,7 +92,6 @@ public class EventTranslatorConfigFactoryIT extends OpenNMSITCase {
     }
     
     private void createAnticipators() {
-        m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
     }
 

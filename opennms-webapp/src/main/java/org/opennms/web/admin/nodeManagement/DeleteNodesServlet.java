@@ -75,7 +75,7 @@ public class DeleteNodesServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        m_resourceStorageDao = (ResourceStorageDao) webAppContext.getBean("resourceStorageDao", ResourceStorageDao.class);
+        m_resourceStorageDao = webAppContext.getBean("resourceStorageDao", ResourceStorageDao.class);
     }
 
     /** {@inheritDoc} */

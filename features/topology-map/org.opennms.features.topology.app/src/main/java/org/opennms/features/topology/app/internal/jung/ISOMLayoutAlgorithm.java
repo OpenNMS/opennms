@@ -31,18 +31,18 @@ package org.opennms.features.topology.app.internal.jung;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
+import edu.uci.ics.jung.graph.SparseGraph;
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
-import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
-import edu.uci.ics.jung.graph.SparseGraph;
 
 public class ISOMLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
@@ -100,7 +100,7 @@ public class ISOMLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 
 		for(Vertex v : vertices) {
-			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
+			graphLayout.setLocation(v, new Point(layout.getX(v), layout.getY(v)));
 		}
 	}
 }

@@ -33,10 +33,12 @@ import java.util.List;
 
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.factory.InitializingBean;
 
-public class TestEngine extends AbstractCorrelationEngine {
+public class TestEngine extends AbstractCorrelationEngine implements InitializingBean {
     
     Integer m_timerId = null;
+    CorrelationEngineRegistrar m_correlator;
 
     @Override
 	public void correlate(Event e) {
@@ -79,6 +81,24 @@ public class TestEngine extends AbstractCorrelationEngine {
     @Override
     public String getName() {
         return "TestEngine";
+    }
+
+    @Override
+    public void tearDown() {
+        // pass
+    }
+
+    @Override
+    public void reloadConfig() {
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        m_correlator.addCorrelationEngine(this);
+    }
+
+    public void setCorrelator(CorrelationEngineRegistrar correlator) {
+        m_correlator = correlator;
     }
 
 }

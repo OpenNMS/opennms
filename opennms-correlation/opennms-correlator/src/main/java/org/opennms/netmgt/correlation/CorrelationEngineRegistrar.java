@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.correlation;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * <p>CorrelationEngineRegistrar interface.</p>
@@ -43,21 +43,21 @@ public interface CorrelationEngineRegistrar {
      *
      * @param engine a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
      */
-    public abstract void addCorrelationEngine(CorrelationEngine engine);
+    void addCorrelationEngine(CorrelationEngine engine);
     
     /**
      * <p>addCorrelationEngine</p>
      *
      * @param engine a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
      */
-    public abstract void addCorrelationEngines(CorrelationEngine... engines);
+    void addCorrelationEngines(CorrelationEngine... engines);
     
     /**
      * <p>getEngines</p>
      *
      * @return a {@link java.util.List} object.
      */
-    public abstract List<CorrelationEngine> getEngines();
+    Collection<CorrelationEngine> getEngines();
     
     /**
      * <p>findEngineByName</p>
@@ -65,6 +65,7 @@ public interface CorrelationEngineRegistrar {
      * @param name a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
      */
-    public abstract CorrelationEngine findEngineByName(String name);
+    CorrelationEngine findEngineByName(String name);
 
+    void removeCorrelationEngine(String name);
 }

@@ -57,8 +57,6 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * <p>Constructor for LinkdConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
     public EnhancedLinkdConfigManager() {
@@ -94,7 +92,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * @return a boolean.
      */
     public boolean useCdpDiscovery() {
-        if (m_config.hasUseCdpDiscovery()) return m_config.getUseCdpDiscovery();
+        if (m_config.getUseCdpDiscovery() != null) return m_config.getUseCdpDiscovery();
         return true;
     }
     
@@ -104,7 +102,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * @return a boolean.
      */
     public boolean useBridgeDiscovery() {
-        if (m_config.hasUseBridgeDiscovery()) return m_config.getUseBridgeDiscovery();
+        if (m_config.getUseBridgeDiscovery() != null) return m_config.getUseBridgeDiscovery();
         return true;
     }
 
@@ -114,7 +112,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * @return a boolean.
      */
     public boolean useLldpDiscovery() {
-        if (m_config.hasUseLldpDiscovery()) return m_config.getUseLldpDiscovery();
+        if (m_config.getUseLldpDiscovery() != null) return m_config.getUseLldpDiscovery();
         return true;
     }
 
@@ -124,7 +122,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * @return a boolean.
      */
     public boolean useOspfDiscovery() {
-        if (m_config.hasUseOspfDiscovery()) return m_config.getUseOspfDiscovery();
+        if (m_config.getUseOspfDiscovery() != null) return m_config.getUseOspfDiscovery();
         return true;
     }
 
@@ -134,19 +132,17 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * @return a boolean.
      */
     public boolean useIsisDiscovery() {
-        if (m_config.hasUseIsisDiscovery()) return m_config.getUseIsisDiscovery();
+        if (m_config.getUseIsisDiscovery() != null) return m_config.getUseIsisDiscovery();
         return true;
     }
     
 
     public long getInitialSleepTime() {
-        if (m_config.hasInitial_sleep_time()) return m_config.getInitial_sleep_time();
-        return 1800000;
+        return m_config.getInitialSleepTime();
     }
 
     public long getRescanInterval() {
-        if (m_config.hasRescan_interval()) return m_config.getRescan_interval();
-        return 86400000;
+        return m_config.getRescanInterval();
     }
 
     /**
@@ -155,12 +151,12 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * @return a int.
      */
     public int getThreads() {
-        if (m_config.hasThreads()) return m_config.getThreads();
+        if (m_config.getThreads() != null) return m_config.getThreads();
         return 5;
     }
     
     public int getMaxBft() {
-        if (m_config.hasMax_bft()) return m_config.getMax_bft();
+        if (m_config.getMaxBft() != null) return m_config.getMaxBft();
         return 1;
     }
 

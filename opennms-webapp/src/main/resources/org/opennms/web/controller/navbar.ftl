@@ -93,7 +93,7 @@
                 <li><a name="nav-admin-admin" href="${baseHref}admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a></li>
               </#if>
               <#if isAdmin || isProvision >
-                <li><a name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/app/quick-add-node.jsp#/" style="white-space: nowrap">Quick-Add Node</a></li>
+                <li><a name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" style="white-space: nowrap">Quick-Add Node</a></li>
               </#if>
               <li><a name="nav-admin-support" href="${baseHref}support/index.htm">Help/Support</a></li>
               <#if request.remoteUser?has_content >
@@ -109,7 +109,7 @@
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->
 <script type='text/javascript'>
-if (window.location != window.parent.location) {
+if (window.location != window.parent.location && window.name.indexOf("-with-header") == -1) {
   // Hide the header
   $("#header").hide();
   // Remove any padding from the body

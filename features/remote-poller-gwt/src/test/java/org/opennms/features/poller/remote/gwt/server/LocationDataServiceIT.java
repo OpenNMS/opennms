@@ -56,7 +56,6 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.utils.Interval;
 import org.opennms.features.poller.remote.gwt.client.utils.IntervalUtils;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -70,6 +69,7 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -85,14 +85,14 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
         "classpath:/locationDataServiceTest.xml",
-        "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
         
 })
 @JUnitConfigurationEnvironment(systemProperties={
@@ -153,16 +153,16 @@ public class LocationDataServiceIT implements TemporaryDatabaseAware<TemporaryDa
         p.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         MockLogAppender.setupLogging(p);
 
-        LocationDef location = new LocationDef("RDU", "East Coast", new String[] { "example1" }, new String[0], "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L, "odd");
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation("RDU", "East Coast", new String[] { "example1" }, new String[0], "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L, "odd");
         m_monitoringLocationDao.saveOrUpdate(location);
 
         OnmsApplication app = new OnmsApplication();
         app.setName("TestApp1");
         m_applicationDao.saveOrUpdate(app);
 
-        OnmsNode localhostNode = new OnmsNode("localhost");
+        OnmsNode localhostNode = new OnmsNode(location, "localhost");
         m_nodeDao.saveOrUpdate(localhostNode);
-        OnmsNode googleNode = new OnmsNode("google");
+        OnmsNode googleNode = new OnmsNode(location, "google");
         m_nodeDao.saveOrUpdate(googleNode);
 
         OnmsIpInterface localhostIpInterface = new OnmsIpInterface(addr("127.0.0.1"), localhostNode);

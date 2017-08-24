@@ -73,7 +73,6 @@ import org.springframework.transaction.annotation.Transactional;
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-		"classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
 		"classpath*:/META-INF/opennms/component-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
 		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -121,7 +120,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(Integer.valueOf(6));
+		event.setEventSeverity(OnmsSeverity.MAJOR.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);
@@ -169,7 +168,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(new Integer(7));
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);
@@ -213,7 +212,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(new Integer(7));
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);
@@ -250,7 +249,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(new Integer(7));
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);
@@ -336,7 +335,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(new Integer(7));
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);

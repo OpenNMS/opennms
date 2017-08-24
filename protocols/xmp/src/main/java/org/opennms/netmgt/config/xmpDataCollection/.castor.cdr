@@ -1,7 +1,0 @@
-#Tue Oct 18 15:57:32 EDT 2011
-org.opennms.netmgt.config.xmpDataCollection.Group=org.opennms.netmgt.config.xmpDataCollection.descriptors.GroupDescriptor
-org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig=org.opennms.netmgt.config.xmpDataCollection.descriptors.XmpDatacollectionConfigDescriptor
-org.opennms.netmgt.config.xmpDataCollection.XmpCollection=org.opennms.netmgt.config.xmpDataCollection.descriptors.XmpCollectionDescriptor
-org.opennms.netmgt.config.xmpDataCollection.Groups=org.opennms.netmgt.config.xmpDataCollection.descriptors.GroupsDescriptor
-org.opennms.netmgt.config.xmpDataCollection.MibObj=org.opennms.netmgt.config.xmpDataCollection.descriptors.MibObjDescriptor
-org.opennms.netmgt.config.xmpDataCollection.Rrd=org.opennms.netmgt.config.xmpDataCollection.descriptors.RrdDescriptor

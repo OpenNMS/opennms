@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,8 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * <p>DroolsTicketerConfigDao class.</p>
  *
- * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
+ * @author jwhite
  */
 public class DroolsTicketerConfigDao {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsTicketerConfigDao.class);

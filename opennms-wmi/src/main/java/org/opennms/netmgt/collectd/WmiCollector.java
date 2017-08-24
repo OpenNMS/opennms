@@ -36,8 +36,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.wmi.WmiAgentState;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionAttributeType;
@@ -116,7 +114,7 @@ public class WmiCollector implements ServiceCollector {
         final WmiSingleInstanceCollectionResource nodeResource = new WmiSingleInstanceCollectionResource(agent);
 
         // Iterate through the WMI collection groups.
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
+        for (final Wpm wpm : collection.getWpms()) {
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
                 if (!isGroupAvailable(agentState, wpm)) {
@@ -164,7 +162,7 @@ public class WmiCollector implements ServiceCollector {
                             }
 
 
-                            for (final Attrib attrib : wpm.getAttrib()) {
+                            for (final Attrib attrib : wpm.getAttribs()) {
                                 final OnmsWbemProperty prop = obj.getWmiProperties().getByName(attrib.getWmiObject());                                
                                 final WmiCollectionAttributeType attribType = m_attribTypeList.get(attrib.getName());
                                 resource.setAttributeValue(attribType, prop.getWmiValue());
@@ -190,15 +188,15 @@ public class WmiCollector implements ServiceCollector {
     }
     
     private void loadAttributeGroupList(final WmiCollection collection) {
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
+        for (final Wpm wpm : collection.getWpms()) {
             final AttributeGroupType attribGroupType1 = new AttributeGroupType(wpm.getName(), wpm.getIfType());
             m_groupTypeList.put(wpm.getName(), attribGroupType1);
         }
     }
 
     private void loadAttributeTypeList(final WmiCollection collection) {
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
-            for (final Attrib attrib : wpm.getAttrib()) {
+        for (final Wpm wpm : collection.getWpms()) {
+            for (final Attrib attrib : wpm.getAttribs()) {
                 final AttributeGroupType attribGroupType = m_groupTypeList.get(wpm.getName());
                 final WmiCollectionAttributeType attribType = new WmiCollectionAttributeType(attrib, attribGroupType);
                 m_attribTypeList.put(attrib.getName(), attribType);
@@ -278,12 +276,6 @@ public class WmiCollector implements ServiceCollector {
         LOG.debug("initialize: Initializing WmiPeerFactory");
         try {
             WmiPeerFactory.init();
-        } catch (final MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (final ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (final IOException e) {
             LOG.error("initialize: Error reading configuration.", e);
             throw new UndeclaredThrowableException(e);
@@ -294,12 +286,6 @@ public class WmiCollector implements ServiceCollector {
         LOG.debug("initialize: Initializing collector: {}", getClass());
         try {
             WmiDataCollectionConfigFactory.init();
-        } catch (final MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (FileNotFoundException e) {
             LOG.error("initialize: Error locating configuration.", e);
             throw new UndeclaredThrowableException(e);

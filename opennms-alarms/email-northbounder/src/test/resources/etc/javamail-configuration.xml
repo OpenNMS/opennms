@@ -2,7 +2,6 @@
 <javamail-configuration
 	xmlns:this="http://xmlns.opennms.org/xsd/config/javamail-configuration"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/javamail-configuration "
 	default-read-config-name="google" default-send-config-name="google">
 
 	<sendmail-config name="google" attempt-interval="3000" use-authentication="true" use-jmta="true" debug="true">

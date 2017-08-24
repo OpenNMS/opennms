@@ -29,50 +29,105 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.SortedSet;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MinionDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsMinionCollection;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Basic Web Service using REST for {@link OnmsMinion} entity
  *
- * @author Seth
+ * @author <a href="seth@opennms.org">Seth Leger</a>
  */
 @Component
 @Path("minions")
 @Transactional
-public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String> {
+public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMinion,String,String> {
 
-	@Autowired
-	private MinionDao m_dao;
+    private static final Logger LOG = LoggerFactory.getLogger(MinionRestService.class);
 
-	protected MinionDao getDao() {
-		return m_dao;
-	}
+    @Autowired
+    private MinionDao m_dao;
 
-	protected Class<OnmsMinion> getDaoClass() {
-		return OnmsMinion.class;
-	}
+    @Autowired
+    @Qualifier("eventProxy")
+    private EventProxy m_eventProxy;
 
-	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsMinion.class);
+    @Override
+    protected MinionDao getDao() {
+        return m_dao;
+    }
 
-		// Order by label by default
-		builder.orderBy("label").desc();
+    @Override
+    protected Class<OnmsMinion> getDaoClass() {
+        return OnmsMinion.class;
+    }
 
-		return builder;
-	}
+    @Override
+    protected Class<OnmsMinion> getQueryBeanClass() {
+        return OnmsMinion.class;
+    }
 
-	@Override
-	protected JaxbListWrapper<OnmsMinion> createListWrapper(Collection<OnmsMinion> list) {
-		return new OnmsMinionCollection(list);
-	}
+    @Override
+    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMinion.class);
+
+        // Order by label by default
+        builder.orderBy("label").desc();
+
+        return builder;
+    }
+
+    @Override
+    protected JaxbListWrapper<OnmsMinion> createListWrapper(Collection<OnmsMinion> list) {
+        return new OnmsMinionCollection(list);
+    }
+
+    @Override
+    protected SortedSet<SearchProperty> getQueryProperties() {
+        return SearchProperties.MINION_SERVICE_PROPERTIES;
+    }
+
+    @Override
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMinion minion) {
+        final String location = minion.getLocation();
+        final String id = minion.getId();
+        getDao().delete(minion);
+
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_DELETED_UEI, "ReST");
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, id);
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, location);
+        try {
+            m_eventProxy.send(eventBuilder.getEvent());
+        } catch (final EventProxyException e) {
+            LOG.warn("Failed to send Event on Minion deletion " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    protected OnmsMinion doGet(UriInfo uriInfo, String id) {
+        return getDao().get(id);
+    }
 }

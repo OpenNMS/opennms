@@ -31,13 +31,13 @@ package org.opennms.netmgt.enlinkd;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
 import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,108 +66,83 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 
     	final Date now = new Date(); 
 
-    	String trackerName = "isisSysObjectCollection";
         final IsisSysObjectGroupTracker isisSysObject = new IsisSysObjectGroupTracker();
-		LOG.info( "run: node[{}]: collecting {} on: {}",
-				getNodeId(),
-				trackerName, 
-				getPrimaryIpAddressString());
-        SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisSysObject);
 
-        walker.start();
-
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting Is-Is Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting Is-Is Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
+                                                      isisSysObject).withDescription("isisSysObjectCollection").withLocation(getLocation()).execute().get();
+        } catch (ExecutionException e) {
+            LOG.info("run: node [{}]: ExecutionException: isisSysObjectCollection: {}", 
+                     getNodeId(), e.getMessage());
+            return;
         } catch (final InterruptedException e) {
-            LOG.error("run: Is-Is Linkd node collection interrupted, exiting", e);
+            LOG.info("run: node [{}]: InterruptedException: isisSysObjectCollection: {}", 
+                     getNodeId(), e.getMessage());
             return;
         }
         
         if (isisSysObject.getIsisSysId() == null ) {
-            LOG.info( "run: node[{}]: address {}. Is-Is mib not supported ", 
-            		getNodeId(),
-            		getPrimaryIpAddressString());
+            LOG.info( "run: node [{}]: Is-Is mib not supported ", 
+            		getNodeId());
             return;
         }
-        
-        m_linkd.getQueryManager().store(getNodeId(), isisSysObject.getIsisElement());
+
+        m_linkd.getQueryManager().store(getNodeId(),
+                                        isisSysObject.getIsisElement());
+    
         
         final List<IsIsLink> links = new ArrayList<IsIsLink>();
-        trackerName = "isisISAdjTable";
         final IsisISAdjTableTracker isisISAdjTableTracker = new IsisISAdjTableTracker() {
-        	@Override
-        	public void processIsisAdjRow(IsIsAdjRow row) {
-        		links.add(row.getIsisLink());
-        	}
+    	   @Override
+    	   public void processIsisAdjRow(IsIsAdjRow row) {
+    		links.add(row.getIsisLink());
+    	   }
         };
-		LOG.info( "run: node[{}]: collecting {} on: {}",
-				getNodeId(),
-				trackerName, 
-				getPrimaryIpAddressString());
-        walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisISAdjTableTracker);
-
-        walker.start();
-
+        
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting Is-Is Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting Is-Is Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
-            }
-        } catch (final InterruptedException e) {
-            LOG.error("run: Is-Is Linkd node collection interrupted, exiting", e);
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
+                      isisISAdjTableTracker)
+                      .withDescription("isisISAdjTable")
+                      .withLocation(getLocation())
+                      .execute()
+                      .get();
+        } catch (ExecutionException e) {
+            LOG.info("run: node [{}]: ExecutionException: isisISAdjTable: {}", 
+                     getNodeId(), e.getMessage());
+            return;
+       } catch (final InterruptedException e) {
+           LOG.info("run: node [{}]: InterruptedException: isisISAdjTable: {}", 
+                    getNodeId(), e.getMessage());
             return;
         }
         
-        trackerName = "isisCircTable";
         final IsisCircTableTracker isisCircTableTracker = new IsisCircTableTracker() {
-        	@Override
-        	public void processIsisCircRow(IsIsCircRow row) {
-        		IsIsLink link = row.getIsisLink();
-        		for (IsIsLink adjlink:links) {
-        			if (link.getIsisCircIndex().intValue() == adjlink.getIsisCircIndex().intValue()) {
-        				adjlink.setIsisCircIfIndex(link.getIsisCircIfIndex());
-        				adjlink.setIsisCircAdminState(link.getIsisCircAdminState());
-        			}
-        		}
-        	}
+    	@Override
+    	public void processIsisCircRow(IsIsCircRow row) {
+    		IsIsLink link = row.getIsisLink();
+    		for (IsIsLink adjlink:links) {
+    			if (link.getIsisCircIndex().intValue() == adjlink.getIsisCircIndex().intValue()) {
+    				adjlink.setIsisCircIfIndex(link.getIsisCircIfIndex());
+    				adjlink.setIsisCircAdminState(link.getIsisCircAdminState());
+    			}
+    		}
+    	}
         };
-		
-		LOG.info( "run: node[{}]: collecting {} on: {}",
-				getNodeId(),
-				trackerName, 
-				getPrimaryIpAddressString());
-        walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisCircTableTracker);
-
-        walker.start();
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting Is-Is Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting Is-Is Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
+                              isisCircTableTracker)
+                              .withDescription("isisCircTable")
+                              .withLocation(getLocation())
+                              .execute().get();
+        } catch (ExecutionException e) {
+            LOG.info("run: node [{}]: ExecutionException: isisCircTable: {}", 
+                     getNodeId(), e.getMessage());
+            return;
         } catch (final InterruptedException e) {
-            LOG.error("run: Is-Is Linkd node collection interrupted, exiting", e);
+            LOG.info("run: node [{}]: InterruptedException: isisCircTable: {}", 
+                     getNodeId(), e.getMessage());
             return;
         }
         

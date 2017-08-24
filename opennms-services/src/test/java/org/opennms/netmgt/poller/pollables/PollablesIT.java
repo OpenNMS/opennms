@@ -51,7 +51,9 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
@@ -60,7 +62,6 @@ import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -74,25 +75,38 @@ import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
+import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.poller.mock.MockTimer;
-import org.opennms.netmgt.rrd.NullRrdStrategy;
-import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.DaoTestConfigBean;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Represents a PollablesTest 
  *
  * @author brozow
  */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-pinger.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
+        "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml"
+})
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
+})
 public class PollablesIT {
     private static final Logger LOG = LoggerFactory.getLogger(PollablesIT.class);
 
@@ -100,7 +114,6 @@ public class PollablesIT {
     private MockPollContext m_pollContext;
     private MockNetwork m_mockNetwork;
     private MockDatabase m_db;
-    private EventAnticipator m_anticipator;
     private MockEventIpcManager m_eventMgr;
     private MockNode mNode1;
     private MockInterface mDot1;
@@ -140,6 +153,9 @@ public class PollablesIT {
     private PersisterFactory m_persisterFactory = null;
     private ResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
 
+    @Autowired
+    private LocationAwarePollerClient m_locationAwarePollerClient;
+
     private int m_lockCount = 0;
 
 
@@ -177,14 +193,10 @@ public class PollablesIT {
         m_db = new MockDatabase();
         m_db.populate(m_mockNetwork);
 
-
-        m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
-
 
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
 
         m_pollContext = new MockPollContext();
@@ -298,7 +310,7 @@ public class PollablesIT {
                 Number svcLostEventId = (Number)rs.getObject("svcLostEventId");
                 String svcLostUei = rs.getString("svcLostEventUei");
 
-                addServiceToNetwork(pNetwork, nodeId, nodeLabel, ipAddr,
+                addServiceToNetwork(pNetwork, nodeId, nodeLabel, null, ipAddr,
                                     serviceName, svcLostEventId, svcLostUei,
                                     date, scheduler, pollerConfig,
                                     pollOutageConfig);
@@ -329,7 +341,7 @@ public class PollablesIT {
     @Test
     public void testCreateNode() {
         int nodeId = 99;
-        PollableNode node = m_network.createNode(nodeId, "WebServer99");
+        PollableNode node = m_network.createNode(nodeId, "WebServer99", null);
         assertNotNull("node is null", node);
 
         assertEquals(0, node.getMemberCount());
@@ -344,7 +356,7 @@ public class PollablesIT {
         int nodeId = 99;
         InetAddress addr = InetAddressUtils.addr("192.168.1.99");
 
-        PollableInterface iface = m_network.createInterface(nodeId, "WebServer99", addr);
+        PollableInterface iface = m_network.createInterface(nodeId, "WebServer99", null, addr);
         assertNotNull("iface is null", iface);
         assertEquals(addr, iface.getAddress());
         assertEquals(nodeId, iface.getNodeId());
@@ -365,7 +377,7 @@ public class PollablesIT {
         InetAddress addr = InetAddressUtils.addr("192.168.1.99");
         String svcName = "HTTP-99";
 
-        PollableService svc = m_network.createService(nodeId, "WebServer99", addr, svcName);
+        PollableService svc = m_network.createService(nodeId, "WebServer99", null, addr, svcName);
         assertNotNull("svc is null", svc);
         assertEquals(svcName, svc.getSvcName());
         assertEquals(addr, svc.getAddress());
@@ -586,7 +598,7 @@ public class PollablesIT {
         assertTime(4500);
         assertNotDeleted(pDot3Http);
 
-        m_anticipator.anticipateEvent(MockEventUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http, null));
+        m_eventMgr.getEventAnticipator().anticipateEvent(MockEventUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http, null));
 
         m_scheduler.next();
 
@@ -1506,7 +1518,7 @@ public class PollablesIT {
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg,
-                m_timer, m_persisterFactory, m_resourceStorageDao);
+                m_timer, m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
 
         m_timer.setCurrentTime(1000L);
         pDot1Smtp.updateStatus(PollStatus.down());
@@ -1539,7 +1551,7 @@ public class PollablesIT {
         // mDot3Http/pDot3Http
         final Package pkg = m_pollerConfig.getPackage("TestPkg2");
         final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig, m_pollerConfig,
-                pkg, m_timer, m_persisterFactory, m_resourceStorageDao);
+                pkg, m_timer, m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
 
         m_timer.setCurrentTime(1000L);
         pDot3Http.updateStatus(PollStatus.down());
@@ -1718,7 +1730,7 @@ public class PollablesIT {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig,
-                pkg, m_timer, m_persisterFactory, m_resourceStorageDao);
+                pkg, m_timer, m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
 
         m_timer.setCurrentTime(2000L);
 
@@ -1890,15 +1902,15 @@ public class PollablesIT {
 
     @Test
     public void testAddUpServiceToUpNodeWithCritSvc() throws Exception {
-        testAddUpSvcToUpNode(1, "Router", "192.168.1.1", "SMTP", "HTTP");
+        testAddUpSvcToUpNode(1, "Router", null, "192.168.1.1", "SMTP", "HTTP");
     }
 
     @Test
     public void testAddUpServiceToUpNodeHasNoCritSvc() throws Exception {
-        testAddUpSvcToUpNode(3, "Firewall", "192.168.1.4", "SMTP", "SNMP");
+        testAddUpSvcToUpNode(3, "Firewall", null, "192.168.1.4", "SMTP", "SNMP");
     }
 
-    private void testAddUpSvcToUpNode(int nodeId, String nodeLabel,
+    private void testAddUpSvcToUpNode(int nodeId, String nodeLabel, String nodeLocation,
             String ipAddr, String existingSvcName, String newSvcName) {
 
         PollableService pExistingSvc = m_network.getService(nodeId, getInetAddress(ipAddr), existingSvcName);
@@ -1915,7 +1927,7 @@ public class PollablesIT {
 
         MockService mSvc = m_mockNetwork.addService(nodeId, ipAddr, newSvcName);
         m_db.writeService(mSvc);
-        PollableService pSvc = addServiceToNetwork(nodeId, nodeLabel, ipAddr, newSvcName);
+        PollableService pSvc = addServiceToNetwork(nodeId, nodeLabel, nodeLocation, ipAddr, newSvcName);
 
         assertNotNull(pSvc);
 
@@ -1942,15 +1954,15 @@ public class PollablesIT {
 
     @Test
     public void testAddDownServiceToDownNodeWithCritSvc() throws Exception {
-        addDownServiceToDownNode(1, "Router", "192.168.1.1", "SMTP", "HTTP");
+        addDownServiceToDownNode(1, "Router", null, "192.168.1.1", "SMTP", "HTTP");
     }
 
     @Test
     public void testAddDownServiceToDownNodeHasNoCritSvc() throws Exception {
-        addDownServiceToDownNode(3, "Firewall", "192.168.1.4", "SMTP", "SNMP");
+        addDownServiceToDownNode(3, "Firewall", null, "192.168.1.4", "SMTP", "SNMP");
     }
 
-    private void addDownServiceToDownNode(int nodeId, String nodeLabel,
+    private void addDownServiceToDownNode(int nodeId, String nodeLabel, String nodeLocation,
             String ipAddr, String existingSvcName, String newSvcName) {
         MockNode mNode = m_mockNetwork.getNode(nodeId);
 
@@ -1983,7 +1995,7 @@ public class PollablesIT {
         // expect nothing since we already have node down event outstanding
 
         // simulate a nodeGainedService event
-        PollableService pSvc = addServiceToNetwork(nodeId, nodeLabel, ipAddr, newSvcName);
+        PollableService pSvc = addServiceToNetwork(nodeId, nodeLabel, nodeLocation, ipAddr, newSvcName);
         assertNotNull(pSvc);
 
         // before the first poll everthing should have the node down cause
@@ -2021,15 +2033,15 @@ public class PollablesIT {
 
     @Test
     public void testAddDownServiceToUpNodeWithCritSvc() throws Exception {
-        testAddDownServiceToUpNode(1, "Router", "192.168.1.1", "SMTP", "HTTP");
+        testAddDownServiceToUpNode(1, "Router", null, "192.168.1.1", "SMTP", "HTTP");
     }
 
     @Test
     public void testAddDownServiceToUpNodeHasNoCritSvc() throws Exception {
-        testAddDownServiceToUpNode(3, "Firewall", "192.168.1.4", "SMTP", "SNMP");
+        testAddDownServiceToUpNode(3, "Firewall", null, "192.168.1.4", "SMTP", "SNMP");
     }
 
-    private void testAddDownServiceToUpNode(int nodeId, String nodeLabel,
+    private void testAddDownServiceToUpNode(int nodeId, String nodeLabel, String nodeLocation,
             String ipAddr, String existingSvcName, String newSvcName) {
         PollableService pExistingSvc = m_network.getService(nodeId, getInetAddress(ipAddr), existingSvcName);
         PollableInterface pIface = pExistingSvc.getInterface();
@@ -2053,7 +2065,7 @@ public class PollablesIT {
         anticipateDown(mSvc);
 
         // add the service to the PollableNetowrk (simulates nodeGainedService event)
-        PollableService pSvc = addServiceToNetwork(nodeId, nodeLabel, ipAddr, newSvcName);
+        PollableService pSvc = addServiceToNetwork(nodeId, nodeLabel, nodeLocation, ipAddr, newSvcName);
         assertNotNull(pSvc);
 
         // before the first call nothing has a cause
@@ -2440,10 +2452,10 @@ public class PollablesIT {
      */
     private void verifyAnticipated() {
         m_eventMgr.finishProcessingEvents();
-        MockEventUtil.printEvents("Missing Anticipated Events: ", m_anticipator.getAnticipatedEvents());
-        assertTrue("Expected events not forthcoming", m_anticipator.getAnticipatedEvents().isEmpty());
-        MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
-        assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+        MockEventUtil.printEvents("Missing Anticipated Events: ", m_eventMgr.getEventAnticipator().getAnticipatedEvents());
+        assertTrue("Expected events not forthcoming", m_eventMgr.getEventAnticipator().getAnticipatedEvents().isEmpty());
+        MockEventUtil.printEvents("Unanticipated: ", m_eventMgr.getEventAnticipator().getUnanticipatedEvents());
+        assertEquals("Received unexpected events", 0, m_eventMgr.getEventAnticipator().getUnanticipatedEvents().size());
 
         m_outageAnticipator.checkAnticipated();
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
@@ -2457,7 +2469,7 @@ public class PollablesIT {
      * 
      */
     private void resetAnticipated() {
-        m_anticipator.reset();
+        m_eventMgr.getEventAnticipator().reset();
         m_outageAnticipator.reset();
     }
 
@@ -2466,7 +2478,7 @@ public class PollablesIT {
      */
     private void anticipateUp(MockElement element) {
         Event event = element.createUpEvent();
-        m_anticipator.anticipateEvent(event);
+        m_eventMgr.getEventAnticipator().anticipateEvent(event);
         m_outageAnticipator.anticipateOutageClosed(element, event);
     }
 
@@ -2475,7 +2487,7 @@ public class PollablesIT {
      */
     private void anticipateDown(MockElement element) {
         Event event = element.createDownEvent();
-        m_anticipator.anticipateEvent(event);
+        m_eventMgr.getEventAnticipator().anticipateEvent(event);
         m_outageAnticipator.anticipateOutageOpened(element, event);
     }
 
@@ -2483,7 +2495,7 @@ public class PollablesIT {
         MockVisitor visitor = new MockVisitorAdapter() {
             @Override
             public void visitService(MockService svc) {
-                m_anticipator.anticipateEvent(svc.createUnresponsiveEvent());
+                m_eventMgr.getEventAnticipator().anticipateEvent(svc.createUnresponsiveEvent());
             }
         };
         element.visit(visitor);
@@ -2493,7 +2505,7 @@ public class PollablesIT {
         MockVisitor visitor = new MockVisitorAdapter() {
             @Override
             public void visitService(MockService svc) {
-                m_anticipator.anticipateEvent(svc.createResponsiveEvent());
+                m_eventMgr.getEventAnticipator().anticipateEvent(svc.createResponsiveEvent());
             }
         };
         element.visit(visitor);
@@ -2560,15 +2572,15 @@ public class PollablesIT {
         return addr;
     }
 
-    private PollableService addServiceToNetwork(final int nodeId, final String nodeLabel, final String ipAddr, final String serviceName) {
+    private PollableService addServiceToNetwork(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String serviceName) {
 
-        final PollableNode svcNode = m_network.createNodeIfNecessary(nodeId, nodeLabel);
+        final PollableNode svcNode = m_network.createNodeIfNecessary(nodeId, nodeLabel, nodeLocation);
 
         return svcNode.withTreeLock(new Callable<PollableService>() {
 
             @Override
             public PollableService call() throws Exception {
-                PollableService svc = addServiceToNetwork(m_network, nodeId, nodeLabel, ipAddr, serviceName, null, null, null, m_scheduler, m_pollerConfig, m_pollerConfig);
+                PollableService svc = addServiceToNetwork(m_network, nodeId, nodeLabel, nodeLocation, ipAddr, serviceName, null, null, null, m_scheduler, m_pollerConfig, m_pollerConfig);
                 //svcNode.recalculateStatus();
                 //svcNode.processStatusChange(new Date());
                 return svc;
@@ -2578,7 +2590,7 @@ public class PollablesIT {
     }
 
     private PollableService addServiceToNetwork(final PollableNetwork pNetwork,
-            int nodeId, String nodeLabel, String ipAddr, String serviceName,
+            int nodeId, String nodeLabel, String nodeLocation, String ipAddr, String serviceName,
             Number svcLostEventId, String svcLostUei,
             Date svcLostTime, final ScheduleTimer scheduler,
             final PollerConfig pollerConfig,
@@ -2591,9 +2603,9 @@ public class PollablesIT {
             return null;
         }
 
-        PollableService svc = pNetwork.createService(nodeId, nodeLabel, addr, serviceName);
+        PollableService svc = pNetwork.createService(nodeId, nodeLabel, nodeLocation, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg,
-                scheduler, m_persisterFactory, m_resourceStorageDao);
+                scheduler, m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
 
         svc.setPollConfig(pollConfig);
         synchronized (svc) {

@@ -68,6 +68,15 @@ public class MultiEngineBuilder implements InitializingBean {
         public String getName() {
            return "MyEngine";
         }
+
+        @Override
+        public void tearDown() {
+            // pass
+        }
+
+        @Override
+        public void reloadConfig() {
+        }
         
     }
     

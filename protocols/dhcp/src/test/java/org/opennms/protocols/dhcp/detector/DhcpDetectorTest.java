@@ -36,8 +36,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -63,6 +61,8 @@ public class DhcpDetectorTest implements InitializingBean {
     private static String DHCP_SERVER_IP = "192.0.2.1";
 
     @Autowired
+    public DhcpDetectorFactory m_detectorFactory;
+    
     public DhcpDetector m_detector;
 
     private Dhcpd m_dhcpd;
@@ -77,7 +77,7 @@ public class DhcpDetectorTest implements InitializingBean {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         m_dhcpd = Dhcpd.getInstance();
         m_dhcpd.init();
         // binds on port 68, hardcoded  :P
@@ -96,11 +96,10 @@ public class DhcpDetectorTest implements InitializingBean {
 
     @Test(timeout=90000)
     @Ignore
-    public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
+    public void testDetectorSuccess() throws  IOException {
         m_detector.setTimeout(5000);
         m_detector.init();
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP)));
-
     }
 
     @Test(timeout=90000)

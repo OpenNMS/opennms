@@ -8,6 +8,7 @@ Standards-Version: 3.7.3
 Package: opennms
 Architecture: all
 Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version})
+Recommends: opennms-source (=${binary:Version})
 Suggests: opennms-doc
 Description: Enterprise-grade Open-source Network Management Platform (Full Install)
  OpenNMS is an enterprise-grade network management system written in Java.
@@ -20,6 +21,21 @@ Description: Enterprise-grade Open-source Network Management Platform (Full Inst
  .
  This package provides the components needed for a reasonable default
  installation of OpenNMS.
+
+Package: opennms-source
+Architecture: all
+Depends: opennms-webapp-jetty (=${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (Source)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package contains the source tarball to be installed alongside the web UI
+ for AGPL-compliance.
 
 Package: opennms-db
 Architecture: all
@@ -101,6 +117,22 @@ Description: Enterprise-grade Open-source Network Management Platform (Jetty Web
  embedded in the main OpenNMS daemon.  The default URL for this
  web UI is 'http://yourhost:8180/opennms/'
 
+Package: opennms-webapp-remoting
+Architecture: all
+Depends: opennms-webapp-jetty (=${binary:Version})
+Replaces: opennms-webapp-jetty (<< 19.0.0)
+Breaks: opennms-webapp-jetty (<< 19.0.0)
+Description: Enterprise-grade Open-source Network Management Platform (Remote Poller JNLP webapp)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This webapp contains the JNLP application that provides the Remote Poller.
+
 Package: opennms-ncs
 Architecture: all
 Depends: opennms-webapp-jetty (=${binary:Version})
@@ -120,6 +152,8 @@ Package: opennms-common
 Architecture: all
 Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl
 Recommends: libnet-snmp-perl, libxml2-utils, libwww-perl, libxml-twig-perl
+Conflicts: opennms-plugin-protocol-xml (<<${binary:Version})
+Replaces: opennms-plugin-protocol-xml (<<${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (Common Files)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -134,8 +168,9 @@ Description: Enterprise-grade Open-source Network Management Platform (Common Fi
 
 Package: libopennms-java
 Architecture: all
-Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, jicmp, jicmp6
-Replaces: opennms-common (<< 1.3.0), libicmp-jni (<< 1.3.0)
+Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Conflicts: opennms-plugin-protocol-xml (<<${binary:Version})
+Replaces: opennms-common (<< 1.3.0), libicmp-jni (<< 1.3.0), opennms-plugin-protocol-xml (<<${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (OpenNMS Libraries)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -193,7 +228,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Contrib)
 
 Package: opennms-plugins
 Architecture: all
-Depends: opennms-plugin-northbounder-jms (=${binary:Version}), opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-rancid (=${binary:Version}), opennms-plugin-provisioning-snmp-asset (=${binary:Version}), opennms-plugin-provisioning-snmp-hardware-inventory (=${binary:Version}), opennms-plugin-protocol-cifs (=${binary:Version}), opennms-plugin-protocol-dhcp (=${binary:Version}), opennms-plugin-protocol-nsclient (=${binary:Version}), opennms-plugin-protocol-radius (=${binary:Version}), opennms-plugin-protocol-xml (=${binary:Version}), opennms-plugin-protocol-xmp (=${binary:Version}), opennms-plugin-collector-vtdxml-handler (=${binary:Version}), opennms-plugin-ticketer-jira (=${binary:Version}), opennms-plugin-ticketer-otrs (=${binary:Version}), opennms-plugin-ticketer-rt (=${binary:Version})
+Depends: opennms-plugin-northbounder-jms (=${binary:Version}), opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-reverse-dns (=${binary:Version}), opennms-plugin-provisioning-rancid (=${binary:Version}), opennms-plugin-provisioning-snmp-asset (=${binary:Version}), opennms-plugin-provisioning-snmp-hardware-inventory (=${binary:Version}), opennms-plugin-protocol-cifs (=${binary:Version}), opennms-plugin-protocol-dhcp (=${binary:Version}), opennms-plugin-protocol-nsclient (=${binary:Version}), opennms-plugin-protocol-radius (=${binary:Version}), opennms-plugin-protocol-xmp (=${binary:Version}), opennms-plugin-collector-vtdxml-handler (=${binary:Version}), opennms-plugin-ticketer-jira (=${binary:Version}), opennms-plugin-ticketer-otrs (=${binary:Version}), opennms-plugin-ticketer-rt (=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (All Plugins)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -236,6 +271,22 @@ Description: Enterprise-grade Open-source Network Management Platform (DNS Provi
  .
  The DNS provisioning adapter allows for updating dynamic DNS records based on
  provisioned nodes.
+
+Package: opennms-plugin-provisioning-reverse-dns
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Replaces: opennms-common (<<${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (Reverse DNS Provisioning Adapter)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ The Reverse DNS provisioning adapter allows for updating the hostname on an
+ interface based on its reverse DNS lookup.
 
 Package: opennms-plugin-provisioning-rancid
 Architecture: all
@@ -347,21 +398,6 @@ Description: Enterprise-grade Open-source Network Management Platform (RADIUS Pr
  .
  This package provides RADIUS support for capability scanning, provisiond,
  polling, and Spring Security authentication.
-
-Package: opennms-plugin-protocol-xml
-Architecture: all
-Depends: opennms-server (=${binary:Version})
-Replaces: libopennms-java (<<${binary:Version}), opennms-common (<<${binary:Version})
-Description: Enterprise-grade Open-source Network Management Platform (XML Collection Support)
- OpenNMS is an enterprise-grade network management system written in Java.
- .
- OpenNMS can monitor various network services to determine status and service
- level availability.  Data collection is performed using protocols such as SNMP
- to generate reports and alert on thresholds.  An extensible event management
- and notification system handles both internally and externally generated
- events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
- .
- This package provides support for data collection from XML data.
 
 Package: opennms-plugin-protocol-xmp
 Architecture: all

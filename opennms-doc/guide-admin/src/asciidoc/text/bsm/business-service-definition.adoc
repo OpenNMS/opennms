@@ -1,0 +1,39 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+=== Business Service Definition
+
+The status of _Service Monitors_ and any kind of _Alarm_ can be used to drive the _Operational Status_ of a _BS_.
+A _BS_ is defined with the following components:
+
+* _Business Service Name_: A unique name used to identify the _BS_
+* _Edges_: A set of elements on which this _BS_ relies which can include other _BS_, or _Reduction Keys_.
+* _Reduce Function_: Function used to aggregate the _Operational Status_ from all the _Edges_.
+   Specific functions may take additional parameters.
+* _Attributes_: Optional key/value pairs that can be used to tag or enrich the _Busines Service_ with additional information.
+
+Each _Business Service_ can contain a list of optional key/value attributes.
+These can be used to identify or tag the _BS_, and may be reference in other workflows.
+These attributes do not affect the dependencies or the status calculation of the _BS_.
+
+TIP: Attributes can be used to filter _BS_ in _Ops Board_ dashlets.
+
+The _Business Service Editor_ is used to manage and model the _Business Services_ and their hierarchy.
+It is required to have administrative permissions and is available in _"Login Name -> Configure OpenNMS -> Manage Business Services"_ in the _Service Monitoring_ section.
+
+[[ga-bsm-editor]]
+.Managing Business Services with the Business Service Editor
+image:bsm/01_bsm-editor.png[]
+
+<1> Create a new _Business Service_ definition
+<2> Collapse tree view for all _Business Services_ in the view
+<3> Expand tree view for all _Business Services_ in the view
+<4> Reload all _Business Services_ in the view with current _Business Services_ from the system
+<5> Reload the _Business Service Monitoring Daemon_ to use the _Business Service_ definition as configured
+<6> _Business Service_ dependency hierarchy as tree view
+<7> Show the current _Business Service_ with dependencies in the _Topology UI_
+<8> Edit and delete existing _Business Service_ defintions
+
+As shown in figure <<ga-bsm-editor, Managing Business Services with the Business Service Editor>> the _Business Services_ can be created or changed.
+The hierarchy is created by assigning an existing _Business Service_ as _Child Service_.

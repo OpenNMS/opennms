@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,7 +29,21 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.discovery.*, org.opennms.web.admin.discovery.ActionDiscoveryServlet" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  java.util.Map,
+  java.util.TreeMap,
+  org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation,
+  org.opennms.netmgt.provision.persist.requisition.Requisition,
+  org.opennms.netmgt.dao.api.*,
+  org.springframework.web.context.WebApplicationContext,
+  org.springframework.web.context.support.WebApplicationContextUtils,
+  org.opennms.web.svclayer.api.RequisitionAccessService,
+  org.opennms.web.admin.discovery.DiscoveryScanServlet,
+  org.opennms.netmgt.config.DiscoveryConfigFactory,
+  org.opennms.netmgt.config.discovery.*,
+  org.opennms.web.admin.discovery.DiscoveryServletConstants,
+  org.opennms.web.admin.discovery.ActionDiscoveryServlet
+"%>
 <%
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -39,8 +53,32 @@
 %>
 
 <%
+WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+
 HttpSession sess = request.getSession(false);
-DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute("discoveryConfiguration");
+DiscoveryConfiguration currConfig;
+if (DiscoveryServletConstants.EDIT_MODE_SCAN.equals(request.getParameter("mode"))) {
+	currConfig  = (DiscoveryConfiguration) sess.getAttribute(DiscoveryScanServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION);
+} else if (DiscoveryServletConstants.EDIT_MODE_CONFIG.equals(request.getParameter("mode"))) {
+	currConfig  = (DiscoveryConfiguration) sess.getAttribute(ActionDiscoveryServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION);
+} else {
+	throw new ServletException("Cannot get discovery configuration from the session");
+}
+
+// Map of primary key to label (which in this case are the same)
+MonitoringLocationDao locationDao = context.getBean(MonitoringLocationDao.class);
+Map<String,String> locations = new TreeMap<String,String>();
+for (OnmsMonitoringLocation location : locationDao.findAll()) {
+	locations.put(location.getLocationName(), location.getLocationName());
+}
+
+// Map of primary key to label (which in this case are the same too)
+RequisitionAccessService reqAccessService = context.getBean(RequisitionAccessService.class);
+Map<String,String> foreignsources = new TreeMap<String,String>();
+for (Requisition requisition : reqAccessService.getRequisitions()) {
+	foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
+}
+
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -75,7 +113,9 @@ function doAddSpecific(){
 	opener.document.getElementById("specificipaddress").value=document.getElementById("ipaddress").value;
 	opener.document.getElementById("specifictimeout").value=document.getElementById("timeout").value;
 	opener.document.getElementById("specificretries").value=document.getElementById("retries").value;
-	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=ActionDiscoveryServlet.addSpecificAction%>";
+	opener.document.getElementById("specificforeignsource").value=document.getElementById("foreignsource").value;
+	opener.document.getElementById("specificlocation").value=document.getElementById("location").value;
+	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=DiscoveryServletConstants.addSpecificAction%>";
 	opener.document.getElementById("modifyDiscoveryConfig").submit();
 	window.close();
 	opener.document.focus();
@@ -97,15 +137,36 @@ function doAddSpecific(){
           </div>
         </div>
         <div class="form-group">
-          <label for="timeout" class="col-sm-2 control-label">Timeout (msec):</label>
+          <label for="timeout" class="col-sm-2 control-label">Timeout (milliseconds):</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout()%>"/>
+            <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
           </div>
         </div>
         <div class="form-group">
           <label for="retries" class="col-sm-2 control-label">Retries:</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries()%>"/>
+            <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="foreignsource" class="col-sm-2 control-label">Foreign Source:</label>
+          <div class="col-sm-10">
+            <select id="foreignsource" class="form-control" name="foreignsource">
+              <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
+              <% for (String key : foreignsources.keySet()) { %>
+                <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=foreignsources.get(key)%></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="location" class="col-sm-2 control-label">Location:</label>
+          <div class="col-sm-10">
+            <select id="location" class="form-control" name="location">
+              <% for (String key : locations.keySet()) { %>
+                <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
+              <% } %>
+            </select>
           </div>
         </div>
         <div class="form-group">
@@ -114,8 +175,9 @@ function doAddSpecific(){
             <button type="button" class="btn btn-default" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
           </div>
         </div>
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
+      </form>
+    </div> <!-- panel-body -->
+  </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 

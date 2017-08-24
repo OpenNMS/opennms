@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -130,8 +130,8 @@ public class AsteriskOriginator {
         
         final AmiAgentConfig agentConfig = AmiPeerFactory.getInstance().getAgentConfig(m_amiHost);
         // Now create and configure the manager connection
-        final ManagerConnectionFactory mcf = new ManagerConnectionFactory(InetAddressUtils.str(m_amiHost), agentConfig.getPort(), agentConfig.getUsername(), agentConfig.getPassword());
-        if (agentConfig.getUseTls()) {
+        final ManagerConnectionFactory mcf = new ManagerConnectionFactory(InetAddressUtils.str(m_amiHost), agentConfig.getPort().orElse(null), agentConfig.getUsername().orElse(null), agentConfig.getPassword().orElse(null));
+        if (agentConfig.getUseTls().orElse(false)) {
             m_managerConnection = (DefaultManagerConnection)mcf.createSecureManagerConnection();
         } else {
             m_managerConnection = (DefaultManagerConnection)mcf.createManagerConnection();
@@ -181,7 +181,7 @@ public class AsteriskOriginator {
         m_legBPriority = Integer.parseInt(legBPriorityStr);
         m_legBAppPattern = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbapp", null);
         m_legBAppDataPattern = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbappdata", null);
-        m_legBIsApp = (m_legBAppPattern != null && ! "".equals(m_legBAppPattern));
+        m_legBIsApp = (m_legBAppPattern != null && ! "".equals(m_legBAppPattern.trim()));
     }
 
     /**

@@ -30,8 +30,6 @@ package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
 
-import javax.annotation.Resource;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +47,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
-import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,22 +66,20 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-trapDaemon.xml",
         // Overrides the port that Trapd binds to and sets newSuspectOnTrap to 'true'
-        "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest-snmpTrapPort.xml"
+        "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class TrapdIT implements InitializingBean {
-    @Resource(name="snmpTrapPort")
-    Integer m_snmpTrapPort;
+
+    @Autowired
+    private TrapdConfigFactory m_trapdConfig;
 
     @Autowired
     Trapd m_trapd;
 
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
-
-    @Autowired
-    TrapdConfigFactory m_trapdConfigFactory;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -126,7 +121,7 @@ public class TrapdIT implements InitializingBean {
         newSuspectBuilder.setInterface(localAddr);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
-        pdu.send(localhost, m_snmpTrapPort, "public");
+        pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
         // Allow time for Trapd and Eventd to do their magic
         Thread.sleep(5000);
@@ -153,7 +148,44 @@ public class TrapdIT implements InitializingBean {
         newSuspectBuilder.setInterface(localAddr);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
-        pdu.send(localhost, m_snmpTrapPort, "public");
+        pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
+
+        // Allow time for Trapd and Eventd to do their magic
+        Thread.sleep(5000);
+    }
+
+    /**
+     * Verifies that we can pull the agent address from the snmpTrapAddress
+     * varbind in a SNMPv2 trap.
+     */
+    @Test
+    public void testSnmpV2cTrapWithAddressFromVarbind() throws Exception {
+        // Enable the feature (disabled by default)
+        m_trapdConfig.getConfig().setUseAddressFromVarbind(true);
+
+        String localhost = "127.0.0.1";
+        InetAddress remoteAddr = InetAddress.getByName("10.255.1.1");
+
+        SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
+        SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
+        SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+        // The varbind with the address
+        pdu.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("10.255.1.1")));
+
+        EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
+        defaultTrapBuilder.setInterface(remoteAddr);
+        defaultTrapBuilder.setSnmpVersion("v2c");
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
+
+        EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
+        // The address in the newSuspect event should match the one specified in the varbind
+        newSuspectBuilder.setInterface(remoteAddr);
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
+
+        pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
         // Allow time for Trapd and Eventd to do their magic
         Thread.sleep(5000);

@@ -50,7 +50,6 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
@@ -63,6 +62,7 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -92,7 +92,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     /**
      *  We need to make sure that these UUIDs are in sorted order because 
      *  {@link DefaultDistributedStatusService#createHistoryModel(String, String, String, String, String)
-     *  pulls the first entry from the list of {@link LocationMonitorDao#findByLocationDefinition(LocationDef)}
+     *  pulls the first entry from the list of {@link LocationMonitorDao#findByLocationDefinition(OnmsMonitoringLocation)}
      *  and we need to be able to verify mock calls reliably.
      */
     private static final String LOCATION_MONITOR_ID_A = "00000000-0000-0000-0000-000000000001";
@@ -110,9 +110,9 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private ResourceDao m_resourceDao = m_easyMockUtils.createMock(ResourceDao.class);
     private GraphDao m_graphDao = m_easyMockUtils.createMock(GraphDao.class);
 
-    private LocationDef m_locationDefinition1;
-    private LocationDef m_locationDefinition2;
-    private LocationDef m_locationDefinition3;
+    private OnmsMonitoringLocation m_locationDefinition1;
+    private OnmsMonitoringLocation m_locationDefinition2;
+    private OnmsMonitoringLocation m_locationDefinition3;
     private OnmsLocationMonitor m_locationMonitor1_1;
     private OnmsLocationMonitor m_locationMonitor2_1;
     private OnmsLocationMonitor m_locationMonitor2_2;
@@ -146,9 +146,9 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_service.setGraphDao(m_graphDao);
         m_service.afterPropertiesSet();
         
-        m_locationDefinition1 = new LocationDef("Raleigh", "OpenNMS NC", "raleigh");
-        m_locationDefinition2 = new LocationDef("Durham", "OpenNMS NC", "durham");
-        m_locationDefinition3 = new LocationDef("Columbus", "OpenNMS OH", "columbus");
+        m_locationDefinition1 = new OnmsMonitoringLocation("Raleigh", "OpenNMS NC", "raleigh");
+        m_locationDefinition2 = new OnmsMonitoringLocation("Durham", "OpenNMS NC", "durham");
+        m_locationDefinition3 = new OnmsMonitoringLocation("Columbus", "OpenNMS OH", "columbus");
 
         m_application1 = new OnmsApplication();
         m_application1.setName("Application 1");
@@ -538,7 +538,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     
     public void testCreateFacilityStatusTable() throws Exception {
          // No need to shuffle, since this is a list
-        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
@@ -627,7 +627,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsApplication app = m_application2;
         
         // No need to shuffle, since this is a list
-        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         
@@ -679,7 +679,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
      */
     public void testCreateFacilityStatusTableLayoutApplicationsVertically() throws Exception {
         // No need to shuffle, since this is a list
-        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
@@ -797,7 +797,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testDetails() {
-        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
@@ -878,7 +878,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testWrongLocationDetails() {
-        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
@@ -944,7 +944,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testWrongApplicationDetails() {
-        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);

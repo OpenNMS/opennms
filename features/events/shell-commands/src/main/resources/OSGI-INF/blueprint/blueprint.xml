@@ -1,0 +1,12 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command  name="events/stress">
+            <action class="org.opennms.netmgt.events.commands.StressCommand">
+                <property name="eventForwarder" ref="eventForwarder"/>
+            </action>
+        </command>
+    </command-bundle>
+</blueprint>

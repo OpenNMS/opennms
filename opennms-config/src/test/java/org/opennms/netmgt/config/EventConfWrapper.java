@@ -68,9 +68,9 @@ public class EventConfWrapper {
     		if (m_event.getAutoacknowledge() != null) {
     			b.append(" Autoacknowledge: " + m_event.getAutoacknowledge() + "\n");
     		}
-    		if (m_event.getAutoactionCount() > 0) {
+    		if (m_event.getAutoactions().size() > 0) {
     			b.append(" Autoactions:");
-    			for (Iterator<Autoaction> i = m_event.getAutoactionCollection().iterator(); i.hasNext(); ) {
+    			for (Iterator<Autoaction> i = m_event.getAutoactions().iterator(); i.hasNext(); ) {
     				b.append(" " + i.next().toString());
     			}
 			b.append("\n");
@@ -78,16 +78,16 @@ public class EventConfWrapper {
 		if (m_event.getDescr() != null) {
 			b.append(" Descr: " + m_event.getDescr() + "\n");
 		}
-		if (m_event.getForwardCount() > 0) {
+		if (m_event.getForwards().size() > 0) {
 			b.append(" Forwards:");
-			for (Iterator<Forward> i = m_event.getForwardCollection().iterator(); i.hasNext(); ) {
+			for (Iterator<Forward> i = m_event.getForwards().iterator(); i.hasNext(); ) {
 				b.append(" " + i.next().toString());
 			}
 			b.append("\n");
 		}
-		if (m_event.getLoggroupCount() > 0) {
+		if (m_event.getLoggroups().size() > 0) {
 			b.append(" Loggroup:");
-			for (Iterator<String> i = m_event.getLoggroupCollection().iterator(); i.hasNext(); ) {
+			for (Iterator<String> i = m_event.getLoggroups().iterator(); i.hasNext(); ) {
 				b.append(" " + i.next());
 			}
 			b.append("\n");
@@ -101,9 +101,9 @@ public class EventConfWrapper {
 		if (m_event.getMouseovertext() != null) {
 			b.append(" Mouseovertext: " + m_event.getMouseovertext() + "\n");
 		}
-		if (m_event.getOperactionCount() > 0) {
+		if (m_event.getOperactions().size() > 0) {
 			b.append(" Operaction:");
-			for (Iterator<Operaction> i = m_event.getOperactionCollection().iterator(); i.hasNext(); ) {
+			for (Iterator<Operaction> i = m_event.getOperactions().iterator(); i.hasNext(); ) {
 				b.append(" " + i.next().toString());
 			}
 			b.append("\n");
@@ -111,9 +111,9 @@ public class EventConfWrapper {
 		if (m_event.getOperinstruct() != null) {
 			b.append(" Operinstruct: " + m_event.getOperinstruct() + "\n");
 		}
-		if (m_event.getScriptCount() > 0) {
+		if (m_event.getScripts().size() > 0) {
 			b.append(" Script:");
-			for (Iterator<Script> i = m_event.getScriptCollection().iterator(); i.hasNext(); ) {
+			for (Iterator<Script> i = m_event.getScripts().iterator(); i.hasNext(); ) {
 				b.append(" " + i.next().toString());
 			}
 			b.append("\n");

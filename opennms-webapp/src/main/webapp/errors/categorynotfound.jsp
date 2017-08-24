@@ -33,21 +33,13 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.category.*"
+	import="org.opennms.web.category.*, org.opennms.web.utils.ExceptionUtils"
 %>
 
 <%
-    CategoryNotFoundException cnfe = null;
-    
-    if( exception instanceof CategoryNotFoundException ) {
-        cnfe = (CategoryNotFoundException)exception;
-    } else if( exception instanceof ServletException ) {
-        cnfe = (CategoryNotFoundException)((ServletException)exception).getRootCause();
-    } else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
-    }    
-    
+    CategoryNotFoundException cnfe = ExceptionUtils.getRootCause(exception, CategoryNotFoundException.class);
 %>
+
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />

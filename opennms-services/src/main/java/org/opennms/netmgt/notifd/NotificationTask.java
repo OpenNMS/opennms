@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,8 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
@@ -252,12 +250,8 @@ public class NotificationTask extends Thread {
                                 LOG.error("Could not insert notice info into database, aborting send notice", e);
                                 continue;
                             }
-                            String binaryCommand = command.getBinary();
-                            if (binaryCommand == null) {
-                                LOG.error("binary flag not set for command: {}.  Guessing false.", command.getExecute());
-                                binaryCommand = "false";
-                            }
-                            if (binaryCommand.equals("true")) {
+                            Boolean binaryCommand = command.getBinary();
+                            if (binaryCommand) {
                                 strategy = new CommandExecutor();
                             } else {
                                 strategy = new ClassExecutor();
@@ -288,10 +282,6 @@ public class NotificationTask extends Thread {
                 }
             } catch (IOException e) {
                 LOG.warn("Could not get user duty schedule information: ", e);
-            } catch (MarshalException e) {
-                LOG.warn("Could not get user duty schedule information: ", e);
-            } catch (ValidationException e) {
-                LOG.warn("Could not get user duty schedule information: ", e);
             }
         } else {
             // remove all the related notices that have yet to be sent
@@ -313,7 +303,7 @@ public class NotificationTask extends Thread {
         return m_userManager;
     }
 
-    private String getContactInfo(String cmdName) throws IOException, MarshalException, ValidationException {
+    private String getContactInfo(String cmdName) throws IOException {
         return getUserManager().getContactInfo(m_user, cmdName);
     }
 
@@ -324,16 +314,16 @@ public class NotificationTask extends Thread {
         List<org.opennms.netmgt.model.notifd.Argument> commandArgs = new ArrayList<org.opennms.netmgt.model.notifd.Argument>();
 
         for (Argument curArg : notifArgs) {
-            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue());
+            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), curArg.getStreamed());
 
-            commandArgs.add(new org.opennms.netmgt.model.notifd.Argument(curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
+            commandArgs.add(new org.opennms.netmgt.model.notifd.Argument(curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), curArg.getStreamed()));
         }
 
         return commandArgs;
     }
 
     private List<Argument> getArgumentsForCommand(Command command) {
-        return command.getArgumentCollection();
+        return command.getArguments();
     }
 
     /**
@@ -380,10 +370,8 @@ public class NotificationTask extends Thread {
      *
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getEmail() throws IOException, MarshalException, ValidationException {
+    public String getEmail() throws IOException {
         return getContactInfo("email");
     }
     
@@ -391,11 +379,9 @@ public class NotificationTask extends Thread {
      * <p>getTuiPin</p>
      *
      * @return a {@link java.lang.String} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public String getTuiPin() throws MarshalException, ValidationException, IOException {
+    public String getTuiPin() throws IOException {
         return getContactInfo("tuiPin");
     }
 

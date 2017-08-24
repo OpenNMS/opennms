@@ -58,6 +58,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.svclayer.SiteStatusViewService;
 import org.opennms.web.svclayer.model.AggregateStatus;
@@ -70,10 +71,8 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
         "classpath:/mockForeignSourceContext.xml",
-        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml",
         "classpath:/testSiteStatusServiceContext.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -159,7 +158,7 @@ public class DefaultSiteStatusServiceIT implements InitializingBean {
         outageEvent.setEventTime(new Date());
         outageEvent.setEventSource("Me");
         outageEvent.setEventCreateTime(new Date());
-        outageEvent.setEventSeverity(0);
+        outageEvent.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         outageEvent.setEventLog("L");
         outageEvent.setEventDisplay("D");
         m_eventDao.save(outageEvent);

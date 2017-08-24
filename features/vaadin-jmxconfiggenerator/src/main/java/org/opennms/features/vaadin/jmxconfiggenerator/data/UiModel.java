@@ -28,17 +28,18 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.bind.JAXB;
+
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-
-import javax.xml.bind.JAXB;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class wraps the <code>JmxDatacollectionConfig</code> and provides some
@@ -169,11 +170,9 @@ public class UiModel {
 		 service.setStatus("on");
 
 		 // add parameters to service
-		 service.addParameter(createParameter("port", getServiceConfig().getPort()));
+		 service.addParameter(createParameter("url", getServiceConfig().getConnection()));
 		 service.addParameter(createParameter("retry", "2"));
 		 service.addParameter(createParameter("timeout", "3000"));
-		 service.addParameter(createParameter("protocol", "rmi"));
-		 service.addParameter(createParameter("urlPath", String.format("/%s", getServiceConfig().isJmxmp() ? "jmxmp" : "jmxrmi")));
 		 service.addParameter(createParameter("rrd-base-name", "java"));
 		 service.addParameter(createParameter("ds-name", getServiceName()));
 		 service.addParameter(createParameter("friendly-name", getServiceName()));

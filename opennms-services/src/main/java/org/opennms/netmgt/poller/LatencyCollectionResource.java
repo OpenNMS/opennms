@@ -39,6 +39,8 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
+import org.opennms.netmgt.model.ResourcePath;
 
 import com.google.common.collect.Maps;
 
@@ -52,6 +54,7 @@ public class LatencyCollectionResource implements CollectionResource {
 
     private final String m_serviceName;
     private final String m_ipAddress;
+    private final String m_location;
     private final Map<AttributeGroupType, AttributeGroup> m_attributeGroups = Maps.newLinkedHashMap();
 
     /**
@@ -59,10 +62,12 @@ public class LatencyCollectionResource implements CollectionResource {
      *
      * @param serviceName a {@link java.lang.String} object.
      * @param ipAddress a {@link java.lang.String} object.
+     * @param location a {@link java.lang.String} object.
      */
-    public LatencyCollectionResource(String serviceName, String ipAddress) {
+    public LatencyCollectionResource(String serviceName, String ipAddress, String location) {
         m_serviceName = serviceName;
         m_ipAddress = ipAddress;
+        m_location = location;
     }
 
     /**
@@ -176,13 +181,17 @@ public class LatencyCollectionResource implements CollectionResource {
 
     @Override
     public Path getPath() {
-        return Paths.get(m_ipAddress);
+        if (MonitoringLocationUtils.isDefaultLocationName(m_location)) {
+            return Paths.get(m_ipAddress);
+        } else {
+            return Paths.get(ResourcePath.sanitize(m_location), m_ipAddress);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return m_serviceName + "@" + m_ipAddress;
+        return String.format("%s on %s at %s", m_serviceName, m_ipAddress, m_location);
     }
 
     @Override

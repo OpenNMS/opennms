@@ -1,6 +1,6 @@
 {
     "count": 1, 
-    "offset": null, 
+    "offset": 0, 
     "node": [
         {
             "assetRecord": {
@@ -76,6 +76,7 @@
             "label": "TestMachine0", 
             "labelSource": "H", 
             "lastCapsdPoll": 1316862766421, 
+            "location": "Default",
             "sysContact": "The Owner", 
             "sysDescription": "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386", 
             "sysLocation": "DevJam", 

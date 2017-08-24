@@ -32,11 +32,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import junit.framework.TestCase;
 
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.xml.JaxbUtils;
@@ -47,9 +48,8 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 public class PollerConfigFactoryIT extends TestCase {
 
@@ -85,11 +85,7 @@ public class PollerConfigFactoryIT extends TestCase {
         super.setUp();
         MockLogAppender.setupLogging();
         
-        Resource dbConfig = new ClassPathResource("/org/opennms/netmgt/config/test-database-schema.xml");
-        InputStream s = dbConfig.getInputStream();
-        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(s);
-        s.close();
-        DatabaseSchemaConfigFactory.setInstance(dscf);
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml")));
 
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
@@ -125,6 +121,9 @@ public class PollerConfigFactoryIT extends TestCase {
         db.populate(network);
         DataSourceFactory.setInstance(db);
         
+        // Make sure it gets *our* MockDatabase
+        FilterDaoFactory.setInstance(null);
+        FilterDaoFactory.getInstance();
     }
 
     @Override
@@ -137,7 +136,7 @@ public class PollerConfigFactoryIT extends TestCase {
         private String m_xml;
 
         public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws IOException {
-            super(new ByteArrayInputStream(xml.getBytes("UTF-8")), localServer, verifyServer);
+            super(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), localServer, verifyServer);
             save();
         }
 
@@ -244,8 +243,7 @@ public class PollerConfigFactoryIT extends TestCase {
         
         TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml(), "localhost", false);
         Package p = newFactory.getPackage("TestPkg");
-        assertNotNull(p);
-        System.out.println(factory.getXml());
+        assertNotNull("package 'TestPkg' from new factory", p);
         assertTrue("Expect 123.12.123.121 to be part of the package", newFactory.isInterfaceInPackage("123.12.123.121", p));
         assertTrue("Expect 123.12.123.122 to be part of the package", newFactory.isInterfaceInPackage("123.12.123.122", p));
         assertFalse("Expected 192.168.1.1 to be excluded from the package", newFactory.isInterfaceInPackage("192.168.1.1", p));

@@ -1,6 +1,17 @@
 {
-    "count": 1, 
+    "count": 2, 
     "location": [
+        {
+            "collection-package-names": [],
+            "geolocation": null,
+            "monitoring-area": "Default",
+            "latitude": null,
+            "location-name": "Default",
+            "longitude": null,
+            "polling-package-names": [],
+            "priority": 100,
+            "tags": []
+        }, 
         {
             "collection-package-names": [
                 "example1"
@@ -19,6 +30,6 @@
             ]
         } 
     ], 
-    "offset": null, 
-    "totalCount": 1
+    "offset": 0, 
+    "totalCount": 2
 }

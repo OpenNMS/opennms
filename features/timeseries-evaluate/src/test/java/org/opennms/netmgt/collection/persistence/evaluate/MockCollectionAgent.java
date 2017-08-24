@@ -160,6 +160,14 @@ public class MockCollectionAgent implements CollectionAgent {
     }
 
     /* (non-Javadoc)
+     * @see org.opennms.netmgt.collection.api.CollectionAgent#getLocationName()
+     */
+    @Override
+    public String getLocationName() {
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.opennms.netmgt.collection.api.CollectionAgent#getStorageDir()
      */
     @Override

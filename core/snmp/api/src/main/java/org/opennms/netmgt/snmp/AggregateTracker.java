@@ -30,9 +30,19 @@ package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.opennms.netmgt.snmp.proxy.CorrelationIdUtils;
+import org.opennms.netmgt.snmp.proxy.WalkRequest;
+import org.opennms.netmgt.snmp.proxy.WalkResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AggregateTracker extends CollectionTracker {
+    private static final Logger LOG = LoggerFactory.getLogger(AggregateTracker.class);
+
     private static final class ChildTrackerPduBuilder extends PduBuilder {
         private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
         private int m_nonRepeaters = 0;
@@ -323,5 +333,42 @@ public class AggregateTracker extends CollectionTracker {
         // construct a response processor that tracks the changes and informs the response processors
         // for the child trackers
         return new ChildTrackerResponseProcessor(this, parentBuilder, builders, nonRepeaters, repeaters);
+    }
+
+    @Override
+    public List<WalkRequest> getWalkRequests() {
+        final List<WalkRequest> walkRequests = new ArrayList<>();
+        for (int k = 0; k < m_children.length; k++) {
+            for (WalkRequest walkRequest : m_children[k].getWalkRequests()) {
+                // Add the index to the correlation id, so we know which child the responses
+                // should be associated with
+                CorrelationIdUtils.pushIndexToCorrelationId(walkRequest, k);
+                walkRequests.add(walkRequest);
+            }
+        }
+        return walkRequests;
+    }
+
+    @Override
+    public void handleWalkResponses(List<WalkResponse> responses) {
+        // Group the responses by index
+        Map<Integer, List<WalkResponse>> responsesByCorrelationId = new HashMap<>();
+        for (int i = 0; i < m_children.length; i++) {
+            // Add an empty list to every index to make sure we call handleWalkResponses() on every child
+            responsesByCorrelationId.put(i, new ArrayList<>());
+        }
+        responses.stream().forEach(r -> CorrelationIdUtils.popIndexFromCollerationId(r, responsesByCorrelationId));
+
+        // Store the results in the appropriate child trackers
+        responsesByCorrelationId.entrySet().stream()
+            .forEach(entry -> {
+                int index = entry.getKey();
+                if (index < 0 || index > (m_children.length  -1)) {
+                    // This shouldn't happen, but just in case...
+                    LOG.warn("Invalid index on response: {}, {}, {}", index, entry.getValue(), m_children.length);
+                } else {
+                    m_children[index].handleWalkResponses(entry.getValue());
+                }
+            });
     }
 }

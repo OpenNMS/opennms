@@ -46,7 +46,7 @@ public class AutoactionTest extends XmlTestNoCastor<Autoaction> {
 		Autoaction autoaction0 = new Autoaction();
 		Autoaction autoaction1 = new Autoaction();
 		autoaction1.setContent("These are important data");
-		autoaction1.setState("on");
+		autoaction1.setState(StateType.ON);
 		return Arrays.asList(new Object[][] {
 				{autoaction0,
 				"<autoaction/>",

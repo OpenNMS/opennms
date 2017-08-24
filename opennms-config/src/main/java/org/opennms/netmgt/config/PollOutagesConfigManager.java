@@ -30,11 +30,9 @@ package org.opennms.netmgt.config;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.List;
 
-import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.AbstractWritableJaxbConfigDao;
 import org.opennms.netmgt.config.poller.outages.Interface;
 import org.opennms.netmgt.config.poller.outages.Node;
 import org.opennms.netmgt.config.poller.outages.Outage;
@@ -48,28 +46,16 @@ import org.springframework.util.Assert;
  *
  * @author brozow
  */
-abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Outages, Outages> implements PollOutagesConfig {
-    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
-    private final Lock m_readLock = m_globalLock.readLock();
-    private final Lock m_writeLock = m_globalLock.writeLock();
-    
+abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfigDao<Outages, Outages> implements PollOutagesConfig {
     public PollOutagesConfigManager() {
         super(Outages.class, "poll outage configuration");
-    }
-
-    public Lock getReadLock() {
-        return m_readLock;
-    }
-    
-    public Lock getWriteLock() {
-        return m_writeLock;
     }
 
     /** {@inheritDoc} */
     @Override
     public void afterPropertiesSet() throws DataAccessException {
         /**
-         * It sucks to duplicate this first test from AbstractCastorConfigDao,
+         * It sucks to duplicate this first test from AbstractJaxbConfigDao,
          * but we need to do so to ensure we don't get an NPE while initializing
          * programmaticStoreConfigResource (if needed).
          */
@@ -89,7 +75,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      *
      * @return Returns the config.
      */
-    protected Outages getConfig() {
+    protected Outages getObject() {
         getReadLock().lock();
         try {
             return getContainer().getObject();
@@ -103,10 +89,10 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      *
      * @return the outages configured
      */
-    public Outage[] getOutages() {
+    public List<Outage> getOutages() {
         getReadLock().lock();
         try {
-            return getConfig().getOutage();
+            return getObject().getOutages();
         } finally {
             getReadLock().unlock();
         }
@@ -122,7 +108,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public Outage getOutage(final String name) {
         getReadLock().lock();
         try {
-            return getConfig().getOutage(name);
+            return getObject().getOutage(name);
         } finally {
             getReadLock().unlock();
         }
@@ -148,10 +134,10 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      *            the outage that is to be looked up
      * @return the outage times for the specified outage, null if not found
      */
-    public Time[] getOutageTimes(final String name) {
+    public List<Time> getOutageTimes(final String name) {
         final Outage out = getOutage(name);
         if (out == null) return null;
-        return out.getTime();
+        return out.getTimes();
     }
 
     /**
@@ -161,10 +147,10 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      *            the outage that is to be looked up
      * @return the interfaces for the specified outage, null if not found
      */
-    public Interface[] getInterfaces(final String name) {
+    public List<Interface> getInterfaces(final String name) {
         final Outage out = getOutage(name);
         if (out == null) return null;
-        return out.getInterface();
+        return out.getInterfaces();
     }
 
     /**
@@ -191,7 +177,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public boolean isInterfaceInOutage(final String linterface, final Outage out) {
         if (out == null) return false;
 
-        for (final Interface ointerface : out.getInterfaceCollection()) {
+        for (final Interface ointerface : out.getInterfaces()) {
             if (ointerface.getAddress().equals("match-any") || ointerface.getAddress().equals(linterface)) {
                 return true;
             }
@@ -270,7 +256,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public void addOutage(final Outage newOutage) {
         getWriteLock().lock();
         try {
-            getConfig().addOutage(newOutage);
+            getObject().addOutage(newOutage);
         } finally {
             getWriteLock().unlock();
         }
@@ -284,7 +270,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public void removeOutage(final String outageName) {
         getWriteLock().lock();
         try {
-            getConfig().removeOutage(outageName);
+            getObject().removeOutage(outageName);
         } finally {
             getWriteLock().unlock();
         }
@@ -298,7 +284,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public void removeOutage(final Outage outageToRemove) {
         getWriteLock().lock();
         try {
-            getConfig().removeOutage(outageToRemove);
+            getObject().removeOutage(outageToRemove);
         } finally {
             getWriteLock().unlock();
         }
@@ -313,13 +299,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public void replaceOutage(final Outage oldOutage, final Outage newOutage) {
         getWriteLock().lock();
         try {
-            int count = getConfig().getOutageCount();
-            for (int i = 0; i < count; i++) {
-                if (getConfig().getOutage(i).equals(oldOutage)) {
-                    getConfig().setOutage(i, newOutage);
-                    return;
-                }
-            }
+            getObject().replaceOutage(oldOutage, newOutage);
         } finally {
             getWriteLock().unlock();
         }
@@ -338,10 +318,10 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * @param name a {@link java.lang.String} object.
      * @return an array of {@link org.opennms.netmgt.config.poller.outages.Node} objects.
      */
-    public Node[] getNodeIds(final String name) {
+    public List<Node> getNodeIds(final String name) {
         final Outage out = getOutage(name);
         if (out == null) return null;
-        return out.getNode();
+        return out.getNodes();
     }
 
     /**
@@ -398,7 +378,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public boolean isNodeIdInOutage(final long lnodeid, final Outage out) {
         if (out == null) return false;
 
-        for (final Node onode : out.getNodeCollection()) {
+        for (final Node onode : out.getNodes()) {
             if (onode.getId() == lnodeid) {
                 return true;
             }

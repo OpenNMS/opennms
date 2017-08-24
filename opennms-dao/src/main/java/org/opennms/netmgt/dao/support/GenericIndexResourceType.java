@@ -371,4 +371,12 @@ public final class GenericIndexResourceType implements OnmsResourceType {
         }
         return resourceTypes;
     }
+
+    @Override
+    public String toString() {
+        return "GenericIndexResourceType [name=" + m_name + ", label=" + m_label
+                + ", resourceLabelExpression=" + m_resourceLabelExpression
+                + ", resourceStorageDao=" + m_resourceStorageDao + ", storageStrategy="
+                + m_storageStrategy + "]";
+    }
 }

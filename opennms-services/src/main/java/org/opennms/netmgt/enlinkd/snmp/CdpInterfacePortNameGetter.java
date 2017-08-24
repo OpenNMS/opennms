@@ -28,27 +28,22 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
+
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.TableTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
-public class CdpInterfacePortNameGetter extends TableTracker {
+public class CdpInterfacePortNameGetter extends SnmpGetter {
 
     public final static SnmpObjId CDP_INTERFACE_NAME = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.1.1.1.6");
     public final static SnmpObjId MIB2_INTERFACE_NAME = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.2");
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
-    private SnmpAgentConfig m_agentConfig;
-    private static final Logger LOG = LoggerFactory.getLogger(CdpInterfacePortNameGetter.class);
-
-    public CdpInterfacePortNameGetter(SnmpAgentConfig peer) {
-        m_agentConfig = peer;
+    public CdpInterfacePortNameGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location, Integer nodeid) {
+        super(peer, client,location,nodeid);
     }
 
     public CdpLink get(CdpLink link) {
@@ -62,24 +57,11 @@ public class CdpInterfacePortNameGetter extends TableTracker {
     }
     
    public SnmpValue getInterfaceNameFromCiscoCdpMib(Integer ifindex) {
-       SnmpObjId instance = SnmpObjId.get(new int[] {ifindex});
-       SnmpObjId[] oids = new SnmpObjId[]{SnmpObjId.get(CDP_INTERFACE_NAME, instance)};
-       SnmpValue[] val = SnmpUtils.get(m_agentConfig, oids);
-       LOG.info("get: oid '{}' found value '{}'", oids[0], val);
-       if (val == null || val.length != 1 || val[0] == null || val[0].isError()) 
-           return null;
-       return val[0];
+       return get(CDP_INTERFACE_NAME, ifindex);
    }
    
    public SnmpValue getInterfaceNameFromMib2(Integer ifindex) {
-       SnmpObjId instance = SnmpObjId.get(new int[] {ifindex});
-       SnmpObjId[] oids = new SnmpObjId[]{SnmpObjId.get(MIB2_INTERFACE_NAME, instance)};
-       SnmpValue[] val = SnmpUtils.get(m_agentConfig, oids);
-       LOG.info("get: oid '{}' found value '{}'", oids[0], val);
-       if (val == null || val.length != 1 || val[0] == null || val[0].isError()) 
-           return null;
-       return val[0];
-       
+       return get(MIB2_INTERFACE_NAME,ifindex);
    }
 
    

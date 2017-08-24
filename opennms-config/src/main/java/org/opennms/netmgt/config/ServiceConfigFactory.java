@@ -53,7 +53,7 @@ public final class ServiceConfigFactory implements org.opennms.netmgt.config.api
     private static final Logger LOG = LoggerFactory.getLogger(ServiceConfigFactory.class);
 
     /**
-     * The loaded configuration after is has been unmarshalled by castor.
+     * The loaded configuration after is has been unmarshalled
      */
     private ServiceConfiguration m_config;
 
@@ -101,7 +101,7 @@ public final class ServiceConfigFactory implements org.opennms.netmgt.config.api
     @Override
     public Service[] getServices() {
         final List<Service> services = new ArrayList<Service>();
-        for (Service s : m_config.getServiceCollection()) {
+        for (Service s : m_config.getServices()) {
             if (s.isEnabled())
                 services.add(s);
         }

@@ -28,6 +28,8 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
+import java.util.Collections;
+
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -35,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EventForwarderImpl implements EventForwarder {
-
 
 	private static final Logger LOG = LoggerFactory.getLogger(EventForwarderImpl.class);
 
@@ -50,15 +51,28 @@ public class EventForwarderImpl implements EventForwarder {
 	}
 	
 	@Override
-	public void sendNow(Event event) {		
+	public void sendNow(Event event) {
 		LOG.debug("Event to send received: " + event.toString());
-		if (eventToIndex!=null) eventToIndex.forwardEvent(event);
+		if (eventToIndex!=null) eventToIndex.forwardEvents(Collections.singletonList(event));
 	}
 
 	@Override
-	public void sendNow(Log arg0) {
-		// TODO Auto-generated method stub
+	public void sendNow(Log eventLog) {
+		if (eventLog != null && eventLog.getEvents() != null) {
+			for (Event event : eventLog.getEvents().getEvent()) {
+				sendNow(event);
+			}
+		}
+	}
 
+	@Override
+	public void sendNowSync(Event event) {
+		sendNow(event);
+	}
+
+	@Override
+	public void sendNowSync(Log eventLog) {
+		sendNow(eventLog);
 	}
 
 }

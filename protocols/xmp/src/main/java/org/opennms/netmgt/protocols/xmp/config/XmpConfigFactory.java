@@ -52,18 +52,14 @@
 package org.opennms.netmgt.protocols.xmp.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
+
 public class XmpConfigFactory {
 
     /* class variables and methods *********************** */
@@ -76,10 +72,8 @@ public class XmpConfigFactory {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static void init() throws IOException, FileNotFoundException, MarshalException, ValidationException 
+    public static void init() throws IOException, FileNotFoundException 
     {
 
         if (instance == null) {
@@ -112,18 +106,12 @@ public class XmpConfigFactory {
      * <p>Constructor for XmpConfigFactory.</p>
      *
      * @param configFile a {@link java.lang.String} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
     public XmpConfigFactory(String configFile) 
-    throws MarshalException, ValidationException, IOException 
-    { 
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        config = (XmpConfig)Unmarshaller.unmarshal(XmpConfig.class,
-                                                   new InputStreamReader(cfgIn, "UTF-8"));
-        cfgIn.close();
+    throws IOException 
+    {
+        config = JaxbUtils.unmarshal(XmpConfig.class, configFile);
         return; 
     }
 
@@ -131,14 +119,12 @@ public class XmpConfigFactory {
      * <p>Constructor for XmpConfigFactory.</p>
      *
      * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
     public XmpConfigFactory(Reader rdr) 
-    throws MarshalException, ValidationException, IOException 
+    throws IOException 
     {
-        config = (XmpConfig)Unmarshaller.unmarshal(XmpConfig.class,rdr);
+        config = (XmpConfig)JaxbUtils.unmarshal(XmpConfig.class,rdr);
     }
 
     /* private methods *********************************** */

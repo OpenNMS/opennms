@@ -37,8 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
@@ -67,10 +65,8 @@ public interface UserConfig {
 	 * <p>parseXML</p>
 	 * 
 	 * @param an InputStream
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	void parseXML(final InputStream in) throws MarshalException, ValidationException;
+	void parseXML(final InputStream in);
 	
 	/**
 	 * <p>saveUser</p>
@@ -96,41 +92,33 @@ public interface UserConfig {
 	 * @param a Calendar
 	 * @return a boolean
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	boolean isUserOnDuty(final String user, final Calendar time) throws IOException, MarshalException, ValidationException;
+	boolean isUserOnDuty(final String user, final Calendar time) throws IOException;
 	
 	/**
 	 * <p>getUsers</p>
 	 * 
 	 * @return a Map<String, User>
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	Map<String, User> getUsers() throws IOException, MarshalException, ValidationException;
+	Map<String, User> getUsers() throws IOException;
 	
 	/**
 	 * <p>getOnmsUserList</p>
 	 * 
 	 * @return an OnmsUserList
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	OnmsUserList getOnmsUserList() throws MarshalException, ValidationException, IOException;
+	OnmsUserList getOnmsUserList() throws  IOException;
 	
 	/**
 	 * <p>getOnmsUser</p>
 	 * 
 	 * @param a String
 	 * @return an OnmsUser
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	OnmsUser getOnmsUser(final String username) throws MarshalException, ValidationException, IOException;
+	OnmsUser getOnmsUser(final String username) throws  IOException;
 	
 	/**
 	 * <p>hasUser</p>
@@ -138,20 +126,16 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a boolean
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	boolean hasUser(final String userName) throws IOException, MarshalException, ValidationException;
+	boolean hasUser(final String userName) throws IOException;
 	
 	/**
 	 * <p>getUserNames</p>
 	 * 
 	 * @return a List<String>
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	List<String> getUserNames() throws IOException, MarshalException, ValidationException;
+	List<String> getUserNames() throws IOException;
 	
 	/**
 	 * <p>getUser</p>
@@ -159,10 +143,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a User
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	User getUser(final String name) throws IOException, MarshalException, ValidationException;
+	User getUser(final String name) throws IOException;
 	
 	/**
 	 * <p>getTuiPin</p>
@@ -170,10 +152,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getTuiPin(final String name) throws IOException, MarshalException, ValidationException;
+	String getTuiPin(final String name) throws IOException;
 	
 	/**
 	 * <p>getTuiPin</p>
@@ -181,22 +161,18 @@ public interface UserConfig {
 	 * @param a User
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getTuiPin(final User user) throws IOException, MarshalException, ValidationException;
+	String getTuiPin(final User user) throws IOException;
 	
 	/**
 	 * <p>getMicroblogName</p>
 	 * 
 	 * @param a String
 	 * @return a String
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	String getMicroblogName(final String name) throws MarshalException, ValidationException, FileNotFoundException, IOException;
+	String getMicroblogName(final String name) throws  FileNotFoundException, IOException;
 	
 	/**
 	 * <p>setContactInfo</p>
@@ -214,11 +190,9 @@ public interface UserConfig {
 	 * @param a String
 	 * @param a ContactType
 	 * @return a String
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	String getContactInfo(final String userId, final ContactType contactType) throws MarshalException, ValidationException, IOException;
+	String getContactInfo(final String userId, final ContactType contactType) throws  IOException;
 	
 	/**
 	 * <p>getContactInfo</p>
@@ -227,10 +201,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getContactInfo(final String userID, final String command) throws IOException, MarshalException, ValidationException;
+	String getContactInfo(final String userID, final String command) throws IOException;
 	
 	/**
 	 * <p>getContactInfo</p>
@@ -239,10 +211,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getContactInfo(final User user, final String command) throws IOException, MarshalException, ValidationException;
+	String getContactInfo(final User user, final String command) throws IOException;
 	
 	/**
 	 * <p>getContactServiceProvider</p>
@@ -251,10 +221,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getContactServiceProvider(final String userID, final String command) throws IOException, MarshalException, ValidationException;
+	String getContactServiceProvider(final String userID, final String command) throws IOException;
 	
 	/**
 	 * <p>getContactServiceProvider</p>
@@ -263,10 +231,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getContactServiceProvider(final User user, final String command) throws IOException, MarshalException, ValidationException;
+	String getContactServiceProvider(final User user, final String command) throws IOException;
 	
 	/**
 	 * <p>getEmail</p>
@@ -274,10 +240,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getEmail(final String userID) throws IOException, MarshalException, ValidationException;
+	String getEmail(final String userID) throws IOException;
 	
 	/**
 	 * <p>getEmail</p>
@@ -285,10 +249,8 @@ public interface UserConfig {
 	 * @param a User
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getEmail(final User user) throws IOException, MarshalException, ValidationException;
+	String getEmail(final User user) throws IOException;
 	
 	/**
 	 * <p>getPagerEmail</p>
@@ -296,10 +258,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getPagerEmail(final String userID) throws IOException, MarshalException, ValidationException;
+	String getPagerEmail(final String userID) throws IOException;
 	
 	/**
 	 * <p>getPagerEmail</p>
@@ -307,10 +267,8 @@ public interface UserConfig {
 	 * @param a User
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getPagerEmail(final User user) throws IOException, MarshalException, ValidationException;
+	String getPagerEmail(final User user) throws IOException;
 	
 	/**
 	 * <p>getNumericaPin</p>
@@ -318,10 +276,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getNumericPin(final String userID) throws IOException, MarshalException, ValidationException;
+	String getNumericPin(final String userID) throws IOException;
 	
 	/**
 	 * <p>getNumericPin</p>
@@ -329,10 +285,8 @@ public interface UserConfig {
 	 * @param a User
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getNumericPin(final User user) throws IOException, MarshalException, ValidationException;
+	String getNumericPin(final User user) throws IOException;
 	
 	/**
 	 * <p>getXMPPAddress</p>
@@ -340,10 +294,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getXMPPAddress(final String userID) throws IOException, MarshalException, ValidationException;
+	String getXMPPAddress(final String userID) throws IOException;
 	
 	/**
 	 * <p>getXMPPAddress</p>
@@ -351,10 +303,8 @@ public interface UserConfig {
 	 * @param a User
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getXMPPAddress(final User user) throws IOException, MarshalException, ValidationException;
+	String getXMPPAddress(final User user) throws IOException;
 	
 	/**
 	 * <p>getNumericPage</p>
@@ -362,10 +312,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getNumericPage(final String userID) throws IOException, MarshalException, ValidationException;
+	String getNumericPage(final String userID) throws IOException;
 	
 	/**
 	 * <p>getNumericPage</p>
@@ -373,10 +321,8 @@ public interface UserConfig {
 	 * @param a User
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getNumericPage(final User user) throws IOException, MarshalException, ValidationException;
+	String getNumericPage(final User user) throws IOException;
 	
 	/**
 	 * <p>getTextPin</p>
@@ -384,10 +330,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getTextPin(final String userID) throws IOException, MarshalException, ValidationException;
+	String getTextPin(final String userID) throws IOException;
 	
 	/**
 	 * <p>getTextPin</p>
@@ -395,10 +339,8 @@ public interface UserConfig {
 	 * @param a User
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getTextPin(final User user) throws IOException, MarshalException, ValidationException;
+	String getTextPin(final User user) throws IOException;
 	
 	/**
 	 * <p>getTextPage</p>
@@ -406,10 +348,8 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getTextPage(final String userID) throws IOException, MarshalException, ValidationException;
+	String getTextPage(final String userID) throws IOException;
 	
 	/**
 	 * <p>getTextPage</p>
@@ -417,76 +357,62 @@ public interface UserConfig {
 	 * @param a User
 	 * @return a String
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String getTextPage(final User user) throws IOException, MarshalException, ValidationException;
+	String getTextPage(final User user) throws IOException;
 	
 	/**
 	 * <p>getWorkPhone</p>
 	 * 
 	 * @param a String
 	 * @return a String
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	String getWorkPhone(final String userID) throws MarshalException, ValidationException, IOException;
+	String getWorkPhone(final String userID) throws  IOException;
 	
 	/**
 	 * <p>getWorkPhone</p>
 	 * 
 	 * @param a User
 	 * @return a String
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	String getWorkPhone(final User user) throws MarshalException, ValidationException, IOException;
+	String getWorkPhone(final User user) throws  IOException;
 	
 	/**
 	 * <p>getMobilePhone</p>
 	 * 
 	 * @param a String
 	 * @return a String
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	String getMobilePhone(final String userID) throws MarshalException, ValidationException, IOException;
+	String getMobilePhone(final String userID) throws  IOException;
 	
 	/**
 	 * <p>getMobilePhone</p>
 	 * 
 	 * @param a User
 	 * @return a String
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	String getMobilePhone(final User user) throws MarshalException, ValidationException, IOException;
+	String getMobilePhone(final User user) throws  IOException;
 	
 	/**
 	 * <p>getHomePhone</p>
 	 * 
 	 * @param a String
 	 * @return a String
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	String getHomePhone(final String userID) throws MarshalException, ValidationException, IOException;
+	String getHomePhone(final String userID) throws  IOException;
 	
 	/**
 	 * <p>getHomePhone</p>
 	 * 
 	 * @param a User
 	 * @return a String
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	String getHomePhone(final User user) throws MarshalException, ValidationException, IOException;
+	String getHomePhone(final User user) throws  IOException;
 	
 	/**
 	 * <p>saveUsers</p>
@@ -564,10 +490,8 @@ public interface UserConfig {
 	 * 
 	 * @throws IOException
 	 * @throws FileNotFoundException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	void update() throws IOException, FileNotFoundException, MarshalException, ValidationException;
+	void update() throws IOException, FileNotFoundException;
 	
 	/**
 	 * <p>getUsersWithRole</p>
@@ -575,10 +499,8 @@ public interface UserConfig {
 	 * @param roleid
 	 * @return
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	String[] getUsersWithRole(final String roleid) throws IOException, MarshalException, ValidationException;
+	String[] getUsersWithRole(final String roleid) throws IOException;
 	
 	/**
 	 * <p>userHasRole</p>
@@ -587,11 +509,9 @@ public interface UserConfig {
 	 * @param a String
 	 * @return a boolean
 	 * @throws FileNotFoundException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	boolean userHasRole(final User user, final String roleid) throws FileNotFoundException, MarshalException, ValidationException, IOException;
+	boolean userHasRole(final User user, final String roleid) throws FileNotFoundException, IOException;
 	
 	/**
 	 * <p>isUserScheduledForRole</p>
@@ -601,11 +521,9 @@ public interface UserConfig {
 	 * @param a Date
 	 * @return a boolean
 	 * @throws FileNotFoundException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	boolean isUserScheduledForRole(final User user, final String roleid, final Date time) throws FileNotFoundException, MarshalException, ValidationException, IOException;
+	boolean isUserScheduledForRole(final User user, final String roleid, final Date time) throws FileNotFoundException, IOException;
 	
 	/**
 	 * <p>getUsersScheduledForRole</p>
@@ -613,31 +531,25 @@ public interface UserConfig {
 	 * @param a String
 	 * @param a Date
 	 * @return a String[]
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	String[] getUsersScheduledForRole(final String roleid, final Date time) throws MarshalException, ValidationException, IOException;
+	String[] getUsersScheduledForRole(final String roleid, final Date time) throws  IOException;
 	
 	/**
-	 * <p>hasRole</p>
+	 * <p>hasOnCallRole</p>
 	 * 
 	 * @param a String
 	 * @return a boolean
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	boolean hasRole(final String roleid) throws MarshalException, ValidationException, IOException;
+	boolean hasOnCallRole(final String roleid) throws IOException;
 	
 	/**
 	 * <p>countUsersWithRole</p>
 	 * 
 	 * @param a String
 	 * @return an int
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	int countUsersWithRole(final String roleid) throws MarshalException, ValidationException, IOException;
+	int countUsersWithRole(final String roleid) throws IOException;
 }

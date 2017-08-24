@@ -13,6 +13,7 @@ var links = {
 	'Import and Export Asset Information': 'Import and Export Assets',
 	'Manage Surveillance Categories': 'Surveillance Categories',
 	'Configure Discovery': 'General Settings',
+	'Configure SNMP Community Names by IP Address': 'SNMP Config Lookup',
 	'Manually Add an Interface': 'Enter IP Address',
 	'Delete Nodes': 'Delete Nodes',
 
@@ -23,7 +24,6 @@ var links = {
 
 	// Service Monitoring
 	'Configure Scheduled Outages': new Selector('form > input[value="New Name"]'),
-	'Configure SNMP Community Names by IP Address': 'SNMP Config Lookup',
 	'Manage and Unmanage Interfaces and Services': 'Manage and Unmanage Interfaces and Services',
 
 	// Performance Measurement

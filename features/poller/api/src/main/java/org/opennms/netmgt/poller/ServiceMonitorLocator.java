@@ -49,13 +49,12 @@ public interface ServiceMonitorLocator {
      * @return a {@link java.lang.String} object.
      */
     String getServiceLocatorKey();
-    
+
     /**
      * <p>getServiceMonitor</p>
      *
      * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
      */
-    ServiceMonitor getServiceMonitor();
-    
+    ServiceMonitor getServiceMonitor(ServiceMonitorRegistry registry);
 
 }

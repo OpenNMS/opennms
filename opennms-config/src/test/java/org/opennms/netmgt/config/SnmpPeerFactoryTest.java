@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ByteArrayResource;
 
@@ -121,11 +122,39 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "       <range begin=\"10.0.1.100\" end=\"10.0.5.100\"/>\n" +
                 "       <range begin=\"10.7.20.100\" end=\"10.7.25.100\"/>\n" +
                 "   </definition>\n" + 
-                "\n" + 
+                "\n" +
                 "   <definition version=\"v2c\" read-community=\"specificv2c\">\n" + 
                 "       <specific>192.168.0.50</specific>\n" +
                 "   </definition>\n" + 
-                "\n" + 
+                "\n" +
+                "   <definition version=\"v2c\" location=\"MINION\" timeout=\"2500\">\n" + 
+                "       <specific>192.168.0.50</specific>\n" +
+                "   </definition>\n" +
+                "\n" +
+                "   <definition version=\"v2c\" location=\"OPENNMS\" timeout=\"2000\">\n" + 
+                "       <specific>192.160.0.50</specific>\n" +
+                "   </definition>\n" + 
+                "\n" +
+                "   <definition version=\"v2c\" location=\"MINION\" timeout=\"2200\">\n" + 
+                "       <specific>192.167.0.50</specific>\n" +
+                "   </definition>\n" + 
+                "\n" +
+                "   <definition version=\"v2c\" location=\"MINION\" timeout=\"2300\">\n" + 
+                "       <specific>192.166.0.50</specific>\n" +
+                "   </definition>\n" + 
+                "\n" +
+                "   <definition version=\"v2c\" location=\"AUSTIN\" timeout=\"2100\">\n" + 
+                "       <specific>192.164.0.50</specific>\n" +
+                "   </definition>\n" +
+                "\n" +
+                "   <definition version=\"v3\"  timeout=\"2400\">\n" + 
+                "       <specific>192.164.0.50</specific>\n" +
+                "   </definition>\n" +
+                "\n" +
+                "   <definition version=\"v2c\" read-community=\"rangev2\">\n" + 
+                "       <specific>192.167.0.50</specific>\n" +
+                "   </definition>\n" + 
+                "\n" +
                 "   <definition version=\"v2c\" read-community=\"ipmatch\" max-vars-per-pdu=\"128\" max-repetitions=\"7\" >\n" + 
                 "       <ip-match>77.5-12,15.1-255.255</ip-match>\n" +
                 "   </definition>\n" + 
@@ -296,23 +325,88 @@ public class SnmpPeerFactoryTest extends TestCase {
     public void testGetV1Config() throws UnknownHostException {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.0.0.1"));
         assertNotNull(agentConfig);
-        assertTrue(agentConfig.getVersion() == SnmpAgentConfig.VERSION1);
+        assertEquals(SnmpAgentConfig.VERSION1, agentConfig.getVersion());
         assertEquals("specificv1", agentConfig.getReadCommunity());
     }
 
     /**
      * This tests for a specifically defined v2c agentConfig
+     * 
      * @throws UnknownHostException
      */
     public void testGetV2cConfig() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("192.168.0.50"));
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
+                .getAgentConfig(InetAddressUtils.addr("192.168.0.50"));
         assertNotNull(agentConfig);
         assertEquals(agentConfig.getVersion(), SnmpAgentConfig.VERSION2C);
         assertEquals("specificv2c", agentConfig.getReadCommunity());
     }
 
     /**
+     * Below tests for a valid/invalid location match
+     * 
+     * @throws UnknownHostException
+     */
+    public void testGetConfigWithValidLocation() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
+                .getAgentConfig(InetAddressUtils.addr("192.168.0.50"), "MINION");
+        assertNotNull(agentConfig);
+        assertEquals(agentConfig.getVersion(), SnmpAgentConfig.VERSION2C);
+        assertEquals(2500, agentConfig.getTimeout());
+    }
+
+    public void testGetConfigWithInvalidLocation() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
+                .getAgentConfig(InetAddressUtils.addr("192.168.0.51"), "AUSTIN");
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION1, agentConfig.getVersion());
+        assertEquals("public", agentConfig.getReadCommunity());
+    }
+
+    public void testGetV2cConfigWithoutLocation() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
+                .getAgentConfig(InetAddressUtils.addr("192.167.0.50"), LocationUtils.DEFAULT_LOCATION_NAME);
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION2C, agentConfig.getVersion());
+        assertEquals("rangev2", agentConfig.getReadCommunity());
+    }
+
+    public void testGetV2cConfigWithDifferentLocation() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
+                .getAgentConfig(InetAddressUtils.addr("192.166.0.50"));
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION1, agentConfig.getVersion());
+        assertEquals("public", agentConfig.getReadCommunity());
+    }
+
+
+    public void testGetV3ConfigWithoutLocation() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
+                .getAgentConfig(InetAddressUtils.addr("192.164.0.50"), LocationUtils.DEFAULT_LOCATION_NAME);
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION3, agentConfig.getVersion());
+        assertEquals(2400, agentConfig.getTimeout());
+    }
+
+    public void testNoMatchedDefinitionWithLocationMatch() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
+                .getAgentConfig(InetAddressUtils.addr("192.160.0.50"), "MINION");
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION1, agentConfig.getVersion());
+        assertEquals("public", agentConfig.getReadCommunity());
+    }
+
+    public void testFallbackToDefaultLocation() {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(
+                InetAddressUtils.addr("10.7.23.100"), "SOME-LOCATION");
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION2C, agentConfig.getVersion());
+        assertEquals("rangev2c", agentConfig.getReadCommunity());
+    }
+
+    /**
      * This tests for ranges configured for a v2 node and community string
+     * 
      * @throws UnknownHostException
      */
     public void testReversedRange() throws UnknownHostException {

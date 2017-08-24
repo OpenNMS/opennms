@@ -29,59 +29,57 @@
 package org.opennms.features.topology.app.internal;
 
 
-import java.util.*;
-
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.support.HistoryAwareSearchProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
-import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
-import org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory;
-import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 
-public class CategorySearchProvider extends AbstractSearchProvider implements SearchProvider {
+public class CategorySearchProvider extends AbstractSearchProvider implements HistoryAwareSearchProvider {
 
-    private CategoryHopCriteriaFactory m_categoryHopFactory;
-    private CategoryDao m_categoryDao;
+    private final static String CONTRIBUTES_TO_NAMESPACE = "nodes";
+
+    private final CategoryProvider categoryProvider;
+
     private String m_hiddenCategoryPrefix = null;
 
-    public CategorySearchProvider(CategoryDao categoryDao, NodeDao nodeDao){
-        m_categoryDao = categoryDao;
-        
-        //Not sure why we have to do this...
-        m_categoryHopFactory = new CategoryHopCriteriaFactory(categoryDao, nodeDao);
+    public CategorySearchProvider(CategoryProvider categoryProvider) {
+        this.categoryProvider = Objects.requireNonNull(categoryProvider);
     }
 
     @Override
     public String getSearchProviderNamespace() {
-        return "category";
+        return CategoryHopCriteria.NAMESPACE;
     }
 
     @Override
     public boolean contributesTo(String namespace) {
-        return "nodes".equals(namespace);
+        return CONTRIBUTES_TO_NAMESPACE.equals(namespace);
     }
 
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
 
-        Collection<OnmsCategory> categories = m_categoryDao.findAll();
+        Collection<OnmsCategory> categories = categoryProvider.getAllCategories();
 
         List<SearchResult> results = new ArrayList<SearchResult>();
         for (OnmsCategory category : categories) {
             if (!checkHiddenPrefix(category.getName()) && searchQuery.matches(category.getName())) {
-                SearchResult result = new SearchResult("category", category.getId().toString(), category.getName(), searchQuery.getQueryString());
-                result.setCollapsible(true);
+                SearchResult result = new SearchResult(CategoryHopCriteria.NAMESPACE, category.getId().toString(), category.getName(),
+                        searchQuery.getQueryString(), SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
                 CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, category.getName());
                 if (criteria != null) {
                     result.setCollapsed(criteria.isCollapsed());
@@ -94,15 +92,12 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     private boolean checkHiddenPrefix(String name) {
         if(m_hiddenCategoryPrefix == null || m_hiddenCategoryPrefix.equals("")) return false;
-
         return name.startsWith(m_hiddenCategoryPrefix);
-
-
     }
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return supportsPrefix("category=", searchPrefix);
+        return supportsPrefix(CategoryHopCriteria.NAMESPACE+"=", searchPrefix);
     }
 
     //FIXME: Should return the <Set> of <VertexRef> that are associated with <SearchResult>
@@ -113,28 +108,24 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        CategoryHopCriteria criteria = m_categoryHopFactory.getCriteria(searchResult.getLabel());
-        criteria.setId(searchResult.getId());
+        CategoryHopCriteria criteria = createCriteria(searchResult);
         container.addCriteria(criteria);
     }
 
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        CategoryHopCriteria c = m_categoryHopFactory.getCriteria(searchResult.getLabel());
-        c.setId(searchResult.getId());
-        container.removeCriteria(c);
-    }
-
-    public CategoryDao getCategoryDao() {
-        return m_categoryDao;
-    }
-
-    public void setCategoryDao(CategoryDao categoryDao) {
-        m_categoryDao = categoryDao;
+        CategoryHopCriteria criteria = createCriteria(searchResult);
+        container.removeCriteria(criteria);
     }
 
     public void setHiddenCategoryPrefix(String prefix) {
         m_hiddenCategoryPrefix = prefix;
+    }
+
+    @Override
+    public Criteria buildCriteriaFromQuery(SearchResult input) {
+        CategoryHopCriteria criteria = createCriteria(input);
+        return criteria;
     }
 
     @Override
@@ -148,11 +139,16 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     private static CollapsibleCriteria getMatchingCriteria(GraphContainer graphContainer, String id) {
         CollapsibleCriteria[] criteria = VertexHopGraphProvider.getCollapsibleCriteriaForContainer(graphContainer);
-        for (CollapsibleCriteria criterium : criteria) {
-            if (criterium.getId().equals(id)) {
-                return criterium;
+        for (CollapsibleCriteria criterion : criteria) {
+            if (criterion.getId().equals(id)) {
+                return criterion;
             }
         }
         return null;
+    }
+
+    private CategoryHopCriteria createCriteria(SearchResult searchResult) {
+        CategoryHopCriteria criteria = new CategoryHopCriteria(searchResult, categoryProvider);
+        return criteria;
     }
 }

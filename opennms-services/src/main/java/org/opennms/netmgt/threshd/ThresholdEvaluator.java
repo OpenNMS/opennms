@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import org.opennms.netmgt.config.threshd.ThresholdType;
 
 /**
  * Class used to provide information to ThresholdEntity about the
@@ -45,7 +46,7 @@ public interface ThresholdEvaluator {
      * @param type a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean supportsType(String type);
+    public boolean supportsType(ThresholdType type);
 
     /**
      * <p>getThresholdEvaluatorState</p>

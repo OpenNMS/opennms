@@ -37,10 +37,8 @@ import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,13 +79,6 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_INET)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
         // Process parameters
         //
 
@@ -98,9 +89,9 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
 
         // Get interface address from NetworkInterface
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
-            LOG.debug("DhcpMonitor.poll: address: {} timeout: {} retry: {}", ipv4Addr, timeout,  retry);
+        LOG.debug("DhcpMonitor.poll: address: {} timeout: {} retry: {}", ipAddr, timeout,  retry);
 
         PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;
@@ -109,7 +100,7 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
             // if the remote box is a DHCP server or -1 if the remote
             // box is NOT a DHCP server.
             // 
-            responseTime = Dhcpd.isServer(ipv4Addr, (long) timeout, retry);
+            responseTime = Dhcpd.isServer(ipAddr, (long) timeout, retry);
             if (responseTime >= 0) {
                 serviceStatus = PollStatus.available((double)responseTime);
             }

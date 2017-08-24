@@ -47,6 +47,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.jdbc.JdbcDetector;
+import org.opennms.netmgt.provision.detector.jdbc.JdbcDetectorFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +65,10 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class JDBCDetectorIT implements InitializingBean {
+    
     @Autowired
+    public JdbcDetectorFactory m_detectorFactory;
     public JdbcDetector m_detector;
-
     @Autowired
     DataSource m_dataSource;
 
@@ -78,7 +80,7 @@ public class JDBCDetectorIT implements InitializingBean {
     @Before
     public void setUp() throws UnknownHostException, SQLException {
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         String url = null;
         String username = null;
         Connection conn = null;

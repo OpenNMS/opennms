@@ -28,13 +28,17 @@
 
 package org.opennms.web.rest.support;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cxf.jaxrs.ext.search.PrimitiveStatement;
+import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
+import org.apache.cxf.jaxrs.ext.search.SearchConditionVisitor;
 import org.apache.cxf.jaxrs.ext.search.SearchUtils;
 import org.apache.cxf.jaxrs.ext.search.visitor.AbstractSearchConditionVisitor;
 import org.opennms.core.criteria.Criteria;
@@ -44,9 +48,33 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisitor<T, CriteriaBuilder> {
+/**
+ * This {@link SearchConditionVisitor} will convert CXF {@link SearchCondition}
+ * instances into a {@link Criteria} that is suitable for querying one of our
+ * DAO interfaces.
+ * 
+ * @param <T> Entity object type (eg. OnmsNode)
+ * @param <Q> Query bean type. In some cases, this will be the same as the entity
+ *   object type but for complex objects, a specific query bean or the CXF {@link SearchBean}
+ *   may be used instead.
+ */
+public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVisitor<Q, CriteriaBuilder> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CriteriaBuilderSearchVisitor.class);
+
+	/**
+	 * Use this value to represent null values. This will translate into a 
+	 * {@link CriteriaBuilder#isNull(String)} or {@link CriteriaBuilder#isNotNull(String)}
+	 * call (depending on the operator).
+	 */
+	public static final String NULL_VALUE = "\u0000";
+
+	/**
+	 * Use this value to represent null {@link Date} values. This will translate into a 
+	 * {@link CriteriaBuilder#isNull(String)} or {@link CriteriaBuilder#isNotNull(String)}
+	 * call (depending on the operator).
+	 */
+	public static final Date NULL_DATE_VALUE = new Date(0);
 
 	/**
 	 * Class that this {@link CriteriaBuilder} will generate {@link Criteria} for.
@@ -56,11 +84,12 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 	/**
 	 * {@link CriteriaBuilder} that will be generated.
 	 */
-	private CriteriaBuilder m_criteriaBuilder;
+	private final CriteriaBuilder m_criteriaBuilder;
+
+	private final Map<String,CriteriaBehavior<?>> m_criteriaBehaviors;
 
 	/**
 	 * Constructor that just specifies the target class.
-	 * @param clazz
 	 */
 	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz) {
 		this(criteriaBuilder, clazz, null);
@@ -68,16 +97,17 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 
 	/**
 	 * Constructor that specifies the target class and a list of field aliases.
-	 * @param clazz
 	 */
-	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz, Map<String, String> fieldMap) {
-		super(fieldMap);
+	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz, Map<String,CriteriaBehavior<?>> behaviors) {
+		super(null);
 		m_class = clazz;
 		m_criteriaBuilder = criteriaBuilder;
+		m_criteriaBehaviors = behaviors;
 		setWildcardStringMatch(true);
 	}
 
-	public void visit(SearchCondition<T> sc) {
+	@Override
+	public void visit(SearchCondition<Q> sc) {
 		PrimitiveStatement statement = sc.getStatement();
 		if (statement != null) {
 			if (statement.getProperty() != null) {
@@ -96,36 +126,93 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 					if (SearchUtils.containsWildcard((String)clsValue.getValue())) {
 						// Then mark it as a wildcard and replace the * wildcards with % wildcards
 						isWildcard = true;
-						clsValue.setValue(SearchUtils.toSqlWildcardString((String)clsValue.getValue(), isWildcardStringMatch()));
+						clsValue.setValue(SearchUtils.toSqlWildcardString((String)clsValue.getValue(), false));
 					}
 				}
+
+				final Object value;
+
+				// Check to see if we have any criteria behaviors for this search term
+				if (m_criteriaBehaviors != null && m_criteriaBehaviors.containsKey(name)) {
+					// TODO: Change CriteriaBehaviors so that they can remap prefixes 
+					// so that we don't have to put every joined property into m_criteriaMapping
+					CriteriaBehavior<?> behavior = m_criteriaBehaviors.get(name);
+
+					// Convert the query bean property name to the Criteria property name
+					// if necessary
+					name = behavior.getPropertyName() == null ? name : behavior.getPropertyName();
+
+					// If we're using CriteriaBehaviors, assume that the value is a String
+					// and convert it to the value that will be used in the Criteria
+					value = behavior.convert(NULL_VALUE.equals((String)clsValue.getValue()) ? null : (String)clsValue.getValue());
+
+					// Execute any beforeVisit() actions for this query term such as adding
+					// additional JOIN aliases
+					behavior.beforeVisit(m_criteriaBuilder, value, sc.getConditionType(), isWildcard);
+
+					// If the behavior indicates that we should skip this search term, then return
+					if (behavior.shouldSkipProperty()) {
+						return;
+					}
+				} else {
+					value = clsValue.getValue();
+				}
+
+				// TODO: Should we get the condition off of the statement instead??
+				// I think they're always identical if the PrimitiveStatement has a
+				// statement.
+				//switch(statement.getCondition()) {
 
 				switch(sc.getConditionType()) {
 				case EQUALS:
 					if (isWildcard) {
-						m_criteriaBuilder.like(name, clsValue.getValue());
+						m_criteriaBuilder.like(name, value);
 					} else {
-						m_criteriaBuilder.eq(name, clsValue.getValue());
+						if (
+							value == null || 
+							NULL_VALUE.equals(value) ||
+							NULL_DATE_VALUE.equals(value)
+						) {
+							m_criteriaBuilder.isNull(name);
+						} else {
+							m_criteriaBuilder.eq(name, value);
+						}
 					}
 					break;
 				case NOT_EQUALS:
 					if (isWildcard) {
-						m_criteriaBuilder.not().like(name, clsValue.getValue());
+						m_criteriaBuilder.not().like(name, value);
 					} else {
-						m_criteriaBuilder.ne(name, clsValue.getValue());
+						if (
+							value == null || 
+							NULL_VALUE.equals(value) ||
+							NULL_DATE_VALUE.equals(value)
+						) {
+							m_criteriaBuilder.isNotNull(name);
+						} else {
+							// Match any rows that do not match the value or are null
+							m_criteriaBuilder.or(
+								Restrictions.ne(name, value),
+								Restrictions.isNull(name)
+							);
+						}
 					}
 					break;
 				case LESS_THAN:
-					m_criteriaBuilder.lt(name, clsValue.getValue());
+					// TODO: Check for null?
+					m_criteriaBuilder.lt(name, value);
 					break;
 				case GREATER_THAN:
-					m_criteriaBuilder.gt(name, clsValue.getValue());
+					// TODO: Check for null?
+					m_criteriaBuilder.gt(name, value);
 					break;
 				case LESS_OR_EQUALS:
-					m_criteriaBuilder.le(name, clsValue.getValue());
+					// TODO: Check for null?
+					m_criteriaBuilder.le(name, value);
 					break;
 				case GREATER_OR_EQUALS:
-					m_criteriaBuilder.ge(name, clsValue.getValue());
+					// TODO: Check for null?
+					m_criteriaBuilder.ge(name, value);
 					break;
 				case OR:
 				case AND:
@@ -136,8 +223,18 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 			}
 		} else {
 			List<Restriction> subRestrictions = new ArrayList<Restriction>();
-			for (SearchCondition<T> condition : sc.getSearchConditions()) {
-				CriteriaBuilderSearchVisitor<T> newVisitor = new CriteriaBuilderSearchVisitor<T>(new CriteriaBuilder(m_class), m_class);
+			for (SearchCondition<Q> condition : sc.getSearchConditions()) {
+				// Create a new CriteriaBuilder
+				CriteriaBuilder builder = null;
+				try {
+					// Try to use the same class as the outside CriteriaBuilder
+					builder = m_criteriaBuilder.getClass().getConstructor(Class.class).newInstance(m_class);
+				} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+					LOG.warn("Could not create " + m_criteriaBuilder.getClass().getSimpleName() + "; falling back to CriteriaBuilder: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+					builder = new CriteriaBuilder(m_class);
+				}
+				// Create a new visitor for the SearchCondition
+				CriteriaBuilderSearchVisitor<T,Q> newVisitor = new CriteriaBuilderSearchVisitor<T,Q>(builder, m_class, m_criteriaBehaviors);
 
 				// Visit the children
 				condition.accept(newVisitor);
@@ -180,4 +277,5 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 	public CriteriaBuilder getQuery() {
 		return m_criteriaBuilder;
 	}
+
 }

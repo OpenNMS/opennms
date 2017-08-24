@@ -32,11 +32,10 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpVarBindDTO;
 import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.opennms.netmgt.snmp.TrapProcessor;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;
@@ -55,60 +54,71 @@ import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
 public class Snmp4JTrapNotifier implements CommandResponder {
-	
-	public static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JTrapNotifier.class);
 
-    private TrapProcessorFactory m_trapProcessorFactory;
+    public static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JTrapNotifier.class);
+
     private TrapNotificationListener m_listener;
 
-    public Snmp4JTrapNotifier(TrapNotificationListener listener, TrapProcessorFactory processorFactory) {
+    public Snmp4JTrapNotifier(TrapNotificationListener listener) {
         m_listener = listener;
-        m_trapProcessorFactory = processorFactory;
     }
     
     public static class Snmp4JV1TrapInformation extends TrapInformation {
 
         private PDUv1 m_pdu;
 
-        protected Snmp4JV1TrapInformation(InetAddress agent, String community, PDUv1 pdu, TrapProcessor trapProcessor) {
-            super(agent, community, trapProcessor);
+        public Snmp4JV1TrapInformation(InetAddress agent, String community, PDUv1 pdu) {
+            super(agent, community);
             m_pdu = pdu;
         }
+        
+        /**
+         * Returns the Protocol Data Unit that was encapsulated within the SNMP
+         * Trap message
+         */
+        public PDUv1 getPdu() {
+            return m_pdu;
+        }
 
+        /**
+         * @return The {@link InetAddress} of the agent that generated the trap
+         * as found in the SNMPv1 AgentAddress field. This can vary from the value
+         * of {@link #getAgentAddress()} if the SNMPv1 trap has been forwarded.
+         */
         @Override
-        protected InetAddress getTrapAddress() {
+        public InetAddress getTrapAddress() {
             return m_pdu.getAgentAddress().getInetAddress();
         }
 
         @Override
-        protected String getVersion() {
+        public String getVersion() {
             return "v1";
         }
 
         @Override
-        protected int getPduLength() {
+        public int getPduLength() {
             return m_pdu.getVariableBindings().size();
         }
 
         @Override
-        protected long getTimeStamp() {
+        public long getTimeStamp() {
             return m_pdu.getTimestamp();
         }
 
         @Override
-        protected TrapIdentity getTrapIdentity() {
+        public TrapIdentity getTrapIdentity() {
             return new TrapIdentity(SnmpObjId.get(m_pdu.getEnterprise().getValue()), m_pdu.getGenericTrap(), m_pdu.getSpecificTrap());
         }
-        
+
         protected VariableBinding getVarBindAt(int i) {
             return m_pdu.get(i);
         }
 
         @Override
-        protected void processVarBindAt(int i) {
+        public SnmpVarBindDTO getSnmpVarBindDTO(int i) {
             SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getOid().getValue());
             SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
-            processVarBind(name, value);
+            return new SnmpVarBindDTO(name, value);
         }
 
 		@Override
@@ -130,6 +140,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
     }
 
     public static class Snmp4JV2TrapInformation extends TrapInformation {
+
         /**
          * The received PDU
          */
@@ -176,11 +187,9 @@ public class Snmp4JTrapNotifier implements CommandResponder {
          *            The community string from the SNMP packet.
          * @param pdu
          *            The encapsulated Protocol Data Unit.
-         * @param trapProcessor The trap processor used to process the trap data
-         * 
          */
-        public Snmp4JV2TrapInformation(InetAddress agent, String community, PDU pdu, TrapProcessor trapProcessor) {
-            super(agent, community, trapProcessor);
+        public Snmp4JV2TrapInformation(InetAddress agent, String community, PDU pdu) {
+            super(agent, community);
             m_pdu = pdu;
             m_pduTypeString = PDU.getTypeString(m_pdu.getType());
         }
@@ -189,19 +198,19 @@ public class Snmp4JTrapNotifier implements CommandResponder {
          * Returns the Protocol Data Unit that was encapsulated within the SNMP
          * Trap message
          */
-        private PDU getPdu() {
+        public PDU getPdu() {
             return m_pdu;
         }
         
         @Override
-        protected int getPduLength() {
+        public int getPduLength() {
             return getPdu().size();
         }
         
         @Override
-        protected long getTimeStamp() {
+        public long getTimeStamp() {
 
-		LOG.debug("V2 {} first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
+            LOG.debug("V2 {} first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
 
             switch (getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getVariable().getSyntax()) {
             case SMIConstants.SYNTAX_TIMETICKS:
@@ -216,13 +225,16 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         }
 
         @Override
-        protected TrapIdentity getTrapIdentity() {
+        public TrapIdentity getTrapIdentity() {
             OID snmpTrapOid = (OID) getVarBindAt(SNMP_TRAP_OID_INDEX).getVariable();
             OID lastVarBindOid = getVarBindAt(getPduLength() - 1).getOid();
             Variable lastVarBindValue = getVarBindAt(getPduLength() - 1).getVariable();
             return new TrapIdentity(SnmpObjId.get(snmpTrapOid.getValue()), SnmpObjId.get(lastVarBindOid.getValue()), new Snmp4JValue(lastVarBindValue));
         }
 
+        /**
+         *  For SNMPv2 traps, this returns the same value as {@link #getAgentAddress()}.
+         */
         @Override
         public InetAddress getTrapAddress() {
             return getAgentAddress();
@@ -233,12 +245,12 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         }
 
         @Override
-        protected String getVersion() {
+        public String getVersion() {
             return "v2";
         }
 
         @Override
-        protected void validate() {
+        public void validate() {
         	int pduType = getPdu().getType();
             if (pduType != PDU.TRAP && pduType != PDU.INFORM) {
                 throw new IllegalArgumentException("Received not SNMPv2 Trap|Inform from host " + getTrapAddress() + " PDU Type = " + PDU.getTypeString(getPdu().getType()));
@@ -277,15 +289,17 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         }
 
         @Override
-        protected void processVarBindAt(int i) {
+        public SnmpVarBindDTO getSnmpVarBindDTO(int i) {
             if (i == 0) {
                 LOG.debug("Skipping processing of varbind {}: it is sysuptime and the first varbind, and is not processed as a parm per RFC2089", i);
+                return null;
             } else if (i == 1) {
-                LOG.debug("Skipping processing of varbind {}: it is the trap OID and the second varbind, and is not processed as a parm per RFC2089", i);				
+                LOG.debug("Skipping processing of varbind {}: it is the trap OID and the second varbind, and is not processed as a parm per RFC2089", i);
+                return null;
             } else {
                 SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getOid().getValue());
                 SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
-                processVarBind(name, value);
+                return new SnmpVarBindDTO(name, value);
             }
         }
 
@@ -346,9 +360,9 @@ public class Snmp4JTrapNotifier implements CommandResponder {
                 }
             }
             if (command instanceof PDUv1) {
-                m_listener.trapReceived(new Snmp4JV1TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), (PDUv1)command, m_trapProcessorFactory.createTrapProcessor()));
+                m_listener.trapReceived(new Snmp4JV1TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), (PDUv1)command));
             } else {
-                m_listener.trapReceived(new Snmp4JV2TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), command, m_trapProcessorFactory.createTrapProcessor()));
+                m_listener.trapReceived(new Snmp4JV2TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), command));
             }
         }
     }

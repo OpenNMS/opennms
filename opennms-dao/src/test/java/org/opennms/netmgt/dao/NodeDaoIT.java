@@ -44,14 +44,21 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -64,8 +71,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -79,8 +84,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
@@ -88,6 +92,9 @@ public class NodeDaoIT implements InitializingBean {
 
     @Autowired
     DistPollerDao m_distPollerDao;
+
+    @Autowired
+    MonitoringLocationDao m_locationDao;
 
     @Autowired
     NodeDao m_nodeDao;
@@ -106,12 +113,12 @@ public class NodeDaoIT implements InitializingBean {
         org.opennms.core.spring.BeanUtils.assertAutowiring(this);
     }
 
-    @BeforeTransaction
+    @Before
     public void setUp() {
         m_populator.populateDatabase();
     }
 
-    @AfterTransaction
+    @After
     public void tearDown() {
         m_populator.resetDatabase();
     }
@@ -136,7 +143,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testSave() {
 
-        OnmsNode node = new OnmsNode("MyFirstNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         getNodeDao().save(node);
 
         getNodeDao().flush();
@@ -146,7 +153,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testSaveWithPathElement() {
 
-        OnmsNode node = new OnmsNode("MyFirstNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -157,7 +164,7 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testSaveWithNullPathElement() {
-        OnmsNode node = new OnmsNode("MyFirstNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -173,7 +180,7 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testLldpSaveAndUpdate() throws InterruptedException {
-        OnmsNode node = new OnmsNode("MyFirstLldpNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstLldpNode");
         getNodeDao().save(node);
         getNodeDao().flush();
         
@@ -251,7 +258,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testCreate() throws InterruptedException {
 
-        OnmsNode node = new OnmsNode("MyFirstNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         node.getAssetRecord().setDisplayCategory("MyCategory");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
@@ -289,8 +296,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testDeleteOnOrphanIpInterface() {
 
-        @SuppressWarnings("deprecation")
-		int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
+        int preCount = getJdbcTemplate().queryForObject("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId(), Integer.class);
 
         OnmsNode n = getNodeDao().get(getNode1().getId());
         Iterator<OnmsIpInterface> it = n.getIpInterfaces().iterator();
@@ -299,8 +305,7 @@ public class NodeDaoIT implements InitializingBean {
         getNodeDao().saveOrUpdate(n);
         getNodeDao().flush();
 
-        @SuppressWarnings("deprecation")
-		int postCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
+        int postCount = getJdbcTemplate().queryForObject("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId(), Integer.class);
 
         assertEquals(preCount-1, postCount);
 
@@ -310,15 +315,13 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testDeleteNode() {
-        @SuppressWarnings("deprecation")
-		int preCount = getJdbcTemplate().queryForInt("select count(*) from node");
+        int preCount = getJdbcTemplate().queryForObject("select count(*) from node", Integer.class);
 
         OnmsNode n = getNodeDao().get(getNode1().getId());
         getNodeDao().delete(n);
         getNodeDao().flush();
 
-        @SuppressWarnings("deprecation")
-		int postCount = getJdbcTemplate().queryForInt("select count(*) from node");
+        int postCount = getJdbcTemplate().queryForObject("select count(*) from node", Integer.class);
 
         assertEquals(preCount-1, postCount);
     }
@@ -432,7 +435,6 @@ public class NodeDaoIT implements InitializingBean {
     @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testDeleteObsoleteInterfaces() {
         try {
-            m_populator.populateDatabase();
 
             final Date timestamp = new Date(1234);
 
@@ -499,6 +501,7 @@ public class NodeDaoIT implements InitializingBean {
 
     private void validateNode(OnmsNode n) throws Exception {
         assertNotNull("Expected node to be non-null", n);
+        assertNotNull("Expected location to be non-null", n.getLocation());
         assertNotNull("Expected node "+n.getId()+" to have interfaces", n.getIpInterfaces());
         assertEquals("Unexpected number of interfaces for node "+n.getId(), 4, n.getIpInterfaces().size());
         for (Object o : n.getIpInterfaces()) {
@@ -627,6 +630,43 @@ public class NodeDaoIT implements InitializingBean {
         assertEquals(2, nodes.size());
     }
 
+    /**
+     * This test exposes a bug in Hibernate: it is not applying join conditions
+     * correctly to the many-to-many node-to-category relationship.
+     * 
+     * This issue is documented in NMS-9470. If we upgrade Hibernate, we should
+     * recheck this issue to see if it is fixed.
+     * 
+     * @see https://issues.opennms.org/browse/NMS-9470
+     */
+    @Test
+    @Transactional
+    @Ignore("Ignore until Hibernate can be upgraded and this can be rechecked")
+    public void testCriteriaBuilderWithCategoryAlias() {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.alias("categories", "category", JoinType.LEFT_JOIN, Restrictions.eq("category.name", "Routers"));
+        m_nodeDao.findMatching(cb.toCriteria());
+    }
+
+    @Test
+    @Transactional
+    public void testCriteriaBuilderOrderBy() {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.alias("ipInterfaces", "ipInterface").distinct();
+
+        // TODO: Make this work but we need to put the fields into
+        // an aggregator function since node->ipInterfaces is a 1->M
+        // relationship.
+        //
+        //cb.orderBy("ipInterfaces.ipAddress").distinct();
+
+        Criteria criteria = cb.toCriteria();
+        System.out.println("Criteria: " + criteria.toString());
+        List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
+        nodes.stream().forEach(System.out::println);
+        assertEquals(6, nodes.size());
+    }
+
     @Test
     @Transactional
     public void testQuery2() {
@@ -637,5 +677,23 @@ public class NodeDaoIT implements InitializingBean {
         assertEquals(3, n.getIpInterfaces().size());
         assertNotNull(n.getAssetRecord());
         assertEquals("category1", n.getAssetRecord().getDisplayCategory());
+    }
+
+    /**
+     * Node 1 and 2 should have consecutive node IDs.
+     */
+    @Test
+    @Transactional
+    public void testGetNextNodeId() {
+        assertEquals(m_populator.getNode2().getId(), m_nodeDao.getNextNodeId(m_populator.getNode1().getId()));
+    }
+
+    /**
+     * Node 1 and 2 should have consecutive node IDs.
+     */
+    @Test
+    @Transactional
+    public void testGetPreviousNodeId() {
+        assertEquals(m_populator.getNode1().getId(), m_nodeDao.getPreviousNodeId(m_populator.getNode2().getId()));
     }
 }

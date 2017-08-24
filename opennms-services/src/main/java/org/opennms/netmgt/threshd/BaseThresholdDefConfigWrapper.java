@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,16 +29,18 @@
 package org.opennms.netmgt.threshd;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.config.threshd.Threshold;
+import org.opennms.netmgt.config.threshd.ThresholdType;
 
 /**
  * <p>Abstract BaseThresholdDefConfigWrapper class.</p>
@@ -81,7 +83,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      */
     public List<String> getFilterDatasources() {
         final List<String> dataSources = new ArrayList<String>();
-        for (ResourceFilter s : getBasethresholddef().getResourceFilterCollection()) {
+        for (ResourceFilter s : getBasethresholddef().getResourceFilters()) {
             dataSources.add(s.getField());
         }
         return dataSources;
@@ -124,7 +126,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getDsLabel() {
+    public Optional<String> getDsLabel() {
         return m_baseDef.getDsLabel();
     }
     
@@ -151,7 +153,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getType() {
+    public ThresholdType getType() {
         return m_baseDef.getType();
     }
     
@@ -170,7 +172,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      * @return a boolean.
      */
     public boolean hasRearm() {
-        return m_baseDef.hasRearm();
+        return m_baseDef.getRearm() != null;
     }
     
     /**
@@ -179,7 +181,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      * @return a boolean.
      */
     public boolean hasTrigger() {
-        return m_baseDef.hasTrigger();
+        return m_baseDef.getTrigger() != null;
     }
     
     /**
@@ -188,7 +190,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      * @return a boolean.
      */
     public boolean hasValue() {
-        return m_baseDef.hasValue();
+        return m_baseDef.getValue() != null;
     }
     
     /**
@@ -196,7 +198,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getTriggeredUEI() {
+    public Optional<String> getTriggeredUEI() {
         return m_baseDef.getTriggeredUEI();
     }
     
@@ -205,7 +207,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getRearmedUEI() {
+    public Optional<String> getRearmedUEI() {
         return m_baseDef.getRearmedUEI();
     }
     
@@ -221,29 +223,32 @@ public abstract class BaseThresholdDefConfigWrapper {
     /** {@inheritDoc} */
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null) return false;
-        if (!(obj instanceof BaseThresholdDefConfigWrapper)) return false;
-        BaseThresholdDefConfigWrapper o = (BaseThresholdDefConfigWrapper)obj;
-        return getType().equals(o.getType())
-        && getDsType().equals(o.getDsType())
-        && getDatasourceExpression().equals(o.getDatasourceExpression())
-        && (getDsLabel() == o.getDsLabel() || (getDsLabel() != null && getDsLabel().equals(o.getDsLabel())))
-        && (getTriggeredUEI() == o.getTriggeredUEI() || (getTriggeredUEI() != null && getTriggeredUEI().equals(o.getTriggeredUEI())))
-        && (getRearmedUEI() ==  o.getRearmedUEI() || (getRearmedUEI() != null && getRearmedUEI().equals(o.getRearmedUEI())))
-        && getValue() == o.getValue()
-        && getRearm() == o.getRearm()
-        && getTrigger() == o.getTrigger()
-        && getBasethresholddef().getFilterOperator().equals(o.getBasethresholddef().getFilterOperator())
-        && getBasethresholddef().isRelaxed() == o.getBasethresholddef().isRelaxed()
-        && Arrays.equals(getBasethresholddef().getResourceFilter(), o.getBasethresholddef().getResourceFilter());
+        if ( this == obj ) {
+            return true;
+        }
+
+        if (obj instanceof BaseThresholdDefConfigWrapper) {
+            final BaseThresholdDefConfigWrapper that = (BaseThresholdDefConfigWrapper)obj;
+            return Objects.equals(this.getType(), that.getType())
+                    && Objects.equals(this.getDsType(), that.getDsType())
+                    && Objects.equals(this.getDatasourceExpression(), that.getDatasourceExpression())
+                    && Objects.equals(this.getDsLabel(), that.getDsLabel())
+                    && Objects.equals(this.getTriggeredUEI(), that.getTriggeredUEI())
+                    && Objects.equals(this.getRearmedUEI(), that.getRearmedUEI())
+                    && Objects.equals(this.getValue(), that.getValue())
+                    && Objects.equals(this.getRearm(), that.getRearm())
+                    && Objects.equals(this.getTrigger(), that.getTrigger())
+                    && Objects.equals(this.getBasethresholddef().getFilterOperator(), that.getBasethresholddef().getFilterOperator())
+                    && Objects.equals(this.getBasethresholddef().getRelaxed(), that.getBasethresholddef().getRelaxed())
+                    && Objects.equals(this.getBasethresholddef().getResourceFilters(), that.getBasethresholddef().getResourceFilters());
+        }
+        return false;
     }
     
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(97, 3)
-            .append(m_baseDef)
-            .toHashCode();
+        return Objects.hash(m_baseDef);
     }
 
     /**

@@ -1,18 +1,29 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R). Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc. OpenNMS(R) is
- * a registered trademark of The OpenNMS Group, Inc. OpenNMS(R) is free
- * software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version. OpenNMS(R) is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
- * License for more details. You should have received a copy of the GNU Affero
- * General Public License along with OpenNMS(R). If not, see:
- * http://www.gnu.org/licenses/ For more information contact: OpenNMS(R)
- * Licensing <license@opennms.org> http://www.opennms.org/
- * http://www.opennms.com/
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.enlinkd;
@@ -120,7 +131,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         for (final OnmsNode node : m_nodeDao.findMatching(criteria)) {
             nodes.add(new Node(node.getId(),
                                node.getPrimaryInterface().getIpAddress(),
-                               node.getSysObjectId(), node.getSysName()));
+                               node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName()));
         }
         return nodes;
     }
@@ -142,7 +153,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             final OnmsNode node = nodes.get(0);
             return new Node(node.getId(),
                             node.getPrimaryInterface().getIpAddress(),
-                            node.getSysObjectId(), node.getSysName());
+                            node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName());
         } else {
             return null;
         }
@@ -604,10 +615,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             link.setNode(node);
             effectiveBFT.put(new BridgeMacLinkHash(link), link);
         }
-        m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+        synchronized (m_nodetoBroadcastDomainMap) {
+            m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+        }
     }
 
-    public Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
+    public synchronized Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
         return m_nodetoBroadcastDomainMap;
     }
     
@@ -641,13 +654,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public synchronized boolean hasUpdatedBft(int nodeid) {
-        return m_nodetoBroadcastDomainMap.containsKey(nodeid);
+    public boolean hasUpdatedBft(int nodeid) {
+        synchronized (m_nodetoBroadcastDomainMap) {
+            return m_nodetoBroadcastDomainMap.containsKey(nodeid);            
+        }
+
     }
     
     @Override
-    public synchronized List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
-        return m_nodetoBroadcastDomainMap.remove(nodeid);
+    public List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
+        synchronized (m_nodetoBroadcastDomainMap) {
+            return m_nodetoBroadcastDomainMap.remove(nodeid);
+        }
     }
 
     @Override
@@ -658,6 +676,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     @Override
     public void store(BroadcastDomain domain, Date now) {
         for (SharedSegment segment : domain.getTopology()) {
+            //FIXME why I can have a segment without a designated port?
+            if (!segment.hasDesignatedBridgeport())
+                continue;
             for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
                 link.setBridgeBridgeLinkLastPollTime(new Date());
                 saveBridgeBridgeLink(link);
@@ -928,5 +949,20 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         for (Integer nodeid: nodes)
             elems.addAll(m_bridgeElementDao.findByNodeId(nodeid));
         return elems;
+    }
+    
+    @Override
+    public void persistForwarders() {
+        for (BroadcastDomain domain: m_bridgeTopologyDao.getAll()) {
+            for (Integer nodeId: domain.getBridgeNodesOnDomain()) {
+                List<BridgeMacLink> forwarders = domain.getForwarders(nodeId);
+                if (forwarders == null || forwarders.size() == 0)
+                    continue;
+                for (BridgeMacLink forward: forwarders) {
+                    forward.setBridgeMacLinkLastPollTime(new Date());
+                    saveBridgeMacLink(forward);
+                }
+            }
+        }
     }
 }

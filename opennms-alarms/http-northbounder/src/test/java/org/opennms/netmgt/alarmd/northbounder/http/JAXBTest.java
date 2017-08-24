@@ -33,6 +33,7 @@ import static org.opennms.core.test.xml.XmlTest.assertXmlEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -159,7 +160,7 @@ public class JAXBTest {
         // verify its matches the expected results
         byte[] utf8 = out.toByteArray();
 
-        String result = new String(utf8, "UTF-8");
+        String result = new String(utf8, StandardCharsets.UTF_8);
         assertXmlEquals(expectedXML, result);
 
         System.err.println(result);
@@ -184,7 +185,7 @@ public class JAXBTest {
         ByteArrayOutputStream reout = new ByteArrayOutputStream();
         marshaller.marshal(read, reout);
 
-        String roundTrip = new String(reout.toByteArray(), "UTF-8");
+        String roundTrip = new String(reout.toByteArray(), StandardCharsets.UTF_8);
 
         assertXmlEquals(expectedXML, roundTrip);
     }

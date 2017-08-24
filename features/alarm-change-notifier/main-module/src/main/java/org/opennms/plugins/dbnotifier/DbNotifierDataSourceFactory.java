@@ -31,9 +31,11 @@ package org.opennms.plugins.dbnotifier;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
@@ -52,7 +54,7 @@ import com.impossibl.postgres.jdbc.PGDataSource;
  * If it is not set then the factory tries to load the file from the class path.
  * 
  * We use DOM parsing to read the datasource-configuration 
- * since the castor XML classes are not in the Karaf classpath
+ * since the JAXB XML classes are not in the Karaf classpath
  * 
  <datasource-configuration>
   <jdbc-data-source name="opennms" 
@@ -177,9 +179,12 @@ public class DbNotifierDataSourceFactory {
 					if(istream==null) throw new RuntimeException("could not load database config from classpath "+OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
 				}
 
-				DataSourceConfiguration dsconfig = CastorUtils.unmarshal(DataSourceConfiguration.class, istream);
+				DataSourceConfiguration dsconfig;
+				try (Reader reader = new InputStreamReader(istream)) {
+				    dsconfig = JaxbUtils.unmarshal(DataSourceConfiguration.class, reader);
+				}
 				JdbcDataSource[] datasourceArray = dsconfig.getJdbcDataSource();
-				
+
 				String dataSourceName=null;
 				JdbcDataSource ds=null;
 				int index = 0;

@@ -30,37 +30,19 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.TableTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
-public class Dot1dBasePortIfIndexGetter extends TableTracker {
+public class Dot1dBasePortIfIndexGetter extends SnmpGetter {
 
     public final static SnmpObjId DOT1DBASE_PORT_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.2");
 
-    private static final Logger LOG = LoggerFactory.getLogger(Dot1dBasePortIfIndexGetter.class);
-    /**
-     * The SnmpPeer object used to communicate via SNMP with the remote host.
-     */
-    private SnmpAgentConfig m_agentConfig;
-
-    public Dot1dBasePortIfIndexGetter(SnmpAgentConfig peer) {
-        m_agentConfig = peer;
+    public Dot1dBasePortIfIndexGetter(SnmpAgentConfig peer,LocationAwareSnmpClient client, String location,Integer nodeid) {
+        super(peer, client,location,nodeid);
     }
 
-    public SnmpValue get(Integer cdpInterfaceIndex) {
-        SnmpObjId instance = SnmpObjId.get(new int[] { cdpInterfaceIndex });
-        SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get(DOT1DBASE_PORT_IFINDEX,
-                                                           instance) };
-
-        SnmpValue[] val = SnmpUtils.get(m_agentConfig, oids);
-        LOG.info("get: oid '{}' found value '{}'", oids[0], val);
-        if (val == null || val.length != 1 || val[0] == null
-                || val[0].isError())
-            return null;
-        return val[0];
+    public SnmpValue get(Integer bridgeport) {
+        return get(DOT1DBASE_PORT_IFINDEX,bridgeport);                
     }
 
 }

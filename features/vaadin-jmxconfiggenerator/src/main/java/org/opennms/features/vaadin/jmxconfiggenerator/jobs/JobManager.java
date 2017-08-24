@@ -28,15 +28,17 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.jobs;
 
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import org.opennms.netmgt.vaadin.core.UIHelper;
+import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 public class JobManager {
 
@@ -63,7 +65,7 @@ public class JobManager {
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
-                        UIHelper.getCurrent().hideProgressWindow();
+                        UIHelper.getCurrent(JmxConfigGeneratorUI.class).hideProgressWindow();
                         taskToRun.onSuccess(result);
                     }
                 });
@@ -75,7 +77,7 @@ public class JobManager {
                UI.getCurrent().access(new Runnable() {
                    @Override
                    public void run() {
-                       UIHelper.getCurrent().hideProgressWindow();
+                       UIHelper.getCurrent(JmxConfigGeneratorUI.class).hideProgressWindow();
                    }
                });
             }

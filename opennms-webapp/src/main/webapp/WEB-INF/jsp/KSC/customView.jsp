@@ -47,7 +47,7 @@
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom View" />
   <jsp:param name="renderGraphs" value="true" />
 </jsp:include>
@@ -179,7 +179,7 @@
                         <c:set var="selected" value=""/>
                       </c:otherwise>
                     </c:choose>
-                    <option value="${option.key}" ${selected}>${option.value}</option>
+                    <option value="${option.key}" ${selected}>${option.value.replaceAll("_", " ")}</option>
                   </c:forEach>
                 </select>
                 <span class="help-block">Press update button to reflect option changes to ALL graphs</span>

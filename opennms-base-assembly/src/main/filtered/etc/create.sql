@@ -50,6 +50,7 @@ drop table alarms cascade;
 drop table memos cascade;
 drop table node cascade;
 drop table service cascade;
+drop table scanreports cascade;
 drop table monitoringlocations cascade;
 drop table monitoringlocationspollingpackages cascade;
 drop table monitoringlocationscollectionpackages cascade;
@@ -105,14 +106,17 @@ drop index filternamesidx;
 
 --# Begin quartz persistence 
 
+--# Legacy quartz 1.X tables
 drop table qrtz_job_listeners;
 drop table qrtz_trigger_listeners;
+
 drop table qrtz_fired_triggers;
 drop table qrtz_paused_trigger_grps;
 drop table qrtz_scheduler_state;
 drop table qrtz_locks;
 drop table qrtz_simple_triggers;
 drop table qrtz_cron_triggers;
+drop table qrtz_simprop_triggers;
 drop table qrtz_blob_triggers;
 drop table qrtz_triggers;
 drop table qrtz_job_details;
@@ -245,7 +249,7 @@ CREATE TABLE monitoringlocationspollingpackages (
     monitoringlocationid TEXT NOT NULL,
     packagename TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
@@ -256,7 +260,7 @@ CREATE TABLE monitoringlocationscollectionpackages (
     monitoringlocationid TEXT NOT NULL,
     packagename TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
@@ -267,11 +271,17 @@ CREATE TABLE monitoringlocationstags (
     monitoringlocationid TEXT NOT NULL,
     tag TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationstags_id_idx on monitoringlocationstags(monitoringlocationid);
 CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstags(monitoringlocationid, tag);
+
+--##################################################################
+--# The following command adds the initial 'Default' entry to
+--# the 'monitoringlocations' table.
+--##################################################################
+INSERT INTO monitoringlocations (id, monitoringarea) values ('Default', 'Default');
 
 
 --#####################################################
@@ -316,8 +326,113 @@ CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsys
 --# The following command adds the initial localhost poller entry to
 --# the 'monitoringsystems' table.
 --##################################################################
-INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'localhost', 'OpenNMS');
+INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'Default', 'OpenNMS');
 
+
+--#####################################################
+--# scanreports Table - Contains a list of OpenNMS remote poller scan reports
+--#
+--# This table contains the following information:
+--#
+--# id               : The UUID of the report
+--# location         : The monitoring location name
+--# locale           : The locale the scan was run from
+--# timestamp        : The start time of the scan
+--#
+--#####################################################
+
+CREATE TABLE scanreports (
+    id TEXT NOT NULL,
+    location TEXT NOT NULL,
+    locale TEXT,
+    timestamp TIMESTAMP WITH TIME ZONE,
+
+    CONSTRAINT scanreports_pkey PRIMARY KEY (id),
+    CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE UNIQUE INDEX scanreports_id_idx on scanreport(id);
+
+--#####################################################
+--# scanreportproperties Table - Contains an arbitrary collection of properties associated with a scan report
+--#
+--# This table contains the following information:
+--#
+--# scanReportId     : The ID of the scan report
+--# property         : The property name/key
+--# propertyValue    : The property value
+--#
+--#####################################################
+
+CREATE TABLE scanreportproperties (
+    scanReportId TEXT NOT NULL,
+    property TEXT NOT NULL,
+    propertyValue TEXT,
+
+    CONSTRAINT scanreportproperties_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
+);
+
+CREATE INDEX scanreportproperties_id_idx on scanreportproperties(scanreportid);
+CREATE UNIQUE INDEX scanreportproperties_id_property_idx on scanreportproperties(scanreportid, property);
+
+--#####################################################
+--# scanreportpollresults Table - Contains the set of poll results (service up/down) associated with a scan report
+--#
+--# This table contains the following information:
+--#
+--# id               : The UUID of the result
+--# scanReportId     : The ID of the scan report
+--# serviceName      : The name of the monitored service
+--# serviceId        : The ID of the monitored service
+--# nodeLabel        : The node label for display
+--# nodeId           : The ID of the node
+--# ipaddress        : The IP address of the monitored service
+--# statusReason     : A user-displayable description of the response
+--# responseTime     : The response time of the poll
+--# statusCode       : The response code associated with the poll
+--# statusTime       : The timestamp of the poll
+--#
+--#####################################################
+
+CREATE TABLE scanreportpollresults (
+    id TEXT NOT NULL,
+    scanReportId TEXT NOT NULL,
+    serviceName TEXT NOT NULL,
+    serviceId INTEGER NOT NULL,
+    nodeLabel TEXT NOT NULL,
+    nodeId INTEGER NOT NULL,
+    ipaddress TEXT,
+    statusReason TEXT,
+    responseTime DOUBLE PRECISION,
+    statusCode INTEGER NOT NULL,
+    statusTime TIMESTAMP WITH TIME ZONE,
+
+    CONSTRAINT scanreportpollresults_pkey PRIMARY KEY (id),
+    CONSTRAINT scanreportpollresults_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX scanreportpollresults_id_idx on scanreportpollresults(id);
+CREATE UNIQUE INDEX scanreportpollresults_id_scanreportid_idx on scanreportpollresults(id, scanreportid);
+
+--#####################################################
+--# scanreportlogs Table - Contains poll logs associated with a scan report
+--#
+--# This table contains the following information:
+--#
+--# scanReportId     : The ID of the scan report
+--# logText          : The contents of the scan log
+--#
+--#####################################################
+
+CREATE TABLE scanreportlogs (
+    scanReportId TEXT NOT NULL,
+    logText TEXT,
+
+    CONSTRAINT scanreportlogs_pkey PRIMARY KEY (scanReportId),
+    CONSTRAINT scanreportlogs_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX scanreportlogs_scanReportId_idx on scanreportlogs(scanReportId);
 
 --########################################################################
 --# node Table - Contains information on nodes discovered and potentially
@@ -378,8 +493,10 @@ create table node (
 	lastCapsdPoll   timestamp with time zone,
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
+	location        text not null,
 
-	constraint pk_nodeID primary key (nodeID)
+	constraint pk_nodeID primary key (nodeID),
+	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON UPDATE CASCADE
 );
 
 create index node_id_type_idx on node(nodeID, nodeType);
@@ -931,7 +1048,7 @@ create table alarms (
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
     ipaddr                  VARCHAR(39),
     serviceID               INTEGER,
-    reductionKey            VARCHAR(256),
+    reductionKey            TEXT,
     alarmType               INTEGER,
     counter                 INTEGER NOT NULL,
     severity                INTEGER NOT NULL,
@@ -1401,410 +1518,6 @@ CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifse
 --#
 --########################################################################
 
---########################################################################
---#
---# atInterface table -- This table maintains a record of ip address to mac 
---#                  address among  interfaces. It reflect information from mib-2
---#                  arp table
---#	at interface is now deprecated .iso.org.dod.internet.mgmt.mib-2.at.atTable.atEntry
---#                  OID: .1.3.6.1.2.1.3.1.1
---#	so support is for .iso.org.dod.internet.mgmt.mib-2.ip.ipNetToMediaTable.ipNetToMediaEntry 
---#                  OID: .1.3.6.1.2.1.4.22.1	
---#					
---# This table provides the following information:
---#
---#  nodeid            : Unique integer identifier of the node
---#  ipAddr            : Ip address identifier of the node
---#  atPhysAddr        : Mac address identifier for the node
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#                      'K' - Unknown
---#  sourceNodeid      : The nodeid from which information have been retrivied.
---#  ifindex           : The SNMP ifindex on which this info was recorded.
---#  lastPollTime    : The last time when this information was active
---#
---########################################################################
-
-create table atinterface (
-    id			integer default nextval('opennmsNxtId') not null,
-	nodeid		integer not null,
-	ipAddr		text not null,
-	atPhysAddr	varchar(32) not null,
-	status		char(1) not null,
-	sourceNodeid	integer not null,
-	ifindex		integer not null,
-	lastPollTime	timestamp not null,
-    constraint pk_atinterface primary key (nodeid,ipAddr,atPhysAddr),
-	constraint fk_ia_nodeID1 foreign key (nodeid) references node on delete cascade
-);
-
-
-
-create index atinterface_nodeid_idx on atinterface(nodeid);
-create index atinterface_node_ipaddr_idx on atinterface(nodeid,ipaddr);
-create index atinterface_atphysaddr_idx on atinterface(atphysaddr);
-
---########################################################################
---#
---# vlan table  --   This table maintains a record of generic vlan table
---#					
---# This table provides the following information:
---#
---#  nodeid   	              : Unique integer identifier of the node
---#  vlanid                   : The vlan identifier to be referred to in a unique fashion.
---#  vlanname                 : the name the vlan 
---#  vlantype           	  : Indicates what type of vlan is this:
---#						        '1' ethernet
---#						        '2' FDDI
---#						        '3' TokenRing
---#                             '4' FDDINet
---#                             '5' TRNet
---#                             '6' Deprecated
---#  vlanstatus               : An indication of what is the Vlan Status: 
---#						        '1' operational
---#						        '2' suspendid
---#						        '3' mtuTooBigForDevice
---#						        '4' mtuTooBigForTrunk
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#                      'K' - Unknown
---#  lastPollTime             : The last time when this information was retrived
---#
---########################################################################
-
-create table vlan (
-    id			integer default nextval('opennmsNxtId') not null,
-    nodeid		 integer not null,
-    vlanid	     integer not null,
-    vlanname     varchar(64) not null,
-    vlantype     integer,
-    vlanstatus   integer,
-    status		 char(1) not null,
-    lastPollTime timestamp not null,
-	constraint pk_vlan primary key (nodeid,vlanid),
-	constraint fk_ia_nodeID8 foreign key (nodeid) references node on delete cascade
-);
-
-create unique index vlan_id_key on vlan(id);
-create index vlan_vlanname_idx on vlan(vlanname);
-
-
---########################################################################
---#
---# stpNode table -- This table maintains a record of general bridge interface.
---#                  It reflect information from the mib-2 bridge mib 
---# 		         support .iso.org.dod.internet.mgmt.mib-2.dot1dBridge
---#                  OID: .1.3.6.1.2.1.17	
---#					
---# This table provides the following information:
---#
---#  nodeid   	              : Unique integer identifier of the node
---#  baseBridgeAddress        : The MAC address used by this bridge when it must
---#                             be referred to in a unique fashion.
---#  baseNumPorts             : The number of ports controlled by the bridge entity.
---#  baseType		: Indicates what type of bridging this bridge can
---#                             perform.
---#						        '1' unknown
---#						        '2' transparent-only
---#						        '3' sourceroute-only
---#                             '4' srt
---#  stpProtocolSpecification : An indication of what version of the Spanning
---#                             Tree Protocol is being run. 
---#						        '1' unknown
---#						        '2' decLb100
---#						        '3' ieee8011d
---#  stpPriority              : The value of the write-able portion of the Bridge
---#                             ID, i.e., the first two octets of the (8 octet
---#                             long) Bridge ID. The other (last) 6 octets of the
---#                             Bridge ID are given by the value of dot1dBaseBridgeAddress.
---#  stpDesignatedRoot        : The bridge identifier of the root of the spanning
---#                             tree as determined by the Spanning Tree Protocol
---#                             as executed by this node.
---#  stpRootCost              : The cost of the path to the root as seen from this bridge.
---#  stpRootPort              : The port number of the port which offers the
---#                             lowest cost path from this bridge to the root bridge.
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#                      'K' - Unknown
---#  lastPollTime             : The last time when this information was retrived
---#  baseVlan                 : Unique integer identifier VLAN for which this info is valid
---#  baseVlanName             : VLAN name
---#
---########################################################################
-
-create table stpnode (
-    id			integer default nextval('opennmsNxtId') not null,
-    nodeid		     integer not null,
-    baseBridgeAddress	     varchar(12) not null,
-    baseNumPorts             integer,
-    basetype                 integer,
-    stpProtocolSpecification integer,
-    stpPriority              integer,
-    stpdesignatedroot        varchar(16),
-    stprootcost              integer,
-    stprootport              integer,
-    status		     char(1) not null,
-    lastPollTime             timestamp not null,
-    basevlan                 integer not null,
-    basevlanname			 varchar(32),
-    constraint pk_stpnode primary key (nodeid,basevlan),
-	constraint fk_ia_nodeID2 foreign key (nodeid) references node on delete cascade
-);
-
-create unique index stpnode_id_key on stpnode(id);
-create index stpnode_nodeid_idx on stpnode(nodeid);
-create index stpnode_baseBridgeAddress_idx on stpnode(baseBridgeAddress);
-create index stpnode_stpdesignatedroot_idx on stpnode(stpdesignatedroot);
-
---########################################################################
---#
---# stpInterface table -- This table maintains a record of STP interface.
---#                  It reflect information from mib-2
---#                  bridge mib and subinterface STP table
---#					 support .iso.org.dod.internet.mgmt.mib-2.dot1dBridge
---#                  OID: .1.3.6.1.2.1.17	
---#					
---# This table provides the following information:
---#
---#  nodeid   	              : Unique integer identifier of the node
---#  ifIndex                  : interface ifindex corresponding to bridge port number
---#  bridgePort               : bridge port number identifier
---#  stpPortState             : integer that reflect thestp staus of the bridge port
---#						        '1' disabled
---#						        '2' blocking
---#						        '3' listening
---#						        '4' learning
---#						        '5' forwarding
---#						        '6' broken
---#  stpPortPathCost          : The contribution of this port to the path cost of
---#                             paths towards the spanning tree root which include
---#                             this port.
---#  stpPortDesignatedRoot    : the unique Bridge Identifier of the Bridge
---#                             recorded as the Root in the Configuration BPDUs
---#                             transmitted by the Designated Bridge for the
---#                             segment to which the port is attached.  
---#  stpPortDesignatedCost    : The path cost of the Designated Port of the
---#                             segment connected to this port. This value is
---#                             compared to the Root Path Cost field in received
---#                             bridge PDUs.
---#  stpPortDesignatedBridge  : The Bridge Identifier of the bridge which this
---#                             port considers to be the Designated Bridge for
---#                             this port's segment.
---#  stpPortDesignatedPort    : The Port Identifier of the port on the Designated
---#                             Bridge for this port's segment.
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#                      'K' - Unknown
---#  lastPollTime          : The last time when this information was retrived
---#  stpVlan               : Unique integer identifier VLAN for which this info is valid
---#
---########################################################################
-
-create table stpinterface (
-    id			integer default nextval('opennmsNxtId') not null,
-    nodeid	            integer not null,
-    bridgeport              integer not null,
-    ifindex                 integer not null,
-    stpportstate            integer,
-    stpportpathcost         integer,
-    stpportdesignatedroot   varchar(16),
-    stpportdesignatedcost   integer,
-    stpportdesignatedbridge varchar(16),
-    stpportdesignatedport   varchar(4),
-    status       	    char(1) not null,
-    lastPollTime         timestamp not null,
-    stpvlan                 integer not null,
-
-    constraint pk_stpinterface primary key (nodeid,bridgeport,stpvlan),
-    constraint fk_ia_nodeID3 foreign key (nodeid) references node on delete cascade
-);
-
-create unique index stpinterface_id_key on stpinterface(id);
-create index stpinterface_node_ifindex_idx on stpinterface(nodeid,ifindex);
-create index stpinterface_node_idx on stpinterface(nodeid);
-create index stpinterface_stpvlan_idx on stpinterface(stpvlan);
-create index stpinterface_stpdesbridge_idx on stpinterface(stpportdesignatedbridge);
-
---########################################################################
---#
---# ipRouteInterface table -- This table maintains a record of ip route info on routers.
---#                           It reflect information from mib-2
---#                           ipRouteTable mib 
---#					          support .iso.org.dod.internet.mgmt.mib-2.ip.ipRouteTable.ipRouteEntry
---#                           OID: .1.3.6.1.2.1.4.21.1	
---#					
---# This table provides the following information:
---#
---#  nodeid   	       : Unique integer identifier of the node
---#  routeDest         : The destination IP address of this route. An
---#                      entry with a value of 0.0.0.0 is considered a default route.
---#  routeMask         : Indicate the mask to be logical-ANDed with the
---#                      destination address before being compared to the
---#                      value in the ipRouteDest field.
---#  routeNextHop      : The IP address of the next hop of this route.
---#                      (In the case of a route bound to an interface
---#                      which is realized via a broadcast media, the value
---#                      of this field is the agent's IP address on that
---#                      interface.)
---#  routeifIndex      : The index value which uniquely identifies the
---#                      local interface through which the next hop of this
---#                      route should be reached. 
---#  routeMetric1      : The primary routing metric for this route. The
---#                      semantics of this metric are determined by the
---#                      routing-protocol specified in the route's
---#                      ipRouteProto value. If this metric is not used,
---#                      its value should be set to -1.
---#  routeMetric2      : An alternate routing metric for this route.
---#  routeMetric3      : An alternate routing metric for this route.
---#  routeMetric4      : An alternate routing metric for this route.
---#  routeMetric5      : An alternate routing metric for this route.
---#  routeType         : The type of route.
---#						 '1' other
---#						 '2' invalid
---#						 '3' direct
---#						 '4' indirect
---#  routeProto        : The routing mechanism via which this route was learned. 
---#						 '1' other
---#						 '2' local
---#						 '3' netmgmt
---#						 '4' icmp
---#						 '5' egp
---#						 '6' ggp
---#						 '7' hello
---#						 '8' rip
---#						 '9' is-is
---#						 '10' es-is
---#						 '11' ciscolgrp
---#						 '12' bbnSpfIgp
---#						 '13' ospf
---#						 '14' bgp
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#                      'K' - Unknown
---#  lastPollTime      : The last time when this information was retrived
---#
---########################################################################
-
-create table iprouteinterface (
-    id			integer default nextval('opennmsNxtId') not null,
-    nodeid		    integer not null,
-    routeDest               varchar(16) not null,
-    routeMask               varchar(16) not null,
-    routeNextHop            varchar(16) not null,
-    routeifindex            integer not null,
-    routemetric1            integer,
-    routemetric2            integer,
-    routemetric3            integer,
-    routemetric4            integer,
-    routemetric5            integer,
-    routetype               integer,
-    routeproto              integer,
-    status		    char(1) not null,
-    lastPollTime            timestamp not null,
-
-    constraint pk_iprouteinterface primary key (nodeid,routedest),
-    constraint fk_ia_nodeID4 foreign key (nodeid) references node on delete cascade
-);
-
-create unique index iprouteinterface_id_key on iprouteinterface(id);
-create index iprouteinterface_nodeid_idx on iprouteinterface(nodeid);
-create index iprouteinterface_node_ifdex_idx on iprouteinterface(nodeid,routeifindex);
-create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
-
---########################################################################
---#
---# dataLinkInterface table -- This table maintains a record of data link info 
---#                            among  the interfaces. 
---#
---# This table provides the following information:
---#
---#  nodeid            : Unique integer identifier for the linked node 
---#  IfIndex           : SNMP index of interface connected to the link on the node, 
---# 		             is -1 if it doesn't support SNMP.
---#  nodeparentid      : Unique integer identifier for linking node
---#  parentIfIndex     : SNMP index of interface linked on the parent node.
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#                      'U' - Unknown
---#                      'G' - Good
---#                      'B' - Bad
---#                      'X' - Admin Down
---#  protocol          : the protocol used to discover the link (bridge,iproute,isis,ospf,cdp,lldp)  
---#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
---#  lastPollTime      : The last time when this information was retrived
---#  source            : The source of the data link.  Defaults to 'linkd', but can be different
---#                      when created from the ReST interface.
---#
---########################################################################
-
-create table datalinkinterface (
-    id               integer default nextval('opennmsNxtId') not null,
-    nodeid           integer not null,
-    ifindex          integer not null,
-    nodeparentid     integer not null,
-    parentIfIndex    integer not null,
-    status           char(1) not null,
-    protocol         varchar(31),
-    linkTypeId       integer,
-    lastPollTime     timestamp not null,
-    source           varchar(64) not null default 'linkd',
-
-    constraint pk_datalinkinterface primary key (id),
-    constraint fk_ia_nodeID5 foreign key (nodeid) references node on delete cascade,
-    constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid) ON DELETE CASCADE
-);
-
-create index dlint_id_idx on datalinkinterface(id);
-create index dlint_node_idx on datalinkinterface(nodeid);
-create index dlint_nodeparent_idx on datalinkinterface(nodeparentid);
-create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,parentifindex);
-
---########################################################################
---#
---# linkState table -- This table maintains the state of the link. 
---#
---# This table provides the following information:
---#
---#  nodeid            : Unique integer identifier for the linked node 
---#  IfIndex           : SNMP index of interface connected to the link on the node, 
---#                      is -1 if it doesn't support SNMP.
---#  nodeparentid      : Unique integer identifier for linking node
---#  parentIfIndex     : SNMP index of interface linked on the parent node.
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#                      'U' - Unknown
---#                      'G' - Good
---#                      'B' - Bad
---#                      'X' - Admin Down
---#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
---#  lastPollTime      : The last time when this information was retrived
---#
---########################################################################
-
-create table linkstate (
-    id                      integer default nextval('opennmsNxtId') not null,
-    datalinkinterfaceid     integer not null, 
-    linkstate               varchar(30) default 'LINK_UP' not null,
-
-    constraint pk_linkstate primary key (id),
-    constraint fk_linkstate_datalinkinterface_id foreign key (datalinkinterfaceid) references datalinkinterface (id) on delete cascade
-);
-
-create unique index linkstate_datalinkinterfaceid_index on linkstate (datalinkinterfaceid);
 
 --########################################################################
 --#
@@ -2356,168 +2069,176 @@ create table bridgeStpLink (
 --# End enlinkd table
 
 --# Begin Quartz persistence tables
+--# See https://github.com/quartz-scheduler/quartz, file tables_postgres.sql
+--# See http://www.quartz-scheduler.org/documentation/quartz-2.x/migration-guide.html
 
 CREATE TABLE qrtz_job_details
   (
-    JOB_NAME  VARCHAR(80) NOT NULL,
-    JOB_GROUP VARCHAR(80) NOT NULL,
-    DESCRIPTION VARCHAR(120) NULL,
-    JOB_CLASS_NAME   VARCHAR(128) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    JOB_NAME  VARCHAR(200) NOT NULL,
+    JOB_GROUP VARCHAR(200) NOT NULL,
+    DESCRIPTION VARCHAR(250) NULL,
+    JOB_CLASS_NAME   VARCHAR(250) NOT NULL, 
     IS_DURABLE BOOL NOT NULL,
-    IS_VOLATILE BOOL NOT NULL,
-    IS_STATEFUL BOOL NOT NULL,
+    IS_NONCONCURRENT BOOL NOT NULL,
+    IS_UPDATE_DATA BOOL NOT NULL,
     REQUESTS_RECOVERY BOOL NOT NULL,
-    JOB_DATA BYTEA NOT NULL,
-
-    constraint qrtz_job_details_pkey PRIMARY KEY (JOB_NAME,JOB_GROUP)
+    JOB_DATA BYTEA,
+    CONSTRAINT pk_qrtz_job_details PRIMARY KEY (SCHED_NAME,JOB_NAME,JOB_GROUP)
 );
-
-CREATE TABLE qrtz_job_listeners
-  (
-    JOB_NAME  VARCHAR(80) NOT NULL,
-    JOB_GROUP VARCHAR(80) NOT NULL,
-    JOB_LISTENER VARCHAR(80) NOT NULL,
-
-    constraint pk_qrtz_job_listeners PRIMARY KEY (JOB_NAME,JOB_GROUP,JOB_LISTENER),
-    constraint fk_qrtz_job_listeners FOREIGN KEY (JOB_NAME,JOB_GROUP)
-        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME,JOB_GROUP)
-);
-
 
 CREATE TABLE qrtz_triggers
   (
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
-    JOB_NAME  VARCHAR(80) NOT NULL,
-    JOB_GROUP VARCHAR(80) NOT NULL,
-    IS_VOLATILE BOOL NOT NULL,
-    DESCRIPTION VARCHAR(120),
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
+    JOB_NAME  VARCHAR(200) NOT NULL, 
+    JOB_GROUP VARCHAR(200) NOT NULL,
+    DESCRIPTION VARCHAR(250) NULL,
     NEXT_FIRE_TIME BIGINT,
     PREV_FIRE_TIME BIGINT,
+    PRIORITY INTEGER,
     TRIGGER_STATE VARCHAR(16) NOT NULL,
     TRIGGER_TYPE VARCHAR(8) NOT NULL,
     START_TIME BIGINT NOT NULL,
     END_TIME BIGINT,
-    CALENDAR_NAME VARCHAR(80),
+    CALENDAR_NAME VARCHAR(200) NULL,
     MISFIRE_INSTR SMALLINT,
     JOB_DATA BYTEA,
-    PRIORITY INTEGER,
-
-    constraint pk_qrtz_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-    constraint fk_qrtz_triggers FOREIGN KEY (JOB_NAME,JOB_GROUP)
-        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME,JOB_GROUP)
+    CONSTRAINT pk_qrtz_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_triggers_job_details FOREIGN KEY (SCHED_NAME,JOB_NAME,JOB_GROUP) 
+	REFERENCES QRTZ_JOB_DETAILS (SCHED_NAME,JOB_NAME,JOB_GROUP) 
 );
 
 CREATE TABLE qrtz_simple_triggers
   (
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
     REPEAT_COUNT BIGINT NOT NULL,
     REPEAT_INTERVAL BIGINT NOT NULL,
     TIMES_TRIGGERED BIGINT NOT NULL,
-
-    constraint pk_qrtz_simple_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-    constraint fk_qrtz_simple_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+    CONSTRAINT pk_qrtz_simple_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_simple_triggers_triggers FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+	REFERENCES QRTZ_TRIGGERS (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
-
 
 CREATE TABLE qrtz_cron_triggers
   (
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
-    CRON_EXPRESSION VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
+    CRON_EXPRESSION VARCHAR(120) NOT NULL,
     TIME_ZONE_ID VARCHAR(80),
-
-    constraint pk_qrtz_cron_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-    constraint fk_qrtz_cron_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+    CONSTRAINT pk_qrtz_cron_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_cron_triggers_triggers FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+	REFERENCES QRTZ_TRIGGERS (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
 
+CREATE TABLE qrtz_simprop_triggers
+  (          
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
+    STR_PROP_1 VARCHAR(512) NULL,
+    STR_PROP_2 VARCHAR(512) NULL,
+    STR_PROP_3 VARCHAR(512) NULL,
+    INT_PROP_1 INTEGER,
+    INT_PROP_2 INTEGER,
+    LONG_PROP_1 BIGINT,
+    LONG_PROP_2 BIGINT,
+    DEC_PROP_1 NUMERIC(13,4) NULL,
+    DEC_PROP_2 NUMERIC(13,4) NULL,
+    BOOL_PROP_1 BOOL,
+    BOOL_PROP_2 BOOL,
+    CONSTRAINT pk_qrtz_simprop_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_simprop_triggers_triggers FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+    REFERENCES QRTZ_TRIGGERS (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
+);
 
 CREATE TABLE qrtz_blob_triggers
   (
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
     BLOB_DATA BYTEA,
-
-    constraint pk_qrtz_blob_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-    constraint fk_qrtz_blob_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+    CONSTRAINT pk_qrtz_blob_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_blob_triggers_triggers FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+        REFERENCES QRTZ_TRIGGERS (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
-
-CREATE TABLE qrtz_trigger_listeners
-  (
-    TRIGGER_NAME  VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
-    TRIGGER_LISTENER VARCHAR(80) NOT NULL,
-
-    constraint pk_qrtz_trigger_listeners PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_LISTENER),
-    constraint fk_qrtz_trigger_listeners FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
-);
-
 
 CREATE TABLE qrtz_calendars
   (
-    CALENDAR_NAME  VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    CALENDAR_NAME  VARCHAR(200) NOT NULL, 
     CALENDAR BYTEA NOT NULL,
-    constraint pk_qrtz_calendars PRIMARY KEY (CALENDAR_NAME)
+    CONSTRAINT pk_qrtz_calendars PRIMARY KEY (SCHED_NAME,CALENDAR_NAME)
 );
 
 
 CREATE TABLE qrtz_paused_trigger_grps
   (
-    TRIGGER_GROUP  VARCHAR(80) NOT NULL,
-    constraint pk_qrtz_paused_trigger_grps PRIMARY KEY (TRIGGER_GROUP)
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_GROUP  VARCHAR(200) NOT NULL, 
+    CONSTRAINT pk_qrtz_paused_trigger_grps PRIMARY KEY (SCHED_NAME,TRIGGER_GROUP)
 );
 
-CREATE TABLE qrtz_fired_triggers
+CREATE TABLE qrtz_fired_triggers 
   (
+    SCHED_NAME VARCHAR(120) NOT NULL,
     ENTRY_ID VARCHAR(95) NOT NULL,
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
-    IS_VOLATILE BOOL NOT NULL,
-    INSTANCE_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
+    INSTANCE_NAME VARCHAR(200) NOT NULL,
     FIRED_TIME BIGINT NOT NULL,
+    SCHED_TIME BIGINT NOT NULL,
+    PRIORITY INTEGER NOT NULL,
     STATE VARCHAR(16) NOT NULL,
-    JOB_NAME VARCHAR(80),
-    JOB_GROUP VARCHAR(80),
-    IS_STATEFUL BOOL,
+    JOB_NAME VARCHAR(200) NULL,
+    JOB_GROUP VARCHAR(200) NULL,
+    IS_NONCONCURRENT BOOL,
     REQUESTS_RECOVERY BOOL,
-    PRIORITY INTEGER,
-    constraint pk_qrtz_fired_triggers PRIMARY KEY (ENTRY_ID)
+    CONSTRAINT pk_qrtz_fired_triggers PRIMARY KEY (SCHED_NAME,ENTRY_ID)
 );
 
-CREATE TABLE qrtz_scheduler_state
+CREATE TABLE qrtz_scheduler_state 
   (
-    INSTANCE_NAME VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    INSTANCE_NAME VARCHAR(200) NOT NULL,
     LAST_CHECKIN_TIME BIGINT NOT NULL,
     CHECKIN_INTERVAL BIGINT NOT NULL,
-    RECOVERER VARCHAR(80),
-    constraint pk_qrtz_scheduler_state PRIMARY KEY (INSTANCE_NAME)
+    CONSTRAINT pk_qrtz_scheduler_state PRIMARY KEY (SCHED_NAME,INSTANCE_NAME)
 );
 
 CREATE TABLE qrtz_locks
   (
-    LOCK_NAME  VARCHAR(40) NOT NULL,
-    constraint pk_qrtz_locks PRIMARY KEY (LOCK_NAME)
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    LOCK_NAME  VARCHAR(40) NOT NULL, 
+    CONSTRAINT pk_qrtz_locks PRIMARY KEY (SCHED_NAME,LOCK_NAME)
 );
 
---##################################################################
---# The following command should populate the qrtz_locks table
---# are no categories in the category table
---##################################################################
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('TRIGGER_ACCESS');
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('JOB_ACCESS');
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('CALENDAR_ACCESS');
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('STATE_ACCESS');
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('MISFIRE_ACCESS');
+create index idx_qrtz_j_req_recovery on qrtz_job_details(SCHED_NAME,REQUESTS_RECOVERY);
+create index idx_qrtz_j_grp on qrtz_job_details(SCHED_NAME,JOB_GROUP);
+
+create index idx_qrtz_t_j on qrtz_triggers(SCHED_NAME,JOB_NAME,JOB_GROUP);
+create index idx_qrtz_t_jg on qrtz_triggers(SCHED_NAME,JOB_GROUP);
+create index idx_qrtz_t_c on qrtz_triggers(SCHED_NAME,CALENDAR_NAME);
+create index idx_qrtz_t_g on qrtz_triggers(SCHED_NAME,TRIGGER_GROUP);
+create index idx_qrtz_t_state on qrtz_triggers(SCHED_NAME,TRIGGER_STATE);
+create index idx_qrtz_t_n_state on qrtz_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_STATE);
+create index idx_qrtz_t_n_g_state on qrtz_triggers(SCHED_NAME,TRIGGER_GROUP,TRIGGER_STATE);
+create index idx_qrtz_t_next_fire_time on qrtz_triggers(SCHED_NAME,NEXT_FIRE_TIME);
+create index idx_qrtz_t_nft_st on qrtz_triggers(SCHED_NAME,TRIGGER_STATE,NEXT_FIRE_TIME);
+create index idx_qrtz_t_nft_misfire on qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME);
+create index idx_qrtz_t_nft_st_misfire on qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_STATE);
+create index idx_qrtz_t_nft_st_misfire_grp on qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_GROUP,TRIGGER_STATE);
+
+create index idx_qrtz_ft_trig_inst_name on qrtz_fired_triggers(SCHED_NAME,INSTANCE_NAME);
+create index idx_qrtz_ft_inst_job_req_rcvry on qrtz_fired_triggers(SCHED_NAME,INSTANCE_NAME,REQUESTS_RECOVERY);
+create index idx_qrtz_ft_j_g on qrtz_fired_triggers(SCHED_NAME,JOB_NAME,JOB_GROUP);
+create index idx_qrtz_ft_jg on qrtz_fired_triggers(SCHED_NAME,JOB_GROUP);
+create index idx_qrtz_ft_t_g on qrtz_fired_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP);
+create index idx_qrtz_ft_tg on qrtz_fired_triggers(SCHED_NAME,TRIGGER_GROUP);
 
 --# End Quartz persistence tables
 
@@ -2638,3 +2359,118 @@ CREATE TABLE subcomponents (
 
 ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_pkey PRIMARY KEY (component_id, subcomponent_id);
 ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent_id_key UNIQUE (component_id, subcomponent_id);
+
+--##################################################################
+--# Business Service Monitor (BSM) tables
+--##################################################################
+
+CREATE TABLE bsm_reduce (
+    id integer NOT NULL,
+    type character varying(32) NOT NULL,
+    threshold float,
+    threshold_severity integer,
+    base float,
+    CONSTRAINT bsm_reduce_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE bsm_map (
+    id integer NOT NULL,
+    type character varying(32) NOT NULL,
+    severity integer,
+    CONSTRAINT bsm_map_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE bsm_service (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL UNIQUE,
+    bsm_reduce_id integer NOT NULL,
+    CONSTRAINT bsm_services_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_reduce_id FOREIGN KEY (bsm_reduce_id) REFERENCES bsm_reduce (id)
+);
+
+CREATE TABLE bsm_service_attributes (
+    bsm_service_id integer NOT NULL,
+    key character varying(255) NOT NULL,
+    value TEXT NOT NULL,
+    CONSTRAINT bsm_service_attributes_pkey PRIMARY KEY (bsm_service_id, key),
+    CONSTRAINT fk_bsm_service_attributes_service_id FOREIGN KEY (bsm_service_id)
+    REFERENCES bsm_service (id)
+);
+
+CREATE TABLE bsm_service_edge (
+    id integer NOT NULL,
+    enabled boolean NOT NULL,
+    weight integer NOT NULL,
+    bsm_map_id integer NOT NULL,
+    bsm_service_id integer NOT NULL,
+    CONSTRAINT bsm_service_edge_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_edge_map_id FOREIGN KEY (bsm_map_id)
+    REFERENCES bsm_map (id),
+    CONSTRAINT fk_bsm_service_edge_service_id FOREIGN KEY (bsm_service_id)
+    REFERENCES bsm_service (id) ON DELETE CASCADE
+);
+
+CREATE TABLE bsm_service_ifservices (
+    id integer NOT NULL,
+    ifserviceid integer NOT NULL,
+    friendlyname varchar(255),
+    CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_ifservices_edge_id FOREIGN KEY (id)
+    REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
+    REFERENCES ifservices (id) ON DELETE CASCADE
+);
+
+CREATE TABLE bsm_service_reductionkeys (
+    id integer NOT NULL,
+    reductionkey TEXT NOT NULL,
+    friendlyname varchar(255),
+    CONSTRAINT bsm_service_reductionkeys_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_reductionkeys_edge_id FOREIGN KEY (id)
+    REFERENCES bsm_service_edge (id) ON DELETE CASCADE
+);
+
+CREATE TABLE bsm_service_children (
+      id integer NOT NULL,
+      bsm_service_child_id integer NOT NULL,
+      CONSTRAINT bsm_service_children_pkey PRIMARY KEY (id),
+      CONSTRAINT fk_bsm_service_children_edge_id FOREIGN KEY (id)
+      REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
+      CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child_id)
+      REFERENCES bsm_service (id) ON DELETE CASCADE
+);
+
+--##################################################################
+--# Topology tables
+--##################################################################
+
+-- Layout table
+CREATE TABLE topo_layout (
+	id varchar(255) NOT NULL,
+	created timestamp NOT NULL,
+	creator varchar(255) NOT NULL,
+	updated timestamp NOT NULL,
+	updator varchar(255) NOT NULL,
+	last_used timestamp,
+	CONSTRAINT topo_layout_pkey PRIMARY KEY (id)
+);
+
+-- Layout coordinates of vertex
+CREATE TABLE topo_vertex_position (
+	id integer NOT NULL,
+	x integer NOT NULL,
+	y integer NOT NULL,
+	vertex_namespace varchar(255) NULL,
+	vertex_id varchar(255) NULL,
+	CONSTRAINT topo_vertex_position_pkey PRIMARY KEY (id)
+);
+
+-- Relation table (layout -> vertex positions)
+CREATE TABLE topo_layout_vertex_positions (
+  vertex_position_id integer NOT NULL,
+	layout_id varchar(255) NOT NULL,
+	CONSTRAINT fk_topo_layout_vertex_positions_layout_id FOREIGN KEY (layout_id)
+	REFERENCES topo_layout (id) ON DELETE CASCADE,
+	CONSTRAINT fk_topo_layout_vertex_positions_vertex_position_id FOREIGN KEY (vertex_position_id)
+	REFERENCES topo_vertex_position (id) ON DELETE CASCADE
+);

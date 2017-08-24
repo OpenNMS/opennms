@@ -45,6 +45,8 @@ import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.util.Assert;
 
 public class TemporaryDatabaseHsqldb implements TemporaryDatabase, InitializingBean {
+    public static final String TEST_DB_NAME_PREFIX = "opennms_test_";
+
     private static DataSource m_dataSource = null;
     private String m_testDatabase;
     private boolean m_populateSchema = false;
@@ -196,5 +198,20 @@ public class TemporaryDatabaseHsqldb implements TemporaryDatabase, InitializingB
     @Override
     public XAConnection getXAConnection(String user, String password) throws SQLException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setClassName(String string) {
+        // Do nothing; doesn't support blame yet
+    }
+
+    @Override
+    public void setMethodName(String string) {
+        // Do nothing; doesn't support blame yet
+    }
+
+    @Override
+    public void setTestDetails(String string) {
+        // Do nothing; doesn't support blame yet
     }
 }

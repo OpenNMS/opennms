@@ -30,19 +30,21 @@ package org.opennms.features.topology.app.internal.support;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.SearchCriteria;
+import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.features.topology.app.internal.IpInterfaceProvider;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -55,16 +57,20 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
  *
  */
-public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
+public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriteria {
 
 	public static final String NAMESPACE = "iplike";
 	private final String m_ipQuery;
 	
 	private boolean m_collapsed = false;
 	private IPVertex m_collapsedVertex;
-	
-	private IpInterfaceDao m_ipIntefaceDao;
-	
+
+	private IpInterfaceProvider ipInterfaceProvider;
+
+	@Override
+	public String getSearchString() {
+		return m_ipQuery;
+	}
 
 	public static class IPVertex extends AbstractVertex implements GroupRef {
 		private Set<VertexRef> m_children = new HashSet<VertexRef>();
@@ -89,21 +95,15 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleC
         }
     }
 
-    public IpLikeHopCriteria(String ipQuery, IpInterfaceDao dao) {
-    	super(ipQuery);
-        m_ipQuery = ipQuery;
-        m_ipIntefaceDao = dao;
-        m_collapsedVertex = new IPVertex(NAMESPACE, NAMESPACE+":"+ipQuery, ipQuery);
+	public IpLikeHopCriteria(SearchResult searchResult, IpInterfaceProvider ipInterfaceProvider) {
+    	super(searchResult.getQuery());
+    	m_collapsed = searchResult.isCollapsed();
+        m_ipQuery = searchResult.getQuery();
+        this.ipInterfaceProvider = Objects.requireNonNull(ipInterfaceProvider);
+        m_collapsedVertex = new IPVertex(NAMESPACE, NAMESPACE+":"+m_ipQuery, m_ipQuery);
         m_collapsedVertex.setChildren(getVertices());
+        setId(searchResult.getId());
     }
-
-	public IpInterfaceDao getIpInterfaceDao() {
-		return m_ipIntefaceDao;
-	}
-
-	public void setIpInterfaceDao(IpInterfaceDao dao) {
-		this.m_ipIntefaceDao = dao;
-	}
 
 	@Override
 	public String getNamespace() {
@@ -138,9 +138,9 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleC
 		
 		CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
 
-		bldr.iplike("ipAddress", m_ipQuery);
-		List<OnmsIpInterface> ips = m_ipIntefaceDao.findMatching(bldr.toCriteria());
-		
+		bldr.iplike("ipAddr", m_ipQuery);
+		List<OnmsIpInterface> ips = ipInterfaceProvider.findMatching(bldr.toCriteria());
+
 		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
 		for (OnmsIpInterface ip : ips) {
 			OnmsNode node = ip.getNode();

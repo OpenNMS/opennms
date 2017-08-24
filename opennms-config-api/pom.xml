@@ -3,11 +3,11 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-api</artifactId>
-  <name>OpenNMS Configuration API</name>
+  <name>OpenNMS :: Model :: Config DAO :: API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -28,7 +28,15 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-jaxb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-config-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
     </dependency>
   </dependencies>
 </project>

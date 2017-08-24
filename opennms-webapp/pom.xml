@@ -3,20 +3,22 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
   <packaging>war</packaging>
   <name>OpenNMS Web Application</name>
   <properties>
+    <frontendPluginVersion>1.0</frontendPluginVersion>
+    <nodeVersion>v6.10.2</nodeVersion>
+    <npmVersion>3.10.10</npmVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
     <!-- this is used by runInPlace.sh to get the overwise provided 
          nms libs into the WEB-INF/lib for jetty -->
     <onmsLibScope>provided</onmsLibScope>
-    <skipITs>true</skipITs>
   </properties>
   <build>
     <plugins>
@@ -27,6 +29,7 @@
         <executions>
           <execution>
             <goals><goal>update-stylesheets</goal></goals>
+            <phase>generate-resources</phase>
           </execution>
         </executions>
         <configuration>
@@ -56,59 +59,9 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
-          <systemProperties>
-            <property>
-              <name>java.endorsed.dirs</name>
-              <value>${basedir}/target/endorsed</value>
-            </property>
-          </systemProperties>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-          <reuseForks>false</reuseForks>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <configuration>
-          <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets>
-            <fileset>
-              <directory>.gwt-cache</directory>
-            </fileset>
             <fileset>
               <directory>tomcat</directory>
             </fileset>
@@ -259,8 +212,6 @@
               !org.apache.fop.messaging,
               <!-- Deprecated dependency on Apache Avalon LogKit -->
               !org.apache.log,
-              <!-- Exclude GWT packages, they are not needed at runtime and we are embedding gwt-servlet.jar -->
-              !com.google*,
               <!-- Exclude sitemesh, not sure where the hell it is coming from -->
               !com.opensymphony.module.sitemesh.filter,
               <!-- Exclude JUnit, not sure where the hell it is coming from -->
@@ -298,10 +249,6 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
 
       <!-- plugin to use to run webapp in an embedded tomcat -->
       <plugin>
@@ -315,7 +262,7 @@
       </plugin>
       <!-- plugin to use to run webapp in an embedded jetty -->
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <configuration>
           <contextPath>/opennms</contextPath>
@@ -347,25 +294,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Generates the GWT Container and Nature for GWT projects when eclipse:eclipse is run -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <additionalBuildcommands>
-            <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
-            <buildcommand>com.google.gwt.eclipse.core.gwtProjectValidator</buildcommand>
-          </additionalBuildcommands>
-          <additionalProjectnatures>
-            <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
-            <projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
-          </additionalProjectnatures>
-          <classpathContainers>
-            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
-            <classpathContainer>com.google.gwt.eclipse.core.GWT_CONTAINER</classpathContainer>
-          </classpathContainers>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -384,18 +312,6 @@
                         </artifact>
                     </artifacts>
                 </configuration>
-            </execution>
-            <execution>
-              <id>add-source</id>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>add-source</goal>
-              </goals>
-              <configuration>
-                <sources>
-                  <source>${project.build.directory}/generated-sources/castor</source>
-                </sources>
-              </configuration>
             </execution>
         </executions>
       </plugin>
@@ -437,6 +353,86 @@
   </build>
   <profiles>
     <profile>
+      <id>runJSTests</id>
+      <activation>
+        <property>
+          <name>skipITs</name>
+          <value>false</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- https://github.com/eirslett/frontend-maven-plugin -->
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${frontendPluginVersion}</version>
+            <configuration>
+              <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
+              <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
+              <installDirectory>target</installDirectory>
+              <triggerfiles>
+                <triggerfile>package.json</triggerfile>
+              </triggerfiles>
+            </configuration>
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <nodeVersion>${nodeVersion}</nodeVersion>
+                  <npmVersion>${npmVersion}</npmVersion>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install nodejs dependencies</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install bower dependencies</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>install --allow-root</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy third-party dependencies</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>vendor</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>execute karma tests</id>
+                <goals>
+                  <goal>karma</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>start</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>runInPlace</id>
       <activation><activeByDefault>false</activeByDefault></activation>
       <properties>
@@ -475,7 +471,7 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.mortbay.jetty</groupId>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-jspc-maven-plugin</artifactId>
             <executions>
               <execution>
@@ -569,19 +565,6 @@
       <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
       <scope>${onmsLibScope}</scope>
-      <!-- 
-        We have to exclude this Java compiler from the classpath because it
-        conflicts with one bundled inside gwt-dev that is used when GWT compiles
-        code into Javascript.
-
-        http://code.google.com/p/google-web-toolkit/issues/detail?id=5290
-      -->
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jdt.core.compiler</groupId>
-          <artifactId>ecj</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -606,11 +589,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>gwt-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
       <artifactId>rancid-dependencies</artifactId>
       <type>pom</type>
       <scope>${onmsLibScope}</scope>
@@ -623,54 +601,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-bootstrap</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-ksc-add</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-graph-resources-list</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>   
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.node-page-list</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
+      <artifactId>org.opennms.features.discovery</artifactId>
       <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
@@ -722,6 +658,18 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.system-report</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.service.api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.graphml</artifactId>
+      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -822,8 +770,8 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty.orbit</groupId>
-      <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
+      <groupId>org.apache.taglibs</groupId>
+      <artifactId>taglibs-standard-impl</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -839,11 +787,6 @@
     <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <scope>${onmsLibScope}</scope>
     </dependency>
 
     <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->
@@ -914,17 +857,6 @@
 
     <!-- test dependencies -->
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
@@ -937,12 +869,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
+      <artifactId>opennms-icmp-jna</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-jna</artifactId>
+      <artifactId>opennms-icmp-best</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -110,6 +110,8 @@ public class TcpOutputStrategyTest {
         // Point the TCP exporter to our server
         System.setProperty("org.opennms.rrd.tcp.host", addr.getHostString());
         System.setProperty("org.opennms.rrd.tcp.port", Integer.toString(addr.getPort()));
+        // Always use queueing during these tests
+        System.setProperty("org.opennms.rrd.usequeue", Boolean.TRUE.toString());
     }
 
     public static class PerfDataServerHandler extends SimpleChannelHandler {

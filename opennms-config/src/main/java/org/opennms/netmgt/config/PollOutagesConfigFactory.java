@@ -35,8 +35,6 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.springframework.core.io.FileSystemResource;
@@ -68,10 +66,6 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      */
     PollOutagesConfigFactory(final String configFile) {
         setConfigResource(new FileSystemResource(configFile));
@@ -90,27 +84,19 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException
      *             if any.
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
             return;
         }
 
-        m_singleton = new PollOutagesConfigFactory(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME)));
-        m_singleton.afterPropertiesSet();
-        m_loaded = true;
+        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME)));
+        factory.afterPropertiesSet();
+        setInstance(factory);
     }
 
     /**
@@ -119,18 +105,10 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be
      *                read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException
      *             if any.
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
      */
-    public static void reload() throws IOException, MarshalException, ValidationException {
+    public static void reload() throws IOException {
         init();
         getInstance().update();
     }
@@ -143,8 +121,9 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      *             Thrown if the factory has not yet been initialized.
      */
     public static PollOutagesConfigFactory getInstance() {
-        if (!m_loaded)
+        if (!m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
+        }
 
         return m_singleton;
     }
@@ -164,72 +143,4 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
 
     }
 
-    /**
-     * Saves the current in-memory configuration to disk and reloads
-     * 
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws java.io.IOException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
-     */
-    public void saveCurrent() throws MarshalException, IOException, ValidationException {
-        getWriteLock().lock();
-
-        try {
-            // Marshal to a string first, then write the string to the file.
-            // This way the original configuration isn't lost if the XML from the
-            // marshal is hosed.
-            final StringWriter stringWriter = new StringWriter();
-            JaxbUtils.marshal(getConfig(), stringWriter);
-
-            final String xmlString = stringWriter.toString();
-            if (xmlString != null) {
-                saveXML(xmlString);
-            }
-        } finally {
-            getWriteLock().unlock();
-        }
-
-        update();
-    }
-
-    /** {@inheritDoc} */
-    protected void saveXML(final String xmlString) throws IOException, MarshalException, ValidationException {
-        getWriteLock().lock();
-
-        try {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
-
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
-            fileWriter.write(xmlString);
-            fileWriter.flush();
-            fileWriter.close();
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-
-    /**
-     * <p>
-     * update
-     * </p>
-     * 
-     * @throws java.io.IOException
-     *             if any.
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
-     */
-    @Override
-    public void update() throws IOException, MarshalException, ValidationException {
-        getReadLock().lock();
-        try {
-            getContainer().reload();
-        } finally {
-            getReadLock().unlock();
-        }
-    }
 }

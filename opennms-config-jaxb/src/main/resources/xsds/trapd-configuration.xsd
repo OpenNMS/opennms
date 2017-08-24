@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/trapd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/trapd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the trapd-configuration.xml configuration
+    file. Version: $Id$</documentation>
+  </annotation>
+
+  <element name="trapd-configuration">
+    <annotation>
+      <documentation>Top-level element for the trapd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:snmpv3-user">
+          <annotation>
+            <documentation>SNMPv3 configuration.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="snmp-trap-address" use="optional" type="string" default="*" >
+        <annotation>
+          <documentation>The IP address on which trapd listens for connections.
+          If "*" is specified, trapd will bind to all addresses.  The default is *.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="snmp-trap-port" use="required">
+        <annotation>
+          <documentation>The port on which trapd listens for SNMP traps. The
+          standard port is 162.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
+
+      <attribute name="new-suspect-on-trap" type="boolean" use="required">
+        <annotation>
+          <documentation>Whether traps from devices unknown to OpenNMS should
+          generate newSuspect events.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="include-raw-message" type="boolean" use="optional">
+        <annotation>
+          <documentation>Whether the raw trap should be included before processing the trap.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="use-address-from-varbind" type="boolean" use="optional">
+        <annotation>
+            <documentation>When enabled, the source address of the trap will be pulled
+            from the snmpTrapAddress (1.3.6.1.6.3.18.1.3.0) varbind when available.
+            This varbind is appended by certain trap forwarders when forwarding
+            SNMPv2 traps.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="threads" use="optional">
+        <annotation>
+          <documentation>Number of threads used for consuming/dispatching messages.
+            Defaults to 2 x the number of available processors.
+          </documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="0"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="queue-size" use="optional" default="10000">
+        <annotation>
+          <documentation>Maximum number of messages to keep in memory while waiting
+            to be dispatched.
+          </documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="batch-size" use="optional" default="1000">
+        <annotation>
+          <documentation>Messages are aggregated in batches before being dispatched.
+            When the batch reaches this size, it will be dispatched.
+          </documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="batch-interval" use="optional" default="500">
+        <annotation>
+          <documentation>Messages are aggregated in batches before being dispatched.
+            When the batch has been created for longer than this interval (ms)
+            it will be dispatched, regardless of the current size.
+          </documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="0"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+
+  <element name="snmpv3-user">
+    <annotation>
+      <documentation>SNMPv3 User Configuration.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="engine-id" type="string" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Application Engine ID</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="security-name" type="string" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Security Name (User Name)</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="security-level" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Security Level (noAuthNoPriv, authNoPriv, authPriv)</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1" />
+            <maxInclusive value="3" />
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="auth-protocol" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Authentication Protocol</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(MD5|SHA)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="auth-passphrase" type="string" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Authentication Password Phrase</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="privacy-protocol" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Privacy Protocol</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(DES|AES|AES192|AES256)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="privacy-passphrase" type="string" use="optional">
+        <annotation>
+          <documentation>SNMPv3 Privacy Password Phrase</documentation>
+        </annotation>
+      </attribute>
+
+    </complexType>
+  </element>
+
+</schema>

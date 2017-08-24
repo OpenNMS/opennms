@@ -84,7 +84,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-ackd.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
@@ -313,7 +312,7 @@ public class AckdIT implements InitializingBean {
         
         event.setEventCreateTime(time);
         event.setEventDescr("Test node down event.");
-        event.setEventSeverity(6);
+        event.setEventSeverity(OnmsSeverity.MAJOR.getId());
         event.setEventSource("AckdTest");
         event.setEventTime(time);
         event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
@@ -326,7 +325,7 @@ public class AckdIT implements InitializingBean {
         vo.m_eventID = event.getId();
         
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setClearKey(EventConstants.NODE_UP_EVENT_UEI + ":localhost:1");
         alarm.setCounter(1);
         alarm.setDescription(event.getEventDescr());

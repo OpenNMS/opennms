@@ -53,7 +53,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -62,6 +61,7 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -134,7 +134,7 @@ public class PollerBackEndIT implements InitializingBean {
     public void setUp(){
         MockLogAppender.setupLogging();
 
-        LocationDef location = new LocationDef("RDU", "East Coast", new String[] { "example1" }, new String[0], "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L, "odd");
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation("RDU", "East Coast", new String[] { "example1" }, new String[0], "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L, "odd");
         m_monitoringLocationDao.saveOrUpdate(location);
     }
 
@@ -142,13 +142,13 @@ public class PollerBackEndIT implements InitializingBean {
     @Transactional
     public void testRegister() {
         
-        final Collection<LocationDef> locations = m_backEnd.getMonitoringLocations();
+        final Collection<OnmsMonitoringLocation> locations = m_backEnd.getMonitoringLocations();
         assertNotNull("locations list should not be null", locations);
         assertFalse("locations list should not be empty", locations.isEmpty());
 
         final int initialCount = m_locationMonitorDao.findAll().size();
         
-        for (final LocationDef location : locations) {
+        for (final OnmsMonitoringLocation location : locations) {
             final String locationMonitorId = m_backEnd.registerLocationMonitor(location.getLocationName());
             assertEquals(MonitorStatus.REGISTERED, m_locationMonitorDao.get(locationMonitorId).getStatus());
         }
@@ -225,7 +225,7 @@ public class PollerBackEndIT implements InitializingBean {
     @Test
     @Transactional
     public void testReportResults() throws InterruptedException {
-        final OnmsNode node = new OnmsNode("foo");
+        final OnmsNode node = new OnmsNode(m_monitoringLocationDao.getDefaultLocation(), "foo");
         final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr("192.168.1.1"), node);
         OnmsServiceType serviceType = m_serviceTypeDao.findByName("HTTP");
         if (serviceType == null) {

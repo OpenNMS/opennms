@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,19 +41,15 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.svclayer.api.KscReportService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-/**
- * <p>FormProcReportController class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class FormProcReportController extends AbstractController implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(FormProcReportController.class);
 
     public enum Parameters {
         action,
@@ -94,30 +90,37 @@ public class FormProcReportController extends AbstractController implements Init
         // Save the global variables into the working report
         report.setTitle(report_title);
         if (show_graphtype == null) {
-            report.setShow_graphtype_button(false);
+            report.setShowGraphtypeButton(false);
         } else {
-            report.setShow_graphtype_button(true);
+            report.setShowGraphtypeButton(true);
         }
         
         if (show_timespan == null) {
-            report.setShow_timespan_button(false);
+            report.setShowTimespanButton(false);
         } else {
-            report.setShow_timespan_button(true);
+            report.setShowTimespanButton(true);
         } 
         
         if (graphs_per_line > 0) {
-            report.setGraphs_per_line(graphs_per_line);
+            report.setGraphsPerLine(graphs_per_line);
         } else {
-            report.setGraphs_per_line(0);
+            report.setGraphsPerLine(0);
         } 
 
         if (Actions.Save.toString().equals(action)) {
             // The working model is complete now... lets save working model to configuration file 
             try {
+                LOG.debug("reports: {}", getKscReportFactory().getReportMap());
+
+                LOG.debug("unloading working report");
                 // First copy working report into report arrays
                 editor.unloadWorkingReport(getKscReportFactory());
+
+                LOG.debug("saving current report");
                 // Save the changes to the config file
                 getKscReportFactory().saveCurrent();
+
+                LOG.debug("unloading editor from session");
                 // Go ahead and unload the editor from the session since we're done using it
                 KscReportEditor.unloadFromSession(request.getSession());
             } catch (Throwable e) {
@@ -129,7 +132,8 @@ public class FormProcReportController extends AbstractController implements Init
                 editor.loadWorkingGraph(graph_index);
             } else {
                 if (Actions.DelGraph.toString().equals(action)) { 
-                    report.removeGraph(report.getGraph(graph_index));
+                    final int index = graph_index;
+                    report.removeGraph(report.getGraphs().get(index));
                 } else {
                     throw new ServletException("Invalid Argument for Customize Form Action.");
                 }
@@ -137,11 +141,11 @@ public class FormProcReportController extends AbstractController implements Init
         }
         
         if (Actions.Save.toString().equals(action)) {
-            return new ModelAndView("redirect:/KSC/index.htm");
+            return new ModelAndView("redirect:/KSC/index.jsp");
         } else if (Actions.DelGraph.toString().equals(action)) {
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (Actions.AddGraph.toString().equals(action)) {
-            return new ModelAndView("redirect:/KSC/customGraphChooseParentResource.htm");
+            return new ModelAndView("redirect:/KSC/customGraphChooseResource.jsp");
         } else if (Actions.ModGraph.toString().equals(action)) {
             Graph graph = editor.getWorkingGraph();
             OnmsResource resource = getKscReportService().getResourceFromGraph(graph);

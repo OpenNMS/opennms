@@ -37,6 +37,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class Impact extends Cause {
+    private static final long serialVersionUID = 6520142892570549526L;
 
     /**
      * <p>Constructor for Impact.</p>

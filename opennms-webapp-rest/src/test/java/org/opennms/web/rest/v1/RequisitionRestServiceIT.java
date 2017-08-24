@@ -30,11 +30,13 @@ package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -332,14 +334,9 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 "</node>" +
             "</model-import>";
 
-        Exception ex = null;
-        try {
-        	sendPost("/requisitions", req, 500, null);
-        } catch (final Exception e) {
-        	ex = e;
-        }
-        assertNotNull("we should have an exception", ex);
-        assertTrue("validator should expect only elements", ex.getMessage().contains("content type is element-only"));
+        final MockHttpServletResponse response = sendPost("/requisitions", req, 500, null);
+        final String responseText = response.getContentAsString();
+        assertThat(responseText, CoreMatchers.containsString("Failed to marshal/unmarshal XML file while unmarshalling an object (Requisition)"));
     }
 
     @Test
@@ -350,7 +347,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         sendRequest(PUT, "/requisitions/test/import", 202);
 
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
     }
 
     @Test
@@ -361,8 +358,8 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 202);
 
-        assertEquals(1, anticipator.unanticipatedEvents().size());
-        final Event event = anticipator.unanticipatedEvents().iterator().next();
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
+        final Event event = anticipator.getUnanticipatedEvents().iterator().next();
         final List<Parm> parms = event.getParmCollection();
         assertEquals(2, parms.size());
         assertEquals("false", parms.get(1).getValue().getContent());

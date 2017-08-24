@@ -1,0 +1,15 @@
+.onms-interface-status-unknown {
+    background: #B2DFFF;
+}
+
+.onms-interface-status-indeterminate {
+    background: #F6CECD;
+}
+
+.onms-interface-status-up {
+    background: #D8E1CD;
+}
+
+.onms-interface-status-down {
+    background: #F5CDCD;
+}

@@ -87,7 +87,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 	 *     <li>If the target is not selected, only the target is returned.</li>
 	 * </ul>
 	 * @param target The target.
-	 * @param selectoinManager The SelectionManager.
+	 * @param selectionManager The SelectionManager.
 	 * @return All vertices which should be considered as a target.
 	 */
 	private static Collection<VertexRef> determineTargets(final VertexRef target, final SelectionManager selectionManager) {
@@ -117,8 +117,10 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 
 	@Override
-	public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
-	    if (targets == null || targets.isEmpty()) return null;
+	public void execute(List<VertexRef> targets, final OperationContext operationContext) {
+	    if (targets == null || targets.isEmpty()) {
+			return;
+		}
 	    
 		final Logger log = LoggerFactory.getLogger(this.getClass());
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
@@ -250,7 +252,6 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		groupNamePrompt.setContent(promptForm);
 
 		window.addWindow(groupNamePrompt);
-		return null;
 	}
 
 	@Override

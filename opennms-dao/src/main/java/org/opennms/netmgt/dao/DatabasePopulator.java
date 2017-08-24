@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
@@ -72,6 +71,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
@@ -265,8 +265,11 @@ public class DatabasePopulator {
         for (final OnmsServiceType service : m_serviceTypeDao.findAll()) {
             m_serviceTypeDao.delete(service);
         }
-        for (final LocationDef location : m_monitoringLocationDao.findAll()) {
-            m_monitoringLocationDao.delete(location);
+        for (final OnmsMonitoringLocation location : m_monitoringLocationDao.findAll()) {
+            // Don't delete the default localhost monitoring location
+            if (!MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(location.getLocationName())) {
+                m_monitoringLocationDao.delete(location);
+            }
         }
         for (final OnmsCategory category : m_categoryDao.findAll()) {
             m_categoryDao.delete(category);
@@ -301,7 +304,7 @@ public class DatabasePopulator {
         LOG.debug("==== DatabasePopulator Starting ====");
 
         final NetworkBuilder builder = new NetworkBuilder();
-        
+
         final OnmsNode node1 = buildNode1(builder);
         getNodeDao().save(node1);
         getNodeDao().flush();
@@ -370,7 +373,7 @@ public class DatabasePopulator {
         getAcknowledgmentDao().save(ack);
         getAcknowledgmentDao().flush();
         
-        final LocationDef def = new LocationDef();
+        final OnmsMonitoringLocation def = new OnmsMonitoringLocation();
         def.setLocationName("RDU");
         def.setMonitoringArea("East Coast");
         def.setPollingPackageNames(Collections.singletonList("example1"));
@@ -552,7 +555,7 @@ public class DatabasePopulator {
         event.setEventLog("Y");
         event.setEventLogMsg("Test Event Log Message");
         event.setEventParms("testParm=HelloWorld(string,text)");
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("test");
         event.setEventTime(new Date(1437061537105L));
         event.setEventUei("uei.opennms.org/test");
@@ -592,7 +595,7 @@ public class DatabasePopulator {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_node1);
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");

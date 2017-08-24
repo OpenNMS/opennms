@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thresholding-config xmlns="http://xmlns.opennms.org/xsd/config/thresholding-config">
+<thresholding-config xmlns="http://xmlns.opennms.org/xsd/config/thresholding">
     <group name="mib2" rrdRepository="${install.share.dir}/rrd/snmp/">
         <threshold
             description="Trigger an alert if one or more incoming packets on the whole node were not received due to an error for one measurement interval"

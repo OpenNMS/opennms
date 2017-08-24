@@ -47,8 +47,10 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -79,6 +81,9 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DistPollerDao m_distPollerDao;
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
 
     @Autowired
     private DatabasePopulator m_databasePopulator;
@@ -129,7 +134,7 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
         parameters.put("limit", "1");
         xml = sendRequest(GET, "/alarms", parameters, 200);
         // There are no acknowledged alarms
-        assertTrue(xml.contains("<alarms totalCount=\"0\"/>"));
+        assertTrue(xml.contains("<alarms offset=\"0\" totalCount=\"0\"/>"));
 
         xml = sendRequest(GET, "/alarms/1", parameters, 200);
         assertTrue(xml.contains("This is a test alarm"));
@@ -208,7 +213,7 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     @JUnitTemporaryDatabase
     public void testEventsForNodeId() throws Exception {
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation());
         node.setId(1);
 
         OnmsEvent event = new OnmsEvent();
@@ -217,7 +222,7 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventTime(new Date());
         event.setEventSource("test");
         event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setNode(node);

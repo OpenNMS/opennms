@@ -8,11 +8,11 @@
   xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
-  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
-  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
 
@@ -38,7 +38,9 @@
   -->
 
   <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
+    <constructor-arg ref="eventdMetricRegistry"/>
     <property name="eventConfDao" ref="eventConfDao"/>
+    <property name="eventUtil" ref="eventUtil"/>
   </bean>
 
   <bean id="eventParmRegexFilter" class="org.opennms.netmgt.eventd.processor.EventParmRegexFilterProcessor">
@@ -46,6 +48,7 @@
   </bean>
 
   <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
+    <constructor-arg ref="eventdMetricRegistry"/>
     <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
     <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
     <property name="eventHandler" ref="eventdEventHandler"/>
@@ -75,6 +78,7 @@
   <bean id="shouldLogEventSummaries" factory-bean="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
   
   <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
+    <constructor-arg ref="eventdMetricRegistry"/>
     <property name="eventProcessors">
       <list>
         <!-- 
@@ -88,18 +92,22 @@
       </list>
     </property>
     <property name="logEventSummaries" ref="shouldLogEventSummaries" />
+    <property name="nodeDao" ref="nodeDao" />
   </bean>
 
-  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter"/>
+  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
+    <constructor-arg ref="eventdMetricRegistry"/>
+  </bean>
 
   <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
+    <constructor-arg ref="eventdMetricRegistry"/>
     <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
   </bean>
 
   <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy" depends-on="eventIpcManagerImpl">
     <property name="eventIpcManager" ref="eventIpcManagerImpl"/>
   </bean>
-  
+
   <bean id="tcpReceiver" class="org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver">
     <property name="port" ref="tcpPort"/>
     <property name="ipAddress" ref="tcpIpAddress"/>
@@ -133,6 +141,18 @@
     <constructor-arg ref="eventConfDao"/>
   </bean>
 
-  <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
+  <bean id="eventdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="eventdMetricRegistry"/>
+  </bean>
+
+  <bean id="eventdMetricRegistryDomainedJmxReporterBuilder" factory-bean="eventdMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <constructor-arg value="org.opennms.netmgt.eventd"/>
+  </bean>
+
+  <bean id="eventdMetricRegistryJmxReporter"
+        factory-bean="eventdMetricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
 
 </beans>

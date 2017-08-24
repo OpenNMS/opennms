@@ -98,7 +98,7 @@ public class FormProcGraphController extends AbstractController implements Initi
             modelAndView.addObject("graphtype", graph.getGraphtype());
             return modelAndView;
         } else if (action.equals("ChooseResource")) {
-            ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customGraphChooseResource.htm");
+            ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customGraphChooseResource.jsp"); // TODO We need to tune the initialization
             modelAndView.addObject("resourceId", resource.getId());
             modelAndView.addObject("selectedResourceId", resource.getId());
             return modelAndView;

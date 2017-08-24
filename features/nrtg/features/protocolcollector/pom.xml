@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms.features.nrtg</groupId>
     <artifactId>features</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg</groupId>
   <artifactId>osgi-nrtg-protocolcollector</artifactId>
-  <name>OpenNMS :: Features :: NRTG :: Protocol Collectors</name>
+  <name>OpenNMS :: Features :: NRTG :: Features :: Collectors</name>
   <description>
     The ProctcolCollector module contains ProtocolCollectors. This
     ProtocolCollectors are able to request values for metrics from agents on nodes.

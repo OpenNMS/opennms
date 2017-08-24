@@ -36,7 +36,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -44,6 +43,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -51,10 +52,11 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
-import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,7 +85,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("{alarmId}")
     @Transactional
     public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId) {
-        assertUserReadCredentials(securityContext);
+        SecurityHelper.assertUserReadCredentials(securityContext);
         if ("summaries".equals(alarmId)) {
             final List<AlarmSummary> collection = m_alarmDao.getNodeAlarmSummaries();
             return collection == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(new AlarmSummaryCollection(collection)).build();
@@ -105,7 +107,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("count")
     @Transactional
     public String getCount(@Context SecurityContext securityContext) {
-        assertUserReadCredentials(securityContext);
+        SecurityHelper.assertUserReadCredentials(securityContext);
         return Integer.toString(m_alarmDao.countAll());
     }
 
@@ -120,7 +122,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public OnmsAlarmCollection getAlarms(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo) {
-        assertUserReadCredentials(securityContext);
+        SecurityHelper.assertUserReadCredentials(securityContext);
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters(), false);
         builder.distinct();
         final OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(builder.toCriteria()));
@@ -149,6 +151,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
         writeLock();
 
         try {
+            boolean isProcessAck = true;
             if (alarmId == null) {
                 return getBadRequestResponse("Unable to determine alarm ID to update based on query path.");
             }
@@ -161,14 +164,17 @@ public class AlarmRestService extends AlarmRestServiceBase {
             formProperties.remove("clear");
             final String ackUserValue = formProperties.getFirst("ackUser");
             formProperties.remove("ackUser");
-
+            final String ticketIdValue = formProperties.getFirst("ticketId");
+            formProperties.remove("ticketId");
+            final String ticketStateValue = formProperties.getFirst("ticketState");
+            formProperties.remove("ticketState");
             final OnmsAlarm alarm = m_alarmDao.get(alarmId);
             if (alarm == null) {
                 return getBadRequestResponse("Unable to locate alarm with ID '" + alarmId + "'");
             }
 
             final String ackUser = ackUserValue == null ? securityContext.getUserPrincipal().getName() : ackUserValue;
-            assertUserEditCredentials(securityContext, ackUser);
+            SecurityHelper.assertUserEditCredentials(securityContext, ackUser);
 
             final OnmsAcknowledgment acknowledgement = new OnmsAcknowledgment(alarm, ackUser);
             acknowledgement.setAckAction(AckAction.UNSPECIFIED);
@@ -186,10 +192,20 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 if (Boolean.parseBoolean(clearValue)) {
                     acknowledgement.setAckAction(AckAction.CLEAR);
                 }
+            } else if (StringUtils.isNotBlank(ticketIdValue)) {
+                isProcessAck = false;
+                alarm.setTTicketId(ticketIdValue);
+            } else if (EnumUtils.isValidEnum(TroubleTicketState.class, ticketStateValue)) {
+                isProcessAck = false;
+                alarm.setTTicketState(TroubleTicketState.valueOf(ticketStateValue));
             } else {
                 return getBadRequestResponse("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
-            m_ackDao.processAck(acknowledgement);
+            if (isProcessAck) {
+                m_ackDao.processAck(acknowledgement);
+            } else {
+                m_alarmDao.saveOrUpdate(alarm);
+            }
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -225,7 +241,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
 
             final String ackUser = formProperties.containsKey("ackUser") ? formProperties.getFirst("ackUser") : securityContext.getUserPrincipal().getName();
             formProperties.remove("ackUser");
-            assertUserEditCredentials(securityContext, ackUser);
+            SecurityHelper.assertUserEditCredentials(securityContext, ackUser);
 
             final List<OnmsAlarm> alarms = m_alarmDao.findMatching(builder.toCriteria());
             for (final OnmsAlarm alarm : alarms) {
@@ -255,46 +271,6 @@ public class AlarmRestService extends AlarmRestServiceBase {
         } finally {
             writeUnlock();
         }
-    }
-
-    private static void assertUserReadCredentials(SecurityContext securityContext) {
-        final String currentUser = securityContext.getUserPrincipal().getName();
-
-        if (securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            // admin can do anything
-            return;
-        }
-        if (securityContext.isUserInRole(Authentication.ROLE_REST) ||
-                securityContext.isUserInRole(Authentication.ROLE_USER) ||
-                securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
-            return;
-        }
-        // otherwise
-        throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to read alarms.").type(MediaType.TEXT_PLAIN).build());
-    }
-
-    public static void assertUserEditCredentials(final SecurityContext securityContext, final String ackUser) {
-        final String currentUser = securityContext.getUserPrincipal().getName();
-
-        if (securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            // admin can do anything
-            return;
-        }
-        if (securityContext.isUserInRole(Authentication.ROLE_READONLY)) {
-            // read only is not allowed to edit
-            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is a read-only user!").type(MediaType.TEXT_PLAIN).build());
-        }
-        if (securityContext.isUserInRole(Authentication.ROLE_REST) ||
-                securityContext.isUserInRole(Authentication.ROLE_USER) ||
-                securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
-            if (ackUser.equals(currentUser)) {
-                // ROLE_REST and ROLE_MOBILE are allowed to modify things as long as it's as the
-                // same user as they're logging in with.
-                return;
-            }
-        }
-        // otherwise
-        throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to perform updates to alarms as user '" + ackUser + "'").type(MediaType.TEXT_PLAIN).build());
     }
 
 }

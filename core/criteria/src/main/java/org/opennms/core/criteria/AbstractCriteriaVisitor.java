@@ -35,7 +35,7 @@ import org.opennms.core.criteria.restrictions.Restriction;
 public class AbstractCriteriaVisitor implements CriteriaVisitor {
 
     @Override
-    public void visitClass(final Class<?> clazz) {
+    public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
     }
 
     @Override

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,11 +57,12 @@
     List<String> escalateDelays = new ArrayList<String>();
     
     targetLinks.add( "Initial Targets" );
-    String[] targets = new String[newPath.getEscalateCount()];
+    final List<Escalate> escalates = newPath.getEscalates();
+    String[] targets = new String[escalates.size()];
     for (int i = 0; i < targets.length; i++)
     {
         targetLinks.add("Escalation # " + (i+1));
-        escalateDelays.add(newPath.getEscalate()[i].getDelay());
+        escalateDelays.add(escalates.get(i).getDelay());
     }
 %>
 
@@ -178,7 +179,7 @@
         <div class="form-group">
           <label for="input_initialDelay" class="control-label col-sm-2">Initial Delay:</label>
           <div class="col-sm-10">
-            <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay())%>
+            <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay().orElse("0s"))%>
           </div>
         </div>
         <div class="form-group">
@@ -203,7 +204,7 @@
                   <br/>
                   <% if (i > 0) { %>
                     Delay:
-                    <%=buildDelaySelect(intervals, "escalate"+(i-1)+"Delay", newPath.getEscalate(i-1).getDelay())%><br/>
+                    <%=buildDelaySelect(intervals, "escalate"+(i-1)+"Delay", newPath.getEscalates().get(i-1).getDelay())%><br/>
                   <% } %>
                   <%=buildTargetList(i, newPath, "escalate"+i)%>
                 </td>
@@ -275,20 +276,19 @@
     public String buildTargetList(int index, Path path, String name)
     {
         StringBuffer buffer = new StringBuffer("<select class=\"form-control\" name=\""+name+"\" size=\"4\">");
-        Target[] targetList = new Target[0];
+        List<Target> targets = null;
         
         if (index == 0)
         {
-            targetList = path.getTarget();
+            targets = path.getTargets();
         }
         else
         {
-            targetList = path.getEscalate()[index-1].getTarget();
+            targets = path.getEscalates().get(index-1).getTargets();
         }
         
-        for (int i = 0; i < targetList.length; i++)
-        {
-            buffer.append("<option>").append( targetList[i].getName() ).append("</option>");
+        for (final Target t : targets) {
+            buffer.append("<option>").append(t.getName()).append("</option>");
         }
         buffer.append("</select>");
         

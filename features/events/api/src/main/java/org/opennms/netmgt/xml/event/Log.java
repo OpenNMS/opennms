@@ -26,13 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.xml.event;
 
 //---------------------------------/
@@ -45,8 +38,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Class Log.
@@ -153,10 +144,7 @@ public class Log implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-        .append("header", _header)
-        .append("events", _events)
-        .toString();
+        return new OnmsStringBuilder(this).toString();
     }
 
 }

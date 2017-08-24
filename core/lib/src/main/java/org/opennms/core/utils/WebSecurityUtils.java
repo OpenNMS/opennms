@@ -125,6 +125,9 @@ public abstract class WebSecurityUtils {
 	 * @throws java.lang.NumberFormatException if any.
 	 */
 	public static int safeParseInt(String dirty) throws NumberFormatException {
+		if (dirty == null) {
+			throw new NumberFormatException("String value of integer was null");
+		}
 		String clean = ILLEGAL_IN_INTEGER.matcher(dirty).replaceAll("");
 		return Integer.parseInt(clean);
 	}
@@ -137,6 +140,9 @@ public abstract class WebSecurityUtils {
 	 * @throws java.lang.NumberFormatException if any.
 	 */
 	public static long safeParseLong(String dirty) throws NumberFormatException {
+		if (dirty == null) {
+			throw new NumberFormatException("String value of long integer was null");
+		}
 		String clean = ILLEGAL_IN_INTEGER.matcher(dirty).replaceAll("");
 		return Long.parseLong(clean);
 	}

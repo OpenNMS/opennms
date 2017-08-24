@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,12 +35,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.PropertiesUtils;
@@ -194,7 +197,6 @@ public class AutomationProcessor implements ReadyRunnable {
     }
     
     static class TriggerResults {
-    	private static final Logger LOG = LoggerFactory.getLogger(TriggerResults.class);
     	private final TriggerProcessor m_trigger;
     	private final ResultSet m_resultSet;
     	private final boolean m_successful;
@@ -441,34 +443,27 @@ public class AutomationProcessor implements ReadyRunnable {
 
         String getUei() {
             if (hasEvent()) {
-                return getAutoEvent().getUei().getContent();
-            } else {
-                return null;
+                return getAutoEvent().getUei().getContent().orElse(null);
             }
+            return null;
         }
 
-        void send() {
+        Event getEvent() {
             
             if (hasEvent()) {
                 //create and send event
-                LOG.debug("AutoEventProcessor: Sending auto-event {} for automation {}", getUei(), m_automationName);
+                LOG.debug("AutoEventProcessor: Generated auto-event {} for automation {}", getUei(), m_automationName);
                 
                 EventBuilder bldr = new EventBuilder(getUei(), "Automation");
-                sendEvent(bldr.getEvent());
+                return bldr.getEvent();
             } else {
                 LOG.debug("AutoEventProcessor: No auto-event for automation {}", m_automationName);
+                return null;
             }
         }
-
-        private void sendEvent(Event event) {
-            Vacuumd.getSingleton().getEventManager().sendNow(event);
-        }
-
     }
     
     static class SQLExceptionHolder extends RuntimeException {
-    	private static final Logger LOG = LoggerFactory.getLogger(SQLExceptionHolder.class);
-
     	private static final long serialVersionUID = 2479066089399740468L;
 
         private final SQLException m_ex;
@@ -512,9 +507,6 @@ public class AutomationProcessor implements ReadyRunnable {
 
     
     static class EventAssignment {
-
-    	private static final Logger LOG = LoggerFactory.getLogger(EventAssignment.class);
-
     	static final Pattern s_pattern = Pattern.compile("\\$\\{(\\w+)\\}");
         private final Assignment m_assignment;
 
@@ -553,12 +545,9 @@ public class AutomationProcessor implements ReadyRunnable {
             m_actionEvent = actionEvent;
             
             if (actionEvent != null) {
-        
-                m_assignments = new ArrayList<EventAssignment>(actionEvent.getAssignmentCount());
-                for(Assignment assignment : actionEvent.getAssignment()) {
-                    m_assignments.add(new EventAssignment(assignment));
-                }
-            
+                m_assignments = actionEvent.getAssignments().parallelStream().map(a -> {
+                    return new EventAssignment(a);
+                }).collect(Collectors.toList());
             } else {
                 m_assignments = null;
             }
@@ -569,17 +558,16 @@ public class AutomationProcessor implements ReadyRunnable {
             return m_actionEvent != null;
         }
 
-        void send() {
-            
+        public Event getEvent() {
             if (hasEvent()) {
                 // the uei will be set by the event assignments
                 EventBuilder bldr = new EventBuilder(null, "Automation");
                 buildEvent(bldr, new InvalidSymbolTable());
-                LOG.debug("ActionEventProcessor: Sending action-event {} for automation {}", bldr.getEvent().getUei(), m_automationName);
-                sendEvent(bldr.getEvent());
-                
+                LOG.debug("ActionEventProcessor: Generated action-event {} for automation {}", bldr.getEvent().getUei(), m_automationName);
+                return bldr.getEvent();
             } else {
                 LOG.debug("ActionEventProcessor: No action-event for automation {}", m_automationName);
+                return null;
             }
         }
 
@@ -589,14 +577,10 @@ public class AutomationProcessor implements ReadyRunnable {
             }
         }
 
-        private void sendEvent(Event event) {
-            Vacuumd.getSingleton().getEventManager().sendNow(event);
-        }
-
-        void processTriggerResults(TriggerResults triggerResults) throws SQLException {
+        List<Event> processTriggerResults(TriggerResults triggerResults) throws SQLException {
             if (!hasEvent()) {
                 LOG.debug("processTriggerResults: No action-event for automation {}", m_automationName);
-                return;
+                return Collections.emptyList();
             }
             
             ResultSet triggerResultSet = triggerResults.getResultSet();
@@ -604,23 +588,24 @@ public class AutomationProcessor implements ReadyRunnable {
             triggerResultSet.beforeFirst();
             
             //Loop through the select results
+            List<Event> events = new LinkedList<>();
             while (triggerResultSet.next()) {
                 // the uei will be set by the event assignments
                 EventBuilder bldr = new EventBuilder(null, "Automation");
                 ResultSetSymbolTable symbols = new ResultSetSymbolTable(triggerResultSet);
                 
                 try {
-                    if (m_actionEvent.isAddAllParms() && resultHasColumn(triggerResultSet, "eventParms") ) {
+                    if (m_actionEvent.getAddAllParms() && resultHasColumn(triggerResultSet, "eventParms") ) {
                         bldr.setParms(EventParameterUtils.decode(triggerResultSet.getString("eventParms")));
                     }
                     buildEvent(bldr, symbols);
                 } catch (SQLExceptionHolder holder) {
                     holder.rethrow();
                 }
-                LOG.debug("processTriggerResults: Sending action-event {} for automation {}", bldr.getEvent().getUei(), m_automationName);
-                sendEvent(bldr.getEvent());
+                LOG.debug("processTriggerResults: Generated action-event {} for automation {}", bldr.getEvent().getUei(), m_automationName);
+                events.add(bldr.getEvent());
             }
-
+            return events;
         }
 
         private boolean resultHasColumn(ResultSet resultSet, String columnName) {
@@ -637,14 +622,17 @@ public class AutomationProcessor implements ReadyRunnable {
             return m_actionEvent == null ? false : m_actionEvent.getForEachResult();
         }
 
-		void processActionEvent(TriggerResults triggerResults) throws SQLException {
-			if (triggerResults.hasTrigger() && forEachResult()) {
-			    processTriggerResults(triggerResults);
-			} else {
-			    send();
-			}
-		}
-        
+        /**
+         * Generates the list of events that should be sent once the transation is closed.
+         */
+        List<Event> processActionEvent(TriggerResults triggerResults) throws SQLException {
+            if (triggerResults.hasTrigger() && forEachResult()) {
+                return processTriggerResults(triggerResults);
+            } else if (hasEvent()) {
+                return Collections.singletonList(getEvent());
+            }
+            return Collections.emptyList();
+        }
     }
 
     /**
@@ -656,10 +644,10 @@ public class AutomationProcessor implements ReadyRunnable {
 	public AutomationProcessor(Automation automation) {
         m_ready = true;
         m_automation = automation;
-        m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName()));
+        m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName().orElse(null)));
         m_action = new ActionProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAction(m_automation.getActionName()));
-        m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName()));
-        m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent()));
+        m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName().orElse(null)));
+        m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent().orElse(null)));
     }
     
     /**
@@ -728,9 +716,9 @@ public class AutomationProcessor implements ReadyRunnable {
             
         LOG.debug("runAutomation: {} action statement is: {}", m_automation.getName(), m_action.getActionSQL());
 
-        LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName());
-        
-        
+        LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName().orElse(null));
+
+        final List<Event> eventsToSend = new LinkedList<>();
         Transaction.begin();
         try {
             LOG.debug("runAutomation: Processing automation: {}", m_automation.getName());
@@ -739,7 +727,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
             boolean success = false;
             if (results.isSuccessful()) {
-                success = processAction(results);
+                success = processAction(results, eventsToSend);
             }
             
 			return success;
@@ -749,23 +737,32 @@ public class AutomationProcessor implements ReadyRunnable {
             LOG.warn("runAutomation: Could not execute automation: {}", m_automation.getName(), e);
             return false;
         } finally {
+            LOG.debug("runAutomation: Closing transaction for automation: {}", m_automation.getName());
+            Transaction.end();
 
-            LOG.debug("runAutomation: Ending processing of automation: {}", m_automation.getName());
-            
-            Transaction.end();         
+            // Always send the events out after the transaction is closed in order to ensure
+            // that any event handlers can access the updated records
+            LOG.debug("runAutomation: Sending {} events for automation: {}", eventsToSend.size(), m_automation.getName());
+            for (Event event : eventsToSend) {
+                Vacuumd.getSingleton().getEventManager().sendNow(event);
+            }
+
+            LOG.debug("runAutomation: Done processing automation: {}", m_automation.getName());
         }
 
     }
 
-    private boolean processAction(TriggerResults triggerResults) throws SQLException {
+    private boolean processAction(TriggerResults triggerResults, List<Event> eventsToSend) throws SQLException {
 		LOG.debug("runAutomation: running action(s)/actionEvent(s) for : {}", m_automation.getName());
 		
         //Verfiy the trigger ResultSet returned the required number of rows and the required columns for the action statement
         m_action.checkForRequiredColumns(triggerResults);
         		
 		if (m_action.processAction(triggerResults)) {
-		    m_actionEvent.processActionEvent(triggerResults);
-		    m_autoEvent.send();
+		    eventsToSend.addAll(m_actionEvent.processActionEvent(triggerResults));
+		    if (m_autoEvent.hasEvent()) {
+		        eventsToSend.add(m_autoEvent.getEvent());
+		    }
 		    return true;
 		} else {
 			return false;

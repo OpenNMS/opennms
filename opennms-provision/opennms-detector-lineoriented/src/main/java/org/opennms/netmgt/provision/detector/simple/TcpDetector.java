@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
@@ -36,8 +38,6 @@ import org.opennms.netmgt.provision.support.ConversationExchange;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.TcpCodecFactory;
 import org.opennms.netmgt.provision.support.codec.TcpLineDecoder;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>TcpDetector class.</p>
@@ -45,8 +45,7 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
     
     private static final String DEFAULT_SERVICE_NAME = "TCP";
@@ -70,7 +69,7 @@ public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
     public TcpDetector(final String serviceName, final int port) {
         super(serviceName, port);
         setDetectorHandler(new TcpDetectorHandler());
-        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(CHARSET_UTF8)));
+        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(StandardCharsets.UTF_8)));
     }
 
     /**

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,27 +37,26 @@ import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetAddress;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.threshd.ExcludeRange;
 import org.opennms.netmgt.config.threshd.IncludeRange;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Service;
+import org.opennms.netmgt.config.threshd.ServiceStatus;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract ThreshdConfigManager class.</p>
@@ -98,11 +97,12 @@ public abstract class ThreshdConfigManager {
      * @param stream a {@link java.io.InputStream} object.
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException 
      */
-    public ThreshdConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ThreshdConfiguration.class, stream);
+    public ThreshdConfigManager(InputStream stream, String localServer, boolean verifyServer) throws IOException {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(ThreshdConfiguration.class, reader);
+        }
 
         createUrlIpMap();
 
@@ -110,8 +110,6 @@ public abstract class ThreshdConfigManager {
         m_localServer = localServer;
 
         createPackageIpListMap();
-
-
     }
 
     /**
@@ -122,8 +120,8 @@ public abstract class ThreshdConfigManager {
     protected void createUrlIpMap() {
         m_urlIPMap = new HashMap<String, List<String>>();
     
-        for (Package pkg : m_config.getPackageCollection()) {
-            for (String urlname : pkg.getIncludeUrlCollection()) {
+        for (Package pkg : m_config.getPackages()) {
+            for (String urlname : pkg.getIncludeUrls()) {
                 java.util.List<String> iplist = IpListFromUrl.fetch(urlname);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(urlname, iplist);
@@ -141,19 +139,21 @@ public abstract class ThreshdConfigManager {
     
         m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
     
-        Enumeration<org.opennms.netmgt.config.threshd.Package> pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.threshd.Package pkg = pkgEnum.nextElement();
-    
+        for (final org.opennms.netmgt.config.threshd.Package pkg : m_config.getPackages()) {
             //
             // Get a list of ipaddress per package agaist the filter rules from
             // database and populate the package, IP list map.
             //
-            StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
-    
+            final StringBuffer filterRules = new StringBuffer();
+            if (pkg.getFilter().getContent().isPresent()) {
+                filterRules.append(pkg.getFilter().getContent().get());
+            }
             try {
                 if (m_verifyServer) {
-                    filterRules.append(" & (serverName == ");
+                    if (filterRules.length() > 0) {
+                        filterRules.append(" & ");
+                    }
+                    filterRules.append("(serverName == ");
                     filterRules.append('\"');
                     filterRules.append(m_localServer);
                     filterRules.append('\"');
@@ -169,7 +169,7 @@ public abstract class ThreshdConfigManager {
                     m_pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
-                LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
+                LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent().orElse(null), t);
             }
         }
     }
@@ -188,34 +188,23 @@ public abstract class ThreshdConfigManager {
     /**
      * Saves the current in-memory configuration to disk and reloads
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
-    
-             //marshall to a string first, then write the string to the file. This way the original config
-             //isn't lost if the xml from the marshall is hosed.
-             StringWriter stringWriter = new StringWriter();
-             Marshaller.marshal(m_config, stringWriter);
-             
-             String xmlString = stringWriter.toString();
-            if (xmlString!=null)
-             {
-                 saveXML(xmlString);
-             }
-    
-             reloadXML();
+    public synchronized void saveCurrent() throws IOException {
+        //marshall to a string first, then write the string to the file. This way the original config
+        final String xmlString = JaxbUtils.marshal(m_config);
+        if (xmlString!=null) {
+            saveXML(xmlString);
+            reloadXML();
+        }
      }
 
     /**
      * <p>reloadXML</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public abstract void reloadXML() throws IOException, MarshalException, ValidationException;
+    public abstract void reloadXML() throws IOException;
 
     /**
      * <p>saveXML</p>
@@ -241,7 +230,7 @@ public abstract class ThreshdConfigManager {
      * @return a org$opennms$netmgt$config$threshd$Package object.
      */
     public synchronized org.opennms.netmgt.config.threshd.Package getPackage(String name) {
-        for (org.opennms.netmgt.config.threshd.Package thisPackage : m_config.getPackageCollection()) {
+        for (org.opennms.netmgt.config.threshd.Package thisPackage : m_config.getPackages()) {
             if(thisPackage.getName().equals(name)) {
                 return thisPackage;
             }
@@ -328,9 +317,9 @@ public abstract class ThreshdConfigManager {
         boolean has_range_include = false;
         boolean has_range_exclude = false;
         
-        has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
+        has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0;
     
-        for (IncludeRange rng : pkg.getIncludeRangeCollection()) {
+        for (IncludeRange rng : pkg.getIncludeRanges()) {
             if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
                 break;
@@ -339,7 +328,7 @@ public abstract class ThreshdConfigManager {
 
         byte[] addr = toIpAddrBytes(iface);
 
-        for (String spec : pkg.getSpecificCollection()) {
+        for (String spec : pkg.getSpecifics()) {
             byte[] speca = toIpAddrBytes(spec);
             if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
@@ -347,12 +336,12 @@ public abstract class ThreshdConfigManager {
             }
         }
 
-        Enumeration<String> eurl = pkg.enumerateIncludeUrl();
-        while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, eurl.nextElement());
+        final Iterator<String> eurl = pkg.getIncludeUrls().iterator();
+        while (!has_specific && eurl.hasNext()) {
+            has_specific = interfaceInUrl(iface, eurl.next());
         }
     
-        for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
+        for (ExcludeRange rng : pkg.getExcludeRanges()) {
             if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
                 break;
@@ -376,12 +365,12 @@ public abstract class ThreshdConfigManager {
     public synchronized boolean serviceInPackageAndEnabled(String svcName, org.opennms.netmgt.config.threshd.Package pkg) {
         boolean result = false;
 
-        for (Service tsvc : pkg.getServiceCollection()) {
+        for (Service tsvc : pkg.getServices()) {
             if (tsvc.getName().equalsIgnoreCase(svcName)) {
                 // Ok its in the package. Now check the
                 // status of the service
-                String status = tsvc.getStatus();
-                if (status.equals("on")) {
+                final ServiceStatus status = tsvc.getStatus().orElse(ServiceStatus.OFF);
+                if (status == ServiceStatus.ON) {
                     result = true;
                     break;
                 }

@@ -1,0 +1,63 @@
+
+==== Discovery
+This endpoint can be used to trigger a one-time discovery scan.
+
+===== POSTs (Submitting one-time scan configuration)
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/opennms/api/v2/discovery`    | Submits an one-time scan configuration
+|===
+
+The following XML structure is used to define a scan job.
+
+.Sample configuration file `discovery.xml`
+[source,XML]
+----
+<discoveryConfiguration>
+  <specifics>
+    <specific>
+      <location>Default</location>
+      <retries>3</retries>
+      <timeout>2000</timeout>
+      <foreignSource>My-ForeignSource</foreignSource>
+      <content>192.0.2.1</content>
+    </specific>
+  </specifics>
+  <includeRanges>
+    <includeRange>
+      <location>Default</location>
+      <retries>3</retries>
+      <timeout>2000</timeout>
+      <foreignSource>My-ForeignSource</foreignSource>
+      <begin>192.0.2.10</begin>
+      <end>192.0.2.254</end>
+    </includeRange>
+  </includeRanges>
+  <excludeRanges>
+    <excludeRange>
+      <begin>192.0.2.60</begin>
+      <end>192.0.2.65</end>
+    </excludeRange>
+  </excludeRanges>
+  <includeUrls>
+    <includeUrl>
+      <location>Default</location>
+      <retries>3</retries>
+      <timeout>2000</timeout>
+      <foreignSource>My-ForeignSource</foreignSource>
+      <content>http://192.0.2.254/addresses.txt</content>
+    </includeUrl>
+  </includeUrls>
+</discoveryConfiguration>
+----
+
+The scan itself can be triggered by posting the configuration to the ReST endpoint as follows:
+
+.Trigger one-time scan
+[source, bash]
+----
+curl -H "Content-Type: application/xml" -u admin:admin -X POST -d @discovery.xml http://localhost:8980/opennms/api/v2/discovery
+----
+

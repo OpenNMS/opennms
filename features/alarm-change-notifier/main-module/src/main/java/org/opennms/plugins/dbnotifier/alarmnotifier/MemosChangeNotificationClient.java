@@ -60,17 +60,6 @@ public class MemosChangeNotificationClient implements NotificationClient {
 
 	public static final String EVENT_SOURCE_NAME = "AlarmChangeNotifier";
 
-	// uei definitions of memo change events
-	public static final String STICKY_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoUpdate";
-	public static final String JOURNAL_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/JournalMemoUpdate";
-	
-	// param names in memo change events
-	public static final String MEMO_VALUES_PARAM="memovalues";
-	public static final String MEMO_ALARMID_PARAM="alarmid";
-	public static final String MEMO_BODY_PARAM="body";
-	public static final String MEMO_AUTHOR_PARAM="author";
-	public static final String MEMO_REDUCTIONKEY_PARAM="reductionkey";
-
 	EventProxy eventProxy = null;
 
 	public EventProxy getEventProxy() {
@@ -118,25 +107,25 @@ public class MemosChangeNotificationClient implements NotificationClient {
 				// sticky note event
 				if("Memo".equals(memoJsonObject.get("type").toString())) {
 					if (LOG.isDebugEnabled()) LOG.debug("sticky memo updated="+memoJsonObject.get("id"));
-					EventBuilder eb= new EventBuilder( STICKY_MEMO_EVENT, EVENT_SOURCE_NAME);
+					EventBuilder eb= new EventBuilder( AlarmChangeEventConstants.STICKY_MEMO_EVENT, EVENT_SOURCE_NAME);
 
 					//copy in all values as json in params
-					eb.addParam(MEMO_VALUES_PARAM,memoJsonObject.toString());
-					eb.addParam(MEMO_ALARMID_PARAM, alarmId );
-					eb.addParam(MEMO_BODY_PARAM, body );
-					eb.addParam(MEMO_AUTHOR_PARAM, author );
+					eb.addParam(AlarmChangeEventConstants.MEMO_VALUES_PARAM,memoJsonObject.toString());
+					eb.addParam(AlarmChangeEventConstants.MEMO_ALARMID_PARAM, alarmId );
+					eb.addParam(AlarmChangeEventConstants.MEMO_BODY_PARAM, body );
+					eb.addParam(AlarmChangeEventConstants.MEMO_AUTHOR_PARAM, author );
 
 					sendEvent(eb.getEvent());
 				} else if("ReductionKeyMemo".equals(memoJsonObject.get("type").toString())) {
 					if (LOG.isDebugEnabled()) LOG.debug("reduction key memo updated="+memoJsonObject.get("id"));
-					EventBuilder eb= new EventBuilder( JOURNAL_MEMO_EVENT, EVENT_SOURCE_NAME);
+					EventBuilder eb= new EventBuilder(AlarmChangeEventConstants.JOURNAL_MEMO_EVENT, EVENT_SOURCE_NAME);
 
 					//copy in all values as json in params
-					eb.addParam(MEMO_VALUES_PARAM,memoJsonObject.toString());
-					eb.addParam(MEMO_ALARMID_PARAM, alarmId );
-					eb.addParam(MEMO_BODY_PARAM, body );
-					eb.addParam(MEMO_AUTHOR_PARAM, author );
-					eb.addParam(MEMO_REDUCTIONKEY_PARAM, reductionkey );
+					eb.addParam(AlarmChangeEventConstants.MEMO_VALUES_PARAM,memoJsonObject.toString());
+					eb.addParam(AlarmChangeEventConstants.MEMO_ALARMID_PARAM, alarmId );
+					eb.addParam(AlarmChangeEventConstants.MEMO_BODY_PARAM, body );
+					eb.addParam(AlarmChangeEventConstants.MEMO_AUTHOR_PARAM, author );
+					eb.addParam(AlarmChangeEventConstants.MEMO_REDUCTIONKEY_PARAM, reductionkey );
 
 					sendEvent(eb.getEvent());
 				}
@@ -191,7 +180,7 @@ public class MemosChangeNotificationClient implements NotificationClient {
 	}
 
 	/**
-	 * converts postgres json time format to normalised time format for matching to Elastic Search 
+	 * converts postgres json time format to normalised time format for matching to Elasticsearch 
 	 * date_optional_time or strict_date_optional_time
 	 * (A generic ISO datetime parser where the date is mandatory and the time is optional
 	 * see https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#strict-date-time) 
@@ -233,8 +222,6 @@ public class MemosChangeNotificationClient implements NotificationClient {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-
 	}
 
 }

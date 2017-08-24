@@ -42,7 +42,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-//import org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao;
 //import org.springframework.core.io.ClassPathResource;
 //import org.springframework.core.io.Resource;
 // TODO indigo: Improve tests and refactor for spring injection
