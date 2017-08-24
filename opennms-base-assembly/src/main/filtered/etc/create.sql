@@ -1438,7 +1438,7 @@ CREATE TABLE location_specific_status_changes (
     ifServiceId INTEGER NOT NULL,
     statusCode INTEGER NOT NULL,
     statusTime timestamp with time zone NOT NULL,
-    statusReason VARCHAR(255),
+    statusReason TEXT,
     responseTime DOUBLE PRECISION,
 
     CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
