@@ -534,6 +534,11 @@ public class JmsNorthBounderTest {
         } catch (UnknownHostException e){ }
         m_nodeDao.save(node);
         m_nodeDao.flush();
+
+        Date date1 = new Date(0);
+
+        Date date2 = new Date();
+
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
@@ -553,7 +558,7 @@ public class JmsNorthBounderTest {
                     new OnmsEventParameter(event, "timestamp", "Dec 22 14:13:21", "string"),
                     new OnmsEventParameter(event, "process", "229250", "string"),
                     new OnmsEventParameter(event, "service", "local7", "string")));
-            event.setEventCreateTime(new Date());
+            event.setEventCreateTime(date2);
             event.setEventDescr("eventdescr");
             event.setEventLogGroup("eventloggroup");
             event.setEventLogMsg("eventlogmsg");
@@ -594,7 +599,7 @@ public class JmsNorthBounderTest {
             alarm.setClearKey("clearKey");
             alarm.setOperInstruct("operInstruct");
             alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
-            alarm.setFirstEventTime(new Date(0));
+            alarm.setFirstEventTime(date1);
             alarm.setIpAddr(ia);
             alarm.setLastEvent(event);
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
@@ -613,9 +618,9 @@ public class JmsNorthBounderTest {
         Message m = m_template.receive("MappingTestQueue");
         String escapedResponse = "ackUser:  appDn: applicationDN logMsg: eventlogmsg objectInstance: managedObjectInstance objectType: managedObjectType ossKey: ossPrimaryKey\n" +
                 " ossState: qosAlarmState ticketId: tticketId alarmUei: uei.uei.org/uei alarmKey: reductionKey clearKey: clearKey description: eventdescr operInstruct: operInstruct ackTime: \n" +
-                " alarmType: PROBLEM count: 1 alarmId: 9 ipAddr: 127.0.0.1 lastOccurrence:  nodeId: 1\n" +
+                " alarmType: PROBLEM count: 1 alarmId: 9 ipAddr: 127.0.0.1 lastOccurrence: " + StringUtils.iso8601LocalOffsetString(date2) + " nodeId: 1\n" +
                 " nodeLabel: schlazor distPoller: 00000000-0000-0000-0000-000000000000 ifService:  severity: WARNING ticketState:  x733AlarmType: other\n"+
-                " x733ProbableCause: other firstOccurrence: " + StringUtils.iso8601LocalOffsetString(new Date(0)) + " lastOccurrence  eventParmsXml: <eventParms>\n" +
+                " x733ProbableCause: other firstOccurrence: " + StringUtils.iso8601LocalOffsetString(date1) + " lastOccurrence " + StringUtils.iso8601LocalOffsetString(date2) + " eventParmsXml: <eventParms>\n" +
                 "    <parm name=\"syslogmessage\" value=\"Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed\" type=\"string\"/>\n" +
                 "    <parm name=\"severity\" value=\"Error\" type=\"string\"/>\n" +
                 "    <parm name=\"timestamp\" value=\"Dec 22 14:13:21\" type=\"string\"/>\n" +
@@ -623,6 +628,7 @@ public class JmsNorthBounderTest {
                 "    <parm name=\"service\" value=\"local7\" type=\"string\"/>\n" +
                 "</eventParms>";
         String response = ((TextMessage)m).getText();
+        
         Assert.assertEquals("Contents of message\n'" + response + "'\n not equals\n'" + escapedResponse+"'.", response, escapedResponse);
         // ensure only 1 message received since same reduction key
         m_template.setReceiveTimeout(JmsTemplate.RECEIVE_TIMEOUT_NO_WAIT);
