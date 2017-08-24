@@ -10,6 +10,7 @@
   <artifactId>subscription-checker</artifactId>
   <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: Subscription Checker</name>
+  <description>Subscription Checker provides a pop up window alerting users that a subscription is not current</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- productkeys.properties (if supplied) are referenced in the top level opennms folder -->
