@@ -110,9 +110,9 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
 
     private Set<OnmsApplication> m_applications = new LinkedHashSet<OnmsApplication>();
 
-	private static final Map<String, String> STATUS_MAP;
-	
-	static {
+    public static final Map<String, String> STATUS_MAP;
+
+    static {
         STATUS_MAP = new HashMap<String, String>();
         STATUS_MAP.put("A", "Managed");
         STATUS_MAP.put("U", "Unmanaged");

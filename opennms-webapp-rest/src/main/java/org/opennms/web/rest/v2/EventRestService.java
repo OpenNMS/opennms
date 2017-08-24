@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -55,6 +56,8 @@ import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,6 +120,11 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
     }
 
     @Override
+    protected SortedSet<SearchProperty> getQueryProperties() {
+        return SearchProperties.EVENT_SERVICE_PROPERTIES;
+    }
+
+    @Override
     protected Map<String, String> getSearchBeanPropertyMap() {
         final Map<String, String> map = new HashMap<>();
         map.put("event.uei", "event.eventUei");
@@ -129,23 +137,25 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
 
         // Root alias
         map.putAll(CriteriaBehaviors.EVENT_BEHAVIORS);
+        // Allow iplike queries on ipAddr
+        map.put("ipAddr", new IpLikeCriteriaBehavior("ipAddr"));
+
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.event, CriteriaBehaviors.EVENT_BEHAVIORS));
+        // Allow iplike queries on event.ipAddr
+        map.put(Aliases.event.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
 
         // 1st level JOINs
-        map.putAll(CriteriaBehaviors.ALARM_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.alarm, CriteriaBehaviors.ALARM_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.distPoller, CriteriaBehaviors.DIST_POLLER_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.node, CriteriaBehaviors.NODE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.serviceType, CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS));
 
         // 2nd level JOINs
-        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
-
-        // Allow iplike queries on event.ipAddr
-        map.put("ipAddr", new IpLikeCriteriaBehavior("ipAddr"));
-        map.put(Aliases.event.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.ipInterface, CriteriaBehaviors.IP_INTERFACE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.location, CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.snmpInterface, CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS));
 
         return map;
     }

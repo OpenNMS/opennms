@@ -70,7 +70,7 @@ public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
 
     private List<T> m_objects = new ArrayList<T>();
     private Integer m_totalCount;
-    private Integer m_offset;
+    private Integer m_offset = 0;
 
     public List<T> getObjects() {
         return m_objects;
