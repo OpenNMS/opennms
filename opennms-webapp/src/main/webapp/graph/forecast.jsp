@@ -69,8 +69,6 @@ pageContext.setAttribute("canForecast", canForecast);
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Forecasting" />
-  <jsp:param name="quiet" value="true" />
-  <jsp:param name="nobreadcrumbs" value="true" />
   <jsp:param name="usebackshift" value="true" />
   <jsp:param name="script" value='<script type="text/javascript" src="js/angular-1.4.0.min.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="js/underscore-min.js"></script>' />
