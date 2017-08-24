@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.core.test;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 import org.junit.runners.model.InitializationError;
@@ -46,9 +47,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author seth
  */
 public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(OpenNMSJUnit4ClassRunner.class);
-	
+    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSJUnit4ClassRunner.class);
+
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
+
     private static final String[] STANDARD_LISTENER_CLASS_NAMES = new String[] {
         "org.opennms.core.test.TestContextAwareExecutionListener",
         "org.opennms.test.OpenNMSConfigurationExecutionListener",
