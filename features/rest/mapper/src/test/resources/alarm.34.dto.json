@@ -35,7 +35,7 @@
 			"value" : "testVal",
 			"type" : "string"
 		} ],
-		"createTime": 1503412443154,
+		"createTime": 1503412443118,
 		"description": "All services are down on interface 10.8.0.30.",
 		"logMessage": "Interface 10.8.0.30 is down.",
 		"severity": "MINOR",

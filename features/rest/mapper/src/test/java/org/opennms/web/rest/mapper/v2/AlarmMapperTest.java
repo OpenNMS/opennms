@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.xml.JsonTest;
 import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -115,7 +116,7 @@ public class AlarmMapperTest {
         event.setEventHost("noise");
         event.setEventSource("OpenNMS.Poller.DefaultPollContext");
         event.setIpAddr(InetAddress.getByName("10.8.0.30"));
-        event.setEventCreateTime(new Date(1503412443154L));
+        event.setEventCreateTime(new Date(1503412443118L));
         event.setEventDescr("All services are down on interface 10.8.0.30.");
         event.setEventLogMsg("Interface 10.8.0.30 is down.");
         event.setEventSeverity(OnmsSeverity.MINOR.getId());
@@ -137,7 +138,8 @@ public class AlarmMapperTest {
         // Verify XML
         try {
             final URL xmlResource = Resources.getResource(xmlResourceUrl);
-            final String expectedXml = Resources.toString(xmlResource, StandardCharsets.UTF_8);
+            final String expectedXmlTemplate = Resources.toString(xmlResource, StandardCharsets.UTF_8);
+            final String expectedXml = expectedXmlTemplate.replaceAll("##DATE##", StringUtils.iso8601LocalOffsetString(new Date(1503412443118L)));
             final String jaxbXml = XmlTest.marshalToXmlWithJaxb(object);
             XmlTest.assertXmlEquals(expectedXml, jaxbXml);
         } catch (IOException e) {
