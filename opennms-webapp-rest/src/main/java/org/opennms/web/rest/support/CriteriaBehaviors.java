@@ -47,11 +47,16 @@ import org.opennms.netmgt.model.TroubleTicketState;
  */
 public abstract class CriteriaBehaviors {
 
-    public static final DateFormat SEARCH_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    public static final ThreadLocal<DateFormat> SEARCH_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override
+        public DateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        }
+    };
 
     public static Date parseDate(String string) {
         try {
-            return SEARCH_DATE_FORMAT.parse(string);
+            return SEARCH_DATE_FORMAT.get().parse(string);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Unparseable date: " + string, e);
         }

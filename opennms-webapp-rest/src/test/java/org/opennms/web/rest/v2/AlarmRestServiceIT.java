@@ -28,9 +28,17 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.opennms.web.svclayer.support.DefaultTroubleTicketProxy.createEventBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -61,6 +69,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -82,10 +92,12 @@ import com.google.common.collect.ImmutableMap;
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.apache.cxf.Logger=org.apache.cxf.common.logging.Slf4jLogger")
 @JUnitTemporaryDatabase
 @Transactional
 public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceIT.class);
 
     public AlarmRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -655,9 +667,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 sendRequest(GET, url, parseParamData(String.format(
                     "_s=%s==%s;%s!=%s", 
                     prop.id, 
-                    CriteriaBehaviors.SEARCH_DATE_FORMAT.format(new Date(0)),
+                    CriteriaBehaviors.SEARCH_DATE_FORMAT.get().format(new Date(0)),
                     prop.id, 
-                    CriteriaBehaviors.SEARCH_DATE_FORMAT.format(new Date(0))
+                    CriteriaBehaviors.SEARCH_DATE_FORMAT.get().format(new Date(0))
                 )), 204);
                 break;
             default:
@@ -726,6 +738,49 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CLOSE_UEI, alarm, null));
         sendPost(url + alarm.getId() + "/ticket/close", "", 202);
         verifyAnticipatedEvents();
+    }
+
+    /**
+     * @see https://issues.opennms.org/browse/NMS-9590
+     * 
+     * @throws Exception 
+     */
+    @Test
+    public void testMultithreadedAccess() throws Exception {
+        final AtomicInteger successes = new AtomicInteger();
+        final AtomicInteger failures = new AtomicInteger();
+        final int n = 40;
+
+        final Executor pool = Executors.newFixedThreadPool(5);
+        final List<CompletableFuture<?>> futures = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            CompletableFuture<?> future = CompletableFuture.runAsync(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        LOG.debug("HELLO");
+                        executeQueryAndVerify("_s=alarmAckTime%3D%3D1970-01-01T00:00:00.000-0000;alarm.severity%3Dge%3DNORMAL;(node.label%3D%3D*sp01*;node.label%3D%3D*sp02*);(node.label%3D%3D*.asp*,node.label%3D%3D*sbx*);(lastEventTime%3Dge%3D2017-08-15T15:33:53.610-0000;lastEventTime%3Dle%3D2017-08-22T15:33:53.610-0000)", 0);
+                        successes.incrementAndGet();
+                    } catch (Throwable e) {
+                        LOG.error("Unexpected exception during executeQueryAndVerify: " + e.getMessage(), e);
+                        failures.incrementAndGet();
+                        fail(e.getMessage());
+                    }
+                }
+            }, pool)
+            .exceptionally(e -> {
+                LOG.error("Unexpected exception in thread: " + e.getMessage(), e);
+                fail();
+                return null;
+            });
+            futures.add(future);
+        }
+
+        // Wait for all of the tasks to complete
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get();
+
+        assertEquals(0, failures.get());
+        assertEquals(n, successes.get());
     }
 
     private void anticipateEvent(EventBuilder eventBuilder) {
