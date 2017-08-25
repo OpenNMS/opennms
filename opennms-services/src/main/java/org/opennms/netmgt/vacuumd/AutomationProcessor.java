@@ -595,9 +595,6 @@ public class AutomationProcessor implements ReadyRunnable {
                 ResultSetSymbolTable symbols = new ResultSetSymbolTable(triggerResultSet);
                 
                 try {
-                    if (m_actionEvent.getAddAllParms() && resultHasColumn(triggerResultSet, "eventParms") ) {
-                        bldr.setParms(EventParameterUtils.decode(triggerResultSet.getString("eventParms")));
-                    }
                     buildEvent(bldr, symbols);
                 } catch (SQLExceptionHolder holder) {
                     holder.rethrow();
