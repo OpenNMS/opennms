@@ -17,7 +17,7 @@
     <context:annotation-config/>
 
     <!-- Automatically scan for @Component beans -->
-    <context:component-scan base-package="org.opennms.web.rest.v2" />
+    <context:component-scan base-package="org.opennms.web.rest.v2, org.opennms.web.rest.mapper.v2" />
 
     <import resource="classpath:/META-INF/cxf/cxf.xml" />
     <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />

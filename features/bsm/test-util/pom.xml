@@ -28,8 +28,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features</groupId>
-            <artifactId>org.opennms.features.rest-commons</artifactId>
+            <groupId>org.opennms.features.rest</groupId>
+            <artifactId>org.opennms.features.rest.common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -64,8 +64,10 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.web.rest.mapper.v2.AlarmMapper;
+import org.opennms.web.rest.model.v2.AlarmCollectionDTO;
+import org.opennms.web.rest.model.v2.AlarmDTO;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
@@ -87,7 +89,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("alarms")
 @Transactional
-public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBean,Integer,Integer> {
+public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,AlarmDTO,SearchBean,Integer,Integer> {
 
     @Autowired
     private AlarmDao m_dao;
@@ -100,6 +102,9 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
 
     @Autowired
     private TroubleTicketProxy m_troubleTicketProxy;
+
+    @Autowired
+    private AlarmMapper m_alarmMapper;
 
     @Override
     protected AlarmDao getDao() {
@@ -142,8 +147,8 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
     }
 
     @Override
-    protected JaxbListWrapper<OnmsAlarm> createListWrapper(Collection<OnmsAlarm> list) {
-        return new OnmsAlarmCollection(list);
+    protected JaxbListWrapper<AlarmDTO> createListWrapper(Collection<AlarmDTO> list) {
+        return new AlarmCollectionDTO(list);
     }
 
     @Override
@@ -323,4 +328,13 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
         return "true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"));
     }
 
+    @Override
+    public AlarmDTO mapEntityToDTO(OnmsAlarm alarm) {
+        return m_alarmMapper.alarmToAlarmDTO(alarm);
+    }
+
+    @Override
+    public OnmsAlarm mapDTOToEntity(AlarmDTO dto) {
+        return m_alarmMapper.alarmDTOToAlarm(dto);
+    }
 }
