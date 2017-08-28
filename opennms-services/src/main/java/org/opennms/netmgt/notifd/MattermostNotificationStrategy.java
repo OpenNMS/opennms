@@ -83,8 +83,8 @@ public class MattermostNotificationStrategy extends AbstractSlackCompatibleNotif
     	if ("".equals(subject)) {
     		return "";
     	}
-    	StringBuilder bldr = new StringBuilder("*");
-    	bldr.append(subject).append("*").append("\n");
+    	StringBuilder bldr = new StringBuilder("**");
+    	bldr.append(subject).append("**").append("\n");
     	return bldr.toString();
     }
     
