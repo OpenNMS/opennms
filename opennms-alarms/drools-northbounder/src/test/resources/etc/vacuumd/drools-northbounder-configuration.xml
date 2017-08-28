@@ -1,0 +1,17 @@
+<bsf-northbounder-config>
+
+	<enabled>true</enabled>
+	<nagles-delay>1000</nagles-delay>
+	<batch-size>100</batch-size>
+	<queue-size>300000</queue-size>
+
+	<engine>
+		<name>Vacuumd</name>
+        <filter>ipAddr != '0.0.0.0'</filter>
+		<global name="log" ref="slf4jLogger"/>
+		<global name="alarmDao" ref="alarmDao"/>
+		<appContext>src/test/resources/etc/vacuumd/vacuumd-context.xml</appContext>
+		<ruleFile>src/test/resources/etc/vacuumd/vacuumd-alarm-cycle.drl</ruleFile>
+	</engine>
+
+</bsf-northbounder-config>

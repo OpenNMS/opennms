@@ -1,0 +1,68 @@
+package org.opennms.netmgt.correlation.drools
+
+import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounder;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.model.events.EventBuilder;
+
+import org.slf4j.Logger;
+
+global DroolsNorthbounder engine;
+global Logger log;
+global AlarmDao alarmDao;
+
+declare NorthboundAlarm
+    @role(event)
+end
+
+rule "cosmicClear"
+    salience 100
+    when
+        $resolve : NorthboundAlarm(alarmType == AlarmType.RESOLUTION)
+        $problem : NorthboundAlarm(alarmType == AlarmType.PROBLEM,
+                   severity.isGreaterThan(OnmsSeverity.CLEARED),
+                   alarmKey == $resolve.clearKey,
+                   lastOccurrence < $resolve.lastOccurrence)
+    then
+        // clearAlarms
+    	log.debug("Clearing problem {} because of {}", $problem.getAlarmKey(), $resolve.getClearKey());
+        OnmsAlarm alarm = alarmDao.get($problem.getId());
+        if (alarm == null) {
+            log.error("Can't find alarm with ID {}", $problem.getId());
+        } else {
+            log.debug("Updating alarm {}", alarm);
+            modify($problem) {
+                setSeverity(OnmsSeverity.CLEARED)
+            }
+            alarm.setSeverity(OnmsSeverity.CLEARED);
+            alarmDao.update(alarm);
+            // sendAlarmClearedEvent
+            EventBuilder eb = new EventBuilder("uei.opennms.org/alarms/alarmCleared", "Drools");
+            eb.addParam("alarmId", $problem.getId());
+            eb.addParam("alarmUei", $problem.getUei());
+            engine.sendEvent(eb.getEvent());
+        }
+end
+
+rule "cleanUp"
+    salience 50
+    when
+        $alarm : NorthboundAlarm(severity.isLessThanOrEqual(OnmsSeverity.NORMAL),
+                 (ackTime == null && (ticketState == null || ticketState == TroubleTicketState.CLOSED)))
+	then
+        // deleteAlarms
+    	log.debug("Deleting alarm {} with ID {}", $alarm.getUei(), $alarm.getId());
+        retract($alarm);
+        alarmDao.delete($alarm.getId());
+
+        // sendAlarmDeletedEvent
+        EventBuilder eb = new EventBuilder("uei.opennms.org/alarms/alarmDeleted", "Drools");
+        eb.addParam("alarmId", $alarm.getId());
+        eb.addParam("alarmUei", $alarm.getUei());
+        eb.addParam("alarmReductionKey", $alarm.getAlarmKey());
+        engine.sendEvent(eb.getEvent());
+end
