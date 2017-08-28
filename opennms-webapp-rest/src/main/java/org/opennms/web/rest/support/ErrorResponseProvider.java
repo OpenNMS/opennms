@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.support;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
@@ -40,7 +41,9 @@ public class ErrorResponseProvider implements ExceptionMapper<Exception> {
     public Response toResponse(Exception exception) {
         // if there is an optional exception message, we add it to the response
         if (exception.getMessage() != null) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(exception.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(exception.getMessage()).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
