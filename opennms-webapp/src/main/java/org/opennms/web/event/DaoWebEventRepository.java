@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -40,6 +41,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -52,6 +54,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Maps;
 
 /**
  * <p>DaoWebEventRepository class.</p>
@@ -199,7 +203,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         event.operatorAction = onmsEvent.getEventOperAction();
         event.operatorActionMenuText = onmsEvent.getEventOperActionMenuText();
         event.operatorInstruction = onmsEvent.getEventOperInstruct();
-        event.parms = onmsEvent.getEventParms();
+        event.parms = onmsEvent.getEventParameters()==null ? Maps.newHashMap() : onmsEvent.getEventParameters().stream().collect(Collectors.toMap(OnmsEventParameter::getName, OnmsEventParameter::getValue));
         event.serviceID = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getId() : 0;
         event.serviceName = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getName() : "";
         event.severity = OnmsSeverity.get(onmsEvent.getEventSeverity());

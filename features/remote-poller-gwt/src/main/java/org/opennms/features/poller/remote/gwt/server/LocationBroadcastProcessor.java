@@ -29,7 +29,6 @@
 package org.opennms.features.poller.remote.gwt.server;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -43,12 +42,10 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpd
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -230,24 +227,22 @@ public class LocationBroadcastProcessor implements InitializingBean, DisposableB
             LOG.warn("handleLocationEvent called, but no eventHandler is registered");
             return;
         }
-        handleEventParms(EventParameterUtils.decode(event.getEventParms()));
+        event.getEventParameters().forEach(p -> handleEventParm(p.getName(), p.getValue()));
     }
     private void handleLocationEvent(final Event event) {
         if (m_eventHandler == null) {
             LOG.warn("handleLocationEvent called, but no eventHandler is registered");
             return;
         }
-        handleEventParms(event.getParmCollection());
+        event.getParmCollection().forEach(p -> handleEventParm(p.getParmName(), p.getValue().getContent()));
     }
 
-    private void handleEventParms(final List<Parm> parms) {
-        for (final Parm p : parms) {
-            if (p.getParmName().equals(EventConstants.PARM_LOCATION_MONITOR_ID)) {
-                final LocationInfo info = m_locationDataService.getLocationInfoForMonitor(Integer.valueOf(p.getValue().getContent()));
-                m_eventHandler.sendEvent(new LocationUpdatedRemoteEvent(info));
-                for (final ApplicationInfo applicationInfo : m_locationDataService.getApplicationsForLocation(info)) {
-                    m_eventHandler.sendEvent(new ApplicationUpdatedRemoteEvent(applicationInfo));
-                }
+    private void handleEventParm(final String name, final String value) {
+        if (name.equals(EventConstants.PARM_LOCATION_MONITOR_ID)) {
+            final LocationInfo info = m_locationDataService.getLocationInfoForMonitor(Integer.valueOf(value));
+            m_eventHandler.sendEvent(new LocationUpdatedRemoteEvent(info));
+            for (final ApplicationInfo applicationInfo : m_locationDataService.getApplicationsForLocation(info)) {
+                m_eventHandler.sendEvent(new ApplicationUpdatedRemoteEvent(applicationInfo));
             }
         }
     }

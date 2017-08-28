@@ -123,7 +123,6 @@ public class DefaultAckServiceIT implements InitializingBean {
         alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setDescription(event.getEventDescr());
         alarm.setDistPoller(event.getDistPoller());
-        alarm.setEventParms(event.getEventParms());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setIfIndex(event.getIfIndex());
         alarm.setIpAddr(event.getIpAddr());

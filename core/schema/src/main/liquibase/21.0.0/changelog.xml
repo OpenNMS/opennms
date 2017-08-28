@@ -57,4 +57,42 @@
       );
     </sql>
   </changeSet>
+  <changeSet id="21.0.0-event-parameters" author="fooker">
+    <createTable tableName="event_parameters">
+      <column name="eventid" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(256)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type" type="VARCHAR(256)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="event_parameters"
+                   columnNames="eventid,name"
+                   constraintName="pk_eventparameters" />
+    <addForeignKeyConstraint baseTableName="event_parameters" baseColumnNames="eventid"
+                             constraintName="fk_eventparameterseventid"
+                             referencedTableName="events"
+                             referencedColumnNames="eventid"
+                             onDelete="CASCADE"/>
+
+    <dropColumn tableName="alarms" columnName="eventparms" />
+  </changeSet>
+
+  <changeSet id="21.0.0-event-parameters-remove-column" author="cpape">
+    <preConditions onFail="CONTINUE">
+      <sqlCheck expectedResult="t">
+        SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'events') AND attname = 'eventparms')
+      </sqlCheck>
+      <sqlCheck expectedResult="f">
+        SELECT EXISTS (SELECT 1 FROM events WHERE eventparms IS NOT NULL LIMIT 1);
+      </sqlCheck>
+    </preConditions>
+    <dropColumn tableName="events" columnName="eventparms"/>
+  </changeSet>
 </databaseChangeLog>

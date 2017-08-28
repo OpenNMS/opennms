@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,6 +73,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -393,19 +396,12 @@ public class HypericAckProcessor implements AckProcessor {
      * @return a {@link org.opennms.netmgt.model.OnmsAlarm} object.
      */
     public static OnmsAlarm findAlarmForHypericAlert(List<OnmsAlarm> alarms, String platformId, HypericAlertStatus alert) {
-        String targetPlatformId = "alert.source=" + platformId + "(string,text)";
-        String targetAlertId = "alert.id="+ String.valueOf(alert.getAlertId()) + "(string,text)";
         for (OnmsAlarm alarm : alarms) {
-            String parmString = alarm.getEventParms();
-            String[] parms = parmString.split(";");
-            for (String parm : parms) {
-                if (targetPlatformId.equals(parm)) {
-                    for (String alertparm : parms) {
-                        if (targetAlertId.equals(alertparm)) {
-                            return alarm;
-                        }
-                    }
-                }
+            final Optional<String> targetPlatformId = alarm.findEventParameter("alert.source").map(OnmsEventParameter::getValue).filter(s -> Objects.equals(s, platformId));
+            final Optional<String> targetAlertId = alarm.findEventParameter("alert.source").map(OnmsEventParameter::getValue).filter(s -> Objects.equals(s, String.valueOf(alert.getAlertId())));
+
+            if (targetPlatformId.isPresent() && targetAlertId.isPresent()) {
+                return alarm;
             }
         }
         return null;
@@ -418,7 +414,7 @@ public class HypericAckProcessor implements AckProcessor {
      * @return a {@link java.lang.String} object.
      */
     public static String getAlertSourceParmValue(OnmsAlarm alarm) {
-        return getParmValueByRegex(alarm, "alert.source=(.*)[(]string,text[)]");
+        return getParmValueByRegex(alarm, "alert.source");
     }
 
     /**
@@ -428,7 +424,7 @@ public class HypericAckProcessor implements AckProcessor {
      * @return a {@link java.lang.String} object.
      */
     public static String getAlertIdParmValue(OnmsAlarm alarm) {
-        return getParmValueByRegex(alarm, "alert.id=([0-9]*)[(]string,text[)]");
+        return getParmValueByRegex(alarm, "alert.id");
     }
 
     /**
@@ -446,12 +442,10 @@ public class HypericAckProcessor implements AckProcessor {
      */
     public static String getParmValueByRegex(OnmsAlarm alarm, String regex) {
         Pattern pattern = Pattern.compile(regex);
-        String parmString = alarm.getEventParms();
-        String[] parms = parmString.split(";");
-        for (String parm : parms) {
-            Matcher matcher = pattern.matcher(parm);
+        for (final OnmsEventParameter parm : alarm.getEventParameters()) {
+            Matcher matcher = pattern.matcher(parm.getName());
             if (matcher.matches()) {
-                return matcher.group(1);
+                return parm.getValue();
             }
         }
         return null;

@@ -28,31 +28,74 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.NoSubstringFilter;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
+import org.hibernate.type.Type;
+import org.opennms.web.filter.OneArgFilter;
+import org.opennms.web.filter.SQLType;
 
-public class NegativeEventParmLikeFilter extends NoSubstringFilter {
+public class NegativeEventParmLikeFilter extends OneArgFilter<String> {
 
     public static final String TYPE = "noparmmatchany";
-    
+
+    private final String key;
+
     public NegativeEventParmLikeFilter(String value) {
-        super(TYPE, "eventParms", "eventParms", value + "(string,text)");
+        this(NegativeEventParmLikeFilter.getKey(value), NegativeEventParmLikeFilter.getValue(value));
+    }
+
+    public NegativeEventParmLikeFilter(String key, String value) {
+        super(TYPE, SQLType.STRING, "lastEventId", "lastEvent." + key, value);
+        this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
     }
 
     @Override
-    public String getTextDescription() {
-        String strippedType = getValue().replace("(string,text)", "");
-        String[] parms = strippedType.split("=");
-        final StringBuilder buffer = new StringBuilder(parms[0] + " is not \"");
-        buffer.append(parms[parms.length - 1]);
-        buffer.append("\"");
-
-        return buffer.toString();
+    public String getSQLTemplate() {
+        return " " + this.getSQLFieldName() + " NOT IN (SELECT eventId FROM event_parameters WHERE name = '" + this.getKey() + "' AND value ILIKE '%s')";
     }
-    
+
+    @Override
+    public Criterion getCriterion() {
+        return Restrictions.sqlRestriction(" {alias}." + this.getSQLFieldName() + " NOT IN (SELECT eventId FROM event_parameters WHERE name = ? AND value ILIKE ?)",
+                new Object[]{this.getKey(), this.getValue()},
+                new Type[]{StringType.INSTANCE, StringType.INSTANCE});
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof EventParmLikeFilter)) return false;
+        return this.toString().equals(obj.toString());
+    }
+
     @Override
     public String getDescription() {
-        return TYPE + "=" + getValueString().replace("(string,text)", "");
-        
+        return String.format("%s is not \"%s\"", this.getKey(), this.getValue());
     }
 
+    private static String getKey(final String s) {
+        final int i = s.indexOf('=');
+        if (i >= 0) {
+            return s.substring(0, i);
+        } else {
+            return s;
+        }
+    }
+
+    private static String getValue(final String s) {
+        final int i = s.indexOf('=');
+        if (i >= 0) {
+            return s.substring(i + 1);
+        } else {
+            return "";
+        }
+    }
 }

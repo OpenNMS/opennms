@@ -68,6 +68,7 @@
 <%@page import="org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter" %>
 <%@page import="org.opennms.web.alarm.filter.EventParmLikeFilter" %>
 <%@page import="org.opennms.web.alarm.filter.NegativeEventParmLikeFilter" %>
+<%@ page import="org.opennms.netmgt.model.OnmsEventParameter" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -389,7 +390,7 @@
           </td>
           
           <td class="divider" valign="middle" rowspan="1">
-          <%String componentType = getParm(alarms[i].getEventParms(), "componentType"); %>
+          <%String componentType = alarms[i].getEventParameter("componentType"); %>
           <%if(componentType != null){ %>
             <%=componentType%>
             <nobr>
@@ -400,9 +401,9 @@
           </td>
           <!-- Start Cause Column -->
           <td class="divider">
-          <%String componentName = getParm(alarms[i].getEventParms(), "componentName"); %>
+          <%String componentName = alarms[i].getEventParameter("componentName"); %>
           <%if(componentName != null){ %>
-            <a href="ncs/ncs-type.htm?type=<%=componentType%>&foreignSource=<%=getParm(alarms[i].getEventParms(), "foreignSource")%>&foreignId=<%=getParm(alarms[i].getEventParms(), "foreignId")%>"><%=componentName %></a>
+            <a href="ncs/ncs-type.htm?type=<%=componentType%>&foreignSource=<%=alarms[i].getEventParameter("foreignSource") %>foreignId=<%=alarms[i].getEventParameter("foreignId")%>"><%=componentName %></a>
             <nobr>
                   <a href="<%=this.makeLink( parms, new EventParmLikeFilter("componentName=" + componentName), true)%>" class="filterLink" title="Show only alarms with componentName">${addPositiveFilter}</a>
                   <a href="<%=this.makeLink( parms, new NegativeEventParmLikeFilter("componentName=" + componentName), true)%>" class="filterLink" title="Do not show alarms with componentName">${addNegativeFilter}</a>
@@ -411,7 +412,7 @@
           </td>
           <!-- Cause Column Start -->          
           <td class="divider" valign="middle" rowspan="1" >
-          <%String related = getParm(alarms[i].getEventParms(), "cause"); %>
+          <%String related = alarms[i].getEventParameter("cause"); %>
           <%if(related != null){%>
             <nobr>
                 <a href="alarm/ncs-alarms.htm?sortby=id&amp;acktype=unack&amp;filter=parmmatchany%3dcause%3d<%=related%>"><%=related%></a>

@@ -26,7 +26,7 @@
     UNION 
       SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid 
     UNION 
-      SELECT eventid FROM notifications WHERE eventid = events.eventid) 
+      SELECT eventid FROM notifications WHERE eventid = events.eventid
     AND eventtime &lt; now() - interval '6 weeks';
   </statement>
     

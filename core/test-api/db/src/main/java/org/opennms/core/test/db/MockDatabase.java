@@ -41,6 +41,7 @@ import java.util.List;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.events.api.EventWriter;
 import org.opennms.netmgt.mock.MockInterface;
@@ -53,6 +54,7 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.Outage;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -288,15 +290,26 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 "Y",
                 e.getTticket() == null ? "" : e.getTticket().getContent(),
                 Integer.valueOf(e.getTticket() == null ? "0" : e.getTticket().getState()),
-                EventParameterUtils.format(e),
                 e.getLogmsg() == null? null : e.getLogmsg().getContent()
         };
         e.setDbid(eventId.intValue());
         update("insert into events (" +
                 "eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, " +
                 "nodeId, ipAddr, serviceId, systemId, " +
-                "eventLog, eventDisplay, eventtticket, eventtticketstate, eventparms, eventlogmsg) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
+                "eventLog, eventDisplay, eventtticket, eventtticketstate, eventlogmsg) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
+
+        if (e.getParmCollection() != null || e.getParmCollection().size() > 0) {
+            for (final Parm parm : e.getParmCollection()) {
+                Object[] parmValues = {
+                        eventId,
+                        parm.getParmName(),
+                        parm.getValue().getContent(),
+                        parm.getValue().getType()
+                };
+                update("insert into event_parameters (eventid, name, value, type) values (?, ?, ?, ?)", parmValues);
+            }
+        }
     }
     
     public void setServiceStatus(MockService svc, char newStatus) {

@@ -39,7 +39,6 @@ import org.opennms.netmgt.dao.util.AutoAction;
 import org.opennms.netmgt.dao.util.OperatorAction;
 import org.opennms.netmgt.dao.util.SnmpInfo;
 import org.opennms.netmgt.events.api.EventDatabaseConstants;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -184,7 +183,7 @@ public class MockEventWriter implements EventProcessor, InitializingBean {
             oe.setEventOperActionMenuText(EventDatabaseConstants.format(b, EVENT_OPERACTION_MENU_FIELD_SIZE));
         }
         oe.setEventOperInstruct(event.getOperinstruct());
-        oe.setEventParms(EventParameterUtils.format(event));
+        oe.setEventParametersFromEvent(event);
         oe.setEventPathOutage(event.getPathoutage());
         try {
             oe.setServiceType(m_serviceTypeDao.findByName(event.getService()));

@@ -44,9 +44,9 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -57,6 +57,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -121,7 +123,17 @@ public class EventDaoIT implements InitializingBean {
         OnmsAlarm alarm = new OnmsAlarm();
 	    event.setAlarm(alarm);
         event.setIpAddr(iface.getIpAddress());
-        event.setEventParms("label=node(string,text);ds=(memAvailReal + memCached) / memTotalReal * 100.0(string,text);description=(memAvailReal + memCached) / memTotalReal * 100.0(string,text);value=4.7(string,text);instance=node(string,text);instanceLabel=node(string,text);resourceId=node[70].nodeSnmp[](string,text);threshold=5.0(string,text);trigger=2(string,text);rearm=10.0(string,text)");
+        event.setEventParameters(Lists.newArrayList(
+                new OnmsEventParameter(event, "label", "node", "string"),
+                new OnmsEventParameter(event, "ds", "(memAvailReal + memCached) / memTotalReal * 100.0", "string"),
+                new OnmsEventParameter(event, "description", "(memAvailReal + memCached) / memTotalReal * 100.0", "string"),
+                new OnmsEventParameter(event, "value", "4.7", "string"),
+                new OnmsEventParameter(event, "instance", "node", "string"),
+                new OnmsEventParameter(event, "instanceLabel", "node", "string"),
+                new OnmsEventParameter(event, "resourceId", "node[70].nodeSnmp[]", "string"),
+                new OnmsEventParameter(event, "threshold", "5.0", "string"),
+                new OnmsEventParameter(event, "trigger", "2", "string"),
+                new OnmsEventParameter(event, "rearm", "10.0", "string")));
         m_eventDao.save(event);
        
         OnmsEvent newEvent = m_eventDao.load(event.getId());
