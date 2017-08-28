@@ -54,7 +54,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         "classpath:/META-INF/opennms/test/detectors.xml",
         "classpath:/META-INF/opennms/detectors.xml"
 })
-public class IcmpDetectorTest {
+public class IcmpDetectorIT {
 
     @Autowired
     private IcmpDetectorFactory m_detectorFactory;
