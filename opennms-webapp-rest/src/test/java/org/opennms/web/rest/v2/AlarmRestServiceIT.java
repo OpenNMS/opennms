@@ -28,13 +28,20 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.opennms.web.svclayer.support.DefaultTroubleTicketProxy.createEventBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -59,6 +66,11 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -80,10 +92,12 @@ import com.google.common.collect.ImmutableMap;
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.apache.cxf.Logger=org.apache.cxf.common.logging.Slf4jLogger")
 @JUnitTemporaryDatabase
 @Transactional
 public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceIT.class);
 
     public AlarmRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -623,6 +637,51 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     /**
+     * Test searching and ordering by every {@link SearchProperty} listed in
+     * {@link SearchProperties#ALARM_SERVICE_PROPERTIES}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testAllSearchParameters() throws Exception {
+        String url = "/alarms";
+        for (SearchProperty prop : SearchProperties.ALARM_SERVICE_PROPERTIES) {
+            System.err.println("Testing " + prop.id);
+            switch(prop.type) {
+            case FLOAT:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==1.0;%s!=1.0", prop.id, prop.id)), 204);
+                break;
+            case INTEGER:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==1;%s!=1", prop.id, prop.id)), 204);
+                break;
+            case IP_ADDRESS:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==127.0.0.1;%s!=127.0.0.1", prop.id, prop.id)), 204);
+                break;
+            case LONG:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==1;%s!=1", prop.id, prop.id)), 204);
+                break;
+            case STRING:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==A;%s!=A", prop.id, prop.id)), 204);
+                break;
+            case TIMESTAMP:
+                sendRequest(GET, url, parseParamData(String.format(
+                    "_s=%s==%s;%s!=%s", 
+                    prop.id, 
+                    CriteriaBehaviors.SEARCH_DATE_FORMAT.get().format(new Date(0)),
+                    prop.id, 
+                    CriteriaBehaviors.SEARCH_DATE_FORMAT.get().format(new Date(0))
+                )), 204);
+                break;
+            default:
+                throw new IllegalArgumentException();
+            }
+            if (prop.orderBy) {
+                sendRequest(GET, url, parseParamData("orderBy=" + prop.id), 200);
+            }
+        }
+    }
+
+    /**
      * Test {@code orderBy} for properties of {@link OnmsServiceType}.
      * 
      * @throws Exception
@@ -681,6 +740,49 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         verifyAnticipatedEvents();
     }
 
+    /**
+     * @see https://issues.opennms.org/browse/NMS-9590
+     * 
+     * @throws Exception 
+     */
+    @Test
+    public void testMultithreadedAccess() throws Exception {
+        final AtomicInteger successes = new AtomicInteger();
+        final AtomicInteger failures = new AtomicInteger();
+        final int n = 40;
+
+        final Executor pool = Executors.newFixedThreadPool(5);
+        final List<CompletableFuture<?>> futures = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            CompletableFuture<?> future = CompletableFuture.runAsync(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        LOG.debug("HELLO");
+                        executeQueryAndVerify("_s=alarmAckTime%3D%3D1970-01-01T00:00:00.000-0000;alarm.severity%3Dge%3DNORMAL;(node.label%3D%3D*sp01*;node.label%3D%3D*sp02*);(node.label%3D%3D*.asp*,node.label%3D%3D*sbx*);(lastEventTime%3Dge%3D2017-08-15T15:33:53.610-0000;lastEventTime%3Dle%3D2017-08-22T15:33:53.610-0000)", 0);
+                        successes.incrementAndGet();
+                    } catch (Throwable e) {
+                        LOG.error("Unexpected exception during executeQueryAndVerify: " + e.getMessage(), e);
+                        failures.incrementAndGet();
+                        fail(e.getMessage());
+                    }
+                }
+            }, pool)
+            .exceptionally(e -> {
+                LOG.error("Unexpected exception in thread: " + e.getMessage(), e);
+                fail();
+                return null;
+            });
+            futures.add(future);
+        }
+
+        // Wait for all of the tasks to complete
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get();
+
+        assertEquals(0, failures.get());
+        assertEquals(n, successes.get());
+    }
+
     private void anticipateEvent(EventBuilder eventBuilder) {
         m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
     }
@@ -723,7 +825,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventDisplay("Y");
         event.setEventHost("127.0.0.1");
         event.setEventLog("Y");
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("JUnit");
         event.setEventTime(new Date());
         event.setEventUei(eventUei);
@@ -737,7 +839,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(node);
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");

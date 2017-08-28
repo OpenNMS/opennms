@@ -1,6 +1,6 @@
 {
     "count": 1, 
-    "offset": null, 
+    "offset": 0, 
     "outage": [
         {
             "foreignId": "1", 

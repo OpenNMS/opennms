@@ -1,6 +1,6 @@
 {
     "count": 1, 
-    "offset": null, 
+    "offset": 0, 
     "onmsAcknowledgment": [
         {
             "ackAction": "UNSPECIFIED", 

@@ -123,6 +123,16 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-bsf</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-drools</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-email</artifactId>
       <scope>test</scope>
     </dependency>
@@ -141,6 +151,7 @@
       <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.daemon</artifactId>
