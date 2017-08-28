@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,24 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2;
+package org.opennms.web.rest.model.v2;
 
-import java.io.Serializable;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.opennms.core.config.api.JaxbListWrapper;
 
-/**
- * Abstract class for use by V2 endpoints that do not support DTOs.
- *
- * See {@link AbstractDaoRestServiceWithDTO} for more details.
- *
- */
-public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extends Serializable> extends AbstractDaoRestServiceWithDTO<T,T,Q,K,I> {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.List;
 
-    public T mapEntityToDTO(T entity) {
-        return entity;
+@XmlRootElement(name="alarms")
+@XmlAccessorType(XmlAccessType.NONE)
+public class AlarmCollectionDTO extends JaxbListWrapper<AlarmDTO> {
+
+    public AlarmCollectionDTO() {
+        // No-arg constructor for JAXB
     }
 
-    public T mapDTOToEntity(T dto) {
-        return dto;
+    public AlarmCollectionDTO(final Collection<? extends AlarmDTO> alarms) {
+        super(alarms);
     }
 
+    @XmlElement(name="alarm")
+    @JsonProperty("alarm")
+    public List<AlarmDTO> getObjects() {
+        return super.getObjects();
+    }
 }
