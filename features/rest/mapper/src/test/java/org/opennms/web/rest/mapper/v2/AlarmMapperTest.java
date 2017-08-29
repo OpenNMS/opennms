@@ -30,6 +30,8 @@ package org.opennms.web.rest.mapper.v2;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -44,6 +46,7 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.model.v2.AlarmDTO;
@@ -72,6 +75,11 @@ public class AlarmMapperTest {
 
     @Autowired
     private AlarmMapper alarmMapper;
+
+    @Before
+    public void setUp() {
+        alarmMapper.setTicketUrlTemplate("https://issues.opennms.org/browse/${id}");
+    }
 
     @Test
     public void canMapAlarm() throws IOException {
@@ -129,6 +137,9 @@ public class AlarmMapperTest {
         event.setEventParameters(Lists.newArrayList(new OnmsEventParameter(event, "test", "testVal", "string")));
         event.setServiceType(serviceType);
         alarm.setLastEvent(event);
+
+        alarm.setTTicketId("NMS-9587");
+        alarm.setTTicketState(TroubleTicketState.OPEN);
 
         AlarmDTO alarmDTO = alarmMapper.alarmToAlarmDTO(alarm);
         mapAndMarshalToFromXmlAndJson(alarmDTO,

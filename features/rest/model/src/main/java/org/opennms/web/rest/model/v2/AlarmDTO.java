@@ -98,6 +98,9 @@ public class AlarmDTO {
     @XmlElement(name="troubleTicketState")
     private Integer troubleTicketState;
 
+    @XmlElement(name = "troubleTicketLink")
+    private String troubleTicketLink;
+
     @XmlElement(name="mouseOverText")
     private String mouseOverText;
 
@@ -301,6 +304,14 @@ public class AlarmDTO {
         this.troubleTicketState = troubleTicketState;
     }
 
+    public void setTroubleTicketLink(String troubleTicketLink) {
+        this.troubleTicketLink = troubleTicketLink;
+    }
+
+    public String getTroubleTicketLink() {
+        return troubleTicketLink;
+    }
+
     public String getMouseOverText() {
         return mouseOverText;
     }
@@ -499,6 +510,7 @@ public class AlarmDTO {
                 Objects.equals(operatorInstructions, alarmDTO.operatorInstructions) &&
                 Objects.equals(troubleTicket, alarmDTO.troubleTicket) &&
                 Objects.equals(troubleTicketState, alarmDTO.troubleTicketState) &&
+                Objects.equals(troubleTicketLink, alarmDTO.troubleTicketLink) &&
                 Objects.equals(mouseOverText, alarmDTO.mouseOverText) &&
                 Objects.equals(suppressedUntil, alarmDTO.suppressedUntil) &&
                 Objects.equals(suppressedBy, alarmDTO.suppressedBy) &&
@@ -525,6 +537,6 @@ public class AlarmDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, uei, location, nodeId, nodeLabel, ipAddress, serviceType, reductionKey, type, count, severity, firstEventTime, description, logMessage, operatorInstructions, troubleTicket, troubleTicketState, mouseOverText, suppressedUntil, suppressedBy, suppressedTime, ackUser, ackTime, clearKey, lastEvent, parameters, lastEventTime, applicationDN, managedObjectInstance, managedObjectType, ossPrimaryKey, x733AlarmType, x733ProbableCause, qosAlarmState, firstAutomationTime, lastAutomationTime, ifIndex, reductionKeyMemo, stickyMemo);
+        return Objects.hash(id, uei, location, nodeId, nodeLabel, ipAddress, serviceType, reductionKey, type, count, severity, firstEventTime, description, logMessage, operatorInstructions, troubleTicket, troubleTicketState, troubleTicketLink, mouseOverText, suppressedUntil, suppressedBy, suppressedTime, ackUser, ackTime, clearKey, lastEvent, parameters, lastEventTime, applicationDN, managedObjectInstance, managedObjectType, ossPrimaryKey, x733AlarmType, x733ProbableCause, qosAlarmState, firstAutomationTime, lastAutomationTime, ifIndex, reductionKeyMemo, stickyMemo);
     }
 }
