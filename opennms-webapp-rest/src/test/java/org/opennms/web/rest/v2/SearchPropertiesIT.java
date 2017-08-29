@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.v2;
 
-import java.util.Date;
 import java.util.Set;
 
 import org.junit.Before;
@@ -38,7 +37,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,9 +151,9 @@ public class SearchPropertiesIT extends AbstractSpringJerseyRestTestCase {
                 sendRequest(GET, url, parseParamData(String.format(
                     "_s=%s==%s;%s!=%s", 
                     prop.getId(), 
-                    CriteriaBehaviors.SEARCH_DATE_FORMAT.get().format(new Date(0)),
+                    "1970-01-01T00:00:00.000-0000",
                     prop.getId(), 
-                    CriteriaBehaviors.SEARCH_DATE_FORMAT.get().format(new Date(0))
+                    "1970-01-01T00:00:00.000%252B0000"
                 )), 204);
                 break;
             default:
