@@ -150,6 +150,11 @@ public abstract class CriteriaBehaviors {
         IP_INTERFACE_BEHAVIORS.put("ipLastCapsdPoll", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
         IP_INTERFACE_BEHAVIORS.put("ipAddress", new CriteriaBehavior<InetAddress>(InetAddressUtils::addr));
 
+        MONITORED_SERVICE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(Integer::parseInt));
+        MONITORED_SERVICE_BEHAVIORS.put("ifindex", new CriteriaBehavior<Integer>(Integer::parseInt));
+        MONITORED_SERVICE_BEHAVIORS.put("lastFail", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+        MONITORED_SERVICE_BEHAVIORS.put("lastGood", new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
+
         MONITORING_LOCATION_BEHAVIORS.put("latitude", new CriteriaBehavior<Float>(Float::parseFloat));
         MONITORING_LOCATION_BEHAVIORS.put("longitude", new CriteriaBehavior<Float>(Float::parseFloat));
         MONITORING_LOCATION_BEHAVIORS.put("priority", new CriteriaBehavior<Long>(Long::parseLong));

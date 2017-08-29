@@ -31,7 +31,7 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -40,6 +40,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -50,6 +51,7 @@ import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
@@ -69,7 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("ifservices")
 @Transactional
-public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredService,OnmsMonitoredService,Integer,String> {
+public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredService,SearchBean,Integer,String> {
 
     @Autowired
     private MonitoredServiceDao m_dao;
@@ -88,8 +90,8 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     }
 
     @Override
-    protected Class<OnmsMonitoredService> getQueryBeanClass() {
-        return OnmsMonitoredService.class;
+    protected Class<SearchBean> getQueryBeanClass() {
+        return SearchBean.class;
     }
 
     @Override
@@ -121,13 +123,16 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     }
 
     @Override
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.IF_SERVICE_SERVICE_PROPERTIES;
     }
 
     @Override
     protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
         final Map<String,CriteriaBehavior<?>> map = new HashMap<>();
+
+        // Root alias
+        map.putAll(CriteriaBehaviors.MONITORED_SERVICE_BEHAVIORS);
 
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.ipInterface, CriteriaBehaviors.IP_INTERFACE_BEHAVIORS));
