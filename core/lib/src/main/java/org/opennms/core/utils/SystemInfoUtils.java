@@ -41,7 +41,7 @@ public class SystemInfoUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SystemInfoUtils.class);
 
     public static final String OPENNMS_INSTANCE_ID_SYS_PROP = "org.opennms.instance.id";
-    public static final String DEFAULT_INSTANCE_ID = "OpenNMS";
+    public static final String DEFAULT_INSTANCE_ID = "OpenNMS-Meridian";
 
     private static final String s_instanceId;
     private static final String s_displayVersion;
