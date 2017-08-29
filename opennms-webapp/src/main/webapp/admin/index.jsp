@@ -222,7 +222,9 @@
             <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
             <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
+            <!-- LTS-204
             <li><a href="minion/index.jsp">Manage Minions</a></li>
+            -->
         </ul>
       </div> <!-- panel-body -->
     </div> <!-- panel -->
@@ -342,9 +344,11 @@
         status information.
         </p>
 
+        <!-- LTS-204
         <p><b>Manage Minions</b>: Configure and administer OpenNMS Minion servers that provide distributed 
         data collection for this OpenNMS server.
         </p>
+        -->
 
         <p><b>SNMP MIB Compiler</b>: Compile MIBs in order to generate events definitions from traps or
             data collection groups for performance metrics.</p>
