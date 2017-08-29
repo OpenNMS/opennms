@@ -29,7 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -95,7 +95,7 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Sca
     }
 
     @Override
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.SCAN_REPORT_SERVICE_PROPERTIES;
     }
 

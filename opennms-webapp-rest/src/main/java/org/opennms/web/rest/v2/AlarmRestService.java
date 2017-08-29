@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.ws.rs.Consumes;
@@ -152,7 +152,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     }
 
     @Override
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.ALARM_SERVICE_PROPERTIES;
     }
 

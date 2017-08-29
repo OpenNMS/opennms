@@ -29,7 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -93,7 +93,7 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
     }
 
     @Override
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.LOCATION_SERVICE_PROPERTIES;
     }
 
