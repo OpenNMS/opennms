@@ -1328,10 +1328,10 @@
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.8.2</log4j2Version>
+    <mapstructVersion>1.2.0.CR1</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
     <minionKarafVersion>${karafVersion}</minionKarafVersion>
     <netty4Version>4.1.9.Final</netty4Version>
-    <mapstructVersion>1.2.0.CR1</mapstructVersion>
     <newtsVersion>1.4.3</newtsVersion>
     <paxExamVersion>4.9.2</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>

@@ -34,6 +34,9 @@
     <nodeLabel>n1</nodeLabel>
     <location>Default</location>
   </lastEvent>
+  <parameters>
+    <parameter name="test" value="testVal" type="string"/>
+  </parameters>
   <lastEventTime>##DATE##</lastEventTime>
   <x733ProbableCause>0</x733ProbableCause>
 </alarm>

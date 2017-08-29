@@ -266,7 +266,6 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
             final List<D> collOfDtos = coll.stream()
                     .map(this::mapEntityToDTO)
                     .collect(Collectors.toList());
-
             final JaxbListWrapper<D> list = createListWrapper(collOfDtos);
             list.setTotalCount(totalCount);
             list.setOffset(offset);

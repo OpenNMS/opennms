@@ -45,6 +45,11 @@
 		"nodeLabel": "n1",
 		"location": "Default"
 	},
+	"parameters" : [ {
+		"name" : "test",
+		"value" : "testVal",
+		"type" : "string"
+	} ],
 	"lastEventTime": 1503412443118,
 	"x733ProbableCause": 0,
 	"ifIndex": null

@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.mapper.v2;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -125,7 +126,7 @@ public class AlarmMapperTest {
         event.setEventDisplay("Y");
         event.setNode(node);
         event.setDistPoller(monitoringSystem);
-        event.addEventParameter(new OnmsEventParameter(event, "test", "testVal", "string"));
+        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter(event, "test", "testVal", "string")));
         event.setServiceType(serviceType);
         alarm.setLastEvent(event);
 
