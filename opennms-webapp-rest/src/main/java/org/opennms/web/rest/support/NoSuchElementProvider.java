@@ -30,6 +30,7 @@ package org.opennms.web.rest.support;
 
 import java.util.NoSuchElementException;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -43,7 +44,9 @@ public class NoSuchElementProvider implements ExceptionMapper<NoSuchElementExcep
     public Response toResponse(NoSuchElementException exception) {
         // if there is an optional exception message, we add it to the response
         if (exception.getMessage() != null) {
-            return Response.status(Response.Status.NOT_FOUND).entity(exception.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(exception.getMessage()).build();
         }
         return Response.status(Response.Status.NOT_FOUND).build();
     }

@@ -80,8 +80,6 @@
 	<include file="19.1.0/changelog.xml"/>
 	<include file="19.1.1/changelog.xml"/>
 
-	<include file="2015.1.0/changelog.xml"/>
-
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
 	<include file="stored-procedures/getManagedOutageForIntfInWindow.xml" />

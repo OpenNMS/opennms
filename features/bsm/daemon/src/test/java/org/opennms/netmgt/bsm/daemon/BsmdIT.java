@@ -357,7 +357,7 @@ public class BsmdIT {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
         alarm.setSeverity(OnmsSeverity.CRITICAL);
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setCounter(1);
         alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setReductionKey(String.format("%s::1:192.168.1.1:ICMP", EventConstants.NODE_LOST_SERVICE_EVENT_UEI));

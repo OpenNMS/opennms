@@ -1250,7 +1250,7 @@ string. &lt;/p>&lt;table>
       <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSysmaxReverted</event-label>
       <descr>&lt;p>The SNMP trap that is generated when the revertible
 sysmax elements are reverted during the card bringup
-if they can not be accomodated in the available memory.&lt;/p>&lt;table>
+if they can not be accommodated in the available memory.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>

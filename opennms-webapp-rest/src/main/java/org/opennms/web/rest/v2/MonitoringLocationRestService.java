@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -40,6 +41,8 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.rest.support.RedirectHelper;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +90,11 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
     @Override
     protected JaxbListWrapper<OnmsMonitoringLocation> createListWrapper(Collection<OnmsMonitoringLocation> list) {
         return new OnmsMonitoringLocationDefinitionList(list);
+    }
+
+    @Override
+    protected Set<SearchProperty> getQueryProperties() {
+        return SearchProperties.LOCATION_SERVICE_PROPERTIES;
     }
 
     @Override

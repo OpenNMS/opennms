@@ -28,13 +28,20 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.opennms.web.svclayer.support.DefaultTroubleTicketProxy.createEventBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -48,7 +55,6 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -59,6 +65,8 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -80,10 +88,12 @@ import com.google.common.collect.ImmutableMap;
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.apache.cxf.Logger=org.apache.cxf.common.logging.Slf4jLogger")
 @JUnitTemporaryDatabase
 @Transactional
 public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceIT.class);
 
     public AlarmRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -312,346 +322,6 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=location.locationName!=Default", 0);
     }
 
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsAlarm} without the alias.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testRootAliasOrderBy() throws Exception {
-        String url = "/alarms";
-
-        // Test orderby for properties of OnmsAlarm
-        sendRequest(GET, url, parseParamData("orderBy=alarmAckTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarmAckUser"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarmType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=applicationDN"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=clearKey"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=counter"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=description"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=details"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=distPoller"), 200);
-        // TODO: Cannot sort by parms since they are all stored in one database column
-        //sendRequest(GET, url, parseParamData("orderBy=eventParameters"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=eventParms"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=firstAutomationTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=firstEventTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=id"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=ifIndex"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=ipAddr"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastAutomationTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEventTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=logMsg"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=managedObjectInstance"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=managedObjectType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=mouseOverText"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=operInstruct"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=ossPrimaryKey"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=qosAlarmState"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=reductionKey"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=reductionKeyMemo"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=serviceType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=severity"), 200);
-        // TODO: Figure out how to do this, OnmsSeverity is an enum
-        //sendRequest(GET, url, parseParamData("orderBy=severity.id"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=severity.label"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=stickyMemo"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=suppressedTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=suppressedUntil"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=suppressedUser"), 200);
-        // TODO: I can't figure out the bean property name for these properties
-        //sendRequest(GET, url, parseParamData("orderBy=tticketId"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=tticketState"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=uei"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=x733AlarmType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=x733ProbableCause"), 200);
-    }
-
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsAlarm}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testAlarmAliasOrderBy() throws Exception {
-        String url = "/alarms";
-        sendRequest(GET, url, parseParamData("orderBy=alarm.alarmAckTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.alarmAckUser"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.alarmType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.applicationDN"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.clearKey"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.counter"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.description"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.details"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.distPoller"), 200);
-        // TODO: Cannot sort by parms since they are all stored in one database column
-        //sendRequest(GET, url, parseParamData("orderBy=alarm.eventParameters"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.eventParms"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.firstAutomationTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.firstEventTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.id"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.ifIndex"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.ipAddr"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.lastAutomationTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.lastEvent"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.lastEventTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.logMsg"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.managedObjectInstance"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.managedObjectType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.mouseOverText"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.node"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.operInstruct"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.ossPrimaryKey"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.qosAlarmState"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.reductionKey"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.reductionKeyMemo"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.serviceType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.severity"), 200);
-        // TODO: Figure out how to do this, OnmsSeverity is an enum
-        //sendRequest(GET, url, parseParamData("orderBy=alarm.severity.id"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=alarm.severity.label"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.stickyMemo"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.suppressedTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.suppressedUntil"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.suppressedUser"), 200);
-        // TODO: I can't figure out the bean property name for these properties
-        //sendRequest(GET, url, parseParamData("orderBy=alarm.tticketId"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=alarm.tticketState"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.uei"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.x733AlarmType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=alarm.x733ProbableCause"), 200);
-    }
-
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsAssetRecord}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testAssetAliasOrderBy() throws Exception {
-        String url = "/alarms";
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.id"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.additionalhardware"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=assetRecord.address1"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=assetRecord.address2"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.admin"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.assetNumber"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.autoenable"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.building"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.category"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.circuitId"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=assetRecord.city"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.comment"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.connection"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=assetRecord.country"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.cpu"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.dateInstalled"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.department"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.description"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.displayCategory"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.division"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.enable"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.floor"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=assetRecord.geolocation"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.hdd1"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.hdd2"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.hdd3"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.hdd4"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.hdd5"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.hdd6"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.inputpower"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.lastModifiedBy"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.lastModifiedDate"), 200); 
-        //sendRequest(GET, url, parseParamData("orderBy=assetRecord.latitude"), 200); 
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.lease"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.leaseExpires"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=assetRecord.longitude"), 200); 
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.maintcontract"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.maintContractExpiration"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.managedObjectInstance"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.managedObjectType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.manufacturer"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.modelNumber"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.notifyCategory"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.numpowersupplies"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.operatingSystem"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.password"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.pollerCategory"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.port"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.rack"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.rackunitheight"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.ram"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.region"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.room"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.serialNumber"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.slot"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.snmpcommunity"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=assetRecord.state"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.storagectrl"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.supportPhone"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.thresholdCategory"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.username"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.vendor"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.vendorAssetNumber"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.vendorFax"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.vendorPhone"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.vmwareManagedEntityType"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.vmwareManagedObjectId"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.vmwareManagementServer"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.vmwareState"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=assetRecord.vmwareTopologyInfo"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=assetRecord.zip"), 200);
-    }
-
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsDistPoller}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testDistPollerAliasOrderBy() throws Exception {
-        String url = "/alarms";
-        sendRequest(GET, url, parseParamData("orderBy=distPoller.id"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=distPoller.label"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=distPoller.location"), 200);
-    }
-
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsEvent}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testLastEventAliasOrderBy() throws Exception {
-        String url = "/alarms";
-
-        // Test orderby for properties of OnmsEvent
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventAckTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventAckUser"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventAutoAction"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventCorrelation"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventCreateTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventDescr"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventDisplay"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventForward"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventHost"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventLog"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventLogGroup"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventLogMsg"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventMouseOverText"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventNotification"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventOperAction"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventOperActionMenuText"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventOperInstruct"), 200);
-        // TODO: Cannot sort by parms since they are all stored in one database column
-        //sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventParameters"), 200);
-        //sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventParms"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventPathOutage"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSeverity"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSnmp"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSnmpHost"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSource"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventSuppressedCount"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventTTicket"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventTTicketState"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.eventUei"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.id"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.ifIndex"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=lastEvent.ipAddr"), 200);
-    }
-
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsIpInterface}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testIpInterfaceAliasOrderBy() throws Exception {
-        String url = "/alarms";
-        sendRequest(GET, url, parseParamData("orderBy=ipInterface.id"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=ipInterface.ipAddress"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=ipInterface.ipHostName"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=ipInterface.ipLastCapsdPoll"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=ipInterface.isManaged"), 200);
-    }
-
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsMonitoringLocation}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testLocationAliasOrderBy() throws Exception {
-        String url = "/alarms";
-        sendRequest(GET, url, parseParamData("orderBy=location.locationName"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=location.geolocation"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=location.latitude"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=location.longitude"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=location.monitoringArea"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=location.priority"), 200);
-    }
-
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsNode}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testNodeAliasOrderBy() throws Exception {
-        String url = "/alarms";
-        sendRequest(GET, url, parseParamData("orderBy=node.createTime"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.foreignId"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.foreignSource"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.id"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.label"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.labelSource"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.lastCapsdPoll"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.netBiosDomain"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.netBiosName"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.operatingSystem"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.parent"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.pathElement"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.sysContact"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.sysDescription"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.sysLocation"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.sysName"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.sysObjectId"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=node.type"), 200);
-    }
-
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsServiceType}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testServiceTypeAliasOrderBy() throws Exception {
-        String url = "/alarms";
-        sendRequest(GET, url, parseParamData("orderBy=serviceType.id"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=serviceType.name"), 200);
-    }
-
-    /**
-     * Test {@code orderBy} for properties of {@link OnmsSnmpInterface}.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testSnmpInterfaceAliasOrderBy() throws Exception {
-        String url = "/alarms";
-        sendRequest(GET, url, parseParamData("orderBy=snmpInterface.id"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=snmpInterface.ifAdminStatus"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=snmpInterface.ifIndex"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=snmpInterface.ifOperStatus"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=snmpInterface.ifSpeed"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=snmpInterface.lastCapsdPoll"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=snmpInterface.lastSnmpPoll"), 200);
-        sendRequest(GET, url, parseParamData("orderBy=snmpInterface.netMask"), 200);
-    }
-
     @Test
     public void verifyTicketerMustBeEnabled() throws Exception {
         final OnmsAlarm alarm = m_databasePopulator.getAlarmDao().findAll().stream()
@@ -679,6 +349,49 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CLOSE_UEI, alarm, null));
         sendPost(url + alarm.getId() + "/ticket/close", "", 202);
         verifyAnticipatedEvents();
+    }
+
+    /**
+     * @see https://issues.opennms.org/browse/NMS-9590
+     * 
+     * @throws Exception 
+     */
+    @Test
+    public void testMultithreadedAccess() throws Exception {
+        final AtomicInteger successes = new AtomicInteger();
+        final AtomicInteger failures = new AtomicInteger();
+        final int n = 40;
+
+        final Executor pool = Executors.newFixedThreadPool(5);
+        final List<CompletableFuture<?>> futures = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            CompletableFuture<?> future = CompletableFuture.runAsync(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        LOG.debug("HELLO");
+                        executeQueryAndVerify("_s=alarmAckTime%3D%3D1970-01-01T00:00:00.000-0000;alarm.severity%3Dge%3DNORMAL;(node.label%3D%3D*sp01*;node.label%3D%3D*sp02*);(node.label%3D%3D*.asp*,node.label%3D%3D*sbx*);(lastEventTime%3Dge%3D2017-08-15T15:33:53.610-0000;lastEventTime%3Dle%3D2017-08-22T15:33:53.610-0000)", 0);
+                        successes.incrementAndGet();
+                    } catch (Throwable e) {
+                        LOG.error("Unexpected exception during executeQueryAndVerify: " + e.getMessage(), e);
+                        failures.incrementAndGet();
+                        fail(e.getMessage());
+                    }
+                }
+            }, pool)
+            .exceptionally(e -> {
+                LOG.error("Unexpected exception in thread: " + e.getMessage(), e);
+                fail();
+                return null;
+            });
+            futures.add(future);
+        }
+
+        // Wait for all of the tasks to complete
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get();
+
+        assertEquals(0, failures.get());
+        assertEquals(n, successes.get());
     }
 
     private void anticipateEvent(EventBuilder eventBuilder) {
@@ -723,7 +436,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventDisplay("Y");
         event.setEventHost("127.0.0.1");
         event.setEventLog("Y");
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("JUnit");
         event.setEventTime(new Date());
         event.setEventUei(eventUei);
@@ -737,7 +450,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(node);
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");

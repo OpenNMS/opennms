@@ -1,11 +1,11 @@
 {
     "count": 1, 
-    "offset": null, 
+    "offset": 0, 
     "resource": [
         {
             "children": {
                 "count": 1, 
-                "offset": null, 
+                "offset": 0, 
                 "resource": [
                     {
                         "externalValueAttributes": {}, 

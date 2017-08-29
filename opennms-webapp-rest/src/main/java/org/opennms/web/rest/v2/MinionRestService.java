@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.SecurityContext;
@@ -44,7 +45,8 @@ import org.opennms.netmgt.model.OnmsMinionCollection;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
-
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +102,11 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
     @Override
     protected JaxbListWrapper<OnmsMinion> createListWrapper(Collection<OnmsMinion> list) {
         return new OnmsMinionCollection(list);
+    }
+
+    @Override
+    protected Set<SearchProperty> getQueryProperties() {
+        return SearchProperties.MINION_SERVICE_PROPERTIES;
     }
 
     @Override
