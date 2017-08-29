@@ -30,6 +30,8 @@ package org.opennms.web.api;
 
 import java.beans.PropertyEditorSupport;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -45,7 +47,8 @@ import org.joda.time.format.ISODateTimeFormat;
  * @author miskellc
  */
 public class ISO8601DateEditor extends PropertyEditorSupport {
-    static final DateTimeFormatter m_formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+    private static final DateTimeFormatter m_formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+    private static final Pattern PATTERN = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{3})?) (\\d{4})");
 
     public ISO8601DateEditor() {
         super();
@@ -60,14 +63,7 @@ public class ISO8601DateEditor extends PropertyEditorSupport {
     /** {@inheritDoc} */
     @Override
     public void setAsText(final String text) throws IllegalArgumentException {
-        Date date;
-        try {
-            final long epoch = Long.parseLong(text);
-            date=new Date(epoch);
-        } catch (final NumberFormatException e) {
-            date = new Date(m_formatter.parseMillis(text));
-        }
-        super.setValue(date);
+        super.setValue(ISO8601DateEditor.stringToDate(text));
     }
 
     /**
@@ -80,4 +76,28 @@ public class ISO8601DateEditor extends PropertyEditorSupport {
         return false;
     }
 
+    public static Date stringToDate(final String text) throws IllegalArgumentException, UnsupportedOperationException {
+        if (text == null || "null".equals(text)) {
+            return null;
+        }
+
+        try {
+            // first, try parsing it as an epoch
+            return new Date(Long.parseLong(text, 10));
+        } catch (final NumberFormatException nfe) {
+            // if that fails, try parsing as a standard ISO8601 date
+            try {
+                return m_formatter.parseDateTime(text).toDate();
+            } catch (final IllegalArgumentException|UnsupportedOperationException e) {
+                // if that fails, try parsing as a CXF-broken positive offset time zone date
+                final Matcher m = PATTERN.matcher(text);
+                if (m.matches()) {
+                    final String fixedDate = m.group(1) + "+" + m.group(3);
+                    return m_formatter.parseDateTime(fixedDate).toDate();
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("Unable to parse value '" + text + "' as a date.");
+    }
 }
