@@ -101,6 +101,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testBSFNorthbounderConfiguration() {
+        testConfigFile("bsf-northbounder-configuration.xml");
+    }
+
+    @Test
     /**
      * This file isn't read directly by OpenNMS.
      */
@@ -146,6 +151,11 @@ public class ConfigTesterTest {
     @Test
     public void testDiscoveryConfiguration() {
         testConfigFile("discovery-configuration.xml");
+    }
+
+    @Test
+    public void testDroolsNorthbounderConfiguration() {
+        testConfigFile("drools-northbounder-configuration.xml");
     }
 
     @Test

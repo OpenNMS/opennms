@@ -30,6 +30,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -423,6 +424,16 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		this.m_eventParameters = EventParameterUtils.normalize(event.getParmCollection()).values().stream()
 				.map(p -> new OnmsEventParameter(this, p))
 				.collect(Collectors.toList());
+	}
+
+	public void addEventParameter(OnmsEventParameter parameter) {
+		if (m_eventParameters == null) {
+			m_eventParameters = new ArrayList<>();
+		}
+		if (m_eventParameters.contains(parameter)) {
+			m_eventParameters.remove(parameter);
+		}
+		m_eventParameters.add(parameter);
 	}
 
 	/**

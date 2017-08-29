@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -50,8 +50,10 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.rest.mapper.v2.EventMapper;
+import org.opennms.web.rest.model.v2.EventDTO;
+import org.opennms.web.rest.model.v2.EventCollectionDTO;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
@@ -70,10 +72,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("events")
 @Transactional
-public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBean,Integer,Integer> {
+public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,EventDTO,SearchBean,Integer,Integer> {
 
     @Autowired
     private EventDao m_dao;
+
+    @Autowired
+    private EventMapper m_eventMapper;
 
     @Override
     protected EventDao getDao() {
@@ -115,12 +120,12 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
     }
 
     @Override
-    protected JaxbListWrapper<OnmsEvent> createListWrapper(Collection<OnmsEvent> list) {
-        return new OnmsEventCollection(list);
+    protected JaxbListWrapper<EventDTO> createListWrapper(Collection<EventDTO> list) {
+        return new EventCollectionDTO(list);
     }
 
     @Override
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.EVENT_SERVICE_PROPERTIES;
     }
 
@@ -173,6 +178,17 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
 
         sendEvent(event);
         return Response.noContent().build();
+    }
+
+
+    @Override
+    public EventDTO mapEntityToDTO(OnmsEvent entity) {
+        return m_eventMapper.eventToEventDTO(entity);
+    }
+
+    @Override
+    public OnmsEvent mapDTOToEntity(EventDTO dto) {
+        return m_eventMapper.eventDTOToEvent(dto);
     }
 
 }

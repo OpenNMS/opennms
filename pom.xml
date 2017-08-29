@@ -894,7 +894,7 @@
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.6.2</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -1331,6 +1331,7 @@
     <minaVersion>2.0.16</minaVersion>
     <minionKarafVersion>${karafVersion}</minionKarafVersion>
     <netty4Version>4.1.9.Final</netty4Version>
+    <mapstructVersion>1.2.0.CR1</mapstructVersion>
     <newtsVersion>1.4.3</newtsVersion>
     <paxExamVersion>4.9.2</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
@@ -2152,6 +2153,16 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-alarm-northbounder-jms</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarm-northbounder-bsf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarm-northbounder-drools</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

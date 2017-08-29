@@ -28,11 +28,13 @@
 
 package org.opennms.web.rest.support;
 
+import java.util.Comparator;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * @author Seth
@@ -41,6 +43,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class SearchProperty implements Comparable<SearchProperty> {
 
 	public static final boolean DEFAULT_ORDER_BY = true;
+
+	public static final boolean DEFAULT_IPLIKE = false;
+
+	private static final Comparator<SearchProperty> COMPARATOR = Comparator
+		// Compare the entity class name
+		.<SearchProperty,String>comparing(t -> t.entityClass.getName())
+		// Compare the property ID
+		.thenComparing(SearchProperty::getId);
 
 	public static enum SearchPropertyType {
 		FLOAT,
@@ -53,31 +63,60 @@ public class SearchProperty implements Comparable<SearchProperty> {
 
 	public SearchProperty() {}
 
-	public SearchProperty(String id, String name, SearchPropertyType type) {
-		this(id, name, type, null);
+	public SearchProperty(Class<?> entityClass, String id, String name, SearchPropertyType type) {
+		this(entityClass, id, name, type, null);
 	}
 
-	public SearchProperty(String id, String name, SearchPropertyType type, boolean orderBy) {
-		this(id, name, type, orderBy, null);
+	public SearchProperty(Class<?> entityClass, String id, String name, SearchPropertyType type, Map<String,String> values) {
+		this(entityClass, null, id, null, name, type, DEFAULT_ORDER_BY, DEFAULT_IPLIKE, values);
 	}
 
-	public SearchProperty(String id, String name, SearchPropertyType type, Map<String,String> values) {
-		this(id, name, type, DEFAULT_ORDER_BY, values);
-	}
-
-	public SearchProperty(String id, String name, SearchPropertyType type, boolean orderBy, Map<String,String> values) {
+	public SearchProperty(
+		Class<?> entityClass,
+		String idPrefix,
+		String id,
+		String namePrefix,
+		String name,
+		SearchPropertyType type,
+		boolean orderBy,
+		boolean iplike,
+		Map<String, String> values
+	) {
+		this.entityClass = entityClass;
+		this.idPrefix = idPrefix;
 		this.id = id;
+		this.namePrefix = namePrefix;
 		this.name = name;
 		this.type = type;
 		this.orderBy = orderBy;
+		this.iplike = iplike;
 		this.values = values;
 	}
 
-	@XmlAttribute
+	@XmlTransient
+	public Class<?> entityClass;
+
+	@XmlTransient
+	String idPrefix;
+
+	@XmlTransient
 	public String id;
 
 	@XmlAttribute
+	public String getId() {
+		return (idPrefix == null ? id : idPrefix + "." + id);
+	}
+
+	@XmlTransient
+	String namePrefix;
+
+	@XmlTransient
 	public String name;
+
+	@XmlAttribute
+	public String getName() {
+		return (namePrefix == null ? name : namePrefix + ": " + name);
+	}
 
 	@XmlAttribute
 	public SearchPropertyType type;
@@ -85,11 +124,14 @@ public class SearchProperty implements Comparable<SearchProperty> {
 	@XmlAttribute
 	public boolean orderBy;
 
+	@XmlAttribute
+	public boolean iplike;
+
 	@XmlElementWrapper(name = "values")
 	public Map<String,String> values;
 
 	@Override
 	public int compareTo(SearchProperty o) {
-		return id.compareTo(o.id);
+		return COMPARATOR.compare(this, o);
 	}
 }
