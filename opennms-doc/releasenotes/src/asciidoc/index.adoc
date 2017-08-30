@@ -21,6 +21,8 @@ include::common/legalnotice.adoc[]
 include::common/preface.adoc[]
 
 :numbered!:
+include::releasenotes/whatsnew-21.adoc[]
+
 include::releasenotes/whatsnew-20.adoc[]
 include::releasenotes/changelog-20.adoc[]
 
