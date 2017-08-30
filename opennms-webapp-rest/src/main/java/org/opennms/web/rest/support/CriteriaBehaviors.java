@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,9 +29,6 @@
 package org.opennms.web.rest.support;
 
 import java.net.InetAddress;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,26 +37,15 @@ import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.web.api.ISO8601DateEditor;
 
 /**
  * Convenience lists of {@link CriteriaBehavior} objects for different database
  * tables.
  */
 public abstract class CriteriaBehaviors {
-
-    public static final ThreadLocal<DateFormat> SEARCH_DATE_FORMAT = new ThreadLocal<DateFormat>() {
-        @Override
-        public DateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        }
-    };
-
-    public static Date parseDate(String string) {
-        try {
-            return SEARCH_DATE_FORMAT.get().parse(string);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Unparseable date: " + string, e);
-        }
+    public static Date parseDate(final String string) {
+        return ISO8601DateEditor.stringToDate(string);
     }
 
     /**
