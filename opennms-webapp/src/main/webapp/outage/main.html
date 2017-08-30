@@ -10,16 +10,8 @@
 					<label>Add Filter:</label>
 					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
 						<div class="form-group">
-						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
-							<option value="id">ID</option>
-							<option value="node.foreignSource">Foreign Source</option>
-							<option value="node.id">Node ID</option>
-							<option value="node.label">Node Label</option>
-							<!-- TODO: Probably won't work because type is InetAddress -->
-							<option value="ipInterface.ipAddress">IP Address</option>
-							<option value="serviceType.name">Service</option>
-							<option value="ifLostService">Lost Service Time</option>
-							<option value="ifRegainedService">Regained Service Time</option>
+						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'" ng-change="updateClauseValue(clause.property)">
+							<option ng-repeat="property in searchProperties" value="{{::property.id}}">{{::property.name}}</option>
 						</select>
 						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
@@ -29,8 +21,20 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'ifLostService' &amp;&amp; clause.property !== 'ifRegainedService'" />
-						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'ifLostService' || clause.property === 'ifRegainedService'"/>
+						<span ng-if="clauseValues.length === 0">
+							<input class="form-control" type="datetime-local"    ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'TIMESTAMP'"/>
+							<input class="form-control" type="text"              ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'STRING' || getSearchProperty(clause.property).type === 'IP_ADDRESS'"
+								placeholder="Type to search..."
+								uib-typeahead="value for value in getSearchPropertyMatches(clause.property, $viewValue)"
+							/>
+							<input class="form-control" type="number"            ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'INTEGER' || getSearchProperty(clause.property).type === 'LONG'"/>
+							<input class="form-control" type="number" step="any" ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'FLOAT'"/>
+							<span ng-if="getSearchProperty(clause.property).iplike" class="label label-default">IPLIKE</span>
+							<span ng-if="loadingSearchProperties">
+								<i class="fa fa-spinner fa-spin fa-lg fa-fw"/>
+							</span>
+						</span>
+						<select class="form-control" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
 						</div>
 						<br/><br/>
 						<button class="btn btn-default" type="submit">Submit</button>
@@ -89,13 +93,13 @@
 			<button type="button" class="btn btn-default {{getSearchClause(resolvedClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(currentClause, resolvedClause)">Resolved</button>
 			<button type="button" class="btn btn-default {{(getSearchClause(resolvedClause) == null &amp;&amp; getSearchClause(currentClause) == null) ? 'active' : ''}}" ng-click="removeSearchClauses([getSearchClause(resolvedClause), getSearchClause(currentClause)])">Both</button>
 		</div>
-		<span ng-hide="query.searchClauses.length == 0">
+		<span ng-hide="query.searchClauses.length == 0 || !searchPropertiesLoaded">
 			<span ng-repeat="clause in query.searchClauses" ng-if="!clauseEquals(clause, resolvedClause) &amp;&amp; !clauseEquals(clause, currentClause)">
 				<div class="btn-group" style="margin:3px;">
 					<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
-						{{clause.property | property}}
+						{{clause.property | property : searchProperties}}
 						{{clause.operator | operator : clause.value}}
-						{{clause.value | value : clause.property}}
+						{{clause.value | value : searchProperties : clause.property}}
 						&nbsp;
 						<i class="fa fa-close"></i>
 					</button>
@@ -191,6 +195,11 @@
 						<i ng-show="query.orderBy === 'node.label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
+						<a ng-click="changeOrderBy('location.locationName')">Node Location</a>
+						<i ng-show="query.orderBy === 'location.locationName' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'location.locationName' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('ipInterface.ipAddress')">IP Address</a>
 						<i ng-show="query.orderBy === 'ipInterface.ipAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'ipInterface.ipAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
@@ -227,6 +236,11 @@
 						<a href="element/node.jsp?node={{item.nodeId}}" title="{{item.nodeLabel}}">{{item.nodeLabel}}</a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.label',operator:'EQ',value:item.nodeLabel})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.label',operator:'NE',value:item.nodeLabel})"><i class="fa fa-minus-square-o fa-lg"/></a>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						{{item.locationName}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location.locationName',operator:'EQ',value:item.locationName})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location.locationName',operator:'NE',value:item.locationName})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<a href="element/interface.jsp?node={{item.nodeId}}&amp;intf={{item.ipAddress}}">{{item.ipAddress}}</a>
