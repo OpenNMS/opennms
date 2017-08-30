@@ -306,16 +306,18 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     private static class HibernateListCallback<T> implements HibernateCallback<List<T>> {
         private final SearchProperty property;
         private final String query;
+        private final Integer limit;
 
-        public HibernateListCallback(final SearchProperty property, final String query) {
+        public HibernateListCallback(final SearchProperty property, final String query, final Integer limit) {
             this.property = property;
             this.query = query;
+            this.limit = limit;
         }
 
         @Override
         public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
             final Query hql;
-            // TODO: Add limit?
+
             // TODO: Sort by count?
 
             // If there is a query string...
@@ -341,6 +343,10 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                 );
             }
 
+            if (limit != null && limit > 0) {
+                hql.setMaxResults(limit);
+            }
+
             @SuppressWarnings("unchecked")
             List<T> list = (List<T>)hql.list();
             return list;
@@ -350,7 +356,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     @GET
     @Path("properties/{propertyId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getPropertyValues(@PathParam("propertyId") final String propertyId, @QueryParam("q") final String query) {
+    public Response getPropertyValues(@PathParam("propertyId") final String propertyId, @QueryParam("q") final String query, @QueryParam("limit") final Integer limit) {
         Set<SearchProperty> props = getQueryProperties();
         // Find the property with the matching ID
         Optional<SearchProperty> prop = props.stream().filter(p -> p.getId().equals(propertyId)).findAny();
@@ -393,22 +399,22 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
             switch(property.type) {
             case FLOAT:
-                List<Float> floats = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Float>(property, query));
+                List<Float> floats = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Float>(property, query, limit));
                 return Response.ok(new FloatCollection(floats)).build();
             case INTEGER:
-                List<Integer> ints = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Integer>(property, query));
+                List<Integer> ints = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Integer>(property, query, limit));
                 return Response.ok(new IntegerCollection(ints)).build();
             case LONG:
-                List<Long> longs = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Long>(property, query));
+                List<Long> longs = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Long>(property, query, limit));
                 return Response.ok(new LongCollection(longs)).build();
             case IP_ADDRESS:
-                List<InetAddress> addresses = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<InetAddress>(property, query));
+                List<InetAddress> addresses = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<InetAddress>(property, query, limit));
                 return Response.ok(new StringCollection(addresses.stream().map(InetAddressUtils::str).collect(Collectors.toList()))).build();
             case STRING:
-                List<String> strings = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<String>(property, query));
+                List<String> strings = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<String>(property, query, limit));
                 return Response.ok(new StringCollection(strings)).build();
             case TIMESTAMP:
-                List<Date> dates = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Date>(property, query));
+                List<Date> dates = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Date>(property, query, limit));
                 return Response.ok(new DateCollection(dates)).build();
             default:
                 return Response.noContent().build();
