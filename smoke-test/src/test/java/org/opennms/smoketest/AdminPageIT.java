@@ -75,7 +75,9 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         new String[] { "Manage Monitoring Locations", "//div[contains(@class,'panel')]/table//tr//a[text()='Location Name']" },
         new String[] { "Manage Applications", "//h3[text()='Applications']" },
         new String[] { "Manage Remote Pollers", "//h3[contains(text(),'Remote Poller Status')]" },
+        /* LTS-204
         new String[] { "Manage Minions", "//div[contains(@class,'panel')]/table//th/a[text()='Location']" },
+         */
 
         // Additional Tools
         new String[] { "Instrumentation Log Reader", "//h3[text()='Filtering']" },
