@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,12 +29,15 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.opennms.web.svclayer.support.DefaultTroubleTicketProxy.createEventBuilder;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -107,6 +110,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     private OnmsNode node1;
     private OnmsNode node2;
+    private OnmsNode node3;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -125,16 +129,23 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // Add a node with 2 categories, since this will really exercise the Criteria
         // aliases since node-to-category is a many-to-many relationship
         node1 = createNode(builder, "server01", "192.168.1.1", new OnmsCategory[] { linux, servers });
+
+        // simpler node to have multi-node matching
         node2 = createNode(builder, "server02", "192.168.1.2", new OnmsCategory[] { macOS });
 
-        createAlarm(node1, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR);
-        createAlarm(node1, "uei.opennms.org/test/somethingIsStillHappening", OnmsSeverity.WARNING);
-        createAlarm(node1, "uei.opennms.org/test/somethingIsOkNow", OnmsSeverity.NORMAL);
+        // node with strange values to test double-decoding of the FIQL engine
+        node3 = createNode(builder, "wêird%20server+name", "192.168.1.3", new OnmsCategory[] {});
 
-        createAlarm(node2, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR);
-        createAlarm(node2, "uei.opennms.org/test/somethingIsStillHappening", OnmsSeverity.WARNING);
-        createAlarm(node2, "uei.opennms.org/test/somethingIsOkNow", OnmsSeverity.NORMAL);
-        createAlarm(node2, "uei.opennms.org/test/somethingIsStillOk", OnmsSeverity.NORMAL);
+        createAlarm(node1, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR, 0);
+        createAlarm(node1, "uei.opennms.org/test/somethingIsStillHappening", OnmsSeverity.WARNING, 1);
+        createAlarm(node1, "uei.opennms.org/test/somethingIsOkNow", OnmsSeverity.NORMAL, 2);
+
+        createAlarm(node2, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR, 10);
+        createAlarm(node2, "uei.opennms.org/test/somethingIsStillHappening", OnmsSeverity.WARNING, 11);
+        createAlarm(node2, "uei.opennms.org/test/somethingIsOkNow", OnmsSeverity.NORMAL, 12);
+        createAlarm(node2, "uei.opennms.org/test/somethingIsStillOk", OnmsSeverity.NORMAL, 13);
+
+        createAlarm(node3, "uei.opennms.org/test/somethingIsStillOk", OnmsSeverity.NORMAL, 20);
     }
 
     /**
@@ -146,9 +157,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testAlarms() throws Exception {
         String url = "/alarms";
 
-        executeQueryAndVerify("limit=0", 7);
+        executeQueryAndVerify("limit=0", 8);
 
-        executeQueryAndVerify("limit=0&_s=alarm.severity==NORMAL", 3);
+        executeQueryAndVerify("limit=0&_s=alarm.severity==NORMAL", 4);
 
         executeQueryAndVerify("limit=0&_s=alarm.severity==WARNING", 2);
 
@@ -171,35 +182,35 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         int categoryId;
         categoryId = m_databasePopulator.getCategoryDao().findByName("Linux").getId();
         executeQueryAndVerify("_s=category.id==" + categoryId, 3);
-        executeQueryAndVerify("_s=category.id!=" + categoryId, 4);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 5);
 
         categoryId = m_databasePopulator.getCategoryDao().findByName("LinuxServers").getId();
         executeQueryAndVerify("_s=category.id==" + categoryId, 3);
-        executeQueryAndVerify("_s=category.id!=" + categoryId, 4);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 5);
 
         categoryId = m_databasePopulator.getCategoryDao().findByName("macOS").getId();
         executeQueryAndVerify("_s=category.id==" + categoryId, 4);
-        executeQueryAndVerify("_s=category.id!=" + categoryId, 3);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 4);
 
         // Category that doesn't exist
         categoryId = Integer.MAX_VALUE;
         executeQueryAndVerify("_s=category.id==" + categoryId, 0);
-        executeQueryAndVerify("_s=category.id!=" + categoryId, 7);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 8);
 
         executeQueryAndVerify("_s=category.name==Linux", 3);
-        executeQueryAndVerify("_s=category.name!=Linux", 4);
+        executeQueryAndVerify("_s=category.name!=Linux", 5);
         executeQueryAndVerify("_s=category.name==LinuxServers", 3);
-        executeQueryAndVerify("_s=category.name!=LinuxServers", 4);
+        executeQueryAndVerify("_s=category.name!=LinuxServers", 5);
         executeQueryAndVerify("_s=category.name==Linux*", 3);
-        executeQueryAndVerify("_s=category.name!=Linux*", 4);
+        executeQueryAndVerify("_s=category.name!=Linux*", 5);
         executeQueryAndVerify("_s=category.name==macOS", 4);
-        executeQueryAndVerify("_s=category.name!=macOS", 3);
+        executeQueryAndVerify("_s=category.name!=macOS", 4);
         executeQueryAndVerify("_s=category.name==mac*", 4);
-        executeQueryAndVerify("_s=category.name!=mac*", 3);
+        executeQueryAndVerify("_s=category.name!=mac*", 4);
         executeQueryAndVerify("_s=category.name==ma*S", 4);
-        executeQueryAndVerify("_s=category.name!=ma*S", 3);
+        executeQueryAndVerify("_s=category.name!=ma*S", 4);
         executeQueryAndVerify("_s=category.name==DoesntExist", 0);
-        executeQueryAndVerify("_s=category.name!=DoesntExist", 7);
+        executeQueryAndVerify("_s=category.name!=DoesntExist", 8);
     }
 
     @Test
@@ -207,8 +218,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=uei==*somethingWentWrong", 2);
         executeQueryAndVerify("_s=uei==*somethingWentWrong;category.name==Linux", 1);
 
-        executeQueryAndVerify("_s=uei==*something*", 7);
-        executeQueryAndVerify("_s=uei==*somethingIs*", 5);
+        executeQueryAndVerify("_s=uei==*something*", 8);
+        executeQueryAndVerify("_s=uei==*somethingIs*", 6);
         executeQueryAndVerify("_s=uei!=*somethingIs*", 2);
 
         // Verify IP address queries including iplike queries
@@ -217,7 +228,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=ipAddr==192.*.*.2", 4);
         executeQueryAndVerify("_s=ipAddr==192.168.1.1-2", 7);
         executeQueryAndVerify("_s=ipAddr==127.0.0.1", 0);
-        executeQueryAndVerify("_s=ipAddr!=127.0.0.1", 7);
+        executeQueryAndVerify("_s=ipAddr!=127.0.0.1", 8);
     }
 
     /**
@@ -230,8 +241,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong", 2);
         executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong;category.name==Linux", 1);
 
-        executeQueryAndVerify("_s=alarm.uei==*something*", 7);
-        executeQueryAndVerify("_s=alarm.uei==*somethingIs*", 5);
+        executeQueryAndVerify("_s=alarm.uei==*something*", 8);
+        executeQueryAndVerify("_s=alarm.uei==*somethingIs*", 6);
         executeQueryAndVerify("_s=alarm.uei!=*somethingIs*", 2);
 
         // Verify IP address queries including iplike queries
@@ -240,7 +251,25 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.ipAddr==192.*.*.2", 4);
         executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.1-2", 7);
         executeQueryAndVerify("_s=alarm.ipAddr==127.0.0.1", 0);
-        executeQueryAndVerify("_s=alarm.ipAddr!=127.0.0.1", 7);
+        executeQueryAndVerify("_s=alarm.ipAddr!=127.0.0.1", 8);
+    }
+
+    @Test
+    public void testCXFDoubleDecoding() throws Exception {
+        sendRequest(GET, "/alarms", parseParamData("_s=alarm.lastEventTime==1970-01-01T00:00:00.000+0000"), 500); // + turns to space
+        sendRequest(GET, "/alarms", parseParamData("_s=alarm.lastEventTime==1970-01-01T00:00:00.000%2B0000"), 500); // %2B turns to space in the servlet handler
+        executeQueryAndVerify("_s=alarm.lastEventTime==1970-01-01T00:00:00.000%252B0000", 0);
+        executeQueryAndVerify("_s=alarm.lastEventTime=ge=1970-01-01T00:00:00.000%252B0000", 8);
+        executeQueryAndVerify("_s=alarm.lastEventTime=lt=1970-01-01T00:00:00.003%252B0000", 3);
+        executeQueryAndVerify("_s=node.label==*%C3%AA*", 1); // "ê" url-encoded
+        executeQueryAndVerify("_s=node.label==*ê*", 1);
+        executeQueryAndVerify("_s=node.label==*%20*", 0); // this will turn to space in the servlet handler
+        executeQueryAndVerify("_s=node.label==*%2520*", 0); // this will turn to space in CXF
+        executeQueryAndVerify("_s=node.label==*%252520*", 1); // the string "%20"
+        executeQueryAndVerify("_s=node.label==*+*", 0); // this will turn to space in the servlet handler
+        executeQueryAndVerify("_s=node.label==*%252B*", 1); // this will turn to +
+        executeQueryAndVerify("_s=node.label!=%00", 8); // null is url-encoded as %00
+        executeQueryAndVerify("_s=id!=%00", 8); // null is url-encoded as %00
     }
 
     /**
@@ -251,10 +280,10 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testServiceFiltering() throws Exception {
         // Verify service queries
-        executeQueryAndVerify("_s=serviceType.name==ICMP", 7);
+        executeQueryAndVerify("_s=serviceType.name==ICMP", 8);
         executeQueryAndVerify("_s=serviceType.name!=ICMP", 0);
         executeQueryAndVerify("_s=serviceType.name==SNMP", 0);
-        executeQueryAndVerify("_s=serviceType.name==*MP", 7);
+        executeQueryAndVerify("_s=serviceType.name==*MP", 8);
     }
 
     /**
@@ -267,7 +296,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=ipInterface.ipAddress==192.168.1.1", 3);
         executeQueryAndVerify("_s=ipInterface.ipAddress==192.168.1.2", 4);
         executeQueryAndVerify("_s=ipInterface.ipAddress==127.0.0.1", 0);
-        executeQueryAndVerify("_s=ipInterface.ipAddress!=127.0.0.1", 7);
+        executeQueryAndVerify("_s=ipInterface.ipAddress!=127.0.0.1", 8);
     }
 
     /**
@@ -281,11 +310,11 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=node.id==" + node2.getId(), 4);
 
         executeQueryAndVerify("_s=node.label==server01", 3);
-        executeQueryAndVerify("_s=node.label!=server01", 4);
+        executeQueryAndVerify("_s=node.label!=server01", 5);
         executeQueryAndVerify("_s=node.label==server02", 4);
-        executeQueryAndVerify("_s=node.label!=server02", 3);
+        executeQueryAndVerify("_s=node.label!=server02", 4);
         executeQueryAndVerify("_s=(node.label==server01,node.label==server02)", 7);
-        executeQueryAndVerify("_s=node.label!=\u0000", 7);
+        executeQueryAndVerify("_s=node.label!=\u0000", 8);
     }
 
     /**
@@ -306,8 +335,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testSnmpFiltering() throws Exception {
         executeQueryAndVerify("_s=snmpInterface.netMask==255.255.255.0", 0);
-        executeQueryAndVerify("_s=snmpInterface.netMask==\u0000", 7);
-        executeQueryAndVerify("_s=snmpInterface.netMask!=255.255.255.0", 7);
+        executeQueryAndVerify("_s=snmpInterface.netMask==\u0000", 8);
+        executeQueryAndVerify("_s=snmpInterface.netMask!=255.255.255.0", 8);
         executeQueryAndVerify("_s=snmpInterface.netMask==255.255.127.0", 0);
     }
 
@@ -318,7 +347,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
      */
     @Test
     public void testLocationFiltering() throws Exception {
-        executeQueryAndVerify("_s=location.locationName==Default", 7);
+        executeQueryAndVerify("_s=location.locationName==Default", 8);
         executeQueryAndVerify("_s=location.locationName!=Default", 0);
     }
 
@@ -429,16 +458,16 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         return cat;
     }
 
-    private void createAlarm(final OnmsNode node, final String eventUei, final OnmsSeverity severity) {
+    private void createAlarm(final OnmsNode node, final String eventUei, final OnmsSeverity severity, final long epoch) {
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
-        event.setEventCreateTime(new Date());
+        event.setEventCreateTime(new Date(epoch));
         event.setEventDisplay("Y");
         event.setEventHost("127.0.0.1");
         event.setEventLog("Y");
         event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("JUnit");
-        event.setEventTime(new Date());
+        event.setEventTime(new Date(epoch));
         event.setEventUei(eventUei);
         event.setIpAddr(node.getIpInterfaces().iterator().next().getIpAddress());
         event.setNode(node);
@@ -458,6 +487,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setIpAddr(node.getIpInterfaces().iterator().next().getIpAddress());
         alarm.setSeverity(severity);
         alarm.setFirstEventTime(event.getEventTime());
+        alarm.setLastEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         alarm.setEventParms(event.getEventParms());
         alarm.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
@@ -465,11 +495,18 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_databasePopulator.getAlarmDao().flush();
     }
 
-    private void executeQueryAndVerify(String query, int totalCount) throws Exception {
+    private void executeQueryAndVerify(final String query, final int totalCount) throws Exception {
+        final Map<String, String> params = parseParamData(query);
+        int expectedStatus = 200;
         if (totalCount == 0) {
-            sendRequest(GET, "/alarms", parseParamData(query), 204);
-        } else {
-            JSONObject object = new JSONObject(sendRequest(GET, "/alarms", parseParamData(query), 200));
+            expectedStatus = 204;
+        }
+
+        LOG.debug("executeQueryAndVerify: GET /alarms = {}, params={}", expectedStatus, params);
+        final String response = sendRequest(GET, "/alarms", params, expectedStatus);
+
+        if (totalCount > 0) {
+            final JSONObject object = new JSONObject(response);
             Assert.assertEquals(totalCount, object.getInt("totalCount"));
         }
     }

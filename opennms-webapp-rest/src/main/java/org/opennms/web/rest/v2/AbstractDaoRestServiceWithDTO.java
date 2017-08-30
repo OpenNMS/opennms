@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,9 @@
 
 package org.opennms.web.rest.v2;
 
-import static org.opennms.web.rest.support.CriteriaBehaviors.SEARCH_DATE_FORMAT;
-
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -82,6 +79,7 @@ import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.api.ISO8601DateEditor;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
@@ -379,8 +377,8 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                 case TIMESTAMP:
                     return Response.ok(new DateCollection(validValues.stream().map(v -> {
                         try {
-                            return SEARCH_DATE_FORMAT.get().parse(v);
-                        } catch (ParseException e) {
+                            return ISO8601DateEditor.stringToDate(v);
+                        } catch (final IllegalArgumentException|UnsupportedOperationException e) {
                             LOG.error("Invalid date in value list: " + v, e);
                             return null;
                         }

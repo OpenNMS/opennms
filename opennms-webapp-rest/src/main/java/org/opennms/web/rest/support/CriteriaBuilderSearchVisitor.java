@@ -144,7 +144,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 
 					// If we're using CriteriaBehaviors, assume that the value is a String
 					// and convert it to the value that will be used in the Criteria
-					value = behavior.convert(NULL_VALUE.equals((String)clsValue.getValue()) ? null : (String)clsValue.getValue());
+					value = NULL_VALUE.equals((String)clsValue.getValue()) ? null : behavior.convert((String)clsValue.getValue());
 
 					// Execute any beforeVisit() actions for this query term such as adding
 					// additional JOIN aliases
