@@ -122,12 +122,12 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
                                     insertStatement.setString(3, entry.getValue().getValue().getContent());
                                     insertStatement.setString(4, entry.getValue().getValue().getType());
                                     insertStatement.execute();
-
-                                    nullifyStatement.setInt(1, eventId);
-                                    nullifyStatement.execute();
                                     parameterCount++;
                                 }
                             }
+                            nullifyStatement.setInt(1, eventId);
+                            nullifyStatement.execute();
+
                             eventCount++;
                         } while (resultSet.next());
 
