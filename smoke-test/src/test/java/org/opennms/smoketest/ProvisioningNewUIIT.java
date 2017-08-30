@@ -150,7 +150,9 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         enterText(By.id("nodeLabel"), NODE_LABEL);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foreignId"))).clear();
         enterText(By.id("foreignId"), NODE_FOREIGNID);
+        /* LTS-206
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("location"))).clear();
+        */
         saveNode();
 
         // Add an IP Interface

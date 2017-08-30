@@ -67,7 +67,9 @@
           <tr>
             <th>Node Label</th>
             <th>Foreign ID</th>
+            <!-- LTS-206
             <th>Minion Location</th>
+            -->
             <th>Building</th>
             <th>City</th>
             <th>IP Addresses</th>
@@ -81,7 +83,9 @@
           <tr ng-class="{danger: node.isModified()}" ng-repeat="node in filteredNodes | startFrom:(currentPage-1)*pageSize | limitTo:pageSize ">
             <td>{{ node.nodeLabel }}</td>
             <td>{{ node.foreignId }}</td>
+            <!-- LTS-206
             <td>{{ node.location || 'N/A' }}</td>
+            -->
             <td>{{ node.building || 'N/A' }}</td>
             <td>{{ node.city || 'N/A' }}</td>
             <td>
