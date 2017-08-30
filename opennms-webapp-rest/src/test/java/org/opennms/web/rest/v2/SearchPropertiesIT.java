@@ -114,6 +114,11 @@ public class SearchPropertiesIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testNodesSearchProperties() throws Exception {
+        testAllSearchParameters("/nodes", SearchProperties.NODE_SERVICE_PROPERTIES);
+    }
+
+    @Test
     public void testNotificationSearchProperties() throws Exception {
         testAllSearchParameters("/notifications", SearchProperties.NOTIFICATION_SERVICE_PROPERTIES);
     }

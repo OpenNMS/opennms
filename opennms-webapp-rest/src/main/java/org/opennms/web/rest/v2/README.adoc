@@ -513,7 +513,14 @@ Supported search/order properties:
 
 Interface: `/api/v2/nodes`
 
-WARNING: This interface is not complete.
+Supported search/order properties:
+
+* <<assetProperties,`assetRecord.*`>>
+* <<categoryProperties,`category.*`>> (Only valid for search)
+* <<ipInterfaceProperties,`ipInterface.*`>> (Only valid for search)
+* <<locationProperties,`location.*`>>
+* <<nodeProperties,`node.*`>>
+* <<snmpInterfaceProperties,`snmpInterface.*`>> (Only valid for search)
 
 === Notifications Interface
 

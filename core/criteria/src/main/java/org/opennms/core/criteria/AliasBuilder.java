@@ -57,6 +57,15 @@ public class AliasBuilder {
         return this;
     }
 
+    public final AliasBuilder alias(final Alias alias) {
+        if (m_aliases.containsKey(alias.getAlias())) {
+            LOG.debug("alias '{}' already associated with associationPath '{}', skipping.", alias.getAlias(), alias.getAssociationPath());
+        } else {
+            m_aliases.put(alias.getAlias(), alias);
+        }
+        return this;
+    }
+
     public final Collection<Alias> getAliasCollection() {
         // make a copy so the internal one can't be modified outside of the builder
         return new ArrayList<Alias>(m_aliases.values());
