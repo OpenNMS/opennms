@@ -103,16 +103,6 @@ public class ISO8601DateEditorTest {
     }
 
     @Test
-    public void testSetAsTextFullDateStringBrokenCXFFormat() {
-        assertNull(m_editor.getValue());
-        m_editor.setAsText("1970-01-02T00:00:00.000 0000");
-        assertNotNull(m_editor.getValue());
-        assertEquals(m_editor.getValue().getClass(), java.util.Date.class);
-        Date dateValue=(Date)m_editor.getValue();
-        assertEquals(86400000, dateValue.getTime());
-    }
-
-    @Test
     public void testGetAsText1() {
         m_editor.setValue(new Date(1));
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
