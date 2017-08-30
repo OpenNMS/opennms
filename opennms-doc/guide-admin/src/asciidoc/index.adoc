@@ -257,9 +257,11 @@ include::text/ticketing/tsrm.adoc[]
 == Enabling RMI
 include::text/rmi.adoc[]
 
+ifndef::opennms-prime[]
 [[ga-minion]]
 == Minion
 include::text/minion/kafka.adoc[]
+endif::opennms-prime[]
 
 [[ga-opennms-plugin-manager]]
 == Plugin Manager
