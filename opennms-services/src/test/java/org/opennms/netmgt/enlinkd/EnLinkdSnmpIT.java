@@ -68,6 +68,7 @@ import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.MtxrWlRtabTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
@@ -140,6 +141,64 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     	assertEquals(true, InetAddressUtils.inSameNetwork(InetAddress.getByName("10.10.0.1"),
     			InetAddress.getByName("10.168.0.5"),InetAddress.getByName("255.0.0.0")));
     }
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE)
+            })
+    public void testMtxrWlRtabTableCollection() throws Exception {
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(MIKROTIK_IP));
+
+        class MtxrWlRtabTableTrackerTester extends MtxrWlRtabTableTracker {
+            int count = 0;
+            public int count() {
+                return count;
+            }
+        }
+
+        final MtxrWlRtabTableTrackerTester mtxrWlRtab = new MtxrWlRtabTableTrackerTester() {
+
+            public void processMtrxWlRTabRow(final MtrxWlRTabRow row) {
+                assertEquals(1, row.getColumnCount());
+                assertEquals(2, row.getMtxrWlCMRtabIface().intValue());
+                count++;
+                switch (count) {
+                case 1:
+                    assertEquals("0015999f07ef", row.getMtxrWlCMRtabAddr());
+                    break;
+                case 2:
+                    assertEquals("001b63cda9fd", row.getMtxrWlCMRtabAddr());
+                    break;
+                case 3:
+                    assertEquals("60334b0817a8", row.getMtxrWlCMRtabAddr());
+                    break;
+                case 4:
+                    assertEquals("f0728c99994d", row.getMtxrWlCMRtabAddr());
+                    break;
+
+                default:
+                    break;
+                }
+            }
+            
+        };
+
+        String trackerName = "mtxrWlRtabTable";
+
+        try {
+            m_client.walk(config,mtxrWlRtab)
+            .withDescription(trackerName)
+            .withLocation(null)
+            .execute()
+            .get();
+        } catch (final InterruptedException e) {
+            LOG.error("run: Mikrorik Remote Wl Table collection interrupted, exiting",e);
+            return;
+        }
+        
+        assertEquals(4, mtxrWlRtab.count());
+    }
+
     
     @Test
     @JUnitSnmpAgents(value={

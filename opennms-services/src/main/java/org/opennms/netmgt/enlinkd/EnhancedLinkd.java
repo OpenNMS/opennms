@@ -186,6 +186,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         	LOG.info("getSnmpCollections: adding Bridge Discovery: {}",
                     node);
         	snmpcolls.add(new NodeDiscoveryBridge(this, node));
+        	
+                LOG.info("getSnmpCollections: adding Wifi Discovery: {}",
+                         node);
+                 snmpcolls.add(new NodeDiscoveryWifi(this, node));
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
