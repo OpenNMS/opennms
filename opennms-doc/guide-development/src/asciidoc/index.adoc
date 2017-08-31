@@ -19,12 +19,14 @@
 == Setup a development system
 include::text/dev-guide.adoc[]
 
+ifndef::opennms-prime[]
 == Minion development
 include::text/minion/introduction.adoc[]
 include::text/minion/container.adoc[]
 include::text/minion/packaging.adoc[]
 include::text/minion/guidelines.adoc[]
 include::text/minion/testing.adoc[]
+endif::opennms-prime[]
 
 == Topology
 include::text/topology/introduction.adoc[]
