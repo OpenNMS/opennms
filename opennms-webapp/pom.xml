@@ -21,7 +21,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jasig.maven</groupId>
+        <groupId>nl.geodienstencentrum.maven</groupId>
         <artifactId>sass-maven-plugin</artifactId>
         <version>${sass.maven.plugin.version}</version>
         <executions>
@@ -421,7 +421,7 @@
     						</pluginExecution>
     						<pluginExecution>
     							<pluginExecutionFilter>
-    								<groupId>org.jasig.maven</groupId>
+    								<groupId>nl.geodienstencentrum.maven</groupId>
     								<artifactId>sass-maven-plugin</artifactId>
     								<versionRange>[${sass.maven.plugin.version},)</versionRange>
     								<goals><goal>update-stylesheets</goal></goals>
@@ -917,6 +917,26 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>gwt-maven-plugin</artifactId>
+      <version>${gwtPluginVersion}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

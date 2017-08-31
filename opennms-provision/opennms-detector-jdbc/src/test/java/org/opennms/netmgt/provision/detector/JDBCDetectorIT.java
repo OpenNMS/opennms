@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,9 +32,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -45,7 +42,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.detector.JdbcTestUtils.DSInfo;
 import org.opennms.netmgt.provision.detector.jdbc.JdbcDetector;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -70,46 +67,25 @@ public class JDBCDetectorIT implements InitializingBean {
     @Autowired
     DataSource m_dataSource;
 
+    private DSInfo m_info;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
     @Before
-    public void setUp() throws UnknownHostException, SQLException {
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        String url = null;
-        String username = null;
-        Connection conn = null;
-        try {
-            conn = m_dataSource.getConnection();
-            DatabaseMetaData metaData = conn.getMetaData();
-            url = metaData.getURL();
-            username = metaData.getUserName();
-            conn.close();
-        } catch (final SQLException e) {
-            e.printStackTrace();
-            if (conn != null) {
-                conn.close();
-            }
-        }
-
-
-        m_detector.setDbDriver("org.postgresql.Driver");
-        m_detector.setPort(5432);
-        m_detector.setUrl(url);
-        m_detector.setUser(username);
-        m_detector.setPassword("");
-
-
-
+        m_info = JdbcTestUtils.getDataSourceInfo(m_dataSource);
+        JdbcTestUtils.setInfo(m_detector, m_info);
     }
 
     @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.init();
-        assertTrue("Service wasn't detected", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
+        assertTrue("Service wasn't detected", m_detector.isServiceDetected(m_info.getHost()));
     }
 
     @Test(timeout=20000)
@@ -117,7 +93,7 @@ public class JDBCDetectorIT implements InitializingBean {
         m_detector.setUser("wrongUser");
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
+        assertFalse(m_detector.isServiceDetected(m_info.getHost()));
     }
 
     @Test(timeout=20000)
@@ -125,7 +101,7 @@ public class JDBCDetectorIT implements InitializingBean {
         m_detector.setUrl("jdbc:postgres://bogus:5432/blank");
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
+        assertFalse(m_detector.isServiceDetected(m_info.getHost()));
     }
 
 }
