@@ -378,7 +378,7 @@ public abstract class SearchProperties {
 	public static final Set<SearchProperty> IF_SERVICE_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> MINION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> LOCATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
-	//public static final Set<SearchProperty> NODE_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> NODE_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> NOTIFICATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> OUTAGE_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> SCAN_REPORT_SERVICE_PROPERTIES = new LinkedHashSet<>();
@@ -488,6 +488,18 @@ public abstract class SearchProperties {
 
 		// Root prefix
 		LOCATION_SERVICE_PROPERTIES.addAll(LOCATION_PROPERTIES);
+
+		// Root prefix
+		NODE_SERVICE_PROPERTIES.addAll(NODE_PROPERTIES);
+		//NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, NODE_PROPERTIES));
+		NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
+		NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
+		NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES, false));
+		NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
+		// TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
+		//NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.monitoredService, "Monitored Service", IF_SERVICE_PROPERTIES, false));
+		//NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES, false));
+		NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES, false));
 
 		// Root prefix
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(NOTIFICATION_PROPERTIES);

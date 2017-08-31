@@ -43,6 +43,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -109,27 +110,24 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
         // 1st level JOINs
         builder.alias("assetRecord", Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
-        // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("categories", Aliases.category.toString(), JoinType.LEFT_JOIN);
-        // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("ipInterfaces", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN);
+        // Add this alias via a CriteriaBehavior so that we can specify a join condition
+        //builder.alias("categories", Aliases.category.toString(), JoinType.LEFT_JOIN);
+        // Add this alias via a CriteriaBehavior so that we can specify a join condition
+        //builder.alias("ipInterfaces", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN);
         builder.alias("location", Aliases.location.toString(), JoinType.LEFT_JOIN);
-        // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("snmpInterfaces", Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN);
+        // Add this alias via a CriteriaBehavior so that we can specify a join condition
+        //builder.alias("snmpInterfaces", Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
-        // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias(Aliases.ipInterface.prop("monitoredServices"), Aliases.monitoredService.toString(), JoinType.LEFT_JOIN);
+        // TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
+        //builder.alias(Aliases.ipInterface.prop("monitoredServices"), Aliases.monitoredService.toString(), JoinType.LEFT_JOIN);
 
         // 3rd level JOINs
-        // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias(Aliases.monitoredService.prop("serviceType"), Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
+        // TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
+        //builder.alias(Aliases.monitoredService.prop("serviceType"), Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // Order by label by default
         builder.orderBy("label").desc();
-
-        // TODO: Remove this once the join conditions are in place
-        builder.distinct();
 
         return builder;
     }
@@ -138,18 +136,53 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
         Map<String,CriteriaBehavior<?>> map = new HashMap<>();
 
+        // Root alias
+        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
+
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
-        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.ipInterface, CriteriaBehaviors.IP_INTERFACE_BEHAVIORS));
+
+        // Use join conditions for one-to-many aliases
+        for (Map.Entry<String,CriteriaBehavior<?>> entry : CriteriaBehaviors.IP_INTERFACE_BEHAVIORS.entrySet()) {
+            map.put(Aliases.ipInterface.prop(entry.getKey()), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+                b.alias(
+                    "ipInterfaces",
+                    Aliases.ipInterface.toString(),
+                    JoinType.LEFT_JOIN,
+                    Restrictions.or(Restrictions.eq(Aliases.ipInterface.prop(entry.getKey()), v), Restrictions.isNull(Aliases.ipInterface.prop(entry.getKey())))
+                );
+            }));
+        }
+        // Also add behaviors for the String properties (which is not normally necessary
+        // but is necessary here because they add BeforeVisit operations to add JOINs)
+        for (String prop : new String[] { "ipHostName", "isManaged" } ) {
+            map.put(Aliases.ipInterface.prop(prop), new CriteriaBehavior<>((String)null, String::new, (b,v,c,w)-> {
+                b.alias(
+                    "ipInterfaces",
+                    Aliases.ipInterface.toString(),
+                    JoinType.LEFT_JOIN,
+                    Restrictions.or(Restrictions.eq(Aliases.ipInterface.prop(prop), v), Restrictions.isNull(Aliases.ipInterface.prop(prop)))
+                );
+            }));
+        }
+
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.location, CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
-        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.snmpInterface, CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS));
 
-        // 2nd level JOINs
-        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.monitoredService, CriteriaBehaviors.MONITORED_SERVICE_BEHAVIORS));
+        // Use join conditions for one-to-many aliases
+        for (Map.Entry<String,CriteriaBehavior<?>> entry : CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS.entrySet()) {
+            map.put(Aliases.snmpInterface.prop(entry.getKey()), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+                b.alias(
+                    "snmpInterfaces",
+                    Aliases.snmpInterface.toString(),
+                    JoinType.LEFT_JOIN,
+                    Restrictions.or(Restrictions.eq(Aliases.snmpInterface.prop(entry.getKey()), v), Restrictions.isNull(Aliases.snmpInterface.prop(entry.getKey())))
+                );
+            }));
+        }
+        // There are no extra String properties on node.snmpInterfaces 
 
-        // 3rd level JOINs
-        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.serviceType, CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS));
+        // TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
 
         return map;
     }

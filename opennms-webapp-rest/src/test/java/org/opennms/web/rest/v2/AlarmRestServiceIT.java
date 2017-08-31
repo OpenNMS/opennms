@@ -29,12 +29,11 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.opennms.web.svclayer.support.DefaultTroubleTicketProxy.createEventBuilder;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +42,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -95,8 +95,9 @@ import com.google.common.collect.ImmutableMap;
 @JUnitTemporaryDatabase
 @Transactional
 public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
-
     private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceIT.class);
+    private static final String SERVER3_NAME = "w\u00EAird%20server+name";
+
 
     public AlarmRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -134,7 +135,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         node2 = createNode(builder, "server02", "192.168.1.2", new OnmsCategory[] { macOS });
 
         // node with strange values to test double-decoding of the FIQL engine
-        node3 = createNode(builder, "wêird%20server+name", "192.168.1.3", new OnmsCategory[] {});
+        node3 = createNode(builder, SERVER3_NAME, "192.168.1.3", new OnmsCategory[] {});
 
         createAlarm(node1, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR, 0);
         createAlarm(node1, "uei.opennms.org/test/somethingIsStillHappening", OnmsSeverity.WARNING, 1);
@@ -349,6 +350,63 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testLocationFiltering() throws Exception {
         executeQueryAndVerify("_s=location.locationName==Default", 8);
         executeQueryAndVerify("_s=location.locationName!=Default", 0);
+    }
+
+    /**
+     * Test metadata autocompletion.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testNodeLabelPropertyValues() throws Exception {
+        JSONObject object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.emptyMap(), 200));
+        Assert.assertEquals(3, object.getInt("totalCount"));
+        JSONArray values = object.getJSONArray("value");
+        // Values should be sorted alphabetically so this order is deterministic
+        assertEquals("server01", values.getString(0));
+        assertEquals("server02", values.getString(1));
+        assertEquals(SERVER3_NAME, values.getString(2));
+
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("limit", "1"), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
+        values = object.getJSONArray("value");
+        assertEquals("server01", values.getString(0));
+
+        // Using a limit less than 1 should result in an unlimited return value
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("limit", "0"), 200));
+        Assert.assertEquals(3, object.getInt("totalCount"));
+        values = object.getJSONArray("value");
+        assertEquals("server01", values.getString(0));
+        assertEquals("server02", values.getString(1));
+        assertEquals(SERVER3_NAME, values.getString(2));
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("limit", "-2"), 200));
+        Assert.assertEquals(3, object.getInt("totalCount"));
+        values = object.getJSONArray("value");
+        assertEquals("server01", values.getString(0));
+        assertEquals("server02", values.getString(1));
+        assertEquals(SERVER3_NAME, values.getString(2));
+
+        // Test a query
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("q", "02"), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
+        values = object.getJSONArray("value");
+        assertEquals("server02", values.getString(0));
+
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("q", "server"), 200));
+        Assert.assertEquals(3, object.getInt("totalCount"));
+        values = object.getJSONArray("value");
+        assertEquals("server01", values.getString(0));
+        assertEquals("server02", values.getString(1));
+        assertEquals(SERVER3_NAME, values.getString(2));
+
+        // Test a query with a limit
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", ImmutableMap.of(
+            "q", "server",
+            "limit", "1"
+        ), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
+        values = object.getJSONArray("value");
+        assertEquals("server01", values.getString(0));
     }
 
     @Test
