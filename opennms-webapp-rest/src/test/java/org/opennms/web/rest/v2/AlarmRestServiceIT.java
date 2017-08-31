@@ -29,11 +29,9 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.opennms.web.svclayer.support.DefaultTroubleTicketProxy.createEventBuilder;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -361,11 +359,12 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testNodeLabelPropertyValues() throws Exception {
         JSONObject object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.emptyMap(), 200));
-        Assert.assertEquals(2, object.getInt("totalCount"));
+        Assert.assertEquals(3, object.getInt("totalCount"));
         JSONArray values = object.getJSONArray("value");
         // Values should be sorted alphabetically so this order is deterministic
         assertEquals("server01", values.getString(0));
         assertEquals("server02", values.getString(1));
+        assertEquals("server03", values.getString(2));
 
         object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("limit", "1"), 200));
         Assert.assertEquals(1, object.getInt("totalCount"));
@@ -374,15 +373,17 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // Using a limit less than 1 should result in an unlimited return value
         object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("limit", "0"), 200));
-        Assert.assertEquals(2, object.getInt("totalCount"));
+        Assert.assertEquals(3, object.getInt("totalCount"));
         values = object.getJSONArray("value");
         assertEquals("server01", values.getString(0));
         assertEquals("server02", values.getString(1));
+        assertEquals("server03", values.getString(2));
         object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("limit", "-2"), 200));
-        Assert.assertEquals(2, object.getInt("totalCount"));
+        Assert.assertEquals(3, object.getInt("totalCount"));
         values = object.getJSONArray("value");
         assertEquals("server01", values.getString(0));
         assertEquals("server02", values.getString(1));
+        assertEquals("server03", values.getString(2));
 
         // Test a query
         object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("q", "02"), 200));
@@ -391,10 +392,11 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("server02", values.getString(0));
 
         object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("q", "server"), 200));
-        Assert.assertEquals(2, object.getInt("totalCount"));
+        Assert.assertEquals(3, object.getInt("totalCount"));
         values = object.getJSONArray("value");
         assertEquals("server01", values.getString(0));
         assertEquals("server02", values.getString(1));
+        assertEquals("server03", values.getString(2));
 
         // Test a query with a limit
         object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", ImmutableMap.of(
