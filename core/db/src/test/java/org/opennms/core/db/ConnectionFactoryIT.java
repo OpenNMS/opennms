@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,6 +49,8 @@ import org.opennms.test.DaoTestConfigBean;
  */
 public class ConnectionFactoryIT extends TestCase {
 	public void testMarshalDataSourceFromConfig() throws Exception {
+		if (Boolean.getBoolean("skipConnectionTests")) return;
+
 		DaoTestConfigBean bean = new DaoTestConfigBean();
 		bean.afterPropertiesSet();
 
@@ -121,6 +123,8 @@ public class ConnectionFactoryIT extends TestCase {
 	}
 
 	public void testPoolWithSqlExceptions() throws Exception {
+		if (Boolean.getBoolean("skipConnectionTests")) return;
+
 		DaoTestConfigBean bean = new DaoTestConfigBean();
 		bean.afterPropertiesSet();
 

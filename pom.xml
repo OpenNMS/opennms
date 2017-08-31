@@ -221,7 +221,7 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.1</version>
         <executions>
           <execution>
             <id>features.xml</id>
@@ -1179,7 +1179,7 @@
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
     <antlr.version>2.7.7</antlr.version>
-    <sass.maven.plugin.version>1.1.2-ONMS-20131018-1</sass.maven.plugin.version>
+    <sass.maven.plugin.version>2.14</sass.maven.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>

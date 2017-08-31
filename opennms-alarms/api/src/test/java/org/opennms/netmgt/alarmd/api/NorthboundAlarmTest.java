@@ -55,23 +55,23 @@ public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
         return Arrays.asList(new Object[][] {
                 {
                     getSampleAlarm(),
-                    "<northbound-alarm xmlns=\"http://xmlns.opennms.org/xsd/alarms\" id=\"1\">\n" +
+                    "<northbound-alarm xmlns=\"http://xmlns.opennms.org/xsd/northbound-alarms\" id=\"1\">\n" +
                      "<uei>some-uei</uei>\n" +
                      "<node-id>99</node-id>\n" +
                      "<node-label>some-node-label</node-label>\n" +
                      "<node-sysobjectid>.1.3.6</node-sysobjectid>\n" +
                      "<node-foreignsource>fs</node-foreignsource>\n" +
                      "<node-foreignid>fid</node-foreignid>\n" +
-                     "<ack-time>" + StringUtils.iso8601LocalOffsetString(new Date(1)) + "</ack-time>\n" +
+                     "<ack-time>1970-01-01T00:00:00.001Z</ack-time>\n" +
                      "<ack-user>admin</ack-user>\n" +
                      "<alarm-type>PROBLEM</alarm-type>\n" +
                      "<app-dn>some-app-dn</app-dn>\n" +
                      "<clear-key>some-clear-key</clear-key>\n" +
                      "<count>1</count>\n" +
                      "<description>some description</description>\n" +
-                     "<first-occurrence>" + StringUtils.iso8601LocalOffsetString(new Date(2)) + "</first-occurrence>\n" +
+                     "<first-occurrence>1970-01-01T00:00:00.002Z</first-occurrence>\n" +
                      "<ip-address>127.0.0.127</ip-address>\n" +
-                     "<last-occurrence>" + StringUtils.iso8601LocalOffsetString(new Date(4)) + "</last-occurrence>\n" +
+                     "<last-occurrence>1970-01-01T00:00:00.004Z</last-occurrence>\n" +
                      "<log-messsage>logmsg</log-messsage>\n" +
                      "<object-instance>instance</object-instance>\n" +
                      "<object-type>type</object-type>\n" +
@@ -81,8 +81,8 @@ public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
                      "<alarm-key>key</alarm-key>\n" +
                      "<service>service</service>\n" +
                      "<severity>CRITICAL</severity>\n" +
-                     "<suppressed>" + StringUtils.iso8601LocalOffsetString(new Date(5)) + "</suppressed>\n" +
-                     "<suppressed-until>" + StringUtils.iso8601LocalOffsetString(new Date(6)) + "</suppressed-until>\n" +
+                     "<suppressed>1970-01-01T00:00:00.005Z</suppressed>\n" +
+                     "<suppressed-until>1970-01-01T00:00:00.006Z</suppressed-until>\n" +
                      "<suppressed-by>me</suppressed-by>\n" +
                      "<ticket-id>NMS-8068</ticket-id>\n" +
                      "<ticket-state>OPEN</ticket-state>\n" +
