@@ -72,6 +72,7 @@ public final class Authentication extends Object {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_READONLY = "ROLE_READONLY";
     public static final String ROLE_DASHBOARD = "ROLE_DASHBOARD";
+    public static final String ROLE_DELEGATE = "ROLE_DELEGATE";
     public static final String ROLE_RTC = "ROLE_RTC";
     public static final String ROLE_PROVISION = "ROLE_PROVISION";
     public static final String ROLE_REMOTING = "ROLE_REMOTING";
@@ -89,6 +90,7 @@ public final class Authentication extends Object {
         s_availableRoles.add(ROLE_ADMIN);
         s_availableRoles.add(ROLE_READONLY);
         s_availableRoles.add(ROLE_DASHBOARD);
+        s_availableRoles.add(ROLE_DELEGATE);
         s_availableRoles.add(ROLE_RTC);
         s_availableRoles.add(ROLE_PROVISION);
         s_availableRoles.add(ROLE_REMOTING);
