@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.collection.api;
 
+import org.opennms.core.utils.LocationUtils;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -59,7 +61,7 @@ public abstract class AbstractServiceCollector implements ServiceCollector {
     @Override
     public String getEffectiveLocation(String location) {
         // Always run at the default location
-        return null;
+        return LocationUtils.DEFAULT_LOCATION_NAME;
     }
 
     @Override
