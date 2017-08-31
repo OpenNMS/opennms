@@ -125,6 +125,7 @@ public class DroolsNorthbounderIT {
         event.setEventParameters(Lists.newArrayList(
                 new OnmsEventParameter(event, "alarmId", "10", "Int32"),
                 new OnmsEventParameter(event, "alarmMessage", "this is a test", "string")));
+        onmsAlarm.setLastEvent(event);
         onmsAlarm.setLogMsg("Test log message");
         onmsAlarm.setDescription("Test description");
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
