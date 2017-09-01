@@ -58,6 +58,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * <p>DaoWebOutageRepository class.</p>
  *
+ * @deprecated Use an injected {@link OutageDao} implementation instead
+ * 
  * @author brozow
  * @version $Id: $
  * @since 1.8.1

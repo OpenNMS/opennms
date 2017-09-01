@@ -36,7 +36,7 @@
                         </a>
                     </td>
                     <td>
-                        <a href="outage/list?outtype=current&filter=node={{item['id']}}" ng-show="item.severity != 'NORMAL' && query.strategy === 'outages'">
+                        <a href="outage/index.jsp?_s=ifRegainedService%3D%3D1970-01-01T00:00:00.000-0000;node.id%3D%3D{{item['id']}}" ng-show="item.severity != 'NORMAL' && query.strategy === 'outages'">
                             <i class="fa fa-external-link-square"></i> View Outages
                         </a>
                         <a href="alarm/list?sortby=lasteventtime&acktype=unack&filter=node={{item['id']}}" ng-show="item.severity != 'NORMAL' && query.strategy === 'alarms'">

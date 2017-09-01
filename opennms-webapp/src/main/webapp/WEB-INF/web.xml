@@ -259,10 +259,6 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/outage/list.htm</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/graph/results.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
@@ -1075,10 +1071,6 @@
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/notification/acknowledge</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/outage/list</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>

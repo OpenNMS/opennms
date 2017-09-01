@@ -325,8 +325,8 @@ function confirmAssetEdit() {
       <a href="<c:out value="${alarmLink}"/>">View Alarms</a>
     </li>
     
-    <c:url var="outageLink" value="outage/list.htm">
-      <c:param name="filter" value="node=${model.id}"/>
+    <c:url var="outageLink" value="outage/index.jsp">
+      <c:param name="_s" value="node.id==${model.id}"/>
     </c:url>
     <li>
       <a href="<c:out value="${outageLink}"/>">View Outages</a>

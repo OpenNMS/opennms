@@ -58,7 +58,7 @@ public class InterfaceFilter extends EqualsFilter<String> {
      */
     @Override
     public String toString() {
-        return ("<OutageFactory.InterfaceFilter: " + this.getDescription() + ">");
+        return ("<InterfaceFilter: " + this.getDescription() + ">");
     }
 
     /**

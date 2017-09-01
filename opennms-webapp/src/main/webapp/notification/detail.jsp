@@ -189,8 +189,8 @@
   <%if (nodeLabel!=null) { %>
     <tr class="severity-<%=eventSeverity.toLowerCase()%>">
       <td colspan="8">
-        <c:url var="outageLink" value="outage/list.htm">
-          <c:param name="filter" value='<%="node=" + notice.getNodeId()%>'/>
+        <c:url var="outageLink" value="outage/index.jsp">
+          <c:param name="_s" value='<%="node.id==" + notice.getNodeId()%>'/>
         </c:url>
         <a href="${outageLink}">Current outages for <c:out value="<%=nodeLabel%>"/></a>
       </td>

@@ -153,9 +153,7 @@
   <page virtual-host="${virtualHost}" path="/opennms/notification/browse" query="acktype=ack" port="${port}" response-range="200"/>
 
   <page virtual-host="${virtualHost}" path="/opennms/outage/index.jsp" port="${port}" response-range="200"/>
-  <page virtual-host="${virtualHost}" path="/opennms/outage/list.htm" port="${port}" response-range="200"/>
-  <page virtual-host="${virtualHost}" path="/opennms/outage/list.htm" query="outtype=current" port="${port}" response-range="200"/>
-  <page virtual-host="${virtualHost}" path="/opennms/outage/list.htm" query="outtype=both" port="${port}" response-range="200"/>
+  <!-- TODO: Add filter and orderBy tests for outage list -->
 
   <page virtual-host="${virtualHost}" path="/opennms/pathOutage/index.jsp" port="${port}" response-range="200"/>
 

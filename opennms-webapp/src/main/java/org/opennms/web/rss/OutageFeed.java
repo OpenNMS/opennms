@@ -86,7 +86,7 @@ public class OutageFeed extends AbstractFeed {
 
         feed.setTitle("Nodes with Outages");
         feed.setDescription("OpenNMS Nodes with Outages");
-        feed.setLink(getUrlBase() + "outage/list.htm");
+        feed.setLink(getUrlBase() + "outage/index.jsp");
 
         List<SyndEntry> entries = new ArrayList<>();
 

@@ -31,10 +31,13 @@ package org.opennms.web.outage;
 import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.netmgt.model.OnmsOutage;
 
 /**
  * A JavaBean for holding information about a single outage.
  *
+ * @deprecated Use {@link OnmsOutage} instead
+ * 
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @version $Id: $
  * @since 1.8.1

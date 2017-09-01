@@ -45,7 +45,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!-- outage/servicesdown-box.htm -->
-<c:url var="headingLink" value="outage/list.htm"/>
+<c:url var="headingLink" value="outage/index.jsp"/>
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title"><a href="${headingLink}">Nodes with Outages</a></h3>
@@ -73,7 +73,7 @@
   </div>
   <c:if test="${moreCount > 0}">
     <div class="panel-footer text-right">
-      <c:url var="moreLink" value="outage/list.htm"/>
+      <c:url var="moreLink" value="outage/index.jsp"/>
       <a href="${moreLink}">${moreCount} more nodes with outages...</a>
     </div>
   </c:if>

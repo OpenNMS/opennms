@@ -52,10 +52,11 @@
 	String ipAddr = (String)request.getAttribute("ipAddr");
     Outage[] outages = (Outage[])request.getAttribute("outages");
 %>
+<c:set var="nodeId"><%=nodeId%></c:set>
 <c:set var="ipAddr"><%=ipAddr%></c:set>
 
-<c:url var="outageLink" value="outage/list.htm">
-  <c:param name="filter" value="intf=${ipAddr}"/>
+<c:url var="outageLink" value="outage/index.jsp">
+  <c:param name="_s" value="node.id==${nodeId};ipInterface.ipAddress==${ipAddr}"/>
 </c:url>
 
 <div class="panel panel-default">

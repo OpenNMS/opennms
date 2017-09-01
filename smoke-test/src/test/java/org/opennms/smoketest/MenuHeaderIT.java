@@ -60,7 +60,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Notification queries']");
 
         clickMenuItem("Status", "Outages", "outage/index.jsp");
-        findElementByXpath("//h3[text()='Outage Menu']");
+        findElementByXpath("//ol[@class='breadcrumb']/li[text()='Outages']");
+        findElementByXpath("//th/a[text()='ID']");
+        findElementByXpath("//th/a[text()='Foreign Source']");
+        findElementByXpath("//th/a[text()='Node']");
 
         clickMenuItem("Status", "Distributed Status", "distributedStatusSummary.htm");
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");

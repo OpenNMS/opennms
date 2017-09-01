@@ -49,8 +49,8 @@
 <c:set var="nodeId"><%=nodeId%></c:set>
 
 
-<c:url var="outageLink" value="outage/list.htm">
-  <c:param name="filter" value="node=${nodeId}"/>
+<c:url var="outageLink" value="outage/index.jsp">
+  <c:param name="_s" value="node.id==${nodeId}"/>
 </c:url>
 <div class="panel panel-default">
 <div class="panel-heading">

@@ -56,7 +56,7 @@
   <jsp:param name="title" value="Outage Details" />
   <jsp:param name="headTitle" value="Detail" />
   <jsp:param name="headTitle" value="Outages" />
-  <jsp:param name="breadcrumb" value="<a href='outage/list'>Outages</a>" />
+  <jsp:param name="breadcrumb" value="<a href='outage/index.jsp'>Outages</a>" />
   <jsp:param name="breadcrumb" value='<%="Outage " + outage.getId()%>' />
 </jsp:include>
 

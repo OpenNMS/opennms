@@ -265,16 +265,6 @@
         <property name="nodeDao" ref="nodeDao"/>
     </bean>
 
-    <alias name="/outage/list.htm" alias="/outage/list"/>
-    <bean name="/outage/list.htm" class="org.opennms.web.controller.outage.OutageFilterController">
-        <property name="successView" value="outage/list"/>
-        <property name="defaultShortLimit" value="20"/>
-        <property name="defaultLongLimit" value="10"/>
-        <property name="defaultOutageType" value="CURRENT"/>
-        <property name="defaultSortStyle" value="ID"/>
-        <property name="webOutageRepository" ref="webOutageRepository"/>
-    </bean>
-
     <alias name="/outage/detail.htm" alias="/outage/detail.jsp"/>
     <bean name="/outage/detail.htm" class="org.opennms.web.controller.outage.OutageDetailController">
         <property name="successView" value="outage/detail"/>

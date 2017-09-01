@@ -34,6 +34,8 @@ import org.opennms.web.outage.filter.OutageCriteria;
 /**
  * <p>WebOutageRepository interface.</p>
  *
+ * @deprecated Use an injected {@link OutageDao} implementation instead
+ * 
  * @author ranger
  * @version $Id: $
  * @since 1.8.1

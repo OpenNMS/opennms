@@ -53,8 +53,8 @@
 %>
 <c:set var="serviceId"><%=serviceId%></c:set>
 
-<c:url var="outageLink" value="outage/list.htm">
-  <c:param name="filter" value="service=${serviceId}"/>
+<c:url var="outageLink" value="outage/index.jsp">
+  <c:param name="_s" value="monitoredService.id==${serviceId}"/>
 </c:url>
 
 <div class="panel panel-default">

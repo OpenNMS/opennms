@@ -20,7 +20,7 @@
             <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
         </trend-attributes>
-        <descriptionLink>outage/list.htm?outtype=current</descriptionLink>
+        <descriptionLink>outage/index.jsp?_s=ifRegainedService%3D%3D1970-01-01T00:00:00.000-0000</descriptionLink>
         <description>${intValue[23]} Nodes with Outage(s)</description>
         <query>
             <![CDATA[
@@ -127,7 +127,7 @@
             <trend-attribute key="sparkBarWidth" value="4"/>
             <trend-attribute key="sparkBarSpacing" value="2"/>
         </trend-attributes>
-        <descriptionLink>outage/list.htm?outtype=both</descriptionLink>
+        <descriptionLink>outage/index.jsp</descriptionLink>
         <description>${intValue[23]} New Outage(s)</description>
         <query>
             <![CDATA[
@@ -159,7 +159,7 @@
             <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
         </trend-attributes>
-        <descriptionLink>outage/list.htm?outtype=current</descriptionLink>
+        <descriptionLink>outage/index.jsp?_s=ifRegainedService%3D%3D1970-01-01T00:00:00.000-0000</descriptionLink>
         <description>${intValue[23]} Current Outage(s)</description>
         <query>
             <![CDATA[

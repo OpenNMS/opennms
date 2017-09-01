@@ -27,7 +27,7 @@ http://1.1.1.1:8980/opennms/element/node.jsp?node=%nodeid%&#xd;
 All Alarms URL:
 http://1.1.1.1:8980/opennms/alarm/list.htm?filter=node=%nodeid%&#xd;
 All Outages URL:
-http://1.1.1.1:8980/opennms/outage/list.htm?filter=node=%nodeid%&#xd;
+http://1.1.1.1:8980/opennms/outage/index.jsp?_s=node.id%%3D%%3D%nodeid%&#xd;
 Possible Services Affected: %service%</text-message>
         <subject>Notice #%noticeid%: %service% down on 
 %interfaceresolve%

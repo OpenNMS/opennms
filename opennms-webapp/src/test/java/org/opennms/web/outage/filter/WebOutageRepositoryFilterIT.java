@@ -37,7 +37,6 @@ import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -110,67 +109,7 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testOutageIdFilter(){
-        OutageIdFilter filter = new OutageIdFilter(1);
-        OutageCriteria criteria = new OutageCriteria(filter);
-        
-        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(1, outages.length);
-    }
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    public void testLostServiceDateBeforeFilter(){
-        LostServiceDateBeforeFilter filter = new LostServiceDateBeforeFilter(new Date());
-        OutageCriteria criteria = new OutageCriteria(filter);
-        
-        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(3, outages.length);
-    }
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    public void testLostServiceDateAfterFilter(){
-        LostServiceDateAfterFilter filter = new LostServiceDateAfterFilter(yesterday());
-        OutageCriteria criteria = new OutageCriteria(filter);
-        
-        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(1, outages.length);
-    }
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    public void testRegainedServiceDateBeforeFilter(){
-        RegainedServiceDateBeforeFilter filter = new RegainedServiceDateBeforeFilter(new Date());
-        OutageCriteria criteria = new OutageCriteria(filter);
-        
-        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(1, outages.length);
-    }
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    public void testRegainedServiceDateAfterFilter(){
-        OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(m_dbPopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "ICMP");
-        // This requires every test method to have a new database instance :/
-        OnmsEvent event = m_dbPopulator.getEventDao().get(1);
 
-        // Put a resolved outage into the database so that one will match the
-        // filter below
-        OnmsOutage resolvedToday = new OnmsOutage(new Date(), new Date(), event, event, svc2, null, null);
-        m_dbPopulator.getOutageDao().save(resolvedToday);
-        m_dbPopulator.getOutageDao().flush();
-
-        RegainedServiceDateAfterFilter filter = new RegainedServiceDateAfterFilter(yesterday());
-        OutageCriteria criteria = new OutageCriteria(filter);
-        
-        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(1, outages.length);
-    }
-    
     private static Date yesterday() {
         Calendar cal = new GregorianCalendar();
         cal.add( Calendar.DATE, -1 );
@@ -187,60 +126,6 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         assertEquals(2, outages.length);
     }
 
-    @Test
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    public void testNegativeInterfaceFilter(){
-        NegativeInterfaceFilter filter = new NegativeInterfaceFilter("192.168.2.1");
-        OutageCriteria criteria = new OutageCriteria(filter);
-        
-        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(2, outages.length);
-    }
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @Ignore
-    public void testNegativeNodeFilter(){
-//        NegativeNodeFilter filter = new NegativeNodeFilter(2);
-//        OutageCriteria criteria = new OutageCriteria(filter);
-//        
-//        NegativeNodeFilter filter2 = new NegativeNodeFilter(1);
-//        OutageCriteria criteria2 = new OutageCriteria(filter2);
-//        
-//        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-//        assertEquals(2, outages.length);
-//        
-//        outages = m_daoOutageRepo.getMatchingOutages(criteria2);
-//        assertEquals(1, outages.length);
-    }
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testNegativeServiceFilter(){
-        NegativeServiceFilter filter = new NegativeServiceFilter(2, null);
-        OutageCriteria criteria = new OutageCriteria(filter);
-        
-        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(1, outages.length);
-    }
-    
-    @Test
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @Ignore
-    public void testNodeFilter(){
-//        NodeFilter filter = new NodeFilter(1, m_appContext);
-//        OutageCriteria criteria = new OutageCriteria(filter);
-//        
-//        NodeFilter filter2 = new NodeFilter(2, m_appContext);
-//        OutageCriteria criteria2 = new OutageCriteria(filter2);
-//        
-//        Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-//        assertEquals(2, outages.length);
-//        
-//        outages = m_daoOutageRepo.getMatchingOutages(criteria2);
-//        assertEquals(1, outages.length);
-    }
-    
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testInterfaceFilter(){

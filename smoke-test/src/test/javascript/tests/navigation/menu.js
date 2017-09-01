@@ -47,8 +47,8 @@ var expected = {
 			},
 			'Outages': {
 				href: '/outage/index.jsp',
-				linkPageSelector: 'h3.panel-title',
-				linkPageText: 'Outage Menu'
+				linkPageSelector: 'ol[@class="breadcrumb"]/li',
+				linkPageText: 'Outages'
 			},
 			'Surveillance': '/surveillance-view.jsp',
 			'Heatmap': '/heatmap/index.jsp'

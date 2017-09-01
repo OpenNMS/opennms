@@ -35,7 +35,7 @@ The following sample defines a _Trend_ chart for displaying nodes with ongoing o
             <trend-attribute key="sparkHighlightSpotColor" value="white"/>
             <trend-attribute key="sparkHighlightLineColor" value="white"/>
         </trend-attributes>
-        <descriptionLink>outage/list.htm?outtype=current</descriptionLink> <6>
+        <descriptionLink>outage/index.jsp?_s=ifRegainedService%3D%3D1970-01-01T00:00:00.000-0000</descriptionLink> <6>
         <description>${intValue[23]} NODES WITH OUTAGE(S)</description> <7>
         <query> <8>
             <![CDATA[
