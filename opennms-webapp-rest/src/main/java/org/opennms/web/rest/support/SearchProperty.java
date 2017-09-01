@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * @author Seth
  */
@@ -133,5 +135,18 @@ public class SearchProperty implements Comparable<SearchProperty> {
 	@Override
 	public int compareTo(SearchProperty o) {
 		return COMPARATOR.compare(this, o);
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+			.append("idPrefix", idPrefix)
+			.append("id", id)
+			.append("namePrefix", namePrefix)
+			.append("name", name)
+			.append("type", type.toString())
+			.append("iplike", iplike)
+			.append("orderBy", orderBy)
+			.build();
 	}
 }
