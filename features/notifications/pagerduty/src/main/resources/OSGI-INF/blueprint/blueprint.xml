@@ -1,0 +1,22 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+                http://www.osgi.org/xmlns/blueprint/v1.0.0
+                http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+
+    <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" availability="mandatory"/>
+    <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+
+    <bean id="pagerDutyNotificationStrategy" class="org.opennms.netmgt.notifd.pd.PagerDutyNotificationStrategy">
+        <property name="eventDao" ref="eventDao"/>
+        <property name="transactionTemplate" ref="transactionTemplate"/>
+    </bean>
+    <service interface="org.opennms.netmgt.model.notifd.NotificationStrategy" ref="pagerDutyNotificationStrategy" >
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.notifd.pd.PagerDutyNotificationStrategy" />
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+
+</blueprint>

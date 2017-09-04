@@ -256,6 +256,7 @@
             <feature>opennms-icmp-commands</feature>
             <feature>opennms-javamail</feature>
             <feature>opennms-model</feature>
+            <feature>opennms-notifications-pagerduty</feature>
             <feature>opennms-poller-api</feature>
             <feature>opennms-poller-shell</feature>
             <feature>opennms-provisioning</feature>
@@ -748,6 +749,13 @@
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.pagerduty</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

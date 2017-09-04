@@ -12,6 +12,7 @@
   <name>OpenNMS :: Features :: Notification</name>
   <modules>
     <module>api</module>
+    <module>pagerduty</module>
     <module>ticket-strategy</module>
   </modules>
 </project>

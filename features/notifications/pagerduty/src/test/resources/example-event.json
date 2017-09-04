@@ -1,0 +1,25 @@
+{
+  "payload": {
+    "summary": "Example alert on host1.example.com",
+    "timestamp": "2015-07-17T08:42:58.315+0000",
+    "source": "minotoriringtool:cloudvendor:central-region-dc-01:852559987:cluster/api-stats-prod-003",
+    "severity": "info",
+    "component": "postgres",
+    "group": "prod-datapipe",
+    "class": "deploy",
+    "custom_details": {
+      "ping time": "1500ms",
+      "load avg": 0.75
+    }
+  },
+  "routing_key": "samplekeyhere",
+  "dedup_key": "samplekeyhere",
+  "images": [{
+    "src": "https://www.pagerduty.com/wp-content/uploads/2016/05/pagerduty-logo-green.png",
+    "href": "https://example.com/",
+    "alt": "Example text"
+  }],
+  "event_action": "trigger",
+  "client": "Sample Monitoring Service",
+  "client_url": "https://monitoring.example.com"
+}

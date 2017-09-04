@@ -47,7 +47,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 public class AutoAcknowledge implements java.io.Serializable {
     private static final long serialVersionUID = 2L;
 
-    private static final String DEFAULT_RESOLUTION_PREFIX = "RESOLVED: ";
+    public static final String DEFAULT_RESOLUTION_PREFIX = "RESOLVED: ";
 
     @XmlAttribute(name = "resolution-prefix")
     private String m_resolutionPrefix;

@@ -476,6 +476,15 @@
       <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-notifications-pagerduty" description="OpenNMS :: Features :: Notifications :: PagerDuty" version="${project.version}">
+      <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+      <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+      <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+
+      <bundle>mvn:org.opennms.features.notifications/org.opennms.features.notifications.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.notifications/org.opennms.features.notifications.pagerduty/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-collection-api" description="OpenNMS :: Collection :: API" version="${project.version}">
       <feature version="[4.2,4.3)">spring</feature>
 
