@@ -57,6 +57,7 @@ import org.opennms.netmgt.model.topology.BroadcastDomain;
  */
 public interface EnhancedLinkdService {
 
+    void delete(BroadcastDomain domain);
     /**
      * <p>
      * getSnmpNodeList
@@ -103,7 +104,9 @@ public interface EnhancedLinkdService {
     void reconcileIpNetToMedia(int nodeId, Date now);
 
     void reconcileBridge(int nodeId, Date now);
-    
+
+    void reconcileBridgeTopology(BroadcastDomain domain, Date now);
+
     void store(int nodeId, LldpLink link);
 
     void store(int nodeId, LldpElement element);
@@ -126,10 +129,11 @@ public interface EnhancedLinkdService {
 
     void store(int nodeId, BridgeStpLink link);
 
-    void store(int nodeId, List<BridgeMacLink> link);
-    
-    void store(BroadcastDomain domain, Date now);
-    
+    void store(BroadcastDomain domain);
+
+
+    void updateBft(int nodeId, List<BridgeMacLink> link);
+        
     void save(BroadcastDomain domain);
 
     void cleanBroadcastDomains();

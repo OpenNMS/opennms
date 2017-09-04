@@ -415,7 +415,7 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
         EasyMock.expect(m_cdpLinkDao.findAll()).andReturn(new ArrayList<CdpLink>()).anyTimes();
         EasyMock.expect(m_cdpElementDao.findAll()).andReturn(new ArrayList<CdpElement>()).anyTimes();
-        EasyMock.expect(m_bridgeTopologyDao.getAllPersisted(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao)).andReturn(new HashSet<BroadcastDomain>()).anyTimes();
+        EasyMock.expect(m_bridgeTopologyDao.load()).andReturn(new HashSet<BroadcastDomain>()).anyTimes();
         EasyMock.expect(m_isisLinkDao.getLinksForTopology()).andReturn(new ArrayList<IsisTopologyLink>()).anyTimes();
 
         EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();

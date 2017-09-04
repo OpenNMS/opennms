@@ -26,9 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,37 +40,184 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
-public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
+public class BridgeTopologyDaoHibernate implements BridgeTopologyDao {
     
-    volatile Set<BroadcastDomain> m_domains;
-    private final static Logger LOG = LoggerFactory.getLogger(BridgeTopologyDaoInMemory.class);
+    private final static Logger LOG = LoggerFactory.getLogger(BridgeTopologyDaoHibernate.class);
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+    
+    private NodeDao m_nodeDao;
+    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
+    private BridgeMacLinkDao m_bridgeMacLinkDao;
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    public BridgeBridgeLinkDao getBridgeBridgeLinkDao() {
+        return m_bridgeBridgeLinkDao;
+    }
+
+    public void setBridgeBridgeLinkDao(BridgeBridgeLinkDao bridgeBridgeLinkDao) {
+        m_bridgeBridgeLinkDao = bridgeBridgeLinkDao;
+    }
+
+    public BridgeMacLinkDao getBridgeMacLinkDao() {
+        return m_bridgeMacLinkDao;
+    }
+
+    public void setBridgeMacLinkDao(BridgeMacLinkDao bridgeMacLinkDao) {
+        m_bridgeMacLinkDao = bridgeMacLinkDao;
+    }
 
     @Override
+    public  void saveForwarders(BroadcastDomain domain) {
+        for (Integer nodeId: domain.getBridgeNodesOnDomain()) {
+            List<BridgeMacLink> forwarders = domain.getForwarders(nodeId);
+            if (forwarders == null || forwarders.size() == 0)
+                continue;
+            for (BridgeMacLink forward: forwarders) {
+                forward.setBridgeMacLinkLastPollTime(new Date());
+                saveBridgeMacLink(forward);
+            }
+        }
+    }
+    
+    @Override 
     public void save(BroadcastDomain domain) {
-        synchronized (m_domains) {
-            m_domains.add(domain);
+        for (SharedSegment segment : domain.getTopology()) {
+            //FIXME why I can have a segment without a designated port?
+            if (!segment.hasDesignatedBridgeport())
+                continue;
+            for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
+                link.setBridgeBridgeLinkLastPollTime(new Date());
+                saveBridgeBridgeLink(link);
+            }
+            for (BridgeMacLink link : segment.getBridgeMacLinks()) {
+                link.setBridgeMacLinkLastPollTime(new Date());
+                saveBridgeMacLink(link);
+            }
         }
     }
 
-    @Override
-    public synchronized void load(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao) {
-        m_domains=getAllPersisted(bridgeBridgeLinkDao, bridgeMacLinkDao);
+    @Transactional
+    protected void saveBridgeMacLink(final BridgeMacLink saveMe) {
+        new UpsertTemplate<BridgeMacLink, BridgeMacLinkDao>(
+                                                            m_transactionManager,
+                                                            m_bridgeMacLinkDao) {
+
+            @Override
+            protected BridgeMacLink query() {
+                return m_dao.getByNodeIdBridgePortMac(saveMe.getNode().getId(),
+                                                      saveMe.getBridgePort(),
+                                                      saveMe.getMacAddress());
+            }
+
+            @Override
+            protected BridgeMacLink doUpdate(BridgeMacLink link) {
+                link.merge(saveMe);
+                m_dao.update(link);
+                m_dao.flush();
+                return link;
+            }
+
+            @Override
+            protected BridgeMacLink doInsert() {
+                final OnmsNode node = m_nodeDao.get(saveMe.getNode().getId());
+                if (node == null)
+                    return null;
+                saveMe.setNode(node);
+                if (saveMe.getBridgeMacLinkLastPollTime() == null)
+                    saveMe.setBridgeMacLinkLastPollTime(saveMe.getBridgeMacLinkCreateTime());
+                m_dao.saveOrUpdate(saveMe);
+                m_dao.flush();
+                return saveMe;
+            }
+
+        }.execute();
+    }
+
+    @Transactional
+    protected void saveBridgeBridgeLink(final BridgeBridgeLink saveMe) {
+        new UpsertTemplate<BridgeBridgeLink, BridgeBridgeLinkDao>(
+                                                                  m_transactionManager,
+                                                                  m_bridgeBridgeLinkDao) {
+
+            @Override
+            protected BridgeBridgeLink query() {
+                return m_dao.getByNodeIdBridgePort(saveMe.getNode().getId(),
+                                                   saveMe.getBridgePort());
+            }
+
+            @Override
+            protected BridgeBridgeLink doUpdate(BridgeBridgeLink link) {
+                link.merge(saveMe);
+                m_dao.update(link);
+                m_dao.flush();
+                return link;
+            }
+
+            @Override
+            protected BridgeBridgeLink doInsert() {
+                final OnmsNode node = m_nodeDao.get(saveMe.getNode().getId());
+                if (node == null)
+                    return null;
+                saveMe.setNode(node);
+                if (saveMe.getBridgeBridgeLinkLastPollTime() == null)
+                    saveMe.setBridgeBridgeLinkLastPollTime(saveMe.getBridgeBridgeLinkCreateTime());
+                m_dao.saveOrUpdate(saveMe);
+                m_dao.flush();
+                return saveMe;
+            }
+
+        }.execute();
     }
 
     @Override
-    public List<SharedSegment> getBridgeNodeSharedSegments(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao, int nodeid) {
+    public void delete(int nodeid) {
+        m_bridgeBridgeLinkDao.deleteByDesignatedNodeId(nodeid);
+        m_bridgeBridgeLinkDao.deleteByNodeId(nodeid);
+        m_bridgeBridgeLinkDao.flush();
+
+        m_bridgeMacLinkDao.deleteByNodeId(nodeid);
+        m_bridgeMacLinkDao.flush();
+
+    }
+
+    @Override
+    public void deleteOlder(int nodeid, Date now) {
+        m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
+        m_bridgeMacLinkDao.flush();
+        m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
+        m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeid, now);
+        m_bridgeBridgeLinkDao.flush();
+    }
+
+    
+    @Override
+    public List<SharedSegment> getBridgeSharedSegments(int nodeid) {
         List<SharedSegment> segments = new ArrayList<SharedSegment>();
         Set<Integer> designated = new HashSet<Integer>();
-BRIDGELINK:        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByNodeId(nodeid)) {
+BRIDGELINK:        for (BridgeBridgeLink link : m_bridgeBridgeLinkDao.findByNodeId(nodeid)) {
             for (SharedSegment segment : segments) {
                 if (segment.containsPort(link.getNode().getId(),
                                          link.getBridgePort())
@@ -88,7 +236,7 @@ BRIDGELINK:        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByNodeId
         
         designated.add(nodeid);
         for (Integer curNodeId: designated) {
-DBRIDGELINK:        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByDesignatedNodeId(curNodeId)) {
+DBRIDGELINK:        for (BridgeBridgeLink link : m_bridgeBridgeLinkDao.findByDesignatedNodeId(curNodeId)) {
             for (SharedSegment segment : segments) {
                 if (segment.containsPort(link.getNode().getId(),
                                          link.getBridgePort())
@@ -105,7 +253,7 @@ DBRIDGELINK:        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByDesig
         }
         }
 
-MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid)) {
+MACLINK:        for (BridgeMacLink link : m_bridgeMacLinkDao.findByNodeId(nodeid)) {
             link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
             for (SharedSegment segment : segments) {
                 if (segment.containsMac(link.getMacAddress())
@@ -125,13 +273,13 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
     }
     
     @Override
-    public SharedSegment getHostNodeSharedSegment(BridgeBridgeLinkDao bridgeBridgeLinkDao, BridgeMacLinkDao bridgeMacLinkDao, String mac) {
+    public SharedSegment getHostSharedSegment(String mac) {
         
-        List<BridgeMacLink> links = bridgeMacLinkDao.findByMacAddress(mac);
+        List<BridgeMacLink> links = m_bridgeMacLinkDao.findByMacAddress(mac);
         if (links.size() == 0 )
             return new SharedSegment();
         BridgeMacLink link = links.get(0);
-        for (SharedSegment segment: getBridgeNodeSharedSegments(bridgeBridgeLinkDao, bridgeMacLinkDao, link.getNode().getId()) ) {
+        for (SharedSegment segment: getBridgeSharedSegments(link.getNode().getId()) ) {
             if (segment.containsPort(link.getNode().getId(), link.getBridgePort())) {
                 return segment;
             }
@@ -140,13 +288,13 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
     }
 
     @Override
-    public Set<BroadcastDomain> getAllPersisted(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao) {
+    public Set<BroadcastDomain> load() {
 
         List<SharedSegment> bblsegments = new ArrayList<SharedSegment>();
         Map<Integer,Set<Integer>> rootnodetodomainnodemap = new HashMap<Integer,Set<Integer>>();
 
         //start bridge bridge link parsing
-        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findAll()) {
+        for (BridgeBridgeLink link : m_bridgeBridgeLinkDao.findAll()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getAllPersisted: Parsing BridgeBridgeLink: {}", link.printTopology());
             }
@@ -249,7 +397,7 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
         List<SharedSegment> bmlsegments = new ArrayList<SharedSegment>();
 
         Map<String,List<BridgeMacLink>> mactobridgeportbbl = new HashMap<String, List<BridgeMacLink>>();
-BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
+BML:    for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
             link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getAllPersisted: Parsing BridgeMacLink: {}", link.printTopology());
@@ -377,33 +525,5 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
         return domains;
     }
     
-    @Override
-    public void delete(BroadcastDomain domain) {
-        synchronized (m_domains) {
-            m_domains.remove(domain);
-        }
-    }
-
-    @Override
-    public BroadcastDomain get(int nodeid) {
-        synchronized (m_domains) {
-            for (BroadcastDomain domain: m_domains) {
-                if (domain.containBridgeId(nodeid))
-                    return domain;
-            }
-        }
-        return null;
-    }
-
-    public synchronized Set<BroadcastDomain> getAll() {
-        return m_domains;
-    }
-
-    @Override
-    public void clean() {
-        synchronized (m_domains) {
-            m_domains.removeIf(BroadcastDomain::isEmpty);
-        }
-    }
 
 }

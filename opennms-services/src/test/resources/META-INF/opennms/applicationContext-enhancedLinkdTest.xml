@@ -112,7 +112,9 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>  
 
-  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.BridgeTopologyDaoInMemory">
+  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.hibernate.BridgeTopologyDaoHibernate">
+    <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+    <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
   </bean>
 
     <bean id="queryManager" class="org.opennms.netmgt.enlinkd.EnhancedLinkdServiceImpl">
@@ -121,9 +123,7 @@
       <property name="lldpLinkDao" ref="lldpLinkDao" />
       <property name="ospfLinkDao" ref="ospfLinkDao" />
       <property name="isisLinkDao" ref="isisLinkDao" />
-      <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
       <property name="bridgeStpLinkDao" ref="bridgeStpLinkDao" />
-      <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
       <property name="cdpElementDao" ref="cdpElementDao" />
       <property name="lldpElementDao" ref="lldpElementDao" />
       <property name="ospfElementDao" ref="ospfElementDao" />
