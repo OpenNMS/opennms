@@ -242,8 +242,20 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | event.ipAddr | IP Address | IP Address
 |===
 
-[[ifServiceProperties]]
-.Interface Service Properties
+[[ipInterfaceProperties]]
+.IP Interface Properties
+[options="header",width="99%",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| ipInterface.id | Integer | ID
+| ipInterface.ipAddress | IP Address | IP Address
+| ipInterface.ipHostName | String | Hostname
+| ipInterface.ipLastCapsdPoll | Timestamp | Last Provisioning Scan
+| ipInterface.isManaged | String | Management Status
+|===
+
+[[monitoredServiceProperties]]
+.Monitored Service Properties
 [options="header",width="99%",cols="2m,1,3"]
 |===
 | Name | Type | Description
@@ -278,18 +290,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 `X`: Remotely Monitored
 
 `N`: Not Monitored
-|===
-
-[[ipInterfaceProperties]]
-.IP Interface Properties
-[options="header",width="99%",cols="2m,1,3"]
-|===
-| Name | Type | Description
-| ipInterface.id | Integer | ID
-| ipInterface.ipAddress | IP Address | IP Address
-| ipInterface.ipHostName | String | Hostname
-| ipInterface.ipLastCapsdPoll | Timestamp | Last Provisioning Scan
-| ipInterface.isManaged | String | Management Status
 |===
 
 [[locationProperties]]
@@ -477,9 +477,9 @@ Interface: `/api/v2/ifservices`
 Supported search/order properties:
 
 * <<assetProperties,`assetRecord.*`>>
-* <<ifServiceProperties,`ifService.*`>>
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * <<locationProperties,`location.*`>>
+* <<monitoredServiceProperties,`monitoredService.*`>>
 * <<nodeProperties,`node.*`>>
 * <<serviceTypeProperties,`serviceType.*`>>
 * <<snmpInterfaceProperties,`snmpInterface.*`>>
@@ -551,6 +551,7 @@ Supported search/order properties:
 * <<distPollerProperties,`distPoller.*`>>
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * <<locationProperties,`location.*`>>
+* <<monitoredServiceProperties,`monitoredService.*`>>
 * <<nodeProperties,`node.*`>>
 * <<outageProperties,`outage.*`>>
 * `serviceLostEvent.\*` (with the same properties as <<eventProperties,`event.*`>>)
