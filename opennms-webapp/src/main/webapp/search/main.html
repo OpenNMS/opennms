@@ -9,10 +9,36 @@
 
 	<div class="text-center">
 		<div class="btn-group" style="margin:0px 0px 0px 0px">
-			<!-- <button style="outline: none" type="button" class="btn btn-default" ng-class="{active:query.nodes}" ng-click="query.nodes = !query.nodes">Nodes</button> -->
+			<button style="outline: none" type="button" class="btn btn-default" ng-class="{active:query.nodes}" ng-click="query.nodes = !query.nodes">Nodes</button>
 			<button style="outline: none" type="button" class="btn btn-default" ng-class="{active:query.alarms}" ng-click="query.alarms = !query.alarms">Alarms</button>
 			<button style="outline: none" type="button" class="btn btn-default" ng-class="{active:query.events}" ng-click="query.events = !query.events">Events</button>
 			<button style="outline: none" type="button" class="btn btn-default" ng-class="{active:query.notifications}" ng-click="query.notifications = !query.notifications">Notifications</button>
+		</div>
+	</div>
+
+	<div ng-show="query.nodes &amp;&amp; nodes.length > 0">
+		<h4>Nodes <i ng-click="query.nodes = false" class="fa fa-close fa-lg"/></h4>
+
+		<div class="row">
+			<div class="col-sm-6 col-md-4" ng-repeat="item in nodes">
+				<a href="element/node.jsp?node={{::item.id}}">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">#{{::item.id}}: {{::item.label | stripTags}}</h3>
+						</div>
+						<div class="panel-body">
+							<dl>
+								<dt ng-repeat-start="(key, value) in getKeyFields(item, [ 'label' ])">
+									{{::key}}:
+								</dt>
+								<dd ng-repeat-end class="typeahead">
+									<span ng-bind-html="value | stripTags | uibTypeaheadHighlight:query.q"></span>
+								</dd>
+							</dl>
+						</div>
+					</div>
+				</a>
+			</div>
 		</div>
 	</div>
 

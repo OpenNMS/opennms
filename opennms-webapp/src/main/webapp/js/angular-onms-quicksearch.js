@@ -103,7 +103,7 @@ function escapeSearchValue(value) {
 	/**
 	 * Generic list controller
 	 */
-	.controller('QuickSearchCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'alarmFactory', 'eventFactory', 'notificationFactory', function($scope, $location, $window, $log, $filter, alarmFactory, eventFactory, notificationFactory) {
+	.controller('QuickSearchCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'alarmFactory', 'eventFactory', 'nodeFactory', 'notificationFactory', function($scope, $location, $window, $log, $filter, alarmFactory, eventFactory, nodeFactory, notificationFactory) {
 		$log.debug('QuickSearchCtrl initializing...');
 
 		$scope.defaults = {
@@ -362,6 +362,14 @@ function escapeSearchValue(value) {
 		// Add the event fields
 		Array.prototype.push.apply($scope.notificationFields, $scope.eventFields);
 
+		$scope.nodeServiceFields = [];
+		// Add the asset fields
+		Array.prototype.push.apply($scope.nodeServiceFields, $scope.nodeFields);
+		// Add the asset fields
+		Array.prototype.push.apply($scope.nodeServiceFields, $scope.assetFields);
+		// Add the location fields
+		Array.prototype.push.apply($scope.nodeServiceFields, $scope.locationFields);
+
 		// Override this to implement updates to an object
 		$scope.refresh = function() {
 
@@ -374,137 +382,184 @@ function escapeSearchValue(value) {
 			// a typeahead search
 			if (typeof $scope.query.q === 'string' && $scope.query.q.length > 0) {
 
-				var searchClauses = [];
-				for (var i = 0; i < $scope.alarmFields.length; i++) {
-					searchClauses.push({
-						property: $scope.alarmFields[i],
-						operator: 'EQ',
-						value: '*' + $scope.query.q + '*' // Substring query
-					});
+				if ($scope.query.nodes) {
+					var searchClauses = [];
+					for (var i = 0; i < $scope.nodeServiceFields.length; i++) {
+						searchClauses.push({
+							property: $scope.nodeServiceFields[i],
+							operator: 'EQ',
+							value: '*' + $scope.query.q + '*' // Substring query
+						});
+					}
+	
+					var nodeQuery = toFiql(searchClauses);
+	
+					// Fetch all of the items
+					nodeFactory.query(
+						{
+							_s: nodeQuery,
+							limit: 10,
+							orderBy: 'id'
+						},
+						function(value, headers) {
+							$scope.nodes = value;
+						},
+						function(response) {
+							switch(response.status) {
+							case 404:
+								// If we didn't find any elements, then clear the list
+								$scope.nodes = [];
+								break;
+							case 401:
+							case 403:
+								// Handle session timeout by reloading page completely
+								$window.location.href = $location.absUrl();
+								break;
+							}
+							// TODO: Handle 500 Server Error by executing an undo callback?
+							// TODO: Handle 431 Request Header Fields Too Large
+							// TODO: Handle 414 URI Too Long
+						}
+					);
 				}
 
-				var alarmQuery = toFiql(searchClauses);
-
-				// Only search among unacknowledged alarms
-				alarmQuery = toFiql([{
-					property: 'alarmAckUser',
-					operator: 'EQ',
-					value: '\u0000' // null
-				}]) + ';(' + alarmQuery + ')';
-
-				// Fetch all of the items
-				alarmFactory.query(
-					{
-						_s: alarmQuery,
-						limit: 10,
-						orderBy: 'id',
-						order: 'desc'
-					},
-					function(value, headers) {
-						$scope.alarms = value;
-					},
-					function(response) {
-						switch(response.status) {
-						case 404:
-							// If we didn't find any elements, then clear the list
-							$scope.alarms = [];
-							break;
-						case 401:
-						case 403:
-							// Handle session timeout by reloading page completely
-							$window.location.href = $location.absUrl();
-							break;
-						}
-						// TODO: Handle 500 Server Error by executing an undo callback?
-						// TODO: Handle 431 Request Header Fields Too Large
-						// TODO: Handle 414 URI Too Long
+				if ($scope.query.alarms) {
+					var searchClauses = [];
+					for (var i = 0; i < $scope.alarmFields.length; i++) {
+						searchClauses.push({
+							property: $scope.alarmFields[i],
+							operator: 'EQ',
+							value: '*' + $scope.query.q + '*' // Substring query
+						});
 					}
-				);
-
-				searchClauses = [];
-				for (var i = 0; i < $scope.eventFields.length; i++) {
-					searchClauses.push({
-						property: $scope.eventFields[i],
+	
+					var alarmQuery = toFiql(searchClauses);
+	
+					// Only search among unacknowledged alarms
+					alarmQuery = toFiql([{
+						property: 'alarmAckUser',
 						operator: 'EQ',
-						value: '*' + $scope.query.q + '*' // Substring query
-					});
+						value: '\u0000' // null
+					}]) + ';(' + alarmQuery + ')';
+	
+					// Fetch all of the items
+					alarmFactory.query(
+						{
+							_s: alarmQuery,
+							limit: 10,
+							orderBy: 'id',
+							order: 'desc'
+						},
+						function(value, headers) {
+							$scope.alarms = value;
+						},
+						function(response) {
+							switch(response.status) {
+							case 404:
+								// If we didn't find any elements, then clear the list
+								$scope.alarms = [];
+								break;
+							case 401:
+							case 403:
+								// Handle session timeout by reloading page completely
+								$window.location.href = $location.absUrl();
+								break;
+							}
+							// TODO: Handle 500 Server Error by executing an undo callback?
+							// TODO: Handle 431 Request Header Fields Too Large
+							// TODO: Handle 414 URI Too Long
+						}
+					);
 				}
 
-				// Fetch all of the items
-				eventFactory.query(
-					{
-						_s: toFiql(searchClauses),
-						limit: 10,
-						orderBy: 'id',
-						order: 'desc'
-					},
-					function(value, headers) {
-						$scope.events = value;
-					},
-					function(response) {
-						switch(response.status) {
-						case 404:
-							// If we didn't find any elements, then clear the list
-							$scope.events = [];
-							break;
-						case 401:
-						case 403:
-							// Handle session timeout by reloading page completely
-							$window.location.href = $location.absUrl();
-							break;
-						}
-						// TODO: Handle 500 Server Error by executing an undo callback?
-						// TODO: Handle 431 Request Header Fields Too Large
-						// TODO: Handle 414 URI Too Long
+				if ($scope.query.events) {
+					var searchClauses = [];
+					for (var i = 0; i < $scope.eventFields.length; i++) {
+						searchClauses.push({
+							property: $scope.eventFields[i],
+							operator: 'EQ',
+							value: '*' + $scope.query.q + '*' // Substring query
+						});
 					}
-				);
-
-				searchClauses = [];
-				for (var i = 0; i < $scope.notificationFields.length; i++) {
-					searchClauses.push({
-						property: $scope.notificationFields[i],
-						operator: 'EQ',
-						value: '*' + $scope.query.q + '*' // Substring query
-					});
+	
+					// Fetch all of the items
+					eventFactory.query(
+						{
+							_s: toFiql(searchClauses),
+							limit: 10,
+							orderBy: 'id',
+							order: 'desc'
+						},
+						function(value, headers) {
+							$scope.events = value;
+						},
+						function(response) {
+							switch(response.status) {
+							case 404:
+								// If we didn't find any elements, then clear the list
+								$scope.events = [];
+								break;
+							case 401:
+							case 403:
+								// Handle session timeout by reloading page completely
+								$window.location.href = $location.absUrl();
+								break;
+							}
+							// TODO: Handle 500 Server Error by executing an undo callback?
+							// TODO: Handle 431 Request Header Fields Too Large
+							// TODO: Handle 414 URI Too Long
+						}
+					);
 				}
 
-				var notificationQuery = toFiql(searchClauses);
-
-				// Only search among open notifications
-				notificationQuery = toFiql([{
-					property: 'answeredBy',
-					operator: 'EQ',
-					value: '\u0000' // null
-				}]) + ';(' + notificationQuery + ')';
-
-				// Fetch all of the items
-				notificationFactory.query(
-					{
-						_s: notificationQuery,
-						limit: 10,
-						orderBy: 'notifyId',
-						order: 'desc'
-					},
-					function(value, headers) {
-						$scope.notifications = value;
-					},
-					function(response) {
-						switch(response.status) {
-						case 404:
-							// If we didn't find any elements, then clear the list
-							$scope.notifications = [];
-							break;
-						case 401:
-						case 403:
-							// Handle session timeout by reloading page completely
-							$window.location.href = $location.absUrl();
-							break;
-						}
-						// TODO: Handle 500 Server Error by executing an undo callback?
-						// TODO: Handle 431 Request Header Fields Too Large
-						// TODO: Handle 414 URI Too Long
+				if ($scope.query.notifications) {
+					var searchClauses = [];
+					for (var i = 0; i < $scope.notificationFields.length; i++) {
+						searchClauses.push({
+							property: $scope.notificationFields[i],
+							operator: 'EQ',
+							value: '*' + $scope.query.q + '*' // Substring query
+						});
 					}
-				);
+	
+					var notificationQuery = toFiql(searchClauses);
+	
+					// Only search among open notifications
+					notificationQuery = toFiql([{
+						property: 'answeredBy',
+						operator: 'EQ',
+						value: '\u0000' // null
+					}]) + ';(' + notificationQuery + ')';
+	
+					// Fetch all of the items
+					notificationFactory.query(
+						{
+							_s: notificationQuery,
+							limit: 10,
+							orderBy: 'notifyId',
+							order: 'desc'
+						},
+						function(value, headers) {
+							$scope.notifications = value;
+						},
+						function(response) {
+							switch(response.status) {
+							case 404:
+								// If we didn't find any elements, then clear the list
+								$scope.notifications = [];
+								break;
+							case 401:
+							case 403:
+								// Handle session timeout by reloading page completely
+								$window.location.href = $location.absUrl();
+								break;
+							}
+							// TODO: Handle 500 Server Error by executing an undo callback?
+							// TODO: Handle 431 Request Header Fields Too Large
+							// TODO: Handle 414 URI Too Long
+						}
+					);
+				}
 			} else {
 				$scope.alarms = [];
 				$scope.events = [];
