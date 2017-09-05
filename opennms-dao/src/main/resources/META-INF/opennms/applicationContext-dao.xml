@@ -185,6 +185,7 @@
     
 
   <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.hibernate.BridgeTopologyDaoHibernate">
+    <property name="nodeDao" ref="nodeDao" />
     <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
     <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
   </bean>
