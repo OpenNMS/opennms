@@ -40,6 +40,7 @@ public enum Aliases {
     category,
     distPoller,
     event,
+    eventParameter,
     ipInterface,
     location,
     memo,

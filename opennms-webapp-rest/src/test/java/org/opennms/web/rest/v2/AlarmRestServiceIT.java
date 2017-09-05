@@ -59,6 +59,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
@@ -95,9 +96,10 @@ import com.google.common.collect.ImmutableMap;
 @JUnitTemporaryDatabase
 @Transactional
 public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
+
     private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceIT.class);
     private static final String SERVER3_NAME = "w\u00EAird%20server+name";
-
+    private static final AtomicInteger ALARM_COUNTER = new AtomicInteger();
 
     public AlarmRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -115,6 +117,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Override
     protected void afterServletStart() throws Exception {
+        ALARM_COUNTER.set(0);
+
         MockLogAppender.setupLogging(true, "DEBUG");
 
         final OnmsCategory linux = createCategory("Linux");
@@ -212,6 +216,58 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=category.name!=ma*S", 4);
         executeQueryAndVerify("_s=category.name==DoesntExist", 0);
         executeQueryAndVerify("_s=category.name!=DoesntExist", 8);
+    }
+
+    /**
+     * Test filtering for properties of {@link OnmsEventParameter}. The implementation
+     * for this filtering is different because the event-to-parameter relationship
+     * is a one-to-many relationship.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testEventParameterFiltering() throws Exception {
+        executeQueryAndVerify("_s=eventParameter.name==testParm1", 4);
+        executeQueryAndVerify("_s=eventParameter.name!=testParm1", 4);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm2", 4);
+        executeQueryAndVerify("_s=eventParameter.name!=testParm2", 4);
+
+        executeQueryAndVerify("_s=eventParameter.name==doesntExist", 0);
+        executeQueryAndVerify("_s=eventParameter.name!=doesntExist", 8);
+
+        executeQueryAndVerify("_s=eventParameter.value==This is an awesome parm%21", 4);
+        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21", 4);
+        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21;eventParameter.value==This is a weird parm", 4);
+
+        executeQueryAndVerify("_s=eventParameter.value==This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.value!=This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.value!=This is a weird parm;eventParameter.value==This is an awesome parm%21", 4);
+
+        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21;eventParameter.value!=This is a weird parm", 0);
+
+        executeQueryAndVerify("_s=eventParameter.value==doesntExist", 0);
+        executeQueryAndVerify("_s=eventParameter.value!=doesntExist", 8);
+
+        executeQueryAndVerify("_s=eventParameter.type==string", 8);
+        executeQueryAndVerify("_s=eventParameter.type!=string", 0);
+
+        executeQueryAndVerify("_s=eventParameter.type==doesntExist", 0);
+        executeQueryAndVerify("_s=eventParameter.type!=doesntExist", 8);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==This is an awesome parm%21", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==This is a weird parm", 0);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is an awesome parm%21", 0);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm*", 8);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*awesome*", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value!=*awesome*", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*weird*", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value!=*weird*", 4);
+        executeQueryAndVerify("_s=eventParameter.type==*ring*;eventParameter.value==*awesome*", 4);
+        executeQueryAndVerify("_s=eventParameter.type==*ring*;eventParameter.value!=*weird*", 4);
     }
 
     @Test
@@ -527,6 +583,11 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventSource("JUnit");
         event.setEventTime(new Date(epoch));
         event.setEventUei(eventUei);
+        if (ALARM_COUNTER.getAndIncrement() % 2 == 0) {
+            event.addEventParameter(new OnmsEventParameter(event, "testParm1", "This is an awesome parm!", "string"));
+        } else {
+            event.addEventParameter(new OnmsEventParameter(event, "testParm2", "This is a weird parm", "string"));
+        }
         event.setIpAddr(node.getIpInterfaces().iterator().next().getIpAddress());
         event.setNode(node);
         event.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));

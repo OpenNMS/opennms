@@ -83,12 +83,36 @@ public abstract class CriteriaBehaviors {
         return retval;
     }
 
+    private static final class EventParameterBehavior extends StringCriteriaBehavior {
+        public EventParameterBehavior(String eventIdColumn, String eventParameterProperty) {
+            super(Aliases.eventParameter.prop(eventParameterProperty), (b,v,c,w) -> {
+                // Add a categories alias that only matches the specified value
+                // TODO: This should work but Hibernate is generating invalid SQL for this criteria
+                //b.alias(Aliases.event.prop("eventParameters"), Aliases.eventParameter.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq(Aliases.eventParameter.prop("value"), v), Restrictions.isNull(Aliases.eventParameter.prop("value")))); 
+
+                switch (c) {
+                case EQUALS:
+                    b.sql(String.format("{alias}.%s in (select event_parameters.eventid from event_parameters where event_parameters.%s %s ?)", eventIdColumn, eventParameterProperty, w ? "like" : "="), v, Type.STRING);
+                    break;
+                case NOT_EQUALS:
+                    b.sql(String.format("{alias}.%s not in (select event_parameters.eventid from event_parameters where event_parameters.%s %s ?)", eventIdColumn, eventParameterProperty, w ? "like" : "="), v, Type.STRING);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Illegal condition type when filtering event_parameters." + eventParameterProperty + ": " + c.toString());
+                }
+            });
+            super.setSkipProperty(true);
+        }
+    }
+
     public static final Map<String,CriteriaBehavior<?>> ALARM_BEHAVIORS = new HashMap<>();
+    public static final Map<String,CriteriaBehavior<?>> ALARM_LASTEVENT_PARAMETER_BEHAVIORS = new HashMap<>();
     // TODO
     //public static final Map<String,CriteriaBehavior<?>> ALARM_DETAILS_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> ASSET_RECORD_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> DIST_POLLER_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> EVENT_BEHAVIORS = new HashMap<>();
+    public static final Map<String,CriteriaBehavior<?>> EVENT_PARAMETER_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> IP_INTERFACE_BEHAVIORS = new HashMap<>();
     // TODO
     public static final Map<String,CriteriaBehavior<?>> MEMO_BEHAVIORS = new HashMap<>();
@@ -121,6 +145,10 @@ public abstract class CriteriaBehaviors {
         ALARM_BEHAVIORS.put("troubleTicketState", new CriteriaBehavior<TroubleTicketState>(TroubleTicketState::valueOf));
         ALARM_BEHAVIORS.put("x733ProbableCause", new CriteriaBehavior<Integer>(INT_CONVERTER));
 
+        ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("name", new EventParameterBehavior("lasteventid", "name"));
+        ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("value", new EventParameterBehavior("lasteventid", "value"));
+        ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("type", new EventParameterBehavior("lasteventid", "type"));
+
         ASSET_RECORD_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         ASSET_RECORD_BEHAVIORS.put("lastModifiedDate", new CriteriaBehavior<Date>(DATE_CONVERTER));
         //ASSET_RECORD_BEHAVIORS.put("geolocation", ???);
@@ -136,6 +164,10 @@ public abstract class CriteriaBehaviors {
         EVENT_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         EVENT_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(INT_CONVERTER));
         EVENT_BEHAVIORS.put("ipAddr", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
+
+        EVENT_PARAMETER_BEHAVIORS.put("name", new EventParameterBehavior("eventid", "name"));
+        EVENT_PARAMETER_BEHAVIORS.put("value", new EventParameterBehavior("eventid", "value"));
+        EVENT_PARAMETER_BEHAVIORS.put("type", new EventParameterBehavior("eventid", "type"));
 
         IP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("ipLastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));

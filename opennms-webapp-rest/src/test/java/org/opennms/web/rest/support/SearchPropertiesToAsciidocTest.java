@@ -33,6 +33,7 @@ import static org.opennms.web.rest.support.SearchProperties.APPLICATION_PROPERTI
 import static org.opennms.web.rest.support.SearchProperties.ASSET_RECORD_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.CATEGORY_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.DIST_POLLER_PROPERTIES;
+import static org.opennms.web.rest.support.SearchProperties.EVENT_PARAMETER_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.EVENT_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.IF_SERVICE_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.IP_INTERFACE_PROPERTIES;
@@ -105,6 +106,12 @@ public class SearchPropertiesToAsciidocTest {
 
 		System.out.println(String.format(HEADER_FORMAT, "event", "Event"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.event, null, EVENT_PROPERTIES)) {
+			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
+		}
+		System.out.println(FOOTER_FORMAT);
+
+		System.out.println(String.format(HEADER_FORMAT, "eventParameter", "Event Parameter"));
+		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.eventParameter, null, EVENT_PARAMETER_PROPERTIES)) {
 			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
