@@ -3,55 +3,55 @@
 
 	var MODULE_NAME = 'onms.elementList.outage';
 
+	function getSearchProperty(searchProperties, id) {
+		for (var i = 0; i < searchProperties.length; i++) {
+			if (searchProperties[i].id === id) {
+				return searchProperties[i];
+			}
+		}
+		return {};
+	}
+
 	// $filters that can be used to create human-readable versions of filter values
 	angular.module('outageListFilters', [ 'onmsListFilters' ])
 	.filter('property', function() {
-		return function(input) {
-			// TODO: Update these values
-			switch (input) {
-			case 'id':
-				return 'ID';
-			case 'node.foreignSource':
-				return 'Foreign Source';
-			case 'node.id':
-				return 'Node ID';
-			case 'node.label':
-				return 'Node Label';
-			case 'ipInterface.ipAddress':
-				return 'IP Address';
-			case 'serviceType.name':
-				return 'Service';
-			case 'ifLostService':
-				return 'Lost Service Time';
-			case 'ifRegainedService':
-				return 'Regained Service Time';
-			}
-			// If no match, return the input
-			return input;
+		return function(input, searchProperties) {
+			var property = getSearchProperty(searchProperties, input);
+			return property.name || '';
 		}
 	})
 	.filter('value', function($filter) {
-		return function(input, property) {
-			switch (property) {
-			case 'ifLostService':
-			case 'ifRegainedService':
-				// Return the date in our preferred format
-				return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+		return function(input, searchProperties, propertyId) {
+			var property = getSearchProperty(searchProperties, propertyId);
+			switch (property.type) {
+			case 'TIMESTAMP':
+				if (input === '0') {
+					return "null";
+				} else {
+					// Return the date in our preferred format
+					return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+				}
 			}
+
 			if (input === '\u0000') {
 				return "null";
 			}
+
+			if (property.values && property.values[input]) {
+				return property.values[input];
+			}
+
 			return input;
 		}
 	});
 
 	// Outage list module
-	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'outageListFilters' ])
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'outageListFilters', 'ui.bootstrap', 'ngSanitize' ])
 
 	/**
 	 * Outage list controller
 	 */
-	.controller('OutageListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'outageFactory', function($scope, $http, $location, $window, $log, $filter, outageFactory) {
+	.controller('OutageListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', '$q', 'outageFactory', function($scope, $http, $location, $window, $log, $filter, $q, outageFactory) {
 		$log.debug('OutageListCtrl initializing...');
 
 		/**
@@ -76,6 +76,9 @@
 		 * Array that will hold the currently selected outage IDs.
 		 */
 		$scope.selectedOutages = [];
+
+		$scope.searchProperties = [];
+		$scope.searchPropertiesLoaded = false;
 
 		/**
 		 * Toggle the selected state for one outage ID.
@@ -122,6 +125,7 @@
 		// Set the default sort and set it on $scope.$parent.query
 		$scope.$parent.defaults.orderBy = 'id';
 		$scope.$parent.query.orderBy = 'id';
+		$scope.clauseValues = [];
 
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
@@ -184,7 +188,92 @@
 
 		};
 
-		// Refresh the item list;
+		$scope.getSearchProperty = function(id) {
+			return getSearchProperty($scope.searchProperties, id);
+		}
+
+		$scope.getSearchPropertyValues = function(id) {
+			var values = getSearchProperty($scope.searchProperties, id).values || {};
+			var retval = [];
+			var keys = Object.keys(values);
+			for (var i = 0; i < keys.length; i++) {
+				retval.push({
+					id: keys[i],
+					name: values[keys[i]]
+				});
+			}
+			return retval;
+		}
+
+		$scope.loadingSearchProperties = false;
+		$scope.getSearchPropertyMatches = function(id, query) {
+			var loading = $q.defer();
+			loading.promise.then(
+				function() {
+					$scope.loadingSearchProperties = false;
+				},
+				function() {},
+				function() {
+					$scope.loadingSearchProperties = true;
+				}
+			);
+
+			var timeout = setTimeout(function() {
+				loading.notify("Loading search properties");
+			}, 200);
+
+			var retval = outageFactory.queryPropertyValues({ id: id, q: query }, function(value, headers) {
+				return value;
+			}).$promise;
+
+			retval.then(
+				function() {
+					clearTimeout(timeout);
+					loading.resolve("Loaded search properties");
+				},
+				function() {
+					clearTimeout(timeout);
+					loading.resolve("Failed to load search properties");
+				}
+			);
+
+			return retval;
+		}
+
+		$scope.updateClauseValue = function(id) {
+			$scope.clauseValues = $scope.getSearchPropertyValues(id);
+			// If the search property has enumerated values...
+			if ($scope.clauseValues.length > 0) {
+				// Set the selected value to the first value in the list
+				$scope.clause.value = $scope.clauseValues[0].id;
+			} else {
+				// Otherwise erase the value
+				$scope.clause.value = '';
+			}
+		}
+
+		outageFactory.queryProperties(
+			{}, 
+			function(value, headers) {
+				$scope.searchProperties = value;
+				$scope.searchPropertiesLoaded = true;
+			},
+			function(response) {
+				switch(response.status) {
+				case 404:
+					return input;
+					break;
+				case 401:
+				case 403:
+					// Handle session timeout by reloading page completely
+					$window.location.href = $location.absUrl();
+					break;
+				}
+				// TODO: Handle 500 Server Error?
+			}
+		);
+
+		// Refresh the item list
 		$scope.$parent.refresh();
 
 		$log.debug('OutageListCtrl initialized');

@@ -390,6 +390,17 @@ public class OnmsOutage implements Serializable {
     }
 
     /**
+     * <p>getLocationName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    @XmlElement(name="locationName")
+    public String getLocationName(){
+        return getMonitoredService().getIpInterface().getNode().getLocation().getLocationName();
+    }
+
+    /**
      * <p>getIpAddress</p>
      *
      * @return a {@link java.lang.String} object.

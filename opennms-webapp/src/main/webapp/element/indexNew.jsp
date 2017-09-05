@@ -32,9 +32,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Notifications" />
-	<jsp:param name="headTitle" value="Notifications" />
-	<jsp:param name="breadcrumb" value="Notifications" />
+	<jsp:param name="title" value="Node List" />
+	<jsp:param name="headTitle" value="Node List" />
+	<jsp:param name="breadcrumb" value="Node List" />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
@@ -42,8 +42,23 @@
 
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-notification.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-node.js"></script>' />
 </jsp:include>
+
+<!-- NMS-7099: Add custom javascripts AFTER the header was included -->
+<script type="text/javascript">
+    function toggleClassDisplay(clazz, displayA, displayB) {
+        var targetElems = document.querySelectorAll("." + clazz);
+        for (var i = 0; i < targetElems.length; i++) {
+            var e = targetElems[i];
+            if (e.style.display == displayA) {
+                e.style.display = displayB;
+            } else {
+                e.style.display = displayA;
+            }
+        }
+    }
+</script>
 
 <style>
 .dropdown-menu {
@@ -61,6 +76,6 @@
 }
 </style>
 
-<ng-include src="'notification/main.html'"></ng-include>
+<ng-include src="'element/main.html'"></ng-include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

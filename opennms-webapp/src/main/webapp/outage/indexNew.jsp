@@ -37,11 +37,29 @@
 	<jsp:param name="breadcrumb" value="Outages" />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
 
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-outage.js"></script>' />
 </jsp:include>
+
+<style>
+.dropdown-menu {
+	padding: 5px;
+}
+
+.dropdown-menu > li > a {
+	padding: 5px;
+}
+
+.dropdown-menu > .active > a
+{
+	color: white !important;
+	background-color: #4c9d29 !important;
+}
+</style>
 
 <ng-include src="'outage/main.html'"></ng-include>
 

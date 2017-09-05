@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var MODULE_NAME = 'onms.elementList.notification';
+	var MODULE_NAME = 'onms.elementList.node';
 
 	function getSearchProperty(searchProperties, id) {
 		for (var i = 0; i < searchProperties.length; i++) {
@@ -13,11 +13,11 @@
 	}
 
 	// $filters that can be used to create human-readable versions of filter values
-	angular.module('notificationListFilters', [ 'onmsListFilters' ])
+	angular.module('nodeListFilters', [ 'onmsListFilters' ])
 	.filter('property', function() {
 		return function(input, searchProperties) {
 			var property = getSearchProperty(searchProperties, input);
-			return property.name || '';
+			return property.name || input;
 		}
 	})
 	.filter('value', function($filter) {
@@ -45,95 +45,34 @@
 		}
 	});
 
-	// Notification list module
-	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'notificationListFilters', 'ui.bootstrap', 'ngSanitize' ])
+	// Node list module
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'nodeListFilters', 'ui.bootstrap', 'ngSanitize' ])
 
 	/**
-	 * Notification list controller
+	 * Node list controller
 	 */
-	.controller('NotificationListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', '$q', 'notificationFactory', function($scope, $http, $location, $window, $log, $filter, $q, notificationFactory) {
-		$log.debug('NotificationListCtrl initializing...');
+	.controller('NodeListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', '$q', 'nodeFactory', function($scope, $http, $location, $window, $log, $filter, $q, nodeFactory) {
+		$log.debug('NodeListCtrl initializing...');
 
-		/**
-		 * Search clause that represents Unacknowledged Notifications
-		 */
-		$scope.unackClause = {
-			property: 'answeredBy',
-			operator: 'EQ',
-			value: '\u0000' // null
+		$scope.showInterfaces = false;
+		
+		$scope.toggleShowInterfaces = function() {
+			$scope.showInterfaces = !$scope.showInterfaces;
 		};
-
-		/**
-		 * Search clause that represents Acknowledged Notifications
-		 */
-		$scope.ackClause = {
-			property: 'answeredBy',
-			operator: 'NE',
-			value: '\u0000' // null
-		};
-
-		/**
-		 * Array that will hold the currently selected notification IDs.
-		 */
-		$scope.selectedNotifications = [];
 
 		$scope.searchProperties = [];
 		$scope.searchPropertiesLoaded = false;
 
-		/**
-		 * Toggle the selected state for one notification ID.
-		 */
-		$scope.toggleNotificationSelection = function(id) {
-			var index = $scope.selectedNotifications.indexOf(id);
-
-			if (index >= 0) {
-				$scope.selectedNotifications.splice(index, 1);
-			} else {
-				$scope.selectedNotifications.push(id);
-			}
-		}
-
-		/**
-		 * Select all of the items in the current view.
-		 */
-		$scope.selectAllNotifications = function() {
-			var newSelection = [];
-			for (var i = 0; i < $scope.$parent.items.length; i++) {
-				newSelection.push($scope.$parent.items[i].id);
-			}
-			$scope.selectedNotifications = newSelection;
-		}
-
-		/**
-		 * Acknowledge the selected notifications as the current user.
-		 */
-		$scope.acknowledgeSelectedNotifications = function() {
-			$http({
-				method: 'POST',
-				url: 'notification/acknowledge',
-				params: {
-					notices: $scope.selectedNotifications
-				}
-			}).then(function success(response) {
-				$scope.$parent.refresh();
-			}, function error(response) {
-				alert("Acknowledgement failed.")
-			})
-		}
-
-
 		// Set the default sort and set it on $scope.$parent.query
-		$scope.$parent.defaults.orderBy = 'notifyId';
-		$scope.$parent.query.orderBy = 'notifyId';
+		$scope.$parent.defaults.orderBy = 'label';
+		$scope.$parent.query.orderBy = 'label';
 		$scope.clauseValues = [];
 
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
-			// Reset the list of selected notifications
-			$scope.selectedNotifications = [];
 
 			// Fetch all of the items
-			notificationFactory.query(
+			nodeFactory.query(
 				{
 					_s: $scope.$parent.query.searchParam, // FIQL search
 					limit: $scope.$parent.query.limit,
@@ -172,7 +111,7 @@
 
 		// Save an item by using $resource.$update
 		$scope.$parent.update = function(item) {
-			var saveMe = notificationFactory.get({id: item.id}, function() {
+			var saveMe = nodeFactory.get({id: item.id}, function() {
 
 				// TODO: Update updateable fields
 
@@ -187,14 +126,6 @@
 			});
 
 		};
-
-		$scope.getSeverityClass = function(severity) {
-			return 'severity-' + severity.substr(0,1).toUpperCase() + severity.substr(1).toLowerCase();
-		}
-
-		$scope.getPrettySeverity = function(severity) {
-			return severity.substr(0,1).toUpperCase() + severity.substr(1).toLowerCase();
-		}
 
 		$scope.getSearchProperty = function(id) {
 			return getSearchProperty($scope.searchProperties, id);
@@ -230,7 +161,7 @@
 				loading.notify("Loading search properties");
 			}, 200);
 
-			var retval = notificationFactory.queryPropertyValues({ id: id, q: query }, function(value, headers) {
+			var retval = nodeFactory.queryPropertyValues({ id: id, q: query }, function(value, headers) {
 				return value;
 			}).$promise;
 
@@ -260,7 +191,7 @@
 			}
 		}
 
-		notificationFactory.queryProperties(
+		nodeFactory.queryProperties(
 			{}, 
 			function(value, headers) {
 				$scope.searchProperties = value;
@@ -284,7 +215,7 @@
 		// Refresh the item list
 		$scope.$parent.refresh();
 
-		$log.debug('NotificationListCtrl initialized');
+		$log.debug('NodeListCtrl initialized');
 	}])
 
 	.run(['$rootScope', '$log', function($rootScope, $log) {
