@@ -221,7 +221,7 @@ public class EventFactory {
         final Map<String, String> result = Maps.newHashMap();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT name, value FROM event_parameters WHERE event_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT name, value FROM event_parameters WHERE eventid = ?");
             d.watch(stmt);
             stmt.setInt(1, eventId);
 
