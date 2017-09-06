@@ -26,15 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.core.xml;
+
+import org.junit.Test;
+
+import java.nio.ByteBuffer;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import java.nio.ByteBuffer;
-
-import org.junit.Test;
 
 public class ByteBufferXmlAdapterTest {
 

@@ -117,6 +117,7 @@ import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.opennms.netmgt.config.wsman.WsmanConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.telemetry.config.model.TelemetrydConfiguration;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -278,6 +279,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class, Impl.JAXB);
+        addFile(Source.CONFIG, "telemetryd-configuration.xml", TelemetrydConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "vmware-config.xml", VmwareConfig.class, Impl.JAXB);

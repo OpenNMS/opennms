@@ -36,6 +36,7 @@
     <module>collection</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
+    <module>telemetry</module>
     <module>wsman</module>
 
     <!-- Discovery -->

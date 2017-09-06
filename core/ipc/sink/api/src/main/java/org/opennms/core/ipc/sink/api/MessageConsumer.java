@@ -37,6 +37,6 @@ public interface MessageConsumer<S extends Message, T extends Message> {
 
     SinkModule<S, T> getModule();
 
-    void handleMessage(T message);
+    void handleMessage(T messageLog);
 
 }

@@ -54,6 +54,7 @@
                                 <feature>minion-poller</feature>
                                 <feature>minion-collection</feature>
                                 <feature>minion-icmp-proxy</feature>
+                                <feature>minion-telemetryd-listeners</feature>
                                 <feature>hawtio-offline</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.features</artifactId>
+    <version>21.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>org.opennms.features.telemetry</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS :: Features :: Telemetry</name>
+  <modules>
+    <module>adapters</module>
+    <module>common</module>
+    <module>config</module>
+    <module>daemon</module>
+    <module>listeners</module>
+    <module>minion</module>
+  </modules>
+</project>

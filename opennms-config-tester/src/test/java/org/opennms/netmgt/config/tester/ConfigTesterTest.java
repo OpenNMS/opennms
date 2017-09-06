@@ -386,6 +386,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testTelemetrydConfiguration() {
+        testConfigFile("telemetryd-configuration.xml");
+    }
+
+    @Test
     public void testScriptdConfiguration() {
         testConfigFile("scriptd-configuration.xml");
     }

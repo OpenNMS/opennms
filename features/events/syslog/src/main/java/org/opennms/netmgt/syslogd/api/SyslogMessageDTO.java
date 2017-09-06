@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.syslogd.api;
 
+import org.opennms.core.xml.ByteBufferXmlAdapter;
+
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Objects;
@@ -38,8 +40,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.opennms.netmgt.syslogd.ByteBufferXmlAdapter;
 
 @XmlRootElement(name = "syslog-message")
 @XmlAccessorType(XmlAccessType.FIELD)
