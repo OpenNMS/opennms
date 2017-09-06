@@ -24,6 +24,7 @@ The following _Security Roles_ are available:
 | _ROLE_ADMIN_        | Permissions to create, read, update and delete in the Web User Interface and the _ReST API_.
 | _ROLE_ASSET_EDITOR_ | Permissions to just update the asset records from nodes.
 | _ROLE_DASHBOARD_    | Allow users to just have access to the _Dashboard_.
+| _ROLE_DELEGATE_     | Allows actions (such as acknowledging an alarm) to be performed on behalf of another user.
 | _ROLE_JMX_          | Allows retrieving JMX metrics but does not allow executing MBeans of the _{opennms-product-name}_ JVM, even if they just return simple values.
 ifndef::opennms-prime[]
 | _ROLE_MINION_       | Minimal amount of permissions required for a _Minion_ to operate.
