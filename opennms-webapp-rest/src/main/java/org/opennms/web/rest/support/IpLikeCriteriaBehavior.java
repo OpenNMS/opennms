@@ -67,6 +67,6 @@ public class IpLikeCriteriaBehavior extends CriteriaBehavior<String> {
         super(name, Function.identity(), beforeVisit);
         // Skip normal processing for this property since we're applying
         // the filter in the BeforeVisit operation.
-        super.setSkipProperty(true);
+        super.setSkipPropertyByDefault(true);
     }
 }

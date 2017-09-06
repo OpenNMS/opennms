@@ -446,7 +446,7 @@ Supported search/order properties:
 * <<assetProperties,`assetRecord.*`>>
 * <<categoryProperties,`category.*`>> (Only valid for search)
 * <<distPollerProperties,`distPoller.*`>>
-* <<eventParameterProperties,`eventParameter.*`>> (for parameters of `lastEvent`)
+* <<eventParameterProperties,`eventParameter.*`>> (for parameters of `lastEvent`, only valid for search)
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * `lastEvent.\*` (with the same properties as <<eventProperties,`event.*`>>)
 * <<locationProperties,`location.*`>>
@@ -475,7 +475,7 @@ Supported search/order properties:
 * <<distPollerProperties,`distPoller.*`>>
 * <<eventProperties,`event.*`>>
 ** `event.ipAddr` can be an iplike expression
-* <<eventParameterProperties,`eventParameter.*`>>
+* <<eventParameterProperties,`eventParameter.*`>> (Only valid for search)
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * <<locationProperties,`location.*`>>
 * <<nodeProperties,`node.*`>>
@@ -544,7 +544,7 @@ Supported search/order properties:
 * <<categoryProperties,`category.*`>> (Only valid for search)
 * <<distPollerProperties,`distPoller.*`>>
 * <<eventProperties,`event.*`>>
-* <<eventParameterProperties,`eventParameter.*`>>
+* <<eventParameterProperties,`eventParameter.*`>> (Only valid for search)
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * <<locationProperties,`location.*`>>
 * <<nodeProperties,`node.*`>>
