@@ -150,19 +150,19 @@ a:focus {
   background-color: $color_opennms_dark;
 }
 .btn-success {
-  background-color: $color_success;
-  border-color: $color_success_darker;
+  background-color: $color_opennms_dark;
+  border-color: $color_opennms_darker;
 }
 .btn-success[disabled] {
-  background-color: $color_success_lighter;
-  border-color: $color_success;
+  background-color: $color_opennms_light;
+  border-color: $color_opennms;
 }
 .btn-success:hover,
 .btn-success:focus,
 .btn-success:active,
 .btn-success.active,
 .open .dropdown-toggle.btn-success {
-  background-color: $color_success_darker;
+  background-color: $color_opennms_darker;
 }
 .btn-info {
   background-color: $color_opennms_light;
@@ -218,7 +218,7 @@ a:focus {
   color:#000;
 }
 .text-success {
-  color:$color_success;
+  color:$color_opennms;
 }
 .text-info {
   color:$color_opennms;
@@ -246,7 +246,7 @@ a:focus {
   margin-top:-15px;
 }
 .alert-success {
-  background: $color_success_darker;
+  background: $color_opennms_dark;
 }
 .alert-info {
   background: $color_opennms;
