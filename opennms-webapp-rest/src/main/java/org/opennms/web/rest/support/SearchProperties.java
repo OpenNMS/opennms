@@ -49,6 +49,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -251,6 +252,13 @@ public abstract class SearchProperties {
 		new SearchPropertyBuilder().entityClass(OnmsEvent.class).id("ipAddr").name("IP Address").type(IP_ADDRESS).iplike(true).build(),
 	}));
 
+	static final SortedSet<SearchProperty> EVENT_PARAMETER_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
+		//new SearchProperty(OnmsEventParameter.class, "id", "ID", INTEGER),
+		new SearchProperty(OnmsEventParameter.class, "name", "Name", STRING),
+		new SearchProperty(OnmsEventParameter.class, "type", "Type", STRING),
+		new SearchProperty(OnmsEventParameter.class, "value", "Value", STRING)
+	}));
+
 	static final SortedSet<SearchProperty> IF_SERVICE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty(OnmsMonitoredService.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsMonitoredService.class, "lastFail", "Last Failure Time", TIMESTAMP),
@@ -450,6 +458,7 @@ public abstract class SearchProperties {
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.eventParameter, "Event Parameter", EVENT_PARAMETER_PROPERTIES, false));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix("lastEvent", "Last Event", EVENT_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
@@ -467,6 +476,7 @@ public abstract class SearchProperties {
 		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
 		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
 		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
+		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.eventParameter, "Event Parameter", EVENT_PARAMETER_PROPERTIES, false));
 		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
 		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
 		EVENT_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
@@ -508,6 +518,7 @@ public abstract class SearchProperties {
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.event, "Event", EVENT_PROPERTIES));
+		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.eventParameter, "Event Parameter", EVENT_PARAMETER_PROPERTIES, false));
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));

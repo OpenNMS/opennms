@@ -39,7 +39,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cxf.jaxrs.ext.search.ConditionType;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.api.ISO8601DateEditor;
@@ -83,12 +87,86 @@ public abstract class CriteriaBehaviors {
         return retval;
     }
 
+    /**
+     * <p>This criteria behavior uses SQL subselect restrictions when doing wildcard filtering or 
+     * negative filtering (since these queries will most likely return multiple rows that match
+     * the criteria) but it uses an alias with a join condition for specific filters. The join
+     * conditions will stack so that multiple specific filters will narrow the results, allowing
+     * you to query for specific combinations of:</p>
+     * <ul>
+     * <li>eventParameter.name</li>
+     * <li>eventParameter.value</li>
+     * <li>eventParameter.type</li>
+     * </ul>
+     * <p>Querying for a specific name-value pair is the primary use case for event parameter filtering.</p>
+     */
+    private static final class EventParameterBehavior extends StringCriteriaBehavior {
+
+        /**
+         * @param eventParameterPath The Hibernate property path for the eventParameter relationship
+         * @param eventIdColumn The column name in the database for the event ID column in the root entity table
+         * @param eventParameterProperty The name of the property in the {@link OnmsEventParameter} object that
+         *        this behavior is being applied to
+         */
+        public EventParameterBehavior(String eventParameterPath, String eventIdColumn, String eventParameterProperty) {
+            super(Aliases.eventParameter.prop(eventParameterProperty), (b,v,c,w) -> {
+                switch (c) {
+                case EQUALS:
+                    if (w) {
+                        b.sql(String.format("{alias}.%s in (select event_parameters.eventid from event_parameters where event_parameters.%s %s ?)", eventIdColumn, eventParameterProperty, w ? "like" : "="), v, Type.STRING);
+                    } else {
+                        // Add an eventParameter alias that only matches the specified value
+                        b.alias(
+                            eventParameterPath,
+                            Aliases.eventParameter.toString(),
+                            JoinType.LEFT_JOIN,
+                            Restrictions.or(
+                                Restrictions.eq(Aliases.eventParameter.prop(eventParameterProperty), v),
+                                Restrictions.isNull(Aliases.eventParameter.prop(eventParameterProperty))
+                            )
+                        );
+                    }
+                    break;
+                case NOT_EQUALS:
+                    b.sql(String.format("{alias}.%s not in (select event_parameters.eventid from event_parameters where event_parameters.%s %s ?)", eventIdColumn, eventParameterProperty, w ? "like" : "="), v, Type.STRING);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Illegal condition type when filtering event_parameters." + eventParameterProperty + ": " + c.toString());
+                }
+            });
+        }
+
+        @Override
+        public boolean shouldSkipProperty(ConditionType condition, boolean wildcard) {
+            switch(condition) {
+            case EQUALS:
+                if (wildcard) {
+                    // If we're using a SQL subselect restriction, then skip the normal
+                    // property filtering
+                    return true;
+                } else {
+                    // If we're using an alias with join condition, then process the
+                    // property filtering as usual
+                    return false;
+                }
+            case NOT_EQUALS:
+                // All negative filters use SQL subselect restrictions so skip the normal
+                // property filtering
+                return true;
+            default:
+                return super.shouldSkipProperty(condition, wildcard);
+            }
+        }
+    }
+
     public static final Map<String,CriteriaBehavior<?>> ALARM_BEHAVIORS = new HashMap<>();
+    public static final Map<String,CriteriaBehavior<?>> ALARM_LASTEVENT_PARAMETER_BEHAVIORS = new HashMap<>();
     // TODO
     //public static final Map<String,CriteriaBehavior<?>> ALARM_DETAILS_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> ASSET_RECORD_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> DIST_POLLER_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> EVENT_BEHAVIORS = new HashMap<>();
+    public static final Map<String,CriteriaBehavior<?>> EVENT_PARAMETER_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> IP_INTERFACE_BEHAVIORS = new HashMap<>();
     // TODO
     public static final Map<String,CriteriaBehavior<?>> MEMO_BEHAVIORS = new HashMap<>();
@@ -121,6 +199,10 @@ public abstract class CriteriaBehaviors {
         ALARM_BEHAVIORS.put("troubleTicketState", new CriteriaBehavior<TroubleTicketState>(TroubleTicketState::valueOf));
         ALARM_BEHAVIORS.put("x733ProbableCause", new CriteriaBehavior<Integer>(INT_CONVERTER));
 
+        ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("name", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "name"));
+        ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("value", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "value"));
+        ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("type", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "type"));
+
         ASSET_RECORD_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         ASSET_RECORD_BEHAVIORS.put("lastModifiedDate", new CriteriaBehavior<Date>(DATE_CONVERTER));
         //ASSET_RECORD_BEHAVIORS.put("geolocation", ???);
@@ -136,6 +218,10 @@ public abstract class CriteriaBehaviors {
         EVENT_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         EVENT_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(INT_CONVERTER));
         EVENT_BEHAVIORS.put("ipAddr", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
+
+        EVENT_PARAMETER_BEHAVIORS.put("name", new EventParameterBehavior(Aliases.event.prop("eventParameters"), "eventid", "name"));
+        EVENT_PARAMETER_BEHAVIORS.put("value", new EventParameterBehavior(Aliases.event.prop("eventParameters"), "eventid", "value"));
+        EVENT_PARAMETER_BEHAVIORS.put("type", new EventParameterBehavior(Aliases.event.prop("eventParameters"), "eventid", "type"));
 
         IP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("ipLastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
@@ -173,7 +259,7 @@ public abstract class CriteriaBehaviors {
         });
         // Skip normal processing of the property since we're doing all of the filtering 
         // in the beforeVisit() method
-        categoryId.setSkipProperty(true);
+        categoryId.setSkipPropertyByDefault(true);
         NODE_CATEGORY_BEHAVIORS.put("id", categoryId);
 
         CriteriaBehavior<String> categoryName = new StringCriteriaBehavior(Aliases.category.prop("name"), (b,v,c,w) -> {
@@ -194,7 +280,7 @@ public abstract class CriteriaBehaviors {
         });
         // Skip normal processing of the property since we're doing all of the filtering 
         // in the beforeVisit() method
-        categoryName.setSkipProperty(true);
+        categoryName.setSkipPropertyByDefault(true);
         NODE_CATEGORY_BEHAVIORS.put("name", categoryName);
 
         CriteriaBehavior<String> categoryDescription = new StringCriteriaBehavior(Aliases.category.prop("description"), (b,v,c,w) -> {
@@ -215,7 +301,7 @@ public abstract class CriteriaBehaviors {
         });
         // Skip normal processing of the property since we're doing all of the filtering 
         // in the beforeVisit() method
-        categoryDescription.setSkipProperty(true);
+        categoryDescription.setSkipPropertyByDefault(true);
         NODE_CATEGORY_BEHAVIORS.put("description", categoryDescription);
 
         NOTIFICATION_BEHAVIORS.put("notifyId", new CriteriaBehavior<Integer>(INT_CONVERTER));
