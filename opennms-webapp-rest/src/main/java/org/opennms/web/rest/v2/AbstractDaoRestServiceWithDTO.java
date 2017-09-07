@@ -157,7 +157,12 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     }
 
     // Do not allow update by default
-    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, T targetObject, final MultivaluedMapImpl params) {
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, K key, T targetObject) {
+        return Response.status(Status.NOT_IMPLEMENTED).build();
+    }
+
+    // Do not allow updating properties by default
+    protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, T targetObject, final MultivaluedMapImpl params) {
         return Response.status(Status.NOT_IMPLEMENTED).build();
     }
 
@@ -467,9 +472,24 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
             }
             for (T object : objects) {
                 RestUtils.setBeanProperties(object, params);
-                doUpdate(securityContext, uriInfo, object, params);
+                doUpdateProperties(securityContext, uriInfo, object, params);
             }
             return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("{id}")
+    public Response update(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final K id, final T object) {
+        writeLock();
+        try {
+            if (object == null) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
+            return doUpdate(securityContext, uriInfo, id, object);
         } finally {
             writeUnlock();
         }
@@ -485,7 +505,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            return doUpdate(securityContext, uriInfo, object, params);
+            return doUpdateProperties(securityContext, uriInfo, object, params);
         } finally {
             writeUnlock();
         }

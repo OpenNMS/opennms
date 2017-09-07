@@ -151,7 +151,7 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     }
 
     @Override
-    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
+    protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
         final String previousStatus = targetObject.getStatus();
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
