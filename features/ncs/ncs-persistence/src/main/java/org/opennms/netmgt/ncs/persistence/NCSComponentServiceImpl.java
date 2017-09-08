@@ -155,7 +155,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	}
 
 	private Set<ComponentIdentifier> getIdentifiers(final Collection<NCSComponent> components) {
-		final Set<ComponentIdentifier> identifiers = new HashSet<ComponentIdentifier>();
+		final Set<ComponentIdentifier> identifiers = new HashSet<>();
 		for (final NCSComponent component : components) {
 			identifiers.add(getIdentifier(component));
 		}
@@ -171,7 +171,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	}
 
 	private NCSComponent addOrUpdateComponents(final ComponentIdentifier id, final NCSComponent component, final ComponentEventQueue ceq, final boolean deleteOrphans) {
-		final Set<NCSComponent> subcomponents = new LinkedHashSet<NCSComponent>();
+		final Set<NCSComponent> subcomponents = new LinkedHashSet<>();
 		
 		final NCSComponent existing = new UpsertTemplate<NCSComponent, NCSComponentDao>(m_transactionManager, m_componentDao) {
 			@Override

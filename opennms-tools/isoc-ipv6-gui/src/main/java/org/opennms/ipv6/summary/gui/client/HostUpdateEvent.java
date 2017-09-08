@@ -32,7 +32,7 @@ import com.google.gwt.event.shared.GwtEvent;
 
 public class HostUpdateEvent extends GwtEvent<HostUpdateEventHandler> {
 
-    public static Type<HostUpdateEventHandler> TYPE = new Type<HostUpdateEventHandler>();
+    public static Type<HostUpdateEventHandler> TYPE = new Type<>();
     
     private final String m_host;
     

@@ -111,7 +111,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
             "where l.cdpcacheaddresstype=1";
 
     private List<CdpTopologyLink> convertObjectToTopologyLink(List<Object[]> list) {
-        List<CdpTopologyLink> topoLinks = new ArrayList<CdpTopologyLink>();
+        List<CdpTopologyLink> topoLinks = new ArrayList<>();
         for (Object[] objs : list) {
             Integer targetId = (Integer)objs[8];
             Integer targetNodeId =(Integer)objs[9];
@@ -181,8 +181,8 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
                     mapToLink.put(sourcekey, link);
                     mapToLink.put(targetkey, link);
                }
-               List<Integer> ids = new ArrayList<Integer>();
-               List<CdpTopologyLink> links = new ArrayList<CdpTopologyLink>();
+               List<Integer> ids = new ArrayList<>();
+               List<CdpTopologyLink> links = new ArrayList<>();
                for (CdpTopologyLink link: mapToLink.values()) {
                     if (ids.contains(link.getSourceId()))
                         continue;

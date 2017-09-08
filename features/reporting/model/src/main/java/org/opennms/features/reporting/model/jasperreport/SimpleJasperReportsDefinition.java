@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlSeeAlso(SimpleJasperReportDefinition.class)
 public class SimpleJasperReportsDefinition {
     
-    private List<SimpleJasperReportDefinition> m_reportList = new ArrayList<SimpleJasperReportDefinition>();
+    private List<SimpleJasperReportDefinition> m_reportList = new ArrayList<>();
     
     @XmlElement(name = "simple-jasper-report")
     public List<SimpleJasperReportDefinition> getReportList() {

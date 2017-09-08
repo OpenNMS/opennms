@@ -428,7 +428,7 @@ public class VmwareViJavaAccess {
      * @throws CIMException
      */
     public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass, String primaryIpAddress) throws ConnectException, RemoteException, CIMException {
-        List<CIMObject> cimObjects = new ArrayList<CIMObject>();
+        List<CIMObject> cimObjects = new ArrayList<>();
 
         if (!m_hostServiceTickets.containsKey(hostSystem)) {
             m_hostServiceTickets.put(hostSystem, hostSystem.acquireCimServicesTicket());
@@ -524,7 +524,7 @@ public class VmwareViJavaAccess {
      * @throws RemoteException
      */
     public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) throws RemoteException {
-        TreeSet<String> ipAddresses = new TreeSet<String>();
+        TreeSet<String> ipAddresses = new TreeSet<>();
 
         HostNetworkSystem hostNetworkSystem = hostSystem.getHostNetworkSystem();
 
@@ -556,7 +556,7 @@ public class VmwareViJavaAccess {
      * @throws RemoteException
      */
     public TreeSet<String> getVirtualMachineIpAddresses(VirtualMachine virtualMachine) throws RemoteException {
-        TreeSet<String> ipAddresses = new TreeSet<String>();
+        TreeSet<String> ipAddresses = new TreeSet<>();
 
         // add the Ip address reported by VMware tools, this should be primary
         if (virtualMachine.getGuest().getIpAddress() != null)

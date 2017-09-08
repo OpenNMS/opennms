@@ -147,7 +147,7 @@ public class TicketNotificationStrategyTest extends TestCase {
     
     protected List<Argument> buildArguments(String eventID, String eventUEI) 
     {
-		List<Argument> arguments = new ArrayList<Argument>();
+		List<Argument> arguments = new ArrayList<>();
 		arguments.add(new Argument("eventID", null, eventID, false));
 		arguments.add(new Argument("eventUEI", null, eventUEI, false));
 		return arguments;

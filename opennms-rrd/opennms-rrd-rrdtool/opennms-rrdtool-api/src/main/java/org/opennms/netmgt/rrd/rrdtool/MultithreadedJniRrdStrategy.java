@@ -85,7 +85,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
 
     public static class UpdateCommand {
         private final String m_filename;
-        private final List<String> m_arguments = new LinkedList<String>();
+        private final List<String> m_arguments = new LinkedList<>();
 
         public UpdateCommand(String filename) {
             m_filename = filename;

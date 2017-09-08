@@ -34,7 +34,7 @@ import java.util.List;
 
 public abstract class VarargsRestrictionRestriction extends BaseRestriction {
 
-    private List<Restriction> m_restrictions = new ArrayList<Restriction>();
+    private List<Restriction> m_restrictions = new ArrayList<>();
 
     public VarargsRestrictionRestriction(final RestrictionType type, final Restriction... restrictions) {
         super(type);

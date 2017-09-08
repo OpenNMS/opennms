@@ -127,7 +127,7 @@ public class JUnitServer {
 
             final ConstraintSecurityHandler security = new ConstraintSecurityHandler();
 
-            final Set<String> knownRoles = new HashSet<String>();
+            final Set<String> knownRoles = new HashSet<>();
             knownRoles.add("user");
             knownRoles.add("admin");
             knownRoles.add("moderator");

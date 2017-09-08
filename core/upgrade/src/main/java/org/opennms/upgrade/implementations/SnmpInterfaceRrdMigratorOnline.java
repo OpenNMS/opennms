@@ -232,7 +232,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected List<SnmpInterfaceUpgrade> getInterfacesToMerge() throws OnmsUpgradeException {
-        List<SnmpInterfaceUpgrade> interfacesToMerge = new ArrayList<SnmpInterfaceUpgrade>();
+        List<SnmpInterfaceUpgrade> interfacesToMerge = new ArrayList<>();
         Connection conn = getDbConnection();
         final DBUtils db = new DBUtils(getClass());
         db.watch(conn);

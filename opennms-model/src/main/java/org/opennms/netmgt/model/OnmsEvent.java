@@ -188,13 +188,13 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private org.opennms.netmgt.model.OnmsNode m_node;
 
 	/** persistent field */
-	private Set<OnmsNotification> m_notifications = new HashSet<OnmsNotification>();
+	private Set<OnmsNotification> m_notifications = new HashSet<>();
 
 	/** persistent field */
-	private Set<OnmsOutage> m_associatedServiceRegainedOutages = new HashSet<OnmsOutage>();
+	private Set<OnmsOutage> m_associatedServiceRegainedOutages = new HashSet<>();
 
 	/** persistent field */
-	private Set<OnmsOutage> m_associatedServiceLostOutages = new HashSet<OnmsOutage>();
+	private Set<OnmsOutage> m_associatedServiceLostOutages = new HashSet<>();
 
 	/**
 	 * default constructor

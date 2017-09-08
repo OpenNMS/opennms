@@ -49,7 +49,7 @@ public class RequisitionTest {
 
 	@Test
 	public void testRequisitionValidation() {
-		final List<RequisitionNode> nodes = new ArrayList<RequisitionNode>();
+		final List<RequisitionNode> nodes = new ArrayList<>();
 		
 		final Requisition req = new Requisition();
 		req.updateDateStamp();

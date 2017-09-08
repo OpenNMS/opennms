@@ -252,7 +252,7 @@ public class MigratorIT {
 
     protected Set<String> getStoredProcedures() throws SQLException {
         final Connection connection = m_dataSource.getConnection();
-        final Set<String> procs = new HashSet<String>();
+        final Set<String> procs = new HashSet<>();
         try {
             final ResultSet rs = connection.getMetaData().getProcedures(null, null, "%");
             while (rs.next()) {
@@ -266,7 +266,7 @@ public class MigratorIT {
 
     protected Set<String> getTables() throws SQLException {
         final Connection connection = m_dataSource.getConnection();
-        final Set<String> tables = new HashSet<String>();
+        final Set<String> tables = new HashSet<>();
         try {
             final ResultSet rs = connection.getMetaData().getTables(null, null, "%", null);
             while (rs.next()) {
@@ -285,7 +285,7 @@ public class MigratorIT {
             PreparedStatement statement = connection.prepareStatement("SELECT id, md5sum FROM databasechangelog order by id");
             assertTrue(statement.execute());
             ResultSet rs = statement.getResultSet();
-            final List<ChangelogEntry> entries = new ArrayList<ChangelogEntry>();
+            final List<ChangelogEntry> entries = new ArrayList<>();
             while (rs.next()) {
                 entries.add(new ChangelogEntry(rs.getString(1), rs.getString(2)));
             }
@@ -348,7 +348,7 @@ public class MigratorIT {
     }
 
     private List<Resource> getTestResources() throws IOException {
-        final List<Resource> resources = new ArrayList<Resource>();
+        final List<Resource> resources = new ArrayList<>();
         for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
             URI uri = resource.getURI();
             if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
@@ -359,7 +359,7 @@ public class MigratorIT {
     }
 
     private List<Resource> getRealChangelog() throws IOException {
-        final List<Resource> resources = new ArrayList<Resource>();
+        final List<Resource> resources = new ArrayList<>();
         for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
             URI uri = resource.getURI();
             System.err.println(uri.toString());

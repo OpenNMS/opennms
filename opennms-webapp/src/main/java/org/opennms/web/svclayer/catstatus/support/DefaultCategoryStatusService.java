@@ -72,7 +72,7 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 
 		Collection<Section> sections = getSectionsForView(view);
 		
-        Collection<StatusSection> statusSections = new ArrayList<StatusSection>();
+        Collection<StatusSection> statusSections = new ArrayList<>();
 		for (Section section : sections) {
 			statusSections.add(createSection(section));
 		}

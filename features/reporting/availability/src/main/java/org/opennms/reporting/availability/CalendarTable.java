@@ -55,7 +55,7 @@ public class CalendarTable implements java.io.Serializable {
     private java.util.List<Week> weekList;
 
     public CalendarTable() {
-        this.weekList = new java.util.ArrayList<Week>();
+        this.weekList = new java.util.ArrayList<>();
     }
 
     /**

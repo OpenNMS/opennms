@@ -49,8 +49,8 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  */
 public class StatsdConfig {
     private StatisticsDaemonConfiguration m_config;
-    private List<Report> m_reports = new ArrayList<Report>();
-    private List<StatsdPackage> m_packages = new ArrayList<StatsdPackage>();
+    private List<Report> m_reports = new ArrayList<>();
+    private List<StatsdPackage> m_packages = new ArrayList<>();
 
     /**
      * <p>Constructor for StatsdConfig.</p>

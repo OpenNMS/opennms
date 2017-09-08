@@ -453,7 +453,7 @@ public class FilterParserTest {
 	 * @return
 	 */
 	public static List<OnmsNode> getMockNodeList(){
-		List<OnmsNode> nodeList= new ArrayList<OnmsNode>();
+		List<OnmsNode> nodeList= new ArrayList<>();
 
 		for( int id = 0;id<5;id++){
 			OnmsNode n =createNode(id);
@@ -514,7 +514,7 @@ public class FilterParserTest {
 		node.setSysLocation("node-nodeLocation_"+id);
 		node.setOperatingSystem("node-operatingsystem_"+id);
 
-		Set<OnmsCategory> categories=new LinkedHashSet<OnmsCategory>();
+		Set<OnmsCategory> categories=new LinkedHashSet<>();
 		node.setCategories(categories);
 
 		// categories used for multi value tests

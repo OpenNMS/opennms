@@ -1888,8 +1888,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         protected int m_svcCategoryCompleted;
         protected int m_assetCount;
         protected int m_assetCompleted;
-        protected List<OnmsNodeRequisition> m_nodes = new ArrayList<OnmsNodeRequisition>();
-        protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<OnmsIpInterfaceRequisition>();
+        protected List<OnmsNodeRequisition> m_nodes = new ArrayList<>();
+        protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<>();
 
         public List<OnmsNodeRequisition> getNodes() {
             return m_nodes;

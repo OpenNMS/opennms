@@ -249,7 +249,7 @@ public class FilterParser {
         if ("(".equals(token)) {
             filters = filterList();
         } else {
-            filters = new LinkedList<Filter>();
+            filters = new LinkedList<>();
         }
         filters.addFirst(filter);
         return filters;

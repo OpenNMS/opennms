@@ -229,7 +229,7 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         
         List<LldpLink> allLinks = m_lldpLinkDao.findAll();
         int combinedlinkfound=0;
-        Set<Integer> parsed = new HashSet<Integer>();
+        Set<Integer> parsed = new HashSet<>();
         for (LldpLink sourceLink : allLinks) {
             System.err.println("loadtopology: parsing lldp link with id "+ sourceLink.getId());
             if (parsed.contains(sourceLink.getId())) {

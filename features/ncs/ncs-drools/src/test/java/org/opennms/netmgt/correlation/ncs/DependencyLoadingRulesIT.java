@@ -65,7 +65,7 @@ public class DependencyLoadingRulesIT extends CorrelationRulesITCase {
 
 	private DroolsCorrelationEngine m_engine;
 	
-	private List<Object> m_anticipatedWorkingMemory = new ArrayList<Object>();
+	private List<Object> m_anticipatedWorkingMemory = new ArrayList<>();
 	
 	@Before
 	public void setUp() {

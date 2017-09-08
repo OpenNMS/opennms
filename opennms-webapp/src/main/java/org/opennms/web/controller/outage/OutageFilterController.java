@@ -121,7 +121,7 @@ public class OutageFilterController extends AbstractController implements Initia
 
         // handle the filter parameters
         String[] filterStrings = request.getParameterValues("filter");
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
                 Filter filter = OutageUtil.getFilter(filterString, getServletContext());

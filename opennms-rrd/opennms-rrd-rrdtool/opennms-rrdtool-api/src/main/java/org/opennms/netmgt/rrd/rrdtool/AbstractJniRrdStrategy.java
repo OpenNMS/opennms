@@ -171,7 +171,7 @@ public abstract class AbstractJniRrdStrategy<D extends Object,F extends Object> 
                 width = Integer.parseInt(s[0]);
                 height = Integer.parseInt(s[1]);
                 
-                List<String> printLinesList = new ArrayList<String>();
+                List<String> printLinesList = new ArrayList<>();
                 
                 while ((line = reader.readLine()) != null) {
                     printLinesList.add(line);

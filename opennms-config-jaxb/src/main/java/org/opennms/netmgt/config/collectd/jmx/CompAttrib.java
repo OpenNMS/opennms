@@ -51,7 +51,7 @@ public class CompAttrib implements java.io.Serializable {
     private String _type;
 
     @XmlElement(name="comp-member")
-    private java.util.List<CompMember> _compMemberList = new java.util.ArrayList<CompMember>();
+    private java.util.List<CompMember> _compMemberList = new java.util.ArrayList<>();
 
     public void addCompMember(final CompMember compMember)
     throws IndexOutOfBoundsException {

@@ -178,7 +178,7 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected List<SnmpInterface> getInterfacesToMerge() throws OnmsUpgradeException {
-        List<SnmpInterface> interfacesToMerge = new ArrayList<SnmpInterface>();
+        List<SnmpInterface> interfacesToMerge = new ArrayList<>();
         Connection conn = getDbConnection();
         final DBUtils db = new DBUtils(getClass());
         db.watch(conn);

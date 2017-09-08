@@ -52,7 +52,7 @@ public class ColumnDef implements Def {
     /**
      * the list of categories associated with this column def
      */
-    private List<Category> m_categories = new LinkedList<Category>();
+    private List<Category> m_categories = new LinkedList<>();
 
     /**
      * {@inheritDoc}

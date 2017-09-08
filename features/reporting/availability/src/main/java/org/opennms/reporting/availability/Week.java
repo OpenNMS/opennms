@@ -48,7 +48,7 @@ public class Week implements java.io.Serializable {
     private java.util.List<Day> dayList;
 
     public Week() {
-        this.dayList = new java.util.ArrayList<Day>();
+        this.dayList = new java.util.ArrayList<>();
     }
 
     /**

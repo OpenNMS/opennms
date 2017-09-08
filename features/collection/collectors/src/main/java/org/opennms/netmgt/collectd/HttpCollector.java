@@ -316,7 +316,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
             LOG.debug("processResponse: found matching attributes: {}", matches);
             final List<Attrib> attribDefs = collectorAgent.getUriDef().getAttributes();
 
-            final List<Locale> locales = new ArrayList<Locale>();
+            final List<Locale> locales = new ArrayList<>();
             if (responseLocale != null) {
                 locales.add(responseLocale);
             }
@@ -498,7 +498,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
     }
 
     private static List<NameValuePair> buildRequestParameters(final HttpCollectorAgent collectorAgent) {
-        List<NameValuePair> retval = new ArrayList<NameValuePair>();
+        List<NameValuePair> retval = new ArrayList<>();
         if (collectorAgent.getUriDef().getUrl().getParameters() == null) {
             return retval;
         }

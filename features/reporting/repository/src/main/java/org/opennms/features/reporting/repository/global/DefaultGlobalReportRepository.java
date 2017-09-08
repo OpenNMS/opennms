@@ -94,7 +94,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         // Get the jasper report version from opennms.properties
         m_jasperReportVersion = System.getProperty("org.opennms.jasperReportsVersion");
 
-        this.m_repositoryList = new ArrayList<ReportRepository>();
+        this.m_repositoryList = new ArrayList<>();
 
         try {
             logger.debug("Config resource is set to '{}'", m_remoteRepositoryConfigDao.toString());
@@ -120,7 +120,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getAllReports() {
-        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> results = new ArrayList<>();
         for (ReportRepository repository : m_repositoryList) {
             results.addAll(repository.getReports());
         }
@@ -133,7 +133,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getReports(String repositoryId) {
-        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> results = new ArrayList<>();
         ReportRepository repository = this.getRepositoryById(repositoryId);
         if (repository != null) {
             results.addAll(repository.getReports());
@@ -147,7 +147,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getAllOnlineReports() {
-        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> results = new ArrayList<>();
         for (ReportRepository repository : m_repositoryList) {
             results.addAll(repository.getOnlineReports());
         }
@@ -160,7 +160,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getOnlineReports(String repositoryId) {
-        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> results = new ArrayList<>();
         ReportRepository repository = this.getRepositoryById(repositoryId);
         if (repository != null) {
             results.addAll(repository.getOnlineReports());

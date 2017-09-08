@@ -306,7 +306,7 @@ public class VmwareViJavaAccessTest {
 
         // setup the cim objects
 
-        cimObjects = new ArrayList<CIMObject>();
+        cimObjects = new ArrayList<>();
 
         int cimObjectCount = 5;
 

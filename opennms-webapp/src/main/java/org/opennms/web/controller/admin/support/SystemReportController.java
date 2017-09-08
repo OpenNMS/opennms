@@ -85,7 +85,7 @@ public class SystemReportController extends AbstractController implements Initia
             }
             
             final List<String> selectedPlugins = Arrays.asList(request.getParameterValues("plugins"));
-            final List<SystemReportPlugin> plugins = new ArrayList<SystemReportPlugin>();
+            final List<SystemReportPlugin> plugins = new ArrayList<>();
             for (final SystemReportPlugin plugin : m_systemReport.getPlugins()) {
                 if (selectedPlugins.contains(plugin.getName())) {
                     plugins.add(plugin);

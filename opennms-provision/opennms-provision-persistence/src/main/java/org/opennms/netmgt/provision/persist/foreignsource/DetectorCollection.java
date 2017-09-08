@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DetectorCollection {
 
     @XmlElement(name="detector")
-    private List<PluginConfig> m_elements = new ArrayList<PluginConfig>();
+    private List<PluginConfig> m_elements = new ArrayList<>();
 
     public List<PluginConfig> getDetectors() {
         return m_elements;

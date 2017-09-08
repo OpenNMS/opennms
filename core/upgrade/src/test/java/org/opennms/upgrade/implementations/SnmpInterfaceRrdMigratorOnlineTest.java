@@ -105,7 +105,7 @@ public class SnmpInterfaceRrdMigratorOnlineTest {
         // Perform Migration
         SnmpInterfaceRrdMigratorOnline obj = new SnmpInterfaceRrdMigratorOnline() {
             protected List<SnmpInterfaceUpgrade> getInterfacesToMerge() throws OnmsUpgradeException {
-                List<SnmpInterfaceUpgrade> interfaces = new ArrayList<SnmpInterfaceUpgrade>();
+                List<SnmpInterfaceUpgrade> interfaces = new ArrayList<>();
                 interfaces.add(new SnmpInterfaceUpgrade(1, null, null, "eth0", "eth0", "005056c00008", false));
                 return interfaces;
             }

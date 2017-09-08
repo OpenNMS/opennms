@@ -127,7 +127,7 @@ public enum AlarmSeverity {
     }
 
     public static List<String> labels() {
-        final List<String> labels = new ArrayList<String>();
+        final List<String> labels = new ArrayList<>();
         for (final AlarmSeverity severity : values()) {
             labels.add(severity.getLabel());
         }

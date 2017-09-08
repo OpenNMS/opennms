@@ -64,7 +64,7 @@ public class OpenNMSEventManager {
         @SuppressWarnings("unchecked")
         Set<H> handlers = (Set<H>) m_handlers.get(type);
         if (handlers == null) {
-            handlers = new HashSet<H>();
+            handlers = new HashSet<>();
             m_handlers.put(type, handlers);
         }
         handlers.add(handler);

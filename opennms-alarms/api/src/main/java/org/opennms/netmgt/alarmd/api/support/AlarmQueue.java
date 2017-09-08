@@ -252,11 +252,11 @@ class AlarmQueue<T extends Preservable> {
 
     /** The queue. */
     // queue for all alarms to be forwarded
-    private BlockingQueue<T> m_queue = new LinkedBlockingQueue<T>();
+    private BlockingQueue<T> m_queue = new LinkedBlockingQueue<>();
 
     /** The preserved queue. */
     // queue for preserving alarms that are being saved during a forwarding failure
-    private BlockingQueue<T> m_preservedQueue = new LinkedBlockingQueue<T>();
+    private BlockingQueue<T> m_preservedQueue = new LinkedBlockingQueue<>();
 
     /** The next batch. */
     // a list of alarms that are pending due to a forwarding failure

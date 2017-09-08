@@ -154,7 +154,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 	        + "order by source_nodeid, bridgeport;";
         
 	private List<BridgeMacTopologyLink> convertObjectToTopologyLink(List<Object[]> list) {
-            List<BridgeMacTopologyLink> topoLinks = new ArrayList<BridgeMacTopologyLink>();
+            List<BridgeMacTopologyLink> topoLinks = new ArrayList<>();
             for (Object[] objs : list) {
                     topoLinks.add(
                                   new BridgeMacTopologyLink(

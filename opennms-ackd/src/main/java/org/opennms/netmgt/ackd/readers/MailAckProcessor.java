@@ -130,7 +130,7 @@ class MailAckProcessor implements AckProcessor {
         List<OnmsAcknowledgment> acks = null;
         
         if (msgs != null && msgs.size() > 0) {
-            acks = new ArrayList<OnmsAcknowledgment>();
+            acks = new ArrayList<>();
             
             Iterator<Message> it = msgs.iterator();
             while (it.hasNext()) {

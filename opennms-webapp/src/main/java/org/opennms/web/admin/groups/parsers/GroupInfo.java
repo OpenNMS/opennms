@@ -69,8 +69,8 @@ public class GroupInfo {
     public GroupInfo() {
         m_groupName = "";
         m_groupComments = "";
-        m_users = new ArrayList<String>();
-        m_dutySchedules = new Vector<DutySchedule>();
+        m_users = new ArrayList<>();
+        m_dutySchedules = new Vector<>();
     }
 
     /**

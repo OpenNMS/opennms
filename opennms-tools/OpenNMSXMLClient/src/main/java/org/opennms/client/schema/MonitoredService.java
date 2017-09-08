@@ -54,7 +54,7 @@ public class MonitoredService implements java.io.Serializable {
 
     public MonitoredService() {
         super();
-        this._categoryList = new java.util.ArrayList<org.opennms.client.schema.Category>();
+        this._categoryList = new java.util.ArrayList<>();
     }
 
 

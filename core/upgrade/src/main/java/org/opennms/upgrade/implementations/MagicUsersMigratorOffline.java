@@ -181,7 +181,7 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
         }
 
         // Parse read-only attributes
-        final List<String> readOnlyUsers = new ArrayList<String>();
+        final List<String> readOnlyUsers = new ArrayList<>();
         try {
             boolean readOnly = false;
             for (String line : Files.readAllLines(usersFile.toPath())) {
@@ -218,7 +218,7 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
             UserManager userManager = UserFactory.getInstance();
 
             // Retrieve all the currently configured users.
-            final List<OnmsUser> users = new ArrayList<OnmsUser>();
+            final List<OnmsUser> users = new ArrayList<>();
             for (final String userName : userManager.getUserNames()) {
                 log("Loading configured user: %s...\n", userName);
                 users.add(userManager.getOnmsUser(userName));
@@ -263,7 +263,7 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
                 boolean notInDefaultGroup = "true".equals(properties.getProperty("role." + role + ".notInDefaultGroup"));
                 String securityRole = "ROLE_" + role.toUpperCase();
 
-                List<String> customRoles = new ArrayList<String>();
+                List<String> customRoles = new ArrayList<>();
                 for (final String username : authUsers) {
                     OnmsUser onmsUser = getUser(users, username);
                     if (onmsUser == null) {

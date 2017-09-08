@@ -192,7 +192,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     @Entity
     @XmlRootElement(name = "severities")
     public static class AlarmStatisticsBySeverity {
-        private List<AlarmStatistics> m_stats = new LinkedList<AlarmStatistics>();
+        private List<AlarmStatistics> m_stats = new LinkedList<>();
 
         @XmlElement(name="alarmStatistics")
         public List<AlarmStatistics> getStats() {

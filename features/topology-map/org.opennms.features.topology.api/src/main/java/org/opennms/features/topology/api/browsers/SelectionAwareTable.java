@@ -52,7 +52,7 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
 	private static final long serialVersionUID = 2761774077365441249L;
 
 	private final OnmsVaadinContainer<?,? extends Serializable> m_container;
-	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
+	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<>();
 	private EventProxy eventProxy;
 
     /**
@@ -123,7 +123,7 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
 	        }
 
 	        // set new value
-	        if (nonCollapsibleColumns == null) nonCollapsibleColumns = new ArrayList<String>();
+	        if (nonCollapsibleColumns == null) nonCollapsibleColumns = new ArrayList<>();
 
 	        // set non collapsible
 	        for (Object eachPropertyId : nonCollapsibleColumns) {

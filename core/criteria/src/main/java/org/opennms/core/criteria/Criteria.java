@@ -128,13 +128,13 @@ public class Criteria implements Cloneable {
 
     private final String m_rootAlias;
 
-    private List<Order> m_orders = new ArrayList<Order>();
+    private List<Order> m_orders = new ArrayList<>();
 
-    private List<Alias> m_aliases = new ArrayList<Alias>();
+    private List<Alias> m_aliases = new ArrayList<>();
 
-    private Set<Fetch> m_fetchTypes = new LinkedHashSet<Fetch>();
+    private Set<Fetch> m_fetchTypes = new LinkedHashSet<>();
 
-    private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
+    private Set<Restriction> m_restrictions = new LinkedHashSet<>();
 
     private boolean m_distinct = false;
 
@@ -305,7 +305,7 @@ public class Criteria implements Cloneable {
                 // "match: class = %s, pathSections = %s, alias = %s",
                 // clazz.getName(), pathSections, alias);
                 // we have a match, retry with the "real" path
-                final List<String> paths = new ArrayList<String>();
+                final List<String> paths = new ArrayList<>();
                 paths.addAll(Arrays.asList(SPLIT_ON.split(associationPath)));
                 paths.addAll(remaining);
                 return getType(clazz, paths, aliases);
@@ -344,7 +344,7 @@ public class Criteria implements Cloneable {
     @Override
     public final String toString() {
         final StringBuilder sb = new StringBuilder();
-        final List<String> entries = new ArrayList<String>();
+        final List<String> entries = new ArrayList<>();
         sb.append("Criteria [");
         if (m_class != null) entries.add("class=" + m_class.toString());
         if (m_orders != null && m_orders.size() > 0) entries.add("orders=" + m_orders.toString());

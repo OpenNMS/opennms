@@ -96,7 +96,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 
     private final String m_namespace;
 	private final Map<String, Edge> m_edgeMap = new LinkedHashMap<String, Edge>();
-	private final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<EdgeListener>();
+	private final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<>();
 	private final String m_contributesTo;
 	
 	public SimpleEdgeProvider(String namespace, String contributesTo) {
@@ -145,7 +145,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 
 	@Override
 	public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
-		List<Edge> edges = new ArrayList<Edge>();
+		List<Edge> edges = new ArrayList<>();
 		for(EdgeRef ref : references) {
 			Edge edge = getSimpleEdge(ref);
 			if (ref != null) {
@@ -230,7 +230,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 
 	@Override
 	public List<Edge> getEdges(Criteria... criteria) {
-		List<Edge> edges = new ArrayList<Edge>();
+		List<Edge> edges = new ArrayList<>();
 		for (Edge edge : m_edgeMap.values()) {
 			edges.add(edge.clone());
 		}

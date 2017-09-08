@@ -238,7 +238,7 @@ public abstract class NotificationManager {
      */
     public Notification[] getNotifForEvent(final Event event) throws IOException {
         update();
-        List<Notification> notifList = new ArrayList<Notification>();
+        List<Notification> notifList = new ArrayList<>();
         boolean matchAll = getConfigManager().getNotificationMatch();
 
         // This if statement will check to see if notification should be suppressed for this event.
@@ -514,7 +514,7 @@ public abstract class NotificationManager {
      * @throws java.io.IOException if any.
      */
     public Collection<Integer> acknowledgeNotice(final Event event, final String uei, final String[] matchList) throws SQLException, IOException {
-        List<Integer> notifIDs = new LinkedList<Integer>();
+        List<Integer> notifIDs = new LinkedList<>();
         final DBUtils dbUtils = new DBUtils(getClass());
 
         try {
@@ -617,7 +617,7 @@ public abstract class NotificationManager {
      * @throws java.io.IOException if any.
      */
     public Collection<Integer> acknowledgeNoticeBasedOnAlarms(final Event event) throws SQLException, IOException {
-        Set<Integer> notifIDs = new TreeSet<Integer>();
+        Set<Integer> notifIDs = new TreeSet<>();
         if (event.getAlarmData() == null || event.getAlarmData().getAlarmType() != 2) {
             return notifIDs;
         }
@@ -652,7 +652,7 @@ public abstract class NotificationManager {
      */
     private List<Integer> doAcknowledgeNotificationsFromEvent(final Connection connection, final DBUtils dbUtils, int eventID) 
             throws SQLException, IOException {
-        List<Integer> notifIDs = new LinkedList<Integer>();
+        List<Integer> notifIDs = new LinkedList<>();
         LOG.debug("EventID for notice(s) to be acked: {}", eventID);
 
         PreparedStatement statement = connection.prepareStatement("SELECT notifyid, answeredby, respondtime FROM notifications WHERE eventID=?");
@@ -703,7 +703,7 @@ public abstract class NotificationManager {
      * @throws java.sql.SQLException if any.
      */
     public List<Integer> getActiveNodes() throws SQLException {
-        final List<Integer> allNodes = new ArrayList<Integer>();
+        final List<Integer> allNodes = new ArrayList<>();
         Querier querier = new Querier(m_dataSource, "SELECT n.nodeid FROM node n WHERE n.nodetype != 'D' ORDER BY n.nodelabel", new RowProcessor() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -935,7 +935,7 @@ public abstract class NotificationManager {
      * @return a {@link java.util.List} object.
      */
     public List<String> getServiceNames() throws SQLException {
-        final List<String> services = new ArrayList<String>();
+        final List<String> services = new ArrayList<>();
         Querier querier = new Querier(m_dataSource, "SELECT servicename FROM service", new RowProcessor() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -968,7 +968,7 @@ public abstract class NotificationManager {
     public List<String> getNotificationNames() throws IOException {
         update();
 
-        List<String> notificationNames = new ArrayList<String>();
+        List<String> notificationNames = new ArrayList<>();
 
         for (Notification curNotif : m_notifications.getNotifications()) {
             notificationNames.add(curNotif.getName());

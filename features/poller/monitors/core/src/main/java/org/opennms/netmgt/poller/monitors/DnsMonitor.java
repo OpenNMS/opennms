@@ -139,7 +139,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
 
         // What do we consider fatal?
         //
-        final List<Integer> fatalCodes = new ArrayList<Integer>();
+        final List<Integer> fatalCodes = new ArrayList<>();
         for (final int code : ParameterMap.getKeyedIntegerArray(parameters, "fatal-response-codes", DEFAULT_FATAL_RESP_CODES)) {
             fatalCodes.add(code);
         }

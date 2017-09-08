@@ -71,8 +71,8 @@ public class LegacyLocalReportRepositoryTest {
     @Before
     public void setUp() throws Exception {
         // Mocked report list as a result from DAOs
-        List<BasicReportDefinition> reports = new ArrayList<BasicReportDefinition>();
-        List<BasicReportDefinition> onlineReports = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> reports = new ArrayList<>();
+        List<BasicReportDefinition> onlineReports = new ArrayList<>();
 
         reports.add(new LegacyLocalReportDefinition());
         reports.add(new LegacyLocalReportDefinition());

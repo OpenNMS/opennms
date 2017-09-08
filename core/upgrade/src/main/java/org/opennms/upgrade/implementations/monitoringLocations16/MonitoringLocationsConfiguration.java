@@ -84,7 +84,7 @@ public class MonitoringLocationsConfiguration implements Serializable {
 
     public void addLocation(final LocationDef location) {
         if (m_locations == null) {
-            m_locations = new ArrayList<LocationDef>();
+            m_locations = new ArrayList<>();
         }
         m_locations.add(location);
     }

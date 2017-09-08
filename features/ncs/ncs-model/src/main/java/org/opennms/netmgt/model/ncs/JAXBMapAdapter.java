@@ -47,7 +47,7 @@ public class JAXBMapAdapter extends XmlAdapter<JAXBMapAdapter.JAXBMap, Map<Strin
 	@XmlRootElement(name = "attributes")
 	public static class JAXBMap {
 	    @XmlElement(name = "attribute", required = true)
-	    private final List<JAXBMapEntry> a = new ArrayList<JAXBMapEntry>();
+	    private final List<JAXBMapEntry> a = new ArrayList<>();
 	    public List<JAXBMapEntry> getA() {
 	        return this.a;
 	    }

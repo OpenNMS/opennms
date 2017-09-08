@@ -73,7 +73,7 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 	}
 
 	public static class IPVertex extends AbstractVertex implements GroupRef {
-		private Set<VertexRef> m_children = new HashSet<VertexRef>();
+		private Set<VertexRef> m_children = new HashSet<>();
 
         public IPVertex(String namespace, String id, String label) {
 			super(namespace, id, label);

@@ -275,11 +275,11 @@ public class Event implements Serializable {
 	public Event() {
 		super();
 
-		_autoactionList = new ArrayList<Autoaction>();
-		_operactionList = new ArrayList<Operaction>();
-		_loggroupList = new ArrayList<String>();
-		_forwardList = new ArrayList<Forward>();
-		_scriptList = new ArrayList<Script>();
+		_autoactionList = new ArrayList<>();
+		_operactionList = new ArrayList<>();
+		_loggroupList = new ArrayList<>();
+		_forwardList = new ArrayList<>();
+		_scriptList = new ArrayList<>();
 	}
 
 	// -----------/
@@ -369,7 +369,7 @@ public class Event implements Serializable {
 
 	public void addParm(final Parm parm) {
 	    if (_parms == null) {
-	        _parms = new ArrayList<Parm>();
+	        _parms = new ArrayList<>();
 	    }
 	    _parms.add(parm);
 	}

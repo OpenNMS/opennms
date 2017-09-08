@@ -344,7 +344,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testOspfIfTableWalk() throws Exception {
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
         String trackerName = "ospfIfTable";
-        final List<OspfLink> links = new ArrayList<OspfLink>();
+        final List<OspfLink> links = new ArrayList<>();
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
 
         	public void processOspfIfRow(final OspfIfRow row) {
@@ -612,7 +612,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void test3LldpRemoteTableWalk() throws Exception {
 
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH2_IP));
-        final List<LldpLink> links = new ArrayList<LldpLink>();
+        final List<LldpLink> links = new ArrayList<>();
                 
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
@@ -732,7 +732,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testIsisISAdjTableWalk() throws Exception {
 
-    	final List<IsIsLink> links = new ArrayList<IsIsLink>();
+    	final List<IsIsLink> links = new ArrayList<>();
     	String trackerName = "isisISAdjTable";
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
         IsisISAdjTableTracker tracker = new IsisISAdjTableTracker() {
@@ -780,7 +780,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testIsisCircTableWalk() throws Exception {
 
-    	final List<IsIsLink> links = new ArrayList<IsIsLink>();
+    	final List<IsIsLink> links = new ArrayList<>();
     	String trackerName = "isisCircTable";
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
         IsisCircTableTracker tracker = new IsisCircTableTracker() {
@@ -854,7 +854,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testIpNetToMediaTableWalk() throws Exception {
 
-    	final List<IpNetToMedia> rows = new ArrayList<IpNetToMedia>();
+    	final List<IpNetToMedia> rows = new ArrayList<>();
     	String trackerName = "ipNetToMediaTable";
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(MIKROTIK_IP));
         IpNetToMediaTableTracker tracker = new IpNetToMediaTableTracker() {
@@ -944,7 +944,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testDot1dBasePortTableWalk() throws Exception {
 
     	String trackerName = "dot1dbasePortTable";
-    	final List<Dot1dBasePortRow> rows = new ArrayList<Dot1dBasePortTableTracker.Dot1dBasePortRow>();
+    	final List<Dot1dBasePortRow> rows = new ArrayList<>();
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dBasePortTableTracker tracker = new Dot1dBasePortTableTracker() {
             @Override
@@ -979,7 +979,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testDot1dStpPortTableWalk() throws Exception {
 
     	String trackerName = "dot1dbaseStpTable";
-    	final List<BridgeStpLink> links = new ArrayList<BridgeStpLink>();
+    	final List<BridgeStpLink> links = new ArrayList<>();
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dStpPortTableTracker tracker = new Dot1dStpPortTableTracker() {
             @Override
@@ -1025,7 +1025,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testDot1dTpFdbTableWalk() throws Exception {
 
     	String trackerName = "dot1dTpFdbTable";
-    	final List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
+    	final List<BridgeMacLink> links = new ArrayList<>();
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dTpFdbTableTracker tracker = new Dot1dTpFdbTableTracker() {
             @Override

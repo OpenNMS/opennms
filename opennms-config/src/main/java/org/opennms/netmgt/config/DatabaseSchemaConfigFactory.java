@@ -227,7 +227,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      * Construct m_primaryJoins
      */
     private void finishConstruction() {
-        Set<String> joinableSet = new HashSet<String>();
+        Set<String> joinableSet = new HashSet<>();
         final Map<String, Join> primaryJoins = new ConcurrentHashMap<String, Join>();
         joinableSet.add(getPrimaryTable().getName());
         // loop until we stop adding entries to the set
@@ -326,7 +326,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      *         exists or only the primary table was specified
      */
     public List<String> getJoinTables(final List<Table> tables) {
-        final List<String> joinedTables = new ArrayList<String>();
+        final List<String> joinedTables = new ArrayList<>();
 
         getReadLock().lock();
         try {

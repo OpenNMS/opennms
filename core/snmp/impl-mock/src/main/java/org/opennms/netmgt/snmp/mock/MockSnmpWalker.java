@@ -50,7 +50,7 @@ public class MockSnmpWalker extends SnmpWalker {
 	private static final Logger LOG = LoggerFactory.getLogger(MockSnmpWalker.class);
 
 	private static class MockPduBuilder extends WalkerPduBuilder {
-        private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
+        private List<SnmpObjId> m_oids = new ArrayList<>();
 
         public MockPduBuilder(final int maxVarsPerPdu) {
             super(maxVarsPerPdu);

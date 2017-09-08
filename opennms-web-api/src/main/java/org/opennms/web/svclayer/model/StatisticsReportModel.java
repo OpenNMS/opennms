@@ -118,7 +118,7 @@ public class StatisticsReportModel {
                 return new ArrayList<OnmsResource>(0);
             }
             
-            List<OnmsResource> resources = new ArrayList<OnmsResource>();
+            List<OnmsResource> resources = new ArrayList<>();
             
             OnmsResource parent = m_resource.getParent();
             while (parent != null) {
@@ -134,7 +134,7 @@ public class StatisticsReportModel {
                 return new ArrayList<OnmsResource>(0);
             }
             
-            List<OnmsResource> resources = new ArrayList<OnmsResource>();
+            List<OnmsResource> resources = new ArrayList<>();
             
             OnmsResource parent = new PrettyOnmsResource(m_resource.getParent());
             while (parent != null) {
@@ -156,7 +156,7 @@ public class StatisticsReportModel {
     
     private BindingResult m_errors;
     private StatisticsReport m_report;
-    private SortedSet<Datum> m_data = new TreeSet<Datum>();
+    private SortedSet<Datum> m_data = new TreeSet<>();
     
     /**
      * <p>getData</p>

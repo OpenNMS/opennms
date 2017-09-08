@@ -91,7 +91,7 @@ public class ChooseUeisController extends AbstractController {
 
         List<String> excludeList = getExcludeList();
         TreeMap<String, String> sortedMap = new TreeMap<String, String>();
-        List<Event> disappearingList = new ArrayList<Event>();
+        List<Event> disappearingList = new ArrayList<>();
 
         if (notice.getUei() != null && notice.getUei().startsWith("~")) {
             buffer.append("<option selected value=\"" + notice.getUei()
@@ -157,7 +157,7 @@ public class ChooseUeisController extends AbstractController {
 
     public List<String> getExcludeList() throws IOException,
             FileNotFoundException {
-        List<String> excludes = new ArrayList<String>();
+        List<String> excludes = new ArrayList<>();
 
         Properties excludeProperties = new Properties();
         excludeProperties.load(new FileInputStream(ConfigFileConstants

@@ -76,7 +76,7 @@ public class HttpNotificationStrategyIT {
             final String message = "text message for unit testing";
 
             final NotificationStrategy ns = new HttpNotificationStrategy();
-            final List<Argument> arguments = new ArrayList<Argument>();
+            final List<Argument> arguments = new ArrayList<>();
 
             arguments.add(new Argument("url", null, "http://localhost:" + port + "/cgi-bin/noauth/nmsgw.pl", false));
             arguments.add(new Argument("post-NodeID", null, "1", false));

@@ -494,7 +494,7 @@ public class Migrator {
      */
     protected ResourceLoader getMigrationResourceLoader(final Migration migration) {
         final File changeLog = new File(migration.getChangeLog());
-        final List<URL> urls = new ArrayList<URL>();
+        final List<URL> urls = new ArrayList<>();
         try {
             if (changeLog.exists()) {
                 urls.add(changeLog.getParentFile().toURI().toURL());

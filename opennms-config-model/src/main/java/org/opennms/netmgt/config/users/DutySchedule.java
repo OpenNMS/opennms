@@ -255,7 +255,7 @@ public class DutySchedule {
      * @return A Vector properly formatted to reflect this DutySchedule.
      */
     public Vector<Object> getAsVector() {
-        Vector<Object> vector = new Vector<Object>();
+        Vector<Object> vector = new Vector<>();
 
         for (int i = 0; i < 7; i++) {
             vector.add(Boolean.valueOf(m_days.get(i)));

@@ -52,7 +52,7 @@ public class Collect implements Serializable {
     private static final long serialVersionUID = 4612617249821481259L;
 
     @XmlElement(name="includeGroup")
-    private List<String> m_includeGroups = new ArrayList<String>();
+    private List<String> m_includeGroups = new ArrayList<>();
 
     public List<String> getIncludeGroups() {
         if (m_includeGroups == null) {

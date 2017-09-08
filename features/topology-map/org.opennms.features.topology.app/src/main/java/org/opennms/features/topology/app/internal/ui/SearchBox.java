@@ -181,7 +181,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel(),
                     searchSuggestion.getQuery(), searchSuggestion.isCollapsible(), searchSuggestion.isCollapsed());
 
-            Set<VertexRef> vRefs = new TreeSet<VertexRef>();
+            Set<VertexRef> vRefs = new TreeSet<>();
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);

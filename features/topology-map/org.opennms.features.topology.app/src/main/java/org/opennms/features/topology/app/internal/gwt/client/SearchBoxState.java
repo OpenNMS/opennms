@@ -35,9 +35,9 @@ import com.vaadin.shared.AbstractComponentState;
 
 public class SearchBoxState extends AbstractComponentState {
 
-    List<SearchSuggestion> m_suggestions = new ArrayList<SearchSuggestion>();
-    List<SearchSuggestion> m_selected = new ArrayList<SearchSuggestion>();
-    List<SearchSuggestion> m_focused = new ArrayList<SearchSuggestion>();
+    List<SearchSuggestion> m_suggestions = new ArrayList<>();
+    List<SearchSuggestion> m_selected = new ArrayList<>();
+    List<SearchSuggestion> m_focused = new ArrayList<>();
     int m_triggerCount = 0;
 
     public void setSuggestions(List<SearchSuggestion> suggestions){

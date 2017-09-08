@@ -313,7 +313,7 @@ public class WmiManager {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public WmiResult performExecQuery(final WmiParams params) throws WmiException {
-        final ArrayList<Object> wmiObjects = new ArrayList<Object>();
+        final ArrayList<Object> wmiObjects = new ArrayList<>();
         final OnmsWbemObjectSet wos = m_WmiClient.performExecQuery(params.getWql());
         
         for(int i=0; i<wos.count(); i++) {
@@ -344,7 +344,7 @@ public class WmiManager {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public WmiResult performInstanceOf(final WmiParams params) throws WmiException {
-        final ArrayList<Object> wmiObjects = new ArrayList<Object>();
+        final ArrayList<Object> wmiObjects = new ArrayList<>();
 		final OnmsWbemObjectSet wos = m_WmiClient.performInstanceOf(params.getWmiClass());
 
         for(int i=0; i<wos.count(); i++) {

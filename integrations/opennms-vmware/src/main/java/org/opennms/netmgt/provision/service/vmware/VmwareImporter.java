@@ -277,7 +277,7 @@ public class VmwareImporter {
         } else {
             if (managedEntity instanceof HostSystem) {
                 boolean reachableInterfaceFound = false, firstInterface = true;
-                List<RequisitionInterface> requisitionInterfaceList = new ArrayList<RequisitionInterface>();
+                List<RequisitionInterface> requisitionInterfaceList = new ArrayList<>();
                 RequisitionInterface primaryInterfaceCandidate = null;
 
                 // add all given interfaces
@@ -810,7 +810,7 @@ public class VmwareImporter {
     }
 
     private List<RequisitionMonitoredService> getManualyConfiguredServices(RequisitionInterface intf) {
-        List<RequisitionMonitoredService> services = new ArrayList<RequisitionMonitoredService>();
+        List<RequisitionMonitoredService> services = new ArrayList<>();
         for (RequisitionMonitoredService svc : intf.getMonitoredServices()) {
             boolean found = false;
             for (String svcName : request.getHostSystemServices()) {

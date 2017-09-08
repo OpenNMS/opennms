@@ -57,7 +57,7 @@ public class PingSweepResponseDTOTest extends XmlTestNoCastor<PingSweepResponseD
         PingSweepResultDTO resultDTO = new PingSweepResultDTO();
         resultDTO.setAddress(InetAddress.getByName("127.0.0.1"));
         resultDTO.setRtt(0.243);
-        List<PingSweepResultDTO> pingResult = new ArrayList<PingSweepResultDTO>();
+        List<PingSweepResultDTO> pingResult = new ArrayList<>();
         pingResult.add(resultDTO);
         responseDTO.setPingSweepResult(pingResult);
         return responseDTO;

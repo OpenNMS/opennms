@@ -1055,7 +1055,7 @@ public class Installer {
     public String findLibrary(String libname, String path, boolean isRequired) throws Exception {
         String fullname = System.mapLibraryName(libname);
 
-        ArrayList<String> searchPaths = new ArrayList<String>();
+        ArrayList<String> searchPaths = new ArrayList<>();
 
         if (path != null) {
             for (String entry : path.split(File.pathSeparator)) {

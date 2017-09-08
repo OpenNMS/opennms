@@ -127,13 +127,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
     private static final LogAdapter s_log = LogFactory.getLogger(MockSnmpAgent.class);
 
-    private AtomicReference<String> m_address = new AtomicReference<String>();
-    private AtomicReference<URL> m_moFile = new AtomicReference<URL>();
+    private AtomicReference<String> m_address = new AtomicReference<>();
+    private AtomicReference<URL> m_moFile = new AtomicReference<>();
     private AtomicBoolean m_running = new AtomicBoolean();
     private AtomicBoolean m_stopped = new AtomicBoolean();
-    private AtomicReference<List<ManagedObject>> m_moList = new AtomicReference<List<ManagedObject>>();
-    private AtomicReference<MockSnmpMOLoader> m_moLoader = new AtomicReference<MockSnmpMOLoader>();
-    private AtomicReference<IOException> m_failure = new AtomicReference<IOException>();
+    private AtomicReference<List<ManagedObject>> m_moList = new AtomicReference<>();
+    private AtomicReference<MockSnmpMOLoader> m_moLoader = new AtomicReference<>();
+    private AtomicReference<IOException> m_failure = new AtomicReference<>();
 
     private static File BOOT_COUNT_FILE;
 

@@ -67,7 +67,7 @@ public class NotificationFeed extends AbstractFeed {
         feed.setDescription("Notifications");
         feed.setLink(getUrlBase() + "notification/browse");
 
-        List<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<SyndEntry> entries = new ArrayList<>();
 
         try {
             NotificationModel model = new NotificationModel();

@@ -42,7 +42,7 @@ import liquibase.statement.SqlStatement;
 public class CreateTypeChange extends AbstractChange implements ChangeWithColumns<ColumnConfig> {
 
 	private String m_typeName;
-	private List<ColumnConfig> m_columns = new ArrayList<ColumnConfig>();
+	private List<ColumnConfig> m_columns = new ArrayList<>();
 
 	public CreateTypeChange() {
 		super("createType", "Create a new column type.", ChangeMetaData.PRIORITY_DEFAULT);

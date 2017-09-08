@@ -116,7 +116,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     private OnmsNode m_node;
 
-    private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<OnmsIpInterface>();
+    private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<>();
 
     /**
      * <p>Constructor for OnmsSnmpInterface.</p>

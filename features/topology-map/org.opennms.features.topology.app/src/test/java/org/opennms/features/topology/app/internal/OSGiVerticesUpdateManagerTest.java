@@ -234,7 +234,7 @@ public class OSGiVerticesUpdateManagerTest {
     }
 
     private List<Vertex> createVerticsWithIds(int... vertexIds) {
-        List<Vertex> vertices = new ArrayList<Vertex>();
+        List<Vertex> vertices = new ArrayList<>();
         for(int i = 0; i < vertexIds.length; i++) {
             Vertex vertex = new TestVertex(String.valueOf(vertexIds[i]), "no-label");
             vertices.add(vertex);
@@ -253,7 +253,7 @@ public class OSGiVerticesUpdateManagerTest {
     }
 
     private List<VertexRef> createVertexRefsWithIds(int... vertIds) {
-        List<VertexRef> vertices = new ArrayList<VertexRef>();
+        List<VertexRef> vertices = new ArrayList<>();
         for (int i = 0; i < vertIds.length; i++) {
             VertexRef vRef = new DefaultVertexRef("nodes", "" + vertIds[i], "");
             vertices.add(vRef);

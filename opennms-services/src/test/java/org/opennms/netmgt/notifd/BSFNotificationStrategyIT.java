@@ -102,7 +102,7 @@ public class BSFNotificationStrategyIT {
         File notifyBsh = tempFolder.newFile("notify.bsh");
         FileUtils.write(notifyBsh, "results.put(\"status\", node.id == 1 ? \"OK\" : \"NOT_OK\");");
 
-        List<Argument> arguments = new ArrayList<Argument>();
+        List<Argument> arguments = new ArrayList<>();
         // Point to our script
         arguments.add(new Argument("file-name", null, notifyBsh.getAbsolutePath(), false));
         // Reference node 1

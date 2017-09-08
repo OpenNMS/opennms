@@ -163,7 +163,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> List<String> getNamespacesForClass(final Class<T> clazz) {
-        final List<String> namespaces = new ArrayList<String>();
+        final List<String> namespaces = new ArrayList<>();
         final XmlSeeAlso seeAlso = clazz.getAnnotation(XmlSeeAlso.class);
         if (seeAlso != null) {
             for (final Class<?> c : seeAlso.value()) {
@@ -412,7 +412,7 @@ public abstract class JaxbUtils {
     }
 
     private static List<String> getSchemaFilesFor(final Class<?> clazz) {
-        final List<String> schemaFiles = new ArrayList<String>();
+        final List<String> schemaFiles = new ArrayList<>();
         for (final Class<?> c : getAllRelatedClasses(clazz)) {
             final ValidateUsing annotation = c.getAnnotation(ValidateUsing.class);
             if (annotation == null || annotation.value() == null) {
@@ -432,7 +432,7 @@ public abstract class JaxbUtils {
             return m_schemas.get(clazz);
         }
 
-        final List<Source> sources = new ArrayList<Source>();
+        final List<Source> sources = new ArrayList<>();
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 
         for (final String schemaFileName : getSchemaFilesFor(clazz)) {

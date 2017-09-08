@@ -161,7 +161,7 @@ public abstract class Bootstrap {
      * @throws java.net.MalformedURLException if any.
      */
     public static ClassLoader loadClasses(String dirStr, boolean recursive, boolean append) throws MalformedURLException {
-        LinkedList<URL> urls = new LinkedList<URL>();
+        LinkedList<URL> urls = new LinkedList<>();
 
         if (append) {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -197,7 +197,7 @@ public abstract class Bootstrap {
      */
     public static ClassLoader loadClasses(File dir, boolean recursive)
             throws MalformedURLException {
-        LinkedList<URL> urls = new LinkedList<URL>();
+        LinkedList<URL> urls = new LinkedList<>();
         loadClasses(dir, recursive, urls);
         return newClassLoader(urls);
     }

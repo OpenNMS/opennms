@@ -44,11 +44,11 @@ public class View {
     /**
      * the row definitions for this view
      */
-    private List<RowDef> m_rows = new LinkedList<RowDef>();
+    private List<RowDef> m_rows = new LinkedList<>();
     /**
      * the column definitions for this view
      */
-    private List<ColumnDef> m_columns = new LinkedList<ColumnDef>();
+    private List<ColumnDef> m_columns = new LinkedList<>();
     /**
      * the name for this view
      */

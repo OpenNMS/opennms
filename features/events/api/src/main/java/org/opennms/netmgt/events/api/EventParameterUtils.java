@@ -119,7 +119,7 @@ public abstract class EventParameterUtils {
      */
     public static List<Parm> decode(final String eventparms) {
         if (eventparms == null ) return null;
-        final List<Parm> parms = new ArrayList<Parm>();
+        final List<Parm> parms = new ArrayList<>();
   
         String[] paramslistString = eventparms.split(Character.toString(EventDatabaseConstants.MULTIPLE_VAL_DELIM));
         if (paramslistString != null) {

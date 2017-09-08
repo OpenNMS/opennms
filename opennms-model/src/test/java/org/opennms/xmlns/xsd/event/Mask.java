@@ -99,7 +99,7 @@ public class Mask {
      */
     public List<Maskelement> getMaskelement() {
         if (maskelement == null) {
-            maskelement = new ArrayList<Maskelement>();
+            maskelement = new ArrayList<>();
         }
         return this.maskelement;
     }

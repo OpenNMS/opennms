@@ -60,7 +60,7 @@ public class XmlSource extends XmlGroups implements Serializable, Comparable<Xml
 
     /** Import Groups List. */
     @XmlElement(name="import-groups", required=false)
-    private List<String> m_importGroupsList = new ArrayList<String>();
+    private List<String> m_importGroupsList = new ArrayList<>();
 
     /** The request object. */
     @XmlElement(name="request", required=false)

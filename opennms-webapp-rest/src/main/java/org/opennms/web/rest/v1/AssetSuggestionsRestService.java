@@ -67,7 +67,7 @@ import org.springframework.util.Assert;
 public class AssetSuggestionsRestService extends OnmsRestService implements InitializingBean {
 
     /** The Constant BLACK_LIST. */
-    private static final Set<String> BLACK_LIST = new HashSet<String>();
+    private static final Set<String> BLACK_LIST = new HashSet<>();
 
     static {
         BLACK_LIST.add("class");

@@ -70,7 +70,7 @@ public class EnhancedLinkdSelectionAware implements SelectionAware {
      * @return
      */
     protected List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
-        List<Integer> nodeIdList = new ArrayList<Integer>();
+        List<Integer> nodeIdList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
             if ("nodes".equals(eachRef.getNamespace())) {
                 try {

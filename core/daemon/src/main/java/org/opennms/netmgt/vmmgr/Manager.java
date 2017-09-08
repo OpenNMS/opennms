@@ -128,7 +128,7 @@ public class Manager implements ManagerMBean {
     public List<String> status() {
         setLogPrefix();
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (MBeanServer server : getMBeanServers()) {
             result.addAll(status(server));
         }

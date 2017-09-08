@@ -238,7 +238,7 @@ public final class NamedSnmpVar {
         if ( instances == null ) {
             return m_isTabular ? new ColumnTracker(getSnmpObjId()) : new SingleInstanceTracker(getSnmpObjId(), SnmpInstId.INST_ZERO);
         } else {
-            final Collection<Collectable> trackers = new ArrayList<Collectable>();
+            final Collection<Collectable> trackers = new ArrayList<>();
             for(final SnmpInstId inst : instances) {
                 trackers.add(new SingleInstanceTracker(getSnmpObjId(), inst));
             }

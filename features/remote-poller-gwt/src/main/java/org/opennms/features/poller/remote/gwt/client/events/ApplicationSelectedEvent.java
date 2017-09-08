@@ -40,7 +40,7 @@ import com.google.gwt.event.shared.GwtEvent;
 public class ApplicationSelectedEvent extends GwtEvent<ApplicationSelectedEventHandler> {
     
     /** Constant <code>TYPE</code> */
-    public static Type<ApplicationSelectedEventHandler> TYPE = new Type<ApplicationSelectedEventHandler>();
+    public static Type<ApplicationSelectedEventHandler> TYPE = new Type<>();
     private String m_applicationName;
     
     /**

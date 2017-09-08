@@ -52,7 +52,7 @@ public class SnmpConfig extends Configuration implements Serializable {
      * Maps IP addresses to specific SNMP parameters (retries, timeouts...)
      */
     @XmlElement(name="definition")
-    private List<Definition> m_definitions = new ArrayList<Definition>();
+    private List<Definition> m_definitions = new ArrayList<>();
 
     public SnmpConfig() {
         super();

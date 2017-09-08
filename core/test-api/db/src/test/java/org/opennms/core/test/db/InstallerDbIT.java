@@ -261,7 +261,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         Table oldTable = new Table();
         oldTable.setName("node");
         oldTable.setConstraints(new LinkedList<Constraint>());
-        List<Column> oldColumns = new LinkedList<Column>();
+        List<Column> oldColumns = new LinkedList<>();
         Column oldColumn = new Column();
         oldColumn.setName("nodeId");
         oldColumn.setType("INTEGER");
@@ -273,7 +273,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         Table newTable = new Table();
         newTable.setName("node");
         newTable.setConstraints(new LinkedList<Constraint>());
-        List<Column> newColumns = new LinkedList<Column>();
+        List<Column> newColumns = new LinkedList<>();
         Column newColumn = new Column();
         newColumn.setName("nodeId");
         newColumn.setType("INTEGER");
@@ -1804,7 +1804,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
         String line;
-        List<String> unanticipatedOutput = new ArrayList<String>();
+        List<String> unanticipatedOutput = new ArrayList<>();
         while ((line = reader.readLine()) != null) {
             if (line.matches("- creating tables\\.\\.\\.")) {
                 continue;

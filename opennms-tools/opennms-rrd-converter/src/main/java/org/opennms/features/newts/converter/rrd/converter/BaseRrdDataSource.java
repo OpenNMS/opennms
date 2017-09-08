@@ -36,7 +36,7 @@ import java.util.TreeMap;
 
 public abstract class BaseRrdDataSource implements TimeSeriesDataSource {
     private Map<String,Integer> m_dsNameMapping = new TreeMap<String,Integer>();
-    private List<String> m_dsNames = new ArrayList<String>();
+    private List<String> m_dsNames = new ArrayList<>();
 
     public BaseRrdDataSource(final List<String> dsNames) {
         setDsNames(dsNames);

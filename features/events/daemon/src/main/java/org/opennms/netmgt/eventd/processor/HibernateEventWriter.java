@@ -357,8 +357,8 @@ public class HibernateEventWriter implements EventWriter {
 
         // eventOperAction / eventOperActionMenuText
         if (event.getOperactionCount() > 0) {
-            final List<Operaction> a = new ArrayList<Operaction>();
-            final List<String> b = new ArrayList<String>();
+            final List<Operaction> a = new ArrayList<>();
+            final List<String> b = new ArrayList<>();
 
             for (final Operaction eoa : event.getOperactionCollection()) {
                 a.add(eoa);

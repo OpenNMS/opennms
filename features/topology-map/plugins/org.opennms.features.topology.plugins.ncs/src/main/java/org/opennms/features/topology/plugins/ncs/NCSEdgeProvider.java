@@ -167,7 +167,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 	 */
 	@Override
 	public List<Edge> getEdges(Criteria... criteria) {
-		List<Edge> retval = new ArrayList<Edge>();
+		List<Edge> retval = new ArrayList<>();
 		for (Criteria criterium : criteria) {
 			try {
 				NCSServiceCriteria crit = (NCSServiceCriteria)criterium;
@@ -225,7 +225,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 	}
 
     private NCSComponent[] checkForeignSource(String foreignSource, Set<NCSComponent> subcomponents) {
-        Set<NCSComponent> retVal = new HashSet<NCSComponent>();
+        Set<NCSComponent> retVal = new HashSet<>();
         for(NCSComponent component : subcomponents) {
             if(component.getForeignSource().equals(foreignSource)){
                 retVal.add(component);

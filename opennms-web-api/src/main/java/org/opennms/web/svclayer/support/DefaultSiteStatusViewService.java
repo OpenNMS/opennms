@@ -111,7 +111,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     private Set<AggregateStatusDefinition> getAggregateStatusDefinitionsForView(View view) {
-        Set<AggregateStatusDefinition> statusDefs = new LinkedHashSet<AggregateStatusDefinition>();
+        Set<AggregateStatusDefinition> statusDefs = new LinkedHashSet<>();
         //Loop over the defined site status rows
         for (RowDef rowDef : view.getRows()) {
             AggregateStatusDefinition def = new AggregateStatusDefinition();
@@ -127,7 +127,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     private Set<OnmsCategory> getCategoriesForRowDef(RowDef rowDef) {
-        Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
+        Set<OnmsCategory> categories = new LinkedHashSet<>();
         
         //Loop over the defined categories and create model categories (OnmsCategory)
         List<Category> cats = rowDef.getCategories();
@@ -196,7 +196,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
          * We'll return this collection populated with all the aggregated statuss for the
          * devices in the building (site) by for each group of categories.
          */
-        Collection<AggregateStatus> stati = new ArrayList<AggregateStatus>();
+        Collection<AggregateStatus> stati = new ArrayList<>();
         
         /*
          * Iterate over the status definitions and create aggregated statuss

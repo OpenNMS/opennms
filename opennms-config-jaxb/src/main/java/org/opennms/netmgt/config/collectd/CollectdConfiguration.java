@@ -66,13 +66,13 @@ public class CollectdConfiguration implements Serializable {
      * from them.
      */
     @XmlElement(name="package")
-    private List<Package> m_packages = new ArrayList<Package>();
+    private List<Package> m_packages = new ArrayList<>();
 
     /**
      * Service collectors
      */
     @XmlElement(name="collector")
-    private List<Collector> m_collectors = new ArrayList<Collector>();
+    private List<Collector> m_collectors = new ArrayList<>();
 
     public CollectdConfiguration() {
         super();
@@ -143,7 +143,7 @@ public class CollectdConfiguration implements Serializable {
     }
 
     public Filter getFilter(final String filterName) {
-        final List<Filter> filters = new ArrayList<Filter>();
+        final List<Filter> filters = new ArrayList<>();
         for (final Package p : getPackages()) {
             final Filter filter = p.getFilter();
             if (filterName.equals(filter.getName())) {
@@ -166,7 +166,7 @@ public class CollectdConfiguration implements Serializable {
     public CollectdConfiguration getCollectdConfigurationForPackages(List<String> collectionPackageNames) {
         if (collectionPackageNames == null || collectionPackageNames.size() < 1) return null;
 
-        final Set<String> seenCollectors = new HashSet<String>();
+        final Set<String> seenCollectors = new HashSet<>();
         final CollectdConfiguration newConfig = new CollectdConfiguration();
         newConfig.setThreads(getThreads());
 

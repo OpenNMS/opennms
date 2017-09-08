@@ -181,7 +181,7 @@ public final class TrapdConfigFactory implements TrapdConfig {
 
     @Override
     public synchronized List<SnmpV3User> getSnmpV3Users() {
-        List<SnmpV3User> snmpUsers = new ArrayList<SnmpV3User>();
+        List<SnmpV3User> snmpUsers = new ArrayList<>();
         for (Snmpv3User user : m_config.getSnmpv3UserCollection()) {
             snmpUsers.add(new SnmpV3User(
                     user.getEngineId(),

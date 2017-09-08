@@ -223,7 +223,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 				}
 			}
 		} else {
-			List<Restriction> subRestrictions = new ArrayList<Restriction>();
+			List<Restriction> subRestrictions = new ArrayList<>();
 			for (SearchCondition<Q> condition : sc.getSearchConditions()) {
 				// Create a new CriteriaBuilder
 				CriteriaBuilder builder = null;

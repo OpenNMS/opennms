@@ -75,7 +75,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         dao.afterPropertiesSet();
 
         // Initialize the Syslog northbound interfaces
-        List<SyslogNorthbounder> nbis = new LinkedList<SyslogNorthbounder>();
+        List<SyslogNorthbounder> nbis = new LinkedList<>();
         for (SyslogDestination syslogDestination : dao.getConfig().getDestinations()) {
             SyslogNorthbounder nbi = new SyslogNorthbounder(dao, syslogDestination.getName());
             nbi.afterPropertiesSet();
@@ -94,7 +94,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         snmpInterface.setIfDescr("en1");
         snmpInterface.setIfName("en1/0");
         snmpInterface.setPhysAddr("00:00:00:00:00:01");
-        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
+        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<>();
         InetAddress address = InetAddress.getByName("10.0.1.1");
         OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
         onmsIf.setSnmpInterface(snmpInterface);
@@ -121,7 +121,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
                     new OnmsEventParameter(this, "owner", "agalue", "String")));
         }});
         NorthboundAlarm nbAlarm = new NorthboundAlarm(onmsAlarm);
-        List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
+        List<NorthboundAlarm> alarms = new LinkedList<>();
         alarms.add(nbAlarm);
 
         // Verify filters and send alarms to the northbound interfaces
@@ -152,7 +152,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
      * @throws Exception the exception
      */
     private List<String> getMessagesFromBuffer(BufferedReader reader) throws Exception {
-        List<String> messages = new LinkedList<String>();
+        List<String> messages = new LinkedList<>();
         String line = null;
         while ((line = reader.readLine()) != null) {
             messages.add(line);

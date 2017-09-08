@@ -41,7 +41,7 @@ import java.util.List;
 @XmlRootElement(name = "database-reports")
 public class LegacyLocalReportsDefinition {
 
-    private List<LegacyLocalReportDefinition> m_reportList = new ArrayList<LegacyLocalReportDefinition>();
+    private List<LegacyLocalReportDefinition> m_reportList = new ArrayList<>();
 
     @XmlElement(name = "report")
     public List<LegacyLocalReportDefinition> getReportList() {

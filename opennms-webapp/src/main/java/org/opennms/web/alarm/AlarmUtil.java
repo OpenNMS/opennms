@@ -362,7 +362,7 @@ public abstract class AlarmUtil extends Object {
     }
 
     public static List<Filter> getFilterList(String[] filterStrings, ServletContext servletContext) {
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
                 Filter filter = AlarmUtil.getFilter(filterString, servletContext);

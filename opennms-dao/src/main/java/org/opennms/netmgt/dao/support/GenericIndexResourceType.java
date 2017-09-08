@@ -314,7 +314,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
                 }
 
                 private List<String> tokenizeIndex(final String index) {
-                    List<String> indexElements = new ArrayList<String>();
+                    List<String> indexElements = new ArrayList<>();
                     StringTokenizer t = new StringTokenizer(index, ".");
                     while (t.hasMoreTokens()) {
                         indexElements.add(t.nextToken());

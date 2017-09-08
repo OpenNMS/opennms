@@ -70,7 +70,7 @@ public class SurveillanceViewTable extends Table {
     /**
      * the list of detail tables
      */
-    private List<SurveillanceViewDetail> m_detailTables = new ArrayList<SurveillanceViewDetail>();
+    private List<SurveillanceViewDetail> m_detailTables = new ArrayList<>();
     /**
      * the selected row categories
      */

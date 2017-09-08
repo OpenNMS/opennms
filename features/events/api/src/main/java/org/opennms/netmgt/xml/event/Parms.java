@@ -69,7 +69,7 @@ public class Parms implements Serializable {
 
     public Parms() {
         super();
-        this._parmList = new java.util.ArrayList<org.opennms.netmgt.xml.event.Parm>();
+        this._parmList = new java.util.ArrayList<>();
     }
 
 

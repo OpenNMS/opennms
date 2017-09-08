@@ -112,7 +112,7 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
         }
 
         // handle the filter parameters
-        ArrayList<Filter> filterArray = new ArrayList<Filter>();
+        ArrayList<Filter> filterArray = new ArrayList<>();
         for (String filterString : filterStrings) {
             Filter filter = AlarmUtil.getFilter(filterString, getServletContext());
             if (filter != null) {

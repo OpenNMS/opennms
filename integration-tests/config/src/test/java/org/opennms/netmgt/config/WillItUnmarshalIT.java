@@ -165,7 +165,7 @@ public class WillItUnmarshalIT {
      * 
      * See {@link #files()} for detailed information.
      */
-    public static final ArrayList<Object[]> FILES = new ArrayList<Object[]>();
+    public static final ArrayList<Object[]> FILES = new ArrayList<>();
 
     private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl, final boolean lenient, final String exceptionMessage) {
         FILES.add(new Object[] {source, file, clazz, impl, lenient, exceptionMessage});

@@ -101,7 +101,7 @@ public class Rrd {
      */
     public List<String> getRra() {
         if (rra == null) {
-            rra = new ArrayList<String>();
+            rra = new ArrayList<>();
         }
         return this.rra;
     }

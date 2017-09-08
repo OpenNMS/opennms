@@ -259,7 +259,7 @@ public class ThresholdingVisitorIT {
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
         initFactories("/threshd-configuration.xml","/test-thresholds.xml");
-        m_anticipatedEvents = new ArrayList<Event>();
+        m_anticipatedEvents = new ArrayList<>();
     };
     
     private void initFactories(String threshd, String thresholds) throws Exception {
@@ -596,7 +596,7 @@ public class ThresholdingVisitorIT {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
         ServiceParameters svcParams = new ServiceParameters(params);
-        List<ThresholdingVisitor> visitors = new ArrayList<ThresholdingVisitor>();
+        List<ThresholdingVisitor> visitors = new ArrayList<>();
         for (int i=1; i<=5; i++) {
             String ipAddress = baseIpAddress + i;
             ThresholdingVisitor visitor = ThresholdingVisitor.create(i, ipAddress, "SNMP", getRepository(), svcParams, m_resourceStorageDao);
@@ -1073,7 +1073,7 @@ public class ThresholdingVisitorIT {
         runTestForBug3554();
         
         // Validate FavoriteFilterDao Calls
-        HashSet<String> filters = new HashSet<String>();
+        HashSet<String> filters = new HashSet<>();
         for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
             filters.add(pkg.getFilter().getContent().orElse(null));
         }

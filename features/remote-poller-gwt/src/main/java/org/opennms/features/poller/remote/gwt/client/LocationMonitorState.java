@@ -46,13 +46,13 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 
 	private static final long serialVersionUID = -7846127073655210004L;
 
-	private Set<GWTLocationMonitor> m_monitorsStarted = new HashSet<GWTLocationMonitor>();
-	private Set<GWTLocationMonitor> m_monitorsStopped = new HashSet<GWTLocationMonitor>();
-	private Set<GWTLocationMonitor> m_monitorsDisconnected = new HashSet<GWTLocationMonitor>();
+	private Set<GWTLocationMonitor> m_monitorsStarted = new HashSet<>();
+	private Set<GWTLocationMonitor> m_monitorsStopped = new HashSet<>();
+	private Set<GWTLocationMonitor> m_monitorsDisconnected = new HashSet<>();
 
 	private Collection<GWTLocationSpecificStatus> m_locationStatuses;
-	private Set<String> m_serviceNames = new HashSet<String>();
-	private Set<Integer> m_serviceIds = new  HashSet<Integer>();
+	private Set<String> m_serviceNames = new HashSet<>();
+	private Set<Integer> m_serviceIds = new  HashSet<>();
 
 	private StatusDetails m_statusDetails;
 
@@ -240,7 +240,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	 * @return a {@link java.util.Collection} object.
 	 */
 	public Collection<GWTMonitoredService> getServices() {
-	    final Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
+	    final Set<GWTMonitoredService> services = new TreeSet<>();
 	    for (final GWTLocationSpecificStatus status : m_locationStatuses) {
 	        services.add(status.getMonitoredService());
 	    }
@@ -253,7 +253,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	 * @return a {@link java.util.Collection} object.
 	 */
 	public Collection<String> getServicesDown() {
-		final Set<String> servicesDown = new HashSet<String>();
+		final Set<String> servicesDown = new HashSet<>();
 		for (final GWTLocationSpecificStatus status : m_locationStatuses) {
 			final GWTMonitoredService service = status.getMonitoredService();
 			final GWTPollResult result = status.getPollResult();
@@ -270,7 +270,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	 * @return a {@link java.util.Collection} object.
 	 */
 	public Collection<GWTLocationMonitor> getMonitorsWithServicesDown() {
-		final Set<GWTLocationMonitor> monitors = new HashSet<GWTLocationMonitor>();
+		final Set<GWTLocationMonitor> monitors = new HashSet<>();
 		for (final GWTLocationSpecificStatus status : m_locationStatuses) {
 			final GWTPollResult result = status.getPollResult();
 			if (result.isDown()) {
@@ -314,9 +314,9 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 			return StatusDetails.marginal("Only 1 monitor is started, the rest are disconnected.");
 		}
 
-		Set<Integer> anyDown = new HashSet<Integer>();
-		Set<Integer> services = new HashSet<Integer>();
-		Set<Integer> servicesDown = new HashSet<Integer>();
+		Set<Integer> anyDown = new HashSet<>();
+		Set<Integer> services = new HashSet<>();
+		Set<Integer> servicesDown = new HashSet<>();
 		for (Integer serviceId : m_serviceIds) {
 			boolean serviceAllDown = true;
 			boolean foundService = false;
