@@ -14985,7 +14985,7 @@
             mtrapargsInteger=%parm[#2]%
             mtrapargsString=%parm[#3]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/bmsWarningCondition:%dpname%:%nodeid%:%interface%:%parm[#2]%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/bmsWarningCondition:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -25600,7 +25600,7 @@
             APC Event: upsBatteryTempSensorFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsBatteryTempSensorFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsBatteryTempSensorFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -25656,7 +25656,7 @@
             APC Event: upsBatterySoftBusStartFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsBatterySoftBusStartFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsBatterySoftBusStartFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -25712,7 +25712,7 @@
             APC Event: apcOutputShortCircuitCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcOutputShortCircuit:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcOutputShortCircuit:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -25768,7 +25768,7 @@
             APC Event: apcOutputRelayFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcOutputRelayFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcOutputRelayFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -25824,7 +25824,7 @@
             APC Event: upsPfcFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsPfcFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsPfcFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -25880,7 +25880,7 @@
             APC Event: apcDcBusOverVoltageCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcDcBusOverVoltage:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcDcBusOverVoltage:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -25936,7 +25936,7 @@
             APC Event: upsInverterFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsInverterFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsInverterFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -25992,7 +25992,7 @@
             APC Event: apcAdConverterFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcAdConverterFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcAdConverterFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -26048,7 +26048,7 @@
             APC Event: apcLogicPowerSupplyFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcLogicPowerSupplyFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcLogicPowerSupplyFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -26104,7 +26104,7 @@
             APC Event: apcTransformerDCImbalanceFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcTransformerDCImbalanceFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/apcTransformerDCImbalanceFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -26160,7 +26160,7 @@
             APC Event: upsBackfeedRelayFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsBackfeedRelayFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsBackfeedRelayFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -26216,7 +26216,7 @@
             APC Event: upsBypassRelayFaultCleared trap received
             mtrapargsString=%parm[#1]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsBypassRelayFault:%dpname%:%nodeid%:%interface%%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsBypassRelayFault:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
