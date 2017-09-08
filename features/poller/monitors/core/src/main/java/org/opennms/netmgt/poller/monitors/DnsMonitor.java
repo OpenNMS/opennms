@@ -176,7 +176,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                 final SimpleResolver resolver = new SimpleResolver();
                 resolver.setAddress(new InetSocketAddress(addr, port));
                 resolver.setLocalAddress((InetSocketAddress)null);
-                double timeout = timeoutTracker.getSoTimeout()/1000;
+                double timeout = timeoutTracker.getSoTimeout() / 1000d;
                 resolver.setTimeout((timeout < 1 ? 1 : (int) timeout));
                 final Record question = Record.newRecord(name, Type.A, DClass.IN);
                 final Message query = Message.newQuery(question);

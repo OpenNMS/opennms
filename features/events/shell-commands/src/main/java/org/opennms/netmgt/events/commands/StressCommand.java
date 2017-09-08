@@ -183,7 +183,7 @@ public class StressCommand extends OsgiCommandSupport {
         boolean useJexl = jexlExpressions != null && jexlExpressions.size() > 0;
 
         // Display the effective settings and rates
-        double eventsPerSecond = eventsPerSecondPerThread * numberOfThreads;
+        double eventsPerSecond = (double)eventsPerSecondPerThread * (double)numberOfThreads;
         System.out.printf("Generating %d events per second accross %d threads for %d seconds\n",
                 eventsPerSecondPerThread, numberOfThreads, numSeconds);
         System.out.printf("\t with UEI: %s\n", eventUei);

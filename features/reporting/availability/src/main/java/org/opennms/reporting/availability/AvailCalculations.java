@@ -768,8 +768,8 @@ public class AvailCalculations extends Object {
         for (final Map.Entry<Date,Double> entry : treeMap.entrySet()) {
             final Double percent = entry.getValue();
             dateSlot++;
-            LOG.debug("Inserting value {} into date slot {}", dateSlot, percent.doubleValue());
-            calBuilder.setPctValue(dateSlot, percent.doubleValue());
+            LOG.debug("Inserting value {} into date slot {}", dateSlot, percent);
+            calBuilder.setPctValue(dateSlot, percent);
         }
 
         Section section = new Section();

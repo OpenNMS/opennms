@@ -79,9 +79,9 @@ public class Duration implements Comparable<Duration>{
         final StringBuilder buf = new StringBuilder();
 
         long millis = millis();
-        millis = appendUnit(buf, millis, 24*60*60*1000, "d");
-        millis = appendUnit(buf, millis, 60*60*1000, "h");
-        millis = appendUnit(buf, millis, 60*1000, "m");
+        millis = appendUnit(buf, millis, 24L * 60L * 60L * 1000L, "d");
+        millis = appendUnit(buf, millis, 60L * 60L * 1000L, "h");
+        millis = appendUnit(buf, millis, 60L * 1000L, "m");
         millis = appendUnit(buf, millis, 1000, "s");
         millis = appendUnit(buf, millis, 1, "ms");
 

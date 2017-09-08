@@ -69,7 +69,7 @@ public class LocationBroadcastProcessor implements InitializingBean, DisposableB
     private EventDao m_eventDao;
 
     @SuppressWarnings("unused")
-    private static final long UPDATE_PERIOD = 1000 * 60;
+    private static final long UPDATE_PERIOD = 1000L * 60L;
     @SuppressWarnings("unused")
     private static volatile Timer m_timer;
 

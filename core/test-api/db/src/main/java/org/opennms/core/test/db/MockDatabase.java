@@ -292,7 +292,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 Integer.valueOf(e.getTticket() == null ? "0" : e.getTticket().getState()),
                 e.getLogmsg() == null? null : e.getLogmsg().getContent()
         };
-        e.setDbid(eventId.intValue());
+        e.setDbid(eventId);
         update("insert into events (" +
                 "eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, " +
                 "nodeId, ipAddr, serviceId, systemId, " +
