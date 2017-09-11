@@ -1,0 +1,182 @@
+[releasenotes-2017]
+=== OpenNMS Meridian 2017
+
+==== System Requirements
+
+* *Java 8*: OpenNMS Meridian 2017 requires Java 8 as the runtime environment.
+  To run Meridian 2017, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9*: Meridian 2017 requires PostgreSQL 9.x, version 9.2 or higher.
+
+[releasenotes-whatsnew-2017]
+==== What's New in Meridian 2017
+
+Since Meridian 2016, a huge number of backend changes have occurred, including a large refactor of provisioning, many cleanups in Enlinkd, and a number of new features including the Business Service Monitor.
+
+===== Important Upgrade Notes
+
+* *Clean Up Events and Alarms*: Please clean up your event and alarm lists as much as possible before performing an upgrade to Meridian 2017.
+  The upgrade process includes a change to move event parameters to a separate table, rather than being encoded in a column in the event table.
+  If you prune unused data from these tables beforehand, it will make the upgrade process much quicker.
+* *Remote Poller API Change*: Due to internal API changes, the Remote Poller API has changed in Meridian 2017.
+  If you upgrade to Meridian 2017, you will also need to upgrade all Remote Pollers attached to the system to 2017 as well.
+* *Cassandra JMX Metrics*: The default value for the `friendly-name` attribute on the `JMX-Cassandra` collection service has changed from `cassandra21x` to `cassandra`.
++
+This changes the path in which the metrics are stored.
+If you have already been collecting these metrics and wish to preserve them, you can ignore this change when merging your configuration.
+* *Jetty 9.4 Upgrade*: Jetty has been upgraded from `8.1` to the latest `9.4`.
++
+If you have a custom `jetty.xml` in your `etc` folder, you will need to migrate your changes.
+Use `etc/examples/jetty.xml` as a starting point.
+* *Drools 6.5.0 Upgrade*: Drools has been upgraded from `6.0.1.Final` to `6.5.0.Final`.
++
+If you have custom Drools rules, they may need to be revised.
+The compiler used in `6.4.0.Final` is stricter than the compiler in previous versions.
+* *Separate opennms-webapp-remoting Package*: The webapp that supports the Remote Poller has been separated from the main OpenNMS webapp.
++
+This will make installations much smaller for users that do not use the Remote Poller.
+If you use the Remote Poller, you will need to install the `meridian-webapp-remoting` package.
+* *User roles moved from magic-users.properties into users.xml*: The `users.xml` file now contains a list of roles for each user alongside the rest of the user attributes.
+* *JICMP 2.0 Upgrade*: Our Java ICMP library has been upgraded to version 2.0.
++
+You will need to upgrade to this version before upgrading to OpenNMS Meridian 2017.
+* *org.opennms.newts.nan_on_counter_wrap*: If you are using Newts, returning NaN when a counter-wrap is encountered now defaults to true.
++
+If you relied on the old behavior, you can change it back by setting `org.opennms.newts.nan_on_counter_wrap=false` in a file in `opennms.properties.d`.
+
+===== Breaking Changes
+
+* *Custom Topology Icon Definitions*: Custom Icon Definitions in the Topology Map are now handled differently.
++
+You will need to migrate your existing custom icons to the new layout.  The link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#_icons[Administrators Guide] covers this topic in more detail.
+* *Event Translator*: The default behavior of the event translator preserving SNMP data when cloning event has been changed to *_NOT_*
+preserve that data by default.
++
+To restore the old behavior, set `preserve-snmp-data="true"` on the event XML.
+For more information, see link:http://issues.opennms.org/browse/NMS-8374[issue NMS-8374].
+* *ReST API*: The ReST API has been normalized to give better and more consistent responses to queries.
++
+This includes dropping support for redirecting to the model URL on write operations (POST, etc.)
+If you were relying on this old (broken) behavior, please update your ReST API calls accordingly.
+Most client code should be unaffected.
+* link:https://issues.opennms.org/browse/NMS-9303[NMS-9303]: Deprecated Capsd and Linkd event definitions are removed.
++
+Otherwise unused event definitions are also cleaned up and removed from the code and configurations.
+For a detailed list of all removed events see link:https://issues.opennms.org/browse/NMS-9303[NMS-9303].
+For people maintaining databases prior to OpenNMS 1.8, we provide a maintenance script for Linux and Windows in the _opennms-contrib_ package to clean up old events in the database.
+The script is named `NMS-9303-cleanup-deprecated-events.sh` and executes a SQL script.
+In case you run PostgreSQL on Windows, you can use `psql.exe -d opennms -U opennms -W -a -f NMS-9303-cleanup-deprecated-events.sql` to run the maintenance script.
+
+===== New Features
+
+* *Business Service Monitor*: Correlation for root cause and business impact analysis.
++
+The goal of the Business Service Monitor is to provide a high-level correlation of business rules, and to display them in the topology map.
++
+In the BSM, you define a Business Service that encompasses a set of entities (nodes, interfaces, services, and other Business Services) and the relationships among them.
+The alarm states of the component entities are rolled up in a map-reduce fashion to drive a state machine.
+The state of a Business Service is reflected in a new type of event, and can also be visualized (along with the service hierarchy) in the existing OpenNMS topology map.
++
+For details on using the BSM, see link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#ga-bsm#ga-bsm[the Administrators Guide].
+* *Modular Configuration Updates*: Now most properties set in the `opennms.properties` file can be instead overriden by creating a file in the `${OPENNMS_HOME}/etc/opennms.properties.d` directory.
+* *Notifications*: New notification strategies for Slack and Mattermost have been added.
+* *OpenNMS Plugin Manager*: An API for adding 3rd-party "plugins" to OpenNMS.
++
+The core of a tool for adding plugins into OpenNMS has been included in Meridian 2017.
+This provides a set of tools for finding and adding plugins to be loaded into the OpenNMS OSGi container.
+* *Provisioning Requisition UI*: A huge number of improvements have gone into the requisition UI.
+Also, the old "Quick-Add Node" functionality has been reimplemented using the same backend as the requisition UI.
+* *"Scan Report" Remote Poller GUI*: A new front-end for the remote poller that lets you perform a single scan and get a pass/fail report in a GUI has been added.
+You can enable this alternate UI with the "-s" option on the remote poller CLI.
+* *Topology UI Updates*: As part of the BSM work, the topology UI has been vastly improved for both performance and usability.
+* *TSRM Ticketing Plugin*: Create incidents in IBM's TSRM.
++
+Information on configuring the TSRM ticketing plugin can be found in link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#ga-ticketing-tsrm[the Administrators Guide].
+* *Usage Statistics*: Collect anonymous usage statistics.
++
+To get a better idea of how to estimate hardware requirements and the performance characteristics of OpenNMS, we wrote a tool to occasionally submit anonymous diagnostic information about your OpenNMS install.
+It will submit information like the number of nodes, alarms, etc. as well as some basic system information to our servers for statistical reasons.
++
+When a user with the Admin role logs into the system for the first time, they will be prompted as to whether or not they want to opt-in to publish these statistics.
+Statistics will only be published once an Administrator has opted-in.
++
+These statistics are visualized on link:https://stats.opennms.org[stats.opennms.org].
+* *GraphML Topology Provider*: A new Topology Provider is available that reads GraphML formatted graphs and displays them in the the Topology UI.
+* *OpenNMS Elasticsearch ReST Forwarder*: This Elasticsearch forwarder can store events, alarms, and alarm state changes in Elasticsearch for archival or searching.
+It is compatible with all currently supported versions of Elasticsearch.
+* *Drools Persistence*: Drools working memory can now be persisted to disk upon shutdown of OpenNMS.
+* *Unified JAAS Authentication*: The web UI, the Apache Karaf OSGi console, and the built-in ActiveMQ broker all use a single authentication method.
+* *Monitoring Location Events*: Events will be sent when Monitoring Locations are added, updated, or deleted.
+* *External JMS broker*: It is possible to configure OpenNMS to use an external JMS broker if desired.
+* *New Syslog Parser*: A new syslog parser, the `RadixTreeSyslogParser`, has been added, which supports all major syslog message formats, and uses Grok for more performant parsing.
+* *String Persisting over TCP*: The TCP persister can now persist string values.
+* *ICMP traffic class and don't-fragment support*: It is possible to configure OpenNMS to set DSCP traffic class and "don't fragment" bits when polling ICMP.
+* *Geographical Maps*: Geographical maps are now included by default in the center of the Web UI front page.
+* *Web UI improvements*: Location information has been added to many places in the UI, and a number of pages have been enhanced including the BSM editor and topology UI.
+* *Asset Topology Provider*: The Asset Topology Provider generates a GraphML topology based on node metadata including asset fields.
+  link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#_asset_topology_provider[(more details)].
+* *Alarm Sounds*: The web UI can now optionally flash and play an alert sound when alarms are created and optionally updated.
+  link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#ga-alarm-sounds[(more details)].
+
+===== Events
+
+New or updated trap definitions have been added for the following classes of devices:
+
+* APC
+* Juniper IVE
+* NetGear ProSafe Smart Switch
+* OpenWRT
+* SonicWall
+
+===== Data Collection
+
+* AKCP SensorProbe
+* Cisco ASA5515-X and ASA5525-X
+* Juniper SRX100h and SRX210he2 Router
+* *HTTP*:
+** Elasticsearch
+* *JMX*:
+** Apache Kafka
+** VMware vCenter Server 6.0.0
+
+===== Other Improvements
+
+As always, many updates and cleanups have been made to the OpenNMS core, through refactoring, addition of unit tests, and other code modernization.
+
+* *Minion Infrastructure*: Minion is OpenNMS's project to provide full distributed monitoring and collection.
++
+While the Minion is not supported in Meridian 2017, the work that went towards Minion support (modernizing polling and data collection) is included.
+* *ActiveMQ*: An ActiveMQ broker is now embedded in the OpenNMS JVM.
+* *Discovery Daemon Rewrite*: The discovery daemon has been replaced with a Camel-based implementation to facilitate future Minion support.
+* *Enhanced Linkd*: Enlinkd has had many bugs fixed and should perform orders of magnitude faster in many configurations.
+* *JNA*: The JNA ping implementation got cleaned up and received many improvements.
+* *Newts*: A number of bugfixes and improvements have been made to the Newts support since Meridian 2017.
+* *Syslog Daemon Updates*: The performance of the OpenNMS syslog support has been vastly improved and updated.
+* We replaced all of the GWT components in the web UI with AngularJS components.
++
+This reduces the complexity of the UI code and will make it easier for developers with Javascript experience to maintain and contribute to the UI.
+* All Javascript dependencies for the web UI are now managed by Bower and Gulp.
+* Jasper reports are now automatically recompiled if changed.
+* The JIRA ticketer has been improved.
+* The default database connection pool has been switched from c3p0 to HikariCP (http://brettwooldridge.github.io/HikariCP/) to increase performance.
+* Our ICMP libraries are now capable of being run by non-root users (although OpenNMS is not yet configured to support this).
+* The startup order of OpenNMS has been improved to make sure that a number of time-sensitive event-consuming daemons are ready immediately after Eventd, and before traps are consumed.
+* Collection APIs have been refactored and cleaned up immensely as part of refactoring for future Minion support.
+* JSON datacollection now supports properly handling responses that return an array.
+* Path handling for collection resources has been improved.
+* Many improvements have been made to the documentation, including documentation for collectors, detectors, and monitors, as well as Karaf shell commands and event sources.
+* A number of improvements to geolocation resolution and node maps have been made.
+* Internal OpenNMS events have been cleaned up and broken into logical parts in `$OPENNMS_HOME/etc`.
+* Graphs that use relative time periods have additional drop-down choices now.
+* The topology infrastructure has been vastly improved, with MANY bug fixes and performance improvements.
+* Fix a thread leak in SNMP queries that can happen when old connections don't get closed properly.
+* Fix a long-standing bug in the `vacuumd-configuration.xml` that referred to the wrong ticket state for "closed".
+* Fix calculation of KSC report "Last Week" and "This Week" timespans.
+* Fix startup on systems without any IPv6 support.
+* Reverse lookups in provisioning now handle IPs without a corresponding A record.
+
+[releasenotes-changelog-2017.1.0]
+==== Release 2017.1.0
+
+Release 2017.1.0 is the first release of OpenNMS Meridian 2017.  It is based on OpenNMS Horizon 19, plus a number of other bug fixes and changes that went into Horizon 20.
+
+The codename for 2017.1.0 is _Sir Not Appearing In This Film_.
