@@ -225,15 +225,15 @@ td.v-table-cell-content.v-table-cell-content-marked {
 
 /*
 .v-table-cell-content-marked {
-  background: #57a7ed;
+  background: $color_opennms_lighter;
   color: #fff;
   padding: 0px 0px 0px 0px;
 }
 */
 
 .v-caption-surveillance-view {
-  background-color: #4d9c29;
-  border-color: #4d9c29 !important;
+  background-color: $color_opennms;
+  border-color: $color_opennms !important;
   border-bottom: 1px solid transparent;
   padding: 6px;
   color: white !important;
@@ -593,7 +593,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   padding-left: 2px;
   padding-right: 4px;
   cursor: pointer;
-  color: #366903;
+  color: $color_opennms_darker;
 }
 
 .v-select-select{
@@ -601,7 +601,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
 }
 
 .surveillance-view .link {
-  color: #366903;
+  color: $color_opennms_darker;
   cursor: pointer;
   opacity: 1.0;
 }
