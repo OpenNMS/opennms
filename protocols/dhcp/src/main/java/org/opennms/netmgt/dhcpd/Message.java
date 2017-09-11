@@ -34,7 +34,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.InetAddress;
 
-import edu.bucknell.net.JDHCP.DHCPMessage;
+import org.opennms.jdhcp.DHCPMessage;
+import org.opennms.jdhcp.MalformedPacketException;
 
 /**
  * <p>Message class.</p>
@@ -93,7 +94,7 @@ public final class Message implements Serializable {
         out.write(buf);
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws MalformedPacketException, ClassNotFoundException, IOException {
         m_target = (InetAddress) in.readObject();
 
         byte[] buf = new byte[in.readInt()];

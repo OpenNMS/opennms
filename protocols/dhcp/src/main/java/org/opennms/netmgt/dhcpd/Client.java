@@ -40,10 +40,9 @@ import java.util.Observable;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.jdhcp.DHCPMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.bucknell.net.JDHCP.DHCPMessage;
 
 final class Client extends Observable implements Runnable, Fiber {
 	
@@ -154,8 +153,8 @@ final class Client extends Observable implements Runnable, Fiber {
                     continue;
                 } catch (ArrayIndexOutOfBoundsException oobE) {
                     // Packet was too large for buffer...log and discard
-                    LOG.debug("UnicastListener.run: array out of bounds exception.", oobE);
-                    LOG.warn("UnicastListener.run: malformed DHCP packet, packet too large for buffer (buffer sz={}), discarding packet.", dgbuf.length);
+                    LOG.debug("UnicastListener.run: malformed DHCP packet", oobE);
+                    LOG.warn("UnicastListener.run: malformed DHCP packet or packet too large for buffer (buffer sz={}), discarding packet.", dgbuf.length);
                 } catch (IOException ioE) {
                     LOG.error("UnicastListener.run: io exception receiving response", ioE);
                     m_keepListening = false;
@@ -282,7 +281,7 @@ final class Client extends Observable implements Runnable, Fiber {
                         LOG.debug("Got disconnect request from Poller corresponding to sending port {}", m_sender.getLocalPort());
                     isOk = false;
                 } else {
-                        LOG.debug("Got request... adress = {}", msg.getAddress());
+                        LOG.debug("Got request... address = {}", msg.getAddress());
                     byte[] dhcp = msg.getMessage().externalize();
 
                     DatagramPacket pkt = new DatagramPacket(dhcp, dhcp.length, msg.getAddress(), DHCP_TARGET_PORT);
