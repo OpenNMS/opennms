@@ -39,11 +39,10 @@ import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.jdhcp.DHCPMessage;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.bucknell.net.JDHCP.DHCPMessage;
 
 /**
  * <P>

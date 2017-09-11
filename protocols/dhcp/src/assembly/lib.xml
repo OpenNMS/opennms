@@ -13,7 +13,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <include>org.dhcp.jdhcp:jdhcp</include>
+        <include>org.opennms:jdhcp</include>
       </includes>
     </dependencySet>
   </dependencySets>
