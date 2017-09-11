@@ -27,7 +27,7 @@ DESC="${install.package.description} Remote Poller"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 PIDFILE="/var/run/$NAME.pid"
 OPENNMS_HOME="${install.dir}"
-JVM_ARGS="-Dpoller.logfile=/var/log/opennms-remote-poller.log"
+JVM_ARGS=""
 EXTRA_ARGS=""
 URI="http://localhost:8980/opennms-remoting"
 LOCATION="Default"
