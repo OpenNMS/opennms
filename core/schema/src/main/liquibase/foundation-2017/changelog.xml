@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <!-- Fix for issue NMS-9497 -->
+  <changeSet author="ranger" id="foundation2017-fix-bsm-alarm-type">
+    <update tableName="alarms">
+      <column name="alarmtype" value="3" />
+      <where>eventuei='uei.opennms.org/bsm/serviceProblem' OR eventuei='uei.opennms.org/bsm/serviceProblemResolved'</where>
+    </update>
+
+    <rollback>
+      <update tableName="alarms">
+        <column name="alarmtype" value="1" />
+	<where>eventuei='uei.opennms.org/bsm/serviceProblem' OR eventuei='uei.opennms.org/bsm/serviceProblemResolved'</where>
+      </update>
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

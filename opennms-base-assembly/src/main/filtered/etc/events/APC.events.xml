@@ -16391,7 +16391,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/bmsWarningCondition:%dpname%:%nodeid%:%interface%:%parm[#2]%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/bmsWarningCondition:%dpname%:%nodeid%:%interface%:%parm[#2]%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -27860,7 +27860,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/upsBatteryTempSensorFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/upsBatteryTempSensorFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -27924,7 +27924,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/upsBatterySoftBusStartFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/upsBatterySoftBusStartFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -27988,7 +27988,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/apcOutputShortCircuit:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/apcOutputShortCircuit:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -28052,7 +28052,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/apcOutputRelayFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/apcOutputRelayFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -28116,7 +28116,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/upsPfcFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/upsPfcFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -28180,7 +28180,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/apcDcBusOverVoltage:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/apcDcBusOverVoltage:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -28244,7 +28244,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/upsInverterFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/upsInverterFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -28308,7 +28308,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/apcAdConverterFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/apcAdConverterFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -28372,7 +28372,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/apcLogicPowerSupplyFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/apcLogicPowerSupplyFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -28436,7 +28436,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/apcTransformerDCImbalanceFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/apcTransformerDCImbalanceFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -28500,7 +28500,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/upsBackfeedRelayFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/upsBackfeedRelayFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>
@@ -28564,7 +28564,7 @@
         </logmsg>
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%"
-                    clear-key="uei.opennms.org/vendor/APC/traps/upsBypassRelayFault:%dpname%:%nodeid%:%interface%%"
+                    clear-key="uei.opennms.org/vendor/APC/traps/upsBypassRelayFault:%dpname%:%nodeid%:%interface%"
                     alarm-type="2" auto-clean="false"/>
     </event>
     <event>

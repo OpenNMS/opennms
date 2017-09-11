@@ -109,14 +109,14 @@ public class SearchPropertiesToAsciidocTest {
 		}
 		System.out.println(FOOTER_FORMAT);
 
-		System.out.println(String.format(HEADER_FORMAT, "ifService", "Interface Service"));
-		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.monitoredService, null, IF_SERVICE_PROPERTIES)) {
+		System.out.println(String.format(HEADER_FORMAT, "ipInterface", "IP Interface"));
+		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.ipInterface, null, IP_INTERFACE_PROPERTIES)) {
 			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
 
-		System.out.println(String.format(HEADER_FORMAT, "ipInterface", "IP Interface"));
-		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.ipInterface, null, IP_INTERFACE_PROPERTIES)) {
+		System.out.println(String.format(HEADER_FORMAT, "monitoredService", "Monitored Service"));
+		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.monitoredService, null, IF_SERVICE_PROPERTIES)) {
 			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);

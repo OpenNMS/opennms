@@ -31,6 +31,7 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ResourceContext;
@@ -59,6 +60,8 @@ import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,6 +133,11 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         builder.orderBy("label").desc();
 
         return builder;
+    }
+
+    @Override
+    protected Set<SearchProperty> getQueryProperties() {
+        return SearchProperties.NODE_SERVICE_PROPERTIES;
     }
 
     @Override

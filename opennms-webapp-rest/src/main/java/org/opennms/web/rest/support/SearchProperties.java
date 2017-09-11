@@ -521,6 +521,7 @@ public abstract class SearchProperties {
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.monitoredService, "Monitored Service", IF_SERVICE_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceLostEvent", "Service Lost Event", EVENT_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceRegainedEvent", "Service Regained Event", EVENT_PROPERTIES));
