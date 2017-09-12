@@ -29,6 +29,7 @@ include::common/legalnotice.adoc[]
 include::common/preface.adoc[]
 
 :numbered!:
+include::releasenotes/whatsnew-2017.adoc[]
 include::releasenotes/whatsnew-2016.adoc[]
 include::releasenotes/whatsnew-2015.adoc[]
 
