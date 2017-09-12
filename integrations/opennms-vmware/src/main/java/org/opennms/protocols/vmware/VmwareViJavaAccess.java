@@ -42,11 +42,11 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -55,12 +55,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AnyServerX509TrustManager;
@@ -76,6 +76,8 @@ import org.sblim.wbem.cim.CIMValue;
 import org.sblim.wbem.client.CIMClient;
 import org.sblim.wbem.client.PasswordCredential;
 import org.sblim.wbem.client.UserPrincipal;
+import org.sblim.wbem.http.HttpSocketFactory;
+import org.sblim.wbem.util.SessionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -462,16 +464,48 @@ public class VmwareViJavaAccess {
         CIMNameSpace ns = new CIMNameSpace(cimAgentAddress, namespace);
         CIMClient cimClient = new CIMClient(ns, userPr, pwCred);
 
+        SessionProperties sessionProperties = cimClient.getSessionProperties();
+        sessionProperties.setHttpTimeOut(3000);
+
+        sessionProperties.setSocketFactory(new SocketFactory() {
+            private final SocketFactory socketFactory = HttpSocketFactory.getInstance().getSocketFactory("https", sessionProperties);
+
+            @Override
+            public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+                Socket socket = socketFactory.createSocket(host, port);
+                socket.setSoTimeout(3000);
+                return socket;
+            }
+
+            @Override
+            public Socket createSocket(String host, int port, InetAddress localHost, int localPort) throws IOException, UnknownHostException {
+                Socket socket = socketFactory.createSocket(host, port, localHost, localPort);
+                socket.setSoTimeout(3000);
+                return socket;
+            }
+
+            @Override
+            public Socket createSocket(InetAddress host, int port) throws IOException {
+                Socket socket = socketFactory.createSocket(host, port);
+                socket.setSoTimeout(3000);
+                return socket;
+            }
+
+            @Override
+            public Socket createSocket(InetAddress host, int port, InetAddress localHost, int localPort) throws IOException {
+                Socket socket = socketFactory.createSocket(host, port, localHost, localPort);
+                socket.setSoTimeout(3000);
+                return socket;
+            }
+        });
+        cimClient.setSessionProperties(sessionProperties);
+
         // very important to query esx5 hosts
         cimClient.useMPost(false);
-
         CIMObjectPath rpCOP = new CIMObjectPath(cimClass);
-
         Enumeration<?> rpEnm = cimClient.enumerateInstances(rpCOP);
-
         while (rpEnm.hasMoreElements()) {
             CIMObject rp = (CIMObject) rpEnm.nextElement();
-
             cimObjects.add(rp);
         }
 
@@ -498,11 +532,10 @@ public class VmwareViJavaAccess {
      *
      * @param hostSystem the host system to query
      * @return the primary ip address
-     * @throws RemoteException
      */
     // TODO We should use the IP of the "Management Network" (i.e. the port that has enabled "Management Traffic" on the available vSwitches).
     //      Resolving the name of the HostSystem as the FQDN is the most closest thing for that.
-    public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) throws RemoteException {
+    public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) {
         TreeSet<String> addresses = getHostSystemIpAddresses(hostSystem);
         String ipAddress = null;
         try {
@@ -521,12 +554,18 @@ public class VmwareViJavaAccess {
      *
      * @param hostSystem the host system to query
      * @return the ip addresses of the host system, the first one is the primary
-     * @throws RemoteException
      */
-    public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) throws RemoteException {
+    public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) {
         TreeSet<String> ipAddresses = new TreeSet<String>();
 
-        HostNetworkSystem hostNetworkSystem = hostSystem.getHostNetworkSystem();
+        HostNetworkSystem hostNetworkSystem = null;
+        try {
+            hostNetworkSystem = hostSystem.getHostNetworkSystem();
+        } catch (RemoteException e) {
+            logger.warn("Error fetching network information for Host System '{}' (ID: {})", hostSystem.getName(), hostSystem.getMOR().getVal());
+            logger.warn("Exception thrown while fetching network information: {}", e);
+            return ipAddresses;
+        }
 
         if (hostNetworkSystem != null) {
             HostNetworkInfo hostNetworkInfo = hostNetworkSystem.getNetworkInfo();
@@ -553,14 +592,14 @@ public class VmwareViJavaAccess {
      *
      * @param virtualMachine the virtual machine to query
      * @return the ip addresses of the virtual machine, the first one is the primary
-     * @throws RemoteException
      */
-    public TreeSet<String> getVirtualMachineIpAddresses(VirtualMachine virtualMachine) throws RemoteException {
+    public TreeSet<String> getVirtualMachineIpAddresses(VirtualMachine virtualMachine) {
         TreeSet<String> ipAddresses = new TreeSet<String>();
 
         // add the Ip address reported by VMware tools, this should be primary
-        if (virtualMachine.getGuest().getIpAddress() != null)
+        if (virtualMachine.getGuest().getIpAddress() != null) {
             ipAddresses.add(virtualMachine.getGuest().getIpAddress());
+        }
 
         // if possible, iterate over all virtual networks networks and add interface Ip addresses
         if (virtualMachine.getGuest().getNet() != null) {
