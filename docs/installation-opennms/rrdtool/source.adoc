@@ -1,0 +1,14 @@
+
+[[gi-rrdtool-install-source]]
+= Source
+
+If you want the latest version of RRDtool, you may want to compile it from source. Instructions for doing so are at
+link:https://oss.oetiker.ch/rrdtool/doc/rrdbuild.en.html[rrdbuild].
+
+IMPORTANT: The latest version of RRDtool may not always be compatible with the version of _OpenNMS_ that you want to run.
+           Please ask about RRDtool support on the discussion lists or chat rooms if you have any problems running a
+           new version of RRDtool.
+
+NOTE: If you want to install the latest _RRDtool_ from source, make sure the `rrdtool` binary is in search path.
+      To make the setup easier, you can link the binary to `/usr/bin/rrdtool` which is the location where _OpenNMS_ will expect
+      to find the executable binary.

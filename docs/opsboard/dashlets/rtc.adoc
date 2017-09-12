@@ -1,0 +1,10 @@
+
+= Real Time Console (RTC)
+
+This _Dashlet_ shows the configured SLA categories from the _{product-title}_ start page.
+
+[options="autowidth"]
+|===
+| Boost support     | false
+| `-`               | -
+|===

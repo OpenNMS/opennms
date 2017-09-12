@@ -1,0 +1,521 @@
+
+= Write the Docs
+
+This document is the guideline for people who wish to contribute to writing documentation for the _{product-title}_.
+The software is free and open source, contribution of any kind is welcome.
+We ask that you observe the rules and guidelines outlined here to maintain consistency across the project.
+
+The chosen file format for documentation is AsciiDoc (http://www.methods.co.nz/asciidoc[Asciidoc Homepage]).
+Document files use the `.adoc` file extension.
+
+Note that there are different ways to contribute documentation, each suitable for the different use cases:
+
+* Tutorials and How To's which are not directly tight to a specific version of _{product-title}_ should be published on the http://wiki.opennms.org[OpenNMS Wiki].
+  For example: you want to describe how to use the Net-SNMP agent and the SNMP monitor from _{product-title}_ to solve a special use case.
+
+* The documentation in the source code should be formal technical documentation.
+  The writing style should be accurate and concise.
+  However, ensure that you explain concepts in detail and do not make omissions.
+
+[[gd-docs-file-structure]]
+== File Structure in docs
+
+[options="header", cols="e,d"]
+|===
+| Directory         | Contents
+| `_images/`        | AsciiBinder related images for rendering, for example the logo
+| `_javascripts/`   | JavaScript libraries used for the rendering
+| `_package/`       | Directory which is not under version control and is created when `asciibinder package` is used to generate the docs
+| `_preview/`       | Directory which is not under version control and is created when `asciibinder build` is used to generate a preview of the docs
+| `_stylesheets/`   | Directory with stylesheets used for the rendering
+| `_templates/`     | Templates for HTML rendering
+| `_distro_map.yml` | Describes the overall documentation structure for _{product-title}_ and the Minion
+| `_topic_map.yml`  | Describes which and how the specific parts of the documentation are build
+|===
+
+All other directories contain the `.adoc` files and directories with images.
+For further instruction please see the xref:how-to-build-docs#[How To Build the Docs] section in this documentation.
+
+[[doc-guidelines-images]]
+=== Include images
+
+When visualizing complex problems you can help the explanation and provide greater information by using an image.
+We use in OpenNMS documentation modules two directories for images.
+
+The image folder structure mirrors the text structure.
+In this case it is a little bit easier to locate the AsciiDoc text file where the image is included.
+
+.Example folder structure for image files
+[source]
+----
+.
+└── docs<1>
+    └── alarms<2>
+        ├── images<3>
+        |   ├── 01_alarm-notes_raw.png<4>
+        |   └── 01_alarm_notes.png
+        ├── alarm-notes.adoc<5>
+        ├── alarm-sound-flash.adoc
+        └── amqp-alarm-northbounder.adoc
+
+----
+
+<1> This folder contains the documentation
+<2> The directory with the generic topic
+<3> Directory with images
+<4> The original unmodified image
+<5> Image which is modified or enriched with markups and used in the documentation
+
+To include an image file, the following procedure can be followed as a best practice:
+
+.First included image
+[source]
+----
+.This is a caption of the image
+image::02_opennms-logo.png[]
+----
+
+Which is rendered as:
+
+.This is a caption of the image
+image::02_opennms-logo.png[]
+
+In the beginning of the `.adoc` file you can add, which allows to use all image file names directly.
+It also enables GitHub to lookup images in the folder and can preview those images when you open the `.adoc` file in GitHub correctly.
+
+[source]
+----
+// Allow GitHub image rendering
+:imagesdir: ./images
+----
+
+[[gd-docs-include-source]]
+== Code Snippets
+
+You can include code snippets, configuration- or source code files in the documentation.
+You can enable syntax highlighting by providing the given language parameter, this will work on source code or configuration.
+
+[[gd-docs-explicit]]
+=== Explicitly defined in the document
+
+WARNING: be careful to use this kind of code snippets as sparsely as possible.
+Code becomes obsolete very quickly, archaic usage practices are detrimental.
+
+if you do wish to include snippets use the following method:
+
+.This is a sample configuration explicitly in the documentation
+[source,xml]
+----
+<service name="DNS" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="5000" />
+  <parameter key="port" value="53" />
+  <parameter key="lookup" value="localhost" />
+  <parameter key="fatal-response-codes" value="2,3,5" /><!-- ServFail, NXDomain, Refused -->
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="dns" />
+  <parameter key="ds-name" value="dns" />
+</service>
+----
+
+If there's no suitable syntax highlighter for the code used just omit the language: +[source]+.
+
+Currently the following syntax highlighters are enabled:
+
+* Bash
+* Groovy
+* Java
+* JavaScript
+* Python
+* XML
+
+For other highlighters that could be added see https://code.google.com/p/google-code-prettify/.
+
+[[gd-docs-include]]
+=== Included from an example file
+
+You can include source or configuration from an external file.
+In this way you can provide a working example configuration maintaining doc and example at the same time.
+The procedure and rules are the same as with images, the path is relative to the *.adoc file where the file to be used is included.
+
+.Include complete external file
+ [source,xml]
+ ----
+ include::./dev-env-opennms/configs/wmi-config.xml[]
+ ----
+
+This is how it's rendered:
+
+[source,xml]
+----
+include::./dev-env-opennms/configs/wmi-config.xml[]
+----
+
+[[gd-docs-include-parts]]
+=== Include parts of a file
+
+If you want to include just a specific segment of a large configuration file, you can assign tags that indicate to AsciiDoc the section that is to be included.
+In this example just the service definition of the _ICMP monitor_ should be included.
+
+In the 'poller-configuration.xml' tag the section in the following manner:
+
+[source,xml]
+----
+...
+<rrd step="300">
+  <rra>RRA:AVERAGE:0.5:1:2016</rra>
+  <rra>RRA:AVERAGE:0.5:12:1488</rra>
+  <rra>RRA:AVERAGE:0.5:288:366</rra>
+  <rra>RRA:MAX:0.5:288:366</rra>
+  <rra>RRA:MIN:0.5:288:366</rra>
+</rrd>
+<!-- # tag::IcmpServiceConfig[] -->
+<service name="ICMP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="icmp" />
+  <parameter key="ds-name" value="icmp" />
+</service>
+<!-- # end::IcmpServiceConfig[] -->
+<service name="DNS" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="5000" />
+  <parameter key="port" value="53" />
+...
+----
+
+.Include this tagged part in the documentation using the _tag_ parameter
+ [source,xml]
+ ----
+ include::./dev-env-opennms/configs/poller-configuration.xml[tags=IcmpServiceConfig]
+ ----
+
+.This is how it rendered
+[source,xml]
+include::./dev-env-opennms/configs/poller-configuration.xml[tags=IcmpServiceConfig]
+
+NOTE: Spaces and tabs are taken from the original file.
+
+[[gd-docs-writing]]
+== Writing
+The following rules will help you to commit correctly formatted and prepared documentation for inclusion in the OpenNMS project.
+It is important that we maintain a level of consistency across all of our committers and the documentation they produce.
+
+When writing place a single sentence on each line.
+This makes it easy to move content around, and also easy to spot long, or fragmented, sentences.
+This will also allow us to assign comments on a sentence in GitHub which will facilitate easier merging.
+
+NOTE: Other than writing documentation, you can help out by providing comments on documentation, reviewing, suggesting improvements or reporting bugs.
+To do this head over to: http://issues.opennms.org/browse/NMS/component/10011[issue tracker for documentation]!
+
+[[gd-docs-conventions]]
+=== Conventions for text formatting
+
+The following conventions are used:
+
+* File names and path are written in \`poller-configuration.xml` they will be rendered in: `poller-configuration.xml`;
+* Names that indicate special attention, e.g. this configuration matches \*any* entry: this is rendered as: this configuration matches *any* entry;
+* \_Italics_ is rendered as _Italics_ and used for emphasis and indicate internal names and abbreviations;
+* \*Bold* is rendered as *Bold* and should be used sparingly, for strong emphasis only;
+* \+methodName()+ is rendered as +methodName()+ and is also used for literals,
+  (note: the content between the `+` signs _will_ be parsed);
+* \`command` is rendered as `command` (typically used for command-line or parts used in configuration files),
+  (note: the content between the +`+ signs _will not_ be parsed);
+* \`my/path/` is rendered as `my/path/` this is used for file names and paths;
+* \\``double quote'' (which is two grave accents to the left and two acute accents to the right) renders as ``double quote'';
+* \`single quote' (which is a single grave accent to the left and a single acute accent to the right) renders as `single quote'.
+
+[[gd-docs-gotchas]]
+=== Gotchas
+
+* Always leave a blank line at the top of the documents section.
+  It might be the title ends up in the last paragraph of the document;
+
+* Start in line 2 setting a relative path to the images directory to picture rendering on GitHub:
+
+[source]
+----
+// Allow image rendering
+:imagesdir: relative/path/to/images/dir
+----
+
+* Always leave a blank line at the end of documents;
+* As +{}+ are used for Asciidoc attributes, everything inside will be treated as an attribute.
+  To avoid this you have to escape the opening brace: +\\{+.
+  If you do not escape the opening brace, the braces and the text inside them will be removed without any warning being issued!;
+* Forcing line breaks can be achieved with ` +` at the end of the line followed by a line break.
+
+.Example in source force line break
+[source]
+----
+This is the first line +
+and this a forced 2nd line
+----
+
+.Rendered output with forced line break
+This is the first line +
+and this a forced 2nd line
+
+[[gd-docs-structure]]
+== Headings and document structure
+
+Each document starts over with headings from level zero (the document title).
+Each document should have an id.
+In some cases sections in the document need to have id's as well, this depends on where they fit in the overall structure.
+If you wish to have a link to specific content that content has to have an id.
+A missing id in a mandatory place will cause the build to fail.
+
+To start a document:
+
+[source]
+----
+[[unique-id-verbose-is-ok]]
+= The Document Title
+----
+
+If you are including the document inside another document and you need to push the headings down to the right level in the output, the +leveloffset+ attribute is used.
+
+Subsequent headings in a document should use the following syntax:
+
+[source]
+----
+== Subheading
+
+... content here ...
+
+=== Subsubheading
+
+content here ...
+
+----
+
+[[gd-docs-links]]
+== Links
+
+When you need to link to other parts of the manual you use the target id.
+To use a target id you follow this syntax:
+
+[source]
+----
+<<doc-guidelines-links>>
+----
+
+This will render as: <<doc-guidelines-links>>
+
+NOTE: To use the target id in you document simply write the target id in your text, for example:
+
+see \<<target-id>>
+
+this should suffice for most cases.
+
+If you need to link to another document with your own link text, then follow this procedure:
+
+[source]
+----
+<<target-id, link text that fits in the context>>
+----
+
+NOTE: Having lots of linked text may work well in a web context but is a distracting in print.
+      The documentation we are creating is intended for both mediums so be considerate of this in your usage.
+
+If you wish to use an external link, they are are added as:
+
+[source]
+----
+http://www.opennms.org/[Link text here]
+----
+
+This will render in the output as: http://www.opennms.org/[Link text here]
+
+For short links it may be beneficial not to use accompanying link text:
+
+[source]
+----
+http://www.opennms.org/
+----
+
+Which renders as: http://www.opennms.org/
+
+NOTE: It is acceptable to have a period trailing after the URL, it will not render as a part of the link.
+
+[[doc-guideline-admonitions-notes]]
+== Admonitions and useful notes
+
+These are useful for defining specific sections, such as Notes, Tips and Important information.
+We encourage the use of them in the documentation as long as they are used appropriately.
+Choose from the following:
+
+.Source template for making a note for additional hints
+[source]
+----
+NOTE: This is my note.
+----
+
+This is how its rendered:
+
+NOTE: This is my note.
+
+.Source for giving a tip
+[source]
+----
+TIP: This is my tip.
+----
+
+This is how its rendered:
+
+TIP: This is my tip.
+
+.Source for giving a important hint
+[source]
+----
+IMPORTANT: This is my important hint.
+----
+
+This is how its rendered:
+
+IMPORTANT: This is my important hint.
+
+.Source for giving a caution
+[source]
+----
+CAUTION: This is my caution.
+----
+
+This is how its rendered:
+
+CAUTION: This is my caution.
+
+.Source for giving a warning
+[source]
+----
+WARNING: This is my warning.
+----
+
+This is how its rendered:
+
+WARNING: This is my warning.
+
+A multiline variation:
+
+[source]
+----
+TIP: Tiptext. +
+     Line 2.
+----
+
+Which is rendered as:
+
+TIP: Tiptext. +
+     Line 2.
+
+NOTE: Remember to write these in full caps. There is no easy manner in which to add new admonitions, do not create your own.
+
+[[gd-docs-attributes]]
+== Attributes
+
+Common attributes you can use in documents:
+
+* \{opennms-version} - rendered as "{opennms-version}"
+
+These can substitute part of URLs that point to, for example, APIdocs or source code.
+Note that opennms-git-tag also handles the case of snapshot/master.
+
+Sample Asciidoc attributes which can be used:
+
+* \{docdir} - root directory of the documents
+* \{nbsp} - non-breaking space
+
+[[gd-docs-comments]]
+== Comments
+There's a separate build that includes comments.
+When the comments are used they show up with a yellow background.
+This build doesn't run by default, but after a normal build, you can use `make annotated` to create a build yourself.
+You can use the resulting 'annotated' page to search for content as the full manual is a single page.
+
+To write a comment:
+
+[source]
+----
+// this is a comment
+----
+
+Comments are not visible in the standard build.
+Comment blocks won't be included in the output of any build.
+The syntax for a comment block is:
+
+[source]
+----
+////
+Note that includes in here will still be processed, but not make it into the output.
+That is, missing includes here will still break the build!
+////
+----
+
+[[gd-docs-tables]]
+== Tables
+
+For representing structured information you can use tables.
+A table is constructed in the following manner:
+
+[source]
+----
+[options="header, autowidth"]
+|===
+| Parameter     | Description                | Required | Default value
+| `myFirstParm` | my first long description  | required | `myDefault`
+| `myScndParm`  | my second long description | required | `myDefault`
+|===
+----
+
+This is rendered as:
+
+[options="header, autowidth"]
+|===
+| Parameter     | Description                | Required | Default value
+| `myFirstParm` | my first long description  | required | `myDefault`
+| `myScndParm`  | my second long description | required | `myDefault`
+|===
+
+NOTE: Please align your columns in the AsciiDoc source in order to give better readability when editing in text view.
+      If you have a very long description, break at 120 characters and align the text to improve source readability.
+
+.Example in AsciiDoc source for very long table descriptions
+image::01_long-table-formatting.png[]
+
+this is rendered as:
+
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                                                 | Required | Default value
+| `basic-authentication` | Authentication credentials to perform basic authentication.
+                           Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945] section 11.1,
+                           without the Base64 encoding part. That's: be a string made of the concatenation of: +
+                           1- the user ID; +
+                           2- a colon; +
+                           3- the password. +
+                          `basic-authentication` takes precedence over the `user` and `password` parameters.           | optional | `-`
+| `header[0-9]+`         | Additional headers to be sent along with the request. Example of valid parameter's names are
+                           `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.             | optional | `-`
+|===
+
+[[doc-guidelines-cheat-sheets]]
+== Cheat Sheets and additional hints
+
+The documentation uses the AsciiDoc format.
+There are a number of guides that will help you to get started with using AsciiDoc:
+
+* http://www.microjaja.com/docs/asciidoc-writers-guide.pdf[AsciiDoc Writers Guide]
+* http://www.methods.co.nz/asciidoc/[Aciidoc Reference]
+* http://www.methods.co.nz/asciidoc/faq.html[AsciiDoc FAQ]
+* http://powerman.name/doc/asciidoc[Powerman AsciiDoc Cheatsheet]
+* http://xpt.sourceforge.net/techdocs/nix/tool/asciidoc-syn/ascs01-AsciiDocMarkupSyntaxQuickSummary/single/[XPT AsciiDoc Cheatsheet]
+
+For other resources, to gain familiarity with AsciiDoc, you can visit:
+
+ * http://asciidoctor.org/docs/user-manual[AsciiDoc User Manual]
+ * http://asciidoctor.org/docs/install-and-use-asciidoctor-maven-plugin/[AsciiDoc Maven Plugin]
+ * https://groups.google.com/forum/?fromgroups#!forum/asciidoc[AsciiDoc discussion list]
+ * http://code.google.com/p/asciidoc/issues/list[AsciiDoc issue tracker]
+ * https://github.com/oreillymedia/docbook2asciidoc[Docbook to AsciiDoc]
+ * http://blog.rainwebs.net/2010/02/25/how-to-create-handsome-pdf-documents-without-frustration/[How to create handsome PDF documents without frustration]

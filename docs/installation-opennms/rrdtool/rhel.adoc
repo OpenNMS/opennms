@@ -1,0 +1,9 @@
+
+[[gi-rrdtool-install]]
+= RHEL
+
+.Installation on RHEL/CentOS
+[source, shell]
+----
+yum install rrdtool
+----

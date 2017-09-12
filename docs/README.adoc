@@ -1,0 +1,11 @@
+= AsciiBinder-Based Docs Repo
+
+This docs repository was created with http://asciibinder.org/[AsciiBinder]. For more information on how AsciiBinder works, check out the http://asciibinder.org/latest/[documentation].
+
+== License
+
+image:http://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg["Creative Commons License",height=31px,width=88px]
+
+This work is licensed under a http://creativecommons.org/licenses/by/4.0/[Creative Commons Attribution 4.0 International License].
+
+See link:LICENSE.txt[LICENSE.txt].

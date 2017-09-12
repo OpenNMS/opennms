@@ -1,0 +1,9 @@
+
+[[gi-rrdtool-install-debian]]
+= Debian
+
+.Installation of RRDtool on Debian/Ubuntu
+[source, shell]
+----
+apt-get install rrdtool
+----
