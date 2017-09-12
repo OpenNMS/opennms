@@ -46,11 +46,11 @@ img {
   height:108px;
 }
 a {
-  color:$color_meridian_blue;
+  color:$color_opennms;
 }
 a:hover,
 a:focus {
-  color: $color_meridian_blue_light;
+  color: $color_opennms_light;
 }
 
 /* centered columns styles */
@@ -564,8 +564,10 @@ a.list-group-item.active:focus {
   font-weight: bold;
 }
 
-.panel-title > a:hover {
-  color: $color_alto_approx;
+.panel-title > a:hover,
+.panel-title > a:link,
+.panel-title > a:visited,
+.panel-title > a:active {
   text-decoration: none;
 }
 
