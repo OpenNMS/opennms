@@ -1,0 +1,20 @@
+:imagesdir: images
+= What is {product-title}?
+
+_{product-title}_ is a carrier-grade, highly integrated, open source platform designed for building network monitoring solutions.
+There are two distributions of OpenNMS: Meridian and Horizon.
+Using Meridian is advisable for enterprises and businesses looking for stability and long term support.
+Horizon is the place where innovation happens quickly and is ideal for monitoring new technologies and IT ecosystems.
+Both distributions are completely open source.
+
+The software _{product-title}_ addresses the following main functions monitor a huge amount of entities in modern IT networks:
+
+* _Service Assurance_: Detect service outages and measure latency for graphing and thresholding via synthetic polling.
+  Out-of-the-box support for many applications with configurable service monitors.
+  Remotely monitor applications and services from the user's perspective.
+* _Performance Management_: Collect performance metrics from industry standard agents via SNMP, JMX, WMI, NRPE, NSClient++ and XMP simply through configuration.
+  Gather performance data from applications via customizable generic collectors with HTTP, JDBC, XML or JSON.
+* _Provisioning_: Discover your network and applications through manual, detected, or ReST API driven interfaces via the OpenNMS provisioning system.
+  It gives control for device management with the ability to add, change, and remove devices.
+* _Integration_: It allows to integrate with ReST API for provisioning or provides monitoring information for external applications.
+  Otherwise it can be integrated in workflows as notification and ticketing systems.

@@ -1,0 +1,79 @@
+= Configure OpenNMS
+
+_IFTTT_ alarm polling will be enabled by setting the attribute `enabled` to `true` in the `ifttt-config.xml` file.
+It is also possible to configure the polling interval.
+The following trigger package defined the trigger sets which itself define a sequence of events to be triggered at _IFTTT_.
+Each trigger defines the `eventName` and an additional delay.
+This allows to defer the execution of the next trigger in a trigger set.
+
+== Example
+
+The following example shows the configuration file for a WiFi light bulb controlled via _IFTTT_.
+The defined applets use `value1` for setting the color and `value2` for setting the brightness.
+The third value demonstrate the use of placeholders.
+For the severity-based trigger sets the following placeholders can be used in the three value fields:
+`%os%`/`%oldSeverity` for old severity, `%ns%`/`%newSeverity%` for new severity, `%oc%`/`%oldCount` for old alarm count and `%nc%`/``%newCount% for new alarm count.
+This is useful for sending messages or operating LED displays via _IFTTT_.
+
+[source, xml]
+----
+<ifttt-config enabled="true" key="X71dfUZsH4Wkl6cjsLjdV" pollInterval="30">
+    <trigger-package categoryFilter="Routers|Switches" onlyUnacknowledged="true">
+        <trigger-set name="ON">
+            <trigger eventName="on" delay="0">
+                <value1></value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="OFF">
+            <trigger eventName="off" delay="0">
+                <value1></value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="NORMAL">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#336600</value1>
+                <value2>0.40</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="WARNING">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#FFCC00</value1>
+                <value2>0.50</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MINOR">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#FF9900</value1>
+                <value2>0.60</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MAJOR">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#CC3300</value1>
+                <value2>0.70</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="CRITICAL">
+            <trigger eventName="OpenNMS" delay="0">
+                <value1>#FF0000</value1>
+                <value2>0.80</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+    <trigger-package>
+</ifttt-config>
+----

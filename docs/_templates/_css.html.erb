@@ -1,0 +1,3 @@
+<%- Dir.glob("_stylesheets/*").sort.each do |sheet| -%>
+  <link href="<%= File.join(css_path, File.basename(sheet)) %>" rel="stylesheet" />
+<%- end -%>

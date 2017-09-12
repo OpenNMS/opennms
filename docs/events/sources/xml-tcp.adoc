@@ -1,0 +1,2 @@
+
+Any application or script can create custom events in _{product-title}_ by sending properly-formatted XML data over a TCP socket.

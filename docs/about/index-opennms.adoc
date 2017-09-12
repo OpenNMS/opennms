@@ -1,0 +1,31 @@
+[[welcome-index]]
+= {product-title} {product-version} Documentation
+{product-author}
+{product-version}
+:data-uri:
+:icons:
+
+[.lead]
+Welcome to the {product-title} {product-version} documentation, where you can find information and guides to help you learn about {product-title} and start exploring its features.
+
+[TIP]
+====
+Use the left navigation bar to browse the documentation or the links below to access some highlights.
+====
+
+'''
+[cols="2",frame="none",grid="none"]
+|===
+.^|[big]#Introduction#
+a|[none]
+* xref:opennms-overview.adoc#[What is {product-title}?]
+|===
+
+'''
+[cols="2",frame="none",grid="none"]
+|===
+.^|[big]#Need Help?#
+a|[none]
+* Talk to us in https://chat.opennms.com/opennms[chat]
+* Join our https://wiki.opennms.org/wiki/Mailing_lists[mailing lists]
+|===

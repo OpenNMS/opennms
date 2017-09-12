@@ -1,0 +1,21 @@
+
+[[gi-jrrd2-install]]
+= Install jrrd2 Interface
+
+To get access from the _OpenNMS Java Virtual Machine_ you have to install _jrrd2_ as an interface.
+You can install it from the _OpenNMS_ package repository with:
+
+.Installation of _jrrd2_ on RHEL/CentOS
+[source, shell]
+----
+yum install jrrd2
+----
+
+.Installation of _jrrd2_ on Debian/Ubuntu
+[source, shell]
+----
+apt-get install jrrd2
+----
+
+NOTE: It is preferred to use _jrrd2_ instead of _jrrd_.
+      The _jrrd2_ module is improved for performance by adding multithreading capabilities.

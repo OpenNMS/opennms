@@ -1,0 +1,195 @@
+
+= Write and Build Documentation
+
+If you want to contribute documentation to this project which manages the docs with AsciiBinder, you’ve come to the right place.
+
+== Installing AsciiBinder
+
+AsciiBinder is distributed as a Ruby gem, use the `gem` command to install it:
+
+[source, shell]
+----
+gem install ascii_binder
+----
+
+But be aware of one additional prerequisite:
+
+*Java*: AsciiBinder bundles http://ditaa.sourceforge.net/[ditaa] for ASCII-based diagramming support.
+However, ditaa depends upon a Java runtime to transform ASCII diagrams into image files.
+So, make sure you have a JVM installed (http://openjdk.java.net/[OpenJDK] works fine) and set the `${JAVA_HOME}` environment variable so that ditaa can find the JVM.
+
+== Making a Copy of the OpenNMS Docs Repo
+
+If you already know how to use https://git-scm.com/[git], then this is going to sound very familiar.
+If not, here’s the full walk-through:
+
+1. Install git.
+2. If the docs source is hosted on GitHub, you will probably next need to https://help.github.com/articles/fork-a-repo/[fork] the https://github.com/OpenNMS/opennms-helm[OpenNMS Helm repo].
+3. Using git, clone the repo (either the original or your fork, as appropriate) to your local system: `git clone <repo URL>`
+
+If the project that you are working in already has version branches, then you will want to set up local copies of those as well.
+After you have cloned the repo to your local system, you can track those branches with the command:
+
+[source, shell]
+----
+$ git checkout -b <local_branch_name> <remote_repo>/<remote_branch_name>
+----
+
+== Write the Docs
+
+The documentation for the project lives in the `docs` directory within the source code repository you have checked out.
+Each main section is structured in directories and contain the text `.adoc` files.
+The text files need to be written in the http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/[AsciiDoc] format.
+
+Every new created directory or text file needs to be included in the general structure of the documentation.
+Within the `_topic_map.yml` the generic layout is defined.
+
+.Structure of the _topic_map.yml file
+[source]
+----
+---
+Name: Project Info <1>
+Dir: project-info <2>
+Topics: <3>
+  - Name: Welcome <4>
+    File: index <5>
+  - Name: How to Build the Docs
+    File: how-to-build-docs
+---
+Name: Architecture <6>
+Dir: architecture
+Topics:
+    - Name: Overview
+      File: index
+----
+<1> Friendly section name _Project Info_ which is used in the left navigation
+<2> Directory name with the files which are shown under _Project Info_
+<3> Each topic in _Project Info_
+<4> Friendly name in the left navigation
+<5> Text file with the content, the `.adoc` extension is automatically appended
+<6> Second second _Architecture_ with a reference to a directory which contains the topics
+
+In case images needs to be included, use a directory `images` inside a topic folder.
+Within the text file images are included as the following:
+
+[source]
+----
+// At the beginning of the .adoc text file
+:imagesdir: ./images<1>
+
+.Overview of the structure of Helm<2>
+image::helm-diagram.svg[Helm Diagram, 600]<3>
+----
+
+<1> Lookup directory for images for this text file
+<2> Description of the image
+<3> Include the image with an alternative text and a proportional with of 600 pixels
+
+The `_distro_map.yml` is used to control the overall behavior how docs are generated for different branches and distributions.
+It is normally not necessary to touch this file just by creating or changing existing content.
+Anyways the file is described as the following:
+
+[source]
+----
+---
+helm: <1>
+  name: Helm
+  author: OpenNMS Team <opennms-discuss@lists.sourceforge.net>
+  site: opennms <2>
+  site_name: OpenNMS
+  site_url: https://docs.opennms.org/helm
+  branches:
+    master: <3>
+      name: Latest <4>
+      dir: latest <5>
+
+----
+<1> System name of distro, used when conditionalizing content on a per-distro basis.
+<2> System name of site, used to pick up the correct index file and organize the included distros.
+<3> Git branch name that represents a version of this distro
+<4> User-readable name of this version of this distro
+<5> Directory on the site where this version of this distro should go
+
+== Building the Docs
+
+The documentation is located in the `docs` directory.
+Transforming an AsciiBinder repo into a bunch of documentation is pretty easy:
+
+[source, shell]
+----
+asciibinder build <docs_dir>
+----
+
+NOTE: Running just the `asciibinder` binary command in the `docs` directory is equivalent to `asciibinder build`.
+
+=== Build Output
+
+AsciiBinder starts by reading the distro config file and then it processes docs multiple times - once for every distribution defined in the distro config file, multiplied by every branch.
+You can see the HTML produced by this process under the `_preview` directory in the `docs` directory.
+
+Previews are organized by distro and then by branch; the generic path to a given version of the docs is:
+
+[source, shell]
+----
+<docs_repo_dir>/_preview/<distro>/<branch_dir_name>
+----
+
+The `branch_dir_name`, which comes from the distro config file, is not necessarily identical to the branch name.
+Following on this build behavior, the simplest way to inspect the output of your build is to open a web browser and navigate to the file that you want, in the distro / branch path that you are working with.
+However, have a look at the section on Instant Preview for information on how to get instant feedback on your modifications.
+
+=== Instant Preview with LiveReload
+
+If you are interested in seeing instant feedback on your changes to an AsciiDoc file, you can take advantage of AsciiBinder’s live preview capability by running:
+
+[source, shell]
+----
+asciibinder watch
+----
+
+When you do this, you are starting a Guard process that runs in the foreground on that terminal.
+To gain the full effects of the guard, first you will need to prepare your web browser with a http://livereload.com/[LiveReload] plugin - http://livereload.com/extensions/[check here for the most up-to-date plugins and instructions].
+
+=== Working with Instant Preview
+
+With `asciibinder watch` running in a terminal, and an HTML file from your `_preview` area open in a webbrowser, you can enable LiveReload in the browser.
+Once you have done that, any time you save the source `.adoc` file for the HTML page that you are watching, AsciiBinder will automatically rebuild the page and your browser will update with the changes.
+If you are new to AsciiDoc, or if you are trying out a new layout, this is a helpful way of getting instant feedback on your work.
+
+=== Exiting Instant Preview
+
+To stop the `asciibinder watch` process, you can either:
+
+* Type `exit` and hit `<ENTER>`` or
+* Press `<CTRL>+C` to break out of the Guard shell
+
+== Packaging Sites for Publication
+
+The site packaging action performs three distinct operations:
+
+1. Clean out previously generated content from the `_preview` and `_package` directories
+2. Build the docs as per `asciibinder build`
+3. Based on rules in the `_distro_map.yml` file, selectively copy content from the `_preview` area into the `_package` area on a site-by-site basis.
+
+The result of this is that the `_package` are will contain a subdirectory for each site that is being built, and all of the files in those site directories will be ready for direct copying onto the site’s web server.
+
+Invoking the package action is very simple:
+
+[source, shell]
+----
+asciibinder package
+----
+
+Presently, AsciiBinder does not include logic to actually push the files out to the hosting server.
+This is better done with a CI system (like Jenkins) that can rebuild the docs in response to changes in the source code and then automatically redeploy the websites using something like `rsync`.
+
+For information on how to configure a site, refer to the Maintainer’s Guide.
+
+== Cleaning Out Build & Package Artifacts
+
+To clean up the the contents of the `_preview` and `_package` directories and start fresh, you can run:
+
+[source, shell]
+----
+asciibinder clean
+----
