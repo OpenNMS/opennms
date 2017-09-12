@@ -38,6 +38,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
@@ -119,4 +120,14 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Sca
     protected ScanReport doGet(UriInfo uriInfo, String id) {
         return getDao().get(id);
     }
+
+    @Override
+    protected Response doUpdate(final SecurityContext securityContext, final UriInfo uriInfo, final String key, ScanReport targetObject) {
+        if (!key.equals(targetObject.getId())) {
+            throw getException(Status.BAD_REQUEST, "The ID of the object doesn't match the ID of the path: {} != {}", targetObject.getId(), key);
+        }
+        getDao().saveOrUpdate(targetObject);
+        return Response.noContent().build();
+    }
+
 }
