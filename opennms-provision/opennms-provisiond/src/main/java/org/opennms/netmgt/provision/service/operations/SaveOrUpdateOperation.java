@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service.operations;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -46,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.xbill.DNS.Address;
 
 public abstract class SaveOrUpdateOperation extends ImportOperation {
     private static final Logger LOG = LoggerFactory.getLogger(SaveOrUpdateOperation.class);
@@ -128,7 +126,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface.setIsSnmpPrimary(primaryType);
         
         if (System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
-        	m_currentInterface.setIpHostName(reverseResolveHostname(ipAddr));
+            m_currentInterface.setIpHostName(getProvisionService().getHostnameResolver().getHostname(m_currentInterface.getIpAddress()));
         }
         
         if (PrimaryType.PRIMARY.equals(primaryType)) {
@@ -214,27 +212,6 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         } catch (final BeansException e) {
             LOG.warn("Could not set property on object of type {}: {}", m_node.getClass().getName(), name, e);
         }
-    }
-
-    private String reverseResolveHostname(final String ipAddr) {
-        final InetAddress addr = InetAddressUtils.addr(ipAddr);
-
-        // Attempt to retrieve the fully qualified domain name for this IP address
-        String hostName = addr.getCanonicalHostName();
-        if (InetAddressUtils.str(addr).equals(hostName)) {
-            // The given host name matches the textual representation of
-            // the IP address, which means that the reverse lookup failed
-            // NMS-9356: InetAddress#getCanonicalHostName requires PTR records
-            // to have a corresponding A record in order to succeed, so we
-            // try using dnsjava's implementation to work around this
-            try {
-                hostName = Address.getHostName(addr);
-            } catch (UnknownHostException e) {
-                LOG.warn("Failed to retrieve the fully qualified domain name for {}. "
-                        + "Using the textual representation of the IP address.", addr);
-            }
-        }
-        return hostName;
     }
 
 }
