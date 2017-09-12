@@ -53,7 +53,7 @@ fi
 if [ x$JAVA_EXE = x ]; then
 	if [ x$JAVA_HOME = x ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
 		echo "ERROR: $JAVA_CONF file not found, and \$JAVA_HOME is not set to a valid JDK."
-		echo "Try running $OPENNMS_HOME/bin/runjava if ${opennms.package.description} is installed, or set JAVA_HOME in $CONFFILE."
+		echo "Try running $OPENNMS_HOME/bin/runjava if ${install.package.description} is installed, or set JAVA_HOME in $CONFFILE."
 		exit 1
 	else
 		JAVA_EXE="$JAVA_HOME/bin/java"
