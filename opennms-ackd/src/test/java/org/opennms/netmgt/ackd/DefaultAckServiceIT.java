@@ -58,6 +58,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -209,7 +210,7 @@ public class DefaultAckServiceIT implements InitializingBean {
         event.setEventTime(new Date());
         event.setEventSource("test");
         event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setNode(node);

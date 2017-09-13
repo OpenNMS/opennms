@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -249,7 +249,7 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_databasePopulator.getNode1());
         alarm.setDescription("This is a test alarm");
         alarm.setEventParms(event.getEventParms());

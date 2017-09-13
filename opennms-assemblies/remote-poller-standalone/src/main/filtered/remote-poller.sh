@@ -16,7 +16,7 @@ REMOTE_POLLER_HOME="$(cd "$REMOTE_POLLER_HOME/.." || exit 1; pwd)"
 
 JAVA_CONF="$REMOTE_POLLER_HOME/etc/java.conf"
 
-MONITOR_JAR="$REMOTE_POLLER_HOME/lib/remote-poller.jar"
+MONITOR_JAR="$REMOTE_POLLER_HOME/bin/remote-poller.jar"
 RMI_PORT=1099
 JVM_ARGS="-Xmx384m"
 EXTRA_ARGS=""

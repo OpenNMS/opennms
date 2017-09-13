@@ -17,5 +17,7 @@
     <module>jms-northbounder</module>
     <module>syslog-northbounder</module>
     <module>snmptrap-northbounder</module>
+    <module>bsf-northbounder</module>
+    <module>drools-northbounder</module>
   </modules>
 </project>

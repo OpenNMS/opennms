@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,12 +38,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ScanReportDao;
 import org.opennms.netmgt.model.ScanReport;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.v1.support.ScanReportList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -91,6 +95,11 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Sca
         return new ScanReportList(list);
     }
 
+    @Override
+    protected Set<SearchProperty> getQueryProperties() {
+        return SearchProperties.SCAN_REPORT_SERVICE_PROPERTIES;
+    }
+
     @GET
     @Path("{id}/logs")
     @Produces({MediaType.TEXT_PLAIN})
@@ -111,4 +120,14 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Sca
     protected ScanReport doGet(UriInfo uriInfo, String id) {
         return getDao().get(id);
     }
+
+    @Override
+    protected Response doUpdate(final SecurityContext securityContext, final UriInfo uriInfo, final String key, ScanReport targetObject) {
+        if (!key.equals(targetObject.getId())) {
+            throw getException(Status.BAD_REQUEST, "The ID of the object doesn't match the ID of the path: {} != {}", targetObject.getId(), key);
+        }
+        getDao().saveOrUpdate(targetObject);
+        return Response.noContent().build();
+    }
+
 }

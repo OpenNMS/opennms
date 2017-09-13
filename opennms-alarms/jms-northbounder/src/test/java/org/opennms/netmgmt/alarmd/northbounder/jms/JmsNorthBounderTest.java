@@ -325,7 +325,7 @@ public class JmsNorthBounderTest {
             alarm.setReductionKey("reductionKey");
             alarm.setClearKey("clearKey");
             alarm.setOperInstruct("operInstruct");
-            alarm.setAlarmType(1);
+            alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setFirstEventTime(new Date(0));
             alarm.setIpAddr(ia);
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
@@ -417,7 +417,7 @@ public class JmsNorthBounderTest {
             alarm.setClearKey("clearKey");
             alarm.setOperInstruct("operInstruct");
             alarm.setFirstEventTime(new Date(0));
-            alarm.setAlarmType(1);
+            alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setIpAddr(ia);
             alarm.setEventParms(eventparms);
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
@@ -507,7 +507,7 @@ public class JmsNorthBounderTest {
             alarm.setReductionKey("reductionKey");
             alarm.setClearKey("clearKey");
             alarm.setOperInstruct("operInstruct");
-            alarm.setAlarmType(1);
+            alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setFirstEventTime(new Date(0));
             alarm.setIpAddr(ia);
             alarm.setEventParms(eventparms);

@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -49,12 +50,16 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.rest.mapper.v2.EventMapper;
+import org.opennms.web.rest.model.v2.EventDTO;
+import org.opennms.web.rest.model.v2.EventCollectionDTO;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,10 +72,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("events")
 @Transactional
-public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBean,Integer,Integer> {
+public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,EventDTO,SearchBean,Integer,Integer> {
 
     @Autowired
     private EventDao m_dao;
+
+    @Autowired
+    private EventMapper m_eventMapper;
 
     @Override
     protected EventDao getDao() {
@@ -112,8 +120,13 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
     }
 
     @Override
-    protected JaxbListWrapper<OnmsEvent> createListWrapper(Collection<OnmsEvent> list) {
-        return new OnmsEventCollection(list);
+    protected JaxbListWrapper<EventDTO> createListWrapper(Collection<EventDTO> list) {
+        return new EventCollectionDTO(list);
+    }
+
+    @Override
+    protected Set<SearchProperty> getQueryProperties() {
+        return SearchProperties.EVENT_SERVICE_PROPERTIES;
     }
 
     @Override
@@ -129,23 +142,25 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
 
         // Root alias
         map.putAll(CriteriaBehaviors.EVENT_BEHAVIORS);
+        // Allow iplike queries on ipAddr
+        map.put("ipAddr", new IpLikeCriteriaBehavior("ipAddr"));
+
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.event, CriteriaBehaviors.EVENT_BEHAVIORS));
+        // Allow iplike queries on event.ipAddr
+        map.put(Aliases.event.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
 
         // 1st level JOINs
-        map.putAll(CriteriaBehaviors.ALARM_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.alarm, CriteriaBehaviors.ALARM_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.distPoller, CriteriaBehaviors.DIST_POLLER_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.node, CriteriaBehaviors.NODE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.serviceType, CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS));
 
         // 2nd level JOINs
-        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
-
-        // Allow iplike queries on event.ipAddr
-        map.put("ipAddr", new IpLikeCriteriaBehavior("ipAddr"));
-        map.put(Aliases.event.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.ipInterface, CriteriaBehaviors.IP_INTERFACE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.location, CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.snmpInterface, CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS));
 
         return map;
     }
@@ -163,6 +178,17 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
 
         sendEvent(event);
         return Response.noContent().build();
+    }
+
+
+    @Override
+    public EventDTO mapEntityToDTO(OnmsEvent entity) {
+        return m_eventMapper.eventToEventDTO(entity);
+    }
+
+    @Override
+    public OnmsEvent mapDTOToEntity(EventDTO dto) {
+        return m_eventMapper.eventDTOToEvent(dto);
     }
 
 }

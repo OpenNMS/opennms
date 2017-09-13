@@ -148,6 +148,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     public void afterPropertiesSet() throws Exception {
         if (getNorthboundInterfaces() != null) {
             for (final Northbounder nb : getNorthboundInterfaces()) {
+                LOG.debug("afterPropertiesSet: starting {}", nb.getName());
                 nb.start();
             }
         }
@@ -160,6 +161,12 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
      */
     @Override
     public void destroy() throws Exception {
+        if (getNorthboundInterfaces() != null) {
+            for (final Northbounder nb : getNorthboundInterfaces()) {
+                LOG.debug("destroy: stopping {}", nb.getName());
+                nb.stop();
+            }
+        }
     }
 
     /**
@@ -180,11 +187,15 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     public void start() throws Exception {
     }
 
+    // TODO This seems to be redundant as this is also being executed through afterPropertiesSet
     public void onNorthbounderRegistered(final Northbounder northbounder, final Map<String,String> properties) {
+        LOG.debug("onNorthbounderRegistered: starting {}", northbounder.getName());
         northbounder.start();
     }
-    
+
+    // TODO The following is not working, which is why the destroy method was implemented.
     public void onNorthbounderUnregistered(final Northbounder northbounder, final Map<String,String> properties) {
+        LOG.debug("onNorthbounderUnregistered: stopping {}", northbounder.getName());
         northbounder.stop();
     }
     

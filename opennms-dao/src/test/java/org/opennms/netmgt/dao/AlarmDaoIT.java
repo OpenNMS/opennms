@@ -120,7 +120,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(Integer.valueOf(6));
+		event.setEventSeverity(OnmsSeverity.MAJOR.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);
@@ -168,7 +168,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(new Integer(7));
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);
@@ -212,7 +212,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(new Integer(7));
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);
@@ -249,7 +249,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(new Integer(7));
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);
@@ -335,7 +335,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventCreateTime(new Date());
 		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
-		event.setEventSeverity(new Integer(7));
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
 		event.setEventSource("test");
 		m_eventDao.save(event);

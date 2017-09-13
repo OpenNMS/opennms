@@ -68,7 +68,7 @@ $font_2: sans-serif;
 %extend_3 {
 	font-weight: normal;
 	text-decoration: none;
-	color: $color_green_leaf_approx;
+	color: $color_opennms_dark;
 	line-height: 1.5em;
 }
 
@@ -132,7 +132,7 @@ div {
 		h3 {
 			background-repeat: repeat-x;
 			background-position: center center;
-			background-color: $color_green_leaf_approx;
+			background-color: $color_opennms_dark;
 			color: $white;
 			margin-bottom: 0;
 			margin-top: 0;
@@ -259,7 +259,7 @@ h3 {
 	@extend %extend_1;
 	background-repeat: repeat-x;
 	background-position: center center;
-	background-color: $color_green_leaf_approx;
+	background-color: $color_opennms_dark;
 	color: #FFF;
 	border: 1px solid $color_mountain_mist_approx;
 	border-bottom: 0;
@@ -275,7 +275,7 @@ h3 {
 	&.o-box-header {
 		background-repeat: repeat-x;
 		background-position: center center;
-		background-color: $color_green_leaf_approx;
+		background-color: $color_opennms_dark;
 		color: $white;
 		margin-bottom: 0;
 		margin-top: 0;
@@ -323,7 +323,7 @@ pre {
 }
 a {
 	@extend %extend_1;
-	color: $color_green_leaf_approx;
+	color: $color_opennms_dark;
 	text-decoration: none;
 	&:hover {
 		text-decoration: underline;
@@ -934,7 +934,7 @@ hr {
 		strong {
 			font-weight: normal;
 			color: #FFF;
-			background-color: $color_green_leaf_approx;
+			background-color: $color_opennms_dark;
 		}
 		a {
 			@extend %extend_3;
@@ -948,7 +948,7 @@ hr {
 				@extend %extend_3;
 			}
 			&:hover {
-				background-color: $color_green_leaf_approx;
+				background-color: $color_opennms_dark;
 				color: #FFF;
 				text-decoration: none;
 			}

@@ -47,8 +47,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.rest-commons</artifactId>
+      <groupId>org.opennms.features.rest</groupId>
+      <artifactId>org.opennms.features.rest.common</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -153,6 +153,12 @@
     <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.daemon</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.rest</groupId>
+      <artifactId>org.opennms.features.rest.mapper</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
