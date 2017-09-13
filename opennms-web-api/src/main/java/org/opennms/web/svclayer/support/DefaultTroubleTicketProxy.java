@@ -97,7 +97,12 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
         alarm.setTTicketState(newState);
         m_alarmDao.saveOrUpdate(alarm);
-        
+
+        EventBuilder bldr = createEventBuilder(uei, alarm, attributes);
+        send(bldr.getEvent());
+    }
+
+    public static EventBuilder createEventBuilder(String uei, OnmsAlarm alarm, Map<String, String> attributes) {
         EventBuilder bldr = new EventBuilder(uei, "AlarmUI");
         bldr.setNode(alarm.getNode());
         bldr.setInterface(alarm.getIpAddr());
@@ -114,7 +119,7 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
         		bldr.addParam(attribute.getKey(), attribute.getValue());
         	}
         }
-        send(bldr.getEvent());
+        return bldr;
     }
 
     private void send(Event e) {

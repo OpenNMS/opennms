@@ -47,6 +47,8 @@ public class CriteriaBuilder {
 	
     private Class<?> m_class;
 
+    private String m_rootAlias;
+
     private OrderBuilder m_orderBuilder = new OrderBuilder();
 
     private Set<Fetch> m_fetch = new LinkedHashSet<Fetch>();
@@ -68,11 +70,16 @@ public class CriteriaBuilder {
     private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
 
     public CriteriaBuilder(final Class<?> clazz) {
+        this(clazz, null);
+    }
+
+    public CriteriaBuilder(final Class<?> clazz, final String rootAlias) {
         m_class = clazz;
+        m_rootAlias = rootAlias;
     }
 
     public Criteria toCriteria() {
-        final Criteria criteria = new Criteria(m_class);
+        final Criteria criteria = new Criteria(m_class, m_rootAlias);
         criteria.setOrders(m_orderBuilder.getOrderCollection());
         criteria.setAliases(m_aliasBuilder.getAliasCollection());
         criteria.setFetchTypes(m_fetch);

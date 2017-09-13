@@ -36,9 +36,12 @@ public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
     public DefaultTopologyProviderInfo() {
     }
 
-    public DefaultTopologyProviderInfo(String name, String description) {
+    public DefaultTopologyProviderInfo(String name, String description, Boolean isHierarchichal) {
         this.name = name;
         this.description = description;
+        if (isHierarchichal != null) {
+            this.hierarchical = isHierarchichal;
+        }
     }
 
     @Override
