@@ -239,6 +239,7 @@ public class NotificationTask extends Thread {
 
                     // send the notice
                     ExecutorStrategy strategy = null;
+                    boolean isBinary = false;
                     String cntct = "";
 
                     for (Command command : m_commands) {
@@ -250,30 +251,33 @@ public class NotificationTask extends Thread {
                                 LOG.error("Could not insert notice info into database, aborting send notice", e);
                                 continue;
                             }
-                            Boolean binaryCommand = command.getBinary();
-                            if (binaryCommand) {
+
+                            isBinary = command.getBinary();
+                            if (command.getServiceRegistry()) {
+                                strategy = new ServiceRegistryExecutor();
+                            } else if (isBinary) {
                                 strategy = new CommandExecutor();
                             } else {
                                 strategy = new ClassExecutor();
                             }
                             LOG.debug("Class created is: {}", command.getClass());
 
-                            getNotificationManager().incrementAttempted(strategy instanceof CommandExecutor);
+                            getNotificationManager().incrementAttempted(isBinary);
                             
                             int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
                             LOG.debug("command {} return code = {}", command.getName(), returnCode);
                             
                             if (returnCode == 0) {
-                                getNotificationManager().incrementSucceeded(strategy instanceof CommandExecutor);
+                                getNotificationManager().incrementSucceeded(isBinary);
                             } else {
-                                getNotificationManager().incrementFailed(strategy instanceof CommandExecutor);
+                                getNotificationManager().incrementFailed(isBinary);
                             }
                         } catch (Throwable e) {
                             LOG.warn("Notification command failed: {}", command.getName(), e);
                             if (strategy == null) {
                                 getNotificationManager().incrementUnknownInterrupted();
                             } else {
-                                getNotificationManager().incrementInterrupted(strategy instanceof CommandExecutor);
+                                getNotificationManager().incrementInterrupted(isBinary);
                             }
                         }
                     }

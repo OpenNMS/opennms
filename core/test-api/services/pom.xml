@@ -46,5 +46,10 @@
       <artifactId>junit</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.api</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>

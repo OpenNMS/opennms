@@ -59,6 +59,7 @@
       </sequence>
 
       <attribute default="true" name="binary" type="boolean"/>
+      <attribute default="false" name="service-registry" type="boolean"/>
     </complexType>
   </element>
 

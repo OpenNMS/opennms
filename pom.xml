@@ -1886,6 +1886,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.notifications</groupId>
+        <artifactId>org.opennms.features.notifications.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.mib-compiler</artifactId>
         <version>${project.version}</version>
