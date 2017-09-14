@@ -28,10 +28,33 @@
 
 package org.opennms.netmgt.provision.service;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xbill.DNS.Address;
+
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public final class DefaultHostnameResolver implements HostnameResolver {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultHostnameResolver.class);
+
     @Override public String getHostname(final InetAddress addr) {
-        return addr.getCanonicalHostName();
+        // Attempt to retrieve the fully qualified domain name for this IP address
+        String hostName = addr.getCanonicalHostName();
+        if (InetAddressUtils.str(addr).equals(hostName)) {
+            // The given host name matches the textual representation of
+            // the IP address, which means that the reverse lookup failed
+            // NMS-9356: InetAddress#getCanonicalHostName requires PTR records
+            // to have a corresponding A record in order to succeed, so we
+            // try using dnsjava's implementation to work around this
+            try {
+                hostName = Address.getHostName(addr);
+            } catch (UnknownHostException e) {
+                LOG.warn("Failed to retrieve the fully qualified domain name for {}. "
+                        + "Using the textual representation of the IP address.", addr);
+            }
+        }
+        return hostName;
     }
 }
