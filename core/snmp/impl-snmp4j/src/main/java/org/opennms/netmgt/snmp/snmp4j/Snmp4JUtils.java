@@ -97,24 +97,27 @@ public class Snmp4JUtils {
 		dispatcher.addMessageProcessingModel(new MPv1());
 		dispatcher.addMessageProcessingModel(new MPv2c());
 
-		Snmp snmp = new Snmp(dispatcher, responder);
+		final Snmp snmp = new Snmp(dispatcher, responder);
+		try {
+			snmp.listen();
 
-		snmp.listen();
+			CommunityTarget target = new CommunityTarget();
+			target.setCommunity(new OctetString(community));
+			if (pdu instanceof PDUv1) {
+				target.setVersion(SnmpConstants.version1);
+			} else {
+				target.setVersion(SnmpConstants.version2c);
+			}
+			target.setAddress(Snmp4JAgentConfig.convertAddress(address, port));
 
-		CommunityTarget target = new CommunityTarget();
-		target.setCommunity(new OctetString(community));
-		if (pdu instanceof PDUv1) {
-			target.setVersion(SnmpConstants.version1);
-		} else {
-			target.setVersion(SnmpConstants.version2c);
+			snmp.send(pdu, target, transport);
+
+			latch.await();
+
+			return bytes.get();
+		} finally {
+			snmp.close();
 		}
-		target.setAddress(Snmp4JAgentConfig.convertAddress(address, port));
-
-		snmp.send(pdu, target, transport);
-
-		latch.await();
-
-		return bytes.get();
 	}
 
 }

@@ -304,6 +304,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
             try {
                 session.listen();
             } catch (IOException e) {
+                closeQuietly(session);
                 LOG.error("send: error setting up listener for SNMP responses", e);
                 future.completeExceptionally(new Exception("error setting up listener for SNMP responses"));
                 return;
@@ -315,29 +316,26 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 session.send(pdu, agentConfig.getTarget(), null, new ResponseListener() {
                     @Override
                     public void onResponse(ResponseEvent responseEvent) {
-                        if (expectResponse) {
-                            try {
-                                future.complete(processResponse(agentConfig, responseEvent));
-                            } catch (IOException e) {
-                                future.completeExceptionally(e);
-                            } finally {
-                                // Close the tracker using a separate thread
-                                // This allows the SnmpWalker to clean up properly instead
-                                // of interrupting execution as it's executing the callback
-                                REAPER_EXECUTOR.submit(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        closeQuietly(session);
-                                    }
-                                });
-                            }
+                        try {
+                            future.complete(processResponse(agentConfig, responseEvent));
+                        } catch (IOException e) {
+                            future.completeExceptionally(e);
+                        } finally {
+                            // Close the tracker using a separate thread
+                            // This allows the SnmpWalker to clean up properly instead
+                            // of interrupting execution as it's executing the callback
+                            REAPER_EXECUTOR.submit(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeQuietly(session);
+                                }
+                            });
                         }
                     }
                 });
             } else {
                 session.send(pdu, agentConfig.getTarget());
                 future.complete(null);
-                closeQuietly(session);
             }
         } catch (final IOException e) {
             LOG.error("send: error during SNMP operation", e);
@@ -345,6 +343,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
         } catch (final RuntimeException e) {
             LOG.error("send: unexpected error during SNMP operation", e);
             future.completeExceptionally(e);
+        } finally {
+            // Always close the session if we're not expecting a response
+            // If we are expecting a response, the ResponseListener will handle the close
+            if (!expectResponse) {
+                closeQuietly(session);
+            }
         }
     }
 
