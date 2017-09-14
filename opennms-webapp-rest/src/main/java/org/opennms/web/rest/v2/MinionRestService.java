@@ -32,8 +32,10 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -107,6 +109,15 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
     @Override
     protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.MINION_SERVICE_PROPERTIES;
+    }
+
+    @Override
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, String key, OnmsMinion targetObject) {
+        if (!key.equals(targetObject.getId())) {
+            throw getException(Status.BAD_REQUEST, "The ID of the object doesn't match the ID of the path: {} != {}", targetObject.getId(), key);
+        }
+        getDao().saveOrUpdate(targetObject);
+        return Response.noContent().build();
     }
 
     @Override

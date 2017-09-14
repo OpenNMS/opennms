@@ -122,14 +122,6 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
         return Response.ok(node.getCategories().size()).build();
     }
 
-    public Response updateMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
-        return Response.status(Status.NOT_IMPLEMENTED).build();
-    }
-
-    public Response deleteMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
-        return Response.status(Status.NOT_IMPLEMENTED).build();
-    }
-
     @Override
     protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, OnmsCategory source) {
         OnmsNode node = getNode(uriInfo);
@@ -151,7 +143,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
     }
 
     @Override
-    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsCategory targetObject, MultivaluedMapImpl params) {
+    protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsCategory targetObject, MultivaluedMapImpl params) {
         if (params.getFirst("name") != null) {
             throw getException(Status.BAD_REQUEST, "Cannot rename category.");
         }
