@@ -88,12 +88,13 @@ public class NotifdIT extends NotificationsITCase {
         
         Date date = new Date();
         
-        long finished = anticipateNotificationsForGroup("High loadavg5 Threshold exceeded", "High loadavg5 Threshold exceeded on 192.168.1.1, loadavg5 with ", "InitialGroup", date, 0);
+        long finished = anticipateNotificationsForGroup("High loadavg5 Threshold exceeded", "High loadavg5 Threshold exceeded on 192.168.1.1, loadavg5 with 90%", "InitialGroup", date, 0);
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
         EventBuilder e = MockEventUtil.createInterfaceEventBuilder("test", EventConstants.HIGH_THRESHOLD_EVENT_UEI, iface);
         e.setTime(date);
         e.addParam("ds", "loadavg5");
+        e.addParam("value", "90");
         m_eventMgr.sendEventToListeners(e.getEvent());
         
         /*
