@@ -126,7 +126,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface.setIsSnmpPrimary(primaryType);
         
         if (System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
-        	m_currentInterface.setIpHostName(reverseResolveHostname(ipAddr));
+            m_currentInterface.setIpHostName(getProvisionService().getHostnameResolver().getHostname(m_currentInterface.getIpAddress()));
         }
         
         if (PrimaryType.PRIMARY.equals(primaryType)) {
@@ -214,9 +214,4 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         }
     }
 
-	private String reverseResolveHostname(String ipAddr) {
-		InetAddress addr = InetAddressUtils.addr(ipAddr);
-		return addr.getCanonicalHostName();
-	}
-    
 }
