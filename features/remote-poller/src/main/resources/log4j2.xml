@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- WARN here is just for internal log4j messages and does not effect logging in general -->
 <configuration status="WARN" monitorInterval="60">
+  <Properties>
+    <Property name="poller.logfile">/var/log/opennms-remote-poller.log</Property>
+  </Properties>
+
   <appenders>
     <!--
      When running in headless mode, output the logs to both the console and the log file specified by the
