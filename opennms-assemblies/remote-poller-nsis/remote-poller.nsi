@@ -993,6 +993,7 @@ CreateFail:
   Return
 CreateOK:
   GetFullPathName /SHORT $1 "$INSTDIR\bin\$VBS_KILL_SCRIPT"
+  # Note that it is pointless to use '--StdOutput=auto --StdError=auto' here because we are executing Java Web Start which redirects all stdout/stderr to the Java console
   ExecWait '"$INSTDIR\bin\$POLLER_SERVICE_FILE_NAME" //US//$POLLER_SVC_NAME  --StopImage="$SYSDIR\wscript.exe" --StopParams="//B#//NOLOGO#$1" --LogLevel=DEBUG --LogPath="$INSTDIR\logs" --LogPrefix=procrun --Startup=auto' $1
   #IntCmp $1 0 UpdateOK UpdateFail UpdateFail
   Goto UpdateOK
@@ -1158,7 +1159,7 @@ Function WriteCustomLogPropsFile
   FileWrite $0 "    <Routing name=$\"RoutingAppender$\">$\r$\n"
   FileWrite $0 "      <Routes pattern=$\"$$$${ctx:prefix}$\">$\r$\n"
   FileWrite $0 "        <Route>$\r$\n"
-  FileWrite $0 "          <RollingFile name=$\"Rolling-\$${ctx:prefix}$\" fileName=$\"\$${logdir}/\$${ctx:prefix}.log$\" filePattern=$\"\$${logdir}/\$${ctx:prefix}.%i.log.gz$\">$\r$\n"
+  FileWrite $0 "          <RollingFile name=$\"Rolling-$${ctx:prefix}$\" fileName=$\"$${logdir}/$${ctx:prefix}.log$\" filePattern=$\"$${logdir}/$${ctx:prefix}.%i.log.gz$\">$\r$\n"
   FileWrite $0 "            <PatternLayout>$\r$\n"
   FileWrite $0 "              <pattern>%d %-5p [%t] %c{1.}: %m%n</pattern>$\r$\n"
   FileWrite $0 "            </PatternLayout>$\r$\n"
