@@ -77,7 +77,7 @@
         <dependency>
             <groupId>com.toastcoders</groupId>
             <artifactId>yavijava</artifactId>
-            <version>6.0.03</version>
+            <version>6.0.05</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
