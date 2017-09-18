@@ -17,18 +17,14 @@
       <Routes>
         <Script name="ConditionalFileLoggerInit" language="JavaScript"><![CDATA[
           var System = Java.type('java.lang.System');
-          // Rely on stdout or the Java console for logging output by default
-          var result = 'disabled';
-          // If we're running in headless mode
-          if (System.getProperty('java.awt.headless') === 'true') {
-            // Check the OS to determine the log path
-            var os = System.getProperty('os.name');
-            if (typeof os === 'string' && os.toLowerCase().indexOf('windows') >= 0) {
-              result = 'windows';
-            } else {
-              result = 'other';
-            }
-          }
+          var result = 'other';
+           // Check the OS to determine the log path
+           var os = System.getProperty('os.name');
+           if (typeof os === 'string' && os.toLowerCase().indexOf('windows') >= 0) {
+             result = 'windows';
+           } else {
+             result = 'other';
+           }
           result;
         ]]></Script>
         <Route key="other">
@@ -37,7 +33,12 @@
             <PatternLayout>
               <Pattern>%d %-5p [%t] %c{1.}: %m%n</Pattern>
             </PatternLayout>
-            <TimeBasedTriggeringPolicy />
+
+            <!-- Rotate logs at 10MB-->
+            <SizeBasedTriggeringPolicy size="10MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
           </RollingFile>
         </Route>
         <Route key="windows">
@@ -46,7 +47,12 @@
             <PatternLayout>
               <Pattern>%d %-5p [%t] %c{1.}: %m%n</Pattern>
             </PatternLayout>
-            <TimeBasedTriggeringPolicy />
+
+            <!-- Rotate logs at 10MB-->
+            <SizeBasedTriggeringPolicy size="10MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
           </RollingFile>
         </Route>
       </Routes>
