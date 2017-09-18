@@ -726,6 +726,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
+%exclude %dir %{instprefix}/etc/drools-engine.d/ncs
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{logdir}
 %attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
@@ -750,6 +751,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644 root root 755)
 %{instprefix}/lib/ncs-*.jar
 %{jettydir}/%{servletdir}/WEB-INF/lib/ncs-*
+%dir %{instprefix}/etc/drools-engine.d/ncs
 %config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
 %config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
 %{sharedir}/xsds/ncs-*.xsd
