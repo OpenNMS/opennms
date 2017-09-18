@@ -40,7 +40,7 @@ public class AggregateTimeSeriesDataSource extends BaseRrdDataSource {
     public AggregateTimeSeriesDataSource(final List<? extends TimeSeriesDataSource> dataSources) throws IOException {
         assertNotNull(dataSources, "dataSources cannot be null!");
         m_dataSources = dataSources;
-        ArrayList<String> dsNames = new ArrayList<String>();
+        ArrayList<String> dsNames = new ArrayList<>();
         for (final TimeSeriesDataSource ds : m_dataSources) {
             for (final String dsName : ds.getDsNames()) {
                 if (!dsNames.contains(dsName)) {

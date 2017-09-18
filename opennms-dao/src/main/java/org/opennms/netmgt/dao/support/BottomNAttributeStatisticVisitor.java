@@ -142,7 +142,7 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
                 return diff;
             }
             
-            diff = o1.getAttribute().getResource().getId().compareToIgnoreCase(o2.getAttribute().getResource().getId());
+            diff = o1.getAttribute().getResource().getId().toString().compareToIgnoreCase(o2.getAttribute().getResource().getId().toString());
             if (diff != 0) {
                 return diff;
             }

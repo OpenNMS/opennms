@@ -43,6 +43,7 @@ import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -137,7 +138,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> findNodeChildResources(OnmsNode node) {
-        List<OnmsResource> resources = new ArrayList<OnmsResource>();
+        List<OnmsResource> resources = new ArrayList<>();
         if (node != null) {
             if (ResourceTypeUtils.isStoreByForeignSource() && node.getForeignSource() != null) {
                 String source = node.getForeignSource() + ':' + node.getForeignId();
@@ -151,8 +152,8 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
     /** {@inheritDoc} */
     public List<OnmsResource> findNodeChildResources(int nodeId) {
-        List<OnmsResource> resources = new ArrayList<OnmsResource>();
-        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("node", Integer.toString(nodeId)));
+        List<OnmsResource> resources = new ArrayList<>();
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("node", Integer.toString(nodeId)));
         if (resource != null) {
             resources = resource.getChildResources();
             resources.size(); // Get the size to force the list to be loaded
@@ -163,8 +164,8 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> findDomainChildResources(String domain) {
-        List<OnmsResource> resources = new ArrayList<OnmsResource>();
-        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("domain", domain));
+        List<OnmsResource> resources = new ArrayList<>();
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("domain", domain));
         if (resource != null) {
             resources = resource.getChildResources();
             resources.size(); // Get the size to force the list to be loaded
@@ -175,8 +176,8 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> findNodeSourceChildResources(String nodeSource) {
-        List<OnmsResource> resources = new ArrayList<OnmsResource>();
-        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("nodeSource", nodeSource));
+        List<OnmsResource> resources = new ArrayList<>();
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("nodeSource", nodeSource));
         if (resource != null) {
             resources = resource.getChildResources();
             resources.size(); // Get the size to force the list to be loaded
@@ -193,7 +194,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
      */
     @Override
     public List<OnmsResource> findChildResources(OnmsResource resource, String... resourceTypeMatches) {
-        List<OnmsResource> matchingChildResources = new LinkedList<OnmsResource>();
+        List<OnmsResource> matchingChildResources = new LinkedList<>();
         
         if (resource != null) {
             for (OnmsResource childResource : resource.getChildResources()) {
@@ -231,7 +232,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
     /** {@inheritDoc} */
     @Override
-    public OnmsResource getResourceById(String id) {
+    public OnmsResource getResourceById(ResourceId id) {
         return m_resourceDao.getResourceById(id);
     }
 
@@ -245,7 +246,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     @Override
     public void promoteGraphAttributesForResource(OnmsResource resource) {
         final String rrdBaseDir = System.getProperty("rrd.base.dir");
-        List<String> rrdFiles = new LinkedList<String>();
+        List<String> rrdFiles = new LinkedList<>();
         for(RrdGraphAttribute attribute : resource.getRrdGraphAttributes().values()) {
             rrdFiles.add(rrdBaseDir+File.separator+attribute.getRrdRelativePath());
         }
@@ -265,7 +266,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
      * @param resourceId a {@link java.lang.String} object.
      */
     @Override
-    public void promoteGraphAttributesForResource(String resourceId) {
+    public void promoteGraphAttributesForResource(ResourceId resourceId) {
         promoteGraphAttributesForResource(getResourceById(resourceId));
     }
 

@@ -95,7 +95,7 @@ public class NsclientDatacollectionConfig {
      */
     public List<NsclientCollection> getNsclientCollection() {
         if (nsclientCollection == null) {
-            nsclientCollection = new ArrayList<NsclientCollection>();
+            nsclientCollection = new ArrayList<>();
         }
         return this.nsclientCollection;
     }

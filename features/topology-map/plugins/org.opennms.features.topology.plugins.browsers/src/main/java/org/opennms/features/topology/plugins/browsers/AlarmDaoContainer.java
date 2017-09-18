@@ -69,7 +69,7 @@ public class AlarmDaoContainer extends OnmsVaadinContainer<OnmsAlarm,Integer> {
 
     @Override
     public Collection<?> getSortableContainerPropertyIds() {
-        Collection<Object> propertyIds = new HashSet<Object>();
+        Collection<Object> propertyIds = new HashSet<>();
         propertyIds.addAll(getContainerPropertyIds());
 
         // This column is a checkbox so we can't sort on it either

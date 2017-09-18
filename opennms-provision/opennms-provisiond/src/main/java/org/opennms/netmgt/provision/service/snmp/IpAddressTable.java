@@ -104,7 +104,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
      * @return a {@link java.util.Set} object.
      */
     public Set<Integer> getIfIndices() {
-        Set<Integer> ifIndices = new TreeSet<Integer>();
+        Set<Integer> ifIndices = new TreeSet<>();
         for(IpAddressTableEntry entry : getEntries()) {
             Integer ifIndex = entry.getIpAddressIfIndex();
             if (ifIndex != null) {
@@ -245,7 +245,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
      * @return a {@link java.util.Set} object.
      */
     public Set<String> getIpAddresses() {
-    	final Set<String> ipAddrs = new LinkedHashSet<String>();
+    	final Set<String> ipAddrs = new LinkedHashSet<>();
     	for (final InetAddress addr : m_addresses) {
     		ipAddrs.add(InetAddressUtils.str(addr));
     	}
@@ -258,7 +258,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
 	}
 
     public static Set<SnmpInstId> getInstanceIds(final Set<InetAddress> ipAddresses) {
-    	final Set<SnmpInstId> ids = new HashSet<SnmpInstId>();
+    	final Set<SnmpInstId> ids = new HashSet<>();
     	for (final InetAddress addr : ipAddresses) {
     		ids.add(getInstanceForAddress(addr));
     	}

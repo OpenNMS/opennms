@@ -12,4 +12,12 @@
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.protocols.xmp.detector.XmpDetectorFactory" />
 	</service>
+
+    <bean id="xmpCollector" class="org.opennms.netmgt.protocols.xmp.collector.XmpCollector" />
+    <service ref="xmpCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+        <service-properties>
+           <entry key="type" value="org.opennms.netmgt.protocols.xmp.collector.XmpCollector" />
+        </service-properties>
+    </service>
+
 </blueprint>

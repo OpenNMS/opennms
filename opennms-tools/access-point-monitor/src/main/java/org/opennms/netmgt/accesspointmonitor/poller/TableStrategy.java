@@ -137,7 +137,7 @@ public class TableStrategy implements AccessPointPoller {
             return null;
         }
 
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 12; i += 2) {
             sb.append(hexString.substring(i, i + 2));
             if (i < 10) {

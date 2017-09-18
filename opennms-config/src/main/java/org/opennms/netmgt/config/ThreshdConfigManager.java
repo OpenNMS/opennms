@@ -144,7 +144,7 @@ public abstract class ThreshdConfigManager {
             // Get a list of ipaddress per package agaist the filter rules from
             // database and populate the package, IP list map.
             //
-            final StringBuffer filterRules = new StringBuffer();
+            final StringBuilder filterRules = new StringBuilder();
             if (pkg.getFilter().getContent().isPresent()) {
                 filterRules.append(pkg.getFilter().getContent().get());
             }

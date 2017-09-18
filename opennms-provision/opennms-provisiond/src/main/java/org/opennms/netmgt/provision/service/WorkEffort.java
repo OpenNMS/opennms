@@ -40,7 +40,7 @@ public class WorkEffort {
 	private String m_name;
 	private long m_totalTime;
 	private long m_sectionCount;
-	private ThreadLocal<WorkDuration> m_pendingSection = new ThreadLocal<WorkDuration>();
+	private ThreadLocal<WorkDuration> m_pendingSection = new ThreadLocal<>();
 	
 	/**
 	 * <p>Constructor for WorkEffort.</p>
@@ -83,9 +83,9 @@ public class WorkEffort {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-        @Override
+	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		final StringBuilder buf = new StringBuilder();
 		buf.append("Total ").append(m_name).append(": ");
 		buf.append((double)m_totalTime/(double)1000L).append(" thread-seconds");
 		if (m_sectionCount > 0) {

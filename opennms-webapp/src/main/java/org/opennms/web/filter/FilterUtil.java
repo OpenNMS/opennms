@@ -39,7 +39,7 @@ public abstract class FilterUtil {
     }
 
     public static String toFilterURL(List<String> filters) {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         if( filters != null ) {
             for( int i=0; i < filters.size(); i++ ) {
                 if (i == 0) buffer.append("filter=");

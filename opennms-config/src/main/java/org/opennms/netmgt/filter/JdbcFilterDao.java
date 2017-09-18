@@ -264,7 +264,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     private List<InetAddress> getIPAddressList(final String rule, final boolean filterDeleted) throws FilterParseException {
-    	final List<InetAddress> resultList = new ArrayList<InetAddress>();
+    	final List<InetAddress> resultList = new ArrayList<>();
         String sqlString;
 
         LOG.debug("Filter.getIPAddressList({})", rule);
@@ -401,9 +401,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     public String getNodeMappingStatement(final String rule) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+        final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+        final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "nodeID"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "nodeLabel"));
 
@@ -421,9 +421,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     public String getIPServiceMappingStatement(final String rule) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+    	final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+    	final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "serviceName"));
 
@@ -441,9 +441,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     public String getInterfaceWithServiceStatement(final String rule) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+    	final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+    	final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "serviceName"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "nodeID"));
@@ -463,9 +463,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     protected String getSQLStatement(final String rule) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+        final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+        final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
 
         final String where = parseRule(tables, rule);
@@ -494,9 +494,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     protected String getSQLStatement(final String rule, final long nodeId, final String ipaddr, final String service) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+        final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+        final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
 
         final StringBuffer where = new StringBuffer(parseRule(tables, rule));
@@ -563,7 +563,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      */
     private String parseRule(final List<Table> tables, final String rule) throws FilterParseException {
         if (rule != null && rule.length() > 0) {
-        	final List<String> extractedStrings = new ArrayList<String>();
+        	final List<String> extractedStrings = new ArrayList<>();
         	
         	String sqlRule = rule;
 

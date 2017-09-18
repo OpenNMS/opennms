@@ -82,7 +82,7 @@ public final class Authentication extends Object {
     public static final String ROLE_JMX = "ROLE_JMX";
     public static final String ROLE_MINION = "ROLE_MINION";
 
-    private static List<String> s_availableRoles = new ArrayList<String>();
+    private static List<String> s_availableRoles = new ArrayList<>();
     private static long lastModified = 0;
 
     static {

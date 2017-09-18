@@ -1,0 +1,25 @@
+[[releasenotes-21]]
+== What's New in OpenNMS Horizon 21
+
+=== System Requirements
+
+=== Breaking Changes
+
+* Property format change of `opennms.alarmTroubleTicketLinkTemplate`:
+Originally the `opennms.alarmTroubleTicketLinkTemplate` defined in `$OPENNMS_HOME/etc/opennms.properties` requires the full `<a href="...">${id}</a>` link to be configured.
+This is changed to the ticketer system url, e.g. `https://issues.opennms.org/browse/${id}` instead of `<a href="https://issues.opennms.org/browse/${id}">${id}</a>`.
+If the `opennms.alarmTroubleTicketEnabled` is `true` then the `opennms.alarmTroubleTicketLinkTemplate` must be updated as well in order to not break the link to an external ticketing system on the Alarm Details Page.
+
+=== Future Breaking Changes
+
+=== Important Upgrade Notes
+
+=== New Features
+
+=== Retired Features
+
+=== Dependency Updates
+
+=== Other Improvements
+
+

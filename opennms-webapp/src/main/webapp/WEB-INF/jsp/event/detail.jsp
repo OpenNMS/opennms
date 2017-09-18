@@ -34,15 +34,14 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@page import="java.util.HashMap"%>
-<%@page import="java.util.regex.Matcher"%>
-<%@page import="java.util.regex.Pattern"%>
-<%@page import="org.springframework.util.Assert"%>
-
-<%@page import="org.opennms.netmgt.events.api.EventConstants"%>
-<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
-<%@page import="org.opennms.web.event.Event"%>
-<%@page import="org.opennms.web.event.AcknowledgeType"%>
+<%@page import="java.util.Map"%>
 <%@page import="org.opennms.core.utils.WebSecurityUtils"%>
+<%@page import="org.opennms.netmgt.events.api.EventConstants"%>
+
+<%@page import="org.opennms.web.event.AcknowledgeType"%>
+<%@page import="org.opennms.web.event.Event"%>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
+<%@page import="org.springframework.util.Assert"%>
 
 <%
 	XssRequestWrapper req = new XssRequestWrapper(request);
@@ -50,7 +49,7 @@
 	Event event = null;
 	String action = null;
     String buttonName=null;
-    HashMap<String, String> parms = new HashMap<String, String>();
+    Map<String, String> parms = new HashMap<String, String>();
 	if ( events.length > 0 ) {
 		Assert.isTrue(events.length == 1, "event detail filter should match only one event: event found:" + events.length);
 
@@ -67,22 +66,8 @@
 	        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
 	    }
 
-		Pattern p = Pattern.compile("([^=]+)=(.*)\\((\\w+),(\\w+)\\)");
-	    
-	    if (event.getParms() != null) {
-			String[] parmStrings = event.getParms().split(";");
-			for (String parmString : parmStrings) {
-				Matcher m = p.matcher(parmString);
-				if (!m.matches()) {
-					log("Could not match event parameter string element '"
-						+ parmString + "' in event ID " + (event == null? "NULL" : event.getId()) );
-					continue;
-				}
-				
-				parms.put(m.group(1), m.group(2));
-			}
-	    }
-	}    
+	    parms = event.getParms();
+	}
 
 %>
 

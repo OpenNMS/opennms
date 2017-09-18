@@ -41,6 +41,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
+import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 @Entity

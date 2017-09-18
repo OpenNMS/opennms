@@ -168,7 +168,7 @@ public class GroupController extends AbstractController implements InitializingB
 
             updateGroup(request, group);
             
-            Vector<Object> newSchedule = new Vector<Object>();
+            Vector<Object> newSchedule = new Vector<>();
 
             int dutyAddCount = WebSecurityUtils.safeParseInt(request.getParameter("numSchedules"));
 
@@ -270,7 +270,7 @@ public class GroupController extends AbstractController implements InitializingB
         
         newGroup.setAuthorizedCategories(new ArrayList<String>(categoryList));
         
-        Vector<Object> newSchedule = new Vector<Object>();
+        Vector<Object> newSchedule = new Vector<>();
         ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
 
         Collection<String> dutySchedules = newGroup.getDutySchedules();

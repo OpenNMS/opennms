@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.collection.support;
 
-import java.nio.file.Path;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * Delegates the visit calls to the wrapped resource.
@@ -56,7 +56,7 @@ public class CollectionResourceWrapper implements CollectionResource {
 
     /** {@inheritDoc} */
     @Override
-    public Path getPath() {
+    public ResourcePath getPath() {
         return m_wrapped.getPath();
     }
 
@@ -86,7 +86,7 @@ public class CollectionResourceWrapper implements CollectionResource {
 
     /** {@inheritDoc} */
     @Override
-    public String getParent() {
+    public ResourcePath getParent() {
         return m_wrapped.getParent();
     }
 

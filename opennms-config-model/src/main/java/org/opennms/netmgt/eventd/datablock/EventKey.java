@@ -354,7 +354,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      */
     @Override
     public String toString() {
-        StringBuffer s = new StringBuffer("EventKey\n[\n\t");
+        final StringBuilder s = new StringBuilder("EventKey\n[\n\t");
 
         for (Map.Entry<String, Object> e : entrySet()) {
             s.append(e.getKey() + "    = " + e.getValue().toString() + "\n\t");
@@ -421,7 +421,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
                 retParmVal = eventSnmpInfo.getCommunity();
             }
         } else if (event.getParmCollection().size() > 0) {
-            ArrayList<String> eventparms = new ArrayList<String>();
+            ArrayList<String> eventparms = new ArrayList<>();
             for (org.opennms.netmgt.xml.event.Parm evParm : event.getParmCollection()) {
                 eventparms.add(EventConstants.getValueAsString(evParm.getValue()));
             }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,14 +33,8 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.protocols.xml.config.Request;
-import org.opennms.protocols.xml.config.XmlDataCollection;
-import org.opennms.protocols.xml.config.XmlSource;
 
 /**
  * The Test Class for AbstractXmlCollectionHandler.
@@ -56,28 +50,6 @@ public class AbstractXmlCollectionHandlerTest {
      */
     @Test
     public void testParseString() throws Exception {
-        AbstractXmlCollectionHandler handler = new AbstractXmlCollectionHandler() {
-            @Override
-            public XmlCollectionSet collect(CollectionAgent agent,
-                    XmlDataCollection collection,
-                    Map<String, Object> parameters)
-                            throws CollectionException {
-                return null;
-            }
-
-            @Override
-            protected void processXmlResource(
-                    XmlCollectionResource collectionResource,
-                    AttributeGroupType attribGroupType) {
-            }
-
-            @Override
-            protected void fillCollectionSet(String urlString,
-                    Request request, CollectionAgent agent,
-                    XmlCollectionSet collectionSet, XmlSource source)
-                    throws Exception {
-            }
-        };
         OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("mynode.local");
@@ -86,10 +58,10 @@ public class AbstractXmlCollectionHandlerTest {
         node.setAssetRecord(asset);
         Map<String, String> parameters = new HashMap<>();
         parameters.put("port", "80");
-        String url = handler.parseString("URL", "http://{nodeLabel}:{parameter:port}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300, parameters);
+        String url = AbstractXmlCollectionHandler.parseString("URL", "http://{nodeLabel}:{parameter:port}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300, parameters);
         Assert.assertEquals("http://mynode.local:80/127.0.0.1/serial/1001/300", url);
         String multiline = "<data>\n   <source label='{nodeLabel}'/>\n</data>";
-        String xml = handler.parseString("Content", multiline, node, "127.0.0.1", 300, parameters);
+        String xml = AbstractXmlCollectionHandler.parseString("Content", multiline, node, "127.0.0.1", 300, parameters);
         Assert.assertEquals("<data>\n   <source label='mynode.local'/>\n</data>", xml);
     }
 

@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PolicyCollection {
 
     @XmlElement(name="policy")
-    private List<PluginConfig> m_elements = new ArrayList<PluginConfig>();
+    private List<PluginConfig> m_elements = new ArrayList<>();
 
     public List<PluginConfig> getPolicies() {
         return m_elements;

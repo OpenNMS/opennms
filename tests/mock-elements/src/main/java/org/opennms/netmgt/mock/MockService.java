@@ -91,7 +91,7 @@ public class MockService extends MockElement implements MonitoredService {
     
     private SvcMgmtStatus m_mgmtStatus = SvcMgmtStatus.ACTIVE;
 
-    private List<PollAnticipator> m_triggers = new ArrayList<PollAnticipator>();
+    private List<PollAnticipator> m_triggers = new ArrayList<>();
 
    /**
     * <p>Constructor for MockService.</p>

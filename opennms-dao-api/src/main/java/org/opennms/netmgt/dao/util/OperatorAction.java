@@ -72,7 +72,7 @@ public abstract class OperatorAction {
      * @return the formatted string
      */
     public static String format(List<Operaction> opacts, int sz) {
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         boolean first = true;
 
         for (Operaction opact : opacts) {

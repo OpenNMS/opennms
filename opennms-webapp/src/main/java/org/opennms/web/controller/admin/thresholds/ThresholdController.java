@@ -201,13 +201,13 @@ public class ThresholdController extends AbstractController implements Initializ
         // Finally, set the sorted resource types into the model
         modelAndView.addObject("dsTypes", dsTypes);
 
-        Collection<String> thresholdTypes = new ArrayList<String>();
+        Collection<String> thresholdTypes = new ArrayList<>();
         for (final ThresholdType tt : ThresholdType.values()) {
             thresholdTypes.add(tt.getEnumName());
         }
         modelAndView.addObject("thresholdTypes", thresholdTypes);
 
-        Collection<String> filterOperators = new ArrayList<String>();
+        Collection<String> filterOperators = new ArrayList<>();
         for (final FilterOperator fo : FilterOperator.values()) {
             filterOperators.add(fo.getEnumName());
         }

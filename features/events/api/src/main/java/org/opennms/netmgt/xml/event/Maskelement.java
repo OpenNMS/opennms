@@ -76,7 +76,7 @@ public class Maskelement implements Serializable {
 
     public Maskelement() {
         super();
-        this._mevalueList = new java.util.ArrayList<java.lang.String>();
+        this._mevalueList = new java.util.ArrayList<>();
     }
 
 

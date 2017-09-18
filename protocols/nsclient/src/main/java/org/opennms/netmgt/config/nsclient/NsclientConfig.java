@@ -103,7 +103,7 @@ public class NsclientConfig {
      */
     public List<Definition> getDefinition() {
         if (definition == null) {
-            definition = new ArrayList<Definition>();
+            definition = new ArrayList<>();
         }
         return this.definition;
     }

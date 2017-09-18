@@ -87,7 +87,7 @@ public class LocationMonitorListModel {
      */
     public void addLocationMonitor(LocationMonitorModel locationMonitor) {
         if (m_locationMonitors == null) {
-            m_locationMonitors = new LinkedList<LocationMonitorModel>();
+            m_locationMonitors = new LinkedList<>();
         }
         m_locationMonitors.add(locationMonitor);
     }

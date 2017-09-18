@@ -47,19 +47,19 @@ public class ServiceConfigurationTest extends
 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
-        List<Attribute> attributes = new LinkedList<Attribute>();
+        List<Attribute> attributes = new LinkedList<>();
         attributes.add(new Attribute("Port", "java.lang.Integer", "58180"));
         attributes.add(new Attribute("Host", "java.lang.String", "127.0.0.1"));
 
-        List<Argument> arguments = new LinkedList<Argument>();
+        List<Argument> arguments = new LinkedList<>();
         arguments.add(new Argument("java.lang.String", "admin"));
         arguments.add(new Argument("java.lang.String", "admin"));
 
-        List<Invoke> invokes = new LinkedList<Invoke>();
+        List<Invoke> invokes = new LinkedList<>();
         invokes.add(new Invoke(InvokeAtType.START, 0, "addAuthorization",
                                arguments));
 
-        List<Service> services = new LinkedList<Service>();
+        List<Service> services = new LinkedList<>();
         Service svc = new Service(":Name=HttpAdaptor",
                                   "mx4j.tools.adaptor.http.HttpAdaptor",
                                   attributes, invokes);

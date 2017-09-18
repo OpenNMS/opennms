@@ -39,7 +39,7 @@ import liquibase.statement.SqlStatement;
 public class SetSequenceChange extends AbstractChange {
     private String m_sequenceName;
 	private Integer m_value;
-	private List<TableConfig> m_tables = new ArrayList<TableConfig>();
+	private List<TableConfig> m_tables = new ArrayList<>();
 
 	public SetSequenceChange() {
         super("setSequence", "Set Sequence", ChangeMetaData.PRIORITY_DEFAULT);

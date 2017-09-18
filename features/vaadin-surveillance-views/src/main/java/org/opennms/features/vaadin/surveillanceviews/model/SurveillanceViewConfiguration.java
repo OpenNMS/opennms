@@ -55,7 +55,7 @@ public class SurveillanceViewConfiguration implements java.io.Serializable {
      */
     @XmlElement(name = "view")
     @XmlElementWrapper(name = "views")
-    private List<View> m_views = new LinkedList<View>();
+    private List<View> m_views = new LinkedList<>();
 
     /**
      * Returns the name of the default view.

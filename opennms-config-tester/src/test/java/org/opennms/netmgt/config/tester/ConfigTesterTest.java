@@ -54,8 +54,8 @@ import org.springframework.util.StringUtils;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConfigTesterTest {
-    private static Set<String> m_filesTested = new HashSet<String>();
-    private static Set<String> m_filesIgnored = new HashSet<String>();
+    private static Set<String> m_filesTested = new HashSet<>();
+    private static Set<String> m_filesIgnored = new HashSet<>();
     private ConfigTesterDataSource m_dataSource;
 
     @Before
@@ -186,6 +186,11 @@ public class ConfigTesterTest {
     @Test
     public void testHttpDatacollectionConfig() {
         testConfigFile("http-datacollection-config.xml");
+    }
+
+    @Test
+    public void testIfTttConfig() {
+        ignoreConfigFile("ifttt-config.xml");
     }
 
     @Test

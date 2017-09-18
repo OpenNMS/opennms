@@ -71,7 +71,7 @@ public class DbChangeNotifierTest {
 		try {
 			System.out.println("DbChangeNotifierTest creating connection - this is quite slow");
 			
-			List<String> paramList = new ArrayList<String>();
+			List<String> paramList = new ArrayList<>();
 			
 			paramList.add(DatabaseChangeNotifier.NOTIFY_EVENT_CHANGES);
 			paramList.add(DatabaseChangeNotifier.NOTIFY_ALARM_CHANGES);

@@ -104,9 +104,9 @@ public class Node implements java.io.Serializable {
 
     public Node() {
         super();
-        this._interfaceList = new java.util.ArrayList<org.opennms.client.schema.Interface>();
-        this._categoryList = new java.util.ArrayList<org.opennms.client.schema.Category>();
-        this._assetList = new java.util.ArrayList<org.opennms.client.schema.Asset>();
+        this._interfaceList = new java.util.ArrayList<>();
+        this._categoryList = new java.util.ArrayList<>();
+        this._assetList = new java.util.ArrayList<>();
     }
 
 

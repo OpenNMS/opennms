@@ -103,7 +103,7 @@ public class NCSPathEdgeProvider implements EdgeProvider {
 
         @Override
         public String getTooltipText() {
-            StringBuffer toolTip = new StringBuffer();
+            final StringBuilder toolTip = new StringBuilder();
 
             toolTip.append(HTML_TOOLTIP_TAG_OPEN);
             toolTip.append("Service: " + m_serviceName);
@@ -128,8 +128,7 @@ public class NCSPathEdgeProvider implements EdgeProvider {
     }
 
     @Override
-    public String getEdgeNamespace() {
-        // TODO Auto-generated method stub
+    public String getNamespace() {
         return "ncsPath";
     }
 
@@ -179,6 +178,11 @@ public class NCSPathEdgeProvider implements EdgeProvider {
     public void clearEdges() {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public int getEdgeTotalCount() {
+        return getEdges().size();
     }
 
 }

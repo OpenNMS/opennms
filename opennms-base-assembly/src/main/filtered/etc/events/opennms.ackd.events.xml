@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/ackd/acknowledge</uei>
+        <event-label>OpenNMS-defined Acknowledgment request</event-label>
+        <descr>
+            A message received requesting an Acknowledgable be acknowledged.
+            &lt;p&gt;Acknowledgement Request:%parm[refId]% of type:%parm[ackType]% was received with the
+            action:%parm[ackAction]% was received for User: %parm[ackUser]%&lt;/p&gt;
+            Typically received from an external source or as a choice of an AckReader implementation.
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;Acknowledgement Request:%parm[refId]% of type:%parm[ackType]% was received with the
+            action:%parm[ackAction]% was received for User: %parm[ackUser]%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+</events>

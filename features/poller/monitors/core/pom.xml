@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.poller</groupId>
     <artifactId>org.opennms.features.poller.monitors</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.poller.monitors</groupId>
@@ -131,6 +131,10 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
     </dependency>
 
     <dependency>

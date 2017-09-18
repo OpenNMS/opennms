@@ -82,7 +82,7 @@ public class KscReportsMigratorTest {
             protected void initializeDatasource() throws OnmsUpgradeException {
             }
             protected List<SnmpInterface> getInterfacesToMerge() throws OnmsUpgradeException {
-                List<SnmpInterface> interfaces = new ArrayList<SnmpInterface>();
+                List<SnmpInterface> interfaces = new ArrayList<>();
                 interfaces.add(new SnmpInterface(1, null, null, "eth0", "eth0", "005056c00008", false));
                 interfaces.add(new SnmpInterface(1, null, null, "eth1", "eth1", "005056c00009", false));
                 return interfaces;

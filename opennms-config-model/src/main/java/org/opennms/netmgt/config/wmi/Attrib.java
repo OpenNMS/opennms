@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
@@ -89,7 +90,7 @@ public class Attrib implements Serializable {
 
     @XmlJavaTypeAdapter(WmiTypeAdapter.class)
     @XmlAttribute(name = "type", required = true)
-    protected WmiType m_type;
+    protected AttributeType m_type;
 
     @XmlAttribute(name = "maxval")
     protected String m_maxval;
@@ -121,12 +122,12 @@ public class Attrib implements Serializable {
         m_wmiObject = ConfigUtils.assertNotEmpty(wmiObject, "wmiObject");
     }
 
-    public WmiType getType() {
+    public AttributeType getType() {
         return m_type;
     }
 
-    public void setType(final WmiType type) {
-        m_type = ConfigUtils.assertNotNull(type, "type");
+    public void setType(final AttributeType value) {
+        m_type = ConfigUtils.assertNotNull(value, "type");
     }
 
     public Optional<String> getMaxval() {

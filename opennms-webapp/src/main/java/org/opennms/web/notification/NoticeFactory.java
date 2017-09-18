@@ -33,13 +33,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.NodeFilter;
@@ -49,6 +51,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Encapsulates all querying functionality for notices
  *
+ * @deprecated Use an injected {@link NotificationDao} implementation instead
+ * 
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
 public class NoticeFactory {
@@ -80,7 +84,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS WHERE");
+            final StringBuilder select = new StringBuilder("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS WHERE");
             select.append(ackType.getAcknowledgeTypeClause());
 
             for (Filter filter : filters) {
@@ -297,7 +301,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATIONS WHERE");
             select.append(ackType.getAcknowledgeTypeClause());
 
             for (Filter filter : filters) {
@@ -419,7 +423,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=?");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND RESPONDTIME IS NULL");
@@ -476,7 +480,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE INTERFACEID=?");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATIONS WHERE INTERFACEID=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND RESPONDTIME IS NULL");
@@ -533,7 +537,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=? AND SERVICEID=?");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=? AND SERVICEID=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND RESPONDTIME IS NULL");
@@ -587,7 +591,7 @@ public class NoticeFactory {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
-            StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATION WHERE SERVICEID=?");
+            final StringBuilder select = new StringBuilder("SELECT * FROM NOTIFICATION WHERE SERVICEID=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND RESPONDTIME IS NULL");
@@ -668,7 +672,7 @@ public class NoticeFactory {
         }
 
         if (noticeIds.length > 0) {
-            StringBuffer update = new StringBuffer("UPDATE NOTIFICATIONS SET RESPONDTIME=?, ANSWEREDBY=?");
+            final StringBuilder update = new StringBuilder("UPDATE NOTIFICATIONS SET RESPONDTIME=?, ANSWEREDBY=?");
             update.append(" WHERE NOTIFYID IN (");
             update.append(noticeIds[0]);
 
@@ -708,8 +712,7 @@ public class NoticeFactory {
      */
     // FIXME: Don't use the single variable "element" for different objects. - dj@opennms.org
     protected static Notification[] rs2Notices(ResultSet rs, ServletContext servletContext) throws SQLException {
-        Notification[] notices = null;
-        Vector<Notification> vector = new Vector<Notification>();
+        List<Notification> vector = new ArrayList<>();
 
         while (rs.next()) {
             Notification notice = new Notification();
@@ -752,15 +755,9 @@ public class NoticeFactory {
                 notice.m_serviceName = (String) element;
             }
 
-            vector.addElement(notice);
+            vector.add(notice);
         }
 
-        notices = new Notification[vector.size()];
-
-        for (int i = 0; i < notices.length; i++) {
-            notices[i] = vector.elementAt(i);
-        }
-
-        return notices;
+        return vector.toArray(new Notification[vector.size()]);
     }
 }

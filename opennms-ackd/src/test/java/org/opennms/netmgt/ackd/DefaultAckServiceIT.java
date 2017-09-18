@@ -123,7 +123,6 @@ public class DefaultAckServiceIT implements InitializingBean {
         alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setDescription(event.getEventDescr());
         alarm.setDistPoller(event.getDistPoller());
-        alarm.setEventParms(event.getEventParms());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setIfIndex(event.getIfIndex());
         alarm.setIpAddr(event.getIpAddr());
@@ -180,7 +179,7 @@ public class DefaultAckServiceIT implements InitializingBean {
         OnmsUserNotification un = new OnmsUserNotification();
         un.setUserId("admin");
         un.setNotification(notif);
-        Set<OnmsUserNotification> usersNotified = new HashSet<OnmsUserNotification>();
+        Set<OnmsUserNotification> usersNotified = new HashSet<>();
         usersNotified.add(un);
         notif.setUsersNotified(usersNotified);
         m_notifDao.save(notif);

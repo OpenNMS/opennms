@@ -56,7 +56,7 @@
   <element name="uris" >
     <complexType>
       <sequence>
-        <element ref="http-dc:uri" minOccurs="1" maxOccurs="unbounded" >
+        <element ref="http-dc:uri" minOccurs="0" maxOccurs="unbounded" >
         </element>
       </sequence>
     </complexType>

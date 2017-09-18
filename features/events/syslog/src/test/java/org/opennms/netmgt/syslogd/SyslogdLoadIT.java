@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -40,6 +41,8 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -54,6 +57,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -72,6 +76,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,9 +93,10 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
+        "classpath:/overrideEventdPort.xml",
         "classpath:/syslogdTest.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=ADVANCED" })
 @JUnitTemporaryDatabase
 public class SyslogdLoadIT implements InitializingBean {
 
@@ -108,7 +114,11 @@ public class SyslogdLoadIT implements InitializingBean {
     private Eventd m_eventd;
 
     @Autowired
-    private SyslogdConfigFactory m_config;
+    private SyslogdConfig m_config;
+
+    @Autowired
+    @Qualifier("eventdPort")
+    private int m_eventdPort;
 
     @Autowired
     private MockMessageDispatcherFactory<SyslogConnection, SyslogMessageLogDTO> m_messageDispatcherFactory;
@@ -143,6 +153,7 @@ public class SyslogdLoadIT implements InitializingBean {
 
     @After
     public void tearDown() throws Exception {
+        MockLogAppender.assertNoErrorOrGreater();
         if (m_syslogd != null) {
             m_syslogd.stop();
         }
@@ -191,7 +202,7 @@ public class SyslogdLoadIT implements InitializingBean {
 
         final int eventCount = 100;
 
-        List<Integer> foos = new ArrayList<Integer>();
+        List<Integer> foos = new ArrayList<>();
 
         for (int i = 0; i < eventCount; i++) {
             int eventNum = Double.valueOf(Math.random() * 10000).intValue();
@@ -238,13 +249,20 @@ public class SyslogdLoadIT implements InitializingBean {
     @Transactional
     public void testSyslogReceiverCamelNetty() throws Exception {
         startSyslogdCamelNetty();
+        // Wait for the Camel context to start
+        await().atMost(10, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return ((SyslogReceiverCamelNettyImpl)m_syslogd.getSyslogReceiver()).isStarted();
+            }
+        });
         doTestSyslogReceiver();
     }
 
     public void doTestSyslogReceiver() throws Exception {
         final int eventCount = 100;
         
-        List<Integer> foos = new ArrayList<Integer>();
+        List<Integer> foos = new ArrayList<>();
 
         for (int i = 0; i < eventCount; i++) {
             int eventNum = Double.valueOf(Math.random() * 10000).intValue();
@@ -358,7 +376,7 @@ public class SyslogdLoadIT implements InitializingBean {
     @Test
     @Transactional
     public void testEventd() throws Exception {
-    	m_eventd.start();
+        m_eventd.start();
 
         EventProxy ep = createEventProxy();
 
@@ -389,6 +407,8 @@ public class SyslogdLoadIT implements InitializingBean {
         m_eventCounter.waitForFinish(120000);
         long end = System.currentTimeMillis();
 
+        assertEquals(eventCount, m_eventCounter.getCount());
+
         m_eventd.stop();
 
         final long total = (end - start);
@@ -396,24 +416,8 @@ public class SyslogdLoadIT implements InitializingBean {
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
     }
 
-    private static EventProxy createEventProxy() throws UnknownHostException {
-        /*
-         * Rather than defaulting to localhost all the time, give an option in properties
-         */
-        String proxyHostName = "127.0.0.1";
-        String proxyHostPort = "5837";
-        String proxyHostTimeout = String.valueOf(TcpEventProxy.DEFAULT_TIMEOUT);
-        InetAddress proxyAddr = null;
-        EventProxy proxy = null;
-
-        proxyAddr = InetAddressUtils.addr(proxyHostName);
-
-        if (proxyAddr == null) {
-        	proxy = new TcpEventProxy();
-        } else {
-            proxy = new TcpEventProxy(new InetSocketAddress(proxyAddr, Integer.parseInt(proxyHostPort)), Integer.parseInt(proxyHostTimeout));
-        }
-        return proxy;
+    private EventProxy createEventProxy() throws UnknownHostException {
+        return new TcpEventProxy(new InetSocketAddress(InetAddressUtils.ONE_TWENTY_SEVEN, m_eventdPort), TcpEventProxy.DEFAULT_TIMEOUT);
     }
 
     public static class EventCounter implements EventListener {

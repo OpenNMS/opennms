@@ -54,7 +54,7 @@ public class MinionPingCommand implements Action {
     public RestClient restClient;
 
     @Option(name = "-j", description = "Maximum number of milliseconds to wait before failing when attempting to establish a JMS session.")
-    public long jmsTimeoutMillis = 20*1000;
+    public long jmsTimeoutMillis = 20L * 1000L;
 
     @Override
     public Object execute() throws Exception {

@@ -111,7 +111,7 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
      */
     public List<RequisitionCategory> getCategories() {
         if (m_categories == null) {
-            m_categories = new ArrayList<RequisitionCategory>();
+            m_categories = new ArrayList<>();
         }
         return m_categories;
     }

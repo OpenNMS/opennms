@@ -131,7 +131,7 @@ public class Page implements Serializable {
      * Currently only used for HTTP form parameters.
      */
     @XmlElement(name="parameter")
-    private List<Parameter> m_parameters = new ArrayList<Parameter>();
+    private List<Parameter> m_parameters = new ArrayList<>();
 
     /**
      * Assign the value of a regex match group to a session variable with a
@@ -139,7 +139,7 @@ public class Page implements Serializable {
      * zero or greater.
      */
     @XmlElement(name="session-variable")
-    private List<SessionVariable> m_sessionVariables = new ArrayList<SessionVariable>();
+    private List<SessionVariable> m_sessionVariables = new ArrayList<>();
 
 
     public Page() {

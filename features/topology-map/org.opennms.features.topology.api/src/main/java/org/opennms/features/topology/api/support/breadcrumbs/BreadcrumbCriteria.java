@@ -134,7 +134,7 @@ public class BreadcrumbCriteria extends Criteria {
     }
 
     public void handleClick(Breadcrumb breadcrumb, GraphContainer graphContainer) {
-        final GraphProvider targetGraphProvider = graphContainer.getMetaTopologyProvider().getGraphProviderBy(breadcrumb.getTargetNamespace());
+        final GraphProvider targetGraphProvider = graphContainer.getTopologyServiceClient().getGraphProviderBy(breadcrumb.getTargetNamespace());
         if (isLeaf(breadcrumb)) {
             if (breadcrumb.getSourceVertices().isEmpty()) {
                 final List<VertexRef> defaultFocus = targetGraphProvider.getDefaults().getCriteria()
@@ -156,7 +156,7 @@ public class BreadcrumbCriteria extends Criteria {
 
     private static List<VertexRef> getOppositeVertices(GraphContainer graphContainer, String targetNamespace, VertexRef sourceVertex) {
         // Find the vertices in other graphs that this vertex links to
-        final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(sourceVertex);
+        final Collection<VertexRef> oppositeVertices = graphContainer.getTopologyServiceClient().getOppositeVertices(sourceVertex);
 
         // Filter the vertices for those matching the target namespace
         final List<VertexRef> targetVertices = oppositeVertices.stream()
@@ -167,8 +167,8 @@ public class BreadcrumbCriteria extends Criteria {
     }
 
     private static void handleClick(GraphContainer graphContainer, GraphProvider targetGraphProvider, List<VertexRef> verticesToFocus, Breadcrumb breadcrumb) {
-        final String targetNamespace = targetGraphProvider.getVertexNamespace();
-        final String currentNamespace = graphContainer.getBaseTopology().getVertexNamespace();
+        final String targetNamespace = targetGraphProvider.getNamespace();
+        final String currentNamespace = graphContainer.getTopologyServiceClient().getNamespace();
 
         // Only Change the layer if namespace is different, otherwise we would switch to the current layer
         if (!currentNamespace.equals(targetNamespace)) {

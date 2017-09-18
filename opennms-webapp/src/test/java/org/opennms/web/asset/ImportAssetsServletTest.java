@@ -59,7 +59,7 @@ public class ImportAssetsServletTest {
     @Before
     public void setUp() throws InterruptedException {
         m_importAssetServlet = new ImportAssetsServlet();
-        m_assetsAsCvs = new ArrayList<String>();
+        m_assetsAsCvs = new ArrayList<>();
         m_assetsAsCvs.add("\"TakPad\",\"1\",\"Unspecified\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"cassandra\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\" \",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"4\"");
         m_assetsAsCvs.add("'Indigo','2','Unspecified','','','','','','','','','','','','','','','','','','','Jasperrrr','','','','','','','','','','','','','','','','','','','','',' ','','','','','','','','','','','','','','','','3'");
         m_assetsAsCvs.add("S. Lem,3,Unspecified,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,8");

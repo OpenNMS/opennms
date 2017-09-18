@@ -73,7 +73,7 @@ public abstract class RrdResourceAttributeUtils {
      */
     protected static Set<OnmsAttribute> getAttributesAtRelativePath(File rrdDirectory, String relativePath, String rrdFileSuffix) {
         
-        Set<OnmsAttribute> attributes =  new HashSet<OnmsAttribute>();
+        Set<OnmsAttribute> attributes =  new HashSet<>();
 
         loadRrdAttributes(rrdDirectory, relativePath, attributes, rrdFileSuffix);
         loadStringAttributes(rrdDirectory, relativePath, attributes);

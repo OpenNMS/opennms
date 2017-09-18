@@ -201,7 +201,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
 	 */
         @Override
 	public String toString() {
-		StringBuffer stats = new StringBuffer();
+		final StringBuilder stats = new StringBuilder();
 		stats.append("Deletes: ").append(m_deleteCount).append(", ");
 		stats.append("Updates: ").append(m_updateCount).append(", ");
 		stats.append("Inserts: ").append(m_insertCount).append("\n");

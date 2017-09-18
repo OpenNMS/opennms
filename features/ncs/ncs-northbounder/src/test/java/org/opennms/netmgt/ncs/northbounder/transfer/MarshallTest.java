@@ -124,7 +124,7 @@ public class MarshallTest {
 				"";	
 		
 
-		List<ServiceAlarm> svcAlarms = new ArrayList<ServiceAlarm>();
+		List<ServiceAlarm> svcAlarms = new ArrayList<>();
 		for(int i = 0; i < 4; i++) {
 			svcAlarms.add(new ServiceAlarm("Id", "Name", "Status"));
 		}

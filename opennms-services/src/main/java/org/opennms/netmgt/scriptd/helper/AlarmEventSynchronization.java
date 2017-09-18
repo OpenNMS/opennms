@@ -46,7 +46,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 public class AlarmEventSynchronization implements EventSynchronization {
 
-	List<EventForwarder> m_forwarders = new ArrayList<EventForwarder>();
+	List<EventForwarder> m_forwarders = new ArrayList<>();
 
 	public AlarmEventSynchronization() {
 		super();
@@ -155,7 +155,7 @@ public class AlarmEventSynchronization implements EventSynchronization {
 	public List<Event> getEvents() {
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         final AlarmDao alarmDao = BeanUtils.getBean(bf,"alarmDao", AlarmDao.class);
-        final List<Event> xmlevents = new ArrayList<Event>();
+        final List<Event> xmlevents = new ArrayList<>();
         TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
         try {
                 transTemplate.execute(new TransactionCallbackWithoutResult() {

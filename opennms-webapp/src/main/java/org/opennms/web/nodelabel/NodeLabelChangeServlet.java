@@ -176,7 +176,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
      * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     protected void sendLabelChangeEvent(int nodeId, NodeLabel oldNodeLabel, NodeLabel newNodeLabel) throws EventProxyException {
-        
+
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "NodeLabelChangeServlet");
 
         bldr.setNodeid(nodeId);

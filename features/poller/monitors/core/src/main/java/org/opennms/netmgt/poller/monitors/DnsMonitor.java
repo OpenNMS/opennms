@@ -139,7 +139,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
 
         // What do we consider fatal?
         //
-        final List<Integer> fatalCodes = new ArrayList<Integer>();
+        final List<Integer> fatalCodes = new ArrayList<>();
         for (final int code : ParameterMap.getKeyedIntegerArray(parameters, "fatal-response-codes", DEFAULT_FATAL_RESP_CODES)) {
             fatalCodes.add(code);
         }
@@ -176,7 +176,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                 final SimpleResolver resolver = new SimpleResolver();
                 resolver.setAddress(new InetSocketAddress(addr, port));
                 resolver.setLocalAddress((InetSocketAddress)null);
-                double timeout = timeoutTracker.getSoTimeout()/1000;
+                double timeout = timeoutTracker.getSoTimeout() / 1000d;
                 resolver.setTimeout((timeout < 1 ? 1 : (int) timeout));
                 final Record question = Record.newRecord(name, Type.A, DClass.IN);
                 final Message query = Message.newQuery(question);

@@ -91,6 +91,9 @@ import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.opennms.web.rest.support.StringCollection;
+import org.opennms.web.utils.CriteriaBuilderUtils;
+import org.opennms.web.utils.QueryParameters;
+import org.opennms.web.utils.QueryParametersBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -122,7 +125,7 @@ import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 @Transactional
 public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable,I extends Serializable> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestServiceWithDTO.class);
 
     @Autowired
     @Qualifier("eventProxy")
@@ -141,7 +144,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     protected abstract Class<Q> getQueryBeanClass();
     protected abstract CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo);
     protected abstract JaxbListWrapper<D> createListWrapper(Collection<D> list);
-    protected abstract T doGet(UriInfo uriInfo, I id); // Abstracted to be able to retrieve the object on different ways 
+    protected abstract T doGet(UriInfo uriInfo, I id); // Abstracted to be able to retrieve the object on different ways
 
     protected final void writeLock() {
         m_writeLock.lock();
@@ -157,7 +160,12 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     }
 
     // Do not allow update by default
-    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, T targetObject, final MultivaluedMapImpl params) {
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, K key, T targetObject) {
+        return Response.status(Status.NOT_IMPLEMENTED).build();
+    }
+
+    // Do not allow updating properties by default
+    protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, T targetObject, final MultivaluedMapImpl params) {
         return Response.status(Status.NOT_IMPLEMENTED).build();
     }
 
@@ -261,7 +269,6 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
             final List<D> collOfDtos = coll.stream()
                     .map(this::mapEntityToDTO)
                     .collect(Collectors.toList());
-
             final JaxbListWrapper<D> list = createListWrapper(collOfDtos);
             list.setTotalCount(totalCount);
             list.setOffset(offset);
@@ -323,23 +330,23 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
             // If there is a query string...
             if (query != null && query.length() > 0) {
                 hql = session.createQuery(
-                    String.format(
-                        "select distinct %s from %s where lower(%s) like :query order by %s",
-                        property.id,
-                        property.entityClass.getSimpleName(),
-                        property.id,
-                        property.id
-                    )
+                        String.format(
+                                "select distinct %s from %s where lower(%s) like :query order by %s",
+                                property.id,
+                                property.entityClass.getSimpleName(),
+                                property.id,
+                                property.id
+                        )
                 );
                 hql.setParameter("query", "%" + query.toLowerCase() + "%");
             } else {
                 hql = session.createQuery(
-                    String.format(
-                        "select distinct %s from %s order by %s",
-                        property.id,
-                        property.entityClass.getSimpleName(),
-                        property.id
-                    )
+                        String.format(
+                                "select distinct %s from %s order by %s",
+                                property.id,
+                                property.entityClass.getSimpleName(),
+                                property.id
+                        )
                 );
             }
 
@@ -371,53 +378,53 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                 }
 
                 switch(property.type) {
-                case FLOAT:
-                    return Response.ok(new FloatCollection(validValues.stream().map(Float::parseFloat).collect(Collectors.toList()))).build();
-                case INTEGER:
-                    return Response.ok(new IntegerCollection(validValues.stream().map(Integer::parseInt).collect(Collectors.toList()))).build();
-                case LONG:
-                    return Response.ok(new LongCollection(validValues.stream().map(Long::parseLong).collect(Collectors.toList()))).build();
-                case IP_ADDRESS:
-                case STRING:
-                    return Response.ok(new StringCollection(validValues)).build();
-                case TIMESTAMP:
-                    return Response.ok(new DateCollection(validValues.stream().map(v -> {
-                        try {
-                            return ISO8601DateEditor.stringToDate(v);
-                        } catch (final IllegalArgumentException|UnsupportedOperationException e) {
-                            LOG.error("Invalid date in value list: " + v, e);
-                            return null;
-                        }
-                    })
-                    // Filter out invalid null values
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList()))).build();
-                default:
-                    return Response.noContent().build();
+                    case FLOAT:
+                        return Response.ok(new FloatCollection(validValues.stream().map(Float::parseFloat).collect(Collectors.toList()))).build();
+                    case INTEGER:
+                        return Response.ok(new IntegerCollection(validValues.stream().map(Integer::parseInt).collect(Collectors.toList()))).build();
+                    case LONG:
+                        return Response.ok(new LongCollection(validValues.stream().map(Long::parseLong).collect(Collectors.toList()))).build();
+                    case IP_ADDRESS:
+                    case STRING:
+                        return Response.ok(new StringCollection(validValues)).build();
+                    case TIMESTAMP:
+                        return Response.ok(new DateCollection(validValues.stream().map(v -> {
+                            try {
+                                return ISO8601DateEditor.stringToDate(v);
+                            } catch (IllegalArgumentException|UnsupportedOperationException e) {
+                                LOG.error("Invalid date in value list: " + v, e);
+                                return null;
+                            }
+                        })
+                                // Filter out invalid null values
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList()))).build();
+                    default:
+                        return Response.noContent().build();
                 }
             }
 
             switch(property.type) {
-            case FLOAT:
-                List<Float> floats = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Float>(property, query, limit));
-                return Response.ok(new FloatCollection(floats)).build();
-            case INTEGER:
-                List<Integer> ints = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Integer>(property, query, limit));
-                return Response.ok(new IntegerCollection(ints)).build();
-            case LONG:
-                List<Long> longs = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Long>(property, query, limit));
-                return Response.ok(new LongCollection(longs)).build();
-            case IP_ADDRESS:
-                List<InetAddress> addresses = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<InetAddress>(property, query, limit));
-                return Response.ok(new StringCollection(addresses.stream().map(InetAddressUtils::str).collect(Collectors.toList()))).build();
-            case STRING:
-                List<String> strings = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<String>(property, query, limit));
-                return Response.ok(new StringCollection(strings)).build();
-            case TIMESTAMP:
-                List<Date> dates = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Date>(property, query, limit));
-                return Response.ok(new DateCollection(dates)).build();
-            default:
-                return Response.noContent().build();
+                case FLOAT:
+                    List<Float> floats = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Float>(property, query, limit));
+                    return Response.ok(new FloatCollection(floats)).build();
+                case INTEGER:
+                    List<Integer> ints = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Integer>(property, query, limit));
+                    return Response.ok(new IntegerCollection(ints)).build();
+                case LONG:
+                    List<Long> longs = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Long>(property, query, limit));
+                    return Response.ok(new LongCollection(longs)).build();
+                case IP_ADDRESS:
+                    List<InetAddress> addresses = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<InetAddress>(property, query, limit));
+                    return Response.ok(new StringCollection(addresses.stream().map(InetAddressUtils::str).collect(Collectors.toList()))).build();
+                case STRING:
+                    List<String> strings = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<String>(property, query, limit));
+                    return Response.ok(new StringCollection(strings)).build();
+                case TIMESTAMP:
+                    List<Date> dates = new HibernateTemplate(m_sessionFactory).execute(new HibernateListCallback<Date>(property, query, limit));
+                    return Response.ok(new DateCollection(dates)).build();
+                default:
+                    return Response.noContent().build();
             }
         } else {
             // 404
@@ -467,9 +474,24 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
             }
             for (T object : objects) {
                 RestUtils.setBeanProperties(object, params);
-                doUpdate(securityContext, uriInfo, object, params);
+                doUpdateProperties(securityContext, uriInfo, object, params);
             }
             return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("{id}")
+    public Response update(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final K id, final T object) {
+        writeLock();
+        try {
+            if (object == null) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
+            return doUpdate(securityContext, uriInfo, id, object);
         } finally {
             writeUnlock();
         }
@@ -485,7 +507,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            return doUpdate(securityContext, uriInfo, object, params);
+            return doUpdateProperties(securityContext, uriInfo, object, params);
         } finally {
             writeUnlock();
         }
@@ -525,41 +547,16 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
         }
     }
 
-    private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
+    public static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
         applyLimitOffsetOrderBy(p, builder, DEFAULT_LIMIT);
     }
 
     private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
-        final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        params.putAll(p);
-
-        builder.limit(defaultLimit);
-
-        if (params.containsKey("limit") && params.getFirst("limit") != null && !"".equals(params.getFirst("limit").trim())) {
-            builder.limit(Integer.valueOf(params.getFirst("limit").trim()));
-            params.remove("limit");
+        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(p);
+        if (queryParameters.getLimit() == null) {
+            queryParameters.setLimit(defaultLimit);
         }
-
-        if (params.containsKey("offset") && params.getFirst("offset") != null && !"".equals(params.getFirst("offset").trim())) {
-            builder.offset(Integer.valueOf(params.getFirst("offset").trim()));
-            params.remove("offset");
-        }
-
-        if (params.containsKey("orderBy") && params.getFirst("orderBy") != null && !"".equals(params.getFirst("orderBy").trim())) {
-            builder.clearOrder();
-
-            builder.orderBy(params.getFirst("orderBy").trim());
-            params.remove("orderBy");
-
-            if (params.containsKey("order") && params.getFirst("order") != null && !"".equals(params.getFirst("order").trim())) {
-                if("desc".equalsIgnoreCase(params.getFirst("order").trim())) {
-                    builder.desc();
-                } else {
-                    builder.asc();
-                }
-                params.remove("order");
-            }
-        }
+        CriteriaBuilderUtils.applyQueryParameters(builder, queryParameters);
     }
 
     protected void sendEvent(final Event event) {

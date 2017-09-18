@@ -98,7 +98,7 @@ public class TrendLine implements Filter {
         long stepInMs = (long)(table.get(limits.lastRowWithValues, TIMESTAMP_COLUMN_NAME) - table.get(limits.lastRowWithValues-1, Filter.TIMESTAMP_COLUMN_NAME));
 
         // Num steps ahead
-        int numStepsAhead = (int)Math.floor(m_secondsAhead * 1000 / stepInMs);
+        int numStepsAhead = (int)Math.floor(m_secondsAhead * 1000d / stepInMs);
         numStepsAhead = Math.max(1, numStepsAhead);
 
         // Script arguments

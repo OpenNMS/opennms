@@ -410,7 +410,7 @@ public class NodeScan implements Scan {
 
             // mark all provisioned interfaces as 'in need of scanning' so we can mark them
             // as scanned during ipAddrTable processing
-            final Set<InetAddress> provisionedIps = new HashSet<InetAddress>();
+            final Set<InetAddress> provisionedIps = new HashSet<>();
             if (getForeignSource() != null) {
                 for(final OnmsIpInterface provisioned : node.getIpInterfaces()) {
                     provisionedIps.add(provisioned.getIpAddress());
@@ -475,7 +475,7 @@ public class NodeScan implements Scan {
 
             // mark all provisioned interfaces as 'in need of scanning' so we can mark them
             // as scanned during ipAddrTable processing
-            final Set<InetAddress> provisionedIps = new HashSet<InetAddress>();
+            final Set<InetAddress> provisionedIps = new HashSet<>();
             if (getForeignSource() != null) {
                 for(final OnmsIpInterface provisioned : node.getIpInterfaces()) {
                     provisionedIps.add(provisioned.getIpAddress());

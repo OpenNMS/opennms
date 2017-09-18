@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -108,6 +108,23 @@ public class Definition implements WsmanAgentConfig {
     @XmlAttribute(name = "gss-auth")
     protected Boolean gssAuth;
 
+    public Definition() { }
+
+    public Definition(WsmanAgentConfig config) {
+        setUsername(config.getUsername());
+        setPassword(config.getPassword());
+        setPort(config.getPort());
+        setRetry(config.getRetry());
+        setTimeout(config.getTimeout());
+        setMaxElements(config.getMaxElements());
+        setSsl(config.isSsl());
+        setStrictSsl(config.isStrictSsl());
+        setPath(config.getPath());
+        setProductVendor(config.getProductVendor());
+        setProductVersion(config.getProductVersion());
+        setGssAuth(config.isGssAuth());
+    }
+
     /**
      * IP address range to which this definition applies.Gets the value of the range property.
      * 
@@ -132,7 +149,7 @@ public class Definition implements WsmanAgentConfig {
      */
     public List<Range> getRange() {
         if (range == null) {
-            range = new ArrayList<Range>();
+            range = new ArrayList<>();
         }
         return this.range;
     }
@@ -161,7 +178,7 @@ public class Definition implements WsmanAgentConfig {
      */
     public List<String> getSpecific() {
         if (specific == null) {
-            specific = new ArrayList<String>();
+            specific = new ArrayList<>();
         }
         return this.specific;
     }
@@ -190,7 +207,7 @@ public class Definition implements WsmanAgentConfig {
      */
     public List<String> getIpMatch() {
         if (ipMatch == null) {
-            ipMatch = new ArrayList<String>();
+            ipMatch = new ArrayList<>();
         }
         return this.ipMatch;
     }

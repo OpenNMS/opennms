@@ -90,7 +90,7 @@ public class MockLogAppender {
      *
      */
     public static LoggingEvent[] getEventsGreaterOrEqual(final Level level) {
-        LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
+        LinkedList<LoggingEvent> matching = new LinkedList<>();
 
         synchronized (s_events) {
             for (final LoggingEvent event : s_events) {
@@ -110,7 +110,7 @@ public class MockLogAppender {
      * 
      */
     public static LoggingEvent[] getEventsAtLevel(final Level level) {
-        final LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
+        final LinkedList<LoggingEvent> matching = new LinkedList<>();
 
         synchronized (s_events) {
             for (final LoggingEvent event : s_events) {
@@ -188,6 +188,7 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.aries.blueprint.container", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.camel", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
@@ -282,7 +283,7 @@ public class MockLogAppender {
             return;
         }
 
-        StringBuffer message = new StringBuffer("Log messages at or greater than the log level ").append(level).append(" received:");
+        final StringBuilder message = new StringBuilder("Log messages at or greater than the log level ").append(level).append(" received:");
 
         for (final LoggingEvent event : events) {
             message.append("\n\t[").append(event.getLevel()).append("] ")
@@ -367,5 +368,13 @@ public class MockLogAppender {
             }
         }
         throw new AssertionFailedError("No log message matched for log level " + level + ", message '" + message + "'");
+    }
+
+    public static void assertNoLogMatched(final Level level, final String message) {
+        for (final LoggingEvent event : s_events) {
+            if (event.getLevel().eq(level) && event.getMessage().contains(message)) {
+                throw new AssertionFailedError("A log message matched for log level " + level + ", message '" + message + "'");
+            }
+        }
     }
 }

@@ -29,7 +29,8 @@
 package org.opennms.features.topology.app.internal;
 
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class KeyMapper implements Serializable {
 
@@ -37,9 +38,9 @@ public class KeyMapper implements Serializable {
 
     private int lastKey = 0;
 
-    private final Hashtable<Object, String> objectKeyMap = new Hashtable<Object, String>();
+    private final Map<Object, String> objectKeyMap = new HashMap<>();
 
-    private final Hashtable<String, Object> keyObjectMap = new Hashtable<String, Object>();
+    private final Map<String, Object> keyObjectMap = new HashMap<>();
 
     private String m_prefix;
     

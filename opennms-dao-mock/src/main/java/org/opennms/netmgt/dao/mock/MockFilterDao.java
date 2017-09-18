@@ -73,7 +73,7 @@ public class MockFilterDao implements FilterDao, InitializingBean {
     @Override
     public List<InetAddress> getActiveIPAddressList(final String rule) throws FilterParseException {
         LOG.debug("rule = {}", rule);
-        final List<InetAddress> addrs = new ArrayList<InetAddress>();
+        final List<InetAddress> addrs = new ArrayList<>();
         if (rule.equals("IPADDR != '0.0.0.0'")) {
             Assert.notNull(m_ipInterfaceDao);
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);

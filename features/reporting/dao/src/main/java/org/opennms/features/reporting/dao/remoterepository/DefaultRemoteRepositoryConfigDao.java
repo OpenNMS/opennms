@@ -199,7 +199,7 @@ public class DefaultRemoteRepositoryConfigDao implements
      */
     @Override
     public List<RemoteRepositoryDefinition> getAllRepositories() {
-        List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
+        List<RemoteRepositoryDefinition> resultList = new ArrayList<>();
         resultList.addAll(this.m_remoteRepositoryConfig.getRepositoryList());
         return resultList;
     }
@@ -209,7 +209,7 @@ public class DefaultRemoteRepositoryConfigDao implements
      */
     @Override
     public List<RemoteRepositoryDefinition> getActiveRepositories() {
-        List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
+        List<RemoteRepositoryDefinition> resultList = new ArrayList<>();
         for (RemoteRepositoryDefinition repository : this.m_remoteRepositoryConfig.getRepositoryList()) {
             if (repository.isRepositoryActive()) {
                 resultList.add(repository);

@@ -75,11 +75,11 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
         final GraphContainer graphContainer = operationContext.getGraphContainer();
         final DefaultVertexRef vertexRef = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
-        if (graphContainer.getBaseTopology().getVertex(vertexRef) == null) {
+        if (graphContainer.getTopologyServiceClient().getVertex(vertexRef) == null) {
             // The vertex to add to focus is not in the current layer
             // Find the GraphProvider it belongs to
-            Optional<GraphProvider> first = graphContainer.getMetaTopologyProvider().getGraphProviders().stream()
-                    .filter(eachProvider -> eachProvider.getVertexNamespace().equals(searchResult.getNamespace()))
+            Optional<GraphProvider> first = graphContainer.getTopologyServiceClient().getGraphProviders().stream()
+                    .filter(eachProvider -> eachProvider.getNamespace().equals(searchResult.getNamespace()))
                     .findFirst();
             // If there is a graph provider (which should) select it
             if (first.isPresent() && first.get().getVertex(vertexRef) != null) {
@@ -92,7 +92,7 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
 
     @Override
     public String getSearchProviderNamespace() {
-        return graphMLTopologyProvider.getVertexNamespace();
+        return graphMLTopologyProvider.getNamespace();
     }
 
     @Override

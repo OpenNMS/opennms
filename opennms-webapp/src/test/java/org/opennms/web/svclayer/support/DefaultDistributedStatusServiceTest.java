@@ -176,7 +176,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_locationMonitor2_2.setStatus(MonitorStatus.STARTED);
         assertEquals("location monitor 2.2 status", MonitorStatus.STARTED, m_locationMonitor2_2.getStatus());
         
-        List<String> serviceNames = new ArrayList<String>();
+        List<String> serviceNames = new ArrayList<>();
         serviceNames.add("ICMP");
         serviceNames.add("DNS");
         serviceNames.add("HTTP");
@@ -189,19 +189,19 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_node.setId(1);
         
         // Can't shuffle since it's a set
-        m_services = new HashSet<OnmsMonitoredService>();
+        m_services = new HashSet<>();
         m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("ICMP")));
         m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("DNS")));
         m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("HTTP")));
         m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("HTTPS")));
 
         // Can't shuffle since these since they are sets
-        m_applicationServices1 = new TreeSet<OnmsMonitoredService>();
+        m_applicationServices1 = new TreeSet<>();
         m_applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTP"));
         m_applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTPS"));
 //        m_application1.setMemberServices(applicationServices1);
         
-        m_applicationServices2 = new TreeSet<OnmsMonitoredService>();
+        m_applicationServices2 = new TreeSet<>();
         m_applicationServices2.add(findMonitoredService(m_services, m_ip, "HTTPS"));
 //        m_application2.setMemberServices(applicationServices2);
 
@@ -538,12 +538,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     
     public void testCreateFacilityStatusTable() throws Exception {
          // No need to shuffle, since this is a list
-        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
         
-        List<OnmsApplication> applications = new LinkedList<OnmsApplication>();
+        List<OnmsApplication> applications = new LinkedList<>();
         applications.add(m_application1);
         applications.add(m_application2);
         Collections.shuffle(applications);
@@ -552,7 +552,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
         OnmsMonitoredService icmpService = findMonitoredService(m_services, m_ip, "ICMP");
         
-        Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<OnmsLocationSpecificStatus>();
+        Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<>();
         mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
         mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
         
@@ -562,7 +562,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpService, PollStatus.available(), "20061011-00:00:00"));
         mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpsService, PollStatus.available(), "20061012-06:00:00"));
         
-        Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<OnmsLocationSpecificStatus>();
+        Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<>();
         statusChanges.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
         statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.unavailable(), "20061012-00:00:00"));
         statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
@@ -575,7 +575,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_applicationDao.findAll()).andReturn(applications);
         expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(Collections.singleton(m_locationMonitor1_1));
-        Collection<OnmsLocationMonitor> monitors2 = new HashSet<OnmsLocationMonitor>();
+        Collection<OnmsLocationMonitor> monitors2 = new HashSet<>();
         monitors2.add(m_locationMonitor2_1);
         monitors2.add(m_locationMonitor2_2);
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(monitors2);
@@ -627,16 +627,16 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsApplication app = m_application2;
         
         // No need to shuffle, since this is a list
-        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
         
-        Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<OnmsLocationSpecificStatus>();
+        Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<>();
         mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061011-00:00:00"));
         
-        Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<OnmsLocationSpecificStatus>();
+        Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<>();
         statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061011-00:00:00"));
 
         Date startDate = s_dbDate.parse("2006-10-12 00:00:00.0");
@@ -679,12 +679,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
      */
     public void testCreateFacilityStatusTableLayoutApplicationsVertically() throws Exception {
         // No need to shuffle, since this is a list
-        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
         
-        List<OnmsApplication> applications = new LinkedList<OnmsApplication>();
+        List<OnmsApplication> applications = new LinkedList<>();
         applications.add(m_application1);
         applications.add(m_application2);
         Collections.shuffle(applications);
@@ -693,7 +693,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
         OnmsMonitoredService icmpService = findMonitoredService(m_services, m_ip, "ICMP");
         
-        Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<OnmsLocationSpecificStatus>();
+        Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<>();
         mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
         mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
         mostRecentStatuses.add(createStatus(m_locationMonitor2_1, httpService, PollStatus.available(), "20061011-00:00:00"));
@@ -701,7 +701,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpService, PollStatus.available(), "20061011-00:00:00"));
         mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpsService, PollStatus.available(), "20061012-06:00:00"));
         
-        Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<OnmsLocationSpecificStatus>();
+        Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<>();
         statusChanges.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
         statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.unavailable(), "20061012-00:00:00"));
         statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
@@ -714,7 +714,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_applicationDao.findAll()).andReturn(applications);
         expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(Collections.singleton(m_locationMonitor1_1));
-        Collection<OnmsLocationMonitor> monitors2 = new HashSet<OnmsLocationMonitor>();
+        Collection<OnmsLocationMonitor> monitors2 = new HashSet<>();
         monitors2.add(m_locationMonitor2_1);
         monitors2.add(m_locationMonitor2_2);
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(monitors2);
@@ -759,7 +759,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
 
-        Collection<OnmsLocationSpecificStatus> statuses = new HashSet<OnmsLocationSpecificStatus>();
+        Collection<OnmsLocationSpecificStatus> statuses = new HashSet<>();
         statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
         statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061012-00:00:00"));
         statuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
@@ -779,7 +779,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
 
-        Collection<OnmsLocationSpecificStatus> statuses = new HashSet<OnmsLocationSpecificStatus>();
+        Collection<OnmsLocationSpecificStatus> statuses = new HashSet<>();
         statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
         statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061012-00:00:00"));
         statuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.unavailable(), "20061012-00:00:00"));
@@ -797,13 +797,13 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testDetails() {
-        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
         expect(m_monitoringLocationDao.findAll()).andReturn(locationDefinitions);
         
-        List<OnmsApplication> applications = new ArrayList<OnmsApplication>();
+        List<OnmsApplication> applications = new ArrayList<>();
         applications.add(m_application1);
         applications.add(m_application2);
         expect(m_applicationDao.findAll()).andReturn(applications);
@@ -811,7 +811,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_monitoringLocationDao.get("Durham")).andReturn(m_locationDefinition2);
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         
-        List<OnmsLocationMonitor> monitors = new ArrayList<OnmsLocationMonitor>();
+        List<OnmsLocationMonitor> monitors = new ArrayList<>();
         monitors.add(m_locationMonitor2_1);
         monitors.add(m_locationMonitor2_2);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);
@@ -878,13 +878,13 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testWrongLocationDetails() {
-        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
         expect(m_monitoringLocationDao.findAll()).andReturn(locationDefinitions);
         
-        List<OnmsApplication> applications = new ArrayList<OnmsApplication>();
+        List<OnmsApplication> applications = new ArrayList<>();
         applications.add(m_application1);
         applications.add(m_application2);
         expect(m_applicationDao.findAll()).andReturn(applications);
@@ -892,7 +892,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_monitoringLocationDao.get("Raleigh-bad")).andReturn(null);
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         
-        List<OnmsLocationMonitor> monitors = new ArrayList<OnmsLocationMonitor>();
+        List<OnmsLocationMonitor> monitors = new ArrayList<>();
         monitors.add(m_locationMonitor1_1);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(monitors);
         
@@ -944,13 +944,13 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testWrongApplicationDetails() {
-        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<OnmsMonitoringLocation>();
+        List<OnmsMonitoringLocation> locationDefinitions = new LinkedList<>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
         expect(m_monitoringLocationDao.findAll()).andReturn(locationDefinitions);
         
-        List<OnmsApplication> applications = new ArrayList<OnmsApplication>();
+        List<OnmsApplication> applications = new ArrayList<>();
         applications.add(m_application1);
         applications.add(m_application2);
         expect(m_applicationDao.findAll()).andReturn(applications);
@@ -958,7 +958,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_monitoringLocationDao.get(m_locationDefinition2.getLocationName())).andReturn(m_locationDefinition2);
         expect(m_applicationDao.findByName("Big Bad Voodoo Daddy Application")).andReturn(null);
         
-        List<OnmsLocationMonitor> monitors = new ArrayList<OnmsLocationMonitor>();
+        List<OnmsLocationMonitor> monitors = new ArrayList<>();
         monitors.add(m_locationMonitor2_1);
         monitors.add(m_locationMonitor2_2);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);

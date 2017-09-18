@@ -70,7 +70,7 @@ public class Events implements Serializable {
 
     public Events() {
         super();
-        this._eventList = new java.util.ArrayList<org.opennms.netmgt.xml.event.Event>();
+        this._eventList = new java.util.ArrayList<>();
     }
 
 

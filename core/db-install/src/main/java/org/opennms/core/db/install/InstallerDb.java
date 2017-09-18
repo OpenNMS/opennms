@@ -45,6 +45,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -107,6 +108,8 @@ public class InstallerDb {
     private String m_sql;
 
     private List<String> m_tables = null;
+
+    private List<String> m_views = new ArrayList<>();
 
     private List<String> m_sequences = null;
 
@@ -234,6 +237,8 @@ public class InstallerDb {
 
                     if (type.toLowerCase().indexOf("table") != -1) {
                         m_tables.add(name);
+                    } else if (type.toLowerCase().indexOf("view") != -1) {
+                        m_views.add(name);
                     } else if (type.toLowerCase().indexOf("sequence") != -1) {
                         m_sequences.add(name);
                     } else if (type.toLowerCase().indexOf("function") != -1) {
@@ -317,7 +322,7 @@ public class InstallerDb {
      * @return a {@link java.lang.String} object.
      */
     public static String cleanText(final List<String> list) {
-    	final StringBuffer s = new StringBuffer();
+        final StringBuilder s = new StringBuilder();
 
         for (final String l : list) {
             s.append(l.replaceAll("\\s+", " "));
@@ -548,7 +553,7 @@ public class InstallerDb {
         	}
         	
         	final BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, StandardCharsets.UTF_8));
-        	final StringBuffer createFunction = new StringBuffer();
+        	final StringBuilder createFunction = new StringBuilder();
         	String line;
         	while ((line = in.readLine()) != null) {
         		createFunction.append(line).append("\n");
@@ -606,8 +611,8 @@ public class InstallerDb {
         File[] list = new File(m_storedProcedureDirectory).listFiles(m_sqlFilter);
 
         for (final File element : list) {
-        	final LinkedList<String> drop = new LinkedList<String>();
-            final StringBuffer create = new StringBuffer();
+            final LinkedList<String> drop = new LinkedList<>();
+            final StringBuilder create = new StringBuilder();
             String line;
 
             m_out.print("\n  - " + element.getName() + "... ");
@@ -725,7 +730,7 @@ public class InstallerDb {
     	final Statement st = getConnection().createStatement();
         ResultSet rs;
 
-        final StringBuffer ct = new StringBuffer();
+        final StringBuilder ct = new StringBuilder();
         for (final int columnType : columnTypes) {
             ct.append(" " + columnType);
         }
@@ -782,6 +787,24 @@ public class InstallerDb {
             }
             m_out.println("DONE");
         }
+    }
+
+    public void createViews() throws Exception {
+        assertUserSet();
+        m_out.println("- creating views...");
+        m_out.println(getSql());
+        try (final Statement st = getConnection().createStatement()) {
+            for (String viewName : m_views) {
+                final String viewSchema = getXFromSQL(viewName, "(?i)\\b(create|create or replace) view (\\w+) as[\\s]*([.\\s\\S]+?);", 2, 3, "view");
+                String query = "CREATE OR REPLACE VIEW " + viewName + " AS " + viewSchema;
+                if (!query.endsWith(";")) {
+                    query += ";";
+                }
+                st.executeUpdate(query);
+                grantAccessToObject(viewName, 2);
+            }
+        }
+        m_out.println("- creating views... DONE");
     }
 
     /**
@@ -873,11 +896,11 @@ public class InstallerDb {
     public Table getTableFromSQL(String tableName) throws Exception {
     	final Table table = new Table();
 
-    	final LinkedList<Column> columns = new LinkedList<Column>();
-    	final LinkedList<Constraint> constraints = new LinkedList<Constraint>();
+    	final LinkedList<Column> columns = new LinkedList<>();
+    	final LinkedList<Constraint> constraints = new LinkedList<>();
 
         boolean parens = false;
-        StringBuffer accumulator = new StringBuffer();
+        StringBuilder accumulator = new StringBuilder();
 
         final String create = getTableCreateFromSQL(tableName);
         for (int i = 0; i <= create.length(); i++) {
@@ -939,7 +962,7 @@ public class InstallerDb {
                     }
                 }
 
-                accumulator = new StringBuffer();
+                accumulator = new StringBuilder();
             } else {
                 accumulator.append(c);
             }

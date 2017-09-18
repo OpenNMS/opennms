@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/remote/locationMonitorConnectionAddressChanged</uei>
+        <event-label>OpenNMS-defined remote poller event: A remote poller's connection IP address has changed
+        </event-label>
+        <descr>
+            This event is sent when a remote poller's connection IP address has changed.
+        </descr>
+        <logmsg dest="logndisplay">
+            The connection IP address for remote poller %parm[locationMonitorId]% in location %parm[location]% has
+            changed
+            from %parm[oldConnectionHostAddress]% to %parm[newConnectionHostAddress]%.
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/remote/locationMonitorReconnected</uei>
+        <event-label>OpenNMS-defined remote poller event: A disconnected remote poller has reconnected</event-label>
+        <descr>
+            This event is sent when a disconnected remote poller reconnects
+            and reports status changes and checks for configuration changes.
+        </descr>
+        <logmsg dest="logndisplay">
+            The disconnected remote poller %parm[locationMonitorId]% in location %parm[location]% has reconnected.
+        </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="2"
+                    clear-key="uei.opennms.org/remote/locationMonitorDisconnected:%parm[locationMonitorId]%"
+                    auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/remote/locationMonitorRegistered</uei>
+        <event-label>OpenNMS-defined remote poller event: A remote poller has registered</event-label>
+        <descr>
+            This event is sent by the remote poller server side API when
+            a remote poller is created.
+        </descr>
+        <logmsg dest="logndisplay">
+            A remote poller has registered from location %parm[location]% and been given the id:
+            %parm[locationMonitorId]%.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/remote/locationMonitorStarted</uei>
+        <event-label>OpenNMS-defined remote poller event: A remote poller has started polling</event-label>
+        <descr>
+            This event is sent when a registered remote poller begins
+            monitoring services defined in its configuration.
+        </descr>
+        <logmsg dest="logndisplay">
+            The remote poller %parm[locationMonitorId]% has started polling from location %parm[location]%.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/remote/locationMonitorPaused</uei>
+        <event-label>OpenNMS-defined remote poller event: A remote poller has been paused</event-label>
+        <descr>
+            This event is sent when a registered remote poller is configured with
+            a polling package containing no services to poll. (experimental)
+
+            The idea here is that a webui administrator can pause a remote poller
+            and the remote poller's configuration is changed to an empty
+            polling package.
+        </descr>
+        <logmsg dest="logndisplay">
+            The remote poller %parm[locationMonitorId]% in location %parm[location]% has been paused.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/remote/locationMonitorStopped</uei>
+        <event-label>OpenNMS-defined remote poller event: A remote poller has been shutdown.</event-label>
+        <descr>
+            This event is sent when a registered remote poller is
+            shutdown by the remote system.
+        </descr>
+        <logmsg dest="logndisplay">
+            The remote poller %parm[locationMonitorId]% in location %parm[location]% has been shutdown.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/remote/locationMonitorDisconnected</uei>
+        <event-label>OpenNMS-defined remote poller event: A remote poller has disconnected</event-label>
+        <descr>
+            This event is sent when a registered remote location fails to report
+            status and check for configuration changes at the required interval.
+        </descr>
+        <logmsg dest="logndisplay">
+            The remote poller %parm[locationMonitorId]% in location %parm[location]% has disconnected.
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="1" auto-clean="false"/>
+    </event>
+</events>

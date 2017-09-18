@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -16,7 +16,7 @@
       <artifactId>org.eclipse.persistence.moxy</artifactId>
       <version>${eclipselinkVersion}</version>
     </dependency>
-    <!-- MOXy 2.5.1 relies on javax.mail classes for Base64 decoding -->
+    <!-- MOXy relies on javax.mail classes for Base64 decoding -->
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>

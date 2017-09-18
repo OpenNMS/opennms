@@ -69,7 +69,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
     /** {@inheritDoc} */
     @Override
     public List<Acknowledgeable> findAcknowledgables(final OnmsAcknowledgment ack) {
-        List<Acknowledgeable> ackables = new ArrayList<Acknowledgeable>();
+        List<Acknowledgeable> ackables = new ArrayList<>();
         
         if (ack == null || ack.getAckType() == null) {
             return ackables;

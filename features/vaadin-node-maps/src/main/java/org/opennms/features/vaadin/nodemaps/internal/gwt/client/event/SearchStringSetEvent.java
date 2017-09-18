@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
 
 public class SearchStringSetEvent extends OpenNMSEvent<SearchStringSetEventHandler> {
-    public static Type<SearchStringSetEventHandler> TYPE = new Type<SearchStringSetEventHandler>();
+    public static Type<SearchStringSetEventHandler> TYPE = new Type<>();
     private String m_searchString;
 
     public SearchStringSetEvent(final String searchString) {

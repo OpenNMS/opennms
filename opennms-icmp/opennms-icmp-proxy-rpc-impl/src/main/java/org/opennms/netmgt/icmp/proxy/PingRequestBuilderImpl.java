@@ -42,13 +42,14 @@ import com.google.common.base.Preconditions;
 
 public class PingRequestBuilderImpl implements PingRequestBuilder {
 
-    protected final RpcClient<PingRequestDTO, PingResponseDTO> client;
-    protected long timeout = PingConstants.DEFAULT_TIMEOUT;
-    protected int packetSize = PingConstants.DEFAULT_PACKET_SIZE;
-    protected int retries = PingConstants.DEFAULT_RETRIES;
+    private final RpcClient<PingRequestDTO, PingResponseDTO> client;
+    private long timeout = PingConstants.DEFAULT_TIMEOUT;
+    private int packetSize = PingConstants.DEFAULT_PACKET_SIZE;
+    private int retries = PingConstants.DEFAULT_RETRIES;
     private int numberOfRequests = 1;
-    protected InetAddress inetAddress;
-    protected String location;
+    private InetAddress inetAddress;
+    private String location;
+    private String systemId;
     private Callback callback;
 
     public PingRequestBuilderImpl(RpcClient<PingRequestDTO, PingResponseDTO> client) {
@@ -90,6 +91,12 @@ public class PingRequestBuilderImpl implements PingRequestBuilder {
     }
 
     @Override
+    public PingRequestBuilder withSystemId(String systemId) {
+        this.systemId = systemId;
+        return this;
+    }
+
+    @Override
     public PingRequestBuilder withNumberOfRequests(int numberOfRequests) {
         Preconditions.checkArgument(numberOfRequests >= 1, "number of requests must be >= 1");
         this.numberOfRequests = numberOfRequests;
@@ -110,6 +117,7 @@ public class PingRequestBuilderImpl implements PingRequestBuilder {
         requestDTO.setTimeout(timeout);
         requestDTO.setRetries(retries);
         requestDTO.setLocation(location);
+        requestDTO.setSystemId(systemId);
 
         if (numberOfRequests > 1) {
             return new MultiplePingExecutionStrategy(client, numberOfRequests, callback).execute(requestDTO);

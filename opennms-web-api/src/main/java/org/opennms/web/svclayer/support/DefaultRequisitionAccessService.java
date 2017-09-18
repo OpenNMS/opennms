@@ -560,7 +560,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
             @Override public RequisitionCollection call() throws Exception {
                 flushAll();
 
-                final Set<Requisition> reqs = new TreeSet<Requisition>();
+                final Set<Requisition> reqs = new TreeSet<>();
                 final Set<String> fsNames = getPendingForeignSourceRepository().getActiveForeignSourceNames();
                 fsNames.addAll(getDeployedForeignSourceRepository().getActiveForeignSourceNames());
                 final Set<String> activeForeignSourceNames = fsNames;

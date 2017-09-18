@@ -76,7 +76,7 @@ public class AlertMapReader {
     }
     
     public List<AlertMapping> getAlertMappings() throws IOException {
-        List<AlertMapping> alertMappings = new ArrayList<AlertMapping>();
+        List<AlertMapping> alertMappings = new ArrayList<>();
         AlertMapping thisAlertMapping = null;
         OidMapping thisOidMapping = null;
         

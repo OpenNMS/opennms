@@ -31,8 +31,6 @@ package org.opennms.netmgt.collection.persistence.tcp;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
@@ -54,17 +52,18 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.protobuf.ProtobufDecoder;
 import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -83,8 +82,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 })
 public class TcpOutputStrategyTest {
 
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    @ClassRule
+    public static TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Autowired
     private PersisterFactory persisterFactory;
@@ -112,6 +111,8 @@ public class TcpOutputStrategyTest {
         System.setProperty("org.opennms.rrd.tcp.port", Integer.toString(addr.getPort()));
         // Always use queueing during these tests
         System.setProperty("org.opennms.rrd.usequeue", Boolean.TRUE.toString());
+        // Use the temporary folder as the base directory
+        System.setProperty("rrd.base.dir", tempFolder.getRoot().getAbsolutePath());
     }
 
     public static class PerfDataServerHandler extends SimpleChannelHandler {
@@ -125,13 +126,9 @@ public class TcpOutputStrategyTest {
     public void peristAndReceiveProtobufMessages() {
         Date start = new Date();
 
-        // Mock the agent
-        String owner = "192.168.1.1";
-        CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(tempFolder.getRoot());
-        when(agent.getHostAddress()).thenReturn(owner);
-
         // Build a collection set with both numeric and string attributes
+        String owner = "192.168.1.1";
+        MockCollectionAgent agent = new MockCollectionAgent(1, "n1", InetAddressUtils.addr(owner));
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         NodeLevelResource node = new NodeLevelResource(agent.getNodeId());  
         InterfaceLevelResource eth0 = new InterfaceLevelResource(node, "eth0");
@@ -152,7 +149,7 @@ public class TcpOutputStrategyTest {
 
         PerformanceDataReading reading = readings.getMessage(0);
         assertEquals(PerformanceDataReading.newBuilder()
-                .setPath(Paths.get(tempFolder.getRoot().getAbsolutePath(), "eth0", "ifInErrors").toString())
+                .setPath(Paths.get(tempFolder.getRoot().getAbsolutePath(), "1", "eth0", "ifInErrors").toString())
                 .setOwner(owner)
                 .setTimestamp(reading.getTimestamp())
                 .addAllDblValue(Arrays.asList(Double.valueOf(0.0)))
@@ -161,7 +158,7 @@ public class TcpOutputStrategyTest {
 
         reading = readings.getMessage(1);
         assertEquals(PerformanceDataReading.newBuilder()
-            .setPath(Paths.get(tempFolder.getRoot().getAbsolutePath(), "eth0", "ifSpeed").toString())
+            .setPath(Paths.get(tempFolder.getRoot().getAbsolutePath(), "1", "eth0", "ifSpeed").toString())
             .setOwner(owner)
             .setTimestamp(reading.getTimestamp())
             .addAllDblValue(Collections.emptyList())
@@ -170,7 +167,7 @@ public class TcpOutputStrategyTest {
 
         reading = readings.getMessage(2);
         assertEquals(PerformanceDataReading.newBuilder()
-            .setPath(Paths.get(tempFolder.getRoot().getAbsolutePath(), "eth0", "ifHighSpeed").toString())
+            .setPath(Paths.get(tempFolder.getRoot().getAbsolutePath(), "1", "eth0", "ifHighSpeed").toString())
             .setOwner(owner)
             .setTimestamp(reading.getTimestamp())
             .addAllDblValue(Collections.emptyList())
@@ -189,7 +186,7 @@ public class TcpOutputStrategyTest {
 
         reading = readings.getMessage(0);
         assertEquals(PerformanceDataReading.newBuilder()
-                .setPath(Paths.get(tempFolder.getRoot().getAbsolutePath(), "eth0", "mib2-interfaces").toString())
+                .setPath(Paths.get(tempFolder.getRoot().getAbsolutePath(), "1", "eth0", "mib2-interfaces").toString())
                 .setOwner(owner)
                 .setTimestamp(reading.getTimestamp())
                 .addAllDblValue(Arrays.asList(Double.valueOf(0.0)))

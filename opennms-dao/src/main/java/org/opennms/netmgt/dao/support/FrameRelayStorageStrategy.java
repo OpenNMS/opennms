@@ -46,7 +46,7 @@ public class FrameRelayStorageStrategy extends IndexStorageStrategy {
     public String getResourceNameFromIndex(CollectionResource resource) {
         StringTokenizer indexes = new StringTokenizer(resource.getInstance(), ".");
         String ifIndex = indexes.nextToken();
-        String ifName = getInterfaceName(resource.getParent(), ifIndex);
+        String ifName = getInterfaceName(resource.getParent().getName(), ifIndex);
         String dlci = indexes.nextToken();
         return ifName + "." + dlci;
     }

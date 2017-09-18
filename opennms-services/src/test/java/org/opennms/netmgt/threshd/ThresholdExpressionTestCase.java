@@ -211,7 +211,7 @@ public class ThresholdExpressionTestCase extends TestCase {
 
         entity.addThreshold(wrapper);
         Collection<String> dataSources=entity.getRequiredDatasources();
-        StringBuffer dsStringBuffer = new StringBuffer();
+        final StringBuilder dsStringBuffer = new StringBuilder();
         for (String dataSource : dataSources) {
             dsStringBuffer.append(dataSource).append(" ");
         }

@@ -119,7 +119,7 @@ public class EventDatabaseConstants extends EventConstants {
             return null;
         }
 
-        final StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         boolean first = true;
 
         for (String s : strings) {
@@ -155,7 +155,7 @@ public class EventDatabaseConstants extends EventConstants {
         if (strings == null || strings.length <= 0)
             return null;
 
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         boolean first = true;
 
         for (String s : strings) {
@@ -190,7 +190,7 @@ public class EventDatabaseConstants extends EventConstants {
         final String escapedString = EventDatabaseConstants.escape(origString, '\u0000');
 
         if (maxlen != 0 && escapedString.length() >= maxlen) {
-            final StringBuffer buf = new StringBuffer(escapedString);
+            final StringBuilder buf = new StringBuilder(escapedString);
 
             buf.setLength(maxlen - 4);
             buf.append(VALUE_TRUNCATE_INDICATOR);

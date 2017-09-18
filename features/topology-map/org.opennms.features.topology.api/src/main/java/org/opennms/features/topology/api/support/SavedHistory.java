@@ -149,7 +149,7 @@ public class SavedHistory {
     }
 
     public String getFragment() {
-        StringBuffer retval = new StringBuffer().append("(").append(m_szl).append("),").append(m_boundBox.fragment()).append(",").append(m_boundBox.getCenter());
+        final StringBuilder retval = new StringBuilder().append("(").append(m_szl).append("),").append(m_boundBox.fragment()).append(",").append(m_boundBox.getCenter());
         // Add a CRC of all of the key-value pairs in m_settings to make the fragment unique
         CRC32 settingsCrc = new CRC32();
         for (Map.Entry<String,String> entry : m_settings.entrySet()) {
@@ -212,7 +212,7 @@ public class SavedHistory {
                 // Add resulting Criteria to the graph container
                 for (SearchResult searchQuery : m_searchQueries) {
                     if (searchProvider.getSearchProviderNamespace().equals(searchQuery.getNamespace()) || searchProvider.contributesTo(searchQuery.getNamespace())) {
-                        Criteria searchCriteria = ((HistoryAwareSearchProvider)searchProvider).buildCriteriaFromQuery(searchQuery);
+                        Criteria searchCriteria = ((HistoryAwareSearchProvider)searchProvider).buildCriteriaFromQuery(searchQuery, graphContainer);
                         graphContainer.addCriteria(searchCriteria);
                     }
                 }
@@ -230,7 +230,7 @@ public class SavedHistory {
 
     @Override
     public String toString() {
-        StringBuffer retval = new StringBuffer().append(this.getClass().getSimpleName()).append(": ").append(getFragment()).append(": ");
+        final StringBuilder retval = new StringBuilder().append(this.getClass().getSimpleName()).append(": ").append(getFragment()).append(": ");
         boolean first = true;
         for (Map.Entry<String,String> entry : m_settings.entrySet()) {
             if (first) { first = false; } else { retval.append(","); }

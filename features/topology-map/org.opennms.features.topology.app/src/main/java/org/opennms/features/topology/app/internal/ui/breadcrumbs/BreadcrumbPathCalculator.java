@@ -34,12 +34,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.api.support.IgnoreHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -59,11 +59,11 @@ public class BreadcrumbPathCalculator {
 
     protected static final Vertex rootVertex = new AbstractVertex("$$outer-space$$", "$$pathService.root$$");
 
-    static PathTree findPath(MetaTopologyProvider metaTopologyProvider, Collection<VertexRef> vertices) {
-        Objects.requireNonNull(metaTopologyProvider);
+    static PathTree findPath(TopologyServiceClient topologyServiceClient, Collection<VertexRef> vertices) {
+        Objects.requireNonNull(topologyServiceClient);
         Objects.requireNonNull(vertices);
 
-        final Map<VertexRef, EdgeRef> incomingEdgeMap = getIncomingEdgeMap(metaTopologyProvider);
+        final Map<VertexRef, EdgeRef> incomingEdgeMap = getIncomingEdgeMap(topologyServiceClient);
         final PathTree pathTree = new PathTree();
         for (VertexRef eachVertex : vertices) {
             List<VertexRef> path = findPath(incomingEdgeMap, eachVertex);
@@ -102,12 +102,12 @@ public class BreadcrumbPathCalculator {
         }
     }
 
-    static Map<VertexRef, EdgeRef> getIncomingEdgeMap(MetaTopologyProvider metaTopologyProvider) {
+    static Map<VertexRef, EdgeRef> getIncomingEdgeMap(TopologyServiceClient topologyServiceClient) {
         // Convert to JUNG graph
         // We build one big graph out of all graph providers in order to determine the shortest path between each vertex
         // when we want to calculate the SHORTEST_PATH_TO_ROOT
         final DirectedSparseGraph<VertexRef, EdgeRef> sparseGraph = new DirectedSparseGraph<>();
-        metaTopologyProvider.getGraphProviders().forEach(eachGraph -> {
+        topologyServiceClient.getGraphProviders().forEach(eachGraph -> {
             for (Vertex eachVertex : eachGraph.getVertices(new IgnoreHopCriteria())) {
                 sparseGraph.addVertex(eachVertex);
             }
@@ -119,14 +119,14 @@ public class BreadcrumbPathCalculator {
         // Link the layers
         final IdGenerator idGenerator = new IdGenerator();
         sparseGraph.getVertices().forEach(eachVertex -> {
-            metaTopologyProvider.getOppositeVertices(eachVertex).forEach(oppositeVertex -> {
+            topologyServiceClient.getOppositeVertices(eachVertex).forEach(oppositeVertex -> {
                 sparseGraph.addEdge(new AbstractEdge("$$outer-space$$", "" + idGenerator.nextId(), eachVertex, oppositeVertex), eachVertex, oppositeVertex);
             });
         });
 
         // Create dummy root
         sparseGraph.addVertex(rootVertex);
-        for (Vertex eachVertex : metaTopologyProvider.getDefaultGraphProvider().getVertices(new IgnoreHopCriteria())) {
+        for (Vertex eachVertex : topologyServiceClient.getDefaultGraphProvider().getVertices(new IgnoreHopCriteria())) {
             sparseGraph.addEdge(new AbstractEdge("$$outer-space$$", "" + idGenerator.nextId(), rootVertex, eachVertex), rootVertex, eachVertex);
         }
 

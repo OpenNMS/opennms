@@ -310,7 +310,7 @@ public class NewUser {
      */
     @Override
     public String toString() {
-        StringBuffer str = new StringBuffer("Full Name : " + fullname + " \n");
+        final StringBuilder str = new StringBuilder("Full Name : " + fullname + " \n");
         str.append("User Id " + user + " \n");
         str.append("Password " + passwd + " \n");
         str.append("Confirm " + confirmpasswd + " \n");

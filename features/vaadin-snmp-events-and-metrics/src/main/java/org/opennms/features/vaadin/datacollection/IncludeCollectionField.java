@@ -163,7 +163,7 @@ public class IncludeCollectionField extends CustomField<List<IncludeCollection>>
      */
     @Override
     protected List<IncludeCollection> getInternalValue() {
-        final List<IncludeCollection> beans = new ArrayList<IncludeCollection>();
+        final List<IncludeCollection> beans = new ArrayList<>();
         for (IncludeCollectionWrapper wrapper : container.getOnmsBeans()) {
             beans.add(wrapper.createIncludeCollection());
         }

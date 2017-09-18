@@ -52,6 +52,7 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -112,7 +113,7 @@ public class NrtController {
         }
     }
 
-    public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
+    public ModelAndView nrtStart(ResourceId resourceId, String report, HttpSession httpSession) {
 
         assert (resourceId != null);
         logger.debug("resourceId: '{}'", resourceId);
@@ -188,7 +189,7 @@ public class NrtController {
     public String getMeasurementSetsForDestination(String nrtCollectionTaskId) {
         List<MeasurementSet> measurementSets = m_nrtBroker.receiveMeasurementSets(nrtCollectionTaskId);
 
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         for (MeasurementSet measurementSet : measurementSets) {
             if (buffer.length() > 0) {

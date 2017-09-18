@@ -111,7 +111,7 @@ public class Definition {
      */
     public List<Range> getRange() {
         if (range == null) {
-            range = new ArrayList<Range>();
+            range = new ArrayList<>();
         }
         return this.range;
     }
@@ -140,7 +140,7 @@ public class Definition {
      */
     public List<String> getSpecific() {
         if (specific == null) {
-            specific = new ArrayList<String>();
+            specific = new ArrayList<>();
         }
         return this.specific;
     }
@@ -169,7 +169,7 @@ public class Definition {
      */
     public List<String> getIpMatch() {
         if (ipMatch == null) {
-            ipMatch = new ArrayList<String>();
+            ipMatch = new ArrayList<>();
         }
         return this.ipMatch;
     }

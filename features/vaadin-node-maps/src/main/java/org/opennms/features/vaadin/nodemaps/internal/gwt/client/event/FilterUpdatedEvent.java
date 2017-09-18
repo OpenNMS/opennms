@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
 
 public class FilterUpdatedEvent extends OpenNMSEvent<FilterUpdatedEventHandler> {
-    public static Type<FilterUpdatedEventHandler> TYPE = new Type<FilterUpdatedEventHandler>();
+    public static Type<FilterUpdatedEventHandler> TYPE = new Type<>();
 
     @Override
     public com.google.gwt.event.shared.GwtEvent.Type<FilterUpdatedEventHandler> getAssociatedType() {

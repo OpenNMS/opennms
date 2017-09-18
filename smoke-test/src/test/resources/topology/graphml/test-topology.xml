@@ -11,6 +11,8 @@
     <key id="focus-ids" for="graph" attr.name="focus-ids" attr.type="string"></key>
     <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"></key>
     <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
+    <key id="foreignSource" for="node" attr.name="foreignSource" attr.type="string"></key>
+    <key id="foreignID" for="node" attr.name="foreignID" attr.type="string"></key>
     <data key="label">GraphML Topology Provider (test-graph)</data>
     <data key="breadcrumb-strategy">SHORTEST_PATH_TO_ROOT</data>
     <graph id="regions" edgedefault="undirected">
@@ -42,9 +44,13 @@
         </node>
         <node id="north.2">
             <data key="label">North 2</data>
+            <data key="foreignID">node1</data>
+            <data key="foreignSource">SeleniumTestGroup</data>
         </node>
         <node id="north.3">
             <data key="label">North 3</data>
+            <data key="foreignID">node2</data>
+            <data key="foreignSource">SeleniumTestGroup</data>
         </node>
         <node id="north.4">
             <data key="label">North 4</data>

@@ -109,7 +109,7 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
                 while (true) {
                     boolean drain = false;
                     long sentReadings = 0;
-                    Collection<PerformanceDataReading> sendMe = new ArrayList<PerformanceDataReading>();
+                    Collection<PerformanceDataReading> sendMe = new ArrayList<>();
                     if (m_myQueue.drainTo(sendMe) > 0) {
                         drain = true;
                         sentReadings = sendMe.size();

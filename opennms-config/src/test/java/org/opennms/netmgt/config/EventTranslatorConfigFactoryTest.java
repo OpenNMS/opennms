@@ -52,7 +52,7 @@ public class EventTranslatorConfigFactoryTest {
         event = new Event();
         AlarmData alarmData = new AlarmData();
        
-        List<UpdateField> updateFields = new ArrayList<UpdateField>();
+        List<UpdateField> updateFields = new ArrayList<>();
        
         UpdateField field1 = new UpdateField();
         field1.setFieldName(SEVERITY);

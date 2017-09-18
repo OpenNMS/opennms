@@ -70,7 +70,7 @@ public class ModifyAssetServlet extends HttpServlet {
     }
     
     private void initAllowHtmlFields() {
-        s_allowHtmlFields = new HashSet<String>();
+        s_allowHtmlFields = new HashSet<>();
         String allowHtmlFieldNames = System.getProperty("opennms.assets.allowHtmlFields");
         if (allowHtmlFieldNames == null)
             return;

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.test-api</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.test-api</groupId>
@@ -58,26 +58,28 @@
       </plugin>
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>features-maven-plugin</artifactId>
+        <artifactId>karaf-maven-plugin</artifactId>
         <version>${karafVersion}</version>
         <executions>
           <execution>
-            <id>add-features-to-repo</id>
-            <phase>process-test-resources</phase>
+            <id>features-add-to-repository</id>
+            <phase>generate-resources</phase>
             <goals>
-              <goal>add-features-to-repo</goal>
+              <goal>features-add-to-repository</goal>
             </goals>
             <configuration>
               <karafVersion>${karafVersion}</karafVersion>
               <descriptors>
+                <!-- Karaf framework features -->
+                <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
                 <!-- Karaf standard features -->
-                <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor>
+                <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
                 <!-- Karaf Spring features -->
-                <descriptor>mvn:org.apache.karaf.assemblies.features/spring/${karafVersion}/xml/features</descriptor>
+                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
                 <!-- Pax Exam features -->
                 <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
                 <!-- Pax Web features -->
-                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/3.2.4/xml/features</descriptor>
+                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/4.3.0/xml/features</descriptor>
               </descriptors>
               <features>
                 <!--
@@ -88,60 +90,69 @@
                 <!-- Pax Exam feature that is necessary to run the tests -->
                 <feature>exam</feature>
 
-                <!-- Standard Karaf features -->
-                <feature>admin</feature>
+                <!-- Karaf framework features -->
+                <feature>framework</feature>
+
+                <!-- Karaf standard features -->
+                <feature>aries-annotation</feature>
                 <feature>aries-blueprint</feature>
                 <feature>aries-proxy</feature>
                 <feature>blueprint-web</feature>
+                <feature>bundle</feature>
                 <feature>config</feature>
                 <feature>deployer</feature>
                 <feature>diagnostic</feature>
                 <feature>eventadmin</feature>
-                <feature>features</feature>
+                <feature>feature</feature>
+                <feature>framework-security</feature>
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
+                <feature>instance</feature>
+                <feature>jaas-boot</feature>
                 <feature>jaas</feature>
                 <feature>jasypt-encryption</feature>
+                <!-- TODO: Figure out how to import 2 versions of Jetty? -->
                 <feature>jetty</feature>
-                <feature>karaf-framework</feature>
+                <feature>jolokia</feature>
                 <feature>kar</feature>
+                <feature>log</feature>
                 <feature>management</feature>
+                <feature>minimal</feature>
                 <feature>obr</feature>
+                <feature>package</feature>
+                <feature>profile</feature>
+                <feature>scheduler</feature>
                 <feature>scr</feature>
+                <feature>service</feature>
                 <feature>service-security</feature>
                 <feature>service-wrapper</feature>
+                <feature>shell-compat</feature>
                 <feature>shell</feature>
                 <feature>ssh</feature>
+                <feature>standard</feature>
+                <feature>system</feature>
                 <feature>war</feature>
                 <feature>webconsole</feature>
                 <feature>wrap</feature>
                 <feature>wrapper</feature>
 
-                <!-- Spring features -->
-                <feature>spring</feature>
-                <feature>spring-aspects</feature>
-                <feature>spring-instrument</feature>
-                <feature>spring-jdbc</feature>
-                <feature>spring-jms</feature>
-                <feature>spring-test</feature>
-                <feature>spring-orm</feature>
-                <feature>spring-oxm</feature>
-                <feature>spring-tx</feature>
-                <feature>spring-web</feature>
+                <!-- Karaf Spring features -->
+                <feature>spring/${springVersion}</feature>
+                <feature>spring-aspects/${springVersion}</feature>
+                <feature>spring-instrument/${springVersion}</feature>
+                <feature>spring-jdbc/${springVersion}</feature>
+                <feature>spring-jms/${springVersion}</feature>
+                <feature>spring-test/${springVersion}</feature>
+                <feature>spring-orm/${springVersion}</feature>
+                <feature>spring-oxm/${springVersion}</feature>
+                <feature>spring-tx/${springVersion}</feature>
+                <feature>spring-web/${springVersion}</feature>
 
               </features>
               <repository>${project.build.directory}/paxexam/test-repo</repository>
             </configuration>
           </execution>
         </executions>
-        <!-- https://issues.apache.org/jira/browse/SM-2416 -->
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-http-lightweight</artifactId>
-            <version>2.6</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin> 
         <artifactId>maven-clean-plugin</artifactId> 
@@ -176,6 +187,12 @@
       <artifactId>pax-exam-dependencies</artifactId>
       <type>pom</type>
       <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Apache Karaf container tar.gz -->
@@ -221,9 +238,19 @@
       <type>pom</type>
     </dependency>
 
+    <!-- Karaf framework features artifact -->
+    <dependency>
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>framework</artifactId>
+      <version>${karafVersion}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- Karaf standard features artifact -->
     <dependency>
-      <groupId>org.apache.karaf.assemblies.features</groupId>
+      <groupId>org.apache.karaf.features</groupId>
       <artifactId>standard</artifactId>
       <version>${karafVersion}</version>
       <classifier>features</classifier>
@@ -233,7 +260,7 @@
 
     <!-- Karaf Spring features artifact -->
     <dependency>
-      <groupId>org.apache.karaf.assemblies.features</groupId>
+      <groupId>org.apache.karaf.features</groupId>
       <artifactId>spring</artifactId>
       <version>${karafVersion}</version>
       <classifier>features</classifier>
@@ -254,7 +281,7 @@
     <dependency>
       <groupId>org.ops4j.pax.web</groupId>
       <artifactId>pax-web-features</artifactId>
-      <version>3.2.4</version>
+      <version>4.3.0</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>compile</scope>
@@ -296,7 +323,7 @@
     </dependency>
     -->
 
-    <!-- Other projects necessary to make the features-maven-plugin happy -->
+    <!-- Other projects necessary to make the karaf-maven-plugin happy -->
     <!--
     <dependency>
       <groupId>org.opennms.features.amqp</groupId>
@@ -398,6 +425,12 @@
     </dependency>
     -->
 
+    <dependency>
+      <groupId>org.apache.karaf.shell</groupId>
+      <artifactId>org.apache.karaf.shell.core</artifactId>
+      <version>${karafVersion}</version>
+    </dependency>
+
   </dependencies>
   <repositories>
     <repository>
@@ -417,11 +450,6 @@
     <repository>
        <id>vaadin-addons</id>
        <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
-    </repository>
-    <repository>
-      <id>sonatype-public-repo</id>
-      <name>Sonatype Public Maven Repository</name>
-      <url>http://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
     </repository>
   </repositories>
 </project>

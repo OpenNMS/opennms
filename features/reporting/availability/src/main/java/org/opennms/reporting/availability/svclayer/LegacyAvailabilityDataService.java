@@ -82,7 +82,7 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
             return Logging.withPrefix(LOG4J_CATEGORY, new Callable<List<Node>>() {
                 @Override public List<Node> call() throws Exception {
                     final DBUtils db = new DBUtils();
-                    m_nodes = new ArrayList<Node>();
+                    m_nodes = new ArrayList<>();
 
                     PreparedStatement ipInfoGetStmt = null;
                     PreparedStatement servicesGetStmt = null;
@@ -282,7 +282,7 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
      */
     public void addNode(final String nodeName, final int nodeid, final String ipaddr, final String serviceid, final long losttime, final long regainedtime) {
         if (m_nodes == null) {
-            m_nodes = new ArrayList<Node>();
+            m_nodes = new ArrayList<>();
         } else {
             if (m_nodes.size() <= 0) {
                 Node newNode = new Node(nodeName, nodeid);

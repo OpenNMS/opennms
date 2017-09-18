@@ -78,8 +78,8 @@ public class Coordinates implements Serializable {
         }
 
         final Double[] coordinates = splitCommaSeparatedDoubles(lonLat);
-        m_longitude = coordinates[0].doubleValue();
-        m_latitude  = coordinates[1].doubleValue();
+        m_longitude = coordinates[0];
+        m_latitude  = coordinates[1];
     }
 
     protected void setCoordinates(final double longitude, final double latitude) {

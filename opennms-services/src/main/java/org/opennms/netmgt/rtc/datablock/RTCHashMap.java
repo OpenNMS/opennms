@@ -64,7 +64,7 @@ public class RTCHashMap {
     }
 
     private List<Integer> getNodeIDs() {
-    	List<Integer> nodes = new LinkedList<Integer>();
+    	List<Integer> nodes = new LinkedList<>();
     	for (Iterator<RTCNodeKey> it = m_map.keySet().iterator(); it.hasNext();) {
 			RTCNodeKey key = it.next();
 			nodes.add(key.getNodeID());
@@ -88,7 +88,7 @@ public class RTCHashMap {
             nodesList.add(rtcN);
         } else {
             // add current node to list
-            nodesList = new ArrayList<RTCNode>();
+            nodesList = new ArrayList<>();
             nodesList.add(rtcN);
 
             // add list to map
@@ -114,7 +114,7 @@ public class RTCHashMap {
             nodesList.add(rtcN);
         } else {
             // add current node to list
-            nodesList = new ArrayList<RTCNode>();
+            nodesList = new ArrayList<>();
             nodesList.add(rtcN);
 
             // add list to map

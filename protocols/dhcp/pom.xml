@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
@@ -51,9 +51,9 @@
   <dependencies>
     <!-- NOTE: JDHCP is licensed as GPL and should be kept separate from other libraries -->
     <dependency>
-      <groupId>org.dhcp.jdhcp</groupId>
+      <groupId>org.opennms</groupId>
       <artifactId>jdhcp</artifactId>
-      <version>1.1.1</version>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

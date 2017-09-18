@@ -57,7 +57,7 @@ public class SystemReportResourceLocator implements ResourceLocator {
 
     @Override
     public String findBinary(final String name) {
-        final List<String> pathEntries = new ArrayList<String>();
+        final List<String> pathEntries = new ArrayList<>();
         final String path = System.getenv().get("PATH");
         if (path != null) {
             for (final String p : path.split(File.pathSeparator)) {

@@ -40,7 +40,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.xml.DoubleAdapter;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
@@ -62,6 +64,7 @@ public class DiscoveryConfiguration implements Serializable {
      *  OpenNMS for discovery
      */
     @XmlAttribute(name = "packets-per-second", required = true)
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double m_packetsPerSecond;
 
     /**

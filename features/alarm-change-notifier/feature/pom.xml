@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>alarm-change-notifier.parent</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
 
   <!-- Feature Definition -->
@@ -57,32 +57,32 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-common</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-transport</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-buffer</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-handler</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
     </dependency>
     <!-- <dependency> -->
     <!-- <groupId>io.netty</groupId> -->
     <!-- <artifactId>netty-resolver</artifactId> -->
-    <!-- <version>${nettyVersion}</version> -->
+    <!-- <version>${netty4Version}</version> -->
     <!-- </dependency> -->
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-codec</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
     </dependency>
 
     <dependency>

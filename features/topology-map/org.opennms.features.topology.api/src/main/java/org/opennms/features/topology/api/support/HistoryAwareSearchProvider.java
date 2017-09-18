@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.api.support;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchResult;
@@ -37,5 +38,5 @@ import org.opennms.features.topology.api.topo.SearchResult;
  * Used for saving / loading to history
  */
 public interface HistoryAwareSearchProvider extends SearchProvider {
-	public Criteria buildCriteriaFromQuery(SearchResult input);
+	public Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container);
 }

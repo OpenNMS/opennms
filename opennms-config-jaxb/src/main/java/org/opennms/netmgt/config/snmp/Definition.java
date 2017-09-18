@@ -56,20 +56,20 @@ public class Definition extends Configuration implements Serializable {
      *  applies.
      */
     @XmlElement(name="range")
-    private List<Range> m_ranges = new ArrayList<Range>();
+    private List<Range> m_ranges = new ArrayList<>();
 
     /**
      * Specific IP address to which this definition
      *  applies.
      */
     @XmlElement(name="specific")
-    private List<String> m_specifics = new ArrayList<String>();
+    private List<String> m_specifics = new ArrayList<>();
 
     /**
      * Match Octets (as in IPLIKE)
      */
     @XmlElement(name="ip-match")
-    private List<String> m_ipMatches = new ArrayList<String>();
+    private List<String> m_ipMatches = new ArrayList<>();
 
     @XmlAttribute(name="location")
     private String m_location;

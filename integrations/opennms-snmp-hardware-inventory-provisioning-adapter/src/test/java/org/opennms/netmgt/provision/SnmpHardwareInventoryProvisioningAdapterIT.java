@@ -125,7 +125,7 @@ public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingB
     private HwEntityDao m_entityDao;
 
     /** The operations. */
-    private List<TestOperation> m_operations = new ArrayList<TestOperation>();
+    private List<TestOperation> m_operations = new ArrayList<>();
 
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()

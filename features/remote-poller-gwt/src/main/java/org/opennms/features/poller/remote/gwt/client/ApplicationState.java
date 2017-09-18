@@ -91,9 +91,9 @@ public class ApplicationState implements Serializable, IsSerializable {
 		if (m_statuses.size() == 0) {
 			return StatusDetails.unknown("No applications are currently defined.");
 		}
-		final List<String> m_applicationsUnknown  = new ArrayList<String>();
-		final List<String> m_applicationsDown     = new ArrayList<String>();
-		final List<String> m_applicationsMarginal = new ArrayList<String>();
+		final List<String> m_applicationsUnknown  = new ArrayList<>();
+		final List<String> m_applicationsDown     = new ArrayList<>();
+		final List<String> m_applicationsMarginal = new ArrayList<>();
 		for (final String appName : m_statuses.keySet()) {
 			final ApplicationDetails status = m_statuses.get(appName);
 			switch(status.getStatusDetails().getStatus()) {

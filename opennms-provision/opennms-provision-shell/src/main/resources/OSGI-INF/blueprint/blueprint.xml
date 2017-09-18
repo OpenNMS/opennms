@@ -46,5 +46,23 @@
 			</action>
 		</command>
 	</command-bundle>
-	
+
+    <reference id="locationAwareRequisitionClient" interface="org.opennms.netmgt.provision.persist.LocationAwareRequisitionClient" availability="mandatory"/>
+    <reference id="requisitionProviderRegistry" interface="org.opennms.netmgt.provision.persist.RequisitionProviderRegistry" availability="mandatory"/>
+
+    <bean id="providerTypeNameCompleter" class="org.opennms.netmgt.provision.requisition.command.ProviderTypeNameCompleter">
+        <property name="registry" ref="requisitionProviderRegistry" />
+    </bean>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="provision/show-import">
+            <action class="org.opennms.netmgt.provision.requisition.command.ShowImport">
+              <property name="client" ref="locationAwareRequisitionClient" />
+            </action>
+            <completers>
+                <ref component-id="providerTypeNameCompleter"/>
+                <null/>
+            </completers>
+        </command>
+    </command-bundle>
 </blueprint>

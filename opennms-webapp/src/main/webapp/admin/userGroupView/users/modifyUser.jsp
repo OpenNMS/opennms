@@ -286,7 +286,7 @@
         String tuiPin = null;
         List<String> availableRoles = new ArrayList<String>(Authentication.getAvailableRoles());
         Collections.sort(availableRoles);
-        List<String> configuredRoles = new ArrayList<String>();
+        List<String> configuredRoles = new ArrayList<>();
             User usertemp = userFactory.getUser(userid);
             if (usertemp != null) {
                     email = userFactory.getEmail(userid);

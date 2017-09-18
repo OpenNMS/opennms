@@ -187,7 +187,7 @@ public class HelpClickListener implements Button.ClickListener {
      * @return a string with HTML code
      */
     private String getOverviewHelpHTML() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("<div class='help-title'>Overview</div>");
         sb.append("");
         sb.append("<div class='help-content'>");

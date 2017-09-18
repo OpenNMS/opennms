@@ -6,8 +6,8 @@
 #
 ### BEGIN INIT INFO
 # Provides:          minion
-# Required-Start:    $network
-# Required-Stop:     $network
+# Required-Start:    $network $remote_fs
+# Required-Stop:     $network $remote_fs
 # Should-Start:      $local_fs
 # Should-Stop:       $local_fs
 # Default-Start:     2 3 4 5
@@ -21,13 +21,18 @@ ME="$0"
 NAME="minion"
 DESC="Minion"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-MINION_HOME="/opt/minion"
-SYSCONFDIR="${MINION_HOME}/etc"
+MINION_HOME="@INSTPREFIX@"
+SYSCONFDIR="@SYSCONFDIR@"
 RUNAS=root
 STOP_RETRIES=10
 STOP_WAIT=5
 
 export NAME DESC PATH
+
+if [ -f /lib/lsb/init-functions ]; then
+	# shellcheck disable=SC1090,SC1091
+	. /lib/lsb/init-functions
+fi
 
 if [ -f /etc/rc.d/init.d/functions ]; then
 	# shellcheck disable=SC1090,SC1091
@@ -46,6 +51,11 @@ fi
 if [ -r "${MINION_HOME}/minion.conf" ]; then
 	# shellcheck disable=SC1090,SC1091
 	. "${MINION_HOME}/minion.conf"
+fi
+
+if [ -r "${MINION_HOME}/etc/minion.conf" ]; then
+	# shellcheck disable=SC1090,SC1091
+	. "${MINION_HOME}/etc/minion.conf"
 fi
 
 validate_icmp() {

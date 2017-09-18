@@ -225,7 +225,7 @@ public class InventoryReportCalculator implements InitializingBean {
         } catch (RancidApiException e) {
             LOG.error("getGroups: has given exception {}. Skipped", e.getMessage());
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
     
     private List<String> getDeviceListOnGroup(String groupName) {
@@ -234,7 +234,7 @@ public class InventoryReportCalculator implements InitializingBean {
         } catch (RancidApiException e) {
             LOG.error("getDeviceListOnGroup: group [{}]. Skipped", groupName); 
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
     
     private List<String> getVersionListOnDevice(String deviceName, String groupName) {
@@ -244,7 +244,7 @@ public class InventoryReportCalculator implements InitializingBean {
             LOG.error("getVersionListOnDevice:  device has no inventory [{}]. {}", deviceName, e.getLocalizedMessage()); 
         }
 
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
     
     private RancidNode getFullNode(String groupName, String deviceName) {
@@ -351,7 +351,7 @@ public class InventoryReportCalculator implements InitializingBean {
                 nbisn.setSwconfigurationurl(nodeBaseInv.getSwconfigurationurl());
                 nbisn.setVersion(nodeBaseInv.getVersion());
 
-                List<InventoryElement2RP> ie2rpList = new ArrayList<InventoryElement2RP>();
+                List<InventoryElement2RP> ie2rpList = new ArrayList<>();
 
                 for (InventoryElement2 ie2 : nodeBaseInv.getIe()) {
                     InventoryElement2RP ie2rp = new InventoryElement2RP();

@@ -204,7 +204,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     public ForeignSourceCollection getForeignSources() {
         readLock();
         try {
-            final Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
+            final Set<ForeignSource> foreignSources = new TreeSet<>();
             for (final String fsName : getActiveForeignSourceNames()) {
                 foreignSources.add(getActiveForeignSource(fsName));
             }

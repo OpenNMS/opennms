@@ -80,9 +80,9 @@ public class BeanInfo {
      * <p>Constructor for BeanInfo.</p>
      */
     public BeanInfo() {
-        operations = new ArrayList<Object>();
-        attributes = new ArrayList<String>();
-        compositeAttributes = new ArrayList<String>();
+        operations = new ArrayList<>();
+        attributes = new ArrayList<>();
+        compositeAttributes = new ArrayList<>();
     }
 
     /**

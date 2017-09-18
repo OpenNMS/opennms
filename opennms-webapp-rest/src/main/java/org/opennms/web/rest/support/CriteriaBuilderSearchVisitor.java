@@ -152,7 +152,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 					behavior.beforeVisit(m_criteriaBuilder, value, sc.getConditionType(), isWildcard);
 
 					// If the behavior indicates that we should skip this search term, then return
-					if (behavior.shouldSkipProperty()) {
+					if (behavior.shouldSkipProperty(sc.getConditionType(), isWildcard)) {
 						return;
 					}
 				} else {
@@ -223,7 +223,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 				}
 			}
 		} else {
-			List<Restriction> subRestrictions = new ArrayList<Restriction>();
+			List<Restriction> subRestrictions = new ArrayList<>();
 			for (SearchCondition<Q> condition : sc.getSearchConditions()) {
 				// Create a new CriteriaBuilder
 				CriteriaBuilder builder = null;

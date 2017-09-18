@@ -95,7 +95,7 @@ public class NCSSearchProvider extends AbstractSearchProvider implements History
     NCSServiceContainer m_container;
 
     @Override
-    public Criteria buildCriteriaFromQuery(SearchResult input) {
+    public Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container) {
         Criteria c = NCSEdgeProvider.createCriteria(Collections.singletonList(Long.parseLong(input.getId())));
         return new NCSHopCriteria(input.getId(), new HashSet<VertexRef>(getVertexRefsForEdges(m_ncsEdgeProvider, c)), input.getLabel());
     }
@@ -144,7 +144,7 @@ public class NCSSearchProvider extends AbstractSearchProvider implements History
 
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-        List<SearchResult> searchResults = new ArrayList<SearchResult>();
+        List<SearchResult> searchResults = new ArrayList<>();
 
         List<NCSComponent> components = m_ncsComponentRepository.findByType("Service");
         for (NCSComponent component : components) {

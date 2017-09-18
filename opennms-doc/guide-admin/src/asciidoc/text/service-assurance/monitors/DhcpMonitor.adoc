@@ -1,3 +1,4 @@
+
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
@@ -17,14 +18,14 @@ IMPORTANT: It is required to install the `{opennms-package-base-name}-plugin-pro
 {apt-get,yum} install {opennms-package-base-name}-plugin-protocol-dhcp
 ----
 
-If you try to start {opennms-product-name} without the _{opennms-package-base-name}-plugin-protocol-dhcp_ you will see the following error message in `output.log`:
+If you try to start _{opennms-product-name}_ without the _{opennms-package-base-name}-plugin-protocol-dhcp_ you will see the following error message in `output.log`:
 
 ----
 An error occurred while attempting to start the "OpenNMS:Name=Dhcpd" service (class org.opennms.netmgt.dhcpd.jmx.Dhcpd).  Shutting down and exiting.
 java.lang.ClassNotFoundException: org.opennms.netmgt.dhcpd.jmx.Dhcpd
 ----
 
-CAUTION: Make sure no DHCP client is running on the {opennms-product-name} server and using port UDP/68.
+CAUTION: Make sure no DHCP client is running on the _{opennms-product-name}_ server and using port UDP/68.
          If UDP/68 is already in use, you will find an error message in the manager.log.
          You can test if a process is listening on udp/68 with `sudo ss -lnpu sport = :68`.
 
@@ -41,11 +42,12 @@ CAUTION: Make sure no DHCP client is running on the {opennms-product-name} serve
 |===
 | Parameter        | Description                                                                                    | Required | Default value
 | `retry`          | Number of retries before the service is marked as down                                         | optional | `0`
-| `timeout`        | Time in milliseconds to wait for the DHCP response from the server                             | optional | `3000`
 | `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from default       | optional | `$OPENNMS_HOME/share/rrd/response`
 | `rrd-base-name`  | The name of the RRD file to write (minus the extension, +.rrd+ or +.jrb+)                      | optional | `dhcp`
 | `ds-name`        | This is the name as reference for this particular data source in the RRD file                  | optional | `dhcp`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== _Dhcpd_ configuration
 

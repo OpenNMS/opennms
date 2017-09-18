@@ -51,13 +51,13 @@ public class CriteriaBuilder {
 
     private OrderBuilder m_orderBuilder = new OrderBuilder();
 
-    private Set<Fetch> m_fetch = new LinkedHashSet<Fetch>();
+    private Set<Fetch> m_fetch = new LinkedHashSet<>();
 
     private AliasBuilder m_aliasBuilder = new AliasBuilder();
 
     private boolean m_distinct = false;
 
-    private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
+    private Set<Restriction> m_restrictions = new LinkedHashSet<>();
 
     private boolean m_negateNext = false;
 

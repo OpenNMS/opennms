@@ -78,11 +78,11 @@ public class EventOrderingTest {
     @Test
     public void test() {
         
-        SortedSet<Item> sorted = new TreeSet<Item>();
+        SortedSet<Item> sorted = new TreeSet<>();
         
         EventOrdering ordering = new EventOrdering();
         
-        List<Item> items = new ArrayList<Item>();
+        List<Item> items = new ArrayList<>();
         for(int i = 0; i < 3; i++) {
             EventOrdering s1 = ordering.subsequence();
             for(int j = 0; j < 3; j++) {
@@ -107,7 +107,7 @@ public class EventOrderingTest {
     }
     
     List<Integer> range(int begin, int end) {
-        List<Integer> r = new ArrayList<Integer>();
+        List<Integer> r = new ArrayList<>();
         for(int i = begin; i <= end; i++) {
             r.add(i);
         }
@@ -115,7 +115,7 @@ public class EventOrderingTest {
     }
     
     List<Integer> labels(Collection<Item> items) {
-        List<Integer> results = new ArrayList<Integer>();
+        List<Integer> results = new ArrayList<>();
         for(Item item : items) {
             results.add(item.getLabel());
         }

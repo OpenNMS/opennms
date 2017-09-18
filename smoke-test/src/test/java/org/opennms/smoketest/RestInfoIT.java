@@ -29,16 +29,16 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
@@ -61,14 +61,15 @@ public class RestInfoIT extends OpenNMSSeleniumTestCase {
         final String json = response.getResponseText();
 
         // The expected payload looks like:
-        //  {"packageDescription":"OpenNMS","displayVersion":"19.0.0-SNAPSHOT","packageName":"opennms","version":"19.0.0"}
+        //  {"packageDescription":"OpenNMS","displayVersion":"21.0.0-SNAPSHOT","packageName":"opennms","version":"21.0.0", "ticketerConfig":{"enabled":false, "plugin": null}}
         final ObjectMapper mapper = new ObjectMapper();
-        final Map<String, String> infoMap = mapper.readValue(json, new TypeReference<Map<String, String>>(){});
+        final JsonNode infoObject = mapper.readTree(json);
 
         // Verify that some value is present for each of the known keys
         for (String key : Arrays.asList("packageDescription", "displayVersion", "packageName", "version")) {
             assertTrue(String.format("Expected value for key '%s', but none was found. Info returned: %s", key, json),
-                    !Strings.isNullOrEmpty(infoMap.get(key)));
+                    !Strings.isNullOrEmpty(infoObject.get(key).asText()));
         }
+        assertNotNull(infoObject.get("ticketerConfig"));
     }
 }

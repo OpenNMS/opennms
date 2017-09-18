@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== JDBCStoredProcedureMonitor
 
 The _JDBCStoredProcedureMonitor_ checks the result of a stored procedure in a remote database.
@@ -24,7 +27,6 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 | `url`              | JDBC Url to connect to.                                            | required | `jdbc:sybase:Tds:OPENNMS_JDBC_HOSTNAME/tempdb`
 | `user`             | Database user                                                      | required | `sa`
 | `password`         | Database password                                                  | required | `empty string`
-| `timeout`          | Timeout in ms for the database connection                          | optional | `3000`
 | `retries`          | How many retries should be performed before failing the test       | optional | `0`
 | `stored-procedure` | Name of the database stored procedure to call                      | required | `-`
 | `schema`           | Name of the database schema in which the stored procedure is       | optional | `test`
@@ -32,6 +34,7 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 
 NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Provide the database driver
 

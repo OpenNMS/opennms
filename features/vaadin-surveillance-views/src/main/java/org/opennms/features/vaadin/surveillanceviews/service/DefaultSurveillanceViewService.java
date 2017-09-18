@@ -71,6 +71,7 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.SurveillanceStatus;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
@@ -269,7 +270,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * @return the SQL query string
      */
     private static String createQuery(final String nodeIdProperty, final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
-        StringBuffer stringBuffer = new StringBuffer();
+        final StringBuilder stringBuffer = new StringBuilder();
 
         stringBuffer.append(nodeIdProperty + " in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
 
@@ -455,7 +456,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, String> getGraphResultsForResourceId(final String resourceId) {
+    public Map<String, String> getGraphResultsForResourceId(final ResourceId resourceId) {
         return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {

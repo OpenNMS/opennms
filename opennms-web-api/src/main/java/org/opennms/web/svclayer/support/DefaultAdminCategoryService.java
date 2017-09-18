@@ -115,7 +115,7 @@ public class DefaultAdminCategoryService implements
 
         OnmsCategory category = findCategory(categoryIdString);
         
-        final List<OnmsNode> memberNodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> memberNodes = new ArrayList<>();
         for (final OnmsNode node : getNodeDao().findByCategory(category)) {
         	if (!OnmsNode.NodeType.DELETED.equals(node.getType())) {
         		memberNodes.add(node);
@@ -157,7 +157,7 @@ public class DefaultAdminCategoryService implements
      */
     @Override
     public List<OnmsNode> findAllNodes() {
-    	final List<OnmsNode> list = new ArrayList<OnmsNode>();
+    	final List<OnmsNode> list = new ArrayList<>();
     	for (final OnmsNode node : getNodeDao().findAll()) {
     		if (!OnmsNode.NodeType.DELETED.equals(node.getType())) {
     			list.add(node);

@@ -115,7 +115,9 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor",
             "org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor",
             "org.opennms.netmgt.poller.monitors.WebMonitor", 
-            "org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor")
+            "org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor",
+            "org.opennms.netmgt.poller.monitors.VmwareMonitor",
+            "org.opennms.netmgt.poller.monitors.VmwareCimMonitor")
             .build();
 
     @ClassRule
@@ -165,7 +167,7 @@ public class MonitorsListCommandIT {
             String shellOutput = sshClient.getStdout();
             shellOutput = StringUtils.substringAfter(shellOutput, "poller:list-monitors");
             LOG.info("Monitors output: {}", shellOutput);
-            Set<String> monitors = new HashSet<String>();
+            Set<String> monitors = new HashSet<>();
             for (String monitor : shellOutput.split("\\r?\\n")) {
                 if (StringUtils.isNotBlank(monitor)) {
                     monitors.add(monitor);

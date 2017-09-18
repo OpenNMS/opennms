@@ -95,7 +95,7 @@ public class AlarmData implements Serializable {
 	 * Field m_updateField
 	 */
     @XmlElement(name="update-field", required=false)
-    private List<UpdateField> m_updateFieldList = new ArrayList<UpdateField>();
+    private List<UpdateField> m_updateFieldList = new ArrayList<>();
     
 
     public AlarmData() {

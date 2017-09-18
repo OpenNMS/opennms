@@ -92,7 +92,7 @@ public class NodeMapComponent extends AbstractComponent implements GeoAssetProvi
 
     @Override
     public Collection<VertexRef> getNodesWithCoordinates() {
-        final List<VertexRef> nodes = new ArrayList<VertexRef>();
+        final List<VertexRef> nodes = new ArrayList<>();
         for (final Map.Entry<Integer,MapNode> entry : m_activeNodes.entrySet()) {
             nodes.add(new AbstractVertex("nodes", entry.getKey().toString(), entry.getValue().getNodeLabel()));
         }

@@ -69,7 +69,7 @@ public class SetSequenceGenerator extends AbstractSqlGenerator<SetSequenceStatem
 
         @Override
 	public Sql[] generateSql(final SetSequenceStatement statement, final Database database, final SqlGeneratorChain sqlGeneratorChain) {
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("SELECT pg_catalog.setval(").append("'").append(statement.getSequenceName()).append("',");
 		if (statement.getValue() != null) {
 			sb.append(statement.getValue());

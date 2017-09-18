@@ -57,6 +57,7 @@ drop table monitoringlocationscollectionpackages cascade;
 drop table monitoringlocationstags cascade;
 drop table monitoringsystems cascade;
 drop table events cascade;
+drop table event_parameters cascade;
 drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
@@ -822,7 +823,6 @@ create table events (
 	eventSnmphost		varchar(256),
 	serviceID		integer,
 	eventSnmp		varchar(256),
-	eventParms		text,
 	eventCreateTime		timestamp with time zone not null,
 	eventDescr		text,
 	eventLoggroup		varchar(32),
@@ -863,6 +863,16 @@ create index events_ackuser_idx on events(eventAckUser);
 create index events_acktime_idx on events(eventAckTime);
 create index events_alarmid_idx on events(alarmID);
 create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, eventackuser);
+
+create table event_parameters (
+	eventID			integer not null,
+	name        varchar(256) not null,
+	value		    text not null,
+	type		    varchar(256) not null,
+
+	constraint pk_eventParameters primary key (eventID, name),
+	constraint fk_eventParametersEventID foreign key (eventID) references events (eventID) ON DELETE CASCADE
+);
 
 --########################################################################
 --#
@@ -1077,7 +1087,6 @@ create table alarms (
     qosAlarmState           VARCHAR(31),
     ifIndex                 INTEGER,
     clearKey                VARCHAR(256),
-    eventParms              text,
     stickymemo              INTEGER, CONSTRAINT fk_stickyMemo FOREIGN KEY (stickymemo) REFERENCES memos (id) ON DELETE CASCADE
 );
 
@@ -2474,3 +2483,46 @@ CREATE TABLE topo_layout_vertex_positions (
 	CONSTRAINT fk_topo_layout_vertex_positions_vertex_position_id FOREIGN KEY (vertex_position_id)
 	REFERENCES topo_vertex_position (id) ON DELETE CASCADE
 );
+
+--##################################################################
+--# Status views
+--##################################################################
+
+CREATE VIEW node_alarm_status AS SELECT node.nodeid,
+  COALESCE(
+        (SELECT max(
+              CASE
+                  WHEN alarms.severity IS NULL OR alarms.severity < 3 THEN 3
+                  ELSE alarms.severity
+              END)
+        FROM alarms
+        WHERE alarms.nodeid = node.nodeid), 3) AS max_alarm_severity,
+  COALESCE(
+        (SELECT max(
+              CASE
+                  WHEN alarms.severity IS NULL OR alarms.severity < 3 THEN 3
+                  ELSE alarms.severity
+              END)
+         FROM alarms
+         WHERE alarms.nodeid = node.nodeid AND alarms.alarmacktime IS NULL), 3) AS max_alarm_severity_unack,
+  (SELECT count(alarms.alarmid)
+         FROM alarms
+        WHERE alarms.nodeid = node.nodeid AND alarms.alarmacktime IS NULL) AS alarm_count_unack,
+  (SELECT count(*)
+         FROM alarms
+        WHERE alarms.nodeid = node.nodeid) AS alarm_count
+ FROM node;
+
+CREATE VIEW node_outage_status AS
+ SELECT node.nodeid,
+      CASE
+          WHEN tmp.severity IS NULL OR tmp.severity < 3 THEN 3
+          ELSE tmp.severity
+      END AS max_outage_severity
+ FROM ( SELECT events.nodeid,
+          max(events.eventseverity) AS severity
+         FROM events
+           JOIN outages ON outages.svclosteventid = events.eventid
+        WHERE outages.svcregainedeventid IS NULL
+        GROUP BY events.nodeid) tmp
+ RIGHT JOIN node ON tmp.nodeid = node.nodeid;

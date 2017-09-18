@@ -46,7 +46,7 @@ import java.util.Objects;
 public class LocalReports {
 
     @XmlElement(name = "report")
-    private List<Report> m_reportList = new ArrayList<Report>();
+    private List<Report> m_reportList = new ArrayList<>();
 
     public List<Report> getReportList() {
         return m_reportList;

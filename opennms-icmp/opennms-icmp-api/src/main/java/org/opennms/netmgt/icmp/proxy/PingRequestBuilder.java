@@ -56,6 +56,8 @@ public interface PingRequestBuilder {
 
     PingRequestBuilder withLocation(String location);
 
+    PingRequestBuilder withSystemId(String systemId);
+
     PingRequestBuilder withNumberOfRequests(int numberOfRequests);
 
     PingRequestBuilder withProgressCallback(Callback callback);

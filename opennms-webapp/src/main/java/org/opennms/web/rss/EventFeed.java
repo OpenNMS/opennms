@@ -77,12 +77,12 @@ public class EventFeed extends AbstractFeed {
         feed.setDescription("OpenNMS Events");
         feed.setLink(getUrlBase() + "event/list.htm");
 
-        List<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<SyndEntry> entries = new ArrayList<>();
 
         try {
             Event[] events;
 
-            ArrayList<Filter> filters = new ArrayList<Filter>();
+            ArrayList<Filter> filters = new ArrayList<>();
             if (this.getRequest().getParameter("node") != null) {
                 Integer nodeId = WebSecurityUtils.safeParseInt(this.getRequest().getParameter("node"));
                 filters.add(new NodeFilter(nodeId, getServletContext()));

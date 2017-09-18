@@ -138,7 +138,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
         try {
             snmpServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.snmpServiceId);
             if (snmpServices != null && snmpServices.length > 0) {
-                List<InetAddress> ips = new ArrayList<InetAddress>();
+                List<InetAddress> ips = new ArrayList<>();
                 for (int i = 0; i < snmpServices.length; i++) {
                     ips.add(InetAddressUtils.addr(snmpServices[i]
                             .getIpAddress()));

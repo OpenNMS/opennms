@@ -85,7 +85,7 @@ public class DaoWebNotificationRepositoryIT implements InitializingBean {
     @Test
     @Transactional
     public void testNotificationCount(){
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         Filter[] filters = filterList.toArray(new Filter[0]);
         AcknowledgeType ackType = AcknowledgeType.UNACKNOWLEDGED;
         int notificationCount = m_daoNotificationRepo.countMatchingNotifications(new NotificationCriteria(ackType, filters));
@@ -95,7 +95,7 @@ public class DaoWebNotificationRepositoryIT implements InitializingBean {
     @Test
     @Transactional
     public void testGetMatchingNotifications() {
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         int limit = 10;
         int multiple = 0;
         AcknowledgeType ackType = AcknowledgeType.UNACKNOWLEDGED;

@@ -104,7 +104,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      */
     @Override
     public Set<ForeignSource> getAllForeignSources() {
-        Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
+        Set<ForeignSource> foreignSources = new TreeSet<>();
         foreignSources.addAll(m_pendingForeignSourceRepository.getForeignSources());
         for (ForeignSource fs : m_deployedForeignSourceRepository.getForeignSources()) {
             if (!foreignSources.contains(fs)) {

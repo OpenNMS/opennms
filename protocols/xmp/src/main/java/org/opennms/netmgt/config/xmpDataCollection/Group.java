@@ -78,8 +78,8 @@ package org.opennms.netmgt.config.xmpDataCollection;
 
     public Group() {
         super();
-        this._mibObjList = new java.util.ArrayList<org.opennms.netmgt.config.xmpDataCollection.MibObj>();
-        this._includeGroupList = new java.util.ArrayList<java.lang.String>();
+        this._mibObjList = new java.util.ArrayList<>();
+        this._includeGroupList = new java.util.ArrayList<>();
     }
 
 

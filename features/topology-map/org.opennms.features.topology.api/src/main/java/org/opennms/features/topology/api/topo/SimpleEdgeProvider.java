@@ -96,7 +96,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 
     private final String m_namespace;
 	private final Map<String, Edge> m_edgeMap = new LinkedHashMap<String, Edge>();
-	private final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<EdgeListener>();
+	private final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<>();
 	private final String m_contributesTo;
 	
 	public SimpleEdgeProvider(String namespace, String contributesTo) {
@@ -109,7 +109,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public String getEdgeNamespace() {
+	public String getNamespace() {
 		return m_namespace;
 	}
 	
@@ -133,7 +133,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	private Edge getSimpleEdge(EdgeRef reference) {
-		if (getEdgeNamespace().equals(reference.getNamespace())) {
+		if (getNamespace().equals(reference.getNamespace())) {
 			if (reference instanceof Edge) {
 				return Edge.class.cast(reference);
 			} else {
@@ -145,7 +145,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 
 	@Override
 	public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
-		List<Edge> edges = new ArrayList<Edge>();
+		List<Edge> edges = new ArrayList<>();
 		for(EdgeRef ref : references) {
 			Edge edge = getSimpleEdge(ref);
 			if (ref != null) {
@@ -230,7 +230,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 
 	@Override
 	public List<Edge> getEdges(Criteria... criteria) {
-		List<Edge> edges = new ArrayList<Edge>();
+		List<Edge> edges = new ArrayList<>();
 		for (Edge edge : m_edgeMap.values()) {
 			edges.add(edge.clone());
 		}
@@ -242,7 +242,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 					Edge next = itr.next();
 					if (
 						matchingCriteria.getType() == Criteria.ElementType.EDGE &&
-						matchingCriteria.getNamespace() == getEdgeNamespace() &&
+						matchingCriteria.getNamespace() == getNamespace() &&
 						!matchingCriteria.matches(next)
 					) {
 						itr.remove();
@@ -261,4 +261,8 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		fireEdgesRemoved(all);
 	}
 
+	@Override
+	public int getEdgeTotalCount() {
+		return m_edgeMap.size();
+	}
 }

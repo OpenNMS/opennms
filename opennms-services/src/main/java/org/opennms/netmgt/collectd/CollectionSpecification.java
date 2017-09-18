@@ -31,21 +31,27 @@ package org.opennms.netmgt.collectd;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
+import org.opennms.core.rpc.api.RpcExceptionHandler;
+import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,21 +71,16 @@ public class CollectionSpecification {
     private final String m_svcName;
     private final ServiceCollector m_collector;
     private Map<String, Object> m_parameters;
-    private CollectionInstrumentation m_instrumentation;
+    private final CollectionInstrumentation m_instrumentation;
+    private final LocationAwareCollectorClient m_locationAwareCollectorClient;
 
-    /**
-     * <p>Constructor for CollectionSpecification.</p>
-     *
-     * @param wpkg a {@link org.opennms.netmgt.config.CollectdPackage} object.
-     * @param svcName a {@link java.lang.String} object.
-     * @param collector a {@link org.opennms.netmgt.collection.api.ServiceCollector} object.
-     */
-    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation) {
-        m_package = wpkg;
-        m_svcName = svcName;
-        m_collector = collector;
-        m_instrumentation = instrumentation;
-        
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient) {
+        m_package = Objects.requireNonNull(wpkg);
+        m_svcName = Objects.requireNonNull(svcName);
+        m_collector = Objects.requireNonNull(collector);
+        m_instrumentation = Objects.requireNonNull(instrumentation);
+        m_locationAwareCollectorClient = Objects.requireNonNull(locationAwareCollectorClient);
+
         initializeParameters();
     }
 
@@ -177,12 +178,13 @@ public class CollectionSpecification {
 
     private void initializeParameters() {
     	final Map<String, Object> m = new TreeMap<String, Object>();
-        m.put("SERVICE", m_svcName);
-        StringBuffer sb;
+        m.put(ParameterName.SERVICE.toString(), m_svcName);
+        m.put(ParameterName.SERVICE_INTERVAL.toString(), getService().getInterval().toString());
+        StringBuilder sb;
         Collection<Parameter> params = getService().getParameters();
         for (Parameter p : params) {
             if (LOG.isDebugEnabled()) {
-                sb = new StringBuffer();
+                sb = new StringBuilder();
                 sb.append("initializeParameters: adding service: ");
                 sb.append(getServiceName());
                 sb.append(" parameter: ");
@@ -215,7 +217,7 @@ public class CollectionSpecification {
             }
             m.put("ifAliasComment", ifAliasComment());
             if (LOG.isDebugEnabled()) {
-                sb = new StringBuffer();
+                sb = new StringBuilder();
                 sb.append("ifAliasDomain = ");
                 sb.append(ifAliasDomain());
                 sb.append(", storeByIfAlias = ");
@@ -241,7 +243,7 @@ public class CollectionSpecification {
     public void initialize(CollectionAgent agent) throws CollectionInitializationException {
         m_instrumentation.beginCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
-            m_collector.initialize(agent, getPropertyMap());
+            m_collector.validateAgent(agent, getPropertyMap());
         } finally {
             m_instrumentation.endCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
@@ -254,11 +256,7 @@ public class CollectionSpecification {
      */
     public void release(CollectionAgent agent) {
         m_instrumentation.beginCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
-        try {
-            m_collector.release(agent);
-        } finally {
-            m_instrumentation.endCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
-        }
+        m_instrumentation.endCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
     }
 
     /**
@@ -271,15 +269,49 @@ public class CollectionSpecification {
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {
         m_instrumentation.beginCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
-            CollectionSet set = getCollector().collect(agent, EventIpcManagerFactory.getIpcManager(), getPropertyMap());
+            final CollectionSet set = m_locationAwareCollectorClient.collect()
+                .withAgent(agent)
+                .withAttributes(getPropertyMap())
+                .withCollector(getCollector())
+                // Use the service interval as the TTL
+                .withTimeToLive(getService().getInterval())
+                .execute()
+                .get();
+
             // There are collector implementations that never throw an exception just return a collection failed
-            if (set.getStatus() == ServiceCollector.COLLECTION_FAILED) {
-                m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, new CollectionFailed(ServiceCollector.COLLECTION_FAILED));
+            if (CollectionStatus.FAILED.equals(set.getStatus())) {
+                m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, new CollectionFailed(CollectionStatus.FAILED));
             }
             return set;
-        } catch (CollectionException e) {
-            m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, e);
-            throw e;
+        } catch (InterruptedException|ExecutionException e) {
+            final CollectionException ce = RpcExceptionUtils.handleException(e, new RpcExceptionHandler<CollectionException>() {
+                @Override
+                public CollectionException onInterrupted(Throwable t) {
+                    return new CollectionUnknown("Interrupted.", t);
+                }
+
+                @Override
+                public CollectionException onTimedOut(Throwable t) {
+                    return new CollectionUnknown("Request timed out.", t);
+                }
+
+                @Override
+                public CollectionException onRejected(Throwable t) {
+                    return new CollectionUnknown("Request rejected.", e);
+                }
+
+                @Override
+                public CollectionException onUnknown(Throwable t) {
+                    if (t instanceof CollectionException) {
+                        return (CollectionException)t;
+                    } else if (t.getCause() != null && t.getCause() instanceof CollectionException) {
+                        return (CollectionException)t.getCause();
+                    }
+                    return new CollectionException("Collection failed.", t);
+                }
+            });
+            m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, ce);
+            throw ce;
         } finally {
             m_instrumentation.endCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }

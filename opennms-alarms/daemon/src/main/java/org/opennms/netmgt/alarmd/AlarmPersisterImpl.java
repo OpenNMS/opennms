@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd;
 
+import org.hibernate.Hibernate;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -146,6 +147,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
         ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
         ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
 
+        Hibernate.initialize(alarm.getEventParameters());
+
         return new OnmsAlarmAndLifecycleEvent(alarm, ebldr.getEvent());
     }
 
@@ -160,7 +163,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
             
             //We always set these even if there are not update fields specified
             alarm.setLogMsg(e.getEventLogMsg());
-            alarm.setEventParms(e.getEventParms());
         } else {
             for (UpdateField field : event.getAlarmData().getUpdateFieldList()) {
                 String fieldName = field.getFieldName();
@@ -171,13 +173,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 } else {
                     alarm.setLogMsg(e.getEventLogMsg());
                 }
-
-                if (fieldName.equalsIgnoreCase("Parms") && field.isUpdateOnReduction() == false) {
-                    continue;
-                } else {
-                    alarm.setEventParms(e.getEventParms());
-                }
-
 
                 //Set these others
                 if (field.isUpdateOnReduction()) {
@@ -228,7 +223,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         alarm.setCounter(1);
         alarm.setDescription(e.getEventDescr());
         alarm.setDistPoller(e.getDistPoller());
-        alarm.setEventParms(e.getEventParms());
         alarm.setFirstEventTime(e.getEventTime());
         alarm.setIfIndex(e.getIfIndex());
         alarm.setIpAddr(e.getIpAddr());

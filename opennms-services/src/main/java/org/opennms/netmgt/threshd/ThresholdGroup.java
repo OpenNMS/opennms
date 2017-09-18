@@ -159,7 +159,7 @@ public class ThresholdGroup {
 	 */
         @Override
 	public String toString() {
-	    StringBuilder buf = new StringBuilder();
+	    final StringBuilder buf = new StringBuilder();
 	    buf.append(getName() + "={node:{");
 	    if (getNodeResourceType() != null) {
 	        buf.append(getNodeResourceType().getThresholdMap().values());

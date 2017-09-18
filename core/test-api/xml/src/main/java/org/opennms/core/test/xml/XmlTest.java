@@ -207,7 +207,7 @@ abstract public class XmlTest<T> {
     }
 
     @Test
-    public void marshalJaxbUnmarshalJaxb() throws Exception {
+    public void marshalJaxbUnmarshalJaxb() {
         final String xml = marshalToXmlWithJaxb();
         final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
         LOG.debug("Sample object: {}\n\nJAXB object: {}", getSampleObject(), obj);
@@ -322,7 +322,7 @@ abstract public class XmlTest<T> {
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
-        final List<Difference> retDifferences = new ArrayList<Difference>();
+        final List<Difference> retDifferences = new ArrayList<>();
         @SuppressWarnings("unchecked") final List<Difference> allDifferences = myDiff.getAllDifferences();
         if (allDifferences.size() > 0) {
             DIFFERENCES:
@@ -418,7 +418,7 @@ abstract public class XmlTest<T> {
         final BeanWrapper expectedWrapper = new BeanWrapperImpl(expected);
         final BeanWrapper actualWrapper   = new BeanWrapperImpl(actual);
 
-        final Set<String> properties = new TreeSet<String>();
+        final Set<String> properties = new TreeSet<>();
         for (final PropertyDescriptor descriptor : expectedWrapper.getPropertyDescriptors()) {
             properties.add(descriptor.getName());
         }

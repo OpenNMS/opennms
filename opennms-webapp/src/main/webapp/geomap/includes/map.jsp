@@ -104,12 +104,12 @@
 
     <script type="text/javascript">
         require(['jquery', 'geomap'], function($, Geomap) {
-            $("<%= mapId%>").ready(function () {
+            $("<%= mapId%>").ready(function() {
                 Geomap.render({
                     baseHref: "<%= baseHref %>",
                     mapId: "<%= mapId %>",
-                    hideControlsOnStartup: <%= getParameter(request, "hideControlsOnStartup") %>,
-                    strategy: "<%= getParameter(request, "strategy") %>",
+                    hideControlsOnStartup: <%= getParameter(request, "hideControlsOnStartup") %> ,
+                    strategy: "<%= getParameter(request, "strategy") %>" ,
                     severity: "<%= getParameter(request, "severity") %>"
                 })
             });

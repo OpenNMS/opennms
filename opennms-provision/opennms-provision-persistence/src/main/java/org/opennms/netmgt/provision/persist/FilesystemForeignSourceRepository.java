@@ -89,7 +89,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public Set<String> getActiveForeignSourceNames() {
         m_readLock.lock();
         try {
-            final Set<String> fsNames = new TreeSet<String>();
+            final Set<String> fsNames = new TreeSet<>();
             File directory = new File(m_foreignSourcePath);
             if (directory.exists()) {
                 for (final File file : directory.listFiles()) {
@@ -139,7 +139,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_readLock.lock();
         try {
             final File directory = new File(m_foreignSourcePath);
-            final TreeSet<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
+            final TreeSet<ForeignSource> foreignSources = new TreeSet<>();
             if (directory.exists()) {
                 for (final File file : directory.listFiles()) {
                     if (file.getName().endsWith(".xml")) {
@@ -236,7 +236,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_readLock.lock();
         try {
             final File directory = new File(m_requisitionPath);
-            final TreeSet<Requisition> requisitions = new TreeSet<Requisition>();
+            final TreeSet<Requisition> requisitions = new TreeSet<>();
             if (directory.exists()) {
                 for (final File file : directory.listFiles()) {
                     if (file.getName().endsWith(".xml")) {

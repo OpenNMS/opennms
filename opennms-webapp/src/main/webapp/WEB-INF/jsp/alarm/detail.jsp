@@ -59,7 +59,8 @@
         if (template == null) {
             return alarm.getTTicketId();
         } else {
-            return template.replaceAll("\\$\\{id\\}", alarm.getTTicketId());
+            template = template.replaceAll("\\$\\{id\\}", alarm.getTTicketId());
+            return "<a href=\"" + template + "\">" + alarm.getTTicketId() + "</a>";
         }
     }
 

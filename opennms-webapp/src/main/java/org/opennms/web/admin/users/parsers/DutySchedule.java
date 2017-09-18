@@ -242,7 +242,7 @@ public class DutySchedule implements Cloneable {
      * @deprecated call the individual getters
      */
     public Vector<Object> getAsVector() {
-        Vector<Object> vector = new Vector<Object>();
+        Vector<Object> vector = new Vector<>();
 
         for (int i = 0; i < 7; i++) {
             vector.add(Boolean.valueOf(m_days.get(i)));
@@ -352,7 +352,7 @@ public class DutySchedule implements Cloneable {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         // put in abbreviations for the days of the week
         for (int i = 0; i < DAY_NAMES.length; i++) {

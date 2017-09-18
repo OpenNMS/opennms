@@ -78,7 +78,7 @@ public class SPC592Test {
     @Test
     public void testStandardParse() throws Exception {
         SmiDefaultParser parser = new SmiDefaultParser();
-        List<URL> inputUrls = new ArrayList<URL>();
+        List<URL> inputUrls = new ArrayList<>();
         try {
             inputUrls.add(new File(MIB_DIR, "SNMPv2-SMI.txt").toURI().toURL());
             inputUrls.add(new File(MIB_DIR, "SNMPv2-TC.txt").toURI().toURL());

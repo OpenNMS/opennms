@@ -181,7 +181,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append('[');
         sb.append("ID=").append(m_id).append(',');
         sb.append("Retries=").append(m_retries).append(",");

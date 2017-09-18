@@ -187,7 +187,7 @@ public class InstanceTrackerTest extends TestCase {
     }
     
     private String toCommaSeparated(String[] instances) {
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         for(int i = 0; i < instances.length; i++) {
             if (i != 0) {
                 buf.append(',');

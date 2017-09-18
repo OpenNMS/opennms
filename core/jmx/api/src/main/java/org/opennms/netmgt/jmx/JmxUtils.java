@@ -113,7 +113,7 @@ public final class JmxUtils {
         return groupName;
     }
 
-    public static Map<String, String> getRuntimeAttributes(JmxConfigDao jmxConfigDao, String address, Map<String, String> parameters) {
+    public static MBeanServer getMBeanServer(JmxConfigDao jmxConfigDao, String address, Map<String, String> parameters) {
         Objects.requireNonNull(address);
         Objects.requireNonNull(parameters);
         if (jmxConfigDao != null && jmxConfigDao.getConfig() != null) {
@@ -121,12 +121,18 @@ public final class JmxUtils {
                 final JmxConnectionConfig config = JmxConnectionConfigBuilder.buildFrom(address, parameters).build();
                 final int port = new JMXServiceURL(config.getUrl()).getPort();
                 final MBeanServer mBeanServer = jmxConfigDao.getConfig().lookupMBeanServer(address, port);
-                if (mBeanServer != null) {
-                    return new HashMap<>(mBeanServer.getParameterMap());
-                }
+                return mBeanServer;
             } catch (MalformedURLException e) {
                 LOG.warn("Unexpected exception: {}", e.getMessage(), e);
             }
+        }
+        return null; // not found or exception
+    }
+
+    public static Map<String, String> getRuntimeAttributes(JmxConfigDao jmxConfigDao, String address, Map<String, String> parameters) {
+        MBeanServer mBeanServer = getMBeanServer(jmxConfigDao, address, parameters);
+        if (mBeanServer != null) {
+            return new HashMap<>(mBeanServer.getParameterMap());
         }
         return Collections.emptyMap();
     }

@@ -104,7 +104,7 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
         Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(m_filterDao.getActiveIPAddressList(selector.getFilterRule()));
         Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
         
-        List<OnmsMonitoredService> matchingServices = new LinkedList<OnmsMonitoredService>();
+        List<OnmsMonitoredService> matchingServices = new LinkedList<>();
         Collection<OnmsMonitoredService> services = findActive();
         for (OnmsMonitoredService svc : services) {
             if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) &&

@@ -159,9 +159,9 @@ public class AggregateStatusView {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-    @Override
+	@Override
 	public String toString() {
-		StringBuffer result = new StringBuffer(50);
+		final StringBuilder result = new StringBuilder(50);
 		result.append("AggregateStatusView { id: ");
 		result.append(m_id);
 		result.append(", name: ");
@@ -175,5 +175,5 @@ public class AggregateStatusView {
 		result.append(" }");
 		return result.toString();
 	}
-    
+
 }

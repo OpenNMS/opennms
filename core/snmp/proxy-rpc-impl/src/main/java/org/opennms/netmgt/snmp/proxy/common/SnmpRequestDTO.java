@@ -49,6 +49,9 @@ public class SnmpRequestDTO implements RpcRequest {
     @XmlAttribute(name="location")
     private String location;
 
+    @XmlAttribute(name="system-id")
+    private String systemId;
+
     @XmlElement(name="agent")
     private SnmpAgentConfig agent;
 
@@ -64,12 +67,22 @@ public class SnmpRequestDTO implements RpcRequest {
     @XmlTransient
     private Long timeToLive;
 
+    @Override
     public String getLocation() {
         return location;
     }
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
     }
 
     public SnmpAgentConfig getAgent() {
@@ -119,7 +132,7 @@ public class SnmpRequestDTO implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, agent, gets, walks, description, timeToLive);
+        return Objects.hash(location, systemId, agent, gets, walks, description, timeToLive);
     }
 
     @Override
@@ -132,6 +145,7 @@ public class SnmpRequestDTO implements RpcRequest {
             return false;
         final SnmpRequestDTO other = (SnmpRequestDTO) obj;
         return Objects.equals(this.location, other.location)
+                && Objects.equals(this.systemId, other.systemId)
                 && Objects.equals(this.agent, other.agent)
                 && Objects.equals(this.gets, other.gets)
                 && Objects.equals(this.walks, other.walks)

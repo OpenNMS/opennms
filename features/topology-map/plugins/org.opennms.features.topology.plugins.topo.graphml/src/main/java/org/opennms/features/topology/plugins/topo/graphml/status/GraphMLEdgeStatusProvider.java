@@ -99,7 +99,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
     @Override
     public String getNamespace() {
-        return provider.getEdgeNamespace();
+        return provider.getNamespace();
     }
 
     @Override

@@ -132,7 +132,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         InputStreamReader isr = null;
         BufferedReader br = null;
     
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         try {
             p = Runtime.getRuntime().exec(command);
             is = p.getInputStream();

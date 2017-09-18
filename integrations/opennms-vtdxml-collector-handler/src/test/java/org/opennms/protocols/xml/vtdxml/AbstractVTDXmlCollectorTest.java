@@ -42,19 +42,22 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
-import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.protocols.xml.collector.XmlCollector;
+import org.opennms.protocols.xml.collector.XmlCollectorTestUtils;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.springframework.core.io.FileSystemResource;
@@ -103,10 +106,7 @@ public abstract class AbstractVTDXmlCollectorTest {
         m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
         m_persisterFactory.setRrdStrategy(m_rrdStrategy);
 
-        m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
-        EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
-        EasyMock.expect(m_collectionAgent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
-        EasyMock.expect(m_collectionAgent.getStorageDir()).andReturn(new File("1")).anyTimes();
+        m_collectionAgent = new MockCollectionAgent(1, "mynode.local", InetAddrUtils.addr("127.0.0.1"));
         m_eventProxy = EasyMock.createMock(EventProxy.class);
 
         m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
@@ -115,7 +115,7 @@ public abstract class AbstractVTDXmlCollectorTest {
         m_xmlCollectionDao.afterPropertiesSet();
         MockDocumentBuilder.setXmlFileName(getXmlSampleFileName());
 
-        EasyMock.replay(m_collectionAgent, m_eventProxy);
+        EasyMock.replay(m_eventProxy);
     }
 
     /**
@@ -148,7 +148,7 @@ public abstract class AbstractVTDXmlCollectorTest {
      */
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(m_collectionAgent, m_eventProxy);
+        EasyMock.verify(m_eventProxy);
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
@@ -162,10 +162,8 @@ public abstract class AbstractVTDXmlCollectorTest {
     public void executeCollectorTest(Map<String, Object> parameters, int expectedFiles) throws Exception {
         XmlCollector collector = new XmlCollector();
         collector.setXmlCollectionDao(m_xmlCollectionDao);
-        collector.initialize(m_collectionAgent, parameters);
-        CollectionSet collectionSet = collector.collect(m_collectionAgent, m_eventProxy, parameters);
-        collector.release(m_collectionAgent);
-        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        CollectionSet collectionSet = XmlCollectorTestUtils.doCollect(collector, m_collectionAgent, parameters);
+        Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), false, false);

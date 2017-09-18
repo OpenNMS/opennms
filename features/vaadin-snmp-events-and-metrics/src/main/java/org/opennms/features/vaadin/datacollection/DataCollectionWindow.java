@@ -62,7 +62,7 @@ public class DataCollectionWindow extends Window {
      * @param logger the logger object
      * @throws Exception the exception
      */
-    public DataCollectionWindow(final MibParser parser, final DataCollectionConfigDao dataCollectionConfigDao, final String fileName, final DatacollectionGroup dcGroup, final Logger logger) throws Exception {
+    public DataCollectionWindow(final MibParser parser, final DataCollectionConfigDao dataCollectionConfigDao, final String fileName, final DatacollectionGroup dcGroup, final Logger logger) {
         super(fileName); // Using fileName for as the window's name.
         //setScrollable(true);
         setModal(false);

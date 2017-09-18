@@ -40,7 +40,7 @@ import java.util.List;
  */
 public class ProtocolCollectorRegistryImpl implements ProtocolCollectorRegistry {
 
-    private List<ProtocolCollector> protocolCollectors = new ArrayList<ProtocolCollector>();
+    private List<ProtocolCollector> protocolCollectors = new ArrayList<>();
 
     @Override
     public ProtocolCollector getProtocolCollector(String protocol) {

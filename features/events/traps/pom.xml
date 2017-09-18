@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.events</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.events</groupId>
@@ -38,12 +38,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <!-- TODO: Is this necessary now that we're using RestClient? -->
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-netty-http</artifactId>
-      <version>${camelVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -187,6 +181,14 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>

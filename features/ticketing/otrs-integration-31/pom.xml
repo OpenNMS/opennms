@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.opennms.features</groupId>
 		<artifactId>org.opennms.features.ticketing</artifactId>
-		<version>19.0.0-SNAPSHOT</version>
+		<version>21.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-otrs-31</artifactId>
@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>org.apache.cxf.xjc-utils</groupId>
 			<artifactId>cxf-xjc-runtime</artifactId>
-			<version>3.0.4</version>
+			<version>${cxfXjcVersion}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.xml.bind</groupId>

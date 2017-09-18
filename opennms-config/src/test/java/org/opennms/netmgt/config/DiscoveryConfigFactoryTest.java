@@ -48,7 +48,7 @@ import org.opennms.netmgt.model.discovery.IPPollAddress;
 public class DiscoveryConfigFactoryTest {
     @Test
     public void testAddToSpecificsFromURLViaURL() throws Exception {
-        final List<IPPollAddress> specifics = new ArrayList<IPPollAddress>();
+        final List<IPPollAddress> specifics = new ArrayList<>();
         final URL in = this.getClass().getResource("validDiscoveryIncludeFile.txt");
         final long timeout = 100;
         final int retries = 1;
@@ -66,7 +66,7 @@ public class DiscoveryConfigFactoryTest {
     
     @Test
     public void testAddToSpecificsFromURLViaStream() throws Exception {
-        final List<IPPollAddress> specifics = new ArrayList<IPPollAddress>();
+        final List<IPPollAddress> specifics = new ArrayList<>();
         final InputStream in = this.getClass().getResourceAsStream("validDiscoveryIncludeFile.txt");
         final long timeout = 100;
         final int retries = 1;

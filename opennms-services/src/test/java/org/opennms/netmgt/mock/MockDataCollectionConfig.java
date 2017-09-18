@@ -200,7 +200,7 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
 
     @Override
     public List<MibObjProperty> getMibObjProperties(String cName, String aSysoid, String anAddress) {
-        return new ArrayList<MibObjProperty>();
+        return new ArrayList<>();
     }
 
     @Override

@@ -31,9 +31,9 @@ package org.opennms.features.topology.shell;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.console.commands.NamespaceHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
@@ -48,7 +48,7 @@ public class BlueprintNamespaceShellCommand extends OsgiCommandSupport {
     		final Bundle bundle = sr.getBundle();
     		final Object rawNamespaces = sr.getProperty("osgi.service.blueprint.namespace");
 
-    		final ArrayList<String> namespaces = new ArrayList<String>();
+    		final ArrayList<String> namespaces = new ArrayList<>();
     		if (rawNamespaces instanceof String) {
     			namespaces.add((String)rawNamespaces);
     		} else if (rawNamespaces instanceof Object[]) {

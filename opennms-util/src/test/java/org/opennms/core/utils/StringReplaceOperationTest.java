@@ -53,7 +53,7 @@ public class StringReplaceOperationTest extends TestCase {
         String orig = "There was once a quick brown fox. There was once a lazy dog.";
         String expected = "On the roof was once one quick brown fox. In the basement was once one lazy dog.";
         
-        List<StringReplaceOperation> ops = new ArrayList<StringReplaceOperation>();
+        List<StringReplaceOperation> ops = new ArrayList<>();
         ops.add(new ReplaceFirstOperation("s/There/On the roof/"));
         ops.add(new ReplaceAllOperation("s/ a / one /"));
         ops.add(new ReplaceFirstOperation("s/There/In the basement/"));

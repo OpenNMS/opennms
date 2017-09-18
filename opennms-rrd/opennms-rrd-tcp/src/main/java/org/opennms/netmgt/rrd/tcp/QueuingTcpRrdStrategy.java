@@ -97,7 +97,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
         public void run() {
             try {
                 while (true) {
-                    Collection<PerformanceDataReading> sendMe = new ArrayList<PerformanceDataReading>();
+                    Collection<PerformanceDataReading> sendMe = new ArrayList<>();
                     if (m_myQueue.drainTo(sendMe) > 0) {
                         RrdOutputSocket socket = new RrdOutputSocket(m_strategy.getHost(), m_strategy.getPort());
                         for (PerformanceDataReading reading : sendMe) {

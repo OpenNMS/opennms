@@ -13,6 +13,7 @@ Attributes are extracted from the available _MBeans_.
 |===
 | Class Name          | `org.opennms.netmgt.collectd.Jsr160Collector`
 | Package             | core
+| Supported on Minion | `Yes`
 |===
 
 ===== Collector Parameters
@@ -68,6 +69,12 @@ Here is a snippet providing a collection definition named `opennms-poller`:
         </mbean>
     </mbeans>
 </jmx-collection>
+----
+
+Once added to `etc/jmx-datacollection-config.xml` you can test it using the `collect` command available in the _Karaf Shell_:
+
+----
+collection:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collection=opennms-poller port=18980
 ----
 
 ===== 3rd Party JMX Services

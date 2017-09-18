@@ -50,7 +50,7 @@ public class JdbcDataCollectionConfig implements Serializable, Comparable<JdbcDa
     private static final JdbcDataCollection[] OF_DATA_COLLECTIONS = new JdbcDataCollection[0];
     
     @XmlElement(name="jdbc-collection")
-    private List<JdbcDataCollection> m_jdbcDataCollections = new ArrayList<JdbcDataCollection>();
+    private List<JdbcDataCollection> m_jdbcDataCollections = new ArrayList<>();
     
     @XmlAttribute(name="rrdRepository")
     private String m_rrdRepository;

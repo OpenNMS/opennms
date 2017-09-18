@@ -107,7 +107,7 @@ public class AlarmSummary implements Comparable<AlarmSummary>, Serializable {
 
     @Override
     public String toString() {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("[AlarmSummary: ");
         buffer.append(this.nodeId);
         buffer.append(":");

@@ -106,7 +106,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap, Date collectionTimestamp) {
         if (!isCollectionEnabled(resource)) {
             LOG.debug("applyThresholds: Ignoring resource {} because data collection is disabled for this resource.", resource);
-            return new LinkedList<Event>();
+            return new LinkedList<>();
         }
 		CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(
 				collectionTimestamp, m_nodeId, m_hostAddress, m_serviceName,

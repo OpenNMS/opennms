@@ -34,6 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -47,16 +48,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 
@@ -227,7 +229,7 @@ public class StressCommand extends OsgiCommandSupport {
                 }
 
                 try {
-                    Thread.sleep(sleepTimeInSecondsBetweenIterations * 1000);
+                    Thread.sleep(sleepTimeInSecondsBetweenIterations * 1000L);
                 } catch (InterruptedException e) {
                     break;
                 }
@@ -334,6 +336,11 @@ public class StressCommand extends OsgiCommandSupport {
         }
 
         @Override
+        public Set<String> getAttributeNames() {
+            return Collections.emptySet();
+        }
+
+        @Override
         public <V> V getAttribute(String property) {
             return null;
         }
@@ -384,15 +391,20 @@ public class StressCommand extends OsgiCommandSupport {
         }
 
         @Override
-        public File getStorageDir() {
+        public ResourcePath getStorageResourcePath() {
             // Copied from org.opennms.netmgt.collectd.org.opennms.netmgt.collectd#getStorageDir
-            File dir = new File(Integer.toString(getNodeId()));
             final String foreignSource = getForeignSource();
             final String foreignId = getForeignId();
+
+            final ResourcePath dir;
             if(isStoreByForeignSource() && foreignSource != null && foreignId != null) {
-                File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, foreignSource);
-                dir = new File(fsDir, foreignId);
+                dir = ResourcePath.get(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY,
+                                       foreignSource,
+                                       foreignId);
+            } else {
+                dir = ResourcePath.get(String.valueOf(getNodeId()));
             }
+
             return dir;
         }
 

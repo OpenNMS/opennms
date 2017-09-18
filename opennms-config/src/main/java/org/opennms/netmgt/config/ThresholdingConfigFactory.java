@@ -262,7 +262,7 @@ public final class ThresholdingConfigFactory {
      */
     public Collection<Basethresholddef> getThresholds(String groupName) {
         Group group=getGroup(groupName);
-        Collection<Basethresholddef> result=new ArrayList<Basethresholddef>();
+        Collection<Basethresholddef> result=new ArrayList<>();
         result.addAll(group.getThresholds());
         result.addAll(group.getExpressions());
         return result;

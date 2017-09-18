@@ -41,7 +41,7 @@ public final class OrderBuilder {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OrderBuilder.class);
 	
-    private final Set<Order> m_orders = new LinkedHashSet<Order>();
+    private final Set<Order> m_orders = new LinkedHashSet<>();
 
     private String m_lastAttribute = null;
 

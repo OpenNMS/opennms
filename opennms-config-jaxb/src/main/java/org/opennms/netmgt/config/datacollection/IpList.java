@@ -56,13 +56,13 @@ public class IpList implements Serializable {
      * List of IP addresses
      */
     @XmlElement(name="ipAddr")
-    private List<String> m_ipAddresses = new ArrayList<String>();
+    private List<String> m_ipAddresses = new ArrayList<>();
 
     /**
      * List of IP address masks
      */
     @XmlElement(name="ipAddrMask")
-    private List<String> m_ipAddressMasks = new ArrayList<String>();
+    private List<String> m_ipAddressMasks = new ArrayList<>();
 
     public List<String> getIpAddresses() {
         if (m_ipAddresses == null) {

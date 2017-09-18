@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features
   name="opennms-${project.version}"
-  xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+  xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
     <!-- Apache Camel features -->
     <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
@@ -13,6 +13,9 @@
 
     <!-- Apache ActiveMQ features -->
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
+
+    <!-- Pax JDBC features -->
+    <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/1.0.1/xml/features</repository>
 
     <!-- ActiveMQ service features -->
 
@@ -51,6 +54,7 @@
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <feature version="${guavaVersion}">guava</feature>
+      <feature>qpid</feature>
 
       <feature>opennms-core-camel</feature>
       <feature>opennms-dao-api</feature>
@@ -65,6 +69,7 @@
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <feature version="${guavaVersion}">guava</feature>
+      <feature>qpid</feature>
 
       <feature>opennms-core-camel</feature>
       <feature>opennms-dao-api</feature>
@@ -78,6 +83,7 @@
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
+      <feature>qpid</feature>
 
       <feature>opennms-core-camel</feature>
       <!-- TODO -->
@@ -158,16 +164,16 @@
       <feature>commons-beanutils</feature>
       <feature>commons-codec</feature>
       <feature>commons-digester</feature>
+      <feature>commons-jxpath</feature>
 
-      <bundle>mvn:commons-jxpath/commons-jxpath/1.3</bundle>
-      <!-- jdom has OSGi issues... use the ServiceMix bundle for it -->
-      <!-- @see https://developer.atlassian.com/docs/faq/plugin-framework-faq/using-jdom-in-osgi -->
-      <!-- @see https://techotom.wordpress.com/2014/10/21/fixing-the-default-package-is-not-permitted-by-the-import-package-syntax-with-maven-bundle-plugin/ -->
-      <!-- <bundle>wrap:mvn:jdom/jdom/1.0</bundle> -->
-      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/1.1_4</bundle>
       <bundle>wrap:mvn:org.apache.ant/ant/1.8.2</bundle>
-
       <bundle>mvn:commons-configuration/commons-configuration/${commonsConfigurationVersion}</bundle>
+    </feature>
+
+    <feature name="commons-beanutils" description="Apache :: commons-beanutils" version="${commonsBeanutilsVersion}">
+      <feature>commons-collections</feature>
+
+      <bundle>mvn:commons-beanutils/commons-beanutils/${commonsBeanutilsVersion}</bundle>
     </feature>
 
     <feature name="commons-digester" description="Apache :: commons-digester" version="${commonsDigesterVersion}">
@@ -186,6 +192,16 @@
 
     <feature name="commons-jexl" description="Apache :: commons-jexl" version="2.1.1">
       <bundle>mvn:org.apache.commons/commons-jexl/2.1.1</bundle>
+    </feature>
+
+    <feature name="commons-jxpath" description="Apache :: commons-jxpath" version="1.3">
+      <!-- jdom has OSGi issues... use the ServiceMix bundle for it -->
+      <!-- @see https://developer.atlassian.com/docs/faq/plugin-framework-faq/using-jdom-in-osgi -->
+      <!-- @see https://techotom.wordpress.com/2014/10/21/fixing-the-default-package-is-not-permitted-by-the-import-package-syntax-with-maven-bundle-plugin/ -->
+      <!-- <bundle>wrap:mvn:jdom/jdom/1.0</bundle> -->
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/1.1_4</bundle>
+      <bundle dependency="true">wrap:mvn:javax.servlet.jsp/jsp-api/2.2</bundle>
+      <bundle>mvn:commons-jxpath/commons-jxpath/${commonsJxpathVersion}</bundle>
     </feature>
 
     <feature name="commons-lang" description="Apache :: commons-lang" version="${commonsLangVersion}">
@@ -240,9 +256,9 @@
       <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final</bundle>
     </feature>
 
-    <feature name="java-native-access" description="Java Native Access (JNA)" version="4.2.1">
-      <bundle>wrap:mvn:net.java.dev.jna/jna/4.2.1$Export-Package=com.sun.jna</bundle>
-      <bundle>wrap:mvn:net.java.dev.jna/jna-platform/4.2.1$Export-Package=com.sun.jna.platform</bundle>
+    <feature name="java-native-access" description="Java Native Access (JNA)" version="4.3.0">
+      <bundle>mvn:net.java.dev.jna/jna/4.3.0</bundle>
+      <bundle>mvn:net.java.dev.jna/jna-platform/4.3.0</bundle>
     </feature>
 
     <feature name="javax.mail" description="javax.mail" version="1.4.5">
@@ -257,19 +273,6 @@
       <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.core/${eclipselinkVersion}</bundle>
       <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
       <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
-
-      <!-- Old bundle configuration necessary to run with JDK 6 -->
-      <!--
-      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/1.0.2</bundle>
-      <bundle dependency="true">wrap:mvn:javax.xml.stream/stax-api/1.0-2</bundle>
-      <bundle dependency="true">wrap:mvn:javax.activation/activation/1.1.1</bundle>
-      <bundle dependency="true">wrap:mvn:org.eclipse.persistence/eclipselink/2.5.1</bundle>
-      <bundle dependency="true">mvn:org.eclipse.persistence/javax.persistence/2.1.0</bundle>
-      <bundle dependency="true">mvn:org.eclipse.persistence/commonj.sdo/2.1.1</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/2.2.0</bundle>
-      <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/2.2.0</bundle>
-      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
-      -->
     </feature>
 
     <feature name="jcifs" description="jcifs" version="${jcifsVersion}">
@@ -285,13 +288,8 @@
       <bundle>wrap:mvn:com.novell.ldap/jldap/4.3</bundle>
     </feature>
 
-    <feature name="jolokia" description="Jolokia" version="1.2.3">
-      <feature>http</feature>
-      <bundle>mvn:org.jolokia/jolokia-osgi/1.2.3</bundle>
-    </feature>
-
-    <feature name="jolokia-client" description="Jolokia-Client" version="1.1.5">
-      <bundle>mvn:org.jolokia/jolokia-client-java/1.1.5</bundle>
+    <feature name="jolokia-client" description="Jolokia-Client" version="1.3.3">
+      <bundle>mvn:org.jolokia/jolokia-client-java/1.3.3</bundle>
     </feature>
     
     <feature name="jrobin" description="JRobin" version="1.6.0-SNAPSHOT">
@@ -321,8 +319,15 @@
     </feature>
 
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
+      <feature>pax-jdbc-spec</feature>
       <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
+    </feature>
+
+    <feature name="qpid" description="Apache :: Qpid" version="0.32_3">
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.qpid/0.32_3</bundle>
     </feature>
 
     <feature name="rate-limited-logger" description="Rate Limited Logger" version="${rateLimitedLoggerVersion}">
@@ -332,7 +337,7 @@
 
     <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
       <!-- spring-web is necessary for HTTP remoting -->
-      <feature version="[4.1,4.2)">spring-web</feature>
+      <feature version="[4.2,4.3)">spring-web</feature>
       <feature>commons-codec</feature>
 
       <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/1.3.2.RELEASE$Export-Package=org.springframework.ldap*;version="1.3.2"</bundle>
@@ -379,8 +384,8 @@
     
     
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
-      <feature version="[4.1,4.2)">spring-orm</feature>
+      <feature version="[4.2,4.3)">spring</feature>
+      <feature version="[4.2,4.3)">spring-orm</feature>
 
       <feature>commons-io</feature>
       <feature>dnsjava</feature>
@@ -407,6 +412,7 @@
     <feature name="opennms-core-camel" description="OpenNMS :: Core :: Camel" version="${project.version}">
       <feature>camel-core</feature>
       <feature>camel-http</feature>
+      <feature>camel-netty4</feature>
 
       <feature>opennms-core</feature>
 
@@ -450,10 +456,10 @@
     </feature>
 
     <feature name="opennms-model" description="OpenNMS :: Model" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
-      <feature version="[4.1,4.2)">spring-jdbc</feature>
-      <feature version="[4.1,4.2)">spring-orm</feature>
-      <feature version="[4.1,4.2)">spring-tx</feature>
+      <feature version="[4.2,4.3)">spring</feature>
+      <feature version="[4.2,4.3)">spring-jdbc</feature>
+      <feature version="[4.2,4.3)">spring-orm</feature>
+      <feature version="[4.2,4.3)">spring-tx</feature>
 
       <feature>commons-io</feature>
       <feature>commons-lang</feature>
@@ -471,10 +477,9 @@
     </feature>
 
     <feature name="opennms-collection-api" description="OpenNMS :: Collection :: API" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
-      <feature>opennms-config-api</feature>
-      <feature>opennms-poller-api</feature>
+      <feature>opennms-model</feature>
       <feature>opennms-rrd-api</feature>
 
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
@@ -499,6 +504,7 @@
     </feature>
 
     <feature name="opennms-config-api" description="OpenNMS :: Configuration :: API" version="${project.version}">
+      <feature>opennms-collection-api</feature>
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
 
@@ -512,6 +518,7 @@
       <feature>hibernate36</feature>
       <feature>commons-lang</feature>
 
+      <feature>opennms-collection-api</feature>
       <feature>opennms-core</feature>
       <feature>opennms-snmp</feature>
 
@@ -558,6 +565,7 @@
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-core-camel</feature>
       <feature>camel-blueprint</feature>
+      <feature>camel-jms</feature>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}</bundle>
     </feature>
 
@@ -573,9 +581,16 @@
       <feature>javax.mail</feature>
       <feature>opennms-core-camel</feature>
       <feature>camel-blueprint</feature>
+      <feature>camel-jms</feature>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel-impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-rpc-commands" description="OpenNMS :: Core :: IPC :: RPC :: Shell Commands" version="${project.version}">
+      <!-- Other dependencies are available via the root classloader -->
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.commands/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-dao-api" description="OpenNMS :: DAO :: API" version="${project.version}">
@@ -611,8 +626,9 @@
     </feature>
 
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
+      <feature>camel-core</feature>
       <feature>commons-lang3</feature>
       <feature>jaxb</feature>
 
@@ -640,6 +656,7 @@
     </feature>
 
     <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
+      <feature>camel-netty4</feature>
       <feature>commons-beanutils</feature>
       <feature version="${guavaVersion}">guava</feature>
       <feature>spring-dm</feature>
@@ -704,7 +721,7 @@
     </feature>
 
     <feature name="opennms-poller-api" description="OpenNMS :: Poller :: API" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>hibernate36</feature>
 
@@ -713,7 +730,7 @@
     </feature>
 
     <feature name="opennms-measurements-api" description="OpenNMS :: Measurements :: API" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>commons-lang</feature>
       <feature version="${guavaVersion}">guava</feature>
@@ -723,6 +740,13 @@
 
     <feature name="opennms-provisioning" description="OpenNMS :: Provisioning" version="${project.version}">
       <feature>commons-lang</feature>
+      <feature>commons-beanutils</feature>
+      <feature>opennms-provisioning-api</feature>
+
+      <bundle dependency="true">wrap:mvn:javax.validation/validation-api/1.0.0.GA</bundle>
+      <bundle dependency="true">mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
+
+      <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
 
       <!--
       These classes are in the system classpath inside OpenNMS
@@ -730,8 +754,6 @@
       <feature>opennms-model</feature>
       <feature>opennms-provisioning-api</feature>
       -->
-
-      <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-provisioning-api" description="OpenNMS :: Provisioning :: API" version="${project.version}">
@@ -766,7 +788,7 @@
     </feature>
 
     <feature name="opennms-rrd-api" description="OpenNMS :: RRD :: API" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>opennms-core</feature>
 
@@ -774,7 +796,7 @@
     </feature>
 
     <feature name="opennms-rrd-jrobin" description="OpenNMS :: RRD :: JRobin" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>jrobin</feature>
       <feature>opennms-rrd-api</feature>
@@ -807,11 +829,11 @@
     </feature>
 
     <feature name="opennms-syslogd" description="OpenNMS :: Syslogd" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
       <feature>activemq-camel</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
-      <feature>camel-netty</feature>
+      <feature>camel-netty4</feature>
       <feature version="${guavaVersion}">guava</feature>
 
       <feature>dropwizard-metrics</feature>
@@ -843,12 +865,12 @@
 
     <!-- TrapD feature -->
     <feature name="opennms-trapd" description="OpenNMS :: Trapd" version="${project.version}">
-      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
-      <feature>camel-netty</feature>
       <feature version="${guavaVersion}">guava</feature>
 
+      <feature>minion-core-api</feature>
       <feature>opennms-core</feature>
       <feature>opennms-core-camel</feature>
       <feature>opennms-core-daemon</feature>
@@ -866,6 +888,16 @@
         <feature version="${cxfVersion}">cxf-jaxws</feature>
         <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
+    </feature>
+
+    <feature name="eif-adapter" version="${project.version}" description="OpenNMS :: Features :: EIF Adapter">
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-netty4</feature>
+        <feature>opennms-core-camel</feature>
+        <feature>opennms-collection-api</feature>
+
+        <bundle>mvn:org.opennms.features/org.opennms.features.eif-adapter/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
@@ -943,6 +975,13 @@
       <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-xml-collector" version="${project.version}" description="OpenNMS :: Protocols :: XML Collector">
+      <bundle>wrap:mvn:com.jcraft/jsch/0.1.51</bundle>
+      <!-- <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3//jdk15</bundle> -->
+      <feature>commons-jxpath</feature>
+      <bundle>wrap:mvn:org.jsoup/jsoup/${jsoupVersion}</bundle>
+      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.xml/${project.version}</bundle>
+    </feature>
 
     <feature name="opennms-provisioning-detectors" description="OpenNMS :: Provisioning :: Detectors" version="${project.version}">
       <feature>bsf</feature>
@@ -986,6 +1025,15 @@
       <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
     
+    <feature name="opennms-vmware" description="OpenNMS :: Integrations :: VMware Integration" version="${project.version}">
+      <feature>opennms-provisioning</feature>
+
+      <bundle>wrap:mvn:com.toastcoders/yavijava/6.0.03</bundle>
+      <bundle>wrap:mvn:org.sblim.slp/sblimSLPClient/1.17</bundle>
+      <bundle>wrap:mvn:org.sblim.wbem/sblimCIMClient/1.17</bundle>
+      <bundle>mvn:org.opennms/opennms-vmware/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-poller-monitors-core" description="OpenNMS :: Poller :: Monitors :: Core" version="${project.version}">
       <feature>camel-core</feature>
       <feature>camel-http</feature>
@@ -1021,4 +1069,5 @@
       -->
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
+
 </features>

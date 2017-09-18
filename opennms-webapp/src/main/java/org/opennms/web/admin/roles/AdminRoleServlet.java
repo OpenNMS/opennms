@@ -225,7 +225,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
         }
 
         private Date getDateParameters(String prefix, HttpServletRequest request) throws ParseException {
-            StringBuffer buf = new StringBuffer();
+            final StringBuilder buf = new StringBuilder();
             buf.append(request.getParameter(prefix+"Month"));
             buf.append('-');
             buf.append(request.getParameter(prefix+"Date"));

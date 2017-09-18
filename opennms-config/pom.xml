@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config</artifactId>
@@ -20,14 +20,6 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-
-            <!-- Launch the Spring contexts when this bundle is loaded in OSGi -->
-            <!--
-            <Spring-Context>
-              META-INF/opennms/applicationContext-commonConfigs-osgi.xml,
-              META-INF/opennms/applicationContext-commonConfigs.xml
-            </Spring-Context>
-            -->
           </instructions>
         </configuration>
       </plugin>

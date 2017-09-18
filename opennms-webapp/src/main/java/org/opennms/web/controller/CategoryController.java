@@ -154,7 +154,7 @@ public class CategoryController extends AbstractController {
     }
 
     private List<String> getAllSurveillanceViewCategories() {
-        List<String> categoryNames = new ArrayList<String>();
+        List<String> categoryNames = new ArrayList<>();
         List<View> views = getSurveillanceViewConfigDao().getViews();
         
         for(View view : views) {

@@ -76,6 +76,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceVisitor;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
@@ -205,7 +206,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         }
 
         // We must be able to retrieve the same resource by id
-        for (Entry<String, OnmsResource> entry : visitor.resourcesById.entrySet()) {
+        for (Entry<ResourceId, OnmsResource> entry : visitor.resourcesById.entrySet()) {
             OnmsResource resourceRetrievedById = m_resourceDao.getResourceById(entry.getKey());
             assertNotNull(String.format("Failed to retrieve resource with id '%s'.", entry.getKey()), resourceRetrievedById);
             assertEquals(String.format("Result mismatch for resource with id '%s'. Retrieved id is '%s'.", entry.getKey(), resourceRetrievedById.getId()),
@@ -216,9 +217,9 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         // and compare it to the known results
         int k = 0;
         String[] expectedResults = loadExpectedResults();
-        for (Entry<String, OnmsResource> entry : visitor.resourcesById.entrySet()) {
+        for (Entry<ResourceId, OnmsResource> entry : visitor.resourcesById.entrySet()) {
             // Convert the attributes to strings and order them lexicographically
-            Set<String> attributeNames = new TreeSet<String>();
+            Set<String> attributeNames = new TreeSet<>();
             for (OnmsAttribute attribute : entry.getValue().getAttributes()) {
                 attributeNames.add(attribute.toString());
             }
@@ -237,9 +238,9 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     }
 
     private static class ResourceCollector implements ResourceVisitor {
-        private Map<String, OnmsResource> resourcesById = new TreeMap<String, OnmsResource>();
+        private Map<ResourceId, OnmsResource> resourcesById = new TreeMap<>();
 
-        private Set<OnmsResourceType> resourceTypes = new HashSet<OnmsResourceType>();
+        private Set<OnmsResourceType> resourceTypes = new HashSet<>();
 
         @Override
         public void visit(OnmsResource resource) {

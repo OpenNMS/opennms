@@ -70,7 +70,7 @@ public class NodeSnmpResourceTypeTest {
         final OnmsResource parent = getNodeResource(1);
 
         final OnmsResource resource = nodeSnmpResourceType.getChildByName(parent, new String(""));
-        assertEquals("node[1].nodeSnmp[]", resource.getId());
+        assertEquals("node[1].nodeSnmp[]", resource.getId().toString());
         assertEquals(parent, resource.getParent());
     }
 

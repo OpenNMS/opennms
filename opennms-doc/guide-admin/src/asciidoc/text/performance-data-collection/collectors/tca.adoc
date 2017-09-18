@@ -1,0 +1,25 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== TcaCollector
+
+The _TcaCollector_ is used to collect special SNMP data from Juniper TCA Devices.
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.tca.TcaCollector`
+| Package             | opennms-plugin-collector-juniper-tca
+| Supported on Minion | `Yes`
+|===
+
+===== Collector Parameters
+
+.Collector specific parameters for the TcaCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                              | Required | Default value
+| `collection`           | The name of the _TCA Collection_ to use  | required |
+|===

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -23,10 +23,6 @@
     <productName>alarm-change-notifier</productName>
     <productId>${productName}/${project.version}</productId>
 
-
-    <!-- If this pom is generated from the karaf-pluginmanager-archetype, this value initially matches the archetype's version -->
-    <!-- <licencemanagerVersion>1.0.1</licencemanagerVersion> --> <!-- defined in main pom -->
-
     <!-- <slf4jVersion>1.7.7</slf4jVersion> -->
     <!-- <karafVersion>2.4.0</karafVersion> -->
     <!-- <log4j2Version>2.1</log4j2Version> -->
@@ -34,9 +30,6 @@
 
     <!-- <pgjdbc-ng-version>0.6.osgi</pgjdbc-ng-version> -->
     <pgjdbc-ng-version>0.6.osgi-wrap</pgjdbc-ng-version>
-
-    <!-- <nettyVersion>4.1.1.Final</nettyVersion> -->
-    <nettyVersion>4.0.32.Final</nettyVersion>
 
     <json-simpleVersion>1.1.1</json-simpleVersion>
   </properties>
@@ -170,13 +163,6 @@
         <enabled>false</enabled>
       </releases>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-    </repository>
-    <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>central</id>
-      <name>Maven Central</name>
-      <url>http://maven.opennms.org/content/repositories/central/</url>
     </repository>
   </repositories>
 

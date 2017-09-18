@@ -49,8 +49,10 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.PersisterFactory;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -153,6 +155,12 @@ public class Collectd extends AbstractServiceDaemon implements
     @Autowired
     private volatile FilterDao m_filterDao;
 
+    @Autowired
+    private volatile ServiceCollectorRegistry m_serviceCollectorRegistry;
+
+    @Autowired
+    private volatile LocationAwareCollectorClient m_locationAwareCollectorClient;
+
     static class SchedulingCompletedFlag {
         volatile boolean m_schedulingCompleted = false;
 
@@ -219,7 +227,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private void installMessageSelectors() {
         // Add the EventListeners for the UEIs in which this service is
         // interested
-        List<String> ueiList = new ArrayList<String>();
+        List<String> ueiList = new ArrayList<>();
 
         // nodeGainedService
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
@@ -475,7 +483,7 @@ public class Collectd extends AbstractServiceDaemon implements
         try {
         
         Collection<CollectionSpecification> matchingSpecs = getSpecificationsForInterface(iface, svcName);
-        StringBuffer sb;
+        StringBuilder sb;
         
         LOG.debug("scheduleInterface: found {} matching specs for interface: {}", matchingSpecs.size(), iface);
 
@@ -527,7 +535,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
                 LOG.debug("scheduleInterface: {}/{} collection, scheduled", iface, svcName);
             } catch (CollectionInitializationException e) {
-                sb = new StringBuffer();
+                sb = new StringBuilder();
                 sb.append("scheduleInterface: Unable to schedule ");
                 sb.append(iface);
                 sb.append('/');
@@ -561,7 +569,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * @return a {@link java.util.Collection} object.
      */
     public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
-        Collection<CollectionSpecification> matchingPkgs = new LinkedList<CollectionSpecification>();
+        Collection<CollectionSpecification> matchingPkgs = new LinkedList<>();
 
         CollectdConfiguration collectdConfig = m_collectdConfigFactory.getCollectdConfig();
 
@@ -594,7 +602,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
             LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
             
-            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation()));
+            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient));
         }
         return matchingPkgs;
     }
@@ -620,11 +628,11 @@ public class Collectd extends AbstractServiceDaemon implements
 
         String svcName = spec.getServiceName();
         String pkgName = spec.getPackageName();
-        StringBuffer sb;
+        StringBuilder sb;
         boolean isScheduled = false;
         
         if (LOG.isDebugEnabled()) {
-            sb = new StringBuffer();
+            sb = new StringBuilder();
             sb.append("alreadyScheduled: determining if interface: ");
             sb.append(iface);
             sb.append(" is already scheduled.");
@@ -644,7 +652,7 @@ public class Collectd extends AbstractServiceDaemon implements
         }
 
         if (LOG.isDebugEnabled()) {
-            sb = new StringBuffer();
+            sb = new StringBuilder();
             sb.append("alreadyScheduled: interface ");
             sb.append(iface);
             sb.append("already scheduled check: ");
@@ -998,7 +1006,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void rebuildScheduler() {
         // Register new collectors if necessary
-        Set<String> configuredCollectors = new HashSet<String>();
+        Set<String> configuredCollectors = new HashSet<>();
         for (Collector collector : m_collectdConfigFactory.getCollectdConfig().getCollectors()) {
             String svcName = collector.getService();
             configuredCollectors.add(svcName);
@@ -1007,7 +1015,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     LOG.debug("rebuildScheduler: Loading collector {}, classname {}", svcName, collector.getClassName());
                     Class<?> cc = Class.forName(collector.getClassName());
                     ServiceCollector sc = (ServiceCollector) cc.newInstance();
-                    sc.initialize(Collections.<String, String>emptyMap());
+                    sc.initialize();
                     setServiceCollector(svcName, sc);
                 } catch (Throwable t) {
                     LOG.warn("rebuildScheduler: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);
@@ -1015,7 +1023,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
         // Removing unused collectors if necessary
-        List<String> blackList = new ArrayList<String>();
+        List<String> blackList = new ArrayList<>();
         for (String collectorName : getCollectorNames()) {
             if (!configuredCollectors.contains(collectorName)) {
                 blackList.add(collectorName);
@@ -1491,6 +1499,14 @@ public class Collectd extends AbstractServiceDaemon implements
         m_filterDao = dao;
     }
 
+    public void setServiceCollectorRegistry(ServiceCollectorRegistry serviceCollectorRegistry) {
+        m_serviceCollectorRegistry = serviceCollectorRegistry;
+    }
+
+    public void setLocationAwareCollectorClient(LocationAwareCollectorClient locationAwareCollectorClient) {
+        m_locationAwareCollectorClient = locationAwareCollectorClient;
+    }
+
     /**
      * <p>setTransactionTemplate</p>
      *
@@ -1559,11 +1575,12 @@ public class Collectd extends AbstractServiceDaemon implements
             String svcName = collector.getService();
             try {
                 LOG.debug("instantiateCollectors: Loading collector {}, classname {}", svcName, collector.getClassName());
-                Class<?> cc = Class.forName(collector.getClassName());
-                ServiceCollector sc = (ServiceCollector) cc.newInstance();
-
-                sc.initialize(Collections.<String, String>emptyMap());
-
+                final ServiceCollector sc = m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName());
+                if (sc == null) {
+                    throw new IllegalArgumentException(String.format("No collector found with class name '%s'. Available collectors include: %s",
+                            collector.getClassName(), m_serviceCollectorRegistry.getCollectorClassNames()));
+                }
+                sc.initialize();
                 setServiceCollector(svcName, sc);
             } catch (Throwable t) {
                 LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);

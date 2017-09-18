@@ -56,7 +56,7 @@ public class MockQueryManager implements QueryManager {
     }
 
     List<Integer> getActiveServiceIdsForInterface(final String ipaddr) throws SQLException {
-        final Set<Integer> serviceIds = new HashSet<Integer>();
+        final Set<Integer> serviceIds = new HashSet<>();
 
         MockVisitor gatherServices = new MockVisitorAdapter() {
 
@@ -74,7 +74,7 @@ public class MockQueryManager implements QueryManager {
     }
 
     List<IfKey> getInterfacesWithService(final String svcName) throws SQLException {
-        final List<IfKey> ifKeys = new ArrayList<IfKey>();
+        final List<IfKey> ifKeys = new ArrayList<>();
 
         MockVisitor gatherInterfaces = new MockVisitorAdapter() {
 

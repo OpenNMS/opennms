@@ -30,15 +30,15 @@ package org.opennms.netmgt.ncs.persistence;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.restrictions.LikeRestriction;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
@@ -154,14 +154,8 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		}
 	}
 
-
-
-
-
-
-
 	private Set<ComponentIdentifier> getIdentifiers(final Collection<NCSComponent> components) {
-		final Set<ComponentIdentifier> identifiers = new HashSet<ComponentIdentifier>();
+		final Set<ComponentIdentifier> identifiers = new HashSet<>();
 		for (final NCSComponent component : components) {
 			identifiers.add(getIdentifier(component));
 		}
@@ -177,7 +171,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	}
 
 	private NCSComponent addOrUpdateComponents(final ComponentIdentifier id, final NCSComponent component, final ComponentEventQueue ceq, final boolean deleteOrphans) {
-		final Set<NCSComponent> subcomponents = new LinkedHashSet<NCSComponent>();
+		final Set<NCSComponent> subcomponents = new LinkedHashSet<>();
 		
 		final NCSComponent existing = new UpsertTemplate<NCSComponent, NCSComponentDao>(m_transactionManager, m_componentDao) {
 			@Override
@@ -309,21 +303,22 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	}
 
 	private void deleteAlarms(final String foreignSource, final String foreignId) {
-		final Criteria alarmCriteria = new Criteria(OnmsAlarm.class)
-            .addRestriction(new LikeRestriction("eventParms", "%componentForeignSource=" + foreignSource +"%"))
-            .addRestriction(new LikeRestriction("eventParms", "%componentForeignId=" + foreignId +"%"));
+		final Map<String, String> eventParameters = new HashMap<>();
+		eventParameters.put("componentForeignSource", foreignSource);
+		eventParameters.put("componentForeignId", foreignId);
 
-        for(final OnmsAlarm alarm : m_alarmDao.findMatching(alarmCriteria)) {
+        for(final OnmsAlarm alarm : m_alarmDao.getAlarmsForEventParameters(eventParameters)) {
             m_alarmDao.delete(alarm);
         }
 	}
 
 	private void deleteEvents(final String foreignSource, final String foreignId) {
-		final Criteria eventCriteria = new Criteria(OnmsEvent.class)
-            .addRestriction(new LikeRestriction("eventParms", "%componentForeignSource=" + foreignSource +"%"))
-            .addRestriction(new LikeRestriction("eventParms", "%componentForeignId=" + foreignId +"%"));
+		final Map<String, String> eventParameters = new HashMap<>();
 
-        for(final OnmsEvent event : m_eventDao.findMatching(eventCriteria)) {
+		eventParameters.put("componentForeignSource", foreignSource);
+		eventParameters.put("componentForeignId", foreignId);
+
+		for(final OnmsEvent event : m_eventDao.getEventsForEventParameters(eventParameters)) {
             m_eventDao.delete(event);
         }
 	}

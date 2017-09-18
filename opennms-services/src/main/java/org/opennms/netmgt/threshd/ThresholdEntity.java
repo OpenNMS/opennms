@@ -179,7 +179,7 @@ public final class ThresholdEntity implements Cloneable {
             return "";
         }
 
-        StringBuffer buffer = new StringBuffer("{");
+        final StringBuilder buffer = new StringBuilder("{");
 
         buffer.append("evaluator=").append(this.getThresholdConfig().getType());
         buffer.append(", dsName=").append(this.getDataSourceExpression());
@@ -233,12 +233,11 @@ public final class ThresholdEntity implements Cloneable {
 
         String instance = null;
         if (resource != null) {
-            // NMS-9361: Use the instance label in conjunction with the instance
-            // as the key for the thresholder's state. This allows us to uniquely
+            // NMS-9361: Use the instance label as the key for the thresholder's state. This allows us to uniquely
             // identify resources that share the same instance, but whose path
             // on disk may differ due to the use of a StorageStrategy implementation
             // such as the SiblingColumnStorageStrategy
-            instance = String.format("%s:%s", resource.getInstance(), resource.getInstanceLabel());
+            instance = resource.getInstanceLabel();
         }
         try {
             if (getThresholdEvaluatorStates(instance).size() > 0) {

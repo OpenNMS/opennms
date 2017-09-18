@@ -92,7 +92,7 @@ public class VmwareCimGroup implements java.io.Serializable {
 
     public VmwareCimGroup() {
         super();
-        this._attribList = new java.util.ArrayList<org.opennms.netmgt.config.vmware.cim.Attrib>();
+        this._attribList = new java.util.ArrayList<>();
     }
 
     /**

@@ -44,7 +44,7 @@ public class VaadinResourceServlet extends HttpServlet implements VaadinResource
 
 	private final Bundle vaadin;
 
-	private final List<Bundle> resourceBundles = new ArrayList<Bundle>();
+	private final List<Bundle> resourceBundles = new ArrayList<>();
 
 	public VaadinResourceServlet(Bundle vaadin) {
 		this.vaadin = vaadin;

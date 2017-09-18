@@ -289,7 +289,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
             //
             // format the string for hex
             //
-            StringBuffer b = new StringBuffer();
+            final StringBuilder b = new StringBuilder();
             // b.append("SNMP Octet String [length = " + m_data.length + ", fmt
             // = HEX] = [");
             for (int i = 0; i < m_data.length; ++i) {
@@ -367,7 +367,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
     // TODO: Move this to common base class
     public static String toHexString(final SnmpOctetString ostr) {
         if (ostr == null) return null;
-        StringBuffer sbuf = new StringBuffer();
+        final StringBuilder sbuf = new StringBuilder();
         if (ostr.getLength() > 0) {
             byte[] bytes = ostr.getString();
             for (int i = 0; i < bytes.length; i++) {

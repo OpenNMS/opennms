@@ -32,10 +32,10 @@ import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a PollableElement
@@ -189,33 +189,32 @@ public abstract class PollableElement {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
-    public PollableElement getLockRoot() {
+    protected PollableElement getLockRoot() {
         PollableContainer parent = getParent();
         return (parent == null ? this : parent.getLockRoot());
     }
-    
+
     /**
-     * <p>isTreeLockAvailable</p>
-     *
-     * @return a boolean.
+     * <p>obtainTreeLock</p>
      */
-    public boolean isTreeLockAvailable() {
-        return getLockRoot().isTreeLockAvailable();
+    protected void obtainTreeLock() {
+        getLockRoot().obtainTreeLock();
     }
     
     /**
      * <p>obtainTreeLock</p>
      *
-     * @param timeout a long.
+     * @param timeout Lock timeout in milliseconds
+     * @throws LockUnavailable 
      */
-    public void obtainTreeLock(long timeout) {
+    protected void obtainTreeLock(long timeout) throws LockUnavailable {
         getLockRoot().obtainTreeLock(timeout);
     }
     
     /**
      * <p>releaseTreeLock</p>
      */
-    public void releaseTreeLock() {
+    protected void releaseTreeLock() {
         getLockRoot().releaseTreeLock();
     }
 
@@ -224,8 +223,8 @@ public abstract class PollableElement {
      *
      * @param r a {@link java.lang.Runnable} object.
      */
-    public void withTreeLock(Runnable r) {
-        withTreeLock(r, 0);
+    public final void withTreeLock(Runnable r) {
+        withTreeLock(Executors.callable(r));
     }
     
     /**
@@ -235,32 +234,9 @@ public abstract class PollableElement {
      * @param <T> a T object.
      * @return a T object.
      */
-    public <T> T withTreeLock(Callable<T> c) {
-        return withTreeLock(c, 0);
-    }
-    
-    
-    /**
-     * <p>withTreeLock</p>
-     *
-     * @param r a {@link java.lang.Runnable} object.
-     * @param timeout a long.
-     */
-    public void withTreeLock(Runnable r, long timeout) {
-        withTreeLock(Executors.callable(r), timeout);
-    }
-
-    /**
-     * <p>withTreeLock</p>
-     *
-     * @param c a {@link java.util.concurrent.Callable} object.
-     * @param timeout a long.
-     * @param <T> a T object.
-     * @return a T object.
-     */
-    public <T> T withTreeLock(Callable<T> c, long timeout) {
+    protected final <T> T withTreeLock(Callable<T> c) {
         try {
-            obtainTreeLock(timeout);
+            obtainTreeLock();
             return c.call();
         } catch (RuntimeException e) {
             throw e;
@@ -268,6 +244,46 @@ public abstract class PollableElement {
             throw new RuntimeException(e);
         } finally {
             releaseTreeLock();
+        }
+    }
+    
+    
+    /**
+     * <p>withTreeLock</p>
+     *
+     * @param r a {@link java.lang.Runnable} object.
+     * @param timeout Lock timeout in milliseconds
+     * @throws LockUnavailable 
+     */
+    protected final void withTreeLock(Runnable r, long timeout) throws LockUnavailable {
+        withTreeLock(Executors.callable(r), timeout);
+    }
+
+    /**
+     * <p>withTreeLock</p>
+     *
+     * @param c a {@link java.util.concurrent.Callable} object.
+     * @param timeout Lock timeout in milliseconds
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws LockUnavailable 
+     */
+    protected final <T> T withTreeLock(Callable<T> c, long timeout) throws LockUnavailable {
+        boolean locked = false;
+        try {
+            obtainTreeLock(timeout);
+            locked = true;
+            return c.call();
+        } catch (LockUnavailable e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (locked) {
+                releaseTreeLock();
+            }
         }
     }
 

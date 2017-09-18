@@ -303,7 +303,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         ManagedGroup(Group group) {
             super(group.getName());
             
-            List<WebUser> users = new ArrayList<WebUser>();
+            List<WebUser> users = new ArrayList<>();
             for (String userId : getUsers(group)) {
                 users.add(getWebUser(userId));
             }
@@ -376,7 +376,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
      */
     @Override
     public Collection<WebUser> getUsers() {
-        List<WebUser> users = new ArrayList<WebUser>();
+        List<WebUser> users = new ArrayList<>();
         for (User u : getBackingUsers()) {
             users.add(getWebUser(u));
         }
@@ -396,7 +396,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
      */
     @Override
     public Collection<WebGroup> getGroups() {
-        List<WebGroup> groups = new ArrayList<WebGroup>();
+        List<WebGroup> groups = new ArrayList<>();
         for (Group group : getBackingGroups()) {
             groups.add(getWebGroup(group));
         }

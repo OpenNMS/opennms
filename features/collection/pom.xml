@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -12,8 +12,11 @@
   <name>OpenNMS :: Features :: Collection</name>
   <modules>
     <module>api</module>
+    <module>client-rpc</module>
+    <module>collectors</module>
     <module>persistence-rrd</module>
     <module>persistence-tcp</module>
     <module>shell-commands</module>
+    <module>test-api</module>
   </modules>
 </project>

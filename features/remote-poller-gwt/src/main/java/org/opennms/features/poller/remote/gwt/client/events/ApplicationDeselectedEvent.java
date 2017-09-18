@@ -42,7 +42,7 @@ import com.google.gwt.event.shared.GwtEvent;
 public class ApplicationDeselectedEvent extends GwtEvent<ApplicationDeselectedEventHandler> {
     
     /** Constant <code>TYPE</code> */
-    public static Type<ApplicationDeselectedEventHandler> TYPE = new Type<ApplicationDeselectedEventHandler>();
+    public static Type<ApplicationDeselectedEventHandler> TYPE = new Type<>();
     private ApplicationInfo m_appInfo;
     
     /**

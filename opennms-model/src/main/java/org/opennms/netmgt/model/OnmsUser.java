@@ -61,10 +61,10 @@ public class OnmsUser {
     private Boolean m_passwordSalted;
 
     @XmlElement(name="duty-schedule", required=false)
-    private List<String> m_dutySchedule = new ArrayList<String>();
+    private List<String> m_dutySchedule = new ArrayList<>();
 
     @XmlElement(name="role", required=false)
-    private List<String> m_roles = new ArrayList<String>();
+    private List<String> m_roles = new ArrayList<>();
 
     public OnmsUser() { }
 

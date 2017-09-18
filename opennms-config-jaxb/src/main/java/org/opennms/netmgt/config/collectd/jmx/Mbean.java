@@ -58,13 +58,13 @@ public class Mbean implements java.io.Serializable {
     private String _keyAlias;
 
     @XmlElement(name="attrib")
-    private java.util.List<Attrib> _attribList = new java.util.ArrayList<Attrib>();
+    private java.util.List<Attrib> _attribList = new java.util.ArrayList<>();
 
     @XmlTransient
-    private java.util.List<String> _includeMbeanList = new java.util.ArrayList<String>();
+    private java.util.List<String> _includeMbeanList = new java.util.ArrayList<>();
 
     @XmlElement(name="comp-attrib")
-    private java.util.List<CompAttrib> _compAttribList = new java.util.ArrayList<CompAttrib>();
+    private java.util.List<CompAttrib> _compAttribList = new java.util.ArrayList<>();
 
     public void addAttrib(final Attrib vAttrib) {
         this._attribList.add(vAttrib);

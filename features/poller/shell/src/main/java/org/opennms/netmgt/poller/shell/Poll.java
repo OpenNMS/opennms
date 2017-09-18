@@ -52,6 +52,9 @@ public class Poll extends OsgiCommandSupport {
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String location;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String systemId;
+
     @Option(name = "-t", aliases = "--ttl", description = "Time to live", required = false, multiValued = false)
     Long ttlInMs;
 
@@ -70,6 +73,7 @@ public class Poll extends OsgiCommandSupport {
     protected Object doExecute() throws Exception {
         final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll()
                 .withService(new SimpleMonitoredService(InetAddress.getByName(host), "SVC", location))
+                .withSystemId(systemId)
                 .withMonitorClassName(className)
                 .withTimeToLive(ttlInMs)
                 .withAttributes(parse(attributes))

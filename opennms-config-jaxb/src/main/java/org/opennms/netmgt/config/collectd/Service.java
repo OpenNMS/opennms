@@ -81,7 +81,7 @@ public class Service implements Serializable {
      * will override defaults set in snmp-config.xml
      */
     @XmlElement(name="parameter")
-    private List<Parameter> m_parameters = new ArrayList<Parameter>();
+    private List<Parameter> m_parameters = new ArrayList<>();
 
     public Service() {
         super();

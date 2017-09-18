@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.ipc</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc</groupId>
@@ -12,8 +12,11 @@
   <name>OpenNMS :: Core :: IPC :: RPC</name>
   <modules>
     <module>api</module>
+    <module>common</module>
     <module>camel-impl</module>
     <module>mock-impl</module>
+    <module>shell-commands</module>
+    <module>utils</module>
     <module>xml</module>
   </modules>
 </project>

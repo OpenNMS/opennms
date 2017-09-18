@@ -33,14 +33,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.Constants;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.support.IgnoreHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.GroupRef;
-import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -64,8 +65,10 @@ public class CategoryHopCriteria extends VertexHopCriteria implements SearchCrit
 	private boolean m_collapsed = false;
 	private CategoryVertex m_collapsedVertex;
 
+	private GraphContainer graphContainer;
+
 	public static class CategoryVertex extends AbstractVertex implements GroupRef {
-		private Set<VertexRef> m_children = new HashSet<VertexRef>();
+		private Set<VertexRef> m_children = new HashSet<>();
 
         public CategoryVertex(String namespace, String id, String label) {
 			super(namespace, id, label);
@@ -87,12 +90,13 @@ public class CategoryHopCriteria extends VertexHopCriteria implements SearchCrit
         }
     }
 
-    public CategoryHopCriteria(SearchResult searchResult, CategoryProvider categoryProvider) {
+    public CategoryHopCriteria(SearchResult searchResult, CategoryProvider categoryProvider, GraphContainer graphContainer) {
 		super(searchResult.getLabel());
 		m_collapsed = searchResult.isCollapsed();
 		m_categoryName = searchResult.getLabel();
 		m_collapsedVertex = new CategoryVertex(NAMESPACE, NAMESPACE + ":" + m_categoryName, m_categoryName);
 		this.categoryProvider = Objects.requireNonNull(categoryProvider);
+		this.graphContainer = graphContainer;
         m_collapsedVertex.setChildren(getVertices());
 		setId(this.categoryProvider.findCategoryByName(m_categoryName).getId().toString());
     }
@@ -132,11 +136,13 @@ public class CategoryHopCriteria extends VertexHopCriteria implements SearchCrit
 			return Collections.emptySet();
 		} else {
 			List<OnmsNode> nodes = categoryProvider.findNodesForCategory(category);
-			Set<VertexRef> retval = new TreeSet<VertexRef>(new RefComparator());
-			for (OnmsNode node : nodes) {
-				retval.add(new DefaultVertexRef("nodes", String.valueOf(node.getId())));
-			}
-			return retval;
+			List<Integer> nodeIds = nodes.stream().map(n -> n.getId()).collect(Collectors.toList());
+
+			GraphProvider graphProvider = graphContainer.getTopologyServiceClient().getGraphProviderBy(graphContainer.getTopologyServiceClient().getNamespace());
+			return graphProvider.getVertices(new IgnoreHopCriteria()).stream()
+					.filter(v -> v.getNodeID() != null)
+					.filter(v -> nodeIds.contains(v.getNodeID()))
+					.collect(Collectors.toSet());
 		}
 	}
 

@@ -89,7 +89,7 @@ public class BeanWrapperVisitorTest {
 
     @Before
     public void setUp() {
-        final List<TestBean> beans = new ArrayList<TestBean>();
+        final List<TestBean> beans = new ArrayList<>();
         beans.add(m_testBean);
         m_visitor = new BeanWrapperCriteriaVisitor(beans);
     }
@@ -264,7 +264,7 @@ public class BeanWrapperVisitorTest {
         cb.eq("eventuei", EventConstants.NODE_DOWN_EVENT_UEI);
         cb.isNull("ipaddr");
         
-        final List<OnmsEvent> events = new ArrayList<OnmsEvent>();
+        final List<OnmsEvent> events = new ArrayList<>();
         events.add(createEvent(1, "uei.opennms.org/test"));
         events.add(createEvent(2, EventConstants.NODE_DOWN_EVENT_UEI));
         events.add(createEvent(3, EventConstants.NODE_DOWN_EVENT_UEI));

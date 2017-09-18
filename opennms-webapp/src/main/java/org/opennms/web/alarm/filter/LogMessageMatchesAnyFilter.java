@@ -58,7 +58,7 @@ public class LogMessageMatchesAnyFilter extends SubstringFilter {
      */
     @Override
     public String getTextDescription() {
-        StringBuffer buffer = new StringBuffer("message containing \"");
+        final StringBuilder buffer = new StringBuilder("message containing \"");
         buffer.append(getValue());
         buffer.append("\"");
 

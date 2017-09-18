@@ -141,16 +141,35 @@ include::text/performance-data-collection/collection-packages.adoc[]
 === Collectors
 include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
-include::text/performance-data-collection/collectors/wsman/ws-management.adoc[]
-include::text/performance-data-collection/collectors/wsman/detector.adoc[]
+include::text/performance-data-collection/collectors/http.adoc[]
+include::text/performance-data-collection/collectors/jdbc.adoc[]
+include::text/performance-data-collection/collectors/jmx.adoc[]
+include::text/performance-data-collection/collectors/nsclient.adoc[]
+include::text/performance-data-collection/collectors/tca.adoc[]
+include::text/performance-data-collection/collectors/vmware-cim.adoc[]
+include::text/performance-data-collection/collectors/vmware.adoc[]
+include::text/performance-data-collection/collectors/wmi.adoc[]
+include::text/performance-data-collection/collectors/wsman.adoc[]
+include::text/performance-data-collection/collectors/xml.adoc[]
+include::text/performance-data-collection/collectors/xmp.adoc[]
 
-[[ga-performance-mgmt-stress-testing]]
-=== Stress Testing
-include::text/performance-data-collection/stress-testing.adoc[]
+[[ga-performance-mgmt-shell]]
+=== Shell Commands
+include::text/performance-data-collection/shell/introduction.adoc[]
+include::text/performance-data-collection/shell/adhoc-collection.adoc[]
+include::text/performance-data-collection/shell/stress-testing.adoc[]
 
 [[ga-events]]
 == Events
-include::text/events/events.adoc[]
+include::text/events/anatomy-events.adoc[]
+include::text/events/event-sources.adoc[]
+include::text/events/sources/snmp-traps.adoc[]
+include::text/events/sources/syslog.adoc[]
+include::text/events/sources/rest.adoc[]
+include::text/events/sources/xml-tcp.adoc[]
+include::text/events/sources/eif-adapter.adoc[]
+include::text/events/sources/tl1.adoc[]
+include::text/events/eventbus.adoc[]
 
 [[ga-alarms]]
 == Alarms
@@ -183,6 +202,10 @@ include::text/provisioning/api-examples.adoc[]
 [[ga-provisioning-detectors]]
 === Service Detectors
 include::text/provisioning/detectors/SnmpDetector.adoc[]
+include::text/provisioning/detectors/wsman.adoc[]
+
+include::text/performance-data-collection/collectors/wsman/detector.adoc[]
+
 
 [[ga-bsm]]
 == Business Service Monitoring
@@ -222,6 +245,7 @@ include::text/enlinkd/layer-3/is-is-discovery.adoc[]
 [[ga-opennms-operation]]
 == Operation
 include::text/operation/ssl/ssl.adoc[]
+include::text/operation/request-logging.adoc[]
 include::text/operation/geocoder.adoc[]
 include::text/operation/resourcecli.adoc[]
 include::text/operation/newts-repository-converter.adoc[]
@@ -281,3 +305,7 @@ include::text/plugins/opennms-es-rest-mapping-table.adoc[]
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds
 include::text/workarounds/snmp.adoc[]
+
+[[ga-ifttt]]
+== IFTTT Integration
+include::text/ifttt/ifttt-integration.adoc[]

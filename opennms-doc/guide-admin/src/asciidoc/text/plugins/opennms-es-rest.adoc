@@ -51,7 +51,7 @@ Once you are sure everything is correctly configured, you can activate the _Elas
 [source, shell]
 ----
 ssh admin@localhost -p 8101
-features:install opennms-es-rest
+feature:install opennms-es-rest
 ----
 
 ==== Loading Historical Events

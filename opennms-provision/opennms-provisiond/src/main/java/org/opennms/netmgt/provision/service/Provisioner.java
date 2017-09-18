@@ -50,6 +50,7 @@ import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -254,16 +255,6 @@ public class Provisioner implements SpringServiceDaemon {
             }            
         }
         
-    }
-    
-    /**
-     * <p>doNodeScan</p>
-     *
-     * @param nodeId a int.
-     * @throws java.lang.InterruptedException if any.
-     * @throws java.util.concurrent.ExecutionException if any.
-     */
-    public void doNodeScan(int nodeId) throws InterruptedException, ExecutionException {
     }
     
     /**
@@ -614,7 +605,7 @@ public class Provisioner implements SpringServiceDaemon {
             @Override
             public void run() {
                 try {
-                    InetAddress addr = addr(ip);
+                    final InetAddress addr = addr(ip);
                     if (addr == null) {
                     	LOG.error("Unable to convert {} to an InetAddress.", ip);
                     	return;
@@ -623,11 +614,16 @@ public class Provisioner implements SpringServiceDaemon {
                     final String location;
                     if (paramMap.containsKey("location")) {
                         location = paramMap.get("location");
-                    } else {
+                    } else if (event.getDistPoller() != null) {
                         location = monitoringSystemDao.get(event.getDistPoller()).getLocation();
+                    } else {
+                        location = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
                     }
 
-                    NewSuspectScan scan = createNewSuspectScan(addr, paramMap.get("foreignSource"), location);
+                    final String foreignSource = paramMap.get("foreignSource");
+                    LOG.debug("Triggering new suspect scan for: {} at location: {} with foreign source: {}.",
+                            addr, location, foreignSource);
+                    final NewSuspectScan scan = createNewSuspectScan(addr, foreignSource, location);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();
@@ -745,27 +741,6 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     /**
-     * <p>handleAddInterface</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
-    public void handleAddInterface(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doAddInterface(event.getNodeid(), event.getInterface());
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    private void doAddInterface(long nodeId, String ipAddr) {
-        // FIXME: Handle Rackspace ADD_INTERFACE event
-        throw new UnsupportedOperationException("Provisioner.doAddInterface is not yet implemented");
-    }
-
-    /**
      * <p>handleAddNode</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
@@ -796,27 +771,6 @@ public class Provisioner implements SpringServiceDaemon {
 
         m_provisionService.insertNode(node);
 
-    }
-
-    /**
-     * <p>handleChangeService</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.CHANGE_SERVICE_EVENT_UEI)
-    public void handleChangeService(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doChangeService(event.getInterface(), event.getService(), EventUtils.getParm(event, EventConstants.PARM_ACTION));
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    private void doChangeService(String ipAddr, String service, String action) {
-        // FIXME: Handle Rackspace CHANGE_SERVICE event
-        throw new UnsupportedOperationException("Provisioner.doChangeService is not yet implemented");
     }
 
     /**
@@ -871,53 +825,6 @@ public class Provisioner implements SpringServiceDaemon {
     
     private void doDeleteService(long nodeId, InetAddress addr, String service) {
         m_provisionService.deleteService((int)nodeId, addr, service);
-    }
-
-    /**
-     * <p>handleUpdateServer</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.UPDATE_SERVER_EVENT_UEI)
-    public void handleUpdateServer(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doUpdateServer(event.getInterface(), event.getHost(), 
-                        EventUtils.getParm(event, EventConstants.PARM_ACTION),
-                        EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    private void doUpdateServer(String ipAddr, String host, String action, String nodeLabel) {
-        // FIXME: Handle Rackspace UPDATE_SERVER event
-        throw new UnsupportedOperationException("Provisioner.doUpdateServer is not yet implemented");
-    }
-
-    /**
-     * <p>handleUpdateService</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.UPDATE_SERVICE_EVENT_UEI)
-    public void handleUpdateService(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doUpdateService(event.getInterface(), event.getService(), 
-                        EventUtils.getParm(event, EventConstants.PARM_ACTION),
-                        EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    
-    private void doUpdateService(String ipAddr, String service, String action, String nodeLabel) {
-        // FIXME: Handle Rackspace UPDATE_SERVICE event
-        throw new UnsupportedOperationException("Provisioner.doUpdateService is not yet implemented");
     }
 
     private String getEventUrl(Event event) {

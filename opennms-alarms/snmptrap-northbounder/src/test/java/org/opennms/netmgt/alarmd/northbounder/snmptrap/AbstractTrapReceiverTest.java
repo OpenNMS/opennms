@@ -65,7 +65,7 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
     protected static final InetAddress TRAP_DESTINATION = InetAddressUtils.getLocalHostAddress();
 
     /** The received trap notification. */
-    private List<TrapData> trapNotifications = new ArrayList<TrapData>();
+    private List<TrapData> trapNotifications = new ArrayList<>();
 
     /**
      * Sets up the test (initialize a trap listener).

@@ -39,8 +39,8 @@ import org.opennms.netmgt.model.BridgeMacLink;
 public class SharedSegment {
     
     BridgePort m_designatedBridge;
-    Set<String> m_macsOnSegment = new HashSet<String>();
-    Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
+    Set<String> m_macsOnSegment = new HashSet<>();
+    Set<BridgePort> m_portsOnSegment = new HashSet<>();
     BroadcastDomain m_domain;
     
     private BridgeBridgeLink getBridgeBridgeLink(BridgePort bp) {
@@ -137,7 +137,7 @@ public class SharedSegment {
     }        
 
     public List<BridgeBridgeLink> getBridgeBridgeLinks() {
-        List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
+        List<BridgeBridgeLink> links = new ArrayList<>();
         for (BridgePort port: m_portsOnSegment) {
             //FIXME port must not be null
             if (port == null) 
@@ -150,7 +150,7 @@ public class SharedSegment {
     }
     
     public List<BridgeMacLink> getBridgeMacLinks() {
-    	List<BridgeMacLink> maclinks = new ArrayList<BridgeMacLink>();
+    	List<BridgeMacLink> maclinks = new ArrayList<>();
     	for (String mac: m_macsOnSegment) {
     		for (BridgePort bp: m_portsOnSegment) {
     	            //FIXME port must not be null
@@ -188,7 +188,7 @@ public class SharedSegment {
     public void mergeBridge(SharedSegment shared, Integer bridgeId) {
         if (bridgeId == null)
             return;
-    	Set<BridgePort> portsOnSegment = new HashSet<BridgePort>();
+    	Set<BridgePort> portsOnSegment = new HashSet<>();
         for (BridgePort bp: m_portsOnSegment) {
             //FIXME port should never be null
         	if ( bp == null || bp.getNode() == null ||
@@ -223,7 +223,7 @@ public class SharedSegment {
     public void removeBridge(int bridgeId) {
         if (m_portsOnSegment.isEmpty())
             return;
-        Set<BridgePort> updateportsonsegment = new HashSet<BridgePort>();
+        Set<BridgePort> updateportsonsegment = new HashSet<>();
         for (BridgePort port: m_portsOnSegment) {
             if (port != null && port.getNode() != null &&
                     port.getNode().getId() != null
@@ -251,7 +251,7 @@ public class SharedSegment {
     }
 
     public Set<Integer> getBridgeIdsOnSegment() {
-        Set<Integer> nodes = new HashSet<Integer>();
+        Set<Integer> nodes = new HashSet<>();
         for (BridgePort link: m_portsOnSegment) {
             //FIXME port should never be null
             if (link == null || link.getNode() == null)
@@ -312,7 +312,7 @@ public class SharedSegment {
     }
 
     public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+            final StringBuilder strbfr = new StringBuilder();
             strbfr.append("segment ->\nsegment bridges:");
             strbfr.append(getBridgeIdsOnSegment());
             strbfr.append(", designated bridge:[");
@@ -328,6 +328,6 @@ public class SharedSegment {
                 strbfr.append("\n");
             }
             
-            return strbfr.toString();    	
+            return strbfr.toString();
     }
 }

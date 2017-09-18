@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="header")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Header {
+public class Header implements Cloneable {
 
     /** The name. */
     @XmlAttribute(required=true)
@@ -64,6 +64,11 @@ public class Header {
     public Header(String name, String value) {
         this.name = name;
         this.value = value;
+    }
+
+    public Header(Header header) {
+        name = header.name;
+        value = header.value;
     }
 
     /**
@@ -110,4 +115,8 @@ public class Header {
         return name + "=" + value;
     }
 
+    @Override
+    public Header clone() {
+        return new Header(this);
+    }
 }

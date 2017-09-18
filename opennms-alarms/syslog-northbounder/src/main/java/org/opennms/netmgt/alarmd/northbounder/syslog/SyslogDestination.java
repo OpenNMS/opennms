@@ -204,7 +204,7 @@ public class SyslogDestination implements Destination {
 
     /** The filters. */
     @XmlElement(name = "filter", required = false)
-    private List<SyslogFilter> m_filters = new ArrayList<SyslogFilter>();
+    private List<SyslogFilter> m_filters = new ArrayList<>();
 
     /**
      * Instantiates a new Syslog destination.

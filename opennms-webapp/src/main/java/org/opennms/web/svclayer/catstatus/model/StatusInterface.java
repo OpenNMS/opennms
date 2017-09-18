@@ -49,7 +49,7 @@ public class StatusInterface {
 	 */
 	public StatusInterface(){
 		
-		m_services = new ArrayList<StatusService>();
+		m_services = new ArrayList<>();
 		
 	}
 	

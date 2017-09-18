@@ -120,7 +120,7 @@ public class SyslogNorthBounderTest {
     class StringOutputStream extends OutputStream {
 
         /** The string buffer. */
-        StringBuilder m_buf = new StringBuilder(MESSAGE_LENGTH);
+        final StringBuilder m_buf = new StringBuilder(MESSAGE_LENGTH);
 
         /* (non-Javadoc)
          * @see java.io.OutputStream#write(int)
@@ -226,7 +226,7 @@ public class SyslogNorthBounderTest {
 
         SyslogNorthbounderConfig config = dao.getConfig();
 
-        List<SyslogNorthbounder> nbis = new LinkedList<SyslogNorthbounder>();
+        List<SyslogNorthbounder> nbis = new LinkedList<>();
 
         for (SyslogDestination syslogDestination : config.getDestinations()) {
             SyslogNorthbounder nbi = new SyslogNorthbounder(dao, syslogDestination.getName());
@@ -235,7 +235,7 @@ public class SyslogNorthBounderTest {
         }
 
         int j = 7;
-        List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
+        List<NorthboundAlarm> alarms = new LinkedList<>();
 
         OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "p-brane");
         node.setForeignSource("TestGroup");
@@ -275,11 +275,6 @@ public class SyslogNorthBounderTest {
                 onmsAlarm.setLogMsg("Node Down");
                 onmsAlarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(i).name());
                 onmsAlarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(i).getId());
-                if (i < j) { // Do not add parameters to the last alarm for testing NMS-6383
-                    String eventparms = "foreignSource=fabric(string,text);foreignId=space-0256012012000038(string,text);reason=Aborting node scan : Agent timed out while scanning the system table(string,text);" +
-                            ".1.3.6.1.4.1.2636.3.18.1.7.1.2.732=207795895(TimeTicks,text)";
-                    onmsAlarm.setEventParms(eventparms );
-                }
                 NorthboundAlarm a = new NorthboundAlarm(onmsAlarm);
 
                 Assert.assertFalse(nbi.accepts(a));
@@ -296,7 +291,7 @@ public class SyslogNorthBounderTest {
 
         BufferedReader r = new BufferedReader(new StringReader(m_logStream.readStream()));
 
-        List<String> messages = new LinkedList<String>();
+        List<String> messages = new LinkedList<>();
         String line = null;
 
         while ((line = r.readLine()) != null) {

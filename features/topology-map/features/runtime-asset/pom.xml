@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.topology</groupId>
@@ -13,31 +13,6 @@
   <packaging>pom</packaging>
   <build>
     <plugins>
-      <!-- Filter the features.xml file -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <!-- Move this task from process-resources to generate-resources in the build cycle so that it is available for the features-maven-plugin. -->
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <filtering>true</filtering>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
@@ -54,13 +29,10 @@
           </importRepositoryExclusions>
           <repositories>
             <repository>mvn:${project.groupId}/opennms-topology-runtime-base/${project.version}/xml/features</repository>
-            <!-- filtered local resources features file -->
-            <repository>file:${project.build.outputDirectory}/features.xml</repository>
           </repositories>
           <features>
             <feature>opennms-topology-runtime-graphml</feature>
             <feature>opennms-topology-runtime-base</feature>
-            <feature>opennms-topology-asset</feature>
           </features>
         </configuration>
       </plugin>
@@ -74,6 +46,11 @@
       <classifier>features</classifier>
       <type>xml</type>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>asset</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <!-- <dependency> -->
     <!-- <groupId>org.opennms.features.topology.plugins.topo</groupId> -->

@@ -2,6 +2,7 @@
   "name": "opennms",
   "dependencies": {
     "angular": "1.5.8",
+    "angular-bootstrap-checkbox": "0.5.1",
     "angular-animate": "1.5.8",
     "angular-cookies": "1.5.8",
     "angular-growl-v2": "0.7.9",
@@ -25,8 +26,10 @@
     "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM",
     "underscore": "1.8.3",
     "jquery": "2.2.4",
+    "jquery-sparkline": "2.1.2",
     "jquery-treegrid": "0.3.0",
     "jquery-ui": "1.12.0",
+    "jquery-ui-treemap": "https://github.com/evancarey/jsTreemap.git#403c7e5",
     "requirejs": "2.2.0",
     "font-awesome": "4.6.3",
     "ionicons": "2.0.1",
@@ -82,6 +85,11 @@
       "main": [
         "jquery-ui.js",
         "themes/base/**"
+      ]
+    },
+    "jquery-ui-treemap": {
+      "main": [
+        "js/jquery.ui.treemap.js"
       ]
     },
     "leaflet": {

@@ -212,7 +212,7 @@ public class EventController extends MultiActionController implements Initializi
             throw new MissingParameterException("actionCode", new String[] { "event", "actionCode" });
         }
 
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
         filters.add(new EventIdListFilter(WebSecurityUtils.safeParseInt(eventIdStrings)));
         EventCriteria criteria = new EventCriteria(filters.toArray(new Filter[0]));
 
@@ -246,7 +246,7 @@ public class EventController extends MultiActionController implements Initializi
         }
 
         // handle the filter parameters
-        ArrayList<Filter> filterArray = new ArrayList<Filter>();
+        ArrayList<Filter> filterArray = new ArrayList<>();
         for (String filterString : filterStrings) {
             Filter filter = EventUtil.getFilter(filterString, getServletContext());
             if (filter != null) {
@@ -351,7 +351,7 @@ public class EventController extends MultiActionController implements Initializi
     }
 
     private ModelAndView createModelAndView(HttpServletRequest request, Filter singleFilter) {
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         filterList.add(singleFilter);
         return createListModelAndView(request, filterList, null);
     }

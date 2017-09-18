@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/internal/interfaceManaged</uei>
+        <event-label>OpenNMS-defined internal event: interfaceManaged</event-label>
+        <descr>
+            &lt;p&gt;The interface %interface% is being
+            remanaged.&lt;/p&gt; &lt;p&gt;This interface will now
+            participate in service polling.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            The interface %interface% is being remanaged.
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/interfaceUnmanaged</uei>
+        <event-label>OpenNMS-defined internal event: interfaceUnmanaged</event-label>
+        <descr>
+            &lt;p&gt;The interface %interface% is being forcibly
+            unmanaged.&lt;/p&gt; &lt;p&gt;This interface and all
+            associated services will &lt;b&gt;NOT&lt;/b&gt; be polled
+            until the interface is remanaged.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            The interface %interface% is being forcibly unmanaged.
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/notificationWithoutUsers</uei>
+        <event-label>OpenNMS-defined internal event: notificationWithoutUsers</event-label>
+        <descr>
+            &lt;p&gt;A destination path in a notification has not been
+            assigned any users.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            A destination path in a notification has not been assigned
+            any users.
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/notificationsTurnedOff</uei>
+        <event-label>OpenNMS-defined internal event: notificationsTurnedOff</event-label>
+        <descr>
+            &lt;p&gt;Notifications have been disabled.&lt;/p&gt;
+            &lt;p&gt;The administrator has disabled notifications on
+            OpenNMS. No pages or emails will be sent until notifications
+            are reenabled.&lt;/p&gt;
+            &lt;p&gt;
+            Responsible user: &lt;em&gt;%parm[remoteUser]%&lt;/em&gt;
+            at &lt;em&gt;%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em&gt;
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;Notifications have been disabled.&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/notificationsTurnedOn</uei>
+        <event-label>OpenNMS-defined internal event: notificationsTurnedOn</event-label>
+        <descr>
+            &lt;p&gt;Notifications have been enabled.&lt;/p&gt;
+            &lt;p&gt;The administrator has enabled notifications on
+            OpenNMS. Pages and/or emails will be sent based upon receipt
+            of important events.&lt;/p&gt;
+            &lt;p&gt;
+            Responsible user: &lt;em&gt;%parm[remoteUser]%&lt;/em&gt;
+            at &lt;em&gt;%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em&gt;
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;Notifications have been enabled.&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <!--  Going to slowly get rid of these random daemon reload events for the generic
+    reloadDaemonConfig event -->
+    <!-- deprecated: originally designed for something called service control manager -->
+    <event>
+        <uei>uei.opennms.org/internal/restartSCM</uei>
+        <event-label>OpenNMS-defined internal event: restartSCM</event-label>
+        <descr>
+            &lt;p&gt;SCM has been asked to restart.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logonly">
+            SCM has been asked to restart.
+        </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/rtc/subscribe</uei>
+        <event-label>OpenNMS-defined internal event: rtc subscribe</event-label>
+        <descr>
+            &lt;p&gt;This event is generated to RTC by any process that
+            wishes to receive POSTs of RTC data.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logonly">
+            A subscription to RTC for the %parm[viewname]% for
+            %parm[url]% has been generated.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/rtc/unsubscribe</uei>
+        <event-label>OpenNMS-defined internal event: rtc unsubscribe</event-label>
+        <descr>
+            &lt;p&gt;This event is generated to RTC by any subscribed
+            process that wishes to discontinue receipt of POSTs of RTC
+            data.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logonly">
+            Unsubscribe request received from %parm[url]%.
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/serviceManaged</uei>
+        <event-label>OpenNMS-defined internal event: serviceManaged</event-label>
+        <descr>
+            &lt;p&gt;The service %service% on interface %interface% is
+            being remanaged.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            The service %service% on interface %interface% is being
+            remanaged.
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/demandPollService</uei>
+        <event-label>OpenNMS-defined node event: DemandPoll</event-label>
+        <descr>
+            &lt;p&gt;The Demand Poll requested on %nodeid% (%nodelabel%)
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;The Demand Poll requested on %nodeid% (%nodelabel%).&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/schedOutagesChanged</uei>
+        <event-label>OpenNMS-defined internal event: scehduled outage configuration changed</event-label>
+        <descr>
+            This event is sent by the WebUI or the user when scheduled outage configuration has changed and shoule be
+            reloaded
+        </descr>
+        <logmsg dest="logndisplay">
+            The scheduled outage configuration has been changed and should be reloaded
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/promoteQueueData</uei>
+        <event-label>OpenNMS-defined event: A request has been made promote data from the RRD Queue</event-label>
+        <descr>
+            This event is generated to invoke the promotion data of the Queueing RRD Strategy.
+        </descr>
+        <logmsg dest="donotpersist">
+            A request has been generated to promote data from the queue for the file(s): %parm[filesToPromote]%.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/authentication/successfulLogin</uei>
+        <event-label>OpenNMS-defined internal event: a user has successfully authentication to the WebUI</event-label>
+        <descr>
+            This event is sent by the WebUI when a user has successfully authenticated
+        </descr>
+        <logmsg dest="donotpersist">
+            OpenNMS user %parm[user]% has logged in from %parm[ip]%.
+        </logmsg>
+        <severity>Normal</severity>
+        <!--     <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/>  -->
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/authentication/failure</uei>
+        <event-label>OpenNMS-defined internal event: an authentication failure has occurred in WebUI</event-label>
+        <descr>
+            This event is sent by the WebUI when an authentication failure occurs.
+        </descr>
+        <logmsg dest="logndisplay">
+            OpenNMS user '%parm[user]%' (may be blank) has failed to login
+            from %parm[ip]%. The failure event is %parm[exceptionName]% with
+            the message '%parm[exceptionMessage]%'.
+        </logmsg>
+        <severity>Minor</severity>
+        <!--    <alarm-data reduction-key="%uei%:%parm[exceptionName]%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/authentication/loggedOut</uei>
+        <event-label>OpenNMS-defined internal event: a user logged out of the web UI</event-label>
+        <descr>
+            This event is sent by the WebUI when a user logs out of the WebUI.
+        </descr>
+        <logmsg dest="logndisplay">
+            OpenNMS user '%parm[user]%' logged out of the WebUI.
+        </logmsg>
+        <severity>Normal</severity>
+        <!--    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/authentication/sessionRemoved</uei>
+        <event-label>OpenNMS-defined internal event: a user's session was removed from the WebUI</event-label>
+        <descr>
+            This event is sent by the WebUI when a user's session is removed for any
+            reason other than a user-initiated logout. This generally means that
+            the session timed out due to inactivity.
+        </descr>
+        <logmsg dest="logndisplay">
+            OpenNMS user '%parm[user]%' has been logged out of the WebUI, most likely
+            due to a session timeout.
+        </logmsg>
+        <severity>Normal</severity>
+        <!--    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/kscReportUpdated</uei>
+        <event-label>OpenNMS-defined internal event: KSC report updated</event-label>
+        <descr>&lt;p&gt;The KSC Report '%parm[reportTitle]%' has been updated (remaining graphs: %parm[graphCount]%).&lt;/p&gt;
+            &lt;p&gt;Some graphs defined on the report have been removed, due to an invalid resource or chart.&lt;/p&gt;
+            &lt;p&gt;A resource is not valid on any of the following situations: the nodeId (or nodeSource) doesn't
+            exist, the resource type
+            is not valid or doesn't exist on the node, the resource name is not valid or doesn't exist on the node.&lt;/p&gt;
+            &lt;p&gt;Check the logs for more details.&lt;/p&gt;</descr>
+        <logmsg dest="logndisplay">The KSC Report %parm[reportTitle]% has been updated.</logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/services/passiveServiceStatus</uei>
+        <event-label>OpenNMS-defined service event: passiveServiceStatus</event-label>
+        <descr>
+            &lt;p&gt;Status information for service %parm[passiveServiceName]% has been updated.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;Status information for service %parm[passiveServiceName]% has been updated.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/asset/maintenance/expirationWarning</uei>
+        <event-label>Maintenance contract will expire in less then %parm[#4]% days</event-label>
+        <descr>&lt;p&gt;Maintenance contract of %nodelabel% will expire in less then %parm[#4]% days.&lt;/p&gt;</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Maintenance contract %parm[#3]% of %nodelabel% will expire at %parm[#2]%.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/monitoringSystemAdded</uei>
+        <event-label>Monitoring system Added</event-label>
+        <descr>A new monitoring system has been added</descr>
+        <logmsg dest="logndisplay">A new monitoring system of type '%parm[monitoringSystemType]%' has been added with ID
+            '%parm[monitoringSystemId]%' at location '%parm[monitoringSystemLocation]%'.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/monitoringSystemLocationChanged</uei>
+        <event-label>Monitoring system Location Changed</event-label>
+        <descr>Monitoring system location changed</descr>
+        <logmsg dest="logndisplay">Monitoring system of type '%parm[monitoringSystemType]%' with ID
+            '%parm[monitoringSystemId]%' has changed its location from '%parm[monitoringSystemPreviousLocation]%' to
+            '%parm[monitoringSystemLocation]%'.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/monitoringSystemDeleted</uei>
+        <event-label>Monitoring system Deleted</event-label>
+        <descr>Monitoring system Deleted</descr>
+        <logmsg dest="logndisplay">Monitoring system of type '%parm[monitoringSystemType]%' with ID
+            '%parm[monitoringSystemId]%' at location '%parm[monitoringSystemLocation]%' has been deleted.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+</events>

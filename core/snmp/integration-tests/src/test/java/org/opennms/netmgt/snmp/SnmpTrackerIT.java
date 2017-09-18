@@ -197,7 +197,7 @@ public class SnmpTrackerIT implements InitializingBean {
 
     }
     static private class TestRowCallback implements RowCallback {
-        private final List<SnmpRowResult> m_responses = new ArrayList<SnmpRowResult>();
+        private final List<SnmpRowResult> m_responses = new ArrayList<>();
         private final ResultTable m_results = new ResultTable();
 
         @Override

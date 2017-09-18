@@ -113,7 +113,7 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
         m_requestId = 0;
         m_errStatus = 0;
         m_errIndex = 0;
-        m_variables = new ArrayList<SnmpVarBind>();
+        m_variables = new ArrayList<>();
     }
 
     /**

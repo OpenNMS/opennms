@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
@@ -44,6 +45,8 @@ import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private MonitoredService service;
+
+    private String systemId;
 
     private ServiceMonitor serviceMonitor;
 
@@ -62,6 +65,12 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     @Override
     public PollerRequestBuilder withService(MonitoredService service) {
         this.service = service;
+        return this;
+    }
+
+    @Override
+    public PollerRequestBuilder withSystemId(String systemId) {
+        this.systemId = systemId;
         return this;
     }
 
@@ -109,8 +118,17 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitored service is required.");
         }
 
+        final RpcTarget target = client.getRpcTargetHelper().target()
+                .withNodeId(service.getNodeId())
+                .withLocation(service.getNodeLocation())
+                .withSystemId(systemId)
+                .withServiceAttributes(attributes)
+                .withLocationOverride((s) -> serviceMonitor.getEffectiveLocation(s))
+                .build();
+
         final PollerRequestDTO request = new PollerRequestDTO();
-        request.setLocation(serviceMonitor.getEffectiveLocation(service.getNodeLocation()));
+        request.setLocation(target.getLocation());
+        request.setSystemId(target.getSystemId());
         request.setClassName(serviceMonitor.getClass().getCanonicalName());
         request.setServiceName(service.getSvcName());
         request.setAddress(service.getAddress());

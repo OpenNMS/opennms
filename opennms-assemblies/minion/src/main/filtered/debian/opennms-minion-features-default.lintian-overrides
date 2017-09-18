@@ -1,0 +1,5 @@
+opennms-minion-features-default: misplaced-extra-member-in-deb
+opennms-minion-features-default: debian-revision-should-not-be-zero
+opennms-minion-features-default: debian-revision-not-well-formed
+opennms-minion-features-default: unknown-java-class-version
+opennms-minion-features-default: package-has-long-file-name

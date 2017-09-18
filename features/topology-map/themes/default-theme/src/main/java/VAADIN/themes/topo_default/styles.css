@@ -490,7 +490,7 @@ div.v-table-header-wrap {
 }
 
 .toolbar .layout.selected {
-    background-color: #4d9c29;
+    background-color: #4c9d29; /* $color_opennms */
     color: #fff;
 }
 
@@ -525,11 +525,11 @@ div.v-table-header-wrap {
 
 .toolbar .toolbar-group-item.selected,
 .toolbar .toolbar-group-item.selected:hover {
-    background-color: #4d9c29;
+    background-color: #4c9d29; /* $color_opennms */
     color: #fff;
 }
 
 .toolbar .toolbar-group-item:hover {
-    color: #4d9c29;
+    color: #4c9d29; /* $color_opennms */
     cursor: pointer;
 }
