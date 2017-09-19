@@ -114,7 +114,7 @@ public class AlarmDTO {
     private String ackUser;
 
     @XmlElement(name="ackTime")
-    private String ackTime;
+    private Date ackTime;
 
     @XmlElement(name="clearKey")
     private String clearKey;
@@ -341,11 +341,11 @@ public class AlarmDTO {
         this.ackUser = ackUser;
     }
 
-    public String getAckTime() {
+    public Date getAckTime() {
         return ackTime;
     }
 
-    public void setAckTime(String ackTime) {
+    public void setAckTime(Date ackTime) {
         this.ackTime = ackTime;
     }
 
