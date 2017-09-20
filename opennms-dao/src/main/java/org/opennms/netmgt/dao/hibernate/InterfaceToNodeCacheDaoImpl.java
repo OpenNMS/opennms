@@ -157,7 +157,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         // Only add the address if it doesn't exist on the map. If it exists, only replace
         // the current one if the new address is primary.
-        if (m_knownips.getNodeId(location, addr).isEmpty()) {
+        if (!m_knownips.getNodeId(location, addr).contains(nodeid)) {
             LOG.debug("setNodeId: adding IP address to cache: {}:{} -> {}", location, str(addr), nodeid);
             m_knownips.addManagedAddress(location, addr, nodeid);
             return true;
