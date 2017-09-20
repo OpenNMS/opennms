@@ -256,9 +256,9 @@
       <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final</bundle>
     </feature>
 
-    <feature name="java-native-access" description="Java Native Access (JNA)" version="4.3.0">
-      <bundle>mvn:net.java.dev.jna/jna/4.3.0</bundle>
-      <bundle>mvn:net.java.dev.jna/jna-platform/4.3.0</bundle>
+    <feature name="java-native-access" description="Java Native Access (JNA)" version="${jnaVersion}">
+      <bundle>mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
+      <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
     </feature>
 
     <feature name="javax.mail" description="javax.mail" version="1.4.5">
