@@ -56,8 +56,6 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.WrappedGraph;
-import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
