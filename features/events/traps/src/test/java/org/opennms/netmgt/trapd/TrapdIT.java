@@ -39,6 +39,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -80,6 +82,9 @@ public class TrapdIT implements InitializingBean {
 
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
+
+    @Autowired
+    private InterfaceToNodeCache m_cache;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -189,5 +194,56 @@ public class TrapdIT implements InitializingBean {
 
         // Allow time for Trapd and Eventd to do their magic
         Thread.sleep(5000);
+    }
+
+    @Test
+    public void testDuplicatedInterface() throws Exception {
+        final SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(SnmpObjId.get(".1.3.6.1.4.1.5813"), new SnmpInstId(1))));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813")));
+        pdu.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("1.2.3.4")));
+
+        // First trap for old node
+        m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddress.getByName("1.2.3.4"), 1);
+
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(
+                new EventBuilder("uei.opennms.org/default/trap", "trapd")
+                        .setInterface(InetAddress.getByName("1.2.3.4"))
+                        .setNodeid(m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddress.getByName("1.2.3.4")).get())
+                        .getEvent());
+
+        pdu.send("127.0.0.1", m_trapdConfig.getSnmpTrapPort(), "public");
+
+        m_mockEventIpcManager.getEventAnticipator().verifyAnticipated(20000, 0, 0, 0, 0);
+        m_mockEventIpcManager.getEventAnticipator().reset();
+
+        // Second trap for both nodes
+        m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddress.getByName("1.2.3.4"), 2);
+
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(
+                new EventBuilder("uei.opennms.org/default/trap", "trapd")
+                        .setInterface(InetAddress.getByName("1.2.3.4"))
+                        .setNodeid(m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddress.getByName("1.2.3.4")).get())
+                        .getEvent());
+
+        pdu.send("127.0.0.1", m_trapdConfig.getSnmpTrapPort(), "public");
+
+        m_mockEventIpcManager.getEventAnticipator().verifyAnticipated(20000, 0, 0, 0, 0);
+        m_mockEventIpcManager.getEventAnticipator().reset();
+
+        // Third trap for new node
+        m_cache.removeNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddress.getByName("1.2.3.4"), 1);
+
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(
+                new EventBuilder("uei.opennms.org/default/trap", "trapd")
+                        .setInterface(InetAddress.getByName("1.2.3.4"))
+                        .setNodeid(m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddress.getByName("1.2.3.4")).get())
+                        .getEvent());
+
+        pdu.send("127.0.0.1", m_trapdConfig.getSnmpTrapPort(), "public");
+
+        m_mockEventIpcManager.getEventAnticipator().verifyAnticipated(20000, 0, 0, 0, 0);
+        m_mockEventIpcManager.getEventAnticipator().reset();
     }
 }
