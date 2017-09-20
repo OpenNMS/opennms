@@ -1319,7 +1319,7 @@
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
-    <jnaVersion>4.3.0</jnaVersion>
+    <jnaVersion>4.4.0</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
