@@ -29,11 +29,14 @@
 package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 
 public class InterfaceToNodeMap {
 
@@ -80,23 +83,21 @@ public class InterfaceToNodeMap {
     }
 
     private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
-    private final Map<LocationIpAddressKey,Integer> m_managedAddresses = new HashMap<>();
+    private final SetMultimap<LocationIpAddressKey,Integer> m_managedAddresses = HashMultimap.create();
 
-    public int addManagedAddress(String location, InetAddress address, int nodeId) {
+    public void addManagedAddress(String location, InetAddress address, int nodeId) {
         m_lock.writeLock().lock();
         try {
-            Integer retval = m_managedAddresses.put(new LocationIpAddressKey(location, address), nodeId);
-            return retval == null ? -1 : retval.intValue();
+            m_managedAddresses.put(new LocationIpAddressKey(location, address), nodeId);
         } finally {
             m_lock.writeLock().unlock();
         }
     }
 
-    public int removeManagedAddress(String location, InetAddress address) {
+    public boolean removeManagedAddress(String location, InetAddress address, int nodeId) {
         m_lock.writeLock().lock();
         try {
-            Integer retval = m_managedAddresses.remove(new LocationIpAddressKey(location, address));
-            return retval == null ? -1 : retval.intValue();
+            return m_managedAddresses.remove(new LocationIpAddressKey(location, address), nodeId);
         } finally {
             m_lock.writeLock().unlock();
         }
@@ -111,21 +112,22 @@ public class InterfaceToNodeMap {
         }
     }
 
-    public int getNodeId(String location, InetAddress address) {
+    public Set<Integer> getNodeId(String location, InetAddress address) {
         m_lock.readLock().lock();
         try {
-            Integer retval = m_managedAddresses.get(new LocationIpAddressKey(location, address));
-            return retval == null ? -1 : retval.intValue();
+            return m_managedAddresses.get(new LocationIpAddressKey(location, address));
         } finally {
             m_lock.readLock().unlock();
         }
     }
 
-    public void setManagedAddresses(Map<LocationIpAddressKey,Integer> addresses) {
+    public void setManagedAddresses(Multimap<LocationIpAddressKey, Integer> addresses) {
         m_lock.writeLock().lock();
         try {
             m_managedAddresses.clear();
-            m_managedAddresses.putAll(addresses);
+            if (!Objects.isNull(addresses)) {
+                m_managedAddresses.putAll(addresses);
+            }
         } finally {
             m_lock.writeLock().unlock();
         }

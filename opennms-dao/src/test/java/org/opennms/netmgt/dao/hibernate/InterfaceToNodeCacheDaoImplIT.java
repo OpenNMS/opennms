@@ -102,15 +102,15 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
         InetAddress ipAddr = m_databasePopulator.getNode2().getPrimaryInterface().getIpAddress();
         long expectedNodeId = Long.parseLong(m_databasePopulator.getNode2().getNodeId());
 
-        long nodeId = m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr);
+        long nodeId = m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr).orElse(-1);
         Assert.assertEquals(expectedNodeId, nodeId);
 
         // Address already exists on database and it is not primary.
-        Assert.assertEquals(-1, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), 1));
+        Assert.assertEquals(false, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), 1));
 
         // Address already exists on database but the new node also contain the address and is their primary address.
-        Assert.assertEquals(1, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), m_testNodeId)); // return old nodeId
-        Assert.assertEquals(m_testNodeId, m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"))); // return the new nodeId
+        Assert.assertEquals(true, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), m_testNodeId)); // return old nodeId
+        Assert.assertEquals(m_testNodeId, m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"))); // return the new nodeId
     }
 
     @Test
@@ -119,11 +119,11 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
         // Retrieve a known entry stored using the default location id
         InetAddress ipAddr = m_databasePopulator.getNode2().getPrimaryInterface().getIpAddress();
         long expectedNodeId = Long.parseLong(m_databasePopulator.getNode2().getNodeId());
-        long nodeId = m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr);
+        long nodeId = m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr).get();
         Assert.assertEquals(expectedNodeId, nodeId);
 
         // Now try retrieving that same node using null for the location
-        nodeId = m_cache.getNodeId(null, ipAddr);
+        nodeId = m_cache.getFirstNodeId(null, ipAddr).get();
         Assert.assertEquals(expectedNodeId, nodeId);
     }
 }

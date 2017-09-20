@@ -29,16 +29,18 @@
 package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
+import java.util.Optional;
+import java.util.Set;
 
 public interface InterfaceToNodeCache {
 
 	void dataSourceSync();
 
-	int getNodeId(String location, InetAddress ipAddr);
+	Set<Integer> getNodeId(String location, InetAddress ipAddr);
 
-	int setNodeId(String location, InetAddress ipAddr, int nodeId);
+	boolean setNodeId(String location, InetAddress ipAddr, int nodeId);
 
-	int removeNodeId(String location, InetAddress ipAddr);
+	boolean removeNodeId(String location, InetAddress ipAddr, int nodeId);
 
 	int size();
 
@@ -46,4 +48,13 @@ public interface InterfaceToNodeCache {
 	 * Should only be used for testing.
 	 */
 	void clear();
+
+	default Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr) {
+		final Set<Integer> ids = this.getNodeId(location, ipAddr);
+		if (ids.isEmpty()) {
+			return Optional.empty();
+		} else {
+			return Optional.of(ids.iterator().next());
+		}
+	}
 }

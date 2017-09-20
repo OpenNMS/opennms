@@ -48,7 +48,7 @@ public class UnmanagedInterfaceFilter implements IpAddressFilter {
 
     @Override
     public boolean matches(String location, InetAddress address) {
-        return interfaceToNodeCache.getNodeId(location, address) < 1;
+        return interfaceToNodeCache.getNodeId(location, address).isEmpty();
     }
 
     @Override

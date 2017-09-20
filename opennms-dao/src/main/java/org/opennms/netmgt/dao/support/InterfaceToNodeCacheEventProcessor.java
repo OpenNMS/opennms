@@ -100,7 +100,7 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
             return;
         }
         // remove from known nodes
-        m_cache.removeNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress());
+        m_cache.removeNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
     }
 
     @EventHandler(uei=EventConstants.INTERFACE_REPARENTED_EVENT_UEI)
