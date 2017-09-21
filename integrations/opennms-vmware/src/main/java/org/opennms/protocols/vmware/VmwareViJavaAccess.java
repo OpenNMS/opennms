@@ -462,16 +462,14 @@ public class VmwareViJavaAccess {
         CIMNameSpace ns = new CIMNameSpace(cimAgentAddress, namespace);
         CIMClient cimClient = new CIMClient(ns, userPr, pwCred);
 
+        cimClient.getSessionProperties().setHttpTimeOut(3000);
+
         // very important to query esx5 hosts
         cimClient.useMPost(false);
-
         CIMObjectPath rpCOP = new CIMObjectPath(cimClass);
-
         Enumeration<?> rpEnm = cimClient.enumerateInstances(rpCOP);
-
         while (rpEnm.hasMoreElements()) {
             CIMObject rp = (CIMObject) rpEnm.nextElement();
-
             cimObjects.add(rp);
         }
 
@@ -498,11 +496,10 @@ public class VmwareViJavaAccess {
      *
      * @param hostSystem the host system to query
      * @return the primary ip address
-     * @throws RemoteException
      */
     // TODO We should use the IP of the "Management Network" (i.e. the port that has enabled "Management Traffic" on the available vSwitches).
     //      Resolving the name of the HostSystem as the FQDN is the most closest thing for that.
-    public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) throws RemoteException {
+    public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) {
         TreeSet<String> addresses = getHostSystemIpAddresses(hostSystem);
         String ipAddress = null;
         try {
@@ -521,12 +518,18 @@ public class VmwareViJavaAccess {
      *
      * @param hostSystem the host system to query
      * @return the ip addresses of the host system, the first one is the primary
-     * @throws RemoteException
      */
-    public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) throws RemoteException {
+    public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) {
         TreeSet<String> ipAddresses = new TreeSet<String>();
 
-        HostNetworkSystem hostNetworkSystem = hostSystem.getHostNetworkSystem();
+        HostNetworkSystem hostNetworkSystem = null;
+        try {
+            hostNetworkSystem = hostSystem.getHostNetworkSystem();
+        } catch (RemoteException e) {
+            logger.warn("Error fetching network information for Host System '{}' (ID: {})", hostSystem.getName(), hostSystem.getMOR().getVal());
+            logger.warn("Exception thrown while fetching network information: {}", e);
+            return ipAddresses;
+        }
 
         if (hostNetworkSystem != null) {
             HostNetworkInfo hostNetworkInfo = hostNetworkSystem.getNetworkInfo();
@@ -553,14 +556,14 @@ public class VmwareViJavaAccess {
      *
      * @param virtualMachine the virtual machine to query
      * @return the ip addresses of the virtual machine, the first one is the primary
-     * @throws RemoteException
      */
-    public TreeSet<String> getVirtualMachineIpAddresses(VirtualMachine virtualMachine) throws RemoteException {
+    public TreeSet<String> getVirtualMachineIpAddresses(VirtualMachine virtualMachine) {
         TreeSet<String> ipAddresses = new TreeSet<String>();
 
         // add the Ip address reported by VMware tools, this should be primary
-        if (virtualMachine.getGuest().getIpAddress() != null)
+        if (virtualMachine.getGuest().getIpAddress() != null) {
             ipAddresses.add(virtualMachine.getGuest().getIpAddress());
+        }
 
         // if possible, iterate over all virtual networks networks and add interface Ip addresses
         if (virtualMachine.getGuest().getNet() != null) {
