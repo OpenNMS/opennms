@@ -157,7 +157,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
         if (bft.size() > 0) {
             LOG.debug("run: node [{}]: updating topology", getNodeId());
-        	m_linkd.getQueryManager().store(getNodeId(), bft);
+        	m_linkd.getQueryManager().updateBft(getNodeId(), bft);
         	m_linkd.scheduleBridgeTopologyDiscovery(getNodeId());
         }
         LOG.debug("run: node [{}]: deleting older the time {}", getNodeId(), now);
