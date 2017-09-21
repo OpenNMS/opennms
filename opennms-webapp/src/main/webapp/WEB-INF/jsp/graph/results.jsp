@@ -161,7 +161,7 @@
 
 <c:set var="showFootnote1" value="false"/>
 
-<div class="row">
+<div class="row" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
 
 	<div class="col-md-10">
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
@@ -200,7 +200,7 @@
             </c:if>
         </h3>
      </div> <!-- panel-heading -->
-     <div class="panel-body" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
+     <div class="panel-body">
         <div growl></div>
         <!-- NRTG Starter script 'window'+resourceId+report -->
         <script type="text/javascript">
