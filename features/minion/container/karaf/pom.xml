@@ -74,7 +74,7 @@
                         <feature>wrap</feature>
                     </bootFeatures>
                     <installedFeatures>
-                        <!-- These versions match the versions shipped with Apache Karaf 4.1.1 -->
+                        <!-- These versions match the versions shipped with Apache Karaf 4.1.2 -->
                         <feature>spring/3.2.18.RELEASE_1</feature>
                         <feature>spring/4.0.7.RELEASE_3</feature>
                         <feature>spring/4.1.9.RELEASE_1</feature>

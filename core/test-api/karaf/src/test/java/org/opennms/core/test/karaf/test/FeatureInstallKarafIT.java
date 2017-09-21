@@ -57,6 +57,8 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("diagnostic");
         installFeature("eventadmin");
         installFeature("feature");
+        // The 'framework-security' feature installation causes a refresh of 
+        // basically the entire container so avoid it during this test
         //installFeature("framework-security");
         installFeature("http");
         installFeature("http-whiteboard");
@@ -71,7 +73,10 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("log");
         installFeature("management");
         installFeature("minimal");
-        installFeature("obr");
+        // The 'obr' feature installation causes a refresh of 
+        // the 'org.apache.karaf.deployer.features' bundle so
+        // avoid it during this test
+        //installFeature("obr");
         installFeature("package");
         installFeature("profile");
         installFeature("scheduler");
@@ -98,7 +103,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
      */
     @Test
     public void testInstallAllSpringFeatures() {
-        addFeaturesUrl(maven().groupId("org.apache.karaf.features").artifactId("spring-legacy").version("4.1.1").type("xml").classifier("features").getURL());
+        addFeaturesUrl(maven().groupId("org.apache.karaf.features").artifactId("spring-legacy").version("4.1.2").type("xml").classifier("features").getURL());
 
         installFeature("spring", "4.2.9.RELEASE_1");
         installFeature("spring-aspects", "4.2.9.RELEASE_1");
