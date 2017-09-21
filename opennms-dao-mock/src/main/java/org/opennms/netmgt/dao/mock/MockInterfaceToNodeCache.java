@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao.mock;
 
 import java.net.InetAddress;
 import java.util.Collections;
-import java.util.Set;
 
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 
@@ -47,7 +46,7 @@ public class MockInterfaceToNodeCache implements InterfaceToNodeCache {
     }
 
     @Override
-    public Set<Integer> getNodeId(String location, InetAddress ipAddr) {
+    public Iterable<Integer> getNodeId(String location, InetAddress ipAddr) {
         return Collections.emptySet();
     }
 

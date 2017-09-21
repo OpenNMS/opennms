@@ -32,25 +32,31 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.util.Collections;
-import java.util.Set;
+import java.util.Objects;
+import java.util.TreeSet;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.InterfaceToNodeMap;
-import org.opennms.netmgt.dao.api.InterfaceToNodeMap.LocationIpAddressKey;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.PrimaryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.SetMultimap;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SortedSetMultimap;
 
 /**
  * This class represents a singular instance that is used to map IP
@@ -63,8 +69,106 @@ import com.google.common.collect.SetMultimap;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
-
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceToNodeCacheDaoImpl.class);
+
+    private static class Key {
+        private final String location;
+        private final InetAddress ipAddress;
+
+        public Key(String location, InetAddress ipAddress) {
+            // Use the default location when location is null
+            this.location = location != null ? location : MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+            this.ipAddress = Objects.requireNonNull(ipAddress);
+        }
+
+        public InetAddress getIpAddress() {
+            return ipAddress;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (obj.getClass() != getClass()) {
+                return false;
+            }
+            final Key that = (Key) obj;
+            return Objects.equals(this.ipAddress, that.ipAddress)
+                    && Objects.equals(this.location, that.location);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.ipAddress, this.location);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Key[location='%s', ipAddress='%s']", this.location, this.ipAddress);
+        }
+    }
+
+    private static class Value implements Comparable<Value> {
+        private final int nodeId;
+        private final PrimaryType type;
+
+
+        private Value(final int nodeId,
+                      final PrimaryType type) {
+            this.nodeId = nodeId;
+            this.type = type;
+        }
+
+        public int getNodeId() {
+            return this.nodeId;
+        }
+
+        public PrimaryType getType() {
+            return this.type;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (obj.getClass() != getClass()) {
+                return false;
+            }
+            final Value that = (Value) obj;
+            return Objects.equals(this.nodeId, that.nodeId)
+                    && Objects.equals(this.type, that.type);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.nodeId, this.type.getCharCode());
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Value[nodeId='%s', type='%s']", this.nodeId, this.type);
+        }
+
+        @Override
+        public int compareTo(final Value that) {
+            return ComparisonChain.start()
+                    .compare(this.type, that.type)
+                    .compare(this.nodeId, that.nodeId)
+                    .result();
+        }
+    }
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -72,7 +176,8 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
-    private final InterfaceToNodeMap m_knownips = new InterfaceToNodeMap();
+    private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
+    private final SortedSetMultimap<Key, Value> m_managedAddresses = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
 
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -96,9 +201,8 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
      * the method opens a new connection to the database, loads the address,
      * and then closes it's connection.
      *
-     * @throws java.sql.SQLException
-     *             Thrown if the connection cannot be created or a database
-     *             error occurs.
+     * @throws java.sql.SQLException Thrown if the connection cannot be created or a database
+     *                               error occurs.
      */
     @Override
     @Transactional
@@ -108,37 +212,50 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
          * if something goes wrong with the DB we won't lose whatever was already
          * in there
          */
-        SetMultimap<LocationIpAddressKey,Integer> newAlreadyDiscovered = HashMultimap.create();
+        final SortedSetMultimap<Key, Value> newAlreadyDiscovered = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
+
         // Fetch all non-deleted nodes
-        CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
         builder.ne("type", String.valueOf(NodeType.DELETED.value()));
+
         for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
-            for (OnmsIpInterface iface : node.getIpInterfaces()) {
+            for (final OnmsIpInterface iface : node.getIpInterfaces()) {
                 // Skip deleted interfaces
                 // TODO: Refactor the 'D' value with an enumeration
                 if ("D".equals(iface.getIsManaged())) {
                     continue;
                 }
                 LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
-                newAlreadyDiscovered.put(new LocationIpAddressKey(node.getLocation().getLocationName(), iface.getIpAddress()), node.getId());
+                newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getIsSnmpPrimary()));
             }
         }
-        m_knownips.setManagedAddresses(newAlreadyDiscovered);
-        LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_knownips.size());
+        m_managedAddresses.clear();
+        m_managedAddresses.putAll(newAlreadyDiscovered);
+        LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
     }
 
     /**
      * Returns the nodeid for the IP Address
+     * <p>
+     * If multiple nodes hav assigned interfaces with the same IP, this returns all known nodes sorted by the interface
+     * management priority.
      *
-     * @param addr The IP Address to query.
+     * @param address The IP Address to query.
      * @return The node ID of the IP Address if known.
      */
     @Override
-    public synchronized Set<Integer> getNodeId(final String location, final InetAddress addr) {
-        if (addr == null) {
+    public synchronized Iterable<Integer> getNodeId(final String location, final InetAddress address) {
+        if (address == null) {
             return Collections.emptySet();
         }
-        return m_knownips.getNodeId(location, addr);
+
+        m_lock.readLock().lock();
+        try {
+            return Iterables.transform(m_managedAddresses.get(new Key(location, address)),
+                    Value::getNodeId);
+        } finally {
+            m_lock.readLock().unlock();
+        }
     }
 
     /**
@@ -155,48 +272,63 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             return false;
         }
 
-        // Only add the address if it doesn't exist on the map. If it exists, only replace
-        // the current one if the new address is primary.
-        if (!m_knownips.getNodeId(location, addr).contains(nodeid)) {
-            LOG.debug("setNodeId: adding IP address to cache: {}:{} -> {}", location, str(addr), nodeid);
-            m_knownips.addManagedAddress(location, addr, nodeid);
-            return true;
-        } else {
-            final OnmsIpInterface intf = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, str(addr));
-            if (intf != null && intf.isPrimary()) {
-                LOG.info("setNodeId: updating SNMP primary IP address in cache: {}:{} -> {}", location, str(addr), nodeid);
-                m_knownips.addManagedAddress(location, addr, nodeid);
-                return true;
-            } else {
-                LOG.debug("setNodeId: IP address {}:{} is not primary, avoiding cache update", location, str(addr));
-                return false;
-            }
+        final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, str(addr));
+        if (iface == null) {
+            return false;
+        }
+
+        LOG.debug("setNodeId: adding IP address to cache: {}:{} -> {}", location, str(addr), nodeid);
+
+        m_lock.writeLock().lock();
+        try {
+            return m_managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getIsSnmpPrimary()));
+        } finally {
+            m_lock.writeLock().unlock();
         }
     }
 
     /**
      * Removes an address from the node ID map.
      *
-     * @param addr The address to remove from the node ID map.
+     * @param address The address to remove from the node ID map.
      * @return The nodeid that was in the map.
      */
     @Override
-    public boolean removeNodeId(final String location, final InetAddress addr, int nodeId) {
-        if (addr == null) {
+    public boolean removeNodeId(final String location, final InetAddress address, final int nodeId) {
+        if (address == null) {
             LOG.warn("removeNodeId: null IP address");
             return false;
         }
-        LOG.debug("removeNodeId: removing IP address from cache: {}:{}", location, str(addr));
-        return m_knownips.removeManagedAddress(location, addr, nodeId);
+
+        LOG.debug("removeNodeId: removing IP address from cache: {}:{}", location, str(address));
+
+        m_lock.writeLock().lock();
+        try {
+            return m_managedAddresses.remove(new Key(location, address), new Value(nodeId, PrimaryType.PRIMARY)) ||
+                    m_managedAddresses.remove(new Key(location, address), new Value(nodeId, PrimaryType.SECONDARY)) ||
+                    m_managedAddresses.remove(new Key(location, address), new Value(nodeId, PrimaryType.NOT_ELIGIBLE));
+        } finally {
+            m_lock.writeLock().unlock();
+        }
     }
 
     @Override
     public int size() {
-        return m_knownips.size();
+        m_lock.readLock().lock();
+        try {
+            return m_managedAddresses.size();
+        } finally {
+            m_lock.readLock().unlock();
+        }
     }
 
     @Override
     public void clear() {
-        m_knownips.setManagedAddresses(null);
+        m_lock.writeLock().lock();
+        try {
+            m_managedAddresses.clear();
+        } finally {
+            m_lock.writeLock().unlock();
+        }
     }
 }
