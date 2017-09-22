@@ -69,6 +69,7 @@ import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
@@ -1087,9 +1088,16 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     public void graphChanged(GraphContainer graphContainer) {
         // are there any vertices to display?
         boolean verticesAvailable = !graphContainer.getGraph().getDisplayVertices().isEmpty();
+        boolean collapsibleCriteriaInFocus = false;
 
+        for (Criteria criteria : graphContainer.getCriteria()) {
+            if (criteria instanceof CollapsibleCriteria) {
+                collapsibleCriteriaInFocus = true;
+                break;
+            }
+        }
         // toggle view
-        if (verticesAvailable) {
+        if (verticesAvailable || collapsibleCriteriaInFocus) {
             m_noContentWindow.setVisible(false);
             removeWindow(m_noContentWindow);
             m_topologyComponent.setEnabled(true);

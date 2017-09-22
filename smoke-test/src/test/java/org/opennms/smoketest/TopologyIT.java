@@ -879,6 +879,22 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     /**
+     * This method tests that selecting an empty category does not cause a default "No focus defined" window to pop up.
+     * <p>
+     *     Temporary solution which only works if the category name is unused
+     * </p>
+     */
+    @Test(expected = NoSuchElementException.class)
+    public void verifyCollapsibleCriteriaNoDefaultFocusWindow() throws IOException, InterruptedException {
+        topologyUiPage.clearFocus();
+
+        String categoryName = "Switches";
+
+        topologyUiPage.search(categoryName).selectItemThatContains(categoryName);
+        topologyUiPage.testCase.findElementByXpath("//*[contains(text(), 'No focus defined')]");
+    }
+
+    /**
      * This method is used to block and wait for any transitions to occur.
      * This should be used after adding or removing vertices from focus and/or
      * changing the SZL.
