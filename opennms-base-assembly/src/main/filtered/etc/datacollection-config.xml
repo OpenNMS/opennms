@@ -21,8 +21,8 @@
         <include-collection dataCollectionGroup="Bluecoat"/>
         <include-collection dataCollectionGroup="Bridgewave"/>
         <include-collection dataCollectionGroup="Brocade"/>
-        <include-collection dataCollectionGroup="Checkpoint"/>
         <include-collection dataCollectionGroup="Ceragon"/>
+        <include-collection dataCollectionGroup="Checkpoint"/>
         <include-collection dataCollectionGroup="Cisco"/>
         <include-collection dataCollectionGroup="Cisco Nexus"/>
         <include-collection dataCollectionGroup="CLAVISTER"/>
@@ -30,16 +30,16 @@
         <include-collection dataCollectionGroup="Concord"/>
         <include-collection dataCollectionGroup="Cyclades"/>
         <include-collection dataCollectionGroup="Dell"/>
-        <include-collection dataCollectionGroup="Ericsson"/>
         <include-collection dataCollectionGroup="Equallogic"/>
+        <include-collection dataCollectionGroup="Ericsson"/>
         <include-collection dataCollectionGroup="Extreme Networks"/>
         <include-collection dataCollectionGroup="F5"/>
+        <include-collection dataCollectionGroup="Force10"/>
         <include-collection dataCollectionGroup="Fortinet-Fortigate-Application-v5.2"/>
         <include-collection dataCollectionGroup="Fortinet-Fortigate-ExplicitProxy-v5.2"/>
         <include-collection dataCollectionGroup="Fortinet-Fortigate-HA-v5.2"/>
-        <include-collection dataCollectionGroup="Fortinet-Fortigate-System-v5.2"/>
         <include-collection dataCollectionGroup="Fortinet-Fortigate-Security-v5.2"/>
-        <include-collection dataCollectionGroup="Force10"/>
+        <include-collection dataCollectionGroup="Fortinet-Fortigate-System-v5.2"/>
         <include-collection dataCollectionGroup="Foundry Networks"/>
         <include-collection dataCollectionGroup="HP"/>
         <include-collection dataCollectionGroup="HWg"/>
@@ -54,17 +54,17 @@
         <include-collection dataCollectionGroup="MGE"/>
         <include-collection dataCollectionGroup="Microsoft"/>
         <include-collection dataCollectionGroup="Mikrotik"/>
-        <include-collection dataCollectionGroup="Network Appliance"/>
+        <include-collection dataCollectionGroup="Net-SNMP"/>
         <include-collection dataCollectionGroup="Netbotz"/>
         <include-collection dataCollectionGroup="NetEnforcer"/>
         <include-collection dataCollectionGroup="Netscaler"/>
-        <include-collection dataCollectionGroup="Net-SNMP"/>
+        <include-collection dataCollectionGroup="Network Appliance"/>
         <include-collection dataCollectionGroup="Nortel"/>
         <include-collection dataCollectionGroup="Novell"/>
         <include-collection dataCollectionGroup="PaloAlto"/>
         <include-collection dataCollectionGroup="pfSense"/>
-        <include-collection dataCollectionGroup="Powerware"/>
         <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>
+        <include-collection dataCollectionGroup="Powerware"/>
         <include-collection dataCollectionGroup="Printers"/>
         <include-collection dataCollectionGroup="Riverbed"/>
         <include-collection dataCollectionGroup="Routers"/>
@@ -75,14 +75,14 @@
         <include-collection dataCollectionGroup="Sonicwall"/>
         <include-collection dataCollectionGroup="SUN Microsystems"/>
         <include-collection dataCollectionGroup="Trango"/>
+        <include-collection dataCollectionGroup="VMware-Cim"/>
+        <include-collection dataCollectionGroup="VMware3"/>
+        <include-collection dataCollectionGroup="VMware4"/>
+        <include-collection dataCollectionGroup="VMware5"/>
         <include-collection dataCollectionGroup="WMI"/>
         <include-collection dataCollectionGroup="XMP"/>
         <include-collection dataCollectionGroup="Zertico"/>
         <include-collection dataCollectionGroup="Zeus"/>
-        <include-collection dataCollectionGroup="VMware3"/>
-        <include-collection dataCollectionGroup="VMware4"/>
-        <include-collection dataCollectionGroup="VMware5"/>
-        <include-collection dataCollectionGroup="VMware-Cim"/>
     </snmp-collection>
 
     <!-- We need a dedicated collection with a different RRD setup for EJN equipment because
