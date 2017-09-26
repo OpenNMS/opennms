@@ -12,9 +12,97 @@
         <attrib name="FreeSpaceInPagingFiles" alias="freeSpaceInPage" type="Gauge"/>
         <attrib name="FreeVirtualMemory" alias="freeVirtMem" type="Gauge"/>
     </group>
+    <group name="windows-cpu"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfOS_Processor"
+           resource-type="wmiOSCpu">
+        <attrib name="Name" alias="wmiOSCpuName" type="String"/>
+        <attrib name="InterruptsPersec" alias="wmiOSCpuIntsPerSec" type="Gauge"/>
+        <attrib name="PercentProcessorTime" alias="wmiOSCpuPctProcTime" type="Gauge"/>
+        <attrib name="PercentDPCTime" alias="wmiOSCpuPctDPCTime" type="Gauge"/>
+        <attrib name="PercentInterruptTime" alias="wmiOSCpuPctIntrTime" type="Gauge"/>
+        <attrib name="PercentUserTime" alias="wmiOSCpuPctUserTime" type="Gauge"/>
+    </group>
+    <group name="windows-physical-disk" wmiClass="Win32_PerfFormattedData_PerfDisk_PhysicalDisk" wmiNamespace="root/cimv2"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfDisk_PhysicalDisk"
+           resource-type="wmiPhysicalDisk">
+        <attrib name="Name" alias="wmiPDName" type="string"/>
+        <attrib name="PercentDiskReadTime" alias="wmiPDPctDiskRdTime" type="Gauge"/>
+        <attrib name="PercentDiskWriteTime" alias="wmiPDPctDiskWrTime" type="Gauge"/>
+        <attrib name="SplitIOPerSec" alias="wmiPDSplitIOsPerSec" type="Gauge"/>
+        <attrib name="DiskTransfersPersec" alias="wmiPDTransPerSec" type="Gauge"/>
+        <attrib name="AvgDisksecPerTransfer" alias="wmiPDAvgSecPerTrans" type="Gauge"/>
+        <attrib name="CurrentDiskQueueLength" alias="wmiPDQueueLen" type="Gauge"/>
+        <attrib name="AvgDiskQueueLength" alias="wmiPDAvgQueueLen" type="Gauge"/>
+        <attrib name="PercentDiskTime" alias="wmiPDPctBusyTime" type="Gauge"/>
+        <attrib name="PercentIdleTime" alias="wmiPDPctIdleTime" type="Gauge"/>
+    </group>
+    <group name="windows-logical-disk"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfDisk_LogicalDisk"
+           resource-type="wmiLogicalDisk">
+        <attrib name="Name" alias="wmiLDName" type="string"/>
+        <attrib name="FreeMegabytes" alias="wmiLDPctFreeMBytes" type="Gauge"/>
+        <attrib name="PercentDiskReadTime" alias="wmiLDPctDiskRdTime" type="Gauge"/>
+        <attrib name="PercentDiskWriteTime" alias="wmiLDPctDiskWrTime" type="Gauge"/>
+        <attrib name="PercentFreeSpace" alias="wmiLDPctFreeSpace" type="Gauge"/>
+        <attrib name="SplitIOPerSec" alias="wmiLDSplitIOsPerSec" type="Gauge"/>
+    </group>
+    <group name="windows-network-interface"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfRawData_Tcpip_NetworkInterface"
+           resource-type="wmiTcpipNetworkInterface">
+        <attrib name="Name" alias="wmiIpNetIfName" type="string"/>
+        <attrib name="CurrentBandwidth" alias="wmiIpNetCurrSpeed" type="string"/>
+        <attrib name="BytesTotalPersec" alias="wmiIpNetBytesSec" type="Counter"/>
+        <attrib name="BytesReceivedPersec" alias="wmiIpNetIBytesSec" type="Counter"/>
+        <attrib name="BytesSentPersec" alias="wmiIpNetOBytesSec" type="Counter"/>
+        <attrib name="PacketsPersec" alias="wmiIpNetPktsSec" type="Counter"/>
+        <attrib name="PacketsReceivedPersec" alias="wmiIpNetIPktsSec" type="Counter"/>
+        <attrib name="PacketsReceivedNonUnicastPersec" alias="wmiIpNetINUPktsSec" type="Counter"/>
+        <attrib name="PacketsReceivedUnicastPersec" alias="wmiIpNetIUCPktsSec" type="Counter"/>
+        <attrib name="PacketsSentPersec" alias="wmiIpNetOPktsSec" type="Counter"/>
+        <attrib name="PacketsSentNonUnicastPersec" alias="wmiIpNetONUPktsSec" type="Counter"/>
+        <attrib name="PacketsSentUnicastPersec" alias="wmiIpNetOUCPktsSec" type="Counter"/>
+    </group>
+    <group name="windows-terminal-services"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_LocalSessionManager_TerminalServices"
+           resource-type="node">
+        <attrib name="ActiveSessions" alias="wmiTSSessActive" type="Gauge"/>
+        <attrib name="InactiveSessions" alias="wmiTSSessInactive" type="Gauge"/>
+        <attrib name="TotalSessions" alias="wmiTSSessTotal" type="Gauge"/>
+    </group>
+    <group name="windows-server-stats"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfNet_Server"
+           resource-type="node">
+        <attrib name="ServerSessions" alias="wmiServerSessions" type="Gauge" />
+        <attrib name="SessionsErroredOut" alias="wmiServerSessErrOut" type="Counter" />
+        <attrib name="SessionsForcedOff" alias="wmiServerSessFcdOff" type="Counter" />
+        <attrib name="SessionsLoggedOff" alias="wmiServerSessLgdOff" type="Counter" />
+        <attrib name="SessionsTimedOut" alias="wmiServerSessTmdOut" type="Counter" />
+        <attrib name="ErrorsSystem" alias="wmiServerErrsSystem" type="Counter" />
+        <attrib name="ErrorsGrantedAccess" alias="wmiServerErrsGtdAxs" type="Counter" />
+        <attrib name="ErrorsAccessPermissions" alias="wmiServerErrsAxsPrm" type="Counter" />
+        <attrib name="ErrorsLogon" alias="wmiServerErrsLogon" type="Counter" />
+    </group>
+    <group name="windows-w3svc-stats"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_W3SVC_WebService"
+           resource-type="wmiW3">
+                <attrib name="Name" alias="wmiW3Name" type="string"/>
+                <attrib name="TotalGetRequests" alias="wmiW3GetReq" type="Counter" />
+                <attrib name="TotalHeadRequests" alias="wmiW3HeadReq" type="Counter" />
+                <attrib name="TotalPostRequests" alias="wmiW3PostReq" type="Counter" />
+                <attrib name="TotalPutRequests" alias="wmiW3PutReq" type="Counter" />
+                <attrib name="TotalDeleteRequests" alias="wmiW3DelReq" type="Counter" />
+                <attrib name="TotalNotFoundErrors" alias="wmiW3NotFound" type="Counter" />
+    </group>
 
     <system-definition name="Microsoft Windows (All Versions)">
         <rule>#productVendor matches '^Microsoft.*' and #productVersion matches '^OS.*'</rule>
         <include-group>windows-os</include-group>
+        <include-group>windows-cpu</include-group>
+        <include-group>windows-logical-disk</include-group>
+        <include-group>windows-physical-disk</include-group>
+        <include-group>windows-network-interface</include-group>
+        <include-group>windows-terminal-services</include-group>
+        <include-group>windows-server-stats</include-group>
+        <include-group>windows-w3svc-stats</include-group>
     </system-definition>
 </wsman-datacollection-config>
