@@ -74,6 +74,9 @@
                 trigger-name="selectPathOutagesNodes"
                 action-name="clearPathOutages" />
 
+    <automation name="deleteUnassignedServices" interval="3600000" active="true"
+                action-name="deleteUnassignedServices" />
+
     <!-- Enable these automation for automatic Trouble Ticketing -->
     <automation name="createTickets" interval="30000" active="false" 
                 trigger-name="selectNullTicketStateAlarms" 
@@ -438,6 +441,17 @@
          WHERE eventuei = 'uei.opennms.org/nodes/pathOutage'
            AND nodeid = ${_nodeid}
            AND lasteventtime &lt;= ${_eventtime_from_node_up}
+      </statement>
+    </action>
+
+    <action name="deleteUnassignedServices" >
+      <statement>
+        DELETE from service a
+         WHERE a.serviceid in (
+        SELECT a.serviceid from service a
+     LEFT JOIN ifservices b
+            ON a.serviceid = b.serviceid
+         WHERE b.serviceid is null)
       </statement>
     </action>
 
