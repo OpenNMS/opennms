@@ -108,6 +108,7 @@ public class EventDispositionReader {
         eventSeverity,
         createAlarm,
         clearAlarm,
+        clearAlarmCause,
         alarmSeverity,
         alarmSeverityComma,
         alarmCause,
@@ -262,8 +263,21 @@ public class EventDispositionReader {
             
             if (m_tokenizer.ttype == StreamTokenizer.TT_WORD && m_tokenizer.sval.equals(clearAlarmToken)) {
                 LOG.debug("Found a clear-alarm token [{}] on line {}, setting clearAlarm to true", m_tokenizer.sval, m_tokenizer.lineno());
+                LOG.trace("Found a clear-alarm token [{}] on line {}, peeking ahead for optional discriminators",
+                		m_tokenizer.sval,
+                		m_tokenizer.lineno());
                 thisEventDisposition.setClearAlarm(true);
                 lastToken = TokenType.clearAlarm;
+            }
+            
+            if (lastToken == TokenType.clearAlarm && m_tokenizer.ttype == StreamTokenizer.TT_WORD) {
+            	LOG.debug("Found a word [{}] after a clear-alarm token [{}] on line {}, treating word as cleared alarm-cause", m_tokenizer.sval, clearAlarmToken, m_tokenizer.lineno());
+            	thisEventDisposition.setClearAlarmCause(m_tokenizer.sval);
+            	lastToken = TokenType.clearAlarmCause;
+            }
+            
+            if (lastToken == TokenType.clearAlarmCause && m_tokenizer.sval.equals(",")) {
+            	// TODO eat clear-event-cause discriminators
             }
             
             if (lastToken == TokenType.alarmSeverityComma || lastToken == TokenType.clearAlarm) {
