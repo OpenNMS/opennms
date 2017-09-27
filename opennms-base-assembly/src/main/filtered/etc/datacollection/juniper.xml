@@ -199,8 +199,57 @@
         </collect>
       </systemDef>
 
-      <systemDef name="Juniper J-Routers">
+      <systemDef name="Juniper J-Routers (J2300)">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.13</sysoidMask>
+        <collect>
+          <includeGroup>juniper-fwdd-process</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper J-Routers (J4300)">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.14</sysoidMask>
+        <collect>
+          <includeGroup>juniper-fwdd-process</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper J-Routers (J6300)">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.15</sysoidMask>
+        <collect>
+          <includeGroup>juniper-fwdd-process</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper J-Routers (J4350)">
         <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.19</sysoidMask>
+        <collect>
+          <includeGroup>juniper-fwdd-process</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper J-Routers (J6350)">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.20</sysoidMask>
+        <collect>
+          <includeGroup>juniper-fwdd-process</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper J-Routers (J4320)">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.22</sysoidMask>
+        <collect>
+          <includeGroup>juniper-fwdd-process</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper J-Routers (J2320)">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.23</sysoidMask>
+        <collect>
+          <includeGroup>juniper-fwdd-process</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper J-Routers (J2350)">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.24</sysoidMask>
         <collect>
           <includeGroup>juniper-fwdd-process</includeGroup>
         </collect>
