@@ -98,6 +98,7 @@ Requires(pre):	%{jdk}
 Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
 Obsoletes: opennms-plugin-protocol-xml
+Conflicts: opennms-plugin-protocol-xml
 
 %description core
 The core backend.  This package contains the main daemon responsible
