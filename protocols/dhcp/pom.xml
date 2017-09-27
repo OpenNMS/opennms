@@ -51,9 +51,9 @@
   <dependencies>
     <!-- NOTE: JDHCP is licensed as GPL and should be kept separate from other libraries -->
     <dependency>
-      <groupId>org.dhcp.jdhcp</groupId>
+      <groupId>org.opennms</groupId>
       <artifactId>jdhcp</artifactId>
-      <version>1.1.1</version>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
