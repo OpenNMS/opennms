@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ./images
 
-= Overview
+= Asset Topology
 
 _{product-title}_ has introduced the ability for users to define arbitrarily complex
  layered topologies using GraphML (see http://graphml.graphdrawing.org/).
