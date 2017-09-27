@@ -162,13 +162,6 @@ Topics:
         - Name: Newts Repository Converter
           File: newts-repository-converter
 ---
-Name: Anonymous Usage Statistics
-Dir: anonymous-usage-statistics
-Distros: horizon
-Topics:
-    - Name: Data Choices
-      File: datachoices
----
 Name: User Management
 Dir: user-management
 Distros: horizon
@@ -479,13 +472,8 @@ Topics:
     File: custom-infopanel
   - Name: Custom GraphML Topology
     File: custom-graphml-topology
----
-Name: Asset Topology Provider
-Dir: asset-topology
-Distros: horizon
-Topics:
-    - Name: GraphML
-      File: graphml
+  - Name: Asset Topology
+    File: asset-topology
 ---
 Name: Enhanced Linkd
 Dir: enlinkd
@@ -514,25 +502,16 @@ Topics:
       - Name: IS-IS Link Discovery
         File: is-is-discovery
 ---
-Name: Ticketing Integration
-Dir: ticketing-integration
+Name: JMX Configuration Generator
+Dir: jmx-config-generator
 Distros: horizon
 Topics:
-    - Name: Introduction
-      File: introduction
-    - Name: JIRA
-      File: jira
-    - Name: TSRM
-      File: tsrm
-    - Name: BMC Remedy
-      File: remedy
----
-Name: Startpage
-Dir: startpage
-Distros: horizon
-Topics:
-  - Name: Grafana Dashboard Box
-    File: grafana-dashboard-box
+  - Name: Introduction
+    File: introduction
+  - Name: Web-based User Interface
+    File: webui
+  - Name: Command Line Interface
+    File: cli
 ---
 Name: Operations Board
 Dir: opsboard
@@ -574,54 +553,6 @@ Topics:
   - Name: Criteria Builder
     File: criteria-builder
 ---
-Name: JMX Configuration Generator
-Dir: jmx-config-generator
-Distros: horizon
-Topics:
-  - Name: Introduction
-    File: introduction
-  - Name: Web-based User Interface
-    File: webui
-  - Name: Command Line Interface
-    File: cli
----
-Name: Surveillance View
-Dir: surveillance-view
-Distros: horizon
-Topics:
-    - Name: Introduction
-      File: introduction
----
-Name: Dashboard
-Dir: dashboard
-Distros: horizon
-Topics:
-    - Name: Introduction
-      File: introduction
----
-Name: Heatmap
-Dir: heatmap
-Distros: horizon
-Topics:
-    - Name: Introduction
-      File: introduction
----
-Name: Trendline Visualization
-Dir: trend
-Distros: horizon
-Topics:
-    - Name: Introduction
-      File: introduction
----
-Name: Database Reports
-Dir: database-reports
-Distros: horizon
-Topics:
-  - Name: Database
-    File: database
-  - Name: JasperReport Styleguide
-    File: jasperreport-styleguide
----
 Name: Plugin Manager
 Dir: plugin-manager
 Distros: horizon
@@ -649,15 +580,6 @@ Topics:
             File: es-rest-mapping
           - Name: ElasticSearch ReST Mapping Table
             File: es-rest-mapping-table
----
-Name: IFTTT Integration
-Dir: ifttt
-Distros: horizon
-Topics:
-    - Name: Setting up IFTTT WebService
-      File: setup-ifttt
-    - Name: Configuring IFTTT in OpenNMS
-      File: configure-opennms
 ---
 Name: Special Cases and Workarounds
 Dir: workarounds
@@ -732,6 +654,41 @@ Topics:
       File: users
     - Name: Examples
       File: examples
+---
+Name: Reference
+Dir: reference
+Distros: horizon
+Topics:
+  - Name: Anonymous Usage Statistics
+    File: anonymous-usage-statistics
+  - Name: Dashboard
+    File: dashboard
+  - Name: Grafana Dashboard Box
+    File: grafana-dashboard-box
+  - Name: Heatmap
+    File: heatmap
+  - Name: Surveillance View
+    File: surveillance-view
+  - Name: Trend Lines
+    File: trend-lines
+  - Name: IFTTT Integration
+    File: ifttt-integration
+  - Name: Database Reports
+    File: database-reports
+  - Name: JasperReport Styleguide
+    File: jasperreport-styleguide
+  - Name: Ticketing Integration
+    Dir: ticketing-integration
+    Distros: horizon
+    Topics:
+        - Name: Introduction
+          File: introduction
+        - Name: JIRA
+          File: jira
+        - Name: TSRM
+          File: tsrm
+        - Name: BMC Remedy
+          File: remedy
 ---
 #
 # Minion related Documentation
