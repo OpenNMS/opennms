@@ -141,6 +141,27 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.7]
+==== Release Meridian-2016.1.7
+
+Release 2016.1.7 is an update to 2016.1.6 that provides a number of small bug fixes.
+
+The codename for 2016.1.7 is _Tobler hyperelliptical_.
+
+===== Bug
+
+* INFO-severity syslog-derived events end up unmatched (Issue http://issues.opennms.org/browse/NMS-8106[NMS-8106])
+* Resource graph forecast page lacks header (Issue http://issues.opennms.org/browse/NMS-8856[NMS-8856])
+* Allow provisiond to perform reverse lookups without requiring an A record (foundation-2016) (Issue http://issues.opennms.org/browse/NMS-9406[NMS-9406])
+* No bounds-checking in processing of DHCP Options (Issue http://issues.opennms.org/browse/NMS-9420[NMS-9420])
+* The reason parameter for a nodeLostService event is limited to 255 characters (Issue http://issues.opennms.org/browse/NMS-9550[NMS-9550])
+* The remote-poller.sh script looks for the remote-poller.jar file in the wrong location (Issue http://issues.opennms.org/browse/NMS-9606[NMS-9606])
+* vmware importer fails with NPE (Issue http://issues.opennms.org/browse/NMS-9611[NMS-9611])
+* Basic syslog messages with Informational severity turn into unknown events (Issue http://issues.opennms.org/browse/NMS-9615[NMS-9615])
+* quick add node is broken (Issue http://issues.opennms.org/browse/NMS-9618[NMS-9618])
+* Remote poller logs have place holders for their names (Issue http://issues.opennms.org/browse/NMS-9621[NMS-9621])
+* Remote Poller log path incorrect when using the NSIS installer (Issue http://issues.opennms.org/browse/NMS-9631[NMS-9631])
+
 [releasenotes-changelog-Meridian-2016.1.6]
 ==== Release Meridian-2016.1.6
 
