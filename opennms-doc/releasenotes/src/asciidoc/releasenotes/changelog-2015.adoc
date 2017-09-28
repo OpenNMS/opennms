@@ -216,7 +216,7 @@ The codename for 2015.1.1 is _UTC_.
 * Improve links for SLA categories on start page (Issue http://issues.opennms.org/browse/NMS-7713[NMS-7713])
 
 [releasenotes-changelog-2015.1.0]
-==== Release 2015.1.0
+==== Release Meridian-2015.1.0
 
 Release 2015.1.0 is the first release of OpenNMS Meridian 2015.  It is based on OpenNMS Horizon 14.0.3, the Bootstrap GUI shipped in OpenNMS Horizon 15, and many smaller bug fixes.
 
