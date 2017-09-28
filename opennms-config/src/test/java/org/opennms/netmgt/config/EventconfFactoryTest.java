@@ -55,12 +55,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -71,6 +70,8 @@ import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -592,10 +593,40 @@ public class EventconfFactoryTest {
         assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
         
+        final List<String> eventsNotIncluded = Arrays.asList(
+        		"A10.AX.events.xml",
+        		"Avocent-DSView.events.xml",
+        		"Ceragon-FA1500.events.xml",
+        		"CitrixNetScaler.events.xml",
+        		"Dell-F10-bgb4-v2.events.xml",
+        		"Dell-F10-chassis.events.xml",
+        		"Dell-F10-copy-config.events.xml",
+        		"Dell-F10-mstp.events.xml",
+        		"Dell-F10-system-component.events.xml",
+        		"DellEquallogic.events.xml",
+        		"Evertz.7780ASI-IP2.events.xml",
+        		"Evertz.7880IP-ASI-IP-FR.events.xml",
+        		"Evertz.7880IP-ASI-IP.events.xml",
+        		"Evertz.7881DEC-MP2-HD.events.xml",
+        		"Infoblox.events.xml",
+        		"Juniper.screen.events.xml",
+        		"Meridian-2016.Liebert.events.xml",
+        		"Meridian-2016.NetApp.events.xml",
+        		"Meridian-2016.OpenSSH.syslog.events.xml",
+        		"MikrotikRouterOS.events.xml",
+        		"Postfix.syslog.events.xml",
+        		"Procmail.syslog.events.xml",
+        		"Raytheon.events.xml",
+        		"Siemens-HiPath3000-HG1500.events.xml",
+        		"Siemens-HiPath3000.events.xml",
+        		"Siemens-HiPath4000.events.xml",
+        		"Siemens-HiPath8000-OpenScapeVoice.events.xml",
+        		"Veeam_Backup-Replication.events.xml"
+        );
         File[] eventFilesOnDiskArray = eventsDirFile.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String name) {
-                return name.endsWith(".xml");
+                return name.endsWith(".xml") && !eventsNotIncluded.contains(name);
             } });
         Set<File> eventFilesOnDisk = new HashSet<File>(Arrays.asList(eventFilesOnDiskArray));
 

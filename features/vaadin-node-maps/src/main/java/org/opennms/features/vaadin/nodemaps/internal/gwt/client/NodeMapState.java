@@ -44,4 +44,7 @@ public class NodeMapState extends AbstractComponentState {
     public List<Integer> nodeIds = new ArrayList<Integer>();
     public int minimumSeverity;
     public boolean groupByState = true;
+    public int maxClusterRadius = 350;
+    public List<Option> tileLayerOptions = new ArrayList<>();
+    public String tileServerUrl;
 }

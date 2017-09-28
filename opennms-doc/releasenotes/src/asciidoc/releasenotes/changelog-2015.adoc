@@ -1,10 +1,44 @@
 [releasenotes-2015]
 === OpenNMS Meridian 2015
 
+[releasenotes-changelog-2015.1.2]
+==== Release Meridian-2015.1.2
+
+Release 2015.1.2 is the third release of OpenNMS Meridian 2015.  It contains a number of bug fixes and new device support since 2015.1.1.
+The codename for 2015.1.2 is _EASST_.
+
+===== Breaking Changes
+
+* Graph definition errors AERA (Issue http://issues.opennms.org/browse/LTS-199[LTS-199])
+* OEM graph for Storage Utilization fails due to '::' (Issue http://issues.opennms.org/browse/NMS-8519[NMS-8519])
+
+===== Bug
+
+* Topology-UI shows LLDP links not correct (Issue http://issues.opennms.org/browse/NMS-8003[NMS-8003])
+* JNA ping code reuses buffer causing inconsistent reads of packet contents (Issue http://issues.opennms.org/browse/NMS-8126[NMS-8126])
+* Install -dis on "SocketException:Too many open files" on centos:latest docker  (Issue http://issues.opennms.org/browse/NMS-8200[NMS-8200])
+* All the defined Statsd's reports are being executed even if they are disabled. (Issue http://issues.opennms.org/browse/NMS-8274[NMS-8274])
+* An error on threshd-configuration.xml breaks Collectd when reloading thresholds configuration (Issue http://issues.opennms.org/browse/NMS-8304[NMS-8304])
+* JdbcCollector does not close database connections correctly (Issue http://issues.opennms.org/browse/NMS-8488[NMS-8488])
+* HW ENTITY_MIB plugin is not showing all information for certain devices (Issue http://issues.opennms.org/browse/NMS-8506[NMS-8506])
+* Requisitioned IP interfaces never have ipHostName set (Issue http://issues.opennms.org/browse/NMS-8593[NMS-8593])
+
+===== Configuration
+
+* Distributed/Geographical Maps do not show images anymore (Issue http://issues.opennms.org/browse/NMS-8597[NMS-8597])
+
+===== Enhancement
+
+* Create a command line tool for compiling all the report template files. (Issue http://issues.opennms.org/browse/LTS-198[LTS-198])
+* Backport Configuration from Meridian 2016 to Meridian 2015 (Issue http://issues.opennms.org/browse/LTS-202[LTS-202])
+* Copyright bump on asciidoc docs (Issue http://issues.opennms.org/browse/NMS-8219[NMS-8219])
+* Alphabetize nodes in surveillance category listing (Issue http://issues.opennms.org/browse/NMS-8535[NMS-8535])
+
 [releasenotes-changelog-2015.1.1]
 ==== Release Meridian-2015.1.1
 
 Release 2015.1.1 is the second release of OpenNMS Meridian 2015.  It contains a number of bug fixes as well as a few security fixes over 2015.1.0.
+The codename for 2015.1.1 is _UTC_.
 
 ===== Bug
 

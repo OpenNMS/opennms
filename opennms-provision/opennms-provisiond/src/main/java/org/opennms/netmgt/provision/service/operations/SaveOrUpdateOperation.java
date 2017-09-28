@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -125,6 +125,10 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(primaryType);
         
+        if (System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
+        	m_currentInterface.setIpHostName(reverseResolveHostname(ipAddr));
+        }
+        
         if (PrimaryType.PRIMARY.equals(primaryType)) {
         	final InetAddress addr = InetAddressUtils.addr(ipAddr);
         	if (addr == null) {
@@ -209,4 +213,10 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
             LOG.warn("Could not set property on object of type {}: {}", m_node.getClass().getName(), name, e);
         }
     }
+
+	private String reverseResolveHostname(String ipAddr) {
+		InetAddress addr = InetAddressUtils.addr(ipAddr);
+		return addr.getCanonicalHostName();
+	}
+    
 }

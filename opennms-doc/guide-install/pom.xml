@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.doc</groupId>
         <artifactId>parent</artifactId>
-        <version>2015.1.1</version>
+        <version>2015.1.2</version>
     </parent>
     <artifactId>guide-install</artifactId>
     <packaging>pom</packaging>
@@ -19,6 +19,13 @@
                 <configuration>
                     <skipAssembly>false</skipAssembly>
                     <tarLongFileMode>gnu</tarLongFileMode>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <configuration>
+                    <sourceDocumentName>index.adoc</sourceDocumentName>
                 </configuration>
             </plugin>
         </plugins>

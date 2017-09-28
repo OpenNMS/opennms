@@ -285,6 +285,11 @@ public class NodeMapsApplication extends UI {
         createMapPanel(vaadinRequest.getParameter("search"));
         createRootLayout();
         addRefresher();
+
+        // Notify the user if no tileserver url or options are set
+        if (!NodeMapConfiguration.isValid()) {
+            new InvalidConfigurationWindow().open();
+        }
     }
 
     private void createMapPanel(final String searchString) {

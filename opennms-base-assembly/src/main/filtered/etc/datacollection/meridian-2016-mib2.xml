@@ -1,0 +1,8 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="meridian-2016-mib2">
+   <group name="mib2-udp" ifType="ignore">
+      <mibObj oid=".1.3.6.1.2.1.7.1" instance="0" alias="udpInDatagrams" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.7.2" instance="0" alias="udpNoPorts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.7.3" instance="0" alias="udpInErrors" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.7.4" instance="0" alias="udpOutDatagrams" type="counter"/>
+   </group>
+</datacollection-group>

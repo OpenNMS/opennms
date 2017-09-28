@@ -632,10 +632,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId()) || !link.getLldpRemChassisId().equals(sourceElement.getLldpChassisId())) 
                     continue;
                 boolean bool1 = sourceLink.getLldpRemPortId().equals(link.getLldpPortId()) && link.getLldpRemPortId().equals(sourceLink.getLldpPortId());
-                boolean bool2 = sourceLink.getLldpRemPortDescr().equals(link.getLldpPortDescr()) && link.getLldpRemPortDescr().equals(sourceLink.getLldpPortDescr());
                 boolean bool3 = sourceLink.getLldpRemPortIdSubType() == link.getLldpPortIdSubType() && link.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
 
-                if (bool1 && bool2 && bool3) {
+                if (bool1 && bool3) {
                     targetLink=link;
                     parsed.add(targetLink.getId());
                     LOG.debug("loadtopology: found lldp mutual link: '{}' and '{}' ", sourceLink,targetLink);

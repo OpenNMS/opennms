@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>2015.1.1</version>
+  <version>2015.1.2</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -152,6 +152,11 @@
         <version>1.9</version>
       </plugin>
       -->
+      <plugin>
+        <groupId>org.asciidoctor</groupId>
+        <artifactId>asciidoctor-maven-plugin</artifactId>
+        <version>${asciidoctorVersion}</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.servicemix.tooling</groupId>
         <artifactId>depends-maven-plugin</artifactId>
@@ -1029,7 +1034,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>2015.1.1</opennms.osgi.version>
+    <opennms.osgi.version>2015.1.2</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1094,7 +1099,7 @@
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <asmVersion>5.0.3</asmVersion>
-    <asciidoctorVersion>1.5.2</asciidoctorVersion>
+    <asciidoctorVersion>1.5.2.1</asciidoctorVersion>
     <asciidoctorjVersion>1.5.2</asciidoctorjVersion>
     <asciidoctorjPdfVersion>1.5.0-alpha.6</asciidoctorjPdfVersion>
     <activemqVersion>5.10.0</activemqVersion>

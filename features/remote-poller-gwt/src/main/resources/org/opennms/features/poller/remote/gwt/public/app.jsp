@@ -31,10 +31,35 @@
 
 <%@page language="java" contentType="text/html; charset=UTF-8" %>
 <%@page import="java.net.URLEncoder"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+
+<%!
+	public static boolean isValidConfiguration() {
+		return isUrlValid() && isAttributionValid();
+	}
+
+	public static boolean isUrlValid() {
+		return isDefined(System.getProperty("gwt.openlayers.url"));
+	}
+
+	public static boolean isAttributionValid() {
+		return isDefined(System.getProperty("gwt.openlayers.options.attribution"));
+	}
+
+	public static boolean isDefined(String input) {
+		return input != null && !"".equals(input);
+	}
+%>
 <%
+
   String mapImplementation = System.getProperty("gwt.maptype", "");
-  String openlayersUrl = System.getProperty("gwt.openlayers.url", "http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png");
+  String openlayersUrl = System.getProperty("gwt.openlayers.url", "");
+  String openlayersAttribution = System.getProperty("gwt.openlayers.options.attribution", "");
   String apiKey = System.getProperty("gwt.apikey", "");
+
+	if (openlayersAttribution != null) {
+    	openlayersAttribution = StringEscapeUtils.escapeJavaScript(openlayersAttribution);
+	}
 
 	if (!apiKey.equals("")) {
 		apiKey = "&key=" + apiKey;
@@ -47,6 +72,7 @@
 		<script type="text/javascript" language="javascript">
 			window.mapImplementation = "<%= mapImplementation %>";
 			window.openlayersUrl = "<%= openlayersUrl %>";
+			window.openlayersAttribution = "<%= openlayersAttribution %>";
 		</script>
 		<% if (mapImplementation.equalsIgnoreCase("googlemaps")) { %>
 			<script src="<%= URLEncoder.encode("http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x" + apiKey, "UTF-8") %>"></script>
@@ -58,12 +84,29 @@
 			<script type="text/javascript" src="opennms-openlayers.js"></script>
 			<script type="text/javascript" src="openlayers/OpenLayers.js"></script>
 		<% } %>
-		<script type="text/javascript" language="javascript" src="RemotePollerMap.nocache.js"></script>
+		<%
+		if(isValidConfiguration()) { %>
+			<script type="text/javascript" language="javascript" src="RemotePollerMap.nocache.js"></script>
+		<%}%>
 	</head>
 	<body>
+		<% if(isValidConfiguration()) { %>
 		<div id="map"></div>
 
 		<!-- OPTIONAL: include this if you want history support -->
 		<iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
+		<% } else {%>
+			<div>
+				<ul>
+					<% if (!isUrlValid()) { %>
+						<li>No <i>gwt.openlayers.url</i> property defined</li>
+					<% } %>
+					<% if (!isAttributionValid()) { %>
+						<li>No <i>gwt.openlayers.options.attribution</i> property defined</li>
+					<% }%>
+				</ul>
+				Please define the above properties in opennms.properties.<br/>
+			</div>
+		<% } %>
 	</body>
 </html>
