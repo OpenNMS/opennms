@@ -75,9 +75,7 @@
 	<include file="16.0.4/changelog.xml"/>
 	<include file="17.0.0/changelog.xml"/>
 
-    <include file="2015.1.0/changelog.xml"/>
-
-    <include file="2015.1.0/changelog.xml"/>
+	<include file="2015.1.0/changelog.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
