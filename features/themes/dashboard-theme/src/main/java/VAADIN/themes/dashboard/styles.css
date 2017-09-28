@@ -345,3 +345,12 @@ td.onms { font-size: 100%; }
     height:1.5em;
     overflow:hidden;
 }
+
+.novscroll {
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+.v-panel-content.v-panel-content-novscroll {
+    overflow-y: hidden !important;
+    overflow-x: auto;
+}

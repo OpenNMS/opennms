@@ -166,9 +166,9 @@ NOTE: this not the same as Provisiond SNMP discovery scan phases: node scan and 
 
 Where directed discovery leaves off and enhanced directed discovery begins is that after all the operations have completed, directed discovery is finished and enhanced directed discovery takes off.
 The requisitioned nodes are scheduled for node scans where details about the node are discovered and interfaces that were not directly provisioned are also discovered.
-All physical (SNMP) and logical (IP) interfaces are discovered and persisted based on any _Provisioning Policies_ that may have defined for the foreign source associated with the import requisition.
+All physical (SNMP) and logical (IP) interfaces are discovered and persisted based on any _Provisioning Policies_ that may have been defined for the foreign source associated with the import requisition.
 
 ====== Service Scan (detection) Phase
 
 Additionally, the new Provisiond enhanced directed discovery mechanism follows interface discovery with service detection on each IP interface entity.
-This is very similar to the Capsd plugin scanning found in all former releases of OpenNMS accept that the foreign source definition is used to define what services should be detected on these interfaces found for nodes in the import requisition.
+This is very similar to the Capsd plugin scanning found in all former releases of OpenNMS except that the foreign source definition is used to define what services should be detected on these interfaces found for nodes in the import requisition.

@@ -55,7 +55,7 @@
     static {
         s_colors.put(0, new String[] { "Red", "ff0000" });
         s_colors.put(1, new String[] { "Green", "00ff00" });
-        s_colors.put(2, new String[] { "Blue", "ff00ff" });
+        s_colors.put(2, new String[] { "Blue", "0000ff" });
         s_colors.put(3, new String[] { "Black", "000000" });
     }
     

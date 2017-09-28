@@ -122,7 +122,9 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         waitForElement(By.xpath("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']")).click();
         setTreeFieldsAndSave("nodeEditForm", type("ipAddr", "::1"));
 
-        // add the interface service
+        // add the interface services
+        waitForElement(By.xpath("//a[text() = 'Add Service']")).click();
+        setTreeFieldsAndSave("nodeEditForm", select("serviceName", "ICMP"));
         waitForElement(By.xpath("//a[text() = 'Add Service']")).click();
         setTreeFieldsAndSave("nodeEditForm", select("serviceName", "HTTP-8980"));
 

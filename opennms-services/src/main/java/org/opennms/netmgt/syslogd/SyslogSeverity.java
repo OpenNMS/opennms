@@ -35,7 +35,7 @@ public enum SyslogSeverity {
     ERROR(3, "error conditions"),
     WARNING(4, "warning conditions"),
     NOTICE(5, "normal but significant condition"),
-    INFORMATIONAL(6, "informational messages"),
+    INFO(6, "informational messages"),
     DEBUG(7, "debug-level messages"),
     ALL(8, "all levels"),
     UNKNOWN(99, "unknown");

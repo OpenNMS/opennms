@@ -60,7 +60,7 @@ import org.springframework.util.Assert;
  */
 class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(TrapQueueProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TrapQueueProcessor.class);
 	
     /**
      * The name of the local host.
@@ -85,11 +85,15 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
 
     private TrapNotification m_trapNotification;
     
+    private static long s_trapsReceived = 0;
+    
     private static long s_v1TrapsReceived = 0;
     
     private static long s_v2cTrapsReceived = 0;
     
     private static long s_v3TrapsReceived = 0;
+    
+    private static long s_vUnknownTrapsReceived = 0;
     
     private static long s_trapsDiscarded = 0;
     
@@ -190,17 +194,22 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
             event.setUei(econf.getUei());
         }
 
-        if (econf != null) {
-            final Snmp snmp = econf.getSnmp();
-            if (snmp != null) {
-                if ("v1".equals(snmp.getVersion())) {
-                    s_v1TrapsReceived++;
-                } else if ("v2c".equals(snmp.getVersion())) {
-                    s_v2cTrapsReceived++;
-                } else if ("v3".equals(snmp.getVersion())) {
-                    s_v3TrapsReceived++;
-                }
+        if (event.getSnmp() != null) {
+            final String version = event.getSnmp().getVersion();
+            s_trapsReceived++;
+            if ("v1".equals(version)) {
+                s_v1TrapsReceived++;
+            } else if ("v2c".equals(version)) {
+                s_v2cTrapsReceived++;
+            } else if ("v3".equals(version)) {
+                s_v3TrapsReceived++;
+            } else {
+                s_vUnknownTrapsReceived++;
+                LOG.warn("Received a trap with an unknown SNMP protocol version '{}'", version);
             }
+        }
+        
+        if (econf != null) {
             final Logmsg logmsg = econf.getLogmsg();
             if (logmsg != null) {
                 final String dest = logmsg.getDest();
@@ -318,6 +327,10 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
         Assert.state(m_trapNotification != null, "property trapNotification must be set");
     }
     
+    public static long getTrapsReceived() {
+        return s_trapsReceived;
+    }
+    
     public static long getV1TrapsReceived() {
         return s_v1TrapsReceived;
     }
@@ -328,6 +341,10 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
     
     public static long getV3TrapsReceived() {
         return s_v3TrapsReceived;
+    }
+    
+    public static long getVersionUnknownTrapsReceived() {
+        return s_vUnknownTrapsReceived;
     }
     
     public static long getTrapsDiscarded() {

@@ -662,7 +662,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_broadcastDomainToRootBFTMap.put(rootid, rootBFT);
     }
     @Override
-    public void store(BroadcastDomain domain) {
+    public void store(BroadcastDomain domain, Date now) {
         for (SharedSegment segment : domain.getTopology()) {
             for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
                 link.setBridgeBridgeLinkLastPollTime(new Date());
@@ -673,15 +673,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                 saveBridgeMacLink(link);
             }
         }
-    }
-
-    @Override
-    public void reconcileBridgeTopology(int nodeid, Date now) {
-        m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
-        m_bridgeMacLinkDao.flush();
-        m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
-        m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeid, now);
-        m_bridgeBridgeLinkDao.flush();
+        
+        for (Integer nodeid: domain.getBridgeNodesOnDomain()) {
+            m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
+            m_bridgeMacLinkDao.flush();
+            m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
+            m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeid, now);
+            m_bridgeBridgeLinkDao.flush();
+        }
     }
 
     @Transactional

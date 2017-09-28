@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.core.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.owasp.encoder.Encode;
+
 /**
  * <p>WebSecurityUtils class.</p>
  *
@@ -46,6 +48,8 @@ public abstract class WebSecurityUtils {
 	private static final Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
 	
     private static final Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern imgOnErrorPattern = Pattern.compile("(img[^>]+)o(nerror=[^>]+>)", Pattern.CASE_INSENSITIVE);
 
     /**
      * <p>sanitizeString</p>
@@ -82,11 +86,16 @@ public abstract class WebSecurityUtils {
         if (raw==null || raw.length()==0) {
             return raw;
         }
+        String next;
 
-        Matcher scriptMatcher = scriptPattern.matcher(raw);
-        String next = scriptMatcher.replaceAll("&#x73;cript");
-        if (!allowHTML) {
-            next = next.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
+        if (allowHTML) {
+            Matcher scriptMatcher = scriptPattern.matcher(raw);
+            next = scriptMatcher.replaceAll("&#x73;cript");
+
+            Matcher imgOnErrorMatcher = imgOnErrorPattern.matcher(next);
+            next = imgOnErrorMatcher.replaceAll("$1&#x6f;$2");
+        } else {
+            next = Encode.forHtmlContent(raw);
         }
         return next;
     }

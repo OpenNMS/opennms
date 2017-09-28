@@ -79,4 +79,8 @@ public class RrdSummaryController {
         response.setContentType(summary.getView().getContentType());
         return summary;
     }
+
+    public void setRrdSummaryService(RrdSummaryService rrdSummaryService) {
+        m_rrdSummaryService = rrdSummaryService;
+    }
 }

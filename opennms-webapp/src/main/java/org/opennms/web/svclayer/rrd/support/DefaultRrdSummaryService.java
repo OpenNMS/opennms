@@ -223,12 +223,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
         private String m_name;
         private int m_count = 0;
         private long m_total = 0;
-        private static ThreadLocal<Long> m_lastStarted = new ThreadLocal<Long>() {
-            @Override
-            protected Long initialValue() {
-                return -1L;
-            }
-        };
+        private long m_lastStarted = -1;
 
         OpStats(String n) {
             m_name = n;
@@ -236,15 +231,14 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 
         void begin() {
             m_count++;
-            m_lastStarted.set(System.nanoTime());
+            m_lastStarted = System.nanoTime();
         }
 
         void end() {
             long ended  = System.nanoTime();
-            long m_lastStartedValue = m_lastStarted.get();
-            Assert.state(m_lastStartedValue >= 0, "must call begin before calling end");
-            m_total += (ended - m_lastStartedValue);
-            m_lastStarted.set(-1L);
+            Assert.state(m_lastStarted >= 0, "must call begin before calling end");
+            m_total += (ended - m_lastStarted);
+            m_lastStarted = -1;
         }
 
         @Override

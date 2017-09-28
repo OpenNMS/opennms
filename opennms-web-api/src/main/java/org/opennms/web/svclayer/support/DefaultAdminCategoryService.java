@@ -52,10 +52,6 @@ import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureExcepti
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultAdminCategoryService implements
         AdminCategoryService {
@@ -120,7 +116,7 @@ public class DefaultAdminCategoryService implements
         
         final List<OnmsNode> memberNodes = new ArrayList<OnmsNode>();
         for (final OnmsNode node : getNodeDao().findByCategory(category)) {
-        	if (!"D".equals(node.getType())) {
+        	if (!OnmsNode.NodeType.DELETED.equals(node.getType())) {
         		memberNodes.add(node);
         	}
         }
@@ -162,7 +158,7 @@ public class DefaultAdminCategoryService implements
     public List<OnmsNode> findAllNodes() {
     	final List<OnmsNode> list = new ArrayList<OnmsNode>();
     	for (final OnmsNode node : getNodeDao().findAll()) {
-    		if (!"D".equals(node.getType())) {
+    		if (!OnmsNode.NodeType.DELETED.equals(node.getType())) {
     			list.add(node);
     		}
     	}

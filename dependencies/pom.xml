@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2016.1.2</version>
+    <version>2016.1.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -42,6 +42,7 @@
     <module>mina</module>
     <module>netty</module>
     <module>newts</module>
+    <module>owasp-encoder</module>
     <module>pax-exam</module>
     <module>quartz</module>
     <module>rancid</module>

@@ -135,6 +135,7 @@ public class CategoryRestService extends OnmsRestService {
 
     @GET
     @Path("/{categoryName}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsCategory getCategory(@PathParam("categoryName") final String categoryName) {
         OnmsCategory category = m_categoryDao.findByName(categoryName);
         if (category == null) throw getException(Response.Status.NOT_FOUND, "Category with name '{}' was not found.", categoryName);
@@ -155,6 +156,7 @@ public class CategoryRestService extends OnmsRestService {
 
     @GET
     @Path("/")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsCategoryCollection listCategories() {
         return new OnmsCategoryCollection(new ArrayList<OnmsCategory>(m_categoryDao.findAll()));
     }
@@ -185,6 +187,7 @@ public class CategoryRestService extends OnmsRestService {
 
     @GET
     @Path("/groups/{groupName}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsCategoryCollection listCategoriesForGroup(@Context final ResourceContext context, @PathParam("groupName") final String groupName) {
         return context.getResource(GroupRestService.class).listCategories(groupName);
     }

@@ -520,8 +520,8 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * @return the computed availability
      */
 
-    private static Double calculateAvailability(int serviceCount, long downMillisCount) {
-        long upMillis = ((long) serviceCount * (24L * 60L * 60L * 1000L)) - downMillisCount;
+    private static Double calculateAvailability(long serviceCount, long downMillisCount) {
+        long upMillis = (serviceCount * (24L * 60L * 60L * 1000L)) - downMillisCount;
 
         return ((double) upMillis / (double) (serviceCount * (24 * 60 * 60 * 1000)));
     }

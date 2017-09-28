@@ -246,7 +246,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             buf.append("statusRowLabel=");
             buf.append(Util.encode(status.getLabel()));
             buf.append('&');
-            buf.append("nodesWithDownAggregateStatus");
+            buf.append("nodesWithDownAggregateStatus=true");
             return buf.toString();
         }
         
