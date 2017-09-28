@@ -2,7 +2,7 @@
 	<parent>
 		<groupId>org.opennms.features</groupId>
 		<artifactId>org.opennms.features.ticketing</artifactId>
-		<version>2015.1.3</version>
+		<version>2015.1.4</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-remedy</artifactId>
@@ -20,10 +20,6 @@
 					</execution>
 				</executions>
 				<configuration>
-					<urls>
-						<url>file:///${project.basedir}/src/main/wsdl/HPD_IncidentInterface_WS.wsdl</url>
-						<url>file:///${project.basedir}/src/main/wsdl/HPD_IncidentInterface_Create_WS.wsdl</url>
-					</urls>
 					<packageSpace>
 						org.opennms.integration.remedy.ticketservice
 					</packageSpace>

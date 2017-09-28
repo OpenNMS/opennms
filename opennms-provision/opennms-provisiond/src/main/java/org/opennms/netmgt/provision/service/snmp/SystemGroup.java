@@ -31,14 +31,16 @@ package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.operations.ScanResource;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -271,13 +273,23 @@ public final class SystemGroup extends AggregateTracker {
     /** {@inheritDoc} */
     @Override
     protected void reportGenErr(String msg) {
-        LOG.warn("Error retrieving systemGroup from {}. {}", msg, m_address);
+        LOG.warn("Error retrieving systemGroup from {}. {}", m_address, msg);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        LOG.info("Error retrieving systemGroup from {}. {}", msg, m_address);
+        LOG.info("Error retrieving systemGroup from {}. {}", m_address, msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving systemGroup from {}. {}", m_address, ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Error ({}) retrieving systemGroup from {}. {}", status, m_address, status.retry()? "Retrying." : "Giving up.");
     }
 
     /**

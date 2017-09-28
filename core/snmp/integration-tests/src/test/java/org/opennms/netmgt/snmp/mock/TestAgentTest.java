@@ -31,10 +31,11 @@ package org.opennms.netmgt.snmp.mock;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
+import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+
+import junit.framework.TestCase;
 
 public class TestAgentTest extends TestCase {
     
@@ -210,7 +211,7 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(get);
         
-        assertEquals(ResponsePdu.TOO_BIG_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.TOO_BIG.ordinal(), resp.getErrorStatus());
         assertEquals(0, resp.getErrorIndex());
     }
 
@@ -226,7 +227,7 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(get);
         
-        assertEquals(ResponsePdu.NO_SUCH_NAME_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.NO_SUCH_NAME.ordinal(), resp.getErrorStatus());
         assertEquals(2, resp.getErrorIndex());
         
     }
@@ -242,7 +243,7 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(get);
         
-        assertEquals(ResponsePdu.NO_SUCH_NAME_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.NO_SUCH_NAME.ordinal(), resp.getErrorStatus());
         assertEquals(2, resp.getErrorIndex());
     }
 
@@ -285,7 +286,7 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(get);
         
-        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.GEN_ERR.ordinal(), resp.getErrorStatus());
         assertEquals(2, resp.getErrorIndex());
     }
     
@@ -303,7 +304,7 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(get);
         
-        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.GEN_ERR.ordinal(), resp.getErrorStatus());
         assertEquals(2, resp.getErrorIndex());
     }
 
@@ -320,7 +321,7 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(get);
         
-        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.GEN_ERR.ordinal(), resp.getErrorStatus());
         assertEquals(1, resp.getErrorIndex());
     }
     
@@ -328,7 +329,7 @@ public class TestAgentTest extends TestCase {
 
     private void validateGetResponse(GetPdu get, ResponsePdu resp) {
         assertNotNull(resp);
-        assertEquals(ResponsePdu.NO_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.NO_ERROR.ordinal(), resp.getErrorStatus());
         // determine if errors are expected
         
         
@@ -360,7 +361,7 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(pdu);
         
-        assertEquals(ResponsePdu.NO_SUCH_NAME_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.NO_SUCH_NAME.ordinal(), resp.getErrorStatus());
         assertEquals(2, resp.getErrorIndex());
     }
 
@@ -389,7 +390,7 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(get);
         
-        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.GEN_ERR.ordinal(), resp.getErrorStatus());
         assertEquals(2, resp.getErrorIndex());
     }
 
@@ -407,12 +408,12 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(get);
         
-        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.GEN_ERR.ordinal(), resp.getErrorStatus());
         assertEquals(2, resp.getErrorIndex());
     }
    private void validateNextResponse(NextPdu pdu, ResponsePdu resp) {
         assertNotNull(resp);
-        assertEquals(ResponsePdu.NO_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.NO_ERROR.ordinal(), resp.getErrorStatus());
         assertEquals(pdu.size(), resp.size());
         for(int i = 0; i < resp.size(); i++) {
             verifyNextVarBind(pdu.getVarBindAt(i).getObjId(), resp.getVarBindAt(i));
@@ -525,7 +526,7 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(pdu);
         
-        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.GEN_ERR.ordinal(), resp.getErrorStatus());
         assertEquals(2, resp.getErrorIndex());
     }
 
@@ -546,14 +547,14 @@ public class TestAgentTest extends TestCase {
         
         ResponsePdu resp = m_agent.send(pdu);
         
-        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.GEN_ERR.ordinal(), resp.getErrorStatus());
         assertEquals(4, resp.getErrorIndex());
     }
 
 
     private void validateBulkResponse(BulkPdu pdu, ResponsePdu resp) {
         assertNotNull(resp);
-        assertEquals(ResponsePdu.NO_ERR, resp.getErrorStatus());
+        assertEquals(ErrorStatus.NO_ERROR.ordinal(), resp.getErrorStatus());
         
         int nonRepeaters = pdu.getNonRepeaters();
         int repeaters = (pdu.size() - nonRepeaters);

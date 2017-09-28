@@ -1,6 +1,32 @@
 [releasenotes-2015]
 === OpenNMS Meridian 2015
 
+[releasenotes-changelog-2015.1.4]
+==== Release Meridian-2015.1.4
+
+Release 2015.1.4 is the fifth release of OpenNMS Meridian 2015.  It contains a few bug fixes and minor enhancements.
+The codename for 2015.1.3 is _ULAST_.
+
+===== Bug
+
+* If a target node is rebooted the RRD/JRB files contains spikes because the sysUpTime check is not working (Issue http://issues.opennms.org/browse/NMS-7106[NMS-7106])
+* SVG maps shows minimum alarm severity color instead of maximum (Issue http://issues.opennms.org/browse/NMS-8658[NMS-8658])
+* Any SNMP error-status > 5 treated as unrecognized, aborts AggregateTracker (Issue http://issues.opennms.org/browse/NMS-8671[NMS-8671])
+* RRDtool 1.6 doesn't like vames called ds (Issue http://issues.opennms.org/browse/NMS-8775[NMS-8775])
+* Elasticsearch Test Cluster is started even if tests are skipped (Issue http://issues.opennms.org/browse/NMS-8783[NMS-8783])
+* The search page for events is not working as expected (Issue http://issues.opennms.org/browse/NMS-8790[NMS-8790])
+* The "Recent Events" in the node page, shows HTML tags on the message (Issue http://issues.opennms.org/browse/NMS-8794[NMS-8794])
+* Several ICMPv6 tests fail with NoRouteToHostException (Issue http://issues.opennms.org/browse/NMS-8840[NMS-8840])
+* user detection in `install` is busted on some Linux systems (Issue http://issues.opennms.org/browse/NMS-8843[NMS-8843])
+* Updating assets/categories through ReST affects Forced Unmanaged services. (Issue http://issues.opennms.org/browse/NMS-8879[NMS-8879])
+* wsdl2java in features/ticketing/remedy is causing build failures (Issue http://issues.opennms.org/browse/NMS-8940[NMS-8940])
+
+===== Enhancement
+
+* Allow filtering by severity in alarm list (Issue http://issues.opennms.org/browse/NMS-8851[NMS-8851])
+* Expose alarm-list "limit" parameter as a UI control (Issue http://issues.opennms.org/browse/NMS-8852[NMS-8852])
+
+
 [releasenotes-changelog-2015.1.3]
 ==== Release Meridian-2015.1.3
 

@@ -92,3 +92,7 @@ include::text/provisioning.adoc[]
 include::text/operation/jmx-config-generator/introduction.adoc[]
 include::text/operation/jmx-config-generator/webui.adoc[]
 include::text/operation/jmx-config-generator/cli.adoc[]
+
+[[ga-special-cases-and-workarounds]]
+== Special Cases and Workarounds
+include::text/workarounds/snmp.adoc[]

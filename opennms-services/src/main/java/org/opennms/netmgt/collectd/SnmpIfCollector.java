@@ -37,6 +37,8 @@ import java.util.TreeMap;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.slf4j.Logger;
@@ -144,6 +146,16 @@ public class SnmpIfCollector extends AggregateTracker {
     @Override
     protected void reportTooBigErr(String msg) {
         LOG.info("{} : request tooBig. {}", m_primaryIf, msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("{} : fatal error. {}", m_primaryIf, ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("{} : non-fatal error ({}) encountered: {}", m_primaryIf, status, status.retry()? "Retrying." : "Giving up.");
     }
 
     /** {@inheritDoc} */

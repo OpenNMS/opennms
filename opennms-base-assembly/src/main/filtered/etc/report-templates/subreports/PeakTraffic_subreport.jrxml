@@ -79,17 +79,17 @@
 	<field name="OutOctets" class="java.lang.Double">
 		<fieldDescription><![CDATA[OutOctets]]></fieldDescription>
 	</field>
-	<variable name="ifInOctets_Average" class="java.lang.Double" calculation="Average">
-		<variableExpression><![CDATA[$F{InOctets}]]></variableExpression>
+	<variable name="ifInBits_Average" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$F{InOctets} * 8]]></variableExpression>
 	</variable>
-	<variable name="ifOutOctets_Average" class="java.lang.Double" calculation="Average">
-		<variableExpression><![CDATA[$F{OutOctets}]]></variableExpression>
+	<variable name="ifOutBits_Average" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$F{OutOctets} * 8]]></variableExpression>
 	</variable>
-	<variable name="ifInOctets_Peak" class="java.lang.Double" calculation="Highest">
-		<variableExpression><![CDATA[$F{InOctets}]]></variableExpression>
+	<variable name="ifInBits_Peak" class="java.lang.Double" calculation="Highest">
+		<variableExpression><![CDATA[$F{InOctets} * 8]]></variableExpression>
 	</variable>
-	<variable name="ifOutOctets_Peak" class="java.lang.Double" calculation="Highest">
-		<variableExpression><![CDATA[$F{OutOctets}]]></variableExpression>
+	<variable name="ifOutBits_Peak" class="java.lang.Double" calculation="Highest">
+		<variableExpression><![CDATA[$F{OutOctets} * 8]]></variableExpression>
 	</variable>
 	<filterExpression><![CDATA[!$F{InOctets}.isNaN() && !$F{OutOctets}.isNaN()]]></filterExpression>
 	<background>
@@ -104,14 +104,14 @@
 					<property name="local_mesure_unitx" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
-				<textFieldExpression><![CDATA[$V{ifOutOctets_Peak}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{ifOutBits_Peak}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Detail" x="113" y="4" width="123" height="20" uuid="4269bf48-156f-4447-bed0-83f3c048cb8f">
 					<property name="local_mesure_unitx" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
-				<textFieldExpression><![CDATA[$V{ifInOctets_Average}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{ifInBits_Average}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Detail" x="329" y="4" width="120" height="20" uuid="d15a4671-5e26-4d42-af3a-e7e39da81b11">
@@ -120,7 +120,7 @@
 					<property name="local_mesure_unitx" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
-				<textFieldExpression><![CDATA[$V{ifOutOctets_Average}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{ifOutBits_Average}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="Detail" x="3" y="4" width="110" height="20" uuid="5ca6f441-c070-481f-8d2f-8e4a0dd763f8">
@@ -135,7 +135,7 @@
 					<property name="local_mesure_unitx" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
-				<textFieldExpression><![CDATA[$V{ifInOctets_Peak}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{ifInBits_Peak}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

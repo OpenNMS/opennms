@@ -41,6 +41,7 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
@@ -176,6 +177,7 @@ public class QueryManagerDaoImpl implements QueryManager {
             new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
         }));
         criteria.addRestriction(new EqRestriction("node.id", nodeId));
+        criteria.addRestriction(new NeRestriction("status", "F")); // Ignore forced-unmanaged
         for (OnmsMonitoredService service : m_monitoredServiceDao.findMatching(criteria)) {
             servicemap.add(new String[] { service.getIpAddressAsString(), service.getServiceName() });
         }

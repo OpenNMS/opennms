@@ -32,8 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SingleInstanceTracker extends CollectionTracker {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(SingleInstanceTracker.class);
+    private static final transient Logger LOG = LoggerFactory.getLogger(SingleInstanceTracker.class);
 
     private SnmpObjId m_base;
     private SnmpInstId m_inst;
@@ -90,21 +89,28 @@ public class SingleInstanceTracker extends CollectionTracker {
 
             @Override
             public boolean processErrors(int errorStatus, int errorIndex) {
-                if (errorStatus == NO_ERR) {
-                    return false;
-                } else if (errorStatus == TOO_BIG_ERR) {
+                //LOG.trace("processErrors: errorStatus={}, errorIndex={}", errorStatus, errorIndex);
+
+                final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
+                if (status == ErrorStatus.TOO_BIG) {
                     throw new IllegalArgumentException("Unable to handle tooBigError for oid request "+m_oid.decrement());
-                } else if (errorStatus == GEN_ERR) {
-                    reportGenErr("Received genErr requesting oid "+m_oid.decrement()+". Marking column is finished.");
+                } else if (status == ErrorStatus.GEN_ERR) {
+                    reportGenErr("Received genErr requesting oid "+m_oid.decrement()+". Marking column as finished.");
                     errorOccurred();
                     return true;
-                } else if (errorStatus == NO_SUCH_NAME_ERR) {
-                    reportNoSuchNameErr("Received noSuchName reqeusting oid "+m_oid.decrement()+". Marking column is finished.");
+                } else if (status == ErrorStatus.NO_SUCH_NAME) {
+                    reportNoSuchNameErr("Received noSuchName requesting oid "+m_oid.decrement()+". Marking column as finished.");
                     errorOccurred();
                     return true;
-                } else {
-                    throw new IllegalArgumentException("Unexpected error processing oid "+m_oid.decrement()+". Aborting!");
+                } else if (status.isFatal()) {
+                    final ErrorStatusException ex = new ErrorStatusException(status, "Unexpected error processing oid "+m_oid.decrement()+". Marking column as finished!");
+                    LOG.debug("Fatal Error: {}", status, ex);
+                    throw ex;
+                } else if (status != ErrorStatus.NO_ERROR) {
+                    LOG.warn("Non-fatal error encountered: {}. {}", status, status.retry()? "Retrying." : "Giving up.");
+                    return status.retry();
                 }
+                return false;
             }
         };
         

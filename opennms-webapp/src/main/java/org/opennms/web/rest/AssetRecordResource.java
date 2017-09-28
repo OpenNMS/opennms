@@ -41,6 +41,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
@@ -74,6 +75,9 @@ public class AssetRecordResource extends OnmsRestService {
     @Autowired
     private NodeDao m_nodeDao;    
     
+    @Autowired
+    private AssetRecordDao m_assetRecordDao;
+
     @Autowired
     private EventProxy m_eventProxy;
     
@@ -123,7 +127,7 @@ public class AssetRecordResource extends OnmsRestService {
             if (assetRecord.getGeolocation() == null) {
                 assetRecord.setGeolocation(new OnmsGeolocation());
             }
-            LOG.debug("updateAssetRecord: updating category {}", assetRecord);
+            LOG.debug("updateAssetRecord: updating asset {}", assetRecord);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
             for(String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -134,7 +138,7 @@ public class AssetRecordResource extends OnmsRestService {
             }
        
             LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
-            m_nodeDao.saveOrUpdate(node);
+            m_assetRecordDao.saveOrUpdate(assetRecord);
             
             try {
                 sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());

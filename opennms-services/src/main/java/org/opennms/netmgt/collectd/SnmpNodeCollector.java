@@ -33,6 +33,8 @@ import java.util.Collection;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +109,16 @@ public class SnmpNodeCollector extends AggregateTracker {
     @Override
     protected void reportNoSuchNameErr(String msg) {
         LOG.info("noSuchName collecting data for node {}: {}", m_primaryIf, msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Fatal error collecting data for node {}: {}", m_primaryIf, ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) collecting data for node {}: {}", status, m_primaryIf, status.retry()? "Retrying." : "Giving up.");
     }
 
     /** {@inheritDoc} */
