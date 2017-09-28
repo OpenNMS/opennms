@@ -20,4 +20,23 @@
     </rollback>
   </changeSet>
 
+  <!-- NMS-9653: undo NMS-9497 and set to 1+2 respectively -->
+  <changeSet author="ranger" id="foundation2017-bsm-service-problem-type">
+    <update tableName="alarms">
+      <column name="alarmtype" value="1" />
+      <where>eventuei='uei.opennms.org/bsm/serviceProblem'</where>
+    </update>
+    <update tableName="alarms">
+      <column name="alarmtype" value="2" />
+      <where>eventuei='uei.opennms.org/bsm/serviceProblemResolved'</where>
+    </update>
+
+    <rollback>
+      <update tableName="alarms">
+        <column name="alarmtype" value="3" />
+	<where>eventuei='uei.opennms.org/bsm/serviceProblem' OR eventuei='uei.opennms.org/bsm/serviceProblemResolved'</where>
+      </update>
+    </rollback>
+  </changeSet>
+
 </databaseChangeLog>
