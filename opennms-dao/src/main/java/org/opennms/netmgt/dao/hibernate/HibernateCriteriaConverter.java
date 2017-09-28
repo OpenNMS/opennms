@@ -29,9 +29,11 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.FetchMode;
 import org.hibernate.LockMode;
@@ -41,7 +43,11 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.type.FloatType;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
+import org.hibernate.type.TimestampType;
 import org.opennms.core.criteria.AbstractCriteriaVisitor;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
@@ -427,7 +433,28 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         @Override
         public void visitSql(final SqlRestriction restriction) {
-            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute()));
+            if (restriction.getParameters() != null && restriction.getParameters().length > 0) {
+                // Map our {@link Type} enum values to {@link org.hibernate.type.Type} equivalents 
+                org.hibernate.type.Type[] types = Arrays.stream(restriction.getTypes()).map(t -> { 
+                    switch(t) {
+                    case FLOAT:
+                        return new FloatType();
+                    case INTEGER:
+                        return new IntegerType();
+                    case LONG:
+                        return new LongType();
+                    case STRING:
+                        return new StringType();
+                    case TIMESTAMP:
+                        return new TimestampType();
+                    default: 
+                        throw new UnsupportedOperationException("Unsupported type specified in SqlRestriction");
+                    }
+                }).collect(Collectors.toList()).toArray(new org.hibernate.type.Type[restriction.getTypes().length]);
+                m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute(), restriction.getParameters(), types));
+            } else {
+                m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute()));
+            }
         }
 
         @Override

@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -227,7 +228,7 @@ public class PageSequenceMonitorIT {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page user-agent=\"Donald\" path=\"/\" scheme=\"https\" port=\"443\" successMatch=\"Get the Network to Work\" virtual-host=\"www.opennms.com\"/>\n" + 
+            "  <page user-agent=\"Donald\" path=\"/\" scheme=\"https\" port=\"443\" successMatch=\"OpenNMS monitors millions of devices from a single instance\" virtual-host=\"www.opennms.com\"/>\n" + 
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
@@ -241,7 +242,7 @@ public class PageSequenceMonitorIT {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page path=\"/\" port=\"80\" successMatch=\"Get the Network to Work\" user-agent=\"Jakarta Commons-HttpClient/3.0.1\" virtual-host=\"www.opennms.com\"/>\n" + 
+            "  <page path=\"/\" port=\"80\" successMatch=\"OpenNMS monitors millions of devices from a single instance\" user-agent=\"Jakarta Commons-HttpClient/3.0.1\" virtual-host=\"www.opennms.com\"/>\n" + 
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
@@ -418,6 +419,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRequireIPv6() throws Exception {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 

@@ -29,9 +29,9 @@
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
@@ -90,6 +90,7 @@ public class DnsMonitorIT {
     
     @Test
     public void testIPV6Response() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         final ServiceMonitor monitor = new DnsMonitor();
@@ -231,6 +232,7 @@ public class DnsMonitorIT {
     
     @Test
     public void testDnsJavaQuadARecord() throws IOException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         final Lookup l = new Lookup("ipv6.example.com", Type.AAAA);
         // make sure we use a temporary cache so don't get results from a previously cached query
         // from another test

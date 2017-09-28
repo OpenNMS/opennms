@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.ticketing</artifactId>
-        <version>2016.1.5</version>
+        <version>2016.1.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>bundle</packaging>
@@ -57,8 +57,8 @@
             <extensions>true</extensions>
             <configuration>
                 <instructions>
-                    <Import-Package>org.joda.time,org.joda.time.format;version=${jodaTimeVersion},javax.ws.rs,javax.ws.rs.core,javax.ws.rs.ext,javax.net.ssl,javax.naming,org.apache.commons.logging,org.springframework.beans.factory</Import-Package>
-                    <Export-Package>com.atlassian.jira.rest.client.api,com.atlassian.jira.rest.client.auth,com.atlassian.jira.rest.client.api.domain,com.atlassian.jira.rest.client.api.domain.input,com.atlassian.jira.rest.client.internal.async,com.atlassian.util.concurrent</Export-Package>
+                    <Import-Package>javax.security.auth,javax.security.auth.x500,org.joda.time,org.joda.time.format;version=${jodaTimeVersion},javax.ws.rs,javax.ws.rs.core,javax.ws.rs.ext,javax.net.ssl,javax.naming,javax.naming.ldap,javax.naming.directory,org.apache.commons.logging,org.springframework.beans.factory</Import-Package>
+                    <Export-Package>com.atlassian.jira.rest.client.api,com.atlassian.jira.rest.client.auth,com.atlassian.jira.rest.client.api.domain,com.atlassian.jira.rest.client.api.domain.input,com.atlassian.jira.rest.client.internal.async,com.atlassian.util.concurrent,com.atlassian.httpclient.apache.httpcomponents</Export-Package>
                 </instructions>
                 <unpackBundle>true</unpackBundle>
             </configuration>

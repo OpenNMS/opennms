@@ -141,12 +141,50 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.6]
+==== Release Meridian-2016.1.6
+
+Release 2016.1.6 is an update to 2016.1.5 that provides quite a few bug fixes and a few small enhancements.
+
+The codename for 2016.1.6 is _Goode homolosine_.
+
+===== Bug
+
+* collectd does not unschedule deleted nodes (Issue http://issues.opennms.org/browse/NMS-5105[NMS-5105])
+* noSuchInstance causing problems during provision scan (Issue http://issues.opennms.org/browse/NMS-8046[NMS-8046])
+* Security issue for all admin vaadin applications exposed as OSGI Service (Issue http://issues.opennms.org/browse/NMS-8431[NMS-8431])
+* Updating assets/categories through ReST affects Forced Unmanaged services. (Issue http://issues.opennms.org/browse/NMS-8879[NMS-8879])
+* Logging for TCP output queue (Issue http://issues.opennms.org/browse/NMS-9291[NMS-9291])
+* provision.pl does not create interfaces (Issue http://issues.opennms.org/browse/NMS-9345[NMS-9345])
+* XSS vulnerability on quick-add node page (Issue http://issues.opennms.org/browse/NMS-9353[NMS-9353])
+* XSS vulnerability on node error page (Issue http://issues.opennms.org/browse/NMS-9354[NMS-9354])
+* XSS vulnerability with application names (Issue http://issues.opennms.org/browse/NMS-9355[NMS-9355])
+* Thresholding on WSMan datasources appears broken (Issue http://issues.opennms.org/browse/NMS-9361[NMS-9361])
+* TCP persistence strategy should output time in milliseconds, not seconds (Issue http://issues.opennms.org/browse/NMS-9409[NMS-9409])
+* NullPointerException during nodeScan on devices with broken IP-MIB::ipAddressIfIndex (Issue http://issues.opennms.org/browse/NMS-9415[NMS-9415])
+* Event Configuration Screen Requires Alarm Type (Issue http://issues.opennms.org/browse/NMS-9422[NMS-9422])
+* SQL injection in DefaultSurveillanceViewService (Issue http://issues.opennms.org/browse/NMS-9476[NMS-9476])
+* "query" parameter allows SQL injection (Issue http://issues.opennms.org/browse/NMS-9478[NMS-9478])
+* Clone foreign source requisition overwrites config of other requisition without any hint or warning (Issue http://issues.opennms.org/browse/NMS-9481[NMS-9481])
+* Fix ownership of users.xml (Issue http://issues.opennms.org/browse/NMS-9493[NMS-9493])
+* ConcurrentModificationException thrown by Statsd (Issue http://issues.opennms.org/browse/NMS-9511[NMS-9511])
+* Update copyright date in docs (Issue http://issues.opennms.org/browse/NMS-9516[NMS-9516])
+* Document supported products and versions for Remedy integration (Issue http://issues.opennms.org/browse/NMS-9538[NMS-9538])
+* Eventd does not respect event configuration order when reloading (Issue http://issues.opennms.org/browse/NMS-9551[NMS-9551])
+* users.xml being overwritten on installation (Issue http://issues.opennms.org/browse/NMS-9573[NMS-9573])
+
+===== Enhancement
+
+* Document the logic behind the response time value reported by the SnmpMonitor (Issue http://issues.opennms.org/browse/NMS-9475[NMS-9475])
+* Add parameterized SQL support to Criteria API (Issue http://issues.opennms.org/browse/NMS-9480[NMS-9480])
+
+
 [releasenotes-changelog-Meridian-2016.1.5]
 ==== Release 2016.1.5
 
 Release 2016.1.5 is an update to 2016.1.4 that provides quite a few bug fixes and a few enhancements.
 
-The codename for 2016.1.4 is _Peirce Quincuncial_.
+The codename for 2016.1.5 is _Peirce Quincuncial_.
 
 ===== Bug
 

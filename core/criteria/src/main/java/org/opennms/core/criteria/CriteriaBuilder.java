@@ -37,6 +37,7 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -273,12 +274,18 @@ public class CriteriaBuilder {
         return this;
     }
 
-    public CriteriaBuilder sql(final Object sql) {
-        if (sql instanceof String) {
-            addRestriction(Restrictions.sql((String) sql));
-        } else {
-            LOG.warn("sql(): {} is not a string type, can't add", sql.getClass().getName());
-        }
+    public CriteriaBuilder sql(final String sql) {
+        addRestriction(Restrictions.sql((String) sql));
+        return this;
+    }
+
+    public CriteriaBuilder sql(final String sql, final Object parameter, final Type type) {
+        addRestriction(Restrictions.sql((String) sql, parameter, type));
+        return this;
+    }
+
+    public CriteriaBuilder sql(final String sql, final Object[] parameters, final Type[] types) {
+        addRestriction(Restrictions.sql((String) sql, parameters, types));
         return this;
     }
 

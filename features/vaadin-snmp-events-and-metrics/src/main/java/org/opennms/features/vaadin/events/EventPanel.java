@@ -318,7 +318,7 @@ public abstract class EventPanel extends Panel {
             for (org.opennms.netmgt.xml.eventconf.Event event : baseEventsObject.getEventCollection()) {
                 logger.debug("Normalizing event " + event.getUei());
                 AlarmData ad = event.getAlarmData();
-                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty())) {
+                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty() || ad.getAlarmType() == null || ad.getAlarmType() == 0)) {
                     event.setAlarmData(null);
                 }
                 Mask m = event.getMask();

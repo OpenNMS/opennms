@@ -9,7 +9,7 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2017 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -193,6 +193,7 @@ include::text/operation/daemon-config-files/pollerd.adoc[]
 == Ticketing
 include::text/ticketing/introduction.adoc[]
 include::text/ticketing/jira.adoc[]
+include::text/ticketing/remedy.adoc[]
 
 [[ga-rmi]]
 == Enabling RMI

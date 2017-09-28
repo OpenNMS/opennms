@@ -164,13 +164,16 @@
         }
       });
       modalInstance.result.then(function(targetForeignSource) {
-        RequisitionsService.startTiming();
-        RequisitionsService.cloneForeignSourceDefinition(foreignSource, targetForeignSource).then(
-          function() { // success
-            growl.success('The foreign source definition for ' + foreignSource + ' has been cloned to ' + targetForeignSource);
-          },
-          $scope.errorHandler
-        );
+        bootbox.confirm('This action will override the existing foreign source definition for the target requisition. Are you sure you want to continue ?', function(ok) {
+          if (!ok) return;
+          RequisitionsService.startTiming();
+          RequisitionsService.cloneForeignSourceDefinition(foreignSource, targetForeignSource).then(
+            function() { // success
+              growl.success('The foreign source definition for ' + foreignSource + ' has been cloned to ' + targetForeignSource);
+            },
+            $scope.errorHandler
+          );
+        });
       });
     };
 

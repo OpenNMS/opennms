@@ -150,7 +150,7 @@
     
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
     nodeModel.put("id", Integer.toString(nodeId));
-    nodeModel.put("label", node_db.getLabel());
+    nodeModel.put("label", WebSecurityUtils.sanitizeString(node_db.getLabel()));
     nodeModel.put("foreignId", node_db.getForeignId());
     nodeModel.put("foreignSource", node_db.getForeignSource());
 

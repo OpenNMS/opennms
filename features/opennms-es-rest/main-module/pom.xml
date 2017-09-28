@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>opennms-es-rest.parent</artifactId>
-    <version>2016.1.5</version>
+    <version>2016.1.6</version>
   </parent>
 
   <!-- LicenceAuthenticator -->
