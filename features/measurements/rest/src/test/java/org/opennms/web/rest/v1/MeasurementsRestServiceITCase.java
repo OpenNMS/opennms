@@ -30,13 +30,24 @@ package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.OS;
+import org.apache.commons.exec.environment.EnvironmentUtils;
+import org.apache.commons.exec.launcher.CommandLauncher;
+import org.apache.commons.exec.launcher.CommandLauncherFactory;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -47,6 +58,8 @@ import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
@@ -57,6 +70,7 @@ import com.google.common.collect.Lists;
  * @author Jesse White <jesse@opennms.org>
  */
 public abstract class MeasurementsRestServiceITCase {
+    private static final Logger LOG = LoggerFactory.getLogger(MeasurementsRestServiceITCase.class);
 
     @Autowired
     protected MeasurementsRestService m_svc;
@@ -253,5 +267,48 @@ public abstract class MeasurementsRestServiceITCase {
 
         // Perform the query - this must fail
         m_svc.query(request);
+    }
+
+    protected static String findRrdtool() {
+        try {
+            @SuppressWarnings("unchecked")
+            final Map<String,String> env = new HashMap<String,String>(EnvironmentUtils.getProcEnvironment());
+            if (env.get("PATH") != null) {
+                final String pathVar = env.get("PATH");
+                if (!OS.isFamilyWindows()) {
+                    final List<String> paths = new ArrayList<>(Arrays.asList(pathVar.split(":")));
+                    paths.add("/usr/local/bin");
+                    paths.add("/usr/local/sbin");
+                    for (final String path : paths) {
+                        final String tryme = path + File.separator + "rrdtool";
+                        if (new File(tryme).exists()) {
+                            return tryme;
+                        }
+                    }
+                }
+            }
+            return "rrdtool";
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected static void assumeRrdtoolExists(final String libraryName) {
+        final String libraryPath = System.getProperty("java.library.path", "");
+        if (!libraryPath.contains(":/usr/local/lib")) {
+            System.setProperty("java.library.path", libraryPath + ":/usr/local/lib");
+        }
+        boolean rrdtoolExists = false;
+        try {
+            final CommandLauncher cl = CommandLauncherFactory.createVMLauncher();
+            final Process p = cl.exec(new CommandLine(findRrdtool()), EnvironmentUtils.getProcEnvironment());
+            final int returnCode = p.waitFor();
+            LOG.debug("Loading library from java.library.path={}", System.getProperty("java.library.path"));
+            System.loadLibrary(libraryName);
+            rrdtoolExists = returnCode == 0;
+        } catch (final Exception e) {
+            LOG.warn("Failed to run 'rrdtool' or libjrrd(2)? is missing.", e);
+        }
+        Assume.assumeTrue(rrdtoolExists);
     }
 }

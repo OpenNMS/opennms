@@ -32,6 +32,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -227,6 +229,50 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // There is one test outage that has been resolved
         restObject = new JSONObject(json);
         assertEquals(1, restObject.getJSONArray("outage").length());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetOutagesForNode() throws Exception {
+        // Test last week (no outages)
+        MockHttpServletRequest jsonRequest = createRequest(m_context, GET, "/outages/forNode/1");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+        JSONObject restObject = new JSONObject(json);
+        Assert.assertEquals(2, restObject.getJSONArray("outage").length()); // 2 outstanding
+
+        // Test a range with outages
+        long start = 1436846400000l;
+        long end = 1436932800000l;
+        jsonRequest = createRequest(m_context, GET, "/outages/forNode/1");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("start=" + start + "&end=" + end);
+        json = sendRequest(jsonRequest, 200);
+        restObject = new JSONObject(json);
+        for (int i=0; i < restObject.getJSONArray("outage").length(); i++) {
+            JSONObject obj = restObject.getJSONArray("outage").getJSONObject(i);
+            Assert.assertTrue(obj.getLong("ifLostService") > start);
+            Assert.assertTrue(obj.getLong("ifLostService") < end);
+        }
+
+        // Test a range without outages
+        jsonRequest = createRequest(m_context, GET, "/outages/forNode/1");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("start=1436932800000&end=1437019200000");
+        json = sendRequest(jsonRequest, 200);
+        restObject = new JSONObject(json);
+        Assert.assertEquals(2, restObject.getJSONArray("outage").length()); // 2 outstanding
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testIPhone() throws Exception {
+        final Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("limit", "50");
+        parameters.put("orderBy", "ifLostService");
+        parameters.put("order", "desc");
+        String xml = sendRequest(GET, "/outages/forNode/1", parameters, 200);
+        Assert.assertTrue(xml.contains("SNMP"));
     }
 
     @Test

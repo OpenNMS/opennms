@@ -14,8 +14,8 @@ Licences are associated with specific Product ID's and specific _Karaf_ instance
 Several _Karaf_ instances can be listed in a licence allowing a feature to run on more than one system using the same licence.
 When a licence is installed, the licence metadata is decoded and displayed.
 
-NOTE: A licence may be installed before or after its associated feature is installed.
-      If a licence is installed after the feature the feature must be restarted before the licence will be read.
+NOTE: A licence may be installed before or after its associated feature is installed. 
+If a licence is installed after the feature the feature must be restarted before the licence will be read.
 
 image::plugin-manager/09_installedLicences.png[]
 

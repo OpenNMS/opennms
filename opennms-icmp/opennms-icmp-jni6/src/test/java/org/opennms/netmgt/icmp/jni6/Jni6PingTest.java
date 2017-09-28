@@ -73,7 +73,7 @@ public class Jni6PingTest extends TestCase {
     }
 
     private boolean isRunTest() {
-        return Boolean.getBoolean(getRunTestProperty());
+        return Boolean.parseBoolean(System.getProperty(getRunTestProperty()));
     }
 
     private String getRunTestProperty() {
@@ -88,8 +88,10 @@ public class Jni6PingTest extends TestCase {
 
         super.setUp();
         m_goodHost = InetAddress.getByName("::1");
-        // 2001:db8 prefix is reserved for documentation purposes suffix is 'BadAddr!' as ascii
-        m_badHost = InetAddress.getByName("2001:0db8::4261:6441:6464:7221");
+        // Originally we used the 2001:db8 prefix, which is reserved for documentation purposes
+        // (suffix is 'BadAddr!' as ascii), but some networks actually return "no route to host"
+        // rather than just timing out, which throws off these tests.
+        m_badHost = InetAddress.getByName("2600:5800:f2a2:ffff:ffff:ffff:dead:beef");
         assertEquals(16, m_badHost.getAddress().length);
     }
 
@@ -179,8 +181,7 @@ public class Jni6PingTest extends TestCase {
         
         cb.await();
 
-        assertTrue("Unexpected Error sending ping to " + m_badHost + ": " + cb.getThrowable(), 
-                cb.getThrowable() == null || cb.getThrowable() instanceof NoRouteToHostException);
+        assertTrue("Unexpected Error sending ping to " + m_badHost + ": " + cb.getThrowable(), cb.getThrowable() == null || cb.getThrowable() instanceof NoRouteToHostException);
         assertTrue(cb.isTimeout());
         assertNotNull(cb.getPacket());
         assertNotNull(cb.getAddress());

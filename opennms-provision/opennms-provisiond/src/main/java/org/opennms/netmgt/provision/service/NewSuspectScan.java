@@ -108,6 +108,8 @@ public class NewSuspectScan implements Scan {
 						LOG.info("Done scanning scan new suspect address {} for foreign source {}", addrString, m_foreignSource);
 					}
 				});
+        } else {
+            LOG.info("A node already exists with address {} in foreign source {}. No node scan will be performed.", addrString, m_foreignSource);
         }
     }
 

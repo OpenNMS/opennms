@@ -94,12 +94,12 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
                 "-",
                 "--start=" + (startTimeInMillis / 1000),
                 "--end=" + (endTimeInMillis / 1000),
-                "DEF:ds=" + RrdFileConstants.escapeForGraphing(rrdAttribute.getRrdRelativePath()) + ":" + attribute.getName() + ":" + rraConsolidationFunction,
+                "DEF:ds1=" + RrdFileConstants.escapeForGraphing(rrdAttribute.getRrdRelativePath()) + ":" + attribute.getName() + ":" + rraConsolidationFunction,
         };
         
         String[] printDefs = new String[printFunctions.length];
         for (int i = 0; i < printFunctions.length; i++) {
-            printDefs[i] = "PRINT:ds:" + printFunctions[i] + ":\"%le\""; 
+            printDefs[i] = "PRINT:ds1:" + printFunctions[i] + ":\"%le\""; 
         }
         
         String commandString = StringUtils.arrayToDelimitedString(command, " ") + ' ' + StringUtils.arrayToDelimitedString(printDefs, " ");

@@ -158,6 +158,11 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         if (m_config.hasThreads()) return m_config.getThreads();
         return 5;
     }
+    
+    public int getMaxBft() {
+        if (m_config.hasMax_bft()) return m_config.getMax_bft();
+        return 1;
+    }
 
     /**
      * <p>saveXml</p>

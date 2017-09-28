@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -123,6 +125,16 @@ public abstract class SnmpTable<T extends SnmpStore> extends AggregateTracker im
     @Override
     protected void reportNoSuchNameErr(String msg) {
         LOG.info("Error retrieving {} from {}. {}", m_tableName, m_address, msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving {} from {}. {}", m_tableName, m_address, ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) encountered: {}", status, status.retry()? "Retrying." : "Giving up.");
     }
 
     @Override

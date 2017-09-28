@@ -66,7 +66,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 
     private boolean m_suspendCollection = false;
 
-    protected boolean m_runned = false;
+    private boolean m_runned = false;
 
 
     protected final EnhancedLinkd m_linkd;

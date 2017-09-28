@@ -1,0 +1,38 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+[[ga-notifications-strategy-mattermost]]
+==== Mattermost
+
+If your organization uses the Mattermost team communications platform, you can configure {opennms-product-name} to send notices to any Mattermost channel via an incoming webhook.
+You must configure an incoming webhook in your Mattermost team and do a bit of manual configuration to your {opennms-product-name} instance.
+
+First, add the following bit of XML to the `notificationCommands.xml` configuration file (no customization should be needed):
+
+[source, xml]
+----
+<command binary="false">
+  <name>mattermost</name>
+  <execute>org.opennms.netmgt.notifd.MattermostNotificationStrategy</execute>
+  <comment>class for sending messages to a Mattermost team channel for notifications</comment>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>    
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+Then create a new file called `mattermost.properties` in the `opennms.properties.d` directory with the following contents (customizing values as appropriate):
+
+[source, properties]
+----
+org.opennms.netmgt.notifd.mattermost.webhookURL=https://mattermost.example.com/hooks/bf980352b5f7232efe721dbf0626bee1
+org.opennms.netmgt.notifd.mattermost.username=OpenNMS_Bot
+org.opennms.netmgt.notifd.mattermost.iconURL=https://assets.example.com/icons/opennmsbot.png
+org.opennms.netmgt.notifd.mattermost.channel=NetOps
+----
+
+Restart OpenNMS so that the `mattermost.properties` file will be loaded. Your new `mattermost` notification command is now available for use in a destination path.

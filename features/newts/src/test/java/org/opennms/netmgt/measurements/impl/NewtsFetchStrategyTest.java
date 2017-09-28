@@ -184,24 +184,24 @@ public class NewtsFetchStrategyTest {
         replay();
 
         // Supply sane values and make sure the same values are returned
-        LateAggregationParams lag = NewtsFetchStrategy.getLagParams(30*1000L, 15*1000L, 450*1000L);
-        assertEquals(30*1000L, lag.step);
-        assertEquals(15*1000L, lag.interval);
+        LateAggregationParams lag = NewtsFetchStrategy.getLagParams(300*1000L, 150*1000L, 450*1000L);
+        assertEquals(300*1000L, lag.step);
+        assertEquals(150*1000L, lag.interval);
         assertEquals(450*1000L, lag.heartbeat);
 
         // Supply a step that is not a multiple of the interval, make sure this is corrected
-        lag = NewtsFetchStrategy.getLagParams(31*1000L, 15*1000L, 450*1000L);
-        assertEquals(31000L, lag.step);
-        assertEquals(15500L, lag.interval);
-        assertEquals(450500L, lag.heartbeat);
+        lag = NewtsFetchStrategy.getLagParams(310*1000L, 150*1000L, 450*1000L);
+        assertEquals(310000L, lag.step);
+        assertEquals(155000L, lag.interval);
+        assertEquals(465000L, lag.heartbeat);
 
         // Supply an interval that is much larger than the step
-        lag = NewtsFetchStrategy.getLagParams(30*1000L, 150*1000L, 4500*1000L);
-        assertEquals(30*1000L, lag.step);
+        lag = NewtsFetchStrategy.getLagParams(300*1000L, 1500*1000L, 45000*1000L);
+        assertEquals(300*1000L, lag.step);
         // Interval should be reduced
-        assertEquals(15*1000L, lag.interval);
+        assertEquals(150*1000L, lag.interval);
         // But the hearbeat should stay the same
-        assertEquals(4500*1000L, lag.heartbeat);
+        assertEquals(45000*1000L, lag.heartbeat);
     }
 
     public Source createMockResource(final String label, final String attr, final String node) {

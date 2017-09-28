@@ -54,6 +54,7 @@
     display:block;
     height:44px;
     width:170px;
+    background-size: 170px 44px;
     overflow:hidden;
     text-indent:100%;
     white-space:nowrap;
@@ -279,12 +280,12 @@
     :: Ops Board/Panel styles
     -------------------------------------------------- */
 
-.alert-details-dashlet .onms-table{
+.alert-details-dashlet.onms-table{
     border-collapse: collapse;
     width: 100%;
     margin-top: 0;
     margin-bottom: 10px;
-    color:#000000;
+    color: #000000;
 }
 
 .alert-details-dashlet .onms { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
@@ -353,4 +354,9 @@ td.onms { font-size: 100%; }
 .v-panel-content.v-panel-content-novscroll {
     overflow-y: hidden !important;
     overflow-x: auto;
+}
+
+.v-panel-caption,
+.v-panel-caption-light {
+    color: #464f52;
 }

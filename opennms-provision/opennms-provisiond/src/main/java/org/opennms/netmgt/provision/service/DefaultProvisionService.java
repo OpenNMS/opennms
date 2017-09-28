@@ -229,7 +229,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public void updateNode(final OnmsNode node, String rescanExisting) {
-
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
@@ -254,20 +253,38 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 primary = node.getIpInterfaces().iterator().next();
             }
 
-            if (primary != null) {
-                LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
-                final InetAddress addr = primary.getIpAddress();
-                final String ipAddress = str(addr);
-                final String hostname = m_hostnameResolver.getHostname(addr);
+            final InetAddress primaryAddr = primary.getIpAddress();
+            final String primaryHostname = getHostnameResolver().getHostname(primaryAddr);
 
-                if (hostname == null || ipAddress.equals(hostname)) {
-                    node.setLabel(ipAddress);
-                    node.setLabelSource(NodeLabelSource.ADDRESS);
+            if (primaryHostname == null && node.getLabel() != null && NodeLabelSource.HOSTNAME.equals((node.getLabelSource()))) {
+                LOG.warn("Previous node label source for address {} was hostname, but it does not currently resolve.  Skipping update.", InetAddressUtils.str(primaryAddr));
+                return;
+            }
+
+            for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+                final InetAddress addr = iface.getIpAddress();
+                final String ipAddress = str(addr);
+                final String hostname = getHostnameResolver().getHostname(addr);
+
+                if (iface.equals(primary)) {
+                    LOG.debug("Node Label was set by hostname or address.  Re-setting.");
+                    if (hostname == null || ipAddress.equals(hostname)) {
+                        node.setLabel(ipAddress);
+                        node.setLabelSource(NodeLabelSource.ADDRESS);
+                    } else {
+                        node.setLabel(hostname);
+                        node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    }
+                }
+
+                if (hostname == null) {
+                    iface.setIpHostName(ipAddress);
                 } else {
-                    node.setLabel(hostname);
-                    node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    iface.setIpHostName(hostname);
                 }
             }
+        } else {
+            LOG.debug("Node label source ({}) is not host or address. Skipping update.", node.getLabelSource());
         }
     }
 
@@ -1335,11 +1352,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource) {
 
-        OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
+        final String effectiveForeignSource = foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource;
+        final OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
             @Override
             protected OnmsNode query() {
-                List<OnmsNode> nodes = m_nodeDao.findByForeignSourceAndIpAddress(FOREIGN_SOURCE_FOR_DISCOVERED_NODES, ipAddress);
+                List<OnmsNode> nodes = m_nodeDao.findByForeignSourceAndIpAddress(effectiveForeignSource, ipAddress);
                 return nodes.size() > 0 ? nodes.get(0) : null;
             }
 
@@ -1357,7 +1375,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 // TODO: Associate location with node if necessary
                 final OnmsNode node = new OnmsNode();
 
-                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
+                final String hostname = getHostnameResolver().getHostname(addr(ipAddress));
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
                     node.setLabelSource(NodeLabelSource.ADDRESS);
@@ -1366,7 +1384,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     node.setLabelSource(NodeLabelSource.HOSTNAME);
                 }
 
-                node.setForeignSource(foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource);
+                node.setForeignSource(effectiveForeignSource);
                 node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);
 
@@ -1383,9 +1401,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }.execute();
 
         if (node != null) {
-            if (foreignSource != null) {
+            if (effectiveForeignSource != null) {
                 node.setForeignId(node.getNodeId());
-                createUpdateRequistion(ipAddress, node, foreignSource);
+                createUpdateRequistion(ipAddress, node, effectiveForeignSource);
             }
 
             // we do this here rather than in the doInsert method because

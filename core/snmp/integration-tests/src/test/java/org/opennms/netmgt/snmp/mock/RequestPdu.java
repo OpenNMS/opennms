@@ -31,6 +31,7 @@ package org.opennms.netmgt.snmp.mock;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
 abstract public class RequestPdu extends TestPdu {
@@ -106,7 +107,7 @@ abstract public class RequestPdu extends TestPdu {
 
     protected ResponsePdu handleTooBig(TestAgent agent, ResponsePdu resp) {
         resp.setVarBinds(new TestVarBindList());
-        resp.setErrorStatus(ResponsePdu.TOO_BIG_ERR);
+        resp.setErrorStatus(ErrorStatus.TOO_BIG.ordinal());
         resp.setErrorIndex(0); // errorIndex uses indices starting at 1
         return resp;
     }

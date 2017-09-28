@@ -1,7 +1,8 @@
 ==== Measurements API
 
-The _Measurements API_ can be used to retrieve collected values stored in _RRD_ (or _JRB_) files.
-Note that all units of time are expressed in milliseconds.
+The _Measurements API_ can be used to retrieve collected values stored in _RRD_ (or _JRB_) files and in _Newts_.
+
+NOTE: Unless specific otherwise, all unit of time are expressed in milliseconds.
 
 ===== GETs (Reading Data)
 
@@ -19,16 +20,26 @@ The following table shows all supported query string parameters and their defaul
 | start              | -14400000 | Timestamp in milliseconds.
 
                                    If > 0, the timestamp is relative to the UNIX epoch (January 1st 1970 00:00:00 AM).
-                                   
+
                                    If < 0, the timestamp is relative to the `end` option (i.e.: default value is 4 hours ago).
 | end                | 0         | Timestamp in milliseconds. If \<= 0, the effective value will be the current timestamp.
-| step               | 300000    | Requested time interval between rows. Actual step may differ. Set to 1 for maximum accuracy.
+| step               | 300000    | Requested time interval between rows. Actual step may differ.
 | maxrows            | 0         | When using the measurements to render a graph, this should be set to the graph's pixel width.
-| interval           | null      | Duration in milliseconds, used by strategies that implement late aggregation.
-| heartbeat          | null      | Duration in milliseconds, used by strategies that implement late aggregation.
 | aggregation        | AVERAGE   | Consolidation function used. Can typically be `AVERAGE`, `MIN` or `MAX`. Depends on `RRA` definitions.
 | fallback-attribute |           | Secondary attribute that will be queried in the case the primary attribute does not exist.
 |===
+
+====== Step sizes
+
+The behavior of the `step` parameter changes based on time series strategy that is being used.
+
+When using persistence strategies based on _RRD_, the available step sizes are limited to those defined by the _RRA_ when the file was created.
+The effective step size used will be one that covers the requested period, and is closest to the requested step size.
+For maximum accuracy, use a step size of 1.
+
+When using _Newts_, the step size can be set arbitrarily since the aggregation is performed at the time of request.
+In order to help prevent large requests, we limit to the step size of a minimum of 5 minutes, the default collection rate.
+This value can be decreased by setting the `org.opennms.newts.query.minimum_step` system property.
 
 ===== Usage examples with curl
 

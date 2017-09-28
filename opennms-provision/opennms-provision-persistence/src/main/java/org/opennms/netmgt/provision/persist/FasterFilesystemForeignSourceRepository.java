@@ -79,19 +79,27 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
         try {
-            // Trust whatever is on the cache if exist.
-            LOG.debug("importResourceRequisition: saving cached requisition to disk");
-            final Requisition req = getRequisitionsDirectoryWatcher().getContents(resource.getFilename());
-            if (req != null) {
-                req.setResource(resource);
-                save(req);
-                return req;
+            boolean isLocal = true;
+            try {
+                resource.getFile();
+            } catch (Exception e) {
+                isLocal = false;
+                LOG.debug("importResourceRequisition: resource {} is not local, ignoring cache", resource);
             }
-        } catch (FileNotFoundException e) {
+            // Trust whatever is on the cache if exist for local resources only.
+            if (isLocal) {
+                LOG.debug("importResourceRequisition: saving cached requisition to disk");
+                final Requisition req = getRequisitionsDirectoryWatcher().getContents(resource.getFilename());
+                if (req != null) {
+                    req.setResource(resource);
+                    save(req);
+                    return req;
+                }
+            }
+        } catch (Exception e) {
             LOG.error("importResourceRequisition: can't save cached requisition associated with {}", resource, e);
         }
-        // Use the default implementation if the cache doesn't contain the requisition.
-        LOG.debug("importResourceRequisition: the requisition {} is  not on the cache, falling back to disk.", resource.getFilename());
+        // Use the default implementation if the cache doesn't contain the requisition or the requisition comes from an external source.
         return super.importResourceRequisition(resource);
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -110,6 +110,23 @@ public class Snmp4JTrapNotifier implements CommandResponder {
             SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
             processVarBind(name, value);
         }
+
+		@Override
+		protected Integer getRequestId() {
+			return m_pdu.getRequestID().toInt();
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("[");
+			sb.append("Version=").append(getVersion())
+				.append(", Agent-Addr=").append(getTrapAddress().getHostAddress())
+				.append(", Length=").append(getPduLength())
+				.append(", Identity=").append(getTrapIdentity().toString())
+				.append(", Request-ID=").append(getRequestId())
+				.append("]");
+			return sb.toString();
+		}
     }
 
     public static class Snmp4JV2TrapInformation extends TrapInformation {
@@ -271,6 +288,23 @@ public class Snmp4JTrapNotifier implements CommandResponder {
                 processVarBind(name, value);
             }
         }
+
+		@Override
+		protected Integer getRequestId() {
+			return m_pdu.getRequestID().toInt();
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("[");
+			sb.append("Version=").append(getVersion())
+				.append(", Source-Addr=").append(getTrapAddress().getHostAddress())
+				.append(", Length=").append(getPduLength())
+				.append(", Identity=").append(getTrapIdentity().toString())
+				.append(", Request-ID=").append(getRequestId())
+				.append("]");
+			return sb.toString();
+		}
     }
         
     

@@ -31,10 +31,12 @@ package org.opennms.web.rest.v1;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -50,6 +52,9 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.netmgt.model.outage.OutageSummaryCollection;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +78,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("outageRestService")
 @Path("outages")
 public class OutageRestService extends OnmsRestService {
+    private static final Logger LOG = LoggerFactory.getLogger(OutageRestService.class);
 
     @Autowired
     private OutageDao m_outageDao;
@@ -147,25 +153,48 @@ public class OutageRestService extends OnmsRestService {
      * <p>forNodeId</p>
      *
      * @param nodeId a int.
+     * @param dateRange a long.
+     * @param startTs a java.lang.Long.
+     * @param endTs a java.lang.Long.
      * @return a {@link org.opennms.netmgt.model.OnmsOutageCollection} object.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     @Path("forNode/{nodeId}")
-    public OnmsOutageCollection forNodeId(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId) {
+    public OnmsOutageCollection forNodeId(@Context final UriInfo uriInfo,
+            @PathParam("nodeId") final int nodeId,
+            @DefaultValue("604800000") @QueryParam("dateRange") final long dateRange,
+            @QueryParam("start") final Long startTs,
+            @QueryParam("end") final Long endTs) {
 
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
         builder.eq("node.id", nodeId);
-        final Date d = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7));
-        builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", d));
 
         builder.alias("monitoredService", "monitoredService");
         builder.alias("monitoredService.ipInterface", "ipInterface");
         builder.alias("monitoredService.ipInterface.node", "node");
         builder.alias("monitoredService.serviceType", "serviceType");
 
-        applyQueryFilters(uriInfo.getQueryParameters(), builder);
+        final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        params.putAll(uriInfo.getQueryParameters());
+        LOG.debug("Processing outages for node {} using {}", nodeId, params);
+
+        if (startTs != null && endTs != null) {
+            params.remove("start");
+            params.remove("end");
+            final Date start = new Date(startTs);
+            final Date end = new Date(endTs);
+            LOG.debug("Getting all outages from {} to {} for node {}", start, end, nodeId);
+            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.and(Restrictions.gt("ifLostService", start), Restrictions.lt("ifLostService", end)));
+        } else {
+            params.remove("dateRange");
+            final Date start = new Date(System.currentTimeMillis() - dateRange);
+            LOG.debug("Getting all outgae from {} to current date for node {}", start, nodeId);
+            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifLostService", start));
+        }
+
+        applyQueryFilters(params, builder);
 
         builder.orderBy("id").desc();
 

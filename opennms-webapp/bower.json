@@ -7,7 +7,7 @@
     "flot": "~0.8.3",
     "flot-axislabels": "https://github.com/j-white/flot-axislabels.git#0d6ae9a79338",
     "flot.tooltip": "~0.8.5",
-    "flot-legend": "https://github.com/j-white/flot-legend.git#v1.0.1",
+    "flot-legend": "https://github.com/opennms/flot-legend.git#v2.0.0",
     "flot-saveas": "https://github.com/j-white/flot-saveas.git#v1.0.0",
     "flot-datatable": "https://github.com/j-white/flot-datatable.git#v1.0.3",
     "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM"

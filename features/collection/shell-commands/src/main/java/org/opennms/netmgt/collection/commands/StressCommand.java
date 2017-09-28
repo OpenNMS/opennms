@@ -108,6 +108,10 @@ public class StressCommand extends OsgiCommandSupport {
     @Option(name="-z", aliases="--string-variation-factor", description="when set, every n-th group will use unique string attribute values in each batch, defaults to 0", required=false, multiValued=false)
     int stringVariationFactor = 0;
 
+    @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the pritine content on datacollection-config.xml", required=false, multiValued=true)
+    List<String> rras = null;
+
+
     private final AtomicBoolean abort = new AtomicBoolean(false);
 
     private final MetricRegistry metrics = new MetricRegistry();
@@ -174,13 +178,17 @@ public class StressCommand extends OsgiCommandSupport {
         RrdRepository repository = new RrdRepository();
         repository.setStep(Math.max(intervalInSeconds, 1));
         repository.setHeartBeat(repository.getStep() * 2);
-        repository.setRraList(Lists.newArrayList(
+        if (rras != null && rras.size() > 0) {
+            repository.setRraList(rras);
+        } else {
+            repository.setRraList(Lists.newArrayList(
                 // Use the default list of RRAs we provide in our stock configuration files
                 "RRA:AVERAGE:0.5:1:2016",
                 "RRA:AVERAGE:0.5:12:1488",
                 "RRA:AVERAGE:0.5:288:366",
                 "RRA:MAX:0.5:288:366",
                 "RRA:MIN:0.5:288:366"));
+        }
         repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"),"share","rrd","snmp").toFile());
 
         // Calculate how we fast we should insert the collection sets
@@ -279,7 +287,7 @@ public class StressCommand extends OsgiCommandSupport {
             for (int attributeId = 0; attributeId < numberOfNumericAttributesPerGroup; attributeId++) {
                 // Generate a predictable, non-constant number
                 int value = groupId * attributeId + seed.incrementAndGet() % 100;
-                builder.withNumericAttribute(resource, groupName, "metric" + attributeId, value, AttributeType.GAUGE);
+                builder.withNumericAttribute(resource, groupName, "metric_" + groupId + "_" + attributeId, value, AttributeType.GAUGE);
                 numericAttributesGenerated.mark();
             }
 

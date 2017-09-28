@@ -1,0 +1,41 @@
+
+=== Overriding SNMP Client Behavior
+
+By default, the SNMP subsystem in {opennms-product-name} does not treat _any_ link:https://tools.ietf.org/html/rfc3416[RFC 3416] `error-status` as fatal.  Instead, it will attempt to continue the request, if possible.  However, only a subset of errors will cause {opennms-product-name}'s SNMP client to attempt retries.  The default SNMP `error-status` handling behavior is as follows:
+
+.Default SNMP Error Status Behavior
+[options="header, autowidth"]
+|===
+| `error-status`          | Fatal? | Retry?
+| noError(0)              | false  | false
+| tooBig(1)               | false  | true
+| noSuchName(2)           | false  | true
+| badValue(3)             | false  | false
+| readOnly(4)             | false  | false
+| genErr(5)               | false  | true
+| noAccess(6)             | false  | true
+| wrongType(7)            | false  | false
+| wrongLength(8)          | false  | false
+| wrongEncoding(9)        | false  | false
+| wrongValue(10)          | false  | false
+| noCreation(11)          | false  | false
+| inconsistentValue(12)   | false  | false
+| resourceUnavailable(13) | false  | false
+| commitFailed(14)        | false  | false
+| undoFailed(15)          | false  | false
+| authorizationError(16)  | false  | true
+| notWritable(17)         | false  | false
+| inconsistentName(18)    | false  | false
+|===
+
+You can override this behavior by setting a property inside `${OPENNMS_HOME}/etc/opennms.properties` in the form:
+
+`org.opennms.netmgt.snmp.errorStatus._[statusCode]_._[type]_`
+
+For example, to make `authorizationError(16)` abort and not retry, you would set:
+
+[source,properties]
+----
+org.opennms.netmgt.snmp.errorStatus.16.fatal=true
+org.opennms.netmgt.snmp.errorStatus.16.retry=false
+----

@@ -52,6 +52,12 @@ public interface EnhancedLinkdConfig {
      */
     int getThreads();
 
+    /**
+     * <p>getMaxBft</p>
+     *
+     * @return a int.
+     */
+    int getMaxBft();
 
     /**
      * <p>getInitialSleepTime</p>

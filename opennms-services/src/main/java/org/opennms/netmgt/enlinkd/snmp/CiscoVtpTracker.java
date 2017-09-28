@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class CiscoVtpTracker extends AggregateTracker
 {
@@ -96,6 +96,11 @@ public final class CiscoVtpTracker extends AggregateTracker
     /** {@inheritDoc} */
     protected void reportNoSuchNameErr(final String msg) {
         LOG.info("Error retrieving vtpVersion: {}", msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving vtpVersion: {}", ex.getMessage(), ex);
     }
 
     /**

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -204,12 +204,12 @@
 <p>
 <b>Description</b>: An optional description for the threshold, to help identify what is their purpose.<br/>
 <b>Type</b>:<br/>
-&nbsp;&nbsp;<b>high</b>: Triggers when the value of the data source exceeds the "value", and is re-armed when it drops below the "re-arm" value.<br/>
-&nbsp;&nbsp;<b>low</b>: Triggers when the value of the data source drops below the "value", and is re-armed when it exceeds the "re-arm" value.<br/>
-&nbsp;&nbsp;<b>relativeChange</b>: Triggers when the change in data source value from one collection to the next is greater than "value" percent.
+&nbsp;&nbsp;<b>high</b>: Triggers when the value of the data source equals or exceeds the "value", and is re-armed when it drops below the "re-arm" value.<br/>
+&nbsp;&nbsp;<b>low</b>: Triggers when the value of the data source equals or drops to or below the "value", and is re-armed when it equals or exceeds the "re-arm" value.<br/>
+&nbsp;&nbsp;<b>relativeChange</b>: Triggers when the change in data source value from one collection to the next is greater than or equal to "value" percent.
   Re-arm and trigger are not used.<br/>
-&nbsp;&nbsp;<b>absoluteChange</b>: Triggers when the value changes by more than the specified amount.  Re-arm and trigger are not used.<br/>
-&nbsp;&nbsp;<b>rearmingAbsoluteChange</b>: Like absoluteChange, Triggers when the value changes by more than the specified amount.  However,
+&nbsp;&nbsp;<b>absoluteChange</b>: Triggers when the value changes by the specified amount or greater.  Re-arm and trigger are not used.<br/>
+&nbsp;&nbsp;<b>rearmingAbsoluteChange</b>: Like absoluteChange, Triggers when the value changes by the specified amount or greater.  However,
   the "trigger" is used to re-arm the event after so many iterations with an unchanged delta.  Re-arm is not used.<br/>
 <b>Expression</b>: A  mathematical expression involving datasource names which will be evaluated and compared to the threshold values<br/>
 <b>Data source type</b>: "node" for node-level data items, "if" for interface-level items, or any Generic Resource Type defined on datacollection-config.xml. Node-level will ignore filter configuration.<br/>

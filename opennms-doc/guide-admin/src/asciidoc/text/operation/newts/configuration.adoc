@@ -48,7 +48,7 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 | `org.opennms.newts.config.writer_threads`       | `16`                 | Number of threads used to pull samples from the ring buffer and insert them into Newts.
 | `org.opennms.newts.config.ttl`                  | `31540000`           | Number of seconds after which samples will automatically be deleted. Defaults to one year.
 | `org.opennms.newts.config.resource_shard`       | `604800`             | Duration in seconds for which samples will be stored at the same key. Defaults to 7 days in seconds.
-| `org.opennms.newts.query.minimum_step`          | `30000`              | Minimum step size in milliseconds. Used to prevent large queries.
+| `org.opennms.newts.query.minimum_step`          | `300000`             | Minimum step size in milliseconds. Used to prevent large queries.
 | `org.opennms.newts.query.interval_divider`      | `2`                  | If no interval is specified in the query, the step will be divided into this many intervals when aggregating values.
 | `org.opennms.newts.query.heartbeat`             | `450000`             | Duration in milliseconds. Used when no heartbeat is specified. Should generally be 1.5x your largest collection interval.
 | `org.opennms.newts.query.parallelism`           | Number of cores      | Maximum number of threads that can be used to compute aggregates. Defaults to the number of available cores.

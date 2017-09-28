@@ -13,9 +13,12 @@ We'll start with _Auto Discovery_, but first, we should quickly review the confi
 
 ==== Provisioning the SNMP Configuration
 
-{opennms-product-name} requires that the SNMP configuration to be properly setup for your network in order to properly understand Network and Node topology as well as to automatically enabled performance data collection.
+{opennms-product-name} requires SNMP configuration to be properly setup for your network in order to properly understand Network and Node topology as well as to automatically enable performance data collection.
 Network topology is updated as nodes (a.k.a. devices or hosts) are provisioned.
-Navigate to the _Admin/Configure SNMP Community Names_ as shown below.
+Navigate to the _Admin/Configure SNMP Community Names by IP address_ as shown below.
+
+.Configuring SNMP community names
+image:../images/provisioning/00029.png[]
 
 NOTE: Provisiond includes an option to add community information in the _Single Node_ provisioning interface.
 This, is equivalent of entering a single IP address in the screen with the convenience of setting the community string at the same time a node is provisioned.
@@ -50,8 +53,8 @@ read-community="public" version="v2c">
 ----
 
 However, If an IP address is then configured that is within the range,
-the range will be split into two separate ranges and a specific entry is
-added. For example, if a configuration was added through the same UI for
+the range will be split into two separate ranges and a specific entry will
+be added. For example, if a configuration was added through the same UI for
 the IP: 10.12.23.32 having the community name `public`, then the
 resulting configuration will be:
 
@@ -79,12 +82,12 @@ resulting configuration will be:
 
 NOTE: the bold IP addresses show where the range was split and the specific with community name "public" was added.
 
-Now, with SNMP configuration provisioned for our 10 network, we are ready to begin adding nodes.
-Our first example will be to automatically discovery and add all managed entities (nodes, IP interfaces, SNMP Interfaces, and Monitored IP based Services).
+Now, with SNMP configuration provisioned for our 10 networks, we are ready to begin adding nodes.
+Our first example will be to automatically discover and add all managed entities (nodes, IP interfaces, SNMP Interfaces, and Monitored IP based Services).
 We will then give an example of how to be more _directed_ and deliberate about your discovery by using _Provisioning Groups_.
 
 Automatically discovered entities are analyzed, persisted to the relational data store, and then managed based on the policies defined in the default foreign source definition.
-This is very similar to the way that entities were handled by Capsd by with finer grained sense of control.
+This is very similar to the way that entities were previously handled by the (now obsolete) Capsd daemon but with finer grained sense of control.
 
 ==== Automatic Discovery
 

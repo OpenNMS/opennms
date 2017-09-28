@@ -30,9 +30,9 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
-
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -54,6 +54,7 @@ public class OspfIpAddrTableGetter extends TableTracker {
 	}
 
 	public OspfElement get(OspfElement element) {
+	    element.setOspfRouterIdNetmask(InetAddressUtils.addr("255.255.255.255"));
 		SnmpValue[] val = get(element.getOspfRouterId());
 		if (val != null && val.length == 2 ) {
 			if (!val[0].isNull() && val[0].isNumeric() )

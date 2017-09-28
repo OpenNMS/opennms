@@ -141,12 +141,110 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-2016.1.4]
+==== Release 2016.1.4
+
+Release 2016.1.4 is an update to 2016.1.4 that provides a number of bug fixes and a few enhancements.
+
+The codename for 2016.1.4 is _Dymaxion_.
+
+===== NOTE: Configuration Changes
+
+While we strive to make no changes to `$OPENNMS_HOME/etc` in micro Meridian releases, we have a few changes that we deemed important or low-impact enough for this release:
+
+* An entry was added to `log4j2.xml` for SNMP4J, avoiding large amounts of spurious SNMP logs.
+* The Peak Traffic Jasper subreport was modified to report in octets.
+* A number of graph definitions in `snmp-graph.properties.d` were fixed.
+
+===== Bug
+
+* If a target node is rebooted the RRD/JRB files contains spikes because the sysUpTime check is not working (Issue http://issues.opennms.org/browse/NMS-7106[NMS-7106])
+* Opsboard change title color to something neutral than red (Issue http://issues.opennms.org/browse/NMS-7911[NMS-7911])
+* ConstraintViolationException in Enlinkd for OSPF (Issue http://issues.opennms.org/browse/NMS-8067[NMS-8067])
+* Enlinkd Topology: Cannot search for nodes without alarms (Issue http://issues.opennms.org/browse/NMS-8420[NMS-8420])
+* Replace VDEF with {diffTime} on the resource templates to avoid conflicts with Backshift (Issue http://issues.opennms.org/browse/NMS-8490[NMS-8490])
+* Inconsistencies with the Measurements API when using Newts (Issue http://issues.opennms.org/browse/NMS-8498[NMS-8498])
+* Restarting OMNS results in numerous SNMP outage alarms and notifications (Issue http://issues.opennms.org/browse/NMS-8620[NMS-8620])
+* Measurements API can fail with exception when operating in relaxed mode (Issue http://issues.opennms.org/browse/NMS-8665[NMS-8665])
+* Newts: When Cassandra Cluster is unavailable, OpenNMS gives up on trying to contact it again (Issue http://issues.opennms.org/browse/NMS-8670[NMS-8670])
+* Any SNMP error-status > 5 treated as unrecognized, aborts AggregateTracker (Issue http://issues.opennms.org/browse/NMS-8671[NMS-8671])
+* Event advanced search does not work because of encoded &s (Issue http://issues.opennms.org/browse/NMS-8768[NMS-8768])
+* The Alarms Details widget on the OpsBoard shows the text on green instead of black (Issue http://issues.opennms.org/browse/NMS-8771[NMS-8771])
+* Installer script doesn't work with PostgreSQL 9.6 (Issue http://issues.opennms.org/browse/NMS-8779[NMS-8779])
+* SNMP web configurator does not allow zero retries (Issue http://issues.opennms.org/browse/NMS-8789[NMS-8789])
+* The search page for events is not working as expected (Issue http://issues.opennms.org/browse/NMS-8790[NMS-8790])
+* InterruptedExceptions thrown when using SNMP (Issue http://issues.opennms.org/browse/NMS-8813[NMS-8813])
+* Outage ReST service forNode use case calculates dates incorrectly (Issue http://issues.opennms.org/browse/NMS-8823[NMS-8823])
+* Discovery duplicates nodes when foreign-source is set (Issue http://issues.opennms.org/browse/NMS-8835[NMS-8835])
+* Several ICMPv6 tests fail with NoRouteToHostException (Issue http://issues.opennms.org/browse/NMS-8840[NMS-8840])
+* user detection in `install` is busted on some Linux systems (Issue http://issues.opennms.org/browse/NMS-8843[NMS-8843])
+* Backshift shows the name of the string variables when the value is not available (Issue http://issues.opennms.org/browse/NMS-8847[NMS-8847])
+* Wallboard / Ops board renders product logo strangely (Issue http://issues.opennms.org/browse/NMS-8855[NMS-8855])
+* NonUniqueResultException when retrieving CDP links (Issue http://issues.opennms.org/browse/NMS-8863[NMS-8863])
+* The ipinterface.iphostname field is not updated after changing the FQDN associated with a given IP address (Issue http://issues.opennms.org/browse/NMS-8874[NMS-8874])
+* The label of unreachable auto-discovered nodes is set to the IP after a rescan. (Issue http://issues.opennms.org/browse/NMS-8880[NMS-8880])
+* Memory Leak in enlinkd? (Issue http://issues.opennms.org/browse/NMS-8896[NMS-8896])
+* Spurious Trapd error logs: unknown SNMP protocol version 'v2' (Issue http://issues.opennms.org/browse/NMS-8900[NMS-8900])
+* Can't save cached requisition associated with HTTP when scheduling the import through provisiond-configuration.xml (Issue http://issues.opennms.org/browse/NMS-8912[NMS-8912])
+* ArrayIndexOutOfBoundsException while processing some trap varbinds (Issue http://issues.opennms.org/browse/NMS-8915[NMS-8915])
+* WS-Man collection fail with unknown reason code 2 (Issue http://issues.opennms.org/browse/NMS-8923[NMS-8923])
+* WS-Man collection with resource-type only store last resource (Issue http://issues.opennms.org/browse/NMS-8924[NMS-8924])
+* Backshift failing with legend errors for NRTG + Forecasts (Issue http://issues.opennms.org/browse/NMS-8939[NMS-8939])
+* wsdl2java in features/ticketing/remedy is causing build failures (Issue http://issues.opennms.org/browse/NMS-8940[NMS-8940])
+* WS_Man datacollection using WQL fails with 'unsupported element' (Issue http://issues.opennms.org/browse/NMS-8955[NMS-8955])
+
+===== Enhancement
+
+* Replace the X with back button in the Angular provisioning WebUI  (Issue http://issues.opennms.org/browse/NMS-7908[NMS-7908])
+* Missing image in provisioning doc (Issue http://issues.opennms.org/browse/NMS-8121[NMS-8121])
+* Add ReST Elastic Search Alarms to Foundation2016 (Issue http://issues.opennms.org/browse/NMS-8693[NMS-8693])
+* Create a more useful example content for opennms.conf (Issue http://issues.opennms.org/browse/NMS-8721[NMS-8721])
+* Add documentation for Mattermost/Slack notifications (Issue http://issues.opennms.org/browse/NMS-8742[NMS-8742])
+* Allow filtering by severity in alarm list (Issue http://issues.opennms.org/browse/NMS-8851[NMS-8851])
+* Expose alarm-list "limit" parameter as a UI control (Issue http://issues.opennms.org/browse/NMS-8852[NMS-8852])
+* Make the ILR put the node label alongside the package/IPADDR/Service tuple (Issue http://issues.opennms.org/browse/NMS-8858[NMS-8858])
+* Better logging for SNMP traps with processing problems (Issue http://issues.opennms.org/browse/NMS-8903[NMS-8903])
+* Make the RRAs tunable for the metrics:stress command when using for RRDtool. (Issue http://issues.opennms.org/browse/NMS-8972[NMS-8972])
+
+
 [releasenotes-changelog-2016.1.3]
 ==== Release 2016.1.3
 
 Release 2016.1.3 is an update to 2016.1.2 that provides a few bug fixes, including a fix to a XSS vulnerability in the web UI.
 
 The codename for 2016.1.3 is _Hobo-Dyer_.
+
+===== Bug
+
+* Syslogd may not associate messages with new nodes without a restart (Issue http://issues.opennms.org/browse/NMS-7236[NMS-7236])
+* No event for Informational syslog (Issue http://issues.opennms.org/browse/NMS-7934[NMS-7934])
+* IE11 and Firefox Browsers Display Double Scroll Bars for the RTC: Service Monitoring Table in the Ops Panel (Issue http://issues.opennms.org/browse/NMS-8035[NMS-8035])
+* Null Pointer Exception in bridge discovery (Issue http://issues.opennms.org/browse/NMS-8390[NMS-8390])
+* upgrade error: too many open files (Issue http://issues.opennms.org/browse/NMS-8507[NMS-8507])
+* Documentation for the Requisition ReST API is confusing (Issue http://issues.opennms.org/browse/NMS-8521[NMS-8521])
+* Missing documentation for ifservices ReST end point. (Issue http://issues.opennms.org/browse/NMS-8604[NMS-8604])
+* Lost Bridge Forwarding Table Links (Issue http://issues.opennms.org/browse/NMS-8619[NMS-8619])
+* Missing documentation for categories ReST end point. (Issue http://issues.opennms.org/browse/NMS-8629[NMS-8629])
+* The categories ReST end point returns HTTP 500 when querying it with a browser. (Issue http://issues.opennms.org/browse/NMS-8637[NMS-8637])
+* Database Reports Are Emailed When "Email report" is Unchecked (Issue http://issues.opennms.org/browse/NMS-8654[NMS-8654])
+* Custom Resource graphs draw magenta lines if "Blue" is selected (Issue http://issues.opennms.org/browse/NMS-8655[NMS-8655])
+* The ReST end point /foreignSourcesConfig/assets contains invalid fields (Issue http://issues.opennms.org/browse/NMS-8690[NMS-8690])
+* Site status view gives a 400 error for aggregate view for node downs (Issue http://issues.opennms.org/browse/NMS-8700[NMS-8700])
+* View current Site outages does not filter for "building" (Issue http://issues.opennms.org/browse/NMS-8702[NMS-8702])
+* The Vaddin version of the dashboard shows negative availability sometimes (Issue http://issues.opennms.org/browse/NMS-8705[NMS-8705])
+* Scriptd is not working at all for events that have nodes associated. (Issue http://issues.opennms.org/browse/NMS-8716[NMS-8716])
+* vmwarecimquery and vmwareconfigbuilder tools is not working (Issue http://issues.opennms.org/browse/NMS-8718[NMS-8718])
+* XSS vulnerability in display of SNMP sysName and trap varbind values (Issue http://issues.opennms.org/browse/NMS-8722[NMS-8722])
+* IllegalStateException when using the RrdSummaryController (Issue http://issues.opennms.org/browse/NMS-8743[NMS-8743])
+* Trapd JMX trap counters don't count traps (Issue http://issues.opennms.org/browse/NMS-8744[NMS-8744])
+* Blank content when clicking on "View Node Link Detailed Info" (Issue http://issues.opennms.org/browse/NMS-8808[NMS-8808])
+* Search Events Error (Issue http://issues.opennms.org/browse/NMS-8970[NMS-8970])
+
+===== Enhancement
+
+* Add Mattermost and Slack notification strategies (Issue http://issues.opennms.org/browse/NMS-8346[NMS-8346])
+* Outage REST service cannot filter on event fields (Issue http://issues.opennms.org/browse/NMS-8724[NMS-8724])
+
 
 [releasenotes-changelog-2016.1.2]
 ==== Release 2016.1.2
@@ -155,12 +253,40 @@ Release 2016.1.2 is an update to 2016.1.1 that provides a number of bug fixes, i
 
 The codename for 2016.1.2 is _Loximuthal_.
 
+===== Bug
+
+* observations related to "ping".option in topology page (Issue http://issues.opennms.org/browse/NMS-6849[NMS-6849])
+* Using ping in topology view cause strange behavior (Issue http://issues.opennms.org/browse/NMS-7204[NMS-7204])
+* New Monitoring Locations Editor only allows integers in the latitude and longitude fields (Issue http://issues.opennms.org/browse/NMS-7869[NMS-7869])
+* output.log fills up with GLib-GObject-CRITICAL messages (Issue http://issues.opennms.org/browse/NMS-8016[NMS-8016])
+* Ping from topology view does not work (results in 404 Page not found) (Issue http://issues.opennms.org/browse/NMS-8043[NMS-8043])
+* VMware-ManagedEntity does not work with VMware 6 (Issue http://issues.opennms.org/browse/NMS-8187[NMS-8187])
+* Install -dis on "SocketException:Too many open files" on centos:latest docker  (Issue http://issues.opennms.org/browse/NMS-8200[NMS-8200])
+* JdbcCollector does not close database connections correctly (Issue http://issues.opennms.org/browse/NMS-8488[NMS-8488])
+* HW ENTITY_MIB plugin is not showing all information for certain devices (Issue http://issues.opennms.org/browse/NMS-8506[NMS-8506])
+* OEM graph for Storage Utilization fails due to '::' (Issue http://issues.opennms.org/browse/NMS-8519[NMS-8519])
+* Topology Map is very very slow (Issue http://issues.opennms.org/browse/NMS-8589[NMS-8589])
+* Requisitioned IP interfaces never have ipHostName set (Issue http://issues.opennms.org/browse/NMS-8593[NMS-8593])
+* Compiler warnings about MaxPermSize support is removed in 8.0 (Issue http://issues.opennms.org/browse/NMS-8594[NMS-8594])
+
+===== Configuration
+
+* Distributed/Geographical Maps do not show images anymore (Issue http://issues.opennms.org/browse/NMS-8597[NMS-8597])
+
+===== Enhancement
+
+* Improve built-in Newts graphs for easier diagnostics (Issue http://issues.opennms.org/browse/NMS-8495[NMS-8495])
+* Alphabetize nodes in surveillance category listing (Issue http://issues.opennms.org/browse/NMS-8535[NMS-8535])
+* Make custom event parameters expandable (Issue http://issues.opennms.org/browse/NMS-8590[NMS-8590])
+
+
 [releasenotes-changelog-2016.1.1]
 ==== Release 2016.1.1
 
 Release 2016.1.1 is an update to 2016.1.0 that provides a fix for upgrades.
 
 The codename for 2016.1.1 is _Cassini_.
+
 
 [releasenotes-changelog-2016.1.0]
 ==== Release 2016.1.0

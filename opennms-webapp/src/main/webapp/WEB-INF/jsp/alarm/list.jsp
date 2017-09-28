@@ -364,18 +364,19 @@
 
 
 
-			<th width="7%">
-              <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" , favorite )%>
-              <br />
-              <%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity", favorite  )%>
+			<th width="1%">
+              <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" ,       favorite )%>
+            </th>
+            <th width="6%">
+              <%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity",  favorite )%>
             </th>
 			<th width="19%">
-              <%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node", favorite      )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node",      favorite )%>
               <c:if test="${param.display == 'long'}">
               <br />
               <%=this.makeSortLink(callback, parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface", favorite )%>
               <br />
-              <%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service", favorite   )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service",   favorite )%>
               </c:if>
             </th>
 			<th width="3%">
@@ -416,9 +417,8 @@
           <% } %>
           </td>
 
-          
-          <td class="divider bright" valign="middle" rowspan="1">
-            
+          <td class="divider" valign="middle" rowspan="1">
+
             <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
             <c:if test="<%= (alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null) && (alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null) %>">
                 <br />
@@ -443,7 +443,7 @@
             <% } else { %>
               &nbsp;
             <% } %>
-            <% Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>      
+            <% Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>
             <% if( !parms.getFilters().contains( severityFilter )) { %>
 		<br />Sev.
               <nobr>
@@ -453,6 +453,16 @@
               </nobr>
             <% } %>
           </c:if>
+          </td>
+          <td class="divider bright" valign="middle" rowspan="1">
+            <strong><%= alarms[i].getSeverity().getLabel() %></strong>
+            <% Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>
+            <% if( !parms.getFilters().contains(severityFilter)) { %>
+            <nobr>
+              <a href="<%=this.makeLink(callback, parms, severityFilter, true, favorite)%>" class="filterLink" title="Show only events with this severity">${addPositiveFilter}</a>
+              <a href="<%=this.makeLink(callback, parms, new NegativeSeverityFilter(alarms[i].getSeverity()), true, favorite)%>" class="filterLink" title="Do not show events with this severity">${addNegativeFilter}</a>
+            </nobr>
+            <% } %>
           </td>
           <td class="divider">
 	    <% if(alarms[i].getNodeId() != null && alarms[i].getNodeLabel()!= null ) { %>

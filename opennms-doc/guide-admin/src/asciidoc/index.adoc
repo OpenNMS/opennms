@@ -125,6 +125,15 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 == Events
 include::text/events.adoc[]
 
+[[ga-notifications]]
+== Notifications
+include::text/notifications/introduction.adoc[]
+include::text/notifications/getting-started.adoc[]
+include::text/notifications/concepts.adoc[]
+include::text/notifications/bonus-strategies.adoc[]
+include::text/notifications/strategies/mattermost.adoc[]
+include::text/notifications/strategies/slack.adoc[]
+
 [ga-provisioning]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
@@ -172,11 +181,16 @@ include::text/operation/newts/configuration.adoc[]
 include::text/operation/newts/cassandra-jmx.adoc[]
 include::text/operation/newts/cassandra-newts-jmx.adoc[]
 
+[[ga-opennms-operation-daemon-config-files]]
+=== Daemon Configuration Files
+include::text/operation/daemon-config-files/introduction.adoc[]
+include::text/operation/daemon-config-files/eventd.adoc[]
+include::text/operation/daemon-config-files/notifd.adoc[]
+include::text/operation/daemon-config-files/pollerd.adoc[]
+
 [[ga-ticketing]]
 == Ticketing
 include::text/ticketing/introduction.adoc[]
-
-// JIRA Ticketer
 include::text/ticketing/jira.adoc[]
 
 [[ga-rmi]]
@@ -189,3 +203,13 @@ include::text/plugin-manager/introduction.adoc[]
 include::text/plugin-manager/setting-karaf-instance-data.adoc[]
 include::text/plugin-manager/installing-available-plugins.adoc[]
 include::text/plugin-manager/installing-licences.adoc[]
+include::text/plugin-manager/internal-plugins-repository.adoc[]
+
+== Internal Plugins
+include::text/plugins/introduction.adoc[]
+include::text/plugins/alarm-change-notifier.adoc[]
+include::text/plugins/opennms-es-rest.adoc[]
+
+[[ga-special-cases-and-workarounds]]
+== Special Cases and Workarounds
+include::text/workarounds/snmp.adoc[]

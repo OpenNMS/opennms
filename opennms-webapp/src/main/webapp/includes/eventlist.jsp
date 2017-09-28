@@ -191,7 +191,7 @@
        <% } %>
        <td class="divider"><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></td>
        <td class="divider bright"><%= event.getSeverity().getLabel() %></td>
-       <td class="divider"><%=WebSecurityUtils.sanitizeString(event.getLogMessage())%></td>
+       <td class="divider"><%=WebSecurityUtils.sanitizeString(event.getLogMessage(),true)%></td>
      </tr>
 <% } %>
 

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>2016.1.3</version>
+    <version>2016.1.4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -119,5 +119,15 @@
 
     <!-- OpenNMS Plugin Manager -->
     <module>vaadin-opennms-pluginmanager</module>
+    
+    <!-- ReST Elastic Search Integration -->
+    <module>opennms-es-rest</module>
+    
+    <!-- Alarm Change Notifier -->
+    <module>alarm-change-notifier</module>
+    
+    <!-- Internal Plugins Descriptor -->
+    <module>internal-plugins-descriptor</module>
+    
   </modules>
 </project>

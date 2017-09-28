@@ -91,7 +91,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsFetchStrategy.class);
 
-    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 30*1000);
+    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 5*60*1000);
 
     public static final int INTERVAL_DIVIDER = Integer.getInteger("org.opennms.newts.query.interval_divider", 2);
 
@@ -383,7 +383,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         long effectiveHeartbeat = heartbeat != null ? heartbeat : DEFAULT_HEARTBEAT_MS;
         if (effectiveInterval < effectiveHeartbeat) {
             if (effectiveHeartbeat % effectiveInterval != 0) {
-                effectiveHeartbeat += effectiveHeartbeat % effectiveInterval;
+                effectiveHeartbeat += effectiveInterval - (effectiveHeartbeat % effectiveInterval);
             } else {
                 // Existing heartbeat is valid
             }

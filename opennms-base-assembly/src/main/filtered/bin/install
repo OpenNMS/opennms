@@ -22,7 +22,7 @@ if [ $? -eq 0 ]; then
 	done
 fi
 
-myuser="`id | sed -e 's/uid=[0-9][0-9]*(//' -e 's/).*//'`"
+myuser="`id -u -n`"
 if [ x"$myuser" = x"$RUNAS" ]; then
 	true # all is well
 else

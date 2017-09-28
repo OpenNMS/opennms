@@ -32,6 +32,8 @@ import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
@@ -260,12 +262,22 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
 
     /** {@inheritDoc} */
     protected void reportGenErr(String msg) {
-        LOG.warn("Error retrieving lldpLocalGroup: {}",msg);
+        LOG.warn("Error retrieving LLDP local group: {}",msg);
     }
 
     /** {@inheritDoc} */
     protected void reportNoSuchNameErr(String msg) {
-        LOG.info("Error retrieving lldpLocalGroup: {}",msg);
+        LOG.info("Error retrieving LLDP local group: {}",msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving LLDP local group: {}", ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) retrieving LLDP local group: {}", status, status.retry()? "Retrying." : "Giving up.");
     }
 
     public LldpElement getLldpElement() {
