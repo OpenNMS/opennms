@@ -609,6 +609,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
+	grep -v '/users.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -722,7 +723,8 @@ rm -rf $RPM_BUILD_ROOT
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root) %{logdir}
+%attr(755,root,root)	%{logdir}
+%attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
 
@@ -905,6 +907,13 @@ if [ "$1" = 0 ]; then
 	fi
 fi
 
+%pre -p /bin/bash core
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+if [ -e "${ROOT_INST}/etc/users.xml" ]; then
+	chmod 640 "${ROOT_INST}/etc/users.xml"
+fi
+
 %post -p /bin/bash core
 ROOT_INST="$RPM_INSTALL_PREFIX0"
 SHARE_INST="$RPM_INSTALL_PREFIX1"
@@ -922,7 +931,7 @@ for prefix in lib lib64; do
 		SYSTEMDDIR="/usr/$prefix/systemd/system"
 		printf -- "- installing service into $SYSTEMDDIR... "
 		install -d -m 755 "$SYSTEMDDIR"
-		install -m 644 "%{instprefix}/etc/opennms.service" "$SYSTEMDDIR"/
+		install -m 644 "${ROOT_INST}/etc/opennms.service" "${SYSTEMDDIR}"/
 		echo "done"
 	fi
 done

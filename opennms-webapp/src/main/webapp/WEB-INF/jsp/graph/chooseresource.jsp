@@ -163,7 +163,7 @@
           }
       }
   </script>
-  <h4><strong>${model.resource.resourceType.label}:</strong> <a href="<c:url value='${model.resource.link}'/>">${model.resource.label}</a></h4> 
+  <h4><strong>${model.resource.resourceType.label}:</strong> <a href="<c:url value='${model.resource.link}'/>"><c:out value="${model.resource.label}"/></a></h4>
   <c:choose>
   <c:when test="${empty model.resourceTypes}">
       <p>
