@@ -37,6 +37,9 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  * @version $Id: $
  */
 public interface TrapdMBean extends BaseOnmsMBean {
+    /** @return The number of traps received since Trapd was last started */
+    public long getTrapsReceived();
+    
     /** @return The number of SNMPv1 traps received since Trapd was last started */
     public long getV1TrapsReceived();
     
@@ -45,6 +48,9 @@ public interface TrapdMBean extends BaseOnmsMBean {
     
     /** @return The number of SNMPv3 traps received since Trapd was last started */
     public long getV3TrapsReceived();
+    
+    /** @return The number of traps with an unknown SNMP protocol version received since Trapd was last started */
+    public long getVUnknownTrapsReceived();
     
     /** @return The number of traps discarded, at user request, since Trapd was last started */
     public long getTrapsDiscarded();

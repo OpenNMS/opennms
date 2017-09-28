@@ -352,6 +352,10 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
     }
+    
+    public long getTrapsReceived() {
+        return TrapQueueProcessor.getTrapsReceived();
+    }
 
     public long getV1TrapsReceived() {
         return TrapQueueProcessor.getV1TrapsReceived();
@@ -363,6 +367,10 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
 
     public long getV3TrapsReceived() {
         return TrapQueueProcessor.getV3TrapsReceived();
+    }
+    
+    public long getVUnknownTrapsReceived() {
+        return TrapQueueProcessor.getVersionUnknownTrapsReceived();
     }
 
     public long getTrapsDiscarded() {

@@ -1264,7 +1264,7 @@ public class ManagerDefaultImpl implements Manager {
                                                                veleminfo.getId()));
 
             if (alarminfo != null) {
-                if (alarminfo.getStatus() > alarmStatus) {
+                if (alarminfo.getStatus() < alarmStatus) {
                     alarminfo.setStatus(alarmStatus);
                     alarminfo.setSeverity(alarmSeverity);
                 }

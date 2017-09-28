@@ -16,7 +16,7 @@
       <plugin>
         <groupId>org.opennms.core.build</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <version>2015.1.2</version>
+        <version>2015.1.3</version>
         <executions>
           <execution>
             <goals>
