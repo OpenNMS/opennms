@@ -28,65 +28,43 @@
 
 package org.opennms.netmgt.icmp.jni6;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.jni6.Jni6Pinger;
+import org.springframework.test.annotation.IfProfileValue;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * 
- * @author <a href="mailto:ranger@opennms.org>Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
-public class Jni6PingTest extends TestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({}) 
+public class Jni6PingTest {
 
     static private Jni6Pinger s_jniPinger = new Jni6Pinger();
 
     private InetAddress m_goodHost = null;
     private InetAddress m_badHost = null;
 
-    /**
-     * Don't run this test unless the runPingTests property
-     * is set to "true".
-     */
-    @Override
-    protected void runTest() throws Throwable {
-        if (!isRunTest()) {
-            System.err.println("Skipping test '" + getName() + "' because system property '" + getRunTestProperty() + "' is not set to 'true'");
-            return;
-        }
-            
-        try {
-            System.err.println("------------------- begin "+getName()+" ---------------------");
-            super.runTest();
-        } finally {
-            System.err.println("------------------- end "+getName()+" -----------------------");
-        }
-    }
-
-    private boolean isRunTest() {
-        return Boolean.parseBoolean(System.getProperty(getRunTestProperty()));
-    }
-
-    private String getRunTestProperty() {
-        return "runPingTests";
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        if (!isRunTest()) {
-            return;
-        }
-
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         m_goodHost = InetAddress.getByName("::1");
         // Originally we used the 2001:db8 prefix, which is reserved for documentation purposes
         // (suffix is 'BadAddr!' as ascii), but some networks actually return "no route to host"
@@ -95,6 +73,8 @@ public class Jni6PingTest extends TestCase {
         assertEquals(16, m_badHost.getAddress().length);
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testSinglePingJni() throws Exception {
         singlePing(s_jniPinger);
     }
@@ -188,10 +168,14 @@ public class Jni6PingTest extends TestCase {
         
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testPingCallbackTimeoutJni() throws Exception {
         pingCallbackTimeout(s_jniPinger);
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testSinglePingFailureJni() throws Exception {
         try {
             singlePingFailure(s_jniPinger);
@@ -204,6 +188,8 @@ public class Jni6PingTest extends TestCase {
         assertNull(pinger.ping(m_badHost));
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testParallelPingJni() throws Exception {
         parallelPing(s_jniPinger);
     }
@@ -219,6 +205,8 @@ public class Jni6PingTest extends TestCase {
         }
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testParallelPingFailureJni() throws Exception {
         parallelPingFailure(s_jniPinger);
     }

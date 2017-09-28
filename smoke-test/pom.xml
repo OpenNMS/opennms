@@ -3,15 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>2016.1.4</version>
+  <version>2016.1.5</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <updatePolicy>interval:60</updatePolicy>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <nodeVersion>v5.8.0</nodeVersion>
-    <npmVersion>3.7.1</npmVersion>
+    <nodeVersion>v6.10.2</nodeVersion>
+    <npmVersion>3.10.10</npmVersion>
     <test.fork.count>1</test.fork.count>
   </properties>
   <build>

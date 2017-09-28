@@ -395,9 +395,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             m_status = ServiceCollector.COLLECTION_SUCCEEDED;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new CollectionWarning("collect: Collection of node SNMP "
-                    + "data for interface " + getCollectionAgent().getHostAddress()
-                    + " interrupted: " + e, e);
+            throw new CollectionUnknown(String.format("Collection of SNMP data for interface %s was interrupted.",
+                    getCollectionAgent().getHostAddress()), e);
         }
     }
 

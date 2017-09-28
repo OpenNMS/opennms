@@ -481,6 +481,62 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals("10000.0", wrapper.getFieldValue(total.getName()));
     }
 
+    @Test
+    public void testCounterReset_NMS7106() throws Exception {
+        // Create Resource
+        SnmpCollectionAgent agent = createCollectionAgent();
+        SnmpCollectionResource resource = createNodeResource(agent);
+        Date baseDate = new Date();
+
+        // Add Counter Attribute
+        System.err.println("------------------------");
+        String attributeName = "myCounter";
+        String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
+        Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
+        BigInteger initialValue = new BigInteger("300");
+        SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", initialValue);
+        attributes.put(attribute.getName(), attribute);
+
+        // Get counter value - first time
+        CollectionResourceWrapper wrapper = createWrapper(resource, attributes, baseDate);
+        Assert.assertFalse(CollectionResourceWrapper.s_cache.containsKey(attributeId));
+        Assert.assertEquals(Double.valueOf(Double.NaN), wrapper.getAttributeValue(attributeName)); // Last value is null
+        Assert.assertEquals(Double.valueOf(Double.NaN), wrapper.getAttributeValue(attributeName)); // Last value is null
+        Assert.assertEquals(Double.valueOf(initialValue.doubleValue()), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
+        Assert.assertTrue(wrapper.getAttributeValue(attributeName).isNaN());
+
+        // Increase counter
+        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("600"));
+        attributes.put(attribute.getName(), attribute);
+        wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 300000));
+        Assert.assertFalse(CollectionResourceWrapper.s_cache.get(attributeId).getValue().isNaN());
+        Assert.assertEquals(Double.valueOf(300.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
+        Assert.assertEquals(Double.valueOf(1.0), wrapper.getAttributeValue(attributeName)); // 600 - 300 / 300 = 1.0
+
+        // Increase counter again
+        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("900"));
+        attributes.put(attribute.getName(), attribute);
+        wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 600000));
+        Assert.assertFalse(CollectionResourceWrapper.s_cache.get(attributeId).getValue().isNaN());
+        Assert.assertEquals(Double.valueOf(600.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
+        Assert.assertEquals(Double.valueOf(1.0), wrapper.getAttributeValue(attributeName)); // 900 - 600 / 300 = 1.0
+
+        // Emulate a sysUpTime restart
+        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("60"));
+        attributes.put(attribute.getName(), attribute);
+        wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 900000));
+        wrapper.setCounterReset(true);
+        Assert.assertTrue(wrapper.getAttributeValue(attributeName).isNaN());
+
+        // Increase counter again
+        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("120"));
+        attributes.put(attribute.getName(), attribute);
+        wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 1200000));
+        Assert.assertEquals(Double.valueOf(0.2), wrapper.getAttributeValue(attributeName)); // 120 - 60 / 300 = 0.2
+
+        EasyMock.verify(agent);
+    }
+
     private SnmpCollectionResource createNodeResource(SnmpCollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);

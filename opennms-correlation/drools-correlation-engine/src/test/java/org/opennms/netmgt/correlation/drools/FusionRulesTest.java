@@ -43,13 +43,14 @@ public class FusionRulesTest extends CorrelationRulesTestCase {
     @Test
     public void testDroolsFusion() throws Exception {
         
-//        anticipate(createNodeDownEvent(1));
+        anticipate(createNodeUpEvent(1));
         
         DroolsCorrelationEngine engine = findEngineByName("droolsFusion");
         
         engine.correlate(createNodeLostServiceEvent(1, "SSH"));
-
+        Thread.sleep(4000); // Give time to execute the time-based rules.
         m_anticipatedMemorySize = 5;
+        engine.getMemoryObjects().forEach(System.err::println);
         
         verify(engine);
     }

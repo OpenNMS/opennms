@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>2016.1.4</version>
+  <version>2016.1.5</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1192,7 +1192,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>2016.1.4</opennms.osgi.version>
+    <opennms.osgi.version>2016.1.5</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1305,7 +1305,7 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
-    <newtsVersion>1.4.2</newtsVersion>
+    <newtsVersion>1.4.3</newtsVersion>
     <paxExamVersion>4.6.0</paxExamVersion>
     <paxSwissboxVersion>1.8.1</paxSwissboxVersion>
     <postgresqlVersion>9.4.1211</postgresqlVersion>
@@ -1316,13 +1316,14 @@
     <owaspEncoderVersion>1.2</owaspEncoderVersion>
     <quartzVersion>1.6.5</quartzVersion>
     <slf4jVersion>1.7.21</slf4jVersion>
-    <snmp4jVersion>2.4.3</snmp4jVersion>
-    <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
+    <snmp4jVersion>2.5.5</snmp4jVersion>
+    <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
+    <wsmanVersion>1.2.2</wsmanVersion>
 
     <springVersion>4.0.5.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
@@ -1791,6 +1792,11 @@
       <dependency>
         <groupId>org.opennms.features.collection</groupId>
         <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.persistence.tcp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

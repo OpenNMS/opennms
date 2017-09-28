@@ -69,6 +69,7 @@ import org.snmp4j.mp.PduHandle;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.IpAddress;
@@ -113,7 +114,11 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         SNMP4JSettings.setAllowSNMPv2InV1(Boolean.getBoolean("org.opennms.snmp.snmp4j.allowSNMPv2InV1"));
         SNMP4JSettings.setNoGetBulk(Boolean.getBoolean("org.opennms.snmp.snmp4j.noGetBulk"));
-        
+
+        // NMS-9223: This call can be expensive, and is synchronized
+        // so we perform it only once during initialization
+        SecurityProtocols.getInstance().addDefaultProtocols();
+
         s_initialized = true;
     }
     

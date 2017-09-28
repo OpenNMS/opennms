@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -244,6 +244,7 @@ public class MockSnmpStrategyTest {
         config.setVersion(SnmpAgentConfig.VERSION1);
         config.setMaxVarsPerPdu(20);
         config.setMaxRepetitions(20);
+        config.setRetries(3);
         return config;
     }
 
@@ -260,8 +261,8 @@ public class MockSnmpStrategyTest {
         public CountingColumnTracker(final SnmpObjId base) {
             super(base);
         }
-        public CountingColumnTracker(final SnmpObjId base, final int maxRepetitions) {
-            super(base, maxRepetitions);
+        public CountingColumnTracker(final SnmpObjId base, final int maxRepetitions, final int maxRetries) {
+            super(base, maxRepetitions, maxRetries);
         }
         public long getCount() {
             return m_count;

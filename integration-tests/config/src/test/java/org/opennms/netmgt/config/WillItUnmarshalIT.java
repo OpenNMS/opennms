@@ -233,7 +233,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, Impl.JAXB);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmptrap-northbounder-configuration.xml", SnmpTrapNorthbounderConfig.class, Impl.JAXB);

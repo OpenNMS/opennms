@@ -76,7 +76,7 @@ public abstract class Jsr160ConnectionFactory {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;
         
-        final String hostAddress = InetAddressUtils.str(address);
+        final String hostAddress = InetAddressUtils.toUrlIpAddress(address);
         LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, hostAddress, port, urlPath);
 
         if (factory == null || factory.equals("STANDARD")) {
@@ -114,7 +114,7 @@ public abstract class Jsr160ConnectionFactory {
         }
         /*
         else if (factory.equals("PASSWORD-OBFUSCATED")) {
-            HashMap env = new HashMap();
+            Map<String,String[]> env = new HashMap<String,String[]>();
             
             // Provide the credentials required by the server to successfully
             // perform user authentication
@@ -139,7 +139,7 @@ public abstract class Jsr160ConnectionFactory {
         }
         
         else if (factory.equals("SSL")) {
-            HashMap env = new HashMap();
+            Map<String,String[]> env = new HashMap<String,String[]>();
             
             // Provide the credentials required by the server to successfully
             // perform user authentication
@@ -174,10 +174,10 @@ public abstract class Jsr160ConnectionFactory {
             // Create an JMXMP connector client and
             // connect it to the JMXMP connector server
             //
-            return new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+            return new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
         } else {
             // Fallback, building a URL for RMI
-            return new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+            return new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.toUrlIpAddress(address) + ":" + port + urlPath);
         }
     }
 
