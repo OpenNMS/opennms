@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2015.1.4</version>
+    <version>2015.1.5</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -80,6 +80,10 @@
       <artifactId>jersey-spring</artifactId>
       <version>${jerseyContribVersion}</version>
       <exclusions>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
@@ -162,6 +166,13 @@
     </dependency>
   </dependencies>
   <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>jboss-repo</id>
+      <name>JBoss Repository</name>
+      <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
+    </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>

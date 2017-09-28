@@ -29,7 +29,7 @@
 package org.opennms.netmgt.rtc;
 
 import java.io.InputStream;
-import java.io.Reader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -45,11 +45,11 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.HttpUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.rtc.datablock.HttpPostInfo;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.rtc.utils.EuiLevelMapper;
-import org.opennms.netmgt.rtc.utils.PipedMarshaller;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -249,7 +249,6 @@ final class DataSender implements Fiber {
         }
 
         // send data
-        Reader inr = null;
         InputStream inp = null;
         try {
             LOG.debug("DataSender: posting data to: {}", url);
@@ -259,8 +258,10 @@ final class DataSender implements Fiber {
             final int oldPriority = setCurrentThreadPriority(Thread.MAX_PRIORITY);
 
             final EuiLevel euidata = m_euiMapper.convertToEuiLevelXML(cat);
-            inr = new PipedMarshaller(euidata).getReader();
-            inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+            final String marshaledUeiData = JaxbUtils.marshal(euidata);
+            try(final StringReader inr = new StringReader(marshaledUeiData)) {
+                inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+            }
 
             final byte[] tmp = new byte[1024];
             int bytesRead;
@@ -281,7 +282,6 @@ final class DataSender implements Fiber {
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } finally {
             IOUtils.closeQuietly(inp);
-            IOUtils.closeQuietly(inr);
         }
     }
 
@@ -361,12 +361,13 @@ final class DataSender implements Fiber {
                 while (urlIter.hasNext()) {
                     final HttpPostInfo postInfo = urlIter.next();
 
-                    Reader inr = null;
                     InputStream inp = null;
                     try {
-                        inr = new PipedMarshaller(euidata).getReader();
                         LOG.debug("DataSender: posting data to: {}", postInfo.getURLString());
-                        inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+                        final String marshaledUeiData = JaxbUtils.marshal(euidata);
+                        try(final StringReader inr = new StringReader(marshaledUeiData)) {
+                            inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+                        }
                         LOG.debug("DataSender: posted data for category: {}", catlabel);
 
 
@@ -388,7 +389,6 @@ final class DataSender implements Fiber {
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } finally {
                         IOUtils.closeQuietly(inp);
-                        IOUtils.closeQuietly(inr);
                     }
 
                     // check to see if URL had too many errors

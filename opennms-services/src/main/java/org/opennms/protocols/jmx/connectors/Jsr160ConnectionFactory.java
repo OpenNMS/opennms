@@ -28,9 +28,11 @@
 
 package org.opennms.protocols.jmx.connectors;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -42,10 +44,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import mx4j.tools.remote.*;
-
-
-/*
+/**
  * This class creates a connection to the remote server. There are many options to using this
  * class.  BUT THEY ARE NOT WORKING YET....
  * 
@@ -53,9 +52,9 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public abstract class Jsr160ConnectionFactory {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Jsr160ConnectionFactory.class);
-    
+
+    private static final Logger LOG = LoggerFactory.getLogger(Jsr160ConnectionFactory.class);
+
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<String, ?> propertiesMap, InetAddress address) {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;
@@ -66,7 +65,7 @@ public abstract class Jsr160ConnectionFactory {
         String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
         String urlPath =  ParameterMap.getKeyedString( propertiesMap, "urlPath",  "/jmxrmi");
         
-        LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, InetAddressUtils.str(address), port, urlPath);
+        LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
 
         if (factory == null || factory.equals("STANDARD")) {
             try {
@@ -77,8 +76,12 @@ public abstract class Jsr160ConnectionFactory {
                 MBeanServerConnection connection = connector.getMBeanServerConnection();
                 
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
+            } catch(MalformedURLException e) {
+                LOG.warn("URL was malformed: {}", url, e);
+            } catch (IOException e) {
+                LOG.warn("An I/O exception occurred: {}", url, e);
             } catch(Throwable e) {
-            	LOG.warn("Unable to get MBeanServerConnection: {}", url);
+                LOG.warn("Unable to get MBeanServerConnection: {}", url, e);
             }
         }
         else if (factory.equals("PASSWORD-CLEAR")) {
@@ -130,7 +133,7 @@ public abstract class Jsr160ConnectionFactory {
                 String username   = ParameterMap.getKeyedString(propertiesMap, "username", null);
                 String password   = ParameterMap.getKeyedString(propertiesMap, "password", null);
                 
-                HashMap env = new HashMap();
+                Map<String,String[]> env = new HashMap<String,String[]>();
                 
                 // Provide the credentials required by the server to successfully
                 // perform user authentication
@@ -141,7 +144,7 @@ public abstract class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+                url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
@@ -154,7 +157,7 @@ public abstract class Jsr160ConnectionFactory {
                 catch (SecurityException x)
                 {
                     // Uh-oh ! Bad credentials 
-                    log.error("Security exception: bad credentials");
+                    LOG.error("Security exception: bad credentials");
                     throw x;
                 }
 
@@ -164,7 +167,7 @@ public abstract class Jsr160ConnectionFactory {
                 
             } catch(Throwable e) {
                 e.fillInStackTrace();
-                log.error("Unable to get MBeanServerConnection", e);
+                LOG.error("Unable to get MBeanServerConnection", e);
             }
         }
         
@@ -174,7 +177,7 @@ public abstract class Jsr160ConnectionFactory {
                 String username   = ParameterMap.getKeyedString(propertiesMap, "username", null);
                 String password   = ParameterMap.getKeyedString(propertiesMap, "password", null);
                 
-                HashMap env = new HashMap();
+                Map<String,String[]> env = new HashMap<String,String[]>();
                 
                 // Provide the credentials required by the server to successfully
                 // perform user authentication
@@ -185,7 +188,7 @@ public abstract class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+                url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
@@ -198,7 +201,7 @@ public abstract class Jsr160ConnectionFactory {
                 catch (SecurityException x)
                 {
                     // Uh-oh ! Bad credentials 
-                    log.error("Security exception: bad credentials");
+                    LOG.error("Security exception: bad credentials");
                     throw x;
                 }
 
@@ -208,7 +211,7 @@ public abstract class Jsr160ConnectionFactory {
                 
             } catch(Throwable e) {
                 e.fillInStackTrace();
-                log.error("Unable to get MBeanServerConnection", e);
+                LOG.error("Unable to get MBeanServerConnection", e);
             }
         }
         */
@@ -222,11 +225,11 @@ public abstract class Jsr160ConnectionFactory {
             // Create an JMXMP connector client and
             // connect it to the JMXMP connector server
             //
-            url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+            url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
         } else {
             // Fallback, building a URL for RMI
-            url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+            url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.toUrlIpAddress(address) + ":" + port + urlPath);
         }
         return url;
-    }    
+    }
 }

@@ -1,6 +1,33 @@
 [releasenotes-2015]
 === OpenNMS Meridian 2015
 
+[releasenotes-changelog-Meridian-2015.1.5]
+==== Release Meridian-2015.1.5
+
+Release 2015.1.5 is the sixth release of OpenNMS Meridian 2015.  It contains a few bug fixes and minor enhancements.
+The codename for 2015.1.3 is _NT_.
+
+===== Bug
+
+* OpenNMS doesn't correctly support IPv6 addresses for (jasper) reporting (Issue http://issues.opennms.org/browse/NMS-5450[NMS-5450])
+* Restarting OMNS results in numerous SNMP outage alarms and notifications (Issue http://issues.opennms.org/browse/NMS-8620[NMS-8620])
+* Poller Node Down without outages (Issue http://issues.opennms.org/browse/NMS-8751[NMS-8751])
+* Threshold editor help text unclear about comparison operators (Issue http://issues.opennms.org/browse/NMS-8826[NMS-8826])
+* Invalid graph templates (Issue http://issues.opennms.org/browse/NMS-8907[NMS-8907])
+* Near Real-Time Graphing unable to graph Cisco BDI interfaces (Issue http://issues.opennms.org/browse/NMS-8908[NMS-8908])
+* Copyright bump 2017 (Issue http://issues.opennms.org/browse/NMS-9060[NMS-9060])
+* opennms.conf can break the snmp-request command (Issue http://issues.opennms.org/browse/NMS-9068[NMS-9068])
+* Jsr160ConnectionFactory doesn't work with IPv6 address (Issue http://issues.opennms.org/browse/NMS-9071[NMS-9071])
+* Migrate RTC related objects to JAXB instead of Castor (Issue http://issues.opennms.org/browse/NMS-9100[NMS-9100])
+* Pollerd continues to monitor deleted nodes (Issue http://issues.opennms.org/browse/NMS-9112[NMS-9112])
+* SNMP client code can get stuck in infinite retry loops (Issue http://issues.opennms.org/browse/NMS-9164[NMS-9164])
+* SyslogParser should not assume UTC timestamps (Issue http://issues.opennms.org/browse/NMS-9201[NMS-9201])
+
+===== Enhancement
+
+* SNMP data collection definitions for Cisco ASA5585-SSP-60 devices (Issue http://issues.opennms.org/browse/NMS-9094[NMS-9094])
+* Enhance to MockSnmpAgent to support returning arbitrary SNMP error codes (Issue http://issues.opennms.org/browse/NMS-9163[NMS-9163])
+
 [releasenotes-changelog-2015.1.4]
 ==== Release Meridian-2015.1.4
 

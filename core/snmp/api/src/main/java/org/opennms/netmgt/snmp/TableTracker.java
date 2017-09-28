@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,15 +50,15 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
     }
     
     public TableTracker(RowCallback rc, SnmpObjId... ids) {
-        this(rc, 2, ids);
+        this(rc, 2, 0, ids);
     }
 
-    public TableTracker(RowCallback rc, int maxRepetitions, SnmpObjId... columns) {
+    public TableTracker(RowCallback rc, int maxRepetitions, int maxRetries, SnmpObjId... columns) {
         m_tableResult = new SnmpTableResult(rc == null ? this : rc, this, columns);
 
         m_columnTrackers = new ArrayList<ColumnTracker>(columns.length);
         for (SnmpObjId id : columns) {
-            m_columnTrackers.add(new ColumnTracker(this, id, maxRepetitions));
+            m_columnTrackers.add(new ColumnTracker(this, id, maxRepetitions, maxRetries));
         }
     }
 
@@ -66,6 +66,13 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
     public void setMaxRepetitions(int maxRepetitions) {
         for(ColumnTracker child : m_columnTrackers) {
             child.setMaxRepetitions(maxRepetitions);
+        }
+    }
+
+    @Override
+    public void setMaxRetries(final int maxRetries) {
+        for(final ColumnTracker child : m_columnTrackers) {
+            child.setMaxRetries(maxRetries);
         }
     }
 

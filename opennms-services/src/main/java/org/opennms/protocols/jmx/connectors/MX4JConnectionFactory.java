@@ -42,19 +42,12 @@ import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-/*
-* This class creates a connection to the remote server. There are many options to using this
-* class.  BUT THEY ARE NOT WORKING YET....
-* 
-* @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
-* @author <A HREF="http://www.opennms.org/">OpenNMS </A>
-*/
 /**
- * <p>MX4JConnectionFactory class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * This class creates a connection to the remote server. There are many options to using this
+ * class.  BUT THEY ARE NOT WORKING YET....
+ * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public abstract class MX4JConnectionFactory {
 	
@@ -78,12 +71,12 @@ public abstract class MX4JConnectionFactory {
       String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
       String urlPath =  ParameterMap.getKeyedString( propertiesMap, "urlPath",  "/jmxrmi");
       
-      LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, InetAddressUtils.str(address), port, urlPath);
+      LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
 
       if (factory == null || factory.equals("STANDARD")) {
           try {
               
-              url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+              url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
               
               // Connect a JSR 160 JMXConnector to the server side
               JMXConnector connector = JMXConnectorFactory.connect(url);
@@ -111,7 +104,7 @@ public abstract class MX4JConnectionFactory {
               // Create an RMI connector client and
               // connect it to the RMI connector server
               //
-              url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+              url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
               
               // Connect a JSR 160 JMXConnector to the server side
               JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
@@ -133,7 +126,7 @@ public abstract class MX4JConnectionFactory {
               connectionWrapper = new MX4JConnectionWrapper(connector, connection);
               
           } catch(Throwable e) {
-		  LOG.error("Unable to get MBeanServerConnection: {}", url, e);
+              LOG.error("Unable to get MBeanServerConnection: {}", url, e);
           }
       }
       /*
@@ -154,7 +147,7 @@ public abstract class MX4JConnectionFactory {
               // Create an RMI connector client and
               // connect it to the RMI connector server
               //
-              JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+              JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
               
               // Connect a JSR 160 JMXConnector to the server side
               JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
@@ -198,7 +191,7 @@ public abstract class MX4JConnectionFactory {
               // Create an RMI connector client and
               // connect it to the RMI connector server
               //
-              JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+              JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
               
               // Connect a JSR 160 JMXConnector to the server side
               JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);

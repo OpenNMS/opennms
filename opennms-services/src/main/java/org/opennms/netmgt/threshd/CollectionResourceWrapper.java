@@ -419,6 +419,9 @@ public class CollectionResourceWrapper {
             LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.m_value +"@"+ last.m_timestamp), current);
             if (last == null) {
                 m_localCache.put(id, Double.NaN);
+                if (m_counterReset) {
+                    s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
+                }
                 LOG.info("getCounterValue: unknown last value for {}, ignoring current", id);
             } else {                
                 Double delta = current.doubleValue() - last.m_value.doubleValue();

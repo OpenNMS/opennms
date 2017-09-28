@@ -48,7 +48,7 @@ import org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextC
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The JBossConnectionFactory class handles the creation of a connection to the 
  * remote JBoss server.  The connections can be either RMI or HTTP based.  RMI is
  * more efficient but doesn't work with firewalls.  The HTTP connection is suited 
@@ -60,15 +60,9 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-/**
- * <p>JBossConnectionFactory class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public abstract class JBossConnectionFactory {
-    
-	private static final Logger LOG = LoggerFactory.getLogger(JBossConnectionFactory.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(JBossConnectionFactory.class);
 
     static String[] packages = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
@@ -146,8 +140,8 @@ public abstract class JBossConnectionFactory {
         if (connectionType.equals("RMI")) {
             InitialContext  ctx  = null;
 
-            final String hostAddress = InetAddressUtils.str(address);
-			try {
+            final String hostAddress = InetAddressUtils.toUrlIpAddress(address);
+            try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.NamingContextFactory");
@@ -176,8 +170,8 @@ public abstract class JBossConnectionFactory {
             InitialContext ctx  = null;
             String invokerSuffix = null;
 
-            final String hostAddress = InetAddressUtils.str(address);
-			try {
+            final String hostAddress = InetAddressUtils.toUrlIpAddress(address);
+            try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.HttpNamingContextFactory");
