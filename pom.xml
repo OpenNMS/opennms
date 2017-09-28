@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>2016.1.6</version>
+  <version>2016.1.7-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1163,7 +1163,7 @@
 
       Add target/endorsed as an endorsed API directory in case projects require it.
     -->
-    <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+    <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed -Dpoller.logfile=/tmp/remote-poller.log</argLine>
 
     <build.skip.tarball>false</build.skip.tarball>
 
@@ -1193,7 +1193,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>2016.1.6</opennms.osgi.version>
+    <opennms.osgi.version>2016.1.7.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1226,6 +1226,7 @@
     <install.perl.bin>/usr/bin/perl</install.perl.bin>
 
     <runMailTests>true</runMailTests>
+    <poller.logfile>/tmp/remote-poller.log</poller.logfile>
   
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>

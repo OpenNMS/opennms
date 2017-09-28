@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,37 +30,51 @@ package org.opennms.protocols.dhcp.detector;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.jdhcp.DHCPMessage;
+import org.opennms.jdhcp.DHCPSocket;
+import org.opennms.netmgt.config.dhcpd.DhcpdConfigFactory;
 import org.opennms.netmgt.dhcpd.Dhcpd;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import edu.bucknell.net.JDHCP.DHCPMessage;
-import edu.bucknell.net.JDHCP.DHCPSocket;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath*:/META-INF/opennms/detectors.xml"})
+@JUnitConfigurationEnvironment
 public class DhcpDetectorTest implements InitializingBean {
 
-    //Tested local DHCP client
-    private static String DHCP_SERVER_IP = "192.0.2.1";
+    // This should be a real, working DHCP server on the network
+    private static String DHCP_SERVER_IP = "192.168.0.1";
+
+    // This should be the IP address of the machine running the test which DHCP_SERVER_IP will respond with
+    private static String MY_IP = "192.168.0.123";
+
+    // This should be the MAC address of the machine running the test
+    private static String MY_MAC = "00:00:00:00:00:01";
+
+    // Enable this if you have set the previous 3 things properly, and you're running as root :)
+    private boolean m_extendedTests = false;
 
     @Autowired
     public DhcpDetector m_detector;
@@ -69,24 +83,46 @@ public class DhcpDetectorTest implements InitializingBean {
 
     private Thread m_dhcpdThread = null;
 
+    private String m_onmsHome;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
+        File etc = new File("target/test-work-dir/etc");
+        etc.mkdirs();
+        m_onmsHome = etc.getParent();
+        System.setProperty("opennms.home", m_onmsHome);
+        ConfigurationTestUtils.setRelativeHomeDirectory(m_onmsHome);
+        File dhcpConfig = new File(etc, "dhcpd-configuration.xml");
+        FileUtils.writeStringToFile(dhcpConfig, "<DhcpdConfiguration\n" + 
+                "        port=\"5818\"\n" + 
+                "        macAddress=\"" + MY_MAC + "\"\n" + 
+                "        myIpAddress=\"" + MY_IP + "\"\n" + 
+                "        extendedMode=\"false\"\n" + 
+                "        requestIpAddress=\"" + MY_IP + "\">\n" + 
+                "</DhcpdConfiguration>");
+
+        DhcpdConfigFactory.init();
         m_dhcpd = Dhcpd.getInstance();
         m_dhcpd.init();
-        // binds on port 68, hardcoded  :P
-        //m_dhcpd.start();
+
+        if (m_extendedTests) {
+            // binds on port 68, hardcoded  :P
+            m_dhcpd.start();
+        }
     }
 
     @After
     public void tearDown(){
-        // m_dhcpd.stop();
+        if (m_extendedTests) {
+            m_dhcpd.stop();
+        }
     }
 
     @Test(timeout=90000)
@@ -95,8 +131,8 @@ public class DhcpDetectorTest implements InitializingBean {
     }
 
     @Test(timeout=90000)
-    @Ignore
     public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
+        assumeTrue(m_extendedTests);
         m_detector.setTimeout(5000);
         m_detector.init();
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP)));
@@ -104,8 +140,8 @@ public class DhcpDetectorTest implements InitializingBean {
     }
 
     @Test(timeout=90000)
-    @Ignore
     public void testJdhcp() throws IOException{
+        assumeTrue(m_extendedTests);
         DHCPSocket mySocket = new DHCPSocket(68);
 
         try {
@@ -140,7 +176,7 @@ public class DhcpDetectorTest implements InitializingBean {
             mySocket.receive(messageIn);
     
             messageIn.printMessage();
-            System.out.println("Destination Address:  " + messageIn.getDestinationAddress());
+            System.out.println("Destination Address:  " + messageIn.getDestination());
             System.out.println("Ch Address:  " + Arrays.toString(messageIn.getChaddr()));
             System.out.println("Siaddr:  " + Arrays.toString(messageIn.getSiaddr()));
             System.out.println("Ciaddr: " + Arrays.toString(messageIn.getCiaddr()));
