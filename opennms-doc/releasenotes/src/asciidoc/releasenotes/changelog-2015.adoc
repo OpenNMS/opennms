@@ -1,6 +1,17 @@
 [releasenotes-2015]
 === OpenNMS Meridian 2015
 
+[releasenotes-changelog-Meridian-2015.1.7]
+==== Release Meridian-2015.1.7
+
+Release 2015.1.7 is the eighth release of OpenNMS Meridian 2015.  It contains a few small bug fixes.
+The codename for 2015.1.7 is _ROTT_.
+
+===== Bug
+
+* The reason parameter for a nodeLostService event is limited to 255 characters (Issue http://issues.opennms.org/browse/NMS-9550[NMS-9550])
+* Remote Poller log path incorrect when using the NSIS installer (Issue http://issues.opennms.org/browse/NMS-9631[NMS-9631])
+
 [releasenotes-changelog-Meridian-2015.1.6]
 ==== Release Meridian-2015.1.6
 

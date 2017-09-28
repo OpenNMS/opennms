@@ -4,7 +4,7 @@
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
   <name>OpenNMS Smoke Test</name>
-  <version>2015.1.6</version>
+  <version>2015.1.7-SNAPSHOT</version>
   <build>
     <plugins>
       <plugin>

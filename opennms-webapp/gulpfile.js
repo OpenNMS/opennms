@@ -8,7 +8,7 @@ var paths = {
 	'jsp': 'src/main/webapp/**/*.jsp'
 };
 
-var opennmsHome = process.env.OPENNMS_HOME || '../target/opennms-2015.1.6'
+var opennmsHome = process.env.OPENNMS_HOME || '../target/opennms-2015.1.7-SNAPSHOT'
 gutil.log('gulp', 'OpenNMS Home: ' + opennmsHome);
 
 gulp.task('default', ['sass', 'jsp']);
