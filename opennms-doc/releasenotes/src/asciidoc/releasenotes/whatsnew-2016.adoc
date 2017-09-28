@@ -201,7 +201,7 @@ The codename for 2016.1.6 is _Goode homolosine_.
 
 
 [releasenotes-changelog-Meridian-2016.1.5]
-==== Release 2016.1.5
+==== Release Meridian-2016.1.5
 
 Release 2016.1.5 is an update to 2016.1.4 that provides quite a few bug fixes and a few enhancements.
 
@@ -269,7 +269,7 @@ The codename for 2016.1.5 is _Peirce Quincuncial_.
 * Improve handling of counter wraps/reset when using Newts (Issue http://issues.opennms.org/browse/NMS-9252[NMS-9252])
 
 [releasenotes-changelog-2016.1.4]
-==== Release 2016.1.4
+==== Release Meridian-2016.1.4
 
 Release 2016.1.4 is an update to 2016.1.3 that provides a number of bug fixes and a few enhancements.
 
@@ -335,7 +335,7 @@ While we strive to make no changes to `$OPENNMS_HOME/etc` in micro Meridian rele
 
 
 [releasenotes-changelog-2016.1.3]
-==== Release 2016.1.3
+==== Release Meridian-2016.1.3
 
 Release 2016.1.3 is an update to 2016.1.2 that provides a few bug fixes, including a fix to a XSS vulnerability in the web UI.
 
@@ -374,7 +374,7 @@ The codename for 2016.1.3 is _Hobo-Dyer_.
 
 
 [releasenotes-changelog-2016.1.2]
-==== Release 2016.1.2
+==== Release Meridian-2016.1.2
 
 Release 2016.1.2 is an update to 2016.1.1 that provides a number of bug fixes, including a fix for geographical maps that were using the (end-of-life'd) MapQuest OpenStreetMap tile server.
 
@@ -408,7 +408,7 @@ The codename for 2016.1.2 is _Loximuthal_.
 
 
 [releasenotes-changelog-2016.1.1]
-==== Release 2016.1.1
+==== Release Meridian-2016.1.1
 
 Release 2016.1.1 is an update to 2016.1.0 that provides a fix for upgrades.
 
@@ -416,7 +416,7 @@ The codename for 2016.1.1 is _Cassini_.
 
 
 [releasenotes-changelog-2016.1.0]
-==== Release 2016.1.0
+==== Release Meridian-2016.1.0
 
 Release 2016.1.0 is the first release of OpenNMS Meridian 2016.  It is based on OpenNMS Horizon 17.1.1, plus a number of smaller bug fixes.
 
