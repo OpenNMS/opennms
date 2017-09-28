@@ -30,18 +30,18 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import java.net.InetAddress;
 
-import static org.opennms.core.utils.InetAddressUtils.getIpAddressByHexString;
+import static org.opennms.core.utils.InetAddressUtils.getInetAddress;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
 
 public class CdpCacheTableTracker extends TableTracker {
@@ -153,19 +153,48 @@ public class CdpCacheTableTracker extends TableTracker {
 		 *
 		 * @return a {@link java.lang.String} object.
 		 */
-		public String getCdpCacheAddress() {
-		    return getValue(CDP_CACHE_ADDRESS).toHexString();
+		public byte[] getCdpCacheAddress() {
+                    return getValue(CDP_CACHE_ADDRESS).getBytes();
 		}
-	
+		
 		/**
 		 * <p>getCdpCacheIpv4Address</p>
 		 *
 		 * @return a {@link java.lang.String} object.
 		 */
-		public InetAddress getCdpCacheIpv4Address() {
-	            return getIpAddressByHexString(getCdpCacheAddress());	    
+		private InetAddress getCdpCacheInetAddress() {
+	            return getInetAddress(getCdpCacheAddress());	    
 		}
-				
+		
+		private String getDisplayableCdpCacheAddress() {
+                    SnmpValue cdpCacheAddressValue = getValue(CDP_CACHE_ADDRESS);
+                    try {
+                        if (cdpCacheAddressValue.isDisplayable())
+                            return cdpCacheAddressValue.toDisplayString();
+                    } catch (Exception e) {
+                        return cdpCacheAddressValue.toHexString();
+                    }
+                    return "not able to diplay";
+		}
+
+		public String getCdpCacheAddressString() {
+		    String cdpCacheAddressValueString = null;
+		    CiscoNetworkProtocolType type = CiscoNetworkProtocolType.get(getCdpCacheAddressType());
+    		    switch (type) {
+    		        case ip:
+                        case ipv6:
+                    try {
+                        cdpCacheAddressValueString =str(getCdpCacheInetAddress());
+                    } catch (Exception e) {
+                        cdpCacheAddressValueString = getDisplayableCdpCacheAddress(); 
+                    }
+                            break;
+                        default:
+                            cdpCacheAddressValueString = getDisplayableCdpCacheAddress(); 
+                            break;
+                        }
+		    return cdpCacheAddressValueString;
+		}
 
 		public String getCdpCacheVersion() {
 			return getValue(CDP_CACHE_VERSION).toDisplayString();
@@ -205,10 +234,7 @@ public class CdpCacheTableTracker extends TableTracker {
             link.setCdpCacheIfIndex(getCdpCacheIfIndex());
             link.setCdpCacheDeviceIndex(getCdpCacheDeviceIndex());
             link.setCdpCacheAddressType(CiscoNetworkProtocolType.get(getCdpCacheAddressType()));
-            if (CiscoNetworkProtocolType.ip == link.getCdpCacheAddressType())
-            	link.setCdpCacheAddress(str(getCdpCacheIpv4Address()));
-            else 
-            	link.setCdpCacheAddress(getCdpCacheAddress());
+            link.setCdpCacheAddress(getCdpCacheAddressString());
             link.setCdpCacheVersion(getCdpCacheVersion());
             link.setCdpCacheDeviceId(getCdpCacheDeviceId());
             link.setCdpCacheDevicePort(getCdpCacheDevicePort());

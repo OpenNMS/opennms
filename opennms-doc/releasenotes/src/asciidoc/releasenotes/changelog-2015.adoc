@@ -1,6 +1,85 @@
 [releasenotes-2015]
 === OpenNMS Meridian 2015
 
+[releasenotes-changelog-2015.1.1]
+==== Release Meridian-2015.1.1
+
+Release 2015.1.1 is the second release of OpenNMS Meridian 2015.  It contains a number of bug fixes as well as a few security fixes over 2015.1.0.
+
+===== Bug
+
+* Database reports fail with 500 error (Issue LTS-184)
+* Forecasting reports fail to render when datasource includes "inf" (Issue LTS-185)
+* Default JMX Config Generator Throw Error (Issue LTS-187)
+* JMX Config Generator Does Not Run in PoweredBy Branch (Issue LTS-191)
+* When removing nodes from a provisioning group, the removed nodes may still be referenced in KSC reports; thus resulting in errors accessing those reports until the nodes are manually removed. (Issue http://issues.opennms.org/browse/NMS-4399[NMS-4399])
+* JMX Config Tool CLI is not packaged correctly (Issue http://issues.opennms.org/browse/NMS-5946[NMS-5946])
+* NRTG is throwing ConcurrentModificationException (Issue http://issues.opennms.org/browse/NMS-6536[NMS-6536])
+* IfIndex not updated in ipinterface table on change (Issue http://issues.opennms.org/browse/NMS-6567[NMS-6567])
+* Event Translator cant translate events with update-field data present (Issue http://issues.opennms.org/browse/NMS-7024[NMS-7024])
+* Remove the logging directories from the DEB package (Issue http://issues.opennms.org/browse/NMS-7192[NMS-7192])
+* IllegalArgumentException on ipnettomediatable (Issue http://issues.opennms.org/browse/NMS-7358[NMS-7358])
+* 1.12.9-2 rpm install broken (Issue http://issues.opennms.org/browse/NMS-7398[NMS-7398])
+* KSC Reports with non-existing resources generate exceptions on the WebUI  (Issue http://issues.opennms.org/browse/NMS-7400[NMS-7400])
+* Double footer in resource graph page (Issue http://issues.opennms.org/browse/NMS-7412[NMS-7412])
+* queued creates its own category for loggings (Issue http://issues.opennms.org/browse/NMS-7485[NMS-7485])
+* Queued daemon seems to ignore loglevel (Issue http://issues.opennms.org/browse/NMS-7510[NMS-7510])
+* XML Collector is not working as expected for node-level resources (Issue http://issues.opennms.org/browse/NMS-7516[NMS-7516])
+* Some parameters logged out of order since slf4j conversion (Issue http://issues.opennms.org/browse/NMS-7603[NMS-7603])
+* Compass can't make a POST request from FILE URLs in some cases (Issue http://issues.opennms.org/browse/NMS-7616[NMS-7616])
+* The PSM doesn't work with IPv6 addresses if the ${ipaddr} placeholder is used on host or virtual-host (Issue http://issues.opennms.org/browse/NMS-7626[NMS-7626])
+* Timeline image links are not working with services containing spaces (Issue http://issues.opennms.org/browse/NMS-7629[NMS-7629])
+* Match event params for auto-ack of Notification (Issue http://issues.opennms.org/browse/NMS-7631[NMS-7631])
+* include-url doesn't work on poller packages (Issue http://issues.opennms.org/browse/NMS-7633[NMS-7633])
+* Node resources are deleted when provisiond aborts a scan (Issue http://issues.opennms.org/browse/NMS-7636[NMS-7636])
+* Default date width in Database Reports is too small (Issue http://issues.opennms.org/browse/NMS-7637[NMS-7637])
+* The global variable org.opennms.rrd.queuing.category is set to OpenNMS.Queued and should be queued (Issue http://issues.opennms.org/browse/NMS-7642[NMS-7642])
+* Fixing Logging Prefix/Category on several classes (Issue http://issues.opennms.org/browse/NMS-7644[NMS-7644])
+* XML data collection with HTTP POST requests is not working (Issue http://issues.opennms.org/browse/NMS-7650[NMS-7650])
+* Improving exception handling on the XML Collector (Issue http://issues.opennms.org/browse/NMS-7651[NMS-7651])
+* Logging not initialized but used on Drools Rule files. (Issue http://issues.opennms.org/browse/NMS-7695[NMS-7695])
+* NumberFormatException in LldpUtils (Issue http://issues.opennms.org/browse/NMS-7697[NMS-7697])
+* Hibernate exception in AlarmDetailsDashlet (Issue http://issues.opennms.org/browse/NMS-7698[NMS-7698])
+* 'More...' event link on /opennms/element/service.jsp encodes URL incorrectly (Issue http://issues.opennms.org/browse/NMS-7714[NMS-7714])
+* Log messages for the Correlation Engine appear in manager.log (Issue http://issues.opennms.org/browse/NMS-7729[NMS-7729])
+* SeleniumMonitor with PhantomJS driver needs gson JAR (Issue http://issues.opennms.org/browse/NMS-7748[NMS-7748])
+* Cannot edit some Asset Info fields (Issue http://issues.opennms.org/browse/NMS-7750[NMS-7750])
+* The command /opt/opennms/bin/ilr doesn't work (Issue http://issues.opennms.org/browse/NMS-7760[NMS-7760])
+* nodeCategoryChanged event on already-down node makes extra nodeDown events (Issue http://issues.opennms.org/browse/NMS-7761[NMS-7761])
+* Incorrect unit divisor in LM-SENSORS-MIB graph definitions (Issue http://issues.opennms.org/browse/NMS-7766[NMS-7766])
+* OpenNMS won't start anymore with 512MB of Heap Size (Issue http://issues.opennms.org/browse/NMS-7783[NMS-7783])
+* Some weak cipher suites allowed in example jetty.xml HTTPS config (Issue http://issues.opennms.org/browse/NMS-7812[NMS-7812])
+* The reload config for Collectd might throws a ConcurrentModificationException (Issue http://issues.opennms.org/browse/NMS-7824[NMS-7824])
+* NPE on "manage and unmanage services and interfaces" (Issue http://issues.opennms.org/browse/NMS-7828[NMS-7828])
+* "No session" error during startup in EnhancedLinkdTopologyProvider (Issue http://issues.opennms.org/browse/NMS-7835[NMS-7835])
+* Fix for NMS-6567 prevents interfaces from acquiring SNMP interface records on rescan (Issue http://issues.opennms.org/browse/NMS-7838[NMS-7838])
+* Counter variables reported as strings (like Net-SNMP extent) are not stored properly when using RRDtool (Issue http://issues.opennms.org/browse/NMS-7839[NMS-7839])
+* Slow LinkdTopologyProvider/EnhancedLinkdTopologyProvider in bigger enviroments (Issue http://issues.opennms.org/browse/NMS-7846[NMS-7846])
+* distributed details page broken (Issue http://issues.opennms.org/browse/NMS-7855[NMS-7855])
+* Cisco Packets In/Out legend label wrong (Issue http://issues.opennms.org/browse/NMS-7857[NMS-7857])
+* Enlinkd CDP code fails to parse hex-encoded IP address string (Issue http://issues.opennms.org/browse/NMS-7858[NMS-7858])
+* IpNetToMedia Hibernate exception in enlinkd.log (Issue http://issues.opennms.org/browse/NMS-7861[NMS-7861])
+* HttpClient ignores socket timeout (Issue http://issues.opennms.org/browse/NMS-7877[NMS-7877])
+* RTC Ops Board category links are broken (Issue http://issues.opennms.org/browse/NMS-7884[NMS-7884])
+* Remedy Integration: the custom code added to the Alarm Detail Page is gone. (Issue http://issues.opennms.org/browse/NMS-7890[NMS-7890])
+* Statsd PDF export gives class not found exception (Issue http://issues.opennms.org/browse/NMS-7897[NMS-7897])
+* JMX Configgenerator Web UI throws NPE when navigating to 2nd page. (Issue http://issues.opennms.org/browse/NMS-7900[NMS-7900])
+* Alarm detail filters get mixed up on the ops board (Issue http://issues.opennms.org/browse/NMS-7917[NMS-7917])
+* Exception Decoding LLDP ChassisId When type is NetworkAddress (Issue http://issues.opennms.org/browse/NMS-7931[NMS-7931])
+* Bouncycastle JARs break large-key crypto operations (Issue http://issues.opennms.org/browse/NMS-7959[NMS-7959])
+* JSoup doesn't properly parse encoded HTML character which confuses the XML Collector (Issue http://issues.opennms.org/browse/NMS-7963[NMS-7963])
+* MBean attribute names are restricted to a specifix max length (Issue http://issues.opennms.org/browse/NMS-7964[NMS-7964])
+* RMI should only bind to localhost by default. (Issue http://issues.opennms.org/browse/NMS-7971[NMS-7971])
+* The ICMP monitor can fail, even if valid responses are received before the timeout (Issue http://issues.opennms.org/browse/NMS-7974[NMS-7974])
+* JMX Configuration Generation misbehavior on validation error (Issue http://issues.opennms.org/browse/NMS-7977[NMS-7977])
+* JMX configuration generator throws NoClassDefFoundError exception (Issue http://issues.opennms.org/browse/HZN-432[HZN-432])
+* Migrate the JMX Configuration Generator (webUI) to Vaadin 7 (Issue http://issues.opennms.org/browse/HZN-417[HZN-417])
+
+===== Enhancement
+
+* Interactive JMX data collection configuration UI (Issue http://issues.opennms.org/browse/NMS-4364[NMS-4364])
+* Improve links for SLA categories on start page (Issue http://issues.opennms.org/browse/NMS-7713[NMS-7713])
+
 [releasenotes-changelog-2015.1.0]
 ==== Release 2015.1.0
 

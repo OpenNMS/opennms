@@ -46,6 +46,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 
 import java.util.List;
@@ -93,7 +94,7 @@ public class Nms0001EnTest extends EnLinkdTestBuilder {
         assertTrue(m_linkd.runSingleSnmpCollection(siegfrie.getId()));
         assertEquals(6, m_isisLinkDao.countAll());
 
-        List<Object[]> links = m_isisLinkDao.getLinksForTopology();
+        List<IsisTopologyLink> links = m_isisLinkDao.getLinksForTopology();
         assertEquals(3, links.size());
 
         for (OnmsNode node: m_nodeDao.findAll()) {

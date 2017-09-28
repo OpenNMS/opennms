@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>2015.1.0</version>
+    <version>2015.1.1</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -115,7 +115,7 @@
   <repositories>
     <repository>
        <id>vaadin-addons</id>
-       <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
+       <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
     </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>

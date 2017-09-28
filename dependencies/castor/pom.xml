@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2015.1.0</version>
+    <version>2015.1.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -58,15 +58,11 @@
   </dependencies>
   <pluginRepositories>
     <pluginRepository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>maven-repo</id>
       <name>Maven Central</name>
-      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
+      <url>http://maven.opennms.org/content/repositories/central/</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots>
@@ -77,7 +73,7 @@
       </releases>
       <id>codehaus</id>
       <name>Maven/Codehaus Repository</name>
-      <url>http://maven.opennms.org/content/groups/codehaus.org-release</url>
+      <url>http://maven.opennms.org/content/repositories/codehaus/</url>
     </pluginRepository>
   </pluginRepositories>
 </project>

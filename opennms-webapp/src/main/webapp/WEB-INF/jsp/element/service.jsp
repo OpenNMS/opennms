@@ -100,9 +100,9 @@
 %>
 
 <c:url var="eventUrl" value="event/list.htm">
-  <c:param name="filter" value="node= ${service.ipInterface.node.id}"/> 
-  <c:param name="filter" value="interface= ${service.ipInterface.ipAddress.hostAddress}"/>
-  <c:param name="filter" value="service= ${service.serviceId}"/>
+  <c:param name="filter" value="node=${service.ipInterface.node.id}"/> 
+  <c:param name="filter" value="interface=${service.ipInterface.ipAddress.hostAddress}"/>
+  <c:param name="filter" value="service=${service.serviceId}"/>
 </c:url>
 <c:url var="nodeLink" value="element/node.jsp">
   <c:param name="node" value="${service.ipInterface.node.id}"/>
@@ -242,8 +242,8 @@ function doDelete() {
               <jsp:param name="ipAddr" value="${service.ipInterface.ipAddress.hostAddress}" />
               <jsp:param name="service" value="${service.serviceType.id}" />
               <jsp:param name="throttle" value="5" />
-              <jsp:param name="header" value="<a href='${fn:escapeXml(eventUrl)}'>Recent Events</a>" />
-              <jsp:param name="moreUrl" value="${fn:escapeXml(eventUrl)}" />
+              <jsp:param name="header" value="<a href='${eventUrl}'>Recent Events</a>" />
+              <jsp:param name="moreUrl" value="${eventUrl}" />
             </jsp:include>
       
             <!-- Recent outages box -->

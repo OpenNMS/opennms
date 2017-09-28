@@ -50,4 +50,6 @@ public interface BridgeMacLinkDao extends OnmsDao<BridgeMacLink, Integer> {
 
     public List<BridgeMacTopologyLink> getAllBridgeLinksToIpAddrToNodes();
 
+    public List<BridgeMacTopologyLink> getAllBridgeLinksToBridgeNodes();
+
 }

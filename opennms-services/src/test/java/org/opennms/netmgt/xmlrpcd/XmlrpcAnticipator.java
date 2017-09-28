@@ -171,22 +171,22 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     private int m_port;
 
     /** default port number */
-    private static final int DEFAULT_PORT_NUMBER = 59000;
+    private static final int DEFAULT_PORT_NUMBER = 0;
 
     /** logger */
     private Logger m_logger = LoggerFactory.getLogger(getClass());
 
     private static final String CHECK_METHOD_NAME = "XmlrpcAnticipatorCheck";
 
-    public XmlrpcAnticipator(int port, boolean delayWebServer) throws IOException {
+    private XmlrpcAnticipator(int port, boolean delayWebServer) throws IOException {
         m_port = port;
         if (!delayWebServer) {
             setupWebServer();
         }
     }
 
-    public XmlrpcAnticipator(int port) throws IOException {
-        this(port, false);
+    public XmlrpcAnticipator(boolean delayWebServer) throws IOException {
+        this(DEFAULT_PORT_NUMBER, delayWebServer);
     }
 
     public XmlrpcAnticipator() throws IOException {

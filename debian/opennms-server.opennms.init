@@ -21,6 +21,7 @@
 #                    and notification management
 ### END INIT INFO
 
+OPENNMS_HOME=/usr/share/opennms
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/opennms
 NAME=opennms
@@ -35,19 +36,21 @@ if [ -f /etc/default/$NAME ]; then
 	. /etc/default/$NAME
 fi
 
+if [ -z "$JAVA_HOME" ] && [ -e "$OPENNMS_HOME/etc/java.conf" ]; then
+	JAVA_EXE=`cat "$OPENNMS_HOME/etc/java.conf"`
+	if [ -e "$JAVA_EXE" ] && [ -x "$JAVA_EXE" ]; then
+		JAVA_BIN=`dirname "$JAVA_EXE"`
+		JAVA_HOME=`dirname "$JAVA_BIN"`
+		if [ ! -d "$JAVA_HOME" ]; then
+			unset JAVA_HOME
+		fi
+	fi
+fi
+
 # Check for JAVA_HOME
 if [ -z "$JAVA_HOME" ]; then
-	for dir in /usr/lib/jvm/java-6-sun; do
-		if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
-			JAVA_HOME="$dir"
-			break
-		fi
-	done
-
-	if [ -z "$JAVA_HOME" ]; then
-		echo "You need to set a valid JAVA_HOME in /etc/default/$NAME" >&2
-		exit 1
-	fi
+	echo "\$JAVA_HOME is not set.  Set it in /etc/default/$NAME or run \`$OPENNMS_HOME/bin/runjava -s\` to autoconfigure." >&2
+	exit 1
 fi
 export JAVA_HOME
 

@@ -59,7 +59,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + LegacyLocalJasperReportsDao.class.getName());
+    private Logger logger = LoggerFactory.getLogger(LegacyLocalJasperReportsDao.class);
 
     /**
      * List of generic report definitions

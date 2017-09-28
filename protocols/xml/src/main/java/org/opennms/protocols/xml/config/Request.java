@@ -202,4 +202,13 @@ public class Request {
     public void setContent(Content content) {
         this.content = content;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Request [method=" + method + ", parameters=" + parameters + ", headers=" + headers + ", content=" + content + "]";
+    }
+
 }

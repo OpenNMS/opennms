@@ -138,7 +138,7 @@
       </div>
       <div class="form-group">
         <div class="col-md-offset-2 col-md-4">
-          <button type="submit" class="btn btn-default" onClick="document.viewStatusDetails.submit();">View Status Details</button>
+          <button type="button" class="btn btn-default" onClick="document.viewStatusDetails.submit();">View Status Details</button>
         </div>
       </div>
     </form>

@@ -101,4 +101,13 @@ public class Header {
     public void setValue(String value) {
         this.value = value;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return name + "=" + value;
+    }
+
 }

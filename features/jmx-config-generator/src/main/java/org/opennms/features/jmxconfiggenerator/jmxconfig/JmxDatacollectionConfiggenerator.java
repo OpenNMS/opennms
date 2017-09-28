@@ -28,15 +28,18 @@
 
 package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
+import org.opennms.features.namecutter.NameCutter;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxCollection;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.ObjectFactory;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.Rrd;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
@@ -52,12 +55,15 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.xml.bind.JAXB;
-
-import org.apache.commons.lang3.StringUtils;
-import org.opennms.features.namecutter.NameCutter;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
@@ -77,9 +83,9 @@ public class JmxDatacollectionConfiggenerator {
 
     private static List<String> rras = new ArrayList<String>();
 
-    private static Map<String, Integer> aliasMap = new HashMap<String, Integer>();
+    protected static Map<String, Integer> aliasMap = new HashMap<String, Integer>();
 
-    private static List<String> aliasList = new ArrayList<String>();
+    protected static List<String> aliasList = new ArrayList<String>();
 
     private static Rrd rrd = new Rrd();
     private static NameCutter nameCutter = new NameCutter();
@@ -111,6 +117,8 @@ public class JmxDatacollectionConfiggenerator {
     }
 
     public JmxDatacollectionConfig generateJmxConfigModel(MBeanServerConnection mBeanServerConnection, String serviceName, Boolean runStandardVmBeans, Boolean runWritableMBeans, Map<String, String> dictionary) {
+        aliasList.clear();
+        aliasMap.clear();
 
         logger.debug("Startup values: \n serviceName: " + serviceName + "\n runStandardVmBeans: " + runStandardVmBeans + "\n runWritableMBeans: " + runWritableMBeans + "\n dictionary" + dictionary);
         nameCutter.setDictionary(dictionary);
@@ -379,7 +387,7 @@ public class JmxDatacollectionConfiggenerator {
         return xmlJmxAttribute;
     }
 
-    private String createAndRegisterUniqueAlias(String originalAlias) {
+    protected String createAndRegisterUniqueAlias(String originalAlias) {
         String uniqueAlias = originalAlias;
         if (!aliasMap.containsKey(originalAlias)) {
             aliasMap.put(originalAlias, 0);
@@ -389,11 +397,12 @@ public class JmxDatacollectionConfiggenerator {
             uniqueAlias = aliasMap.get(originalAlias).toString() + originalAlias;
         }
         //find alias crashes caused by cuting down alias length to 19 chars
-        if (aliasList.contains(nameCutter.trimByCamelCase(uniqueAlias, 19))) {
-            logger.error("ALIAS CRASH AT :" + uniqueAlias + "\t as: " + nameCutter.trimByCamelCase(uniqueAlias, 19));
+        final String uniqueAliasTrimmedTo19Chars = nameCutter.trimByCamelCase(uniqueAlias, 19);
+        if (aliasList.contains(uniqueAliasTrimmedTo19Chars)) {
+            logger.error("ALIAS CRASH AT :" + uniqueAlias + "\t as: " + uniqueAliasTrimmedTo19Chars);
             uniqueAlias = uniqueAlias + "_NAME_CRASH_AS_19_CHAR_VALUE";
         } else {
-            uniqueAlias = nameCutter.trimByCamelCase(uniqueAlias, 19);
+            uniqueAlias = uniqueAliasTrimmedTo19Chars;
             aliasList.add(uniqueAlias);
         }
         return uniqueAlias;

@@ -30,9 +30,11 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 
 import java.io.File;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.bind.JAXBException;
 
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -44,7 +46,6 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -56,6 +57,8 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import com.google.common.collect.Lists;
 
@@ -85,10 +88,30 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider {
      * @throws MalformedURLException 
      */
     public void onInit() throws MalformedURLException, JAXBException {
-        LOG.debug("init: loading topology.");
-        load(null);
+        LOG.debug("init: loading linkd topology.");
+        try {
+            // @see http://issues.opennms.org/browse/NMS-7835
+            getTransactionOperations().execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    try {
+                        load(null);
+                    } catch (MalformedURLException | JAXBException e) {
+                        throw new UndeclaredThrowableException(e);
+                    }
+                }
+            });
+        } catch (UndeclaredThrowableException e) {
+            // I'm not sure if there's a more elegant way to do this...
+            Throwable t = e.getUndeclaredThrowable();
+            if (t instanceof MalformedURLException) {
+                throw (MalformedURLException)t;
+            } else if (t instanceof JAXBException) {
+                throw (JAXBException)t;
+            }
+        }
     }
-    
+
     public LinkdTopologyProvider() { }
 
     @Override
@@ -113,23 +136,34 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider {
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
             LOG.debug("loadtopology: parsing link: " + link.getDataLinkInterfaceId());
 
-            OnmsNode node = getNodeDao().get(link.getNode().getId());
+            OnmsNode node = link.getNode();
             LOG.debug("loadtopology: found source node: " + node.getLabel());
             String sourceId = node.getNodeId();
             Vertex source = getVertex(getVertexNamespace(), sourceId);
             if (source == null) {
-                LOG.debug("loadtopology: adding source node as vertex: " + node.getLabel());
-                source = getVertex(node);
+                LOG.debug("loadtopology: adding source node as vertex: "
+                        + node.getLabel());
+                source = getDefaultVertex(node.getId(),
+                                   node.getSysObjectId(),
+                                   node.getLabel(),
+                                     node.getSysLocation(),
+                                 node.getType());
                 addVertices(source);
             }
 
             OnmsNode parentNode = getNodeDao().get(link.getNodeParentId());
-            LOG.debug("loadtopology: found target node: " + parentNode.getLabel());
+            LOG.debug("loadtopology: found target node: "
+                    + parentNode.getLabel());
             String targetId = parentNode.getNodeId();
             Vertex target = getVertex(getVertexNamespace(), targetId);
             if (target == null) {
-                LOG.debug("loadtopology: adding target as vertex: " + parentNode.getLabel());
-                target = getVertex(parentNode);
+                LOG.debug("loadtopology: adding target as vertex: "
+                        + parentNode.getLabel());
+                target = getDefaultVertex(parentNode.getId(),
+                                   parentNode.getSysObjectId(),
+                                   parentNode.getLabel(),
+                                 parentNode.getSysLocation(),
+                                 parentNode.getType());
                 addVertices(target);
             }
             

@@ -30,6 +30,8 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
@@ -118,4 +120,7 @@ public interface EnhancedLinkdService {
 
 	void store(int nodeId, BridgeMacLink link);
 
+	void storeBridgeToIfIndexMap(int nodeId, Map<Integer,Integer> bridgeifindex);
+
+	void storeBridgetoVlanMap(int nodeId, Set<Integer> bridgeports, Integer vlanid);
 }

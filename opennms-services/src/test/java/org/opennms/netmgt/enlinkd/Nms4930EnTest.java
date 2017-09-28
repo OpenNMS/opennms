@@ -39,8 +39,11 @@ import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
+
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_SNMP_RESOURCE;
@@ -54,10 +57,11 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
     String[] macsonbbport = { 
             "001e58a6aed7", "00265abd0b08", "1caff72905d8", "1caff702cffd", "00e0d8107c0c", "001562cae2cf", "001cf0d18441", "001e58a31b47"
     };
-    
+
     @Before
     public void setUpNetwork4930() throws Exception {
     	builder.setNodeDao(m_nodeDao);
+        builder.setIpNetToMediaDao(m_ipNetToMediaDao);
         builder.buildNetwork4930();
     }
 
@@ -73,12 +77,32 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
             @JUnitSnmpAgent(host=DLINK2_IP, port=161, resource=DLINK2_SNMP_RESOURCE)
     })
     public void testNms4930Network() throws Exception {
+        //   the topology is shown here...
+        //   (10.100.2.6:000ffeb10e26) --> <port 6:dlink1:port 24> ---<cloud>----<port 10:dlink2>
+        //                                                               |
+        //                                                           10.100.1.7:001e58a6aed7:101
 
+        // Adding a "node" with mac address 001e58a6aed7 found both on dlink1 port 24 and dlink2 port 10 
+        builder.addMacNodeWithSnmpInterface("001e58a6aed7","10.100.1.7",101 );
+        // Adding a "node" with mac address 000ffeb10e26 found on dlink1 port 6
+        builder.addMacNode("000ffeb10e26","10.100.2.6" );
+        assertEquals(4, m_nodeDao.countAll());
+        assertEquals(2, m_ipNetToMediaDao.countAll());
+        IpNetToMedia at0 = m_ipNetToMediaDao.findByPhysAddress("001e58a6aed7").get(0);
+        assertNotNull(at0);
+        assertEquals("10.100.1.7", at0.getNetAddress().getHostAddress());
+        IpNetToMedia at1 = m_ipNetToMediaDao.findByPhysAddress("000ffeb10e26").get(0);
+        assertNotNull(at1);
+        assertEquals("10.100.2.6", at1.getNetAddress().getHostAddress());
         
     	final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
         final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
-        m_nodeDao.flush();
-
+        final OnmsNode nodebetweendlink1dlink2 = m_nodeDao.findByForeignId("linkd", "10.100.1.7");
+        final OnmsNode nodeonlink1dport6 = m_nodeDao.findByForeignId("linkd", "10.100.2.6");
+        
+        assertNotNull(nodebetweendlink1dlink2);
+        assertNotNull(nodeonlink1dport6);
+        
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -99,10 +123,74 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(58,m_bridgeMacLinkDao.countAll());
+        assertEquals(2,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
+        assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(659,m_bridgeMacLinkDao.countAll());
+        // we have 3 that links "real mac nodes" to bridge.
+        // we have 8 macs on bridge cloud between dlink1 and dlink2
+        assertEquals(3,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
+        assertEquals(8,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
+
+        for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
+            assertNotNull(link.getNode());
+            assertNotNull(link.getBridgePort());
+            assertNotNull(link.getBridgePortIfIndex());
+            assertNotNull(link.getMacAddress());
+        }
+
+        for (BridgeMacTopologyLink link: m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()) {
+            assertNotNull(link.getSrcNodeId());
+            assertNotNull(link.getBridgePort());
+            assertNotNull(link.getBridgePortIfIndex());
+            assertNotNull(link.getTargetNodeId());
+            assertNotNull(link.getMacAddr());
+            assertNotNull(link.getTargetPortIfName());
+            if (link.getSrcNodeId().intValue() == dlink1.getId().intValue()) {
+                if (link.getBridgePort().intValue() == 6) {
+                    assertEquals(link.getBridgePortIfIndex().intValue(), 6);
+                    assertEquals(link.getTargetNodeId().intValue(), nodeonlink1dport6.getId().intValue());
+                    assertEquals(link.getMacAddr(), "000ffeb10e26");
+                    assertEquals(link.getTargetPortIfName(), "10.100.2.6");
+                    assertEquals(link.getTargetIfIndex(), null);
+                } else if (link.getBridgePort().intValue() == 24) {
+                    assertEquals(link.getBridgePortIfIndex().intValue(), 24);
+                    assertEquals(link.getTargetNodeId().intValue(), nodebetweendlink1dlink2.getId().intValue());
+                    assertEquals(link.getMacAddr(), "001e58a6aed7");
+                    assertEquals(link.getTargetPortIfName(), "10.100.1.7");
+                    assertEquals(link.getTargetIfIndex().intValue(), 101);
+                } else {
+                    assertTrue(false);
+                }
+            } else if (link.getSrcNodeId().intValue() == dlink2.getId().intValue()) {
+                assertEquals(link.getBridgePortIfIndex().intValue(), 10);
+                assertEquals(link.getTargetNodeId().intValue(), nodebetweendlink1dlink2.getId().intValue());
+                assertEquals(link.getMacAddr(), "001e58a6aed7");
+                assertEquals(link.getTargetPortIfName(), "10.100.1.7");
+                assertEquals(link.getTargetIfIndex().intValue(), 101);
+            } else {
+                assertTrue(false);
+            }
+        }
+        
+        for (BridgeMacTopologyLink link: m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()) {
+            assertNotNull(link.getSrcNodeId());
+            assertNotNull(link.getBridgePort());
+            assertNotNull(link.getBridgePortIfIndex());
+            assertNotNull(link.getTargetNodeId());
+            assertNotNull(link.getMacAddr());
+            assertNotNull(link.getTargetBridgePort());
+            assertNotNull(link.getTargetIfIndex());
+            assertNotNull(link.getTargetId());
+            assertEquals(dlink1.getId().intValue(), link.getSrcNodeId().intValue());
+            assertEquals(dlink2.getId().intValue(), link.getTargetNodeId().intValue());
+            assertEquals(24, link.getBridgePort().intValue());
+            assertEquals(10, link.getTargetBridgePort().intValue());
+        }
+        
+
         // Matt here you find that the macs on backbone port have all the same
         // switch port
         // the array "macsonbbport" is the intersection between 
@@ -115,8 +203,6 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
     		printBackboneBridgeMacLink(maclinks.get(0),maclinks.get(1));
         }
 
-        // Test the bridge link second query
-        assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
     }
     
     @Test
@@ -126,7 +212,9 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
     })
     public void testNms4930NetworkReverse() throws Exception {
 
-          
+        assertEquals(2, m_nodeDao.countAll());
+        assertEquals(0, m_ipNetToMediaDao.countAll());
+  
     	final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
         final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
 
@@ -150,9 +238,14 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(977,m_bridgeMacLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
+        assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
+
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(659,m_bridgeMacLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
+        assertEquals(8,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
         
         for (String mac: macsonbbport) {
         	List<BridgeMacLink> maclinks = m_bridgeMacLinkDao.findByMacAddress(mac);

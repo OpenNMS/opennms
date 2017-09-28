@@ -29,7 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +38,8 @@ import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
@@ -89,6 +91,62 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
 		}
 	}
 
+	private final static String SQL_GET_ISIS_LINKS=
+                "select distinct on (distinct_id) " +
+                "least(l1.id, l2.id) as distinct_id, " +
+                "l1.id as source_id, " +
+                "l1.nodeid as source_nodeid, " +
+                "n.nodelabel as sourcenodelabel, " +
+                "n.nodesysoid as sourcenodesysoid, " +
+                "n.nodesyslocation as sourcenodelocation, " +
+                "n.nodetype as sourcenodetype, " +
+                "l1.isiscircifindex as l1_isiscircifindex, " +
+                "l2.id as target_id,  " +
+                "l2.nodeid as target_nodeid, " +
+                "np.nodelabel as targetnodelabel, " +
+                "np.nodesysoid as targetnodesysoid, " +
+                "np.nodesyslocation as targetnodelocation, " +
+                "np.nodetype as targetnodetype, " +
+                "l2.isiscircifindex as l2_isiscircifindex " +
+
+                "from isislink l1 " +
+                "left join isiselement e1 on l1.nodeid = e1.nodeid " +
+                "left join node n on n.nodeid = e1.nodeid " +
+                "left join isiselement e2 on l1.isisisadjneighsysid = e2.isissysid " +
+                "left join node np on np.nodeid = e2.nodeid " +
+                "left join isislink l2 on e2.nodeid=l2.nodeid " +
+                "where l1.isisisadjindex = l2.isisisadjindex and l2.isisisadjneighsysid = e1.isissysid " +
+                "order by distinct_id;";
+	
+	private List<IsisTopologyLink> convertObjectToTopologyLink(List<Object[]> list) {
+	        List<IsisTopologyLink> topoLinks = new ArrayList<IsisTopologyLink>();
+	        for (Object[] objs : list) {
+	            Integer targetId = (Integer)objs[8];
+	            Integer targetNodeId =(Integer)objs[9];
+	            if(targetId != null && targetNodeId != null) {
+	                topoLinks.add(
+	                              new IsisTopologyLink(
+	                                (Integer) objs[1], 
+	                                (Integer) objs[2], 
+	                                (String) objs[3], 
+	                                (String) objs[4],
+	                                (String) objs[5],
+	                                NodeType.getNodeTypeFromChar((char)objs[6]),	                                
+	                                (Integer) objs[7], 
+	                                (Integer) objs[8], 
+	                                (Integer) objs[9], 
+	                                (String) objs[10], 
+	                                (String) objs[11],
+	                                (String) objs[12],
+	                                NodeType.getNodeTypeFromChar((char)objs[13]),
+	                                (Integer) objs[14]));
+	            }
+	        }
+
+	        return topoLinks;
+    
+	}
+
     /**
      * Gets the ISIS links between nodes and returns a list of Object[],
      * with the following mapping:
@@ -101,27 +159,12 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
      * [6] = link2 isiscircifindex
      * @return A list of Object[] see notes for index mapping
      */
-    public List<Object[]> getLinksForTopology() {
-        return getHibernateTemplate().execute(new HibernateCallback<List<Object[]>>() {
+    public List<IsisTopologyLink> getLinksForTopology() {
+        return getHibernateTemplate().execute(new HibernateCallback<List<IsisTopologyLink>>() {
 
             @Override
-            public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
-                List<Object[]> list = session.createSQLQuery("select distinct on (distinct_id) " +
-                        "least(l1.id, l2.id) as distinct_id, " +
-                        "l1.id as source_id, " +
-                        "l1.nodeid as source_nodeid, " +
-                        "l1.isiscircifindex as l1_isiscircifindex, " +
-                        "l2.id as target_id,  " +
-                        "l2.nodeid as target_nodeid, " +
-                        "l2.isiscircifindex as l2_isiscircifindex " +
-
-                        "from isislink l1 " +
-                        "left join isiselement e1 on l1.nodeid = e1.nodeid " +
-                        "left join isiselement e2 on l1.isisisadjneighsysid = e2.isissysid " +
-                        "left join isislink l2 on e2.nodeid=l2.nodeid " +
-                        "where l1.isisisadjindex = l2.isisisadjindex and l2.isisisadjneighsysid = e1.isissysid " +
-                        "order by distinct_id;").list();
-                return list;
+            public List<IsisTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
+                return convertObjectToTopologyLink(session.createSQLQuery(SQL_GET_ISIS_LINKS).list());
             }
 
         });

@@ -40,7 +40,7 @@ public class Tl1d extends AbstractSpringContextJmxServiceDaemon<org.opennms.netm
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Tl1d";
+        return "tl1d";
     }
 
     /** {@inheritDoc} */

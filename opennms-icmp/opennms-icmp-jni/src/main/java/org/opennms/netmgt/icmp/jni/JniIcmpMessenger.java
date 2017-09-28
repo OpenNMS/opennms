@@ -30,13 +30,12 @@ package org.opennms.netmgt.icmp.jni;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.util.Queue;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
-import org.opennms.protocols.icmp.ICMPHeader;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
+import org.opennms.protocols.rt.ReplyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +62,7 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
         m_socket = new IcmpSocket();
     }
 
-    void processPackets(Queue<JniPingResponse> pendingReplies) {
+    void processPackets(ReplyHandler<JniPingResponse> callback) {
         final int pingerId = m_pingerId;
         while (true) {
             try {
@@ -74,7 +73,7 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
                 if (reply.isEchoReply() && reply.getIdentifier() == pingerId) {
                     // Remove this so we don't send a lot of time in this method when we should be processing packets
                     // LogUtils.debugf(this, "Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
-                    pendingReplies.offer(reply);
+                    callback.handleReply(reply);
                 }
             } catch (IOException e) {
                 LOG.error("I/O Error occurred reading from ICMP Socket", e);
@@ -101,13 +100,13 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
 
     /** {@inheritDoc} */
     @Override
-    public void start(final Queue<JniPingResponse> responseQueue) {
+    public void start(final ReplyHandler<JniPingResponse> callback) {
         final Thread socketReader = new Thread("JNI-ICMP-"+m_pingerId+"-Socket-Reader") {
             @Override
             public void run() {
                 Logging.putPrefix("icmp");
                 try {
-                    processPackets(responseQueue);
+                    processPackets(callback);
                 } catch (Throwable t) {
                     LOG.error("Unexpected exception on Thread {}!", this, t);
                 }
@@ -149,4 +148,5 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
         //
         return new JniPingResponse(packet.getAddress(), pkt);
     }
+
 }

@@ -67,7 +67,7 @@ public class VmwareMonitor extends AbstractServiceMonitor {
     /**
      * logging for VMware monitor
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.VMware." + VmwareMonitor.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(VmwareMonitor.class);
 
     /**
      * the node dao object for retrieving assets

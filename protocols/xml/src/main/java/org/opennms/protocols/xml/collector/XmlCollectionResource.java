@@ -32,6 +32,8 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The abstract Class XmlCollectionResource.
@@ -39,6 +41,9 @@ import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public abstract class XmlCollectionResource extends AbstractCollectionResource {
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(XmlCollectionResource.class);
 
     /** The Time Keeper. */
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
@@ -59,7 +64,8 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
      * @param value the value
      */
     public void setAttributeValue(XmlCollectionAttributeType type, String value) {
-        XmlCollectionAttribute attr = new XmlCollectionAttribute(this, type, value);
+        final XmlCollectionAttribute attr = new XmlCollectionAttribute(this, type, value);
+        LOG.debug("setAttributeValue: setting attribute {}", attr);
         addAttribute(attr);
     }
 

@@ -74,7 +74,7 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
                         && (m_filterMap.containsKey(parm.getParmName() + "|" + event.getUei()))
                 ) {
                     org.opennms.netmgt.xml.eventconf.Filter f = m_filterMap.get(parm.getParmName() + "|" + event.getUei());
-                    LOG.debug("filtering {} with {}", f.getPattern(), parm.getParmName());
+                    LOG.debug("filtering {} with {}", parm.getParmName(), f.getPattern());
                     final Pattern pattern = Pattern.compile( f.getPattern() );
                     Matcher matcher = pattern.matcher( parm.getValue().getContent().trim() );
                     parm.getValue().setContent( matcher.replaceAll(f.getReplacement()) );

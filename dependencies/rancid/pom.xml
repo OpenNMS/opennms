@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>2015.1.0</version>
+    <version>2015.1.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>rancid-api</artifactId>
-      <version>1.0.3</version>
+      <version>1.0.4</version>
       <exclusions>
         <exclusion>
           <groupId>log4j</groupId>
@@ -33,7 +33,7 @@
       <releases><enabled>true</enabled></releases>
       <id>sonatype-public-repo</id>
       <name>Sonatype Public Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/sonatype.org-release</url>
+      <url>http://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
     </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>

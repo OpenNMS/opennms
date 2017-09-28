@@ -8,6 +8,3 @@ usr/share/opennms/system
 var/lib/opennms
 var/lib/opennms/reports
 var/log/opennms
-var/log/opennms/controller
-var/log/opennms/daemon
-var/log/opennms/webapp

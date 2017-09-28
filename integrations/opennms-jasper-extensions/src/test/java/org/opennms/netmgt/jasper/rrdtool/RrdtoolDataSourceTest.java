@@ -117,7 +117,7 @@ public class RrdtoolDataSourceTest {
 		Reader reader = new FileReader("src/test/resources/rrdtool-xport.xml");
 		Xport xport = (Xport) Unmarshaller.unmarshal(Xport.class, reader);
 		Assert.assertEquals("SampleData", xport.getMeta().getLegend().getEntry(0).getContent());
-		Assert.assertEquals(13, xport.getData().getRowCount());
+		Assert.assertEquals(14, xport.getData().getRowCount());
 		RrdtoolDataSource ds = new RrdtoolDataSource(xport);
 
 		Assert.assertTrue(ds.next());
@@ -160,6 +160,12 @@ public class RrdtoolDataSourceTest {
 
 		Double v13 = (Double) ds.getFieldValue(new RrdField("SampleData", Double.class));
 		Assert.assertEquals(new Double(50.00), v13);
+
+		Assert.assertTrue(ds.next());
+
+	    Double v14 = (Double) ds.getFieldValue(new RrdField("SampleData", Double.class));
+	    Double inf = Double.POSITIVE_INFINITY;
+	    Assert.assertEquals(inf, v14);
 
 		Assert.assertFalse(ds.next());
 	}

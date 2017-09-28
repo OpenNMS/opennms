@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -143,7 +143,7 @@ public class LdapPlugin extends AbstractPlugin {
 
             // now go ahead and attempt to determine if LDAP is on this host
             for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
-                LOG.debug("LDAPPlugin.isServer: attempt {} to connect host {}", InetAddressUtils.str(host), attempts);
+                LOG.debug("LDAPPlugin.isServer: attempt {} to connect host {}", attempts, InetAddressUtils.str(host));
                 LDAPConnection lc = null;
                 try {
                     lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));

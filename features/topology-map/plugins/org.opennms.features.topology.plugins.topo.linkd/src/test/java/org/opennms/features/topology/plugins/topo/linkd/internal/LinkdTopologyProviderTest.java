@@ -37,7 +37,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.bind.JAXBException;
@@ -65,7 +64,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
@@ -115,14 +113,14 @@ public class LinkdTopologyProviderTest {
 
 	@Test 
 	public void testGetIcon() {
-		Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode1())));
-		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode2())));
-		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode3())));
-		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode4())));
-		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode5())));
-		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode6())));
-		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode7())));
-		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode8())));
+		Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode1().getSysObjectId())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode2().getSysObjectId())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode3().getSysObjectId())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode4().getSysObjectId())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode5().getSysObjectId())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode6().getSysObjectId())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode7().getSysObjectId())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode8().getSysObjectId())));
 
 	}
 

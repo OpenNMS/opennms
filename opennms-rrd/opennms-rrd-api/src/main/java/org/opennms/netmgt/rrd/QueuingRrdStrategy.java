@@ -93,7 +93,7 @@ import org.slf4j.LoggerFactory;
  * org.opennms.rrd.queuing.modulus: (default 10000) the number of updates the
  * get enqueued between statistics output
  *
- * org.opennms.rrd.queuing.category: (default "OpenNMS.Queued") the log category
+ * org.opennms.rrd.queuing.category: (default "queued") the log routing prefix
  * to place the statistics output in
  *
  *

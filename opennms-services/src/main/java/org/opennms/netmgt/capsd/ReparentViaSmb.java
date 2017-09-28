@@ -432,7 +432,7 @@ public final class ReparentViaSmb {
                     duplicateNodeList.add(innerEntry); // add to current dup
                                                         // list
 
-                    LOG.debug("ReparentViaSmb.retrieveNodeData: found that nodeid {} is a duplicate of nodeid {}", outerEntry.getNodeId(), innerEntry.getNodeId());
+                    LOG.debug("ReparentViaSmb.retrieveNodeData: found that nodeid {} is a duplicate of nodeid {}", innerEntry.getNodeId(), outerEntry.getNodeId());
                 }
             } // end inner while()
 
@@ -443,7 +443,7 @@ public final class ReparentViaSmb {
                     m_reparentNodeMap = new HashMap<LightWeightNodeEntry, List<LightWeightNodeEntry>>();
 
 
-                LOG.debug("ReparentViaSmb.retrieveNodeData: adding dup list w/ {} to reparent Map for reparent nodeid {}", outerEntry.getNodeId(), duplicateNodeList.size());
+                LOG.debug("ReparentViaSmb.retrieveNodeData: adding dup list w/ {} to reparent Map for reparent nodeid {}", duplicateNodeList.size(), outerEntry.getNodeId());
                 m_reparentNodeMap.put(outerEntry, duplicateNodeList);
             }
         }// end outer while()
@@ -522,7 +522,7 @@ public final class ReparentViaSmb {
 
                     try {
 
-                        LOG.debug("reparentInterfaces: reparenting all interfaces/services for nodeID {} under reparent nodeID {}", reparentNodeID, dupNodeID);
+                        LOG.debug("reparentInterfaces: reparenting all interfaces/services for nodeID {} under reparent nodeID {}", dupNodeID, reparentNodeID);
 
                         //
                         // Prior to reparenting the interfaces associated with the
@@ -557,7 +557,7 @@ public final class ReparentViaSmb {
                             reparentedIfList.add(lwIfEntry);
 
 
-                            LOG.debug("reparentInterfaces: will reparent {} : oldNodeId: {} newNodeId: {}", lwIfEntry.getParentNodeId(), lwIfEntry.getAddress(), lwIfEntry.getOldParentNodeId());
+                            LOG.debug("reparentInterfaces: will reparent {} : oldNodeId: {} newNodeId: {}", lwIfEntry.getAddress(), lwIfEntry.getOldParentNodeId(), lwIfEntry.getParentNodeId());
                         }
 
 
@@ -645,7 +645,7 @@ public final class ReparentViaSmb {
             }
 
 
-            LOG.debug("generateEvents: generating events for reparent node w/ id/netbiosName: {}/ {}", reparentNode.getNetbiosName(), reparentNode.getNodeId());
+            LOG.debug("generateEvents: generating events for reparent node w/ id/netbiosName: {}/ {}", reparentNode.getNodeId(), reparentNode.getNetbiosName());
 
             // Get list of interface objects associated with this reparent node
             List<LightWeightIfEntry> ifList = m_reparentedIfMap.get(reparentNode);
@@ -686,7 +686,7 @@ public final class ReparentViaSmb {
      */
     private synchronized void sendInterfaceReparentedEvent(String ipAddr, String ipHostName, int newNodeId, int oldNodeId, DbNodeEntry reparentNodeEntry) {
 
-        LOG.debug("sendInterfaceReparentedEvent: ipAddr: {} ipHostName: {} newNodeId: {} oldNodeId: {}", oldNodeId, ipAddr, ipHostName, newNodeId);
+        LOG.debug("sendInterfaceReparentedEvent: ipAddr: {} ipHostName: {} newNodeId: {} oldNodeId: {}", ipAddr, ipHostName, newNodeId, oldNodeId);
 
         // Make sure host name not null
         if (ipHostName == null)

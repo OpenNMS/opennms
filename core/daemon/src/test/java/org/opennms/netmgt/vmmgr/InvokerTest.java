@@ -141,7 +141,7 @@ public class InvokerTest {
         		"    <class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>\n" + 
         		"    <attribute>\n" + 
         		"      <name>Port</name>\n" + 
-        		"      <value type=\"java.lang.Integer\">58180</value>\n" + 
+        		"      <value type=\"java.lang.Integer\">0</value>\n" +
         		"    </attribute>\n" + 
         		"    <attribute>\n" + 
         		"      <name>Host</name>\n" + 
@@ -167,7 +167,7 @@ public class InvokerTest {
         		"    <class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>\n" + 
         		"    <attribute>\n" + 
         		"      <name>Port</name>\n" + 
-        		"      <value type=\"java.lang.Integer\">58181</value>\n" + 
+        		"      <value type=\"java.lang.Integer\">0</value>\n" +
         		"    </attribute>\n" + 
         		"    <attribute>\n" + 
         		"      <name>Host</name>\n" + 

@@ -7,5 +7,5 @@ ILR_JAR=`ls -1 "$OPENNMS_HOME"/lib/org.opennms.features.instrumentationLogReader
 
 exec "$OPENNMS_BINDIR"/runjava -r -- \
 	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
-	-jar "$ILR_JAR"
+	-jar "$ILR_JAR" \
 	"$@"

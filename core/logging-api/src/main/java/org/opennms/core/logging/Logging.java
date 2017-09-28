@@ -47,6 +47,10 @@ public abstract class Logging {
 
     }
 
+    public static void putThreadContext(final String key, final String value) {
+        MDC.put(key,  value);
+    }
+
     public static Map<String, String> getCopyOfContextMap() {
         return MDC.getCopyOfContextMap();
     }

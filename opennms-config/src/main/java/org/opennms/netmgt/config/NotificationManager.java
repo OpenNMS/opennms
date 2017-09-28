@@ -590,7 +590,7 @@ public abstract class NotificationManager {
                                 numkey = Integer.parseInt(key.substring(1));
                             } catch (Exception e) {}
                         }
-                        int idx = 0;
+                        int idx = 1;
                         for (Parm p : event.getParmCollection()) {
                             if (numkey > 0) {
                                 if (numkey == idx) {

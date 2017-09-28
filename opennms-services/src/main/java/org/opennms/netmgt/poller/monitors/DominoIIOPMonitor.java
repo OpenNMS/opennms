@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -125,7 +125,7 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
 
-		LOG.debug("poll: address = {}, port = {}, {}", tracker, hostAddress, port);
+		LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
 
         // Lets first try to the the IOR via HTTP, if we can't get that then any
@@ -155,7 +155,7 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
 
-                LOG.debug("DominoIIOPMonitor: connected to host: {} on port: {}", port, ipv4Addr);
+                LOG.debug("DominoIIOPMonitor: connected to host: {} on port: {}", ipv4Addr, port);
 
                 // got here so its up...
                 

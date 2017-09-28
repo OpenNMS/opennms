@@ -26,7 +26,7 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 Requires(pre): opennms-core >= %{version}-%{release}
 Requires:      opennms-core >= %{version}-%{release}
-BuildRequires: %{jdk}
+#BuildRequires: %{jdk}
 
 Prefix:        %{instprefix}
 
@@ -54,6 +54,8 @@ mvn -Droot.dir="%{instprefix}" $EXTRA_OPTIONS -Dmaven.test.skip.exec=true packag
 install -d -m 755 $RPM_BUILD_ROOT%{instprefix}
 tar -C $RPM_BUILD_ROOT%{instprefix} -xvzf target/centric-troubleticketer-*.tar.gz
 chmod 644 $RPM_BUILD_ROOT%{instprefix}/lib/*.jar
+# HACK ALERT!
+rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/commons-io-*.jar
 
 %clean
 rm -rf $RPM_BUILD_ROOT

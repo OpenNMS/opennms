@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -136,7 +136,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket.setSoTimeout(timeout);
-                LOG.debug("SmtpPlugin: connected to host: {} on port: {}", port, host);
+                LOG.debug("SmtpPlugin: connected to host: {} on port: {}", host, port);
 
                 // Allocate a line reader
                 //
@@ -242,7 +242,7 @@ public final class SmtpPlugin extends AbstractPlugin {
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
                 //
-                LOG.debug("SmtpPlugin: connection refused to {}: {}", port, InetAddressUtils.str(host));
+                LOG.debug("SmtpPlugin: connection refused to {}: {}", InetAddressUtils.str(host), port);
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No route to host!! No need to perform retries.
@@ -251,7 +251,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
-                LOG.debug("SmtpPlugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
+                LOG.debug("SmtpPlugin: did not connect to host within timeout: {} attempt: {}", timeout, attempts);
                 isAServer = false;
             } catch (IOException e) {
                 LOG.info("SmtpPlugin: Error communicating with host {}", InetAddressUtils.str(host), e);

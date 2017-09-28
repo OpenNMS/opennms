@@ -28,48 +28,55 @@
 
 package org.opennms.netmgt.model.topology;
 
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 
-import java.net.InetAddress;
 
-public class BridgeMacTopologyLink {
+public class BridgeMacTopologyLink extends TopologyLink {
 
     private final int m_id;
-    private final Integer m_nodeId;
     private final Integer m_bridgePort;
     private final Integer m_bridgePortIfIndex;
-    private final Integer m_bridgePortIfName;
+    private final String m_bridgePortIfName;
     private final Integer m_vlan;
-    private final String m_macAddr;
-    private final InetAddress m_netaddress;
-    private final InetAddress m_ipAddr;
-    private final Integer m_targetNodeId;
-    private final String m_nodeLabel;
-    private final Integer m_sourceIfIndex;
+    private final Integer m_targetBridgePort;
+    private final Integer m_targetIfIndex;
+    private final String m_targetPortIfName;
+    private final int m_targetid;
 
-    public BridgeMacTopologyLink(Integer id, Integer nodeId, Integer bridgePort, Integer bridgePortIfIndex,
-                                 Integer bridgePortIfName, Integer vlan, String macAddr, String netaddress,
-                                 String ipAddr, Integer targetNodeId, String nodeLabel, Integer sourceIfIndex) {
+    private final String m_macAddr;
+
+    public BridgeMacTopologyLink(Integer id, 
+            Integer nodeId, 
+            String srcLabel, String srcSysoid, String srcLocation,
+            NodeType srcNodeType,
+            Integer bridgePort, Integer bridgePortIfIndex,
+            String bridgePortIfName, 
+            Integer vlan, 
+            Integer targetNodeId, 
+            String targetLabel, String targetSysoid, String targetLocation,
+            NodeType targetNodeType,
+            String macAddr,
+            Integer targetIfIndex, String targetPortIfName, 
+            Integer targetBridgePort, Integer targetid) {
+        super(nodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
         m_id = id;
-        m_nodeId = nodeId;
         m_bridgePort = bridgePort;
         m_bridgePortIfIndex = bridgePortIfIndex;
         m_bridgePortIfName = bridgePortIfName;
         m_vlan = vlan;
         m_macAddr = macAddr;
-        m_netaddress = InetAddressUtils.getInetAddress(netaddress);
-        m_ipAddr = InetAddressUtils.getInetAddress(ipAddr);
-        m_targetNodeId = targetNodeId;
-        m_nodeLabel = nodeLabel;
-        m_sourceIfIndex = sourceIfIndex;
+        m_targetIfIndex = targetIfIndex;
+        m_targetPortIfName = targetPortIfName;
+        m_targetBridgePort = targetBridgePort;
+        m_targetid = targetid;
     }
 
     public int getId() {
         return m_id;
     }
 
-    public Integer getNodeId() {
-        return m_nodeId;
+    public int getTargetId() {
+        return m_targetid;
     }
 
     public Integer getBridgePort() {
@@ -80,7 +87,7 @@ public class BridgeMacTopologyLink {
         return m_bridgePortIfIndex;
     }
 
-    public Integer getBridgePortIfName() {
+    public String getBridgePortIfName() {
         return m_bridgePortIfName;
     }
 
@@ -91,24 +98,17 @@ public class BridgeMacTopologyLink {
     public String getMacAddr() {
         return m_macAddr;
     }
-
-    public InetAddress getNetaddress() {
-        return m_netaddress;
+    
+    public Integer getTargetIfIndex() {
+        return m_targetIfIndex;
     }
 
-    public InetAddress getIpAddr() {
-        return m_ipAddr;
+    public String getTargetPortIfName() {
+        return m_targetPortIfName;
     }
 
-    public Integer getTargetNodeId() {
-        return m_targetNodeId;
+    public Integer getTargetBridgePort() {
+        return m_targetBridgePort;
     }
 
-    public String getNodeLabel() {
-        return m_nodeLabel;
-    }
-
-    public Integer getSourceIfIndex(){
-        return m_sourceIfIndex;
-    }
 }

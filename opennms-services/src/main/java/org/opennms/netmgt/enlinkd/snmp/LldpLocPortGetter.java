@@ -76,7 +76,7 @@ public class LldpLocPortGetter extends TableTracker {
             return lldplink;
         }
 
-        if (val[0] == null || !val[0].isNumeric()) {
+        if (val[0] == null || val[0].isError() || !val[0].isNumeric()) {
             LOG.warn("get: port id subtype is null or invalid for lldp local port number {}",
                      lldpRemLocalPortNum);
             LOG.warn("get: setting default not found Values: portidtype \"InterfaceAlias\"");
@@ -84,7 +84,7 @@ public class LldpLocPortGetter extends TableTracker {
         } else {
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.get(val[0].toInt()));
         }
-        if (val[1] == null) {
+        if (val[1] == null || val[1].isError()) {
             LOG.warn("get: port id is null for lldp local port number {}",
                      lldpRemLocalPortNum);
             LOG.warn("get: setting default not found Values: portid=\"Not Found On lldpLocPortTable\"");
@@ -93,7 +93,7 @@ public class LldpLocPortGetter extends TableTracker {
             lldplink.setLldpPortId(LldpRemTableTracker.decodeLldpPortId(lldplink.getLldpPortIdSubType().getValue(),
                                                                         val[1]));
         }
-        if (val[2] != null)
+        if (val[2] != null && !val[2].isError())
             lldplink.setLldpPortDescr((val[2].toDisplayString()));
         else
             lldplink.setLldpPortDescr("");

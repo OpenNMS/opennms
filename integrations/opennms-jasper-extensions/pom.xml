@@ -4,7 +4,7 @@
 <parent>
   <groupId>org.opennms</groupId>
   <artifactId>opennms-integrations</artifactId>
-  <version>2015.1.0</version>
+  <version>2015.1.1</version>
 </parent>
 <!-- the name must alphabetically come before jasperreports jar -->
   <artifactId>jasper-extensions</artifactId>
@@ -56,6 +56,7 @@
           <descriptors>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
+          <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
         <executions>
           <execution>

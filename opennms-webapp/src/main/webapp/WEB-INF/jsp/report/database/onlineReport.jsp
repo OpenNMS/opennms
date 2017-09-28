@@ -113,7 +113,7 @@
                     <%-- // date parameters --%>
                     <c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
                         <div class="form-group">
-                            <div class="col-md-3">
+                            <div class="col-md-8">
                                 <strong >
 				                    <c:out value="${date.displayName}:"/>
 			                    </strong>

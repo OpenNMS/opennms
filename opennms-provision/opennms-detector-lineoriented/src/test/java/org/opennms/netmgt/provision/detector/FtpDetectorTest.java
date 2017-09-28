@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,32 +46,32 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class FtpDetectorTest {
-    
+
     @Autowired
     private FtpDetector m_detector;
 
     private SimpleServer m_server;
-    
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
         m_detector.setTimeout(500);
         m_detector.init();
-       
+
         m_server = new SimpleServer() {
-           
+
             @Override
             public void onInit() {
                 setBanner("220 ProFTPD 1.3.0 Server (ProFTPD)");
                 addResponseHandler(matches("quit"), shutdownServer("221 Goodbye."));
             }
         };
-       
+
         m_server.init();
         m_server.startServer();
     }
-    
+
     @After
     public void tearDown() throws Exception {
         if (m_server != null) {
@@ -80,56 +80,56 @@ public class FtpDetectorTest {
         }
         m_detector.dispose();
     }
-    
-    
-    @Test(timeout=90000)
+
+
+    @Test(timeout=20000)
     public void testDetectorSingleLineResponseSuccess() throws Exception {
-        
+
         m_server.setBanner("220 ProFTPD 1.3.0 Server (ProFTPD)");
         m_detector.setPort(m_server.getLocalPort());
         m_detector.setIdleTime(10000);
-       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress()))); 
+
+        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress()))); 
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorMultilineSuccess() throws Exception {
-       
+
         m_server.setBanner("220---------- Welcome to Pure-FTPd [TLS] ----------\r\n220-You are user number 1 of 50 allowed.\r\n220-Local time is now 07:47. Server port: 21.\r\n220 You will be disconnected after 15 minutes of inactivity.");
         m_detector.setPort(m_server.getLocalPort());
         m_detector.setIdleTime(10000);
 
-       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress()))); 
+        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress()))); 
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testFailureClosedPort() throws Exception {
-        
+
         m_server.setBanner("WRONG BANNER");
         m_detector.setPort(65535);
         m_detector.setIdleTime(10000);
-        
+
         DetectFuture df = m_detector.isServiceDetected(m_server.getInetAddress());
         assertFalse("Test should fail because the server closes before detection takes place", doCheck(df));
-    
+
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testFailureNoBannerSent() throws Exception {
-       m_server = new SimpleServer();
+        m_server = new SimpleServer();
         m_server.init();
         m_server.startServer();
+
         m_detector.setPort(m_server.getLocalPort());
         m_detector.setIdleTime(10000);
-        
+
         DetectFuture df = m_detector.isServiceDetected(m_server.getInetAddress());
         assertFalse("Test should fail because the banner doesn't even get sent", doCheck(df));
-    
+
     }
-    
+
     private boolean doCheck(DetectFuture future) throws InterruptedException {
-        
         future.awaitFor();
-        
         return future.isServiceDetected();
     }
 }

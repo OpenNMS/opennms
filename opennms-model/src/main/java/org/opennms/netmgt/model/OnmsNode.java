@@ -355,6 +355,14 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         public String toString() {
             return String.valueOf(value);
         }
+        
+        public static NodeType getNodeTypeFromChar(char c) {
+            for (NodeType nodeType: NodeType.values()) {
+                if (nodeType.value == c)
+                    return nodeType;
+            }
+            return null;
+        }
     }
 
     /**

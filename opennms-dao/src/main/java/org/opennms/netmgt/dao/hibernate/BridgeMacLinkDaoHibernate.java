@@ -37,6 +37,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -78,35 +79,116 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 		}
 	}
 
+	private final static String SQL_GET_MAC_LINKS=
+	        "select mlink.id as source_id, "
+	        + "mlink.nodeid as source_nodeid, "
+	        + "n.nodelabel as sourcenodelabel, "
+	        + "n.nodesysoid as sourcenodesysoid, "
+	        + "n.nodesyslocation as sourcenodelocation,  "
+	        + "n.nodetype as sourcenodetype,  "
+	        + "mlink.bridgeport as bridgeport, "
+	        + "mlink.bridgeportifindex as bridgeportifindex, "
+	        + "mlink.bridgeportifname as bridgeportifname, "
+	        + "mlink.vlan as vlan, "
+	        + "ip.nodeid as target_nodeid, "
+	        + "np.nodelabel as targetnodelabel,"
+	        + "np.nodesysoid as targetnodesysoid,"
+	        + "np.nodesyslocation as targetnodelocation, "
+	        + "np.nodetype as targetnodetype, "
+	        + "ntm.physaddress as target_mac,  "
+                + "ip.ifindex as target_ifindex, "
+                + "ip.ipaddr as target_ifname, "
+                + "ip.ifindex as target_bridgeport, "
+                + "ip.id as target_id "
+	        + "from bridgemaclink as mlink "
+	        + "left join ipnettomedia as ntm on mlink.macaddress = ntm.physaddress "
+	        + "left join ipinterface ip on ip.ipaddr = ntm.netaddress "
+	        + "left join node n on mlink.nodeid = n.nodeid "
+	        + "left join node np on ip.nodeid = np.nodeid "
+	        + "where ip.nodeid is not null "
+	        + "order by source_nodeid, bridgeport;";
+
+	private final static String SQL_GET_BRIDGE_LINKS=
+	        "select mlink.id as id, "
+	        + "mlink.nodeid as source_nodeid, "
+	        + "n.nodelabel as sourcenodelabel, "
+	        + "n.nodesysoid as sourcenodesysoid, "
+	        + "n.nodesyslocation as sourcenodelocation, "
+	        + "n.nodetype as sourcenodetype, "
+	        + "mlink.bridgeport as bridgeport, "
+	        + "mlink.bridgeportifindex as bridgeportifindex, "
+	        + "mlink.bridgeportifname as bridgeportifname, "
+	        + "mlink.vlan as vlan, "
+	        + "np.nodeid as target_nodeid, "
+	        + "np.nodelabel as targetnodelabel, "
+	        + "np.nodesysoid as targetnodesysoid, "
+	        + "np.nodesyslocation as targetnodelocation, "
+	        + "np.nodetype as targetnodetype, "
+	        + "plink.macaddress as target_mac, "
+                + "plink.bridgeportifindex as target_ifindex, "
+                + "plink.bridgeportifname as target_ifname, "
+                + "plink.bridgeport as target_bridgeport, "
+                + "plink.id as target_id "
+	        + "from bridgemaclink as mlink "
+	        + "left join bridgemaclink as plink on mlink.macaddress = plink.macaddress "
+	        + "left join node n on mlink.nodeid = n.nodeid "
+	        + "left join node np on plink.nodeid = np.nodeid "
+	        + "where mlink.nodeid < plink.nodeid "
+	        + "order by source_nodeid, bridgeport;";
+        
+	private List<BridgeMacTopologyLink> convertObjectToTopologyLink(List<Object[]> list) {
+            List<BridgeMacTopologyLink> topoLinks = new ArrayList<BridgeMacTopologyLink>();
+            for (Object[] objs : list) {
+                    topoLinks.add(
+                                  new BridgeMacTopologyLink(
+                                    (Integer) objs[0],
+                                    (Integer) objs[1], 
+                                    (String) objs[2], 
+                                    (String) objs[3],
+                                    (String) objs[4],
+                                    NodeType.getNodeTypeFromChar((char)objs[5]),
+                                    (Integer) objs[6], 
+                                    (Integer) objs[7], 
+                                    (String) objs[8], 
+                                    (Integer) objs[9], 
+                                    (Integer) objs[10], 
+                                    (String) objs[11], 
+                                    (String) objs[12],
+                                    (String) objs[13],
+                                    NodeType.getNodeTypeFromChar((char)objs[14]),
+                                    (String) objs[15],
+                                    (Integer) objs[16],
+                                    (String) objs[17],
+                                    (Integer) objs[18],
+                                    (Integer) objs[19]
+                                            )
+                                  );
+            }
+
+            return topoLinks;
+
+    }
+	        
     @Override
     public List<BridgeMacTopologyLink> getAllBridgeLinksToIpAddrToNodes(){
-        List<Object[]> links =  getHibernateTemplate().execute(new HibernateCallback<List<Object[]>>() {
+        return  getHibernateTemplate().execute(new HibernateCallback<List<BridgeMacTopologyLink>>() {
             @Override
-            public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
-                return session.createSQLQuery("select mlink.*," +
-                        "ntm.netaddress, " +
-                        "ip.ipaddr, " +
-                        "ip.nodeid as targetnodeid, " +
-                        "node.nodelabel, " +
-                        "ntm.sourceIfIndex " +
-                        "from bridgemaclink as mlink " +
-                        "left join ipnettomedia as ntm " +
-                        "on mlink.macaddress = ntm.physaddress " +
-                        "left join ipinterface ip on ip.ipaddr = ntm.netaddress " +
-                        "left join node on ip.nodeid = node.nodeid " +
-                        "order by bridgeport;").list();
-                //where ip.nodeid is not null
+            public List<BridgeMacTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
+                return convertObjectToTopologyLink(session.createSQLQuery(SQL_GET_MAC_LINKS).list());
             }
         });
 
-        List<BridgeMacTopologyLink> topoLinks = new ArrayList<BridgeMacTopologyLink>();
-        for(Object[] link : links) {
-            topoLinks.add(new BridgeMacTopologyLink((Integer)link[0], (Integer)link[1], (Integer)link[2],
-                    (Integer)link[3], (Integer)link[4], (Integer)link[5], (String)link[6], (String)link[9],
-                    (String)link[10], (Integer)link[11], (String)link[12], (Integer)link[13]));
-        }
+    }
 
-        return topoLinks;
+    @Override
+    public List<BridgeMacTopologyLink> getAllBridgeLinksToBridgeNodes(){
+        return  getHibernateTemplate().execute(new HibernateCallback<List<BridgeMacTopologyLink>>() {
+            @Override
+            public List<BridgeMacTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
+                return convertObjectToTopologyLink(session.createSQLQuery(SQL_GET_BRIDGE_LINKS).list());
+            }
+        });
+
     }
 
 }

@@ -61,7 +61,7 @@ public class DefaultRemoteRepositoryConfigDao implements
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + DefaultRemoteRepositoryConfigDao.class.getName());
+    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDao.class);
 
     /**
      * Config resource for remote repository configuration file

@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NrtController {
 
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtController.class);
+    private static Logger logger = LoggerFactory.getLogger(NrtController.class);
     private GraphDao m_graphDao;
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;

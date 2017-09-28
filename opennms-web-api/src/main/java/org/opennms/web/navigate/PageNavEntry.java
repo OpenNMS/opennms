@@ -35,12 +35,12 @@ public interface PageNavEntry {
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getName();
+    String getName();
 
     /**
      * <p>getUrl</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getUrl();
+    String getUrl();
 }

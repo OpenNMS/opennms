@@ -93,10 +93,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @Transactional(readOnly=true)
 public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFactoryInterface{
-
-	Map<Integer,BridgeLinkNode> bridgelinks = new HashMap<Integer,BridgeLinkNode>(); 
-
-	Map<Integer, NodeLinkBridge> nodelinks = new HashMap<Integer,NodeLinkBridge>();
 	
 	@Autowired
 	private OspfElementDao m_ospfElementDao;
@@ -472,10 +468,11 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 
 	@Override
 	public Collection<NodeLinkBridge> getNodeLinks(int nodeId) {
+	        Map<Integer, NodeLinkBridge> nodelinks = new HashMap<Integer,NodeLinkBridge>();
 		for (OnmsIpInterface ip: m_ipInterfaceDao.findByNodeId(nodeId)) {
 			for (IpNetToMedia ipnetomedia: m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress())) {
 				for (BridgeMacLink maclink: m_bridgeMacLinkDao.findByMacAddress(ipnetomedia.getPhysAddress())) {
-					convertFromModel(nodeId, maclink, getNodePortString(str(ipnetomedia.getNetAddress()), ipnetomedia.getPhysAddress()));
+					convertFromModel(nodeId, maclink, getNodePortString(str(ipnetomedia.getNetAddress()), ipnetomedia.getPhysAddress()),nodelinks);
 				}
 			}
 		}
@@ -483,7 +480,7 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	}
 
 	@Transactional
-	private void convertFromModel(int nodeid, BridgeMacLink link, String port) {
+	private void convertFromModel(int nodeid, BridgeMacLink link, String port, Map<Integer, NodeLinkBridge> nodelinks) {
 		if (!nodelinks.containsKey(link.getId())) {
 			final NodeLinkBridge linknode = new NodeLinkBridge();
 			final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
@@ -512,20 +509,22 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 
 	@Override
 	public Collection<BridgeLinkNode> getBridgeLinks(int nodeId) {
-		for (BridgeMacLink link: m_bridgeMacLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-			convertFromModel(nodeId,link);
+	        Map<Integer,BridgeLinkNode> bridgelinks = new HashMap<Integer,BridgeLinkNode>(); 
+
+	        for (BridgeMacLink link: m_bridgeMacLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
+			convertFromModel(nodeId,link,bridgelinks);
 		}
 		for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-			convertFromModel(nodeId,link);
+			convertFromModel(nodeId,link,bridgelinks);
 		}
 		for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findByDesignatedNodeId(Integer.valueOf(nodeId))) {
-			convertFromModel(nodeId,link.getReverseBridgeBridgeLink());
+			convertFromModel(nodeId,link.getReverseBridgeBridgeLink(),bridgelinks);
 		}
 		return bridgelinks.values();
 	}
 	
 	@Transactional 
-	private void convertFromModel(int nodeid, BridgeBridgeLink link) {
+	private void convertFromModel(int nodeid, BridgeBridgeLink link,Map<Integer,BridgeLinkNode> bridgelinks) {
 
 		BridgeLinkNode linknode = new BridgeLinkNode();
 		if (bridgelinks.containsKey(link.getBridgePort())) {
@@ -552,7 +551,7 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	}
 	
 	@Transactional
-	private void convertFromModel(int nodeid, BridgeMacLink link) {
+	private void convertFromModel(int nodeid, BridgeMacLink link,Map<Integer,BridgeLinkNode> bridgelinks) {
 		BridgeLinkNode linknode = new BridgeLinkNode();
 		if (bridgelinks.containsKey(link.getBridgePort())) {
 				linknode = bridgelinks.get(link.getBridgePort());

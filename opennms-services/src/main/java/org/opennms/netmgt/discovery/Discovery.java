@@ -72,7 +72,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-@EventListener(name="OpenNMS.Discovery", logPrefix="discover")
+@EventListener(name="OpenNMS.Discovery", logPrefix="discovery")
 public class Discovery extends AbstractServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
@@ -82,7 +82,7 @@ public class Discovery extends AbstractServiceDaemon {
      */
     private static final DiscoveryPingResponseCallback cb = new DiscoveryPingResponseCallback();
 
-    private static final String LOG4J_CATEGORY = "discover";
+    private static final String LOG4J_CATEGORY = "discovery";
 
 
     private static final int PING_IDLE = 0;

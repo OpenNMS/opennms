@@ -84,7 +84,7 @@ public class VmwareCimCollector implements ServiceCollector {
     /**
      * logging for VMware CIM data collection
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.VMware." + VmwareCimCollector.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(VmwareCimCollector.class);
 
     /**
      * the attribute groups

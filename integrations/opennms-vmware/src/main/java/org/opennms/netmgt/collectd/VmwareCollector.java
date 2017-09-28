@@ -80,7 +80,7 @@ public class VmwareCollector implements ServiceCollector {
     /**
      * logging for VMware data collection
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.VMware." + VmwareCollector.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(VmwareCollector.class);
 
     /**
      * the node dao object for retrieving assets

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -211,7 +211,7 @@ final class Executor implements Runnable, PausableFiber {
                         try {
                             int rc = dp.getProcess().exitValue();
 
-                            LOG.debug("Process {} completed, rc = {}", rc, dp);
+                            LOG.debug("Process {} completed, rc = {}", dp, rc);
 
                             i.remove();
                             continue;

@@ -44,7 +44,7 @@ import java.util.StringTokenizer;
 public class SnmpInformantOidResolver extends JRDefaultScriptlet {
 
     // Logging to reporting log
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + SnmpInformantOidResolver.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(SnmpInformantOidResolver.class);
 
     /**
      * Convert a name of specific device to a decimal ASCII string as

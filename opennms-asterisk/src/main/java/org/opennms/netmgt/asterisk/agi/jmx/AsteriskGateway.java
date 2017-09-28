@@ -35,7 +35,7 @@ public class AsteriskGateway extends AbstractSpringContextJmxServiceDaemon<org.o
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.AsteriskGateway";
+        return "asterisk-gateway";
     }
 
     /** {@inheritDoc} */

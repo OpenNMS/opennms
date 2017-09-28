@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,15 +28,18 @@
 
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
 import org.springframework.beans.BeansException;
@@ -52,11 +55,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@Ignore
 public class NrpeDetectorTest implements ApplicationContextAware {
-    
+
     private NrpeDetector m_detector;
     private ApplicationContext m_applicationContext;
-    
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
@@ -64,23 +68,23 @@ public class NrpeDetectorTest implements ApplicationContextAware {
         m_detector.setPort(5666);
         m_detector.init();
     }
-    
+
     //Tested against a local windows box with NSClient++
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException {
-        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailWrongPort() throws UnknownHostException {
-        //m_detector.setPort(12489);
-        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
+        m_detector.setPort(12489);
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailNotUsingSSL() throws UnknownHostException {
-        //m_detector.setUseSsl(false);
-        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
+        m_detector.setUseSsl(false);
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 
     /* (non-Javadoc)
@@ -90,7 +94,7 @@ public class NrpeDetectorTest implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }
-    
+
     private NrpeDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
         Object bean = m_applicationContext.getBean(detectorClass.getName());
         assertNotNull(bean);

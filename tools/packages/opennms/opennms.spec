@@ -59,8 +59,8 @@ Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
-Requires(pre):		%{name}-webui      >= %{version}-%{release}
-Requires:		%{name}-webui      >= %{version}-%{release}
+Requires(pre):		%{name}-webui       = %{version}-%{release}
+Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 8.4
@@ -874,24 +874,44 @@ rm -rf $RPM_BUILD_ROOT
 %{instprefix}/lib/opennms-vtdxml-collector-handler-*.jar
 %{instprefix}/lib/vtd-xml-*.jar
 
-%post docs
-printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
-if [ -e "$RPM_INSTALL_PREFIX0/docs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/docs" ]; then
-	echo "failed: $RPM_INSTALL_PREFIX0/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+%post -p /bin/bash docs
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
+
+printf -- "- making symlink for $ROOT_INST/docs... "
+if [ -e "$ROOT_INST/docs" ] && [ ! -L "$ROOT_INST/docs" ]; then
+	echo "failed: $ROOT_INST/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
 else
-	rm -rf "$RPM_INSTALL_PREFIX0/docs"
-	ln -sf "%{_docdir}/%{name}-%{version}" "$RPM_INSTALL_PREFIX0/docs"
+	rm -rf "$ROOT_INST/docs"
+	ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/docs"
 	echo "done"
 fi
 
-%postun docs
+%postun -p /bin/bash docs
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
+
 if [ "$1" = 0 ]; then
-	if [ -L "$RPM_INSTALL_PREFIX0/docs" ]; then
-		rm -f "$RPM_INSTALL_PREFIX0/docs"
+	if [ -L "$ROOT_INST/docs" ]; then
+		rm -f "$ROOT_INST/docs"
 	fi
 fi
 
-%post core
+%post -p /bin/bash core
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
 if [ -n "$DEBUG" ]; then
 	env | grep RPM_INSTALL_PREFIX | sort -u
@@ -907,33 +927,33 @@ for prefix in lib lib64; do
 	fi
 done
 
-if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
-	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/logs... "
-	if [ -e "$RPM_INSTALL_PREFIX0/logs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/logs" ]; then
-		echo "failed: $RPM_INSTALL_PREFIX0/logs is a real directory or file, but it should be a symlink to $RPM_INSTALL_PREFIX2."
+if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/logs... "
+	if [ -e "$ROOT_INST/logs" ] && [ ! -L "$ROOT_INST/logs" ]; then
+		echo "failed: $ROOT_INST/logs is a real directory or file, but it should be a symlink to $LOG_INST."
 		echo "Your %{_descr} install may not function properly."
 	else
-		rm -rf "$RPM_INSTALL_PREFIX0/logs"
-		ln -sf "$RPM_INSTALL_PREFIX2" "$RPM_INSTALL_PREFIX0/logs"
+		rm -rf "$ROOT_INST/logs"
+		ln -sf "$LOG_INST" "$ROOT_INST/logs"
 		echo "done"
 	fi
 fi
 
-if [ "$RPM_INSTALL_PREFIX0/share" != "$RPM_INSTALL_PREFIX1" ]; then
-	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/share... "
-	if [ -e "$RPM_INSTALL_PREFIX0/share" ] && [ ! -L "$RPM_INSTALL_PREFIX0/share" ]; then
-		echo "failed: $RPM_INSTALL_PREFIX0/share is a real directory, but it should be a symlink to $RPM_INSTALL_PREFIX1."
+if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/share... "
+	if [ -e "$ROOT_INST/share" ] && [ ! -L "$ROOT_INST/share" ]; then
+		echo "failed: $ROOT_INST/share is a real directory, but it should be a symlink to $SHARE_INST."
 		echo "Your %{_descr} install may not function properly."
 	else
-		rm -rf "$RPM_INSTALL_PREFIX0/share"
-		ln -sf "$RPM_INSTALL_PREFIX1" "$RPM_INSTALL_PREFIX0/share"
+		rm -rf "$ROOT_INST/share"
+		ln -sf "$SHARE_INST" "$ROOT_INST/share"
 		echo "done"
 	fi
 fi
 
 printf -- "- moving *.sql.rpmnew files (if any)... "
-if [ `ls $RPM_INSTALL_PREFIX0/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
-	for i in $RPM_INSTALL_PREFIX0/etc/*.sql.rpmnew; do
+if [ `ls $ROOT_INST/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
+	for i in $ROOT_INST/etc/*.sql.rpmnew; do
 		mv $i ${i%%%%.rpmnew}
 	done
 fi
@@ -941,41 +961,41 @@ echo "done"
 
 printf -- "- checking for old update files... "
 
-JAR_UPDATES=`find $RPM_INSTALL_PREFIX0/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
-CLASS_UPDATES=`find $RPM_INSTALL_PREFIX0/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
-let TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
+JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+CLASS_UPDATES=`find $ROOT_INST/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
 if [ "$TOTAL_UPDATES" -gt 0 ]; then
 	echo "FOUND"
 	echo ""
 	echo "WARNING: $TOTAL_UPDATES old update files were found in your"
-	echo "$RPM_INSTALL_PREFIX0/lib/updates directory.  They have been deleted"
+	echo "$ROOT_INST/lib/updates directory.  They have been deleted"
 	echo "because they should now be out of date."
 	echo ""
 else
 	echo "done"
 fi
 
-rm -f $RPM_INSTALL_PREFIX0/etc/configured
+rm -f $ROOT_INST/etc/configured
 for dir in /etc /etc/rc.d; do
 	if [ -d "$dir" ]; then
-		ln -sf $RPM_INSTALL_PREFIX0/bin/opennms $dir/init.d/opennms
+		ln -sf $ROOT_INST/bin/opennms $dir/init.d/opennms
 		break
 	fi
 done
 
 for LIBNAME in jicmp jicmp6 jrrd; do
-	if [ `grep "opennms.library.${LIBNAME}" "$RPM_INSTALL_PREFIX0/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
+	if [ `grep "opennms.library.${LIBNAME}" "$ROOT_INST/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
 		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
 		if [ -n "$LIBRARY_PATH" ]; then
-			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "$RPM_INSTALL_PREFIX0/etc/libraries.properties"
+			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "$ROOT_INST/etc/libraries.properties"
 		fi
 	fi
 done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
-if [ -d "$RPM_INSTALL_PREFIX0/data" ]; then
-	find "$RPM_INSTALL_PREFIX0/data/"* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
-	find "$RPM_INSTALL_PREFIX0/data/tmp/"* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
+if [ -d "$ROOT_INST/data" ]; then
+	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
+	find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
 fi
 echo "done"
 
@@ -987,12 +1007,18 @@ echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
 echo " *** release notes for details."
 echo ""
 
-%postun core
+%postun -p /bin/bash core
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
 if [ "$1" = 0 ]; then
 	for dir in logs share; do
-		if [ -L "$RPM_INSTALL_PREFIX0/$dir" ]; then
-			rm -f "$RPM_INSTALL_PREFIX0/$dir"
+		if [ -L "$ROOT_INST/$dir" ]; then
+			rm -f "$ROOT_INST/$dir"
 		fi
 	done
 fi

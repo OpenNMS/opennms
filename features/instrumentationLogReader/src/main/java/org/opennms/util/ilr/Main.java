@@ -112,7 +112,7 @@ public class Main {
     public Collector getCollector(){
         return c;
     }
-    @Arguments(help = "One or more instrumentation log files (with debug logging enabled)")
+    @Arguments(help = "One or more instrumentation log files (with INFO logging enabled)")
     public void processLogFile(String fileName) {
         try {
 

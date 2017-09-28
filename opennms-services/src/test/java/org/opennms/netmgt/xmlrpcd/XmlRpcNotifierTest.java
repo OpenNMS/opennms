@@ -79,27 +79,17 @@ public class XmlRpcNotifierTest  {
 
     private static final int s_unknownNodeId = 2;
 
-    private static int s_port = 59000;
-    
-    private static final boolean USE_DIFFERENT_PORT_PER_TEST = false;
-
     @Before
     public void setUp() throws Exception, InterruptedException, IOException  {
-        
-        
+
         MockLogAppender.setupLogging();
 
-        int port = s_port;
-        if (USE_DIFFERENT_PORT_PER_TEST) {
-            s_port++;
-        }
-        
-        m_anticipator = new XmlrpcAnticipator(port);
+        m_anticipator = new XmlrpcAnticipator();
         m_anticipator.anticipateCall("notifyReceivedEvent", "0", "uei.opennms.org/internal/capsd/xmlrpcNotification", "test connection");
 
         XmlrpcServer remoteServer = new XmlrpcServer();
-        remoteServer.setUrl("http://localhost:" + port);
-        
+        remoteServer.setUrl("http://localhost:" + m_anticipator.getPort());
+
         m_notifier = new XmlRpcNotifier(new XmlrpcServer[] { remoteServer }, 1, 1500, false, "");
 
         m_network = new MockNetwork();

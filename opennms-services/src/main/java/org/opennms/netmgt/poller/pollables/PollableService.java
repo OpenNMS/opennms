@@ -31,7 +31,9 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.Map;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -396,26 +398,35 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     }
 
     private PollStatus doRun(int timeout) {
-        long startDate = System.currentTimeMillis();
-        LOG.debug("Start Scheduled Poll of service {}", this);
-        PollStatus status;
-        if (getContext().isNodeProcessingEnabled()) {
-            PollRunner r = new PollRunner();
-            try {
-                withTreeLock(r, timeout);
-            } catch (LockUnavailable e) {
-                LOG.info("Postponing poll for {}", this, e);
-                throw new PostponeNecessary("LockUnavailable postpone poll");
+        final Map<String, String> mdc = Logging.getCopyOfContextMap();
+        try {
+            Logging.putThreadContext("service", m_svcName);
+            Logging.putThreadContext("ipAddress", m_netInterface.getAddress().getHostAddress());
+            Logging.putThreadContext("nodeId", Integer.toString(getNodeId()));
+            Logging.putThreadContext("nodeLabel", getNodeLabel());
+            long startDate = System.currentTimeMillis();
+            LOG.debug("Start Scheduled Poll of service {}", this);
+            PollStatus status;
+            if (getContext().isNodeProcessingEnabled()) {
+                PollRunner r = new PollRunner();
+                try {
+                    withTreeLock(r, timeout);
+                } catch (LockUnavailable e) {
+                    LOG.info("Postponing poll for {}", this, e);
+                    throw new PostponeNecessary("LockUnavailable postpone poll");
+                }
+                status = r.getPollStatus();
             }
-            status = r.getPollStatus();
+            else {
+                doPoll();
+                processStatusChange(new Date());
+                status = getStatus();
+            }
+            LOG.debug("Finish Scheduled Poll of service {}, started at {}", this, new Date(startDate));
+            return status;
+        } finally {
+            Logging.setContextMap(mdc);
         }
-        else {
-            doPoll();
-            processStatusChange(new Date());
-            status = getStatus();
-        }
-        LOG.debug("Finish Scheduled Poll of service {}, started at {}", this, new Date(startDate));
-        return status;
     }
 
 	/**

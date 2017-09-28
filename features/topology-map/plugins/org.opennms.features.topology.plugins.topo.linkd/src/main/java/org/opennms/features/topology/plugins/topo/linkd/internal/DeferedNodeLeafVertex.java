@@ -42,12 +42,12 @@ public class DeferedNodeLeafVertex extends AbstractVertex {
         LOG.debug("Loading node details for vertex: {}", this.getLabel());
 
         OnmsNode node = m_topologyProvider.getNodeDao().get(getNodeID());
-        setIconKey(AbstractLinkdTopologyProvider.getIconName(node));
+        setIconKey(AbstractLinkdTopologyProvider.getIconName(node.getSysObjectId()));
 
-        OnmsIpInterface ip = m_topologyProvider.getAddress(node);
+        OnmsIpInterface ip = m_topologyProvider.getAddress(node.getId());
         setIpAddress(ip == null ? null : ip.getIpAddress().getHostAddress());
 
-        setTooltipText(AbstractLinkdTopologyProvider.getNodeTooltipText(node, this, ip));
+        setTooltipText(AbstractLinkdTopologyProvider.getNodeTooltipDefaultText(getIpAddress(), node.getLabel(), ip.isManaged(), node.getSysLocation(), node.getType()));
     }
 
     public String getIconKey() {

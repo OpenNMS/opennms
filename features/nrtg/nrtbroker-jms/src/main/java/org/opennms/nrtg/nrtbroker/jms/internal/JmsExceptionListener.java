@@ -38,7 +38,7 @@ import javax.jms.JMSException;
  * @author Markus Neumann
  */
 public class JmsExceptionListener implements ExceptionListener {
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + JmsExceptionListener.class);
+    private static Logger logger = LoggerFactory.getLogger(JmsExceptionListener.class);
 
     @Override
     public void onException(final JMSException e) {

@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class CdpInterfacePortNameGetter extends TableTracker {
 
     public final static SnmpObjId CDP_INTERFACE_NAME = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.1.1.1.6");
-
+    public final static SnmpObjId MIB2_INTERFACE_NAME = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.2");
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
@@ -52,15 +52,35 @@ public class CdpInterfacePortNameGetter extends TableTracker {
     }
 
     public CdpLink get(CdpLink link) {
-        SnmpObjId instance = SnmpObjId.get(new int[] {link.getCdpCacheIfIndex()});
-        SnmpObjId[] oids = new SnmpObjId[]{SnmpObjId.get(CDP_INTERFACE_NAME, instance)};
-
-        SnmpValue[] val = SnmpUtils.get(m_agentConfig, oids);
-        LOG.info("get: oid '{}' found value '{}'", oids[0], val);
-        if (val == null || val.length != 1 || val[0] == null) 
-            return link;
-        link.setCdpInterfaceName(val[0].toDisplayString());
+        SnmpValue ifName = getInterfaceNameFromCiscoCdpMib(link.getCdpCacheIfIndex());
+        if (ifName == null) {
+            ifName = getInterfaceNameFromMib2(link.getCdpCacheIfIndex());
+        }
+        if (ifName != null)
+            link.setCdpInterfaceName(ifName.toDisplayString());
         return link;
     }
+    
+   public SnmpValue getInterfaceNameFromCiscoCdpMib(Integer ifindex) {
+       SnmpObjId instance = SnmpObjId.get(new int[] {ifindex});
+       SnmpObjId[] oids = new SnmpObjId[]{SnmpObjId.get(CDP_INTERFACE_NAME, instance)};
+       SnmpValue[] val = SnmpUtils.get(m_agentConfig, oids);
+       LOG.info("get: oid '{}' found value '{}'", oids[0], val);
+       if (val == null || val.length != 1 || val[0] == null || val[0].isError()) 
+           return null;
+       return val[0];
+   }
+   
+   public SnmpValue getInterfaceNameFromMib2(Integer ifindex) {
+       SnmpObjId instance = SnmpObjId.get(new int[] {ifindex});
+       SnmpObjId[] oids = new SnmpObjId[]{SnmpObjId.get(MIB2_INTERFACE_NAME, instance)};
+       SnmpValue[] val = SnmpUtils.get(m_agentConfig, oids);
+       LOG.info("get: oid '{}' found value '{}'", oids[0], val);
+       if (val == null || val.length != 1 || val[0] == null || val[0].isError()) 
+           return null;
+       return val[0];
+       
+   }
 
+   
 }

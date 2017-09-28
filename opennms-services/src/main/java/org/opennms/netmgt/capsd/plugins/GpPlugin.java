@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -109,7 +109,7 @@ public final class GpPlugin extends AbstractPlugin {
 
         boolean isAServer = false;
 
-        LOG.debug("poll: address = {}, script = {}, arguments = {}, timeout(seconds) = {}, retry = {}", retry, InetAddressUtils.str(host), script, args, timeout);
+        LOG.debug("poll: address = {}, script = {}, arguments = {}, timeout(seconds) = {}, retry = {}", InetAddressUtils.str(host), script, args, timeout, retry);
 
         for (int attempts = 0; attempts <= retry && !isAServer; attempts++) {
             try {
@@ -176,7 +176,7 @@ public final class GpPlugin extends AbstractPlugin {
         //
         // return the status of the server
         //
-        LOG.debug("poll: GP - isAServer = {} {}", InetAddressUtils.str(host), isAServer);
+        LOG.debug("poll: GP - isAServer = {} {}", isAServer, InetAddressUtils.str(host));
         return isAServer;
     }
 

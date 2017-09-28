@@ -343,7 +343,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testAlarmClearAsUser() throws Exception {
         setUser("ranger", new String[]{ "ROLE_USER" });
         final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
-        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 403);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 303);
     }
 
     @Test

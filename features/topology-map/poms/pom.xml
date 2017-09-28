@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>topology</artifactId>
-    <version>2015.1.0</version>
+    <version>2015.1.1</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -88,7 +88,7 @@
     <repository>
       <id>servicemix</id>
       <name>Apache ServiceMix Repository</name>
-      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
+      <url>http://maven.opennms.org/content/repositories/servicemix/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
@@ -106,7 +106,7 @@
     <pluginRepository>
       <id>servicemix</id>
       <name>Apache ServiceMix Repository</name>
-      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
+      <url>http://maven.opennms.org/content/repositories/servicemix/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </pluginRepository>

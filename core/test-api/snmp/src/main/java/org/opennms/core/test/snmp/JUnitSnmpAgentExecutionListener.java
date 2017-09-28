@@ -33,10 +33,11 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
@@ -66,7 +67,6 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     private static final String STRATEGY_CLASS_PROPERTY = "org.opennms.snmp.strategyClass";
 
     private static final String STRATEGY_CLASS_KEY = "org.opennms.core.test-api.snmp.strategyClass";
-    private static final String AGENT_KEY = "org.opennms.core.test-api.snmp.agentList";
     private static final String PROVIDER_KEY = "org.opennms.core.test-api.snmp.dataProvider";
     public static final String IPADDRESS_KEY = "org.opennms.core.test-api.snmp.ipAddress";
     public static final String PORT_KEY = "org.opennms.core.test-api.snmp.port";
@@ -78,7 +78,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         final JUnitSnmpAgents agents = findAgentListAnnotation(testContext);
         final JUnitSnmpAgent agent = findAgentAnnotation(testContext);
 
-        // save the existing stragegy property
+        // save the existing strategy property
         String strategy = System.getProperty(STRATEGY_CLASS_PROPERTY);
         testContext.setAttribute(STRATEGY_CLASS_KEY, strategy);
 
@@ -100,14 +100,9 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
         LOG.debug("Initializing JUnit SNMP Agent with strategy: {}", strategy == null ? "default" : strategy);
 
-        final HashMap<SnmpAgentAddress,MockSnmpAgent> mockAgents = new HashMap<SnmpAgentAddress,MockSnmpAgent>();
-        testContext.setAttribute(AGENT_KEY, mockAgents);
-
-        
-        
         final MockSnmpDataProvider provider = useMockSnmpStrategy 
                 ? new MockSnmpStrategyDataProvider() 
-                : new MockSnmpAgentDataProvider(mockAgents);
+                : new MockSnmpAgentDataProvider();
                 
         testContext.setAttribute(PROVIDER_KEY, provider);
 
@@ -120,7 +115,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         handleSnmpAgent(testContext, agent, useMockSnmpStrategy, provider);
 
         if (testContext.getTestInstance() instanceof MockSnmpDataProviderAware) {
-        	LOG.debug("injecting data provider into MockSnmpDataProviderAware test: {}", testContext.getTestInstance());
+            LOG.debug("injecting data provider into MockSnmpDataProviderAware test: {}", testContext.getTestInstance());
             ((MockSnmpDataProviderAware)testContext.getTestInstance()).setMockSnmpDataProvider(provider);
         }
     }
@@ -142,8 +137,8 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
         final MockSnmpDataProvider provider = (MockSnmpDataProvider)testContext.getAttribute(PROVIDER_KEY);
         if (provider != null) {
-        	LOG.debug("Tearing down JUnit SNMP Agent provider: {}", provider);
-        	provider.resetData();
+            LOG.debug("Tearing down JUnit SNMP Agent provider: {}", provider);
+            provider.resetData();
         }
 
         // Put the strategy class property back the way it was before the tests.
@@ -166,7 +161,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
             // ignore
         }
         if (!factoryClassName.contains("ProxySnmpAgentConfigFactory")) {
-        	LOG.warn("SNMP Peer Factory ({}) is not the ProxySnmpAgentConfigFactory -- did you forget to include applicationContext-proxy-snmp.xml?", factoryClassName);
+            LOG.warn("SNMP Peer Factory ({}) is not the ProxySnmpAgentConfigFactory -- did you forget to include applicationContext-proxy-snmp.xml?", factoryClassName);
         }
 
         LOG.debug("handleSnmpAgent(testContext, {}, {})", config, useMockSnmpStrategy);
@@ -215,9 +210,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
             LOG.debug("using MockSnmpAgent on {} for 'real' address {}", listenAddress, agentAddress);
 
-            @SuppressWarnings("unchecked")
-            final Map<SnmpAgentAddress,MockSnmpAgent> agents = (Map<SnmpAgentAddress,MockSnmpAgent>)testContext.getAttribute(AGENT_KEY);
-            agents.put(agentAddress, agent);
+            provider.addAgent(agentAddress, agent);
         }
 
         provider.setDataForAddress(agentAddress, resource);
@@ -249,13 +242,19 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
     private static final class MockSnmpStrategyDataProvider implements MockSnmpDataProvider {
         @Override
+        public void addAgent(SnmpAgentAddress address, MockSnmpAgent agent) {
+            // Don't do anything, we don't need to track agent instances
+        }
+
+        @Override
         public void setDataForAddress(final SnmpAgentAddress address, final Resource resource) {
             try {
                 MockSnmpStrategy.setDataForAddress(address, resource);
             } catch (final Exception e) {
-            	LOG.warn("Unable to set mock SNMP data for {}", address, e);
+                LOG.warn("Unable to set mock SNMP data for {}", address, e);
             }
         }
+
         @Override
         public void resetData() {
             MockSnmpStrategy.resetData();
@@ -265,20 +264,41 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         public String toString() {
             return "MockSnmpStrategyDataProvider[]";
         }
+
+        @Override
+        public void updateIntValue(SnmpAgentAddress address, String oid, int val) {
+            MockSnmpStrategy.updateIntValue(address, oid, val);
+        }
+
+        @Override
+        public void updateStringValue(SnmpAgentAddress address, String oid, String val) {
+            MockSnmpStrategy.updateStringValue(address, oid, val);
+        }
+
+        @Override
+        public void updateCounter32Value(SnmpAgentAddress address, String oid, int val) {
+            MockSnmpStrategy.updateCounter32Value(address, oid, (long)val);
+        }
+
+        @Override
+        public void updateCounter64Value(SnmpAgentAddress address, String oid, long val) {
+            MockSnmpStrategy.updateCounter64Value(address, oid, BigInteger.valueOf(val));
+        }
     }
 
     private static final class MockSnmpAgentDataProvider implements MockSnmpDataProvider {
-        private final Map<SnmpAgentAddress, MockSnmpAgent> m_agents;
+        private final Map<SnmpAgentAddress, MockSnmpAgent> m_agents = new ConcurrentHashMap<SnmpAgentAddress, MockSnmpAgent>();
 
-        public MockSnmpAgentDataProvider(final Map<SnmpAgentAddress,MockSnmpAgent> mockAgents) {
-            m_agents = mockAgents;
+        @Override
+        public void addAgent(SnmpAgentAddress address, MockSnmpAgent agent) {
+            m_agents.put(address, agent);
         }
 
         @Override
         public void setDataForAddress(final SnmpAgentAddress address, final Resource resource) throws IOException {
             final MockSnmpAgent agent = m_agents.get(address);
             if (agent == null) {
-            	LOG.warn("Unable to set mock SNMP data for {}: no such agent", address);
+                LOG.warn("Unable to set mock SNMP data for {}: no such agent", address);
                 return;
             }
             agent.updateValuesFromResource(resource.getURL());
@@ -288,10 +308,10 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         public void resetData() {
             for (final MockSnmpAgent agent : m_agents.values()) {
                 try {
-                	LOG.debug("Shutting down agent: {}", agent);
+                    LOG.debug("Shutting down agent: {}", agent);
                     agent.shutDownAndWait();
                 } catch (final InterruptedException e) {
-                	LOG.debug("Unable to shut down agent {}", agent, e);
+                    LOG.debug("Unable to shut down agent {}", agent, e);
                     // Thread.currentThread().interrupt();
                 }
             }
@@ -300,7 +320,47 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
         @Override
         public String toString() {
-            return "MockSnmpAgentDataProvider[" + (m_agents == null? "" : (m_agents.size() + " agents")) + "]";
+            return "MockSnmpAgentDataProvider[" + m_agents.size() + " agents]";
+        }
+
+        @Override
+        public void updateIntValue(SnmpAgentAddress address, String oid, int val) {
+            final MockSnmpAgent agent = m_agents.get(address);
+            if (agent == null) {
+                LOG.warn("Unable to set mock SNMP data for {}: no such agent", address);
+                return;
+            }
+            agent.updateIntValue(oid, val);
+        }
+
+        @Override
+        public void updateStringValue(SnmpAgentAddress address, String oid, String val) {
+            final MockSnmpAgent agent = m_agents.get(address);
+            if (agent == null) {
+                LOG.warn("Unable to set mock SNMP data for {}: no such agent", address);
+                return;
+            }
+            agent.updateStringValue(oid, val);
+        }
+
+        @Override
+        public void updateCounter32Value(SnmpAgentAddress address, String oid, int val) {
+            final MockSnmpAgent agent = m_agents.get(address);
+            if (agent == null) {
+                LOG.warn("Unable to set mock SNMP data for {}: no such agent", address);
+                return;
+            }
+            agent.updateCounter32Value(oid, val);
+        }
+
+        @Override
+        public void updateCounter64Value(SnmpAgentAddress address, String oid, long val) {
+            final MockSnmpAgent agent = m_agents.get(address);
+            if (agent == null) {
+                LOG.warn("Unable to set mock SNMP data for {}: no such agent", address);
+                return;
+            }
+            agent.updateCounter64Value(oid, val);
         }
 
     }

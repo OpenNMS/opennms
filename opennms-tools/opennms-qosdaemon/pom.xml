@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2015.1.0</version>
+    <version>2015.1.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-qosdaemon</artifactId>
@@ -148,6 +148,7 @@
           <descriptors>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
+          <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
@@ -427,7 +428,7 @@
       <releases><enabled>true</enabled></releases>
       <id>openoss-repo</id>
       <name>Sourceforge OSSbeans Release Repository</name>
-      <url>http://maven.opennms.org/content/groups/openoss.sourceforge.net-release</url>
+      <url>http://maven.opennms.org/content/repositories/openoss-repo/</url>
     </repository>
   </repositories>
 </project>

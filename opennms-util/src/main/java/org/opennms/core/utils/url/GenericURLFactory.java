@@ -49,7 +49,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
     /**
      * Logging to output.log
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Output." + GenericURLFactory.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(GenericURLFactory.class);
 
     /**
      * Map with protocol and URL connections

@@ -34,6 +34,7 @@ import java.util.List;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -140,5 +141,6 @@ public interface ResourceService {
      * @param resourceId a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<OnmsResource> getResourceListById(String resourceId);
 }

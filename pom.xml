@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>2015.1.0</version>
+  <version>2015.1.1</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -755,6 +755,7 @@
              <descriptor>src/assembly/source.xml</descriptor>
              <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
+             <tarLongFileMode>gnu</tarLongFileMode>
            </configuration>
          </execution>
        </executions>
@@ -1028,7 +1029,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>2015.1.0</opennms.osgi.version>
+    <opennms.osgi.version>2015.1.1</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1115,11 +1116,12 @@
     <guavaVersion>17.0</guavaVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
-    <httpcoreVersion>4.3.2</httpcoreVersion>
-    <httpclientVersion>4.3.4</httpclientVersion>
+    <httpcoreVersion>4.3.3</httpcoreVersion>
+    <httpclientVersion>4.3.6</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>7.6.15.v20140411</jettyVersion>
+    <jrubyVersion>9.0.0.0</jrubyVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
     <felixVersion>2.3.0</felixVersion>
@@ -1144,6 +1146,7 @@
     <springWebFlowVersion>2.3.2.RELEASE</springWebFlowVersion>
     <springSecurityVersion>3.1.7.RELEASE</springSecurityVersion>
     <springLdapVersion>3.1.7.RELEASE</springLdapVersion>
+    <springSecurityKerberosVersion>1.0.1.RELEASE</springSecurityKerberosVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
@@ -3332,7 +3335,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>central</id>
       <name>Maven Central</name>
-      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
+      <url>http://maven.opennms.org/content/repositories/central/</url>
     </repository>
 -->
   </repositories>
@@ -3350,7 +3353,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>maven-repo</id>
       <name>Maven Central</name>
-      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
+      <url>http://maven.opennms.org/content/repositories/central/</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>true</enabled></snapshots>
@@ -3364,11 +3367,11 @@
       <releases><enabled>true</enabled></releases>
       <id>java-net-repo</id>
       <name>Java.net Repository</name>
-      <url>http://maven.opennms.org/content/groups/java.net-release</url>
+      <url>http://maven.opennms.org/content/repositories/maven2-repository.dev.java.net/</url>
     </pluginRepository>
     <pluginRepository>
       <id>onejar-maven-plugin.googlecode.com</id>
-      <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
+      <url>http://maven.opennms.org/content/repositories/onejar-maven-plugin.googlecode.com/</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>

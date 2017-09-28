@@ -57,7 +57,7 @@
       &lt;p&gt;User: %parm[configUser]% &lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
-      &lt;p&gt;%parm[configUser]%" changed entity %nodelabel%_%interface% from source: %parm[configSource]% &lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;"%parm[configUser]%" changed entity %nodelabel%_%interface% from source: %parm[configSource]% &lt;/a&gt;&lt;/p&gt;
     </logmsg>
     <severity>Warning</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />

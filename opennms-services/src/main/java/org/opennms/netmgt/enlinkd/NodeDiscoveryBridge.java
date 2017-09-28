@@ -103,6 +103,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			}
 			getPeer().setReadCommunity(community);
 		}
+		LOG.debug("run: found on node: '{}' bridge ifindex map {}",getNodeId(), bridgeifindex);
+		m_linkd.getQueryManager().storeBridgeToIfIndexMap(getNodeId(), bridgeifindex);
 		walkDot1qTpFdp(bridgeifindex);
 		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
 	}
@@ -227,17 +229,20 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		m_linkd.getQueryManager().store(getNodeId(), bridge);
 		
 		Map<Integer,Integer> bridgetoifindex = walkDot1dBasePortTable();
+                LOG.debug("run: found on node: '{}' vlan: '{}', bridge ifindex map {}",getNodeId(), vlanname, bridgetoifindex);
 
 		if (!isValidStpBridgeId(bridge.getStpDesignatedRoot())) {
 			LOG.info("run: invalid Stp designated root: spanning tree not supported on: {}",
 					str(getPeer().getAddress()));
 		} else if (bridge.getBaseBridgeAddress().equals(getBridgeAddressFromStpBridgeId(bridge.getStpDesignatedRoot()))) {
-			LOG.info("designated root of spanning tree is itself on bridge {}, on: {}",
+			LOG.info("run: designated root of spanning tree is itself on bridge {}, on: {}",
 					bridge.getStpDesignatedRoot(),
 					str(getPeer().getAddress()));
 		} else {
 			walkSpanningTree(bridge.getBaseBridgeAddress(),vlan, bridgetoifindex);
-		}		
+		}
+		if (vlan != null)
+		    m_linkd.getQueryManager().storeBridgetoVlanMap(getNodeId(), bridgetoifindex.keySet(), vlan);
 		walkDot1dTpFdp(vlan,bridgetoifindex);
 		return bridgetoifindex;
 	}
@@ -279,8 +284,10 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			@Override
 			public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
 				BridgeMacLink link = row.getLink();
+				Integer ifindex = bridgeifindex.get(link.getBridgePort());
+				LOG.debug("processDot1dTpFdbRow: found mac {}: vlan {}: on port {} ifindex {}", row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),ifindex);
 				link.setVlan(vlan);
-				link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
+				link.setBridgePortIfIndex(ifindex);
 				if (isValidBridgeAddress(link.getMacAddress())
 						&& link.getBridgeDot1qTpFdbStatus() == BridgeMacLink.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)
 					m_linkd.getQueryManager().store(getNodeId(), link);
@@ -316,7 +323,9 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			@Override
 			public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
 				BridgeMacLink link = row.getLink();
-				link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
+                                Integer ifindex = bridgeifindex.get(link.getBridgePort());
+                                LOG.debug("processDot1qTpFdbRow: found mac {}: on port {} ifindex {} ", row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort(),ifindex);
+				link.setBridgePortIfIndex(ifindex);
 				if (isValidBridgeAddress(link.getMacAddress()) && link.getBridgePort() != null
 						&& link.getBridgeDot1qTpFdbStatus() == BridgeMacLink.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)
 					m_linkd.getQueryManager().store(getNodeId(), link);

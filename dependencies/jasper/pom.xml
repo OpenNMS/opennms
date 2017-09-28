@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2015.1.0</version>
+    <version>2015.1.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -25,19 +25,15 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>bouncycastle</groupId>
-          <artifactId>bcmail-jdk14</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>bouncycastle</groupId>
-          <artifactId>bcprov-jdk14</artifactId>
+          <groupId>com.lowagie</groupId>
+          <artifactId>itext</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>jasperreports</groupId>
-      <artifactId>iText</artifactId>
-      <version>2.1.7</version>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
+      <version>2.1.7.js3</version>
       <exclusions>
         <exclusion>
           <groupId>eclipse</groupId>
@@ -46,6 +42,18 @@
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bctsp-jdk14</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>bouncycastle</groupId>
+          <artifactId>bcmail-jdk14</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>bouncycastle</groupId>
+          <artifactId>bcprov-jdk14</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -76,7 +84,7 @@
     <dependency>
       <groupId>org.codehaus.mojo</groupId>
       <artifactId>jasperreports-maven-plugin</artifactId>
-      <version>1.0-beta-3-OPENNMS-20120424-1</version>
+      <version>1.0-beta-3-OPENNMS-20150402-1</version>
       <exclusions>
         <exclusion>
           <groupId>backport-util-concurrent</groupId>
@@ -94,6 +102,20 @@
     </dependency>
   </dependencies>
   <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>jasperreports</id>
+      <name>Jasper Reports Maven Repository</name>
+      <url>http://maven.opennms.org/content/repositories/jasperreports</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>jaspersoft-third-party</id>
+      <name>JasperSoft Third Party Maven Repository</name>
+      <url>http://maven.opennms.org/content/repositories/jaspersoft-third-party</url>
+    </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>

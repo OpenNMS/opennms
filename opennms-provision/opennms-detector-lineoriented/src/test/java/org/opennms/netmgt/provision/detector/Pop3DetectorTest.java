@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,13 +53,13 @@ public class Pop3DetectorTest implements ApplicationContextAware {
     private SimpleServer m_server;
     private Pop3Detector m_detector;
     private ApplicationContext m_applicationContext;
-    
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
         m_server = new SimpleServer() {
-            
+
             @Override
             public void onInit() {
                 setBanner("+OK");
@@ -69,6 +69,8 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         };
         m_server.init();
         m_server.startServer();
+
+        m_detector = createDetector(m_server.getLocalPort());
     }
 
     @After
@@ -78,42 +80,33 @@ public class Pop3DetectorTest implements ApplicationContextAware {
             m_server = null;
         }
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testSuccess() throws Exception {
-        
-        m_detector = createDetector(m_server.getLocalPort());
         m_detector.setIdleTime(1000);
         assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress())));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testFailureWithBogusResponse() throws Exception {
         m_server.setBanner("Oh Henry");
-        
-        m_detector = createDetector(m_server.getLocalPort());
-        
         assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
-        
+
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testMonitorFailureWithNoResponse() throws Exception {
         m_server.setBanner(null);
-        m_detector = createDetector(m_server.getLocalPort());
-        
         assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
-        
+
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailWrongPort() throws Exception{
-        
         m_detector = createDetector(9000);
-        
         assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
     }
-    
+
     private Pop3Detector createDetector(int port) {
         Pop3Detector detector = getDetector(Pop3Detector.class);
         detector.setServiceName("POP3");
@@ -122,11 +115,9 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         detector.init();
         return detector;
     }
-    
+
     private boolean  doCheck(DetectFuture future) throws Exception {
-        
         future.awaitFor();
-        
         return future.isServiceDetected();
     }
 
@@ -137,7 +128,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }
-    
+
     private Pop3Detector getDetector(Class<? extends ServiceDetector> detectorClass) {
         Object bean = m_applicationContext.getBean(detectorClass.getName());
         assertNotNull(bean);

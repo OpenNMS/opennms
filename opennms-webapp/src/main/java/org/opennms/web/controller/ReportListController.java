@@ -52,7 +52,7 @@ import java.util.Map;
  */
 public class ReportListController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + ReportListController.class.getName());
+    private Logger logger = LoggerFactory.getLogger(ReportListController.class);
 
     /**
      * Service provides report templates from different repositories

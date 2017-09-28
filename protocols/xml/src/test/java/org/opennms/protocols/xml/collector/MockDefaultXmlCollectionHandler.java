@@ -54,7 +54,7 @@ public class MockDefaultXmlCollectionHandler extends DefaultXmlCollectionHandler
      */
     @Override
     protected String parseUrl(String unformattedUrl, CollectionAgent agent, Integer collectionStep) {
-        return null;
+        return unformattedUrl.replace("{ipaddr}", "127.0.0.1");
     }
 
     /* (non-Javadoc)

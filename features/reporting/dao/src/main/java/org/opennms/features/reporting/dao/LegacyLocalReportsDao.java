@@ -59,7 +59,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + LegacyLocalReportsDao.class.getName());
+    private Logger logger = LoggerFactory.getLogger(LegacyLocalReportsDao.class);
 
     /**
      * List of generic report definitions

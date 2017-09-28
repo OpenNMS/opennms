@@ -30,9 +30,11 @@ package org.opennms.netmgt.correlation;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
@@ -62,7 +64,10 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		public EngineAdapter(final CorrelationEngine engine) {
 			m_engine = engine;
 			m_name = m_engine.getClass().getSimpleName() + '-' + m_engine.getName() ;
+		        Map<String,String> mdc = Logging.getCopyOfContextMap();
+		        Logging.putPrefix(m_name);
 			m_eventIpcManager.addEventListener(this, m_engine.getInterestingEvents());
+		        Logging.setContextMap(mdc);
 		}
 
                 @Override

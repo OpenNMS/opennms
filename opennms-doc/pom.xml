@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms</artifactId>
-        <version>2015.1.0</version>
+        <version>2015.1.1</version>
     </parent>
     <groupId>org.opennms.doc</groupId>
     <artifactId>parent</artifactId>
@@ -67,6 +67,11 @@
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctorj</artifactId>
                         <version>${asciidoctorjVersion}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jruby</groupId>
+                        <artifactId>jruby-complete</artifactId>
+                        <version>${jrubyVersion}</version>
                     </dependency>
                 </dependencies>
 
@@ -138,6 +143,7 @@
                         <descriptors>
                             <descriptor>${basedir}/../src/assembly/doc.xml</descriptor>
                         </descriptors>
+                        <tarLongFileMode>gnu</tarLongFileMode>
                     </configuration>
                 </plugin>
             </plugins>

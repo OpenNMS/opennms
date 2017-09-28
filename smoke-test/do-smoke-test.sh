@@ -13,6 +13,7 @@ if [ -z "$MATCH_RPM" ]; then
 fi
 OPENNMS_HOME=/opt/opennms
 SOURCEDIR="$ME/.."
+JAVA_HOME=`"$SOURCEDIR"/bin/javahome.pl`
 
 PACKAGES="$@"; shift
 if [ -z "$PACKAGES" ]; then
@@ -90,8 +91,8 @@ reset_database() {
 	banner "Resetting OpenNMS Database"
 
 	# easy way to make sure no one is holding on to any pg sockets
-	do_log "/sbin/service postgresql restart"
-	/sbin/service postgresql restart
+	do_log "service postgresql restart"
+	service postgresql restart
 
 	sleep 5
 
@@ -103,8 +104,10 @@ reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
 	do_log "opennms stop"
-	/sbin/service "opennms" stop
-	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
+	"$OPENNMS_HOME"/bin/opennms stop
+
+	do_log "opennms kill"
+	"$OPENNMS_HOME"/bin/opennms kill
 
 	do_log "clean_yum"
 	clean_yum || die "Unable to clean up old RPM files."
@@ -149,8 +152,8 @@ configure_opennms() {
 		done
 	popd
 
-	do_log "runjava -s"
-	"$OPENNMS_HOME/bin/runjava" -s || die "'runjava -s' failed."
+	do_log "runjava -S '$JAVA_HOME/bin/java'"
+	"$OPENNMS_HOME/bin/runjava" -S "$JAVA_HOME/bin/java" || die "'runjava -S $JAVA_HOME/bin/java' failed."
 
 	do_log "install -dis"
 	"$OPENNMS_HOME/bin/install" -dis || die "Unable to run OpenNMS install."
@@ -163,7 +166,7 @@ start_opennms() {
 	find "$OPENNMS_HOME" -type f -name \*.rpmorig -o -name \*.rpmnew
 
 	do_log "opennms restart"
-	/sbin/service "opennms" restart
+	"$OPENNMS_HOME"/bin/opennms restart
 	RETVAL=$?
 
 	if [ $? -gt 0 ]; then
@@ -214,7 +217,7 @@ stop_opennms() {
 	banner "Stopping OpenNMS"
 
 	do_log "opennms kill"
-	/etc/init.d/"opennms" kill
+	"$OPENNMS_HOME"/bin/opennms kill
 
 	#do_log "yum clean all"
 	#yum clean all || :

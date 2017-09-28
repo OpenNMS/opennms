@@ -292,6 +292,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
             return;
         }
         if (m_securityContext.isUserInRole(Authentication.ROLE_REST) ||
+                m_securityContext.isUserInRole(Authentication.ROLE_USER) ||
                 m_securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
             return;
         }
@@ -311,6 +312,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
             throw new WebApplicationException(new IllegalArgumentException("User '" + currentUser + "', is a read-only user!"), Status.FORBIDDEN);
         }
         if (m_securityContext.isUserInRole(Authentication.ROLE_REST) ||
+                m_securityContext.isUserInRole(Authentication.ROLE_USER) ||
                 m_securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
             if (ackUser.equals(currentUser)) {
                 // ROLE_REST and ROLE_MOBILE are allowed to modify things as long as it's as the

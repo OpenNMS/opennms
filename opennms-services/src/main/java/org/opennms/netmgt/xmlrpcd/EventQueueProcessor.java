@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -177,7 +177,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
                 parmContent = parmValue.getContent();
             }
 
-            LOG.debug("ParmName: {} /parmContent: ", parmName, parmContent);
+            LOG.debug("ParmName: {} /parmContent: {}", parmName, parmContent);
 
             // get txNo
             if (parmName.equals(EventConstants.PARM_TRANSACTION_NO)) {

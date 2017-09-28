@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.doc</groupId>
         <artifactId>parent</artifactId>
-        <version>2015.1.0</version>
+        <version>2015.1.1</version>
     </parent>
     <artifactId>guide-all</artifactId>
     <packaging>pom</packaging>
@@ -21,6 +21,7 @@
                     <descriptors>
                         <descriptor>src/assembly/all.xml</descriptor>
                     </descriptors>
+                    <tarLongFileMode>gnu</tarLongFileMode>
                 </configuration>
             </plugin>
         </plugins>

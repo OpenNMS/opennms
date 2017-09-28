@@ -32,18 +32,19 @@ import java.beans.PropertyVetoException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.test.ConfigurationTestUtils;
-import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.CastorUtils;
+import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+
+import junit.framework.TestCase;
 
 /**
  * 
@@ -118,12 +119,50 @@ public class C3P0ConnectionFactoryTest extends TestCase {
     }
 
     private C3P0ConnectionFactory makeFactory(String database) throws MarshalException, ValidationException, PropertyVetoException, SQLException, IOException {
-        InputStream stream = new ByteArrayInputStream(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME)).getBytes());
-        DataSourceConfigurationFactory factory = new DataSourceConfigurationFactory(stream);
+        final DataSourceConfiguration config = new DataSourceConfiguration();
+
+        final JdbcDataSource opennms = new JdbcDataSource();
+        opennms.setName("opennms");
+        opennms.setClassName("org.postgresql.Driver");
+        opennms.setUserName("opennms");
+        opennms.setPassword("opennms");
+        opennms.setUrl("jdbc:postgresql://localhost:5432/template1");
+        config.addJdbcDataSource(opennms);
+
+        final JdbcDataSource opennms2 = new JdbcDataSource();
+        opennms2.setName("opennms2");
+        opennms2.setClassName("org.postgresql.Driver");
+        opennms2.setUserName("opennms");
+        opennms2.setPassword("opennms");
+        opennms2.setUrl("jdbc:postgresql://localhost:5432/template1");
+        config.addJdbcDataSource(opennms2);
+
+        final String mockDbUrl = System.getProperty("mock.db.url");
+        if (mockDbUrl != null && !"".equals(mockDbUrl.trim())) {
+            opennms.setUrl(mockDbUrl + "template1");
+            opennms2.setUrl(mockDbUrl + "template1");
+        }
+
+        final String mockDbAdminUser = System.getProperty("mock.db.adminUser");
+        if (mockDbAdminUser != null && !"".equals(mockDbAdminUser.trim())) {
+            opennms.setUserName(mockDbAdminUser);
+            opennms2.setUserName(mockDbAdminUser);
+        }
+
+        final String mockDbAdminPassword = System.getProperty("mock.db.adminPassword");
+        if (mockDbAdminPassword != null) {
+            opennms.setPassword(mockDbAdminPassword);
+            opennms2.setPassword(mockDbAdminPassword);
+        }
+
+        final StringWriter sw = new StringWriter();
+        CastorUtils.marshalWithTranslatedExceptions(config, sw);
+        final String configString = sw.toString();
+
+        InputStream stream = new ByteArrayInputStream(configString.getBytes());
+        final DataSourceConfigurationFactory factory = new DataSourceConfigurationFactory(stream);
         try {
-            factory.getJdbcDataSource("opennms").marshal(new OutputStreamWriter(System.err));
-            System.err.println();
-            return new C3P0ConnectionFactory(factory.getJdbcDataSource("opennms"));
+            return new C3P0ConnectionFactory(factory.getJdbcDataSource(database));
         } finally {
             IOUtils.closeQuietly(stream);
         }

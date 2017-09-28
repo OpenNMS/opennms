@@ -42,7 +42,10 @@
         org.opennms.netmgt.model.OnmsAcknowledgment,
         org.opennms.netmgt.model.OnmsAlarm,
         org.opennms.netmgt.model.OnmsSeverity,
-        org.opennms.web.api.Authentication"
+        org.opennms.web.api.Authentication,
+        org.apache.commons.configuration.Configuration,
+        org.apache.commons.configuration.ConfigurationException,
+        org.apache.commons.configuration.PropertiesConfiguration"
 %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -258,8 +261,10 @@
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
 				<textarea style="width:100%" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
-	            <form:input type="submit" value="Save" />
-                <form:input type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
+                <div class="btn-group btn-group-sm">
+	            <form:input class="btn btn-default" type="submit" value="Save" />
+                <form:input class="btn btn-default" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
+                </div>
 	         </form>
 	         <form id="deleteStickyForm" method="post" action="alarm/removeStickyMemo.htm">
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
@@ -294,8 +299,10 @@
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
                 <textarea style="width:100%" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
-                <form:input type="submit" value="Save" />
-                <form:input type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
+                <div class="btn-group btn-group-sm">
+                <form:input class="btn btn-default" type="submit" value="Save" />
+                <form:input class="btn btn-default" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
+                </div>
             </form>
             <form id="deleteJournalForm" method="post" action="alarm/removeJournalMemo.htm">
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
@@ -339,20 +346,22 @@
 
 <% if (request.isUserInRole(Authentication.ROLE_ADMIN) || !request.isUserInRole(Authentication.ROLE_READONLY)) {%>
 
+<div class="row">
+<div class="col-md-6">
+
                 <form class="form-inline" method="post" action="alarm/acknowledge">
                     <input type="hidden" name="actionCode" value="<%=action%>" />
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                     <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
-                    <input type="submit" value="<%=ackButtonName%>" />
+                    <input class="form-control btn btn-default" type="submit" value="<%=ackButtonName%>" />
                 </form>
 
         <%if (showEscalate || showClear) {%>
 
-                <br/>
                 <form class="form-inline" method="post" action="alarm/changeSeverity">
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                     <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />	  
-                    <select name="actionCode">
+                    <select class="form-control" name="actionCode">
                         <%if (showEscalate) {%>
                         <option value="<%=escalateAction%>">Escalate this alarm</option>
                         <% }%>
@@ -360,36 +369,59 @@
                         <option value="<%=clearAction%>">Clear this alarm</option>
                         <% }%>
                     </select>
-                    <input type="submit" value="Go"/>
+                    <input class="form-control btn btn-default" type="submit" value="Go"/>
                 </form>
 
         <% } // showEscalate || showClear %>
 
 <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"))) {%>
 
-<br/>
+</div>
+<div class="col-md-6">
 
 <form class="form-inline" method="post" action="alarm/ticket/create.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input type="submit" value="Create Ticket" disabled="${(!empty alarm.TTicketState) && (alarm.TTicketState != 'CREATE_FAILED')}" />
+    <form:input class="form-control btn btn-default" type="submit" value="Create Ticket" disabled="${(!empty alarm.TTicketState) && (alarm.TTicketState != 'CREATE_FAILED')}" />
+    <%-- Remedy Specific TroubleTicket - Start --%>
+    <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
+      <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
+      <input class="form-control" type="text" name="remedy.user.comment" value="Add a Comment here"/>
+      <select class="form-control" name="remedy.urgency">
+        <option value="1-Critical">1-Critical</option>
+        <option value="2-High">2-High</option>
+        <option value="3-Medium">3-Medium</option>
+        <option value="4-Low" selected="selected">4-Low</option>
+      </select>
+      <select class="form-control" name="remedy.assignedgroup">
+        <% String propsFile = new String(Vault.getProperty("opennms.home") + "/etc/remedy.properties");
+           Configuration remedyConfig = null;
+           try {
+             remedyConfig = new PropertiesConfiguration(propsFile);
+           } catch (final ConfigurationException e) {}
+           for (String group: remedyConfig.getString("remedy.targetgroups").split(":")) { %>
+             <option value="<%=group%>"><%=group%></option>
+        <% }  %>
+      </select>
+    <% } %>
+    <%-- Remedy Specific TroubleTicket - Start --%>
 </form>
-
-<br/>
 
 <form class="form-inline" method="post" action="alarm/ticket/update.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input type="submit" value="Update Ticket" disabled="${(empty alarm.TTicketId)}"/>
+    <form:input class="form-control btn btn-default" type="submit" value="Update Ticket" disabled="${(empty alarm.TTicketId)}"/>
 </form>
-
-<br/>
 
 <form class="form-inline" method="post" action="alarm/ticket/close.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input type="submit" value="Close Ticket" disabled="${(empty alarm.TTicketState) || ((alarm.TTicketState != 'OPEN') && (alarm.TTicketState != 'CLOSE_FAILED')) }" />
+    <form:input class="form-control btn btn-default" type="submit" value="Close Ticket" disabled="${(empty alarm.TTicketState) || ((alarm.TTicketState != 'OPEN') && (alarm.TTicketState != 'CLOSE_FAILED')) }" />
 </form>
+
+</div>
+</div>
+<br/>
 
 <% } // alarmTroubleTicketEnabled %>
 <% } // isUserInRole %>

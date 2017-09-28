@@ -86,3 +86,9 @@ include::text/events.adoc[]
 
 // Provisioning guide
 include::text/provisioning.adoc[]
+
+// OpenNMS operation
+== OpenNMS Operation
+include::text/operation/jmx-config-generator/introduction.adoc[]
+include::text/operation/jmx-config-generator/webui.adoc[]
+include::text/operation/jmx-config-generator/cli.adoc[]

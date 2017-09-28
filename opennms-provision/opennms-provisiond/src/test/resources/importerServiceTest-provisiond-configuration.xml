@@ -20,7 +20,7 @@
         Year (Opt)     empty, 1970-2099    , - * /
    -->
    
-  <requisition-def import-name="localhost" import-url-resource="dns://localhost/localhost">
+  <requisition-def import-name="localhost" import-url-resource="dns://localhost/localhost" rescan-existing="dbonly">
     <cron-schedule>0 0 0 * * ? *</cron-schedule>
   </requisition-def>
   

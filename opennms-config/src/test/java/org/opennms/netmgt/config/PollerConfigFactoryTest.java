@@ -29,6 +29,8 @@
 package org.opennms.netmgt.config;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -250,4 +252,52 @@ public class PollerConfigFactoryTest extends TestCase {
         
     }
 
+    public void testIncludeUrl() throws Exception {
+        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
+        assertNull(factory.getPackage("TestPkg"));
+        Package pkg = new Package();
+        pkg.setName("TestPkg");
+        
+        Filter filter = new Filter();
+        filter.setContent("IPADDR != '0.0.0.0'");
+        pkg.setFilter(filter);
+        
+        Rrd rrd = new Rrd();
+        rrd.setStep(300);
+        rrd.addRra("RRA:AVERAGE:0.5:1:2016");
+        pkg.setRrd(rrd);
+        
+        Service svc = new Service();
+        svc.setName("TestService");
+        svc.setInterval(300000l);
+        pkg.addService(svc);
+        
+        Downtime dt = new Downtime();
+        dt.setBegin(0l);
+        pkg.addDowntime(dt);
+
+        File iplistFile = new File(System.getProperty("java.io.tmpdir"), "iplist.txt");
+        FileWriter fw = new FileWriter(iplistFile);
+        fw.write("#192.168.1.1");
+        fw.write(System.lineSeparator());
+        fw.write("123.12.123.121");
+        fw.write(System.lineSeparator());
+        fw.write("123.12.123.122");
+        fw.close();
+        pkg.addIncludeUrl("file:" + iplistFile.getAbsolutePath());
+        
+        factory.addPackage(pkg);
+        factory.save();
+        
+        assertNotNull(factory.getPackage("TestPkg"));
+        
+        TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml(), "localhost", false);
+        Package p = newFactory.getPackage("TestPkg");
+        assertNotNull(p);
+        System.out.println(factory.getXml());
+        assertTrue("Expect 123.12.123.121 to be part of the package", newFactory.isInterfaceInPackage("123.12.123.121", p));
+        assertTrue("Expect 123.12.123.122 to be part of the package", newFactory.isInterfaceInPackage("123.12.123.122", p));
+        assertFalse("Expected 192.168.1.1 to be excluded from the package", newFactory.isInterfaceInPackage("192.168.1.1", p));
+        iplistFile.delete();
+    }
 }
