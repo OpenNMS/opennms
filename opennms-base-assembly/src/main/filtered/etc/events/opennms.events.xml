@@ -1483,7 +1483,7 @@
       <descr>&lt;p>There are currently one or more problems affecting business service '%parm[businessServiceName]%'. args(%parm[##]%): %parm[all]%&lt;/p></descr>
       <logmsg dest="logndisplay">One or more problems are affecting business service '%parm[businessServiceName]%'.</logmsg>
       <severity>Indeterminate</severity>
-      <alarm-data reduction-key="%uei%:%parm[businessServiceId]%" alarm-type="3" auto-clean="false">
+      <alarm-data reduction-key="%uei%:%parm[businessServiceId]%" alarm-type="1" auto-clean="false">
          <update-field field-name="severity" update-on-reduction="true"/>
       </alarm-data>
    </event>
@@ -1493,7 +1493,7 @@
       <descr>&lt;p>The problem affecting business service '%parm[businessServiceName]%' has been resolved. args(%parm[##]%): %parm[all]%&lt;/p></descr>
       <logmsg dest="logndisplay">The problems affecting business service '%parm[businessServiceName]%' have been resolved.</logmsg>
       <severity>Indeterminate</severity>
-      <alarm-data reduction-key="uei.opennms.org/bsm/serviceProblem:%parm[businessServiceId]%" alarm-type="3" auto-clean="false">
+      <alarm-data reduction-key="uei.opennms.org/bsm/serviceProblem:%parm[businessServiceId]%" alarm-type="2" auto-clean="false">
          <update-field field-name="severity" update-on-reduction="true"/>
       </alarm-data>
    </event>
