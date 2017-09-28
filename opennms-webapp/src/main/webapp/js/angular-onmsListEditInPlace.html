@@ -1,6 +1,6 @@
 <form class="form-inline" ng-submit="submit()" style="margin: 0;">
 	<!-- Editing input -->
-	<input ng-show="editing" ng-keyup="onKeyup($event)" type="{{valueType}}" ng-model="value"/>
+	<input ng-show="editing" ng-keyup="onKeyup($event)" type="{{valueType}}" step="{{step}}" ng-model="value"/>
 
 	<!-- Text label -->
 	<span style="line-height:24px;" ng-hide="editing" ng-click="edit()">{{value}}&nbsp;</span>

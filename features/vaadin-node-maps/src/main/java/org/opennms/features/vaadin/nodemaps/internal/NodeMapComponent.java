@@ -66,6 +66,8 @@ public class NodeMapComponent extends AbstractComponent {
 
     public NodeMapComponent() {
         registerRpc(m_rpc);
+        getState().tileServerUrl = NodeMapConfiguration.getTileServerUrl();
+        getState().tileLayerOptions = NodeMapConfiguration.getTileLayerOptions();
     }
 
     protected NodeIdSelectionRpc getRpc() {

@@ -86,8 +86,8 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
         assertEquals(4, config.getJmxCollection(0).getMbeanCount());
         assertEquals(config.getJmxCollection(1).getRrd().getStep(), 300);
         assertEquals("jsr160", config.getJmxCollection(1).getName());
-        assertEquals(34, config.getJmxCollection("jsr160").getMbeanCount());
-        assertEquals(34, config.getJmxCollection(1).getMbeanCount());
+        assertEquals(37, config.getJmxCollection("jsr160").getMbeanCount());
+        assertEquals(37, config.getJmxCollection(1).getMbeanCount());
 
         assertEquals(config.getJmxCollection(2).getRrd().getStep(), 300);
         assertEquals("cassandra30x", config.getJmxCollection(2).getName());

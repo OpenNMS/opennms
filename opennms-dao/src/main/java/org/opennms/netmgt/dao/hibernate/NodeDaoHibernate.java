@@ -147,6 +147,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                                            + "left join fetch n.assetRecord "
                                            + "where n.id = ?", id);
 
+        initialize(node.getCategories());
         initialize(node.getIpInterfaces());
         for (OnmsIpInterface i : node.getIpInterfaces()) {
             initialize(i.getMonitoredServices());

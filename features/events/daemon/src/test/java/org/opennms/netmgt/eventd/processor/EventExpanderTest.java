@@ -30,9 +30,14 @@ package org.opennms.netmgt.eventd.processor;
 
 import junit.framework.TestCase;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.easymock.EasyMock;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.eventd.EventExpander;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
@@ -108,6 +113,7 @@ public class EventExpanderTest extends TestCase {
     public void testOptionalParameters() {
         String uei = "uei.opennms.org/testEventWithOptionalParameters";
         EventBuilder builder = new EventBuilder(uei, "something");
+        builder.addParam("worst-framework-ever", "Vaadin");
         Event event = builder.getEvent();
 
         EventExpander expander = new EventExpander();
@@ -120,17 +126,26 @@ public class EventExpanderTest extends TestCase {
         p1.setName("username");
         p1.setValue("agalue");
         eventConfig.addParameter(p1);
+        org.opennms.netmgt.xml.eventconf.Parameter p2 = new org.opennms.netmgt.xml.eventconf.Parameter();
+        p2.setName("i-hate");
+        p2.setValue("%parm[#1]%");
+        p2.setExpand(true);
+        eventConfig.addParameter(p2);
 
         EasyMock.expect(m_eventConfDao.findByEvent(event)).andReturn(eventConfig);
         EasyMock.expect(m_eventConfDao.isSecureTag(EasyMock.anyObject())).andReturn(true).anyTimes();
+        EventUtil eventUtil = m_mocks.createMock(EventUtil.class);
+        EasyMock.expect(eventUtil.expandParms("%parm[#1]%", event, new HashMap<String,Map<String,String>>())).andReturn("Vaadin");
         m_mocks.replayAll();
+        AbstractEventUtil.setInstance(eventUtil);
 
         expander.expandEvent(event);
 
         assertEquals("event UEI", uei, event.getUei());
-        assertEquals("parameters count", 1, event.getParmCollection().size());
+        assertEquals("parameters count", 3, event.getParmCollection().size());
         assertNotNull(event.getParm("username"));
         assertEquals("parameter value", "agalue", event.getParm("username").getValue().getContent());
+        assertEquals("parameter value", "Vaadin", event.getParm("i-hate").getValue().getContent());
     }
 
 }

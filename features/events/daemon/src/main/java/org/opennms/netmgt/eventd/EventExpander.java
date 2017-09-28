@@ -482,6 +482,16 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     private void expandParms(Event event, Map<String, Map<String, String>> decode) {
         String strRet = null;
 
+        // parameters
+        if (event.getParmCollection() != null && event.getParmCollection().size() > 0) {
+            event.getParmCollection().stream().map(p -> p.getValue()).filter(v -> v.isExpand()).forEach(v -> {
+                final String str = AbstractEventUtil.getInstance().expandParms(v.getContent(), event, decode);
+                if (str != null) {
+                    v.setContent(str);
+                }
+            });
+        }
+
         // description
         if (event.getDescr() != null) {
             strRet = AbstractEventUtil.getInstance().expandParms(event.getDescr(), event,decode);
@@ -532,7 +542,6 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
             	event.getAlarmData().setClearKey(strRet);
             }
         }
-
     }
 
     /**
@@ -744,6 +753,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                         v.setContent(p.getValue());
                         v.setType("string");
                         v.setEncoding("text");
+                        v.setExpand(p.isExpand());
                         parm.setValue(v);
                         e.addParm(parm);
                     } else {

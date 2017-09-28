@@ -120,7 +120,7 @@ public class JdbcCollector implements ServiceCollector {
         }
     }
 
-    private void initDatabaseConnectionFactory(String dataSourceName) {
+    private static void initDatabaseConnectionFactory(String dataSourceName) {
         DataSourceFactory.init(dataSourceName);
     }
 
@@ -267,10 +267,11 @@ public class JdbcCollector implements ServiceCollector {
                 } catch(SQLException e) {
                     // Close the statement but retain the connection, log the exception and continue to the next query.
                     LOG.warn("There was a problem executing query '{}' Please review the query or configuration. Reason: {}", query.getQueryName(), e.getMessage());
+                    continue;
+                } finally {
                     agentState.closeResultSet(results);
                     agentState.closeStmt(stmt);
                     agentState.closeConnection(con);
-                    continue;
                 }
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
@@ -289,7 +290,7 @@ public class JdbcCollector implements ServiceCollector {
     
     
     // Simply check the database the query is supposed to connect to to see if it is available.
-    private boolean isGroupAvailable(JdbcAgentState agentState, JdbcQuery query) {
+    private static boolean isGroupAvailable(JdbcAgentState agentState, JdbcQuery query) {
         LOG.debug("Checking availability of group {}", query.getQueryName());
         boolean status = false;
         ResultSet resultset = null;

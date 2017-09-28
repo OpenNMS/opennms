@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -82,6 +83,9 @@ public class Value implements Serializable {
      */
 	@XmlAttribute(name="encoding")
     private java.lang.String _encoding = "text";
+
+	@XmlTransient
+    private java.lang.Boolean _expand = Boolean.FALSE;
 
 
       //----------------/
@@ -138,6 +142,16 @@ public class Value implements Serializable {
     }
 
     /**
+     * Returns the value of field 'expand'.
+     * 
+     * @return the value of field 'Expand'.
+     */
+    public java.lang.Boolean isExpand(
+    ) {
+        return this._expand;
+    }
+
+    /**
      * Sets the value of field 'content'. The field 'content' has
      * the following description: internal content storage
      * 
@@ -166,6 +180,16 @@ public class Value implements Serializable {
     public void setType(
             final java.lang.String type) {
         this._type = type;
+    }
+
+    /**
+     * Sets the value of field 'expand'.
+     * 
+     * @param type the value of field 'expand'.
+     */
+    public void setExpand(
+            final java.lang.Boolean expand) {
+        this._expand = expand;
     }
 
         @Override

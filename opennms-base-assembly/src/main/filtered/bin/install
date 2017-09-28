@@ -5,12 +5,19 @@ OPENNMS_BINDIR="${install.bin.dir}"
 
 RUNAS="root"
 
-ULIMIT=`which ulimit 2>/dev/null`
-if [ -n $ULIMIT ]; then
-	for SIZE in 1024 2048 4096 8192 unlimited; do
-		ulimit -n "$SIZE" >/dev/null 2>&1
-		if [ $? -gt 0 ]; then
+# if we have ulimit, attempt to raise it
+ulimit -a >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+	for SIZE in 1024 2048 4096 8192 16384 20480; do
+		let CURRENT=`ulimit -n`
+		if [ $CURRENT = "unlimited" ]; then
 			break
+		fi
+		if [ $CURRENT -lt $SIZE ]; then
+			ulimit -n $SIZE >/dev/null 2>&1
+			if [ $? -gt 0 ]; then
+				break
+			fi
 		fi
 	done
 fi

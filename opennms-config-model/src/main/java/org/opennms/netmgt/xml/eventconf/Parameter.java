@@ -60,6 +60,9 @@ public class Parameter implements Serializable {
     @XmlAttribute(name="value", required=true)
     private String m_value;
 
+    @XmlAttribute(name="expand", required=false)
+    private Boolean m_expand;
+
     public boolean hasName() {
         return m_name != null ? true : false;
     }
@@ -82,6 +85,18 @@ public class Parameter implements Serializable {
 
     public void setValue(final String value) {
         m_value = value;
+    }
+
+    public boolean hasExpand() {
+        return m_expand != null ? true : false; 
+    }
+
+    public Boolean isExpand() {
+        return m_expand == null ? Boolean.FALSE : m_expand;
+    }
+
+    public void setExpand(final Boolean expand) {
+        m_expand = expand;
     }
 
     public static Parameter unmarshal(final Reader reader) throws MarshalException, ValidationException {

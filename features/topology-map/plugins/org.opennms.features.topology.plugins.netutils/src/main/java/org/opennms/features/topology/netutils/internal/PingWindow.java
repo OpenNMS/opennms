@@ -28,291 +28,156 @@
 
 package org.opennms.features.topology.netutils.internal;
 
-import com.vaadin.server.ExternalResource;
+import java.util.Objects;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.netutils.internal.service.PingRequest;
+import org.opennms.features.topology.netutils.internal.service.PingService;
+
+import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 /**
  * The PingWindow class creates a Vaadin Sub-window with a form and results section
- * for the Ping functionality of a Node.
+ * for the Ping functionality of a Vertex.
  *
  * @author Leonardo Bell
  * @author Philip Grenon
- * @version 1.0
+ * @author Markus von Rüden
+ * @version 2.0
  */
-@SuppressWarnings("serial")
 public class PingWindow extends Window {
 
-    private static final int sizePercentage = 80; // Window size proportionate to main window
-    protected NativeSelect ipDropdown = null; //Dropdown component for IP Address
-    protected NativeSelect packetSizeDropdown = null; //Dropdown component for Packet Size
-    private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
-    protected TextField requestsField = null; //Textfield for "Number of Requests" variable
-    protected TextField timeoutField = null; //Textfield for "Time-Out (seconds)" variable
-    protected CheckBox numericalDataCheckBox = null; //Checkbox for toggling numeric output
-    protected Button pingButton; //Button to execute the ping operation
-    private Embedded resultsBrowser = null; //Browser which displays the ping results
-    private static final String noLabel = "no such label"; //Label given to vertexes that have no real label.
-    private String pingUrl;
+    /**
+     * As soon as we start the ping command, we must poll for state changes, as the ping is executed asynchronously.
+     * The POLL_INTERVAL determines the poll interval in milliseconds.
+     */
+    public static final int POLL_INTERVAL = 1000;
 
     /**
-     * The PingWindow method constructs a PingWindow component with a size proportionate to the
-     * width and height of the main window.
-     *
-     * @param node
-     * @param pingUrl
+     * If a ping is started, it is indicated.
      */
-    public PingWindow(final Node node, final String pingUrl) {
+    private final ProgressBar progressIndicator;
 
-        this.pingUrl = pingUrl;
+    /**
+     * Cancels the current ping
+     */
+    private final Button cancelButton;
 
-        String label = "";
-        String ipAddress = "";
-        if (node != null) {
-            label = node.getLabel();
-            ipAddress = node.getIPAddress();
-        }
-        String caption = "";
-        /*Sets up window settings*/
-        if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
-            label = "";
-        }
-        if (!label.equals("")) {
-            caption = " - " + label;
-        }
-        setCaption("Ping" + caption);
-        setImmediate(true);
-        setResizable(false);
-        setSizeFull();
+    /**
+     * Starts a ping
+     */
+    private final Button pingButton;
 
-		/*Initialize the header of the Sub-window with the name of the selected Node*/
-        String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + label + "</div>";
-        nodeLabel = new Label(nodeName);
-        nodeLabel.setContentMode(ContentMode.HTML);
+    /**
+     * The form to configure the Ping command.
+     */
+    private final PingForm pingForm;
 
-        VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setSizeFull();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
+    /**
+     * Creates the PingWindow to make ping requests.
+     *
+     * @param vertex The vertex which IP Address is pinged.
+     *               It is expected that the IP Address os not null and parseable.
+     * @param pingService The {@link PingService} to actually make the ping request.
+     */
+    public PingWindow(Vertex vertex, PingService pingService) {
+        Objects.requireNonNull(vertex);
+        Objects.requireNonNull(pingService);
 
-        VerticalLayout form = new VerticalLayout();
-        GridLayout grid = new GridLayout(2, 4);
-        grid.setWidth("420");
-        grid.setHeight("120");
+        // Remember initial poll interval, as we poll as soon as we start pinging
+        final int initialPollInterval = UI.getCurrent().getPollInterval();
 
-		/*Sets up IP Address dropdown with the Name as default*/
-        ipDropdown = new NativeSelect();
-        ipDropdown.addItem(ipAddress);
-        ipDropdown.select(ipAddress);
-        ipDropdown.setNullSelectionAllowed(false);
+        // Ping Form
+        pingForm = new PingForm(InetAddressUtils.getInetAddress(vertex.getIpAddress()));
 
-		/*Sets up Packet Size dropdown with different values*/
-        packetSizeDropdown = new NativeSelect();
-        packetSizeDropdown.addItem("16");
-        packetSizeDropdown.addItem("32");
-        packetSizeDropdown.addItem("64");
-        packetSizeDropdown.addItem("128");
-        packetSizeDropdown.addItem("256");
-        packetSizeDropdown.addItem("512");
-        packetSizeDropdown.addItem("1024");
-        packetSizeDropdown.select("16");
+        // Result
+        final TextArea resultArea = new TextArea();
+        resultArea.setRows(15);
+        resultArea.setSizeFull();
 
-		/*Creates the Numerical Output Check box and sets up the listener*/
-        numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
-        numericalDataCheckBox.setImmediate(true);
-        numericalDataCheckBox.setValue(false);
+        // Progress Indicator
+        progressIndicator = new ProgressBar();
+        progressIndicator.setIndeterminate(true);
 
-		/*Creates the form labels and text fields*/
-        Label ipLabel = new Label("IP Address: ");
-        Label requestsLabel = new Label("Number of Requests: ");
-        Label timeoutLabel = new Label("Time-Out (seconds): ");
-        Label packetLabel = new Label("Packet Size: ");
-        requestsField = new TextField();
-        requestsField.setMaxLength(4); //Max buffer of 4 to prevent buffer overflow
-        requestsField.setValue("4");
-        timeoutField = new TextField();
-        timeoutField.setMaxLength(4); //Max buffer of 4 to prevent buffer overflow
-        timeoutField.setValue("1");
-
-		/*Add all of the components to the GridLayout*/
-        grid.addComponent(ipLabel);
-        grid.setComponentAlignment(ipLabel, Alignment.MIDDLE_LEFT);
-        grid.addComponent(ipDropdown);
-        grid.setComponentAlignment(ipDropdown, Alignment.MIDDLE_LEFT);
-        grid.addComponent(requestsLabel);
-        grid.setComponentAlignment(requestsLabel, Alignment.MIDDLE_LEFT);
-        grid.addComponent(requestsField);
-        grid.setComponentAlignment(requestsField, Alignment.MIDDLE_LEFT);
-        grid.addComponent(timeoutLabel);
-        grid.setComponentAlignment(timeoutLabel, Alignment.MIDDLE_LEFT);
-        grid.addComponent(timeoutField);
-        grid.setComponentAlignment(timeoutField, Alignment.MIDDLE_LEFT);
-        grid.addComponent(packetLabel);
-        grid.setComponentAlignment(packetLabel, Alignment.MIDDLE_LEFT);
-        grid.addComponent(packetSizeDropdown);
-        grid.setComponentAlignment(packetSizeDropdown, Alignment.MIDDLE_LEFT);
-
-		/*Creates the Ping button and sets up the listener*/
+        // Buttons
+        cancelButton = new Button("Cancel");
+        cancelButton.addClickListener((event) -> {
+            pingService.cancel();
+            resultArea.setValue(resultArea.getValue() + "\n" + "Ping cancelled by user");
+            getUI().setPollInterval(initialPollInterval);
+            setRunning(false);
+        } );
         pingButton = new Button("Ping");
-        pingButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                changeBrowserURL(buildURL());
-            }
-        });
-
-		/*Adds components to the form and sets the width and spacing*/
-        form.addComponent(grid);
-        form.addComponent(numericalDataCheckBox);
-        form.addComponent(pingButton);
-        form.setWidth("100%");
-        form.setSpacing(true);
-
-		/*Adds components to the Top Layout and sets the width and margins*/
-        mainLayout.addComponent(nodeLabel);
-        mainLayout.setComponentAlignment(nodeLabel, Alignment.MIDDLE_CENTER);
-        mainLayout.addComponent(form);
-
-        buildEmbeddedBrowser();
-
-        Panel panel = new Panel();
-        panel.setSizeFull();
-        panel.setCaption("Results");
-        panel.setContent(resultsBrowser);
-
-        mainLayout.addComponent(panel);
-        mainLayout.setExpandRatio(panel, 1.0f);
-
-        setContent(mainLayout);
-    }
-
-    @Override
-    public void attach() {
-        super.attach();
-
-        setWidth(sizePercentage, Unit.PERCENTAGE);
-        setHeight(sizePercentage, Unit.PERCENTAGE);
-
-        center();
-
-        resultsBrowser.setSizeFull();
-    }
-
-    /**
-     * The changeBrowserURL method changes the address of the results browser whenever a new
-     * ping request form is submitted and refreshes the browser.
-     *
-     * @param url New web address
-     */
-    private void changeBrowserURL(URL url) {
-        if (url != null) {
-            /* This setVisible(false/true) toggle is used to refresh the browser.
-             * Due to to the fact that the updates to the client require a call to
-			 * the server, this is currently one of the only ways to accomplish the
-			 * the needed update.
-			 */
-            resultsBrowser.setVisible(false);
-            resultsBrowser.setSource(new ExternalResource(url));
-            resultsBrowser.setVisible(true);
-        }
-    }
-
-    /**
-     * The buildURL method takes the current values in the form and formats them into the
-     * URL string that is used to redirect the results browser to the Ping page.
-     *
-     * @return Web address for ping command with submitted parameters
-     * @throws MalformedURLException
-     */
-    protected URL buildURL() {
-        boolean validInput = false;
-        try {
-            validInput = validateInput();
-        } catch (NumberFormatException e) {
-            Notification.show("Inputs must be integers", Notification.Type.WARNING_MESSAGE);
-            return null;
-        }
-        if (validInput) {
-            final StringBuilder options = new StringBuilder(pingUrl);
-            try {
-                URL baseUrl = getUI().getPage().getLocation().toURL();
-
-                options.append(pingUrl.contains("?") ? "&" : "?");
-
-                options.append("address=").append(ipDropdown.getValue())
-                        .append("&timeout=").append(timeoutField.getValue())
-                        .append("&numberOfRequest=").append(requestsField.getValue())
-                        .append("&hideCloseButton=true")
-                        .append("&packetSize=").append(Integer.parseInt(packetSizeDropdown.getValue().toString()) - 8);
-                if (numericalDataCheckBox.getValue().equals(true)) {
-                    options.append("&numericOutput=true");
+        pingButton.addClickListener((event) -> {
+                try {
+                    final PingRequest pingRequest = pingForm.getPingRequest();
+                    setRunning(true);
+                    getUI().setPollInterval(POLL_INTERVAL);
+                    resultArea.setValue(""); // Clear
+                    pingService.ping(pingRequest, (result) -> {
+                        setRunning(!result.isComplete());
+                        resultArea.setValue(result.toDetailString());
+                        if (result.isComplete()) {
+                            getUI().setPollInterval(initialPollInterval);
+                        }
+                    });
+                } catch (FieldGroup.CommitException e) {
+                    Notification.show("Validation errors", "Please correct them. Make sure all required fields are set.", Notification.Type.ERROR_MESSAGE);
                 }
+        });
+        // Button Layout
+        final HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setSpacing(true);
+        buttonLayout.addComponent(pingButton);
+        buttonLayout.addComponent(cancelButton);
+        buttonLayout.addComponent(progressIndicator);
 
-                return new URL(baseUrl, options.toString());
-            } catch (final MalformedURLException e) {
-                Notification.show("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
-                return null;
-            }
-        } else {
-            Notification.show("Inputs must be between 0 and 9999", Notification.Type.WARNING_MESSAGE);
-            return null;
-        }
+        // Root Layout
+        final VerticalLayout rootLayout = new VerticalLayout();
+        rootLayout.setSpacing(true);
+        rootLayout.setMargin(true);
+        rootLayout.addComponent(pingForm);
+        rootLayout.addComponent(buttonLayout);
+        rootLayout.addComponent(new Label("<b>Results</b>", ContentMode.HTML));
+        rootLayout.addComponent(resultArea);
+        rootLayout.setExpandRatio(resultArea, 1.0f);
+
+        // Window Config
+        setCaption(String.format("Ping - %s (%s)", vertex.getLabel(), vertex.getIpAddress()));
+        setResizable(false);
+        setModal(true);
+        setWidth(800, Unit.PIXELS);
+        setHeight(550, Unit.PIXELS);
+        setContent(rootLayout);
+        center();
+        setRunning(false);
+
+        // Set back to default, when closing
+        addCloseListener((CloseListener) e -> {
+            pingService.cancel();
+            getUI().setPollInterval(initialPollInterval);
+        });
     }
 
-    /**
-     * The validateInput method checks the timeout text field and the
-     * number of requests field to make sure the input given by the
-     * user was formatted correctly.
-     *
-     * @return Whether input was correctly formatted
-     */
-    protected boolean validateInput() throws NumberFormatException {
-        int timeout = 0, requests = 0;
-
-        if (timeoutField.getValue() == null || "".equals(timeoutField.getValue().toString())) {
-            return false;
-        } else {
-            timeout = Integer.parseInt(timeoutField.getValue().toString());
-        }
-        if (requestsField.getValue() == null || "".equals(requestsField.getValue().toString())) {
-            return false;
-        } else {
-            requests = Integer.parseInt(requestsField.getValue().toString());
-        }
-
-        if (timeout < 1 || timeout > 9999) {
-            return false;
-        }
-        if (requests < 1 || requests > 9999) {
-            return false;
-        }
-        return true;
+    private void setRunning(boolean running) {
+        cancelButton.setEnabled(running);
+        progressIndicator.setVisible(running);
+        pingButton.setEnabled(!running);
+        pingForm.setEnabled(!running);
     }
 
-    /**
-     * The buildEmbeddedBrowser method creates a new browser instance and adds it to the
-     * bottom layout. The browser is set to invisible by default.
-     */
-    private void buildEmbeddedBrowser() {
-        resultsBrowser = new Embedded();
-        resultsBrowser.setType(Embedded.TYPE_BROWSER);
-        resultsBrowser.setImmediate(true);
-        resultsBrowser.setVisible(true);
+    public void open() {
+        UI.getCurrent().addWindow(this);
     }
-
 }
