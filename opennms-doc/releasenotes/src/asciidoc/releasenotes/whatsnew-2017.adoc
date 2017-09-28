@@ -175,7 +175,7 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
 [releasenotes-changelog-2017.1.0]
-==== Release 2017.1.0
+==== Release Meridian-2017.1.0
 
 Release 2017.1.0 is the first release of OpenNMS Meridian 2017.  It is based on OpenNMS Horizon 19, plus a number of other bug fixes and changes that went into Horizon 20.
 
