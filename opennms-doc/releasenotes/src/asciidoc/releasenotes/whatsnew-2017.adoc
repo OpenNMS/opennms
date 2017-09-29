@@ -30,7 +30,7 @@ Use `etc/examples/jetty.xml` as a starting point.
 * *Drools 6.5.0 Upgrade*: Drools has been upgraded from `6.0.1.Final` to `6.5.0.Final`.
 +
 If you have custom Drools rules, they may need to be revised.
-The compiler used in `6.4.0.Final` is stricter than the compiler in previous versions.
+The compiler used in `6.5.0.Final` is stricter than the compiler in previous versions.
 * *Separate opennms-webapp-remoting Package*: The webapp that supports the Remote Poller has been separated from the main OpenNMS webapp.
 +
 This will make installations much smaller for users that do not use the Remote Poller.
