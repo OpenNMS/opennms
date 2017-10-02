@@ -27,6 +27,7 @@ To upgrade our container to use a new base Karaf version, follow these steps.
         cp $KARAF_DIR/system/org/apache/karaf/features/spring-legacy/$KARAF_VERSION/spring-legacy-$KARAF_VERSION-features.xml $SRC_DIR/container/karaf/src/main/filtered-resources/features/spring-legacy.xml
 
 1. Remove the unmodified standard features repo from the spring-legacy.xml file by making all of the changes between the OPENNMS CUSTOMIZATION comment blocks.
+1. Update the ```karaf-maven-plugin``` configuration inside ```$SRC_DIR/features/minion/container/karaf/pom.xml``` so that it matches the default Karaf assembly from <https://github.com/apache/karaf/blob/karaf-$KARAF_VERSION/assemblies/apache-karaf/pom.xml> with our additions.
 1. Update the list of repo features inside ```$SRC_DIR/container/features/pom.xml```, ```$SRC_DIR/core/test-api/karaf/pom.xml```, and ```$SRC_DIR/opennms-full-assembly/pom.xml```.
 1. Update the Karaf version inside ```$SRC_DIR/core/test-api/karaf/src/main/java/org/opennms/core/test/karaf/KarafTestCase.java```.
 1. Update ```$SRC_DIR/pom.xml``` with new value for ```<karafVersion>``` property.
