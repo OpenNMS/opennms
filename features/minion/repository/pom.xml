@@ -29,8 +29,8 @@
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>mvn:org.apache.karaf.features/standard/${minionKarafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring/${minionKarafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
                                 <!-- Add OpenNMS features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
                                 <!-- Add Minion features -->
