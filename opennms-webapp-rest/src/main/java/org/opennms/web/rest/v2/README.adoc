@@ -259,6 +259,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | Name | Type | Description
 | ipInterface.id | Integer | ID
 | ipInterface.ipAddress | IP Address | IP Address
+| ipInterface.netMask | IP Address | Network Mask
 | ipInterface.ipHostName | String | Hostname
 | ipInterface.ipLastCapsdPoll | Timestamp | Last Provisioning Scan
 | ipInterface.isManaged | String | Management Status
@@ -428,7 +429,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | snmpInterface.ifSpeed | Long | Interface Speed (Bits per second)
 | snmpInterface.lastCapsdPoll | Timestamp | Last Provisioning Scan
 | snmpInterface.lastSnmpPoll | Timestamp | Last SNMP Interface Poll
-| snmpInterface.netMask | IP Address | Network Mask
 |===
 
 ////

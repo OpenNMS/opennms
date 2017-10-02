@@ -40,6 +40,7 @@
 		<column name="id" visible="false"/>
 		<column name="nodeID" visible="false"/>
 		<column name="ipAddr"/>
+		<column name="netMask"/>
 		<column name="ipHostname"/>
 		<column name="IsManaged"/>
 		<column name="IsSnmpPrimary"/>
@@ -51,7 +52,6 @@
 		<join column="id" table="ipInterface" table-column="snmpinterfaceid"/>
 		<column name="id" visible="false"/>
 		<column name="nodeID" visible="false"/>
-		<column name="snmpIpAdEntNetMask"/>
 		<column name="snmpPhysAddr"/>
 		<column name="snmpIfIndex"/>
 		<column name="snmpIfDescr"/>

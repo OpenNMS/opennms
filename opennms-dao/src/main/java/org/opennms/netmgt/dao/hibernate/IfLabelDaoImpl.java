@@ -136,7 +136,6 @@ public class IfLabelDaoImpl extends AbstractIfLabel implements IfLabel {
                     // Get extra information about the interface
                     info.put("id", String.valueOf(iface.getId()));
                     info.put("nodeid", String.valueOf(iface.getNodeId()));
-                    info.put("snmpipadentnetmask", String.valueOf(iface.getNetMask()));
                     info.put("snmpphysaddr", String.valueOf(iface.getPhysAddr()));
                     info.put("snmpifindex", String.valueOf(iface.getIfIndex()));
                     info.put("snmpifdescr", String.valueOf(iface.getIfDescr()));

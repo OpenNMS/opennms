@@ -447,16 +447,33 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     /**
+     * Test filtering for netmask property of {@link OnmsIpInterface}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testNetmaskFiltering() throws Exception {
+        executeQueryAndVerify("_s=ipInterface.netMask==255.255.255.0", 8);
+        executeQueryAndVerify("_s=ipInterface.netMask==\u0000", 0);
+        executeQueryAndVerify("_s=ipInterface.netMask!=255.255.255.0", 0);
+        executeQueryAndVerify("_s=ipInterface.netMask==255.255.127.0", 0);
+    }
+
+    /**
      * Test filtering for properties of {@link OnmsSnmpInterface}.
      * 
      * @throws Exception
      */
     @Test
     public void testSnmpFiltering() throws Exception {
-        executeQueryAndVerify("_s=snmpInterface.netMask==255.255.255.0", 0);
-        executeQueryAndVerify("_s=snmpInterface.netMask==\u0000", 8);
-        executeQueryAndVerify("_s=snmpInterface.netMask!=255.255.255.0", 8);
-        executeQueryAndVerify("_s=snmpInterface.netMask==255.255.127.0", 0);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed==10000000", 8);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed==\u0000", 0);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed!=500", 8);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed==500", 0);
+        executeQueryAndVerify("_s=snmpInterface.ifName==eth0", 8);
+        executeQueryAndVerify("_s=snmpInterface.ifName==\u0000", 0);
+        executeQueryAndVerify("_s=snmpInterface.ifName!=eth1", 8);
+        executeQueryAndVerify("_s=snmpInterface.ifName==eth1", 0);
     }
 
     /**
@@ -620,10 +637,11 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         .setIfName("eth0")
         .setIfType(6)
         .setPhysAddr("C9D2DFC7CB68")
-        .addIpInterface(ipAddress).setIsManaged("M").setIsSnmpPrimary("S");
+        .addIpInterface(ipAddress).setIsManaged("M").setIsSnmpPrimary("S").setNetMask("255.255.255.0");
         builder.addService(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
         final OnmsNode node = builder.getCurrentNode();
         m_databasePopulator.getNodeDao().save(node);
+        LOG.debug("ifspeed={}", node.getSnmpInterfaceWithIfIndex(1).getIfSpeed());
         return node;
     }
 
@@ -635,6 +653,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     private void createAlarm(final OnmsNode node, final String eventUei, final OnmsSeverity severity, final long epoch) {
+        final OnmsIpInterface alarmNode = node.getIpInterfaces().iterator().next();
+
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
         event.setEventCreateTime(new Date(epoch));
@@ -651,10 +671,11 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
             event.addEventParameter(new OnmsEventParameter(event, "testParm2", "This is a weird parm", "string"));
         }
         event.addEventParameter(new OnmsEventParameter(event, "testParm3", "Here's another parm", "string"));
-        event.setIpAddr(node.getIpInterfaces().iterator().next().getIpAddress());
+        event.setIpAddr(alarmNode.getIpAddress());
         event.setNode(node);
         event.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
         event.setEventSeverity(severity.getId());
+        event.setIfIndex(alarmNode.getIfIndex());
         m_databasePopulator.getEventDao().save(event);
         m_databasePopulator.getEventDao().flush();
 
@@ -666,12 +687,13 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");
         alarm.setCounter(1);
-        alarm.setIpAddr(node.getIpInterfaces().iterator().next().getIpAddress());
+        alarm.setIpAddr(alarmNode.getIpAddress());
         alarm.setSeverity(severity);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         alarm.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
+        alarm.setIfIndex(alarmNode.getIfIndex());
         m_databasePopulator.getAlarmDao().save(alarm);
         m_databasePopulator.getAlarmDao().flush();
     }

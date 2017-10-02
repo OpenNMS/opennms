@@ -282,9 +282,9 @@ INSERT INTO service (serviceid, servicename) VALUES (3, 'HTTP');
 -- Data for Name: snmpinterface; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
-INSERT INTO snmpinterface (nodeid, ipaddr, snmpipadentnetmask, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.1', NULL, NULL, 1, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
-INSERT INTO snmpinterface (nodeid, ipaddr, snmpipadentnetmask, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.2', NULL, NULL, 2, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
-INSERT INTO snmpinterface (nodeid, ipaddr, snmpipadentnetmask, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.3', NULL, NULL, 3, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
+INSERT INTO snmpinterface (nodeid, ipaddr, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.1', NULL, 1, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
+INSERT INTO snmpinterface (nodeid, ipaddr, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.2', NULL, 2, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
+INSERT INTO snmpinterface (nodeid, ipaddr, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.3', NULL, 3, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
 
 
 --

@@ -281,6 +281,7 @@ public abstract class SearchProperties {
 	static final SortedSet<SearchProperty> IP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty(OnmsIpInterface.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsIpInterface.class, "ipAddress", "IP Address", IP_ADDRESS),
+                new SearchProperty(OnmsIpInterface.class, "netMask", "Network Mask", IP_ADDRESS),
 		new SearchProperty(OnmsIpInterface.class, "ipHostName", "Hostname", STRING),
 		new SearchProperty(OnmsIpInterface.class, "ipLastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty(OnmsIpInterface.class, "isManaged", "Management Status", STRING)
@@ -377,7 +378,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsSnmpInterface.class, "ifSpeed", "Interface Speed (Bits per second)", LONG),
 		new SearchProperty(OnmsSnmpInterface.class, "lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty(OnmsSnmpInterface.class, "lastSnmpPoll", "Last SNMP Interface Poll", TIMESTAMP),
-		new SearchProperty(OnmsSnmpInterface.class, "netMask", "Network Mask", IP_ADDRESS)
 	}));
 
 	public static final Set<SearchProperty> ALARM_SERVICE_PROPERTIES = new LinkedHashSet<>();

@@ -512,8 +512,6 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 --# This table provides the following information:
 --#
 --#  nodeID             : Unique identifier for node to which this if belongs
---#  snmpIpAdEntNetMask : SNMP MIB-2 ipAddrTable.ipAddrEntry.ipAdEntNetMask
---#                       Value is interface's subnet mask
 --#  snmpPhysAddr       : SNMP MIB-2 ifTable.ifEntry.ifPhysAddress
 --#                       Value is interface's MAC Address
 --#  snmpIfIndex        : SNMP MIB-2 ifTable.ifEntry.ifIndex
@@ -546,15 +544,12 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 --#
 --# NOTE:  Although not marked as "not null" the snmpIfIndex field
 --#        should never be null.  This table is considered to be uniquely
---#        keyed by nodeId and snmpIfIndex.  Eventually ipAddr and
---#        snmpIpAdEntNetMask will be removed and netmask added to
---#        the ipInterface table.
+--#        keyed by nodeId and snmpIfIndex.
 --########################################################################
 
 create table snmpInterface (
     id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
-	snmpIpAdEntNetMask	varchar(45),
 	snmpPhysAddr		varchar(32),
 	snmpIfIndex		integer not null,
 	snmpIfDescr		varchar(256),
@@ -585,6 +580,7 @@ create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
 --#
 --#  nodeID          : Unique identifier of the node that "owns" this interface
 --#  ipAddr          : IP Address associated with this interface
+--#  netmask         : Netmask associated with this interface
 --#  ifIndex	     : SNMP index of interface, used to uniquely identify
 --# 		           unnumbered interfaces, or null if there is no mapping to
 --#                    snmpInterface table.  Can be -100 if old code added an
@@ -622,10 +618,11 @@ create table ipInterface (
     id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
 	ipAddr			text not null,
+	netmask			varchar(45),
 	ipHostname		varchar(256),
 	isManaged		char(1),
 	ipStatus		integer,
-    ipLastCapsdPoll timestamp with time zone,
+	ipLastCapsdPoll timestamp with time zone,
 	isSnmpPrimary   char(1),
 	snmpInterfaceId	integer,
 
