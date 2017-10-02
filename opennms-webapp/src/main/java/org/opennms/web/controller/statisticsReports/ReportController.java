@@ -57,10 +57,14 @@ public class ReportController extends AbstractCommandController implements Initi
         StatisticsReportCommand command = (StatisticsReportCommand) cmd;
 
         try {
-        	StatisticsReportModel report = m_statisticsReportService.getReport(command, errors);
-            return new ModelAndView(getSuccessView(), "model", report);
+            StatisticsReportModel report = m_statisticsReportService.getReport(command, errors);
+            if (report == null) {
+                throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString());
+            } else {
+                return new ModelAndView(getSuccessView(), "model", report);
+            }
         } catch (org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException horfe) {
-        	throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString());
+            throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString());
         }
     }
 

@@ -103,9 +103,12 @@ public abstract class AbstractFilterCallback implements FilterCallback {
         if (parameters.getDisplay() != null) {
             buffer.append("&amp;display=").append(parameters.getDisplay());
         }
-        buffer.append("&amp;").append(toFilterString(parameters.getFilters()));
+        String filters = toFilterString(parameters.getFilters());
+        if (filters != null && filters.length() > 0) {
+            buffer.append("&amp;").append(filters);
+        }
         if (favorite != null) {
-            buffer.append("&favoriteId=" + favorite.getId());
+            buffer.append("&amp;favoriteId=" + favorite.getId());
         }
         return (buffer.toString());
     }
