@@ -1307,8 +1307,8 @@
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>
-    <httpcoreVersion>4.3.3</httpcoreVersion>
-    <httpclientVersion>4.3.6</httpclientVersion>
+    <httpcoreVersion>4.4.4</httpcoreVersion>
+    <httpclientVersion>4.5.2</httpclientVersion>
     <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jackson2Version>2.6.6</jackson2Version>
