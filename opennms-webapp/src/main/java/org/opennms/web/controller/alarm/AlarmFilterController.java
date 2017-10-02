@@ -158,7 +158,16 @@ public class AlarmFilterController extends MultiActionController implements Init
     }
 
     private String getDisplay(HttpServletRequest request) {
-        return request.getParameter("display");
+        // handle the display parameter
+        String displayString = request.getParameter("display");
+        String display = null;
+        if (displayString != null) {
+            String temp = WebSecurityUtils.sanitizeString(displayString);
+            if (temp != null) {
+                display = temp;
+            }
+        }
+        return display;
     }
 
     private int getLimit(HttpServletRequest request) {

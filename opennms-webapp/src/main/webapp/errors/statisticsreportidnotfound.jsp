@@ -60,7 +60,7 @@
 <h1>Statistics Report ID Not Found</h1>
     
 <p>
-  A statistics report could not be found for the identifier <%=e.getBadID()%>.
+  A statistics report could not be found for the identifier <c:out value="<%=e.getBadID()%>"/>.
 </p>
 
 <p>
