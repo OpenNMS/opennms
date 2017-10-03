@@ -520,8 +520,10 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
         ub.setPath(substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getPath(), "getURL"));
 
         final String query = substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getQuery().orElse(null), "getQuery");
-        final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
-        ub.setParameters(params);
+        if (query != null) {
+            final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
+            ub.setParameters(params);
+        }
 
         ub.setFragment(substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getFragment().orElse(null), "getFragment"));
         return ub.build();
