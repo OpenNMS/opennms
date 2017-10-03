@@ -66,7 +66,7 @@ public class ReportController {
                 return new ModelAndView("statisticsReports/report", "model", report);
             }
         } catch (org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException horfe) {
-            throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString(), e);
+            throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString(), horfe);
         }
     }
 }
