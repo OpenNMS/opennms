@@ -61,12 +61,12 @@ public class ReportController {
         try {
             StatisticsReportModel report = m_statisticsReportService.getReport(command, errors);
             if (report == null) {
-                throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString());
+                throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString(), null);
             } else {
                 return new ModelAndView("statisticsReports/report", "model", report);
             }
         } catch (org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException horfe) {
-            throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString());
+            throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString(), horfe);
         }
     }
 }
