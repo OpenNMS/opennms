@@ -75,10 +75,14 @@ public class TrapListener implements TrapNotificationListener {
                     .whenComplete((t,ex) -> {
                         if (ex != null) {
                             LOG.error("An error occured while forwarding trap {} for further processing. The trap will be dropped.", trapInformation, ex);
+                            // This trap will never reach the sink consumer
+                            TrapSinkConsumer.trapdInstrumentation.incErrorCount();
                         }
                     });
         } catch (IllegalArgumentException ex) {
-            LOG.error("Received trap {} is not valid and cannot be processed.", trapInformation, ex);
+            LOG.error("Received trap {} is not valid and cannot be processed. The trap will be dropped.", trapInformation, ex);
+            // This trap will never reach the sink consumer
+            TrapSinkConsumer.trapdInstrumentation.incErrorCount();
         }
     }
 
