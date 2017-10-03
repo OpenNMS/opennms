@@ -1309,7 +1309,7 @@
     <hikaricpVersion>2.5.1</hikaricpVersion>
     <httpcoreVersion>4.4.4</httpcoreVersion>
     <httpclientVersion>4.5.2</httpclientVersion>
-    <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
+    <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jackson2Version>2.6.6</jackson2Version>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
