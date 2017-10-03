@@ -105,6 +105,10 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
+<c:url var="alarmListLink" value="alarm/list">
+  <c:param name="display" value="<%=parms.getDisplay()%>"/>
+</c:url>
+
   <script type="text/javascript">
     function checkAllCheckboxes() {
        if( document.alarm_action_form.alarm.length ) {  
@@ -199,7 +203,7 @@
     }
 
     function changeFavorite(favoriteId, filter) {
-        window.location.href = "<%=req.getContextPath()%>/alarm/list?display=<%=parms.getDisplay()%>&favoriteId=" + favoriteId + '&' + filter;
+        window.location.href = "<%=req.getContextPath()%>/${alarmListLink}&favoriteId=" + favoriteId + '&' + filter;
     }
 
   </script>
