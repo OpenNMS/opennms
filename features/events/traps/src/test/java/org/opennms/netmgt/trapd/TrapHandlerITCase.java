@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Iterator;
@@ -401,12 +402,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testNodeGainedModifiesIpMgr() throws Exception {
-        final OnmsNode node = new OnmsNode(m_dbPopulator.getMonitoringLocationDao().getDefaultLocation(), "test123");
-        final OnmsIpInterface iface = new OnmsIpInterface();
-        iface.setIpAddress(m_ip);
-        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
-        node.addIpInterface(iface);
-        int nodeId = m_dbPopulator.getNodeDao().save(node);
+        long nodeId = 1;
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
