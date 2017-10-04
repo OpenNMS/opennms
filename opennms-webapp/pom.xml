@@ -729,7 +729,7 @@
       <artifactId>opencsv</artifactId>
     </dependency>
     <dependency>
-      <groupId>ognl</groupId>
+      <groupId>opensymphony</groupId>
       <artifactId>ognl</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
