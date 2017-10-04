@@ -59,7 +59,7 @@
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
-    	<groupId>net.sf.opencsv</groupId>
+    	<groupId>com.opencsv</groupId>
     	<artifactId>opencsv</artifactId>
     </dependency>
   </dependencies>
