@@ -492,8 +492,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             ub.setHost(host);
             ub.setPort(getPort());
             ub.setPath(getPath(seqProps, svcProps));
-            final List<NameValuePair> params = URLEncodedUtils.parse(getQuery(seqProps, svcProps), StandardCharsets.UTF_8);
-            if (!params.isEmpty()) {
+            final String query = getQuery(seqProps, svcProps);
+            if (query != null) {
+                final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
                 ub.setParameters(params);
             }
             ub.setFragment(getFragment(seqProps, svcProps));
