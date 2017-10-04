@@ -30,6 +30,7 @@
       </activation>
       <modules>
         <module>centric-troubleticketer</module>
+        <module>config-normalizer</module>
         <module>mib2events</module>
         <module>quickbase-troubleticketer</module>
         <module>jrobin-spike-hunter</module>
