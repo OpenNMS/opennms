@@ -1,181 +1,162 @@
-<!--
-Quintum Tenor, Call Relay & Gatekeeper Trap Events for OpenNMS
-Revised 09-01-2004
-mlwilson@acegroup.cc
-mikew@isphone.net
--->
-
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of Quintum Traps -->
-<!-- Start of Quintum MIB: Critical Alert -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- <varbind>
-  <vbnumber>2</vbnumber> 
-  <vbvalue>.1.3.6.1.4.1.6618.2.0.1</vbvalue> 
-  </varbind>
-</mask>
- <uei>uei.opennms.org/vendor/Quintum/traps/QuintumCriticalAlarm</uei>
- <event-label>Quintum - Critical Alarm</event-label>
- <descr>&lt;p&gt;Quintum IP Address - %parm[#3]%&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- %parm[all]%&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Critical Alarm - %parm[#3]%&lt;/p&gt;</logmsg>
- <severity>Critical</severity>
-</event>
-<!-- Start of Quintum MIB: Major Alert -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- <varbind>
-  <vbnumber>2</vbnumber> 
-  <vbvalue>.1.3.6.1.4.1.6618.2.0.2</vbvalue> 
-  </varbind>
-</mask>
- <uei>uei.opennms.org/vendor/Quintum/traps/QuintumMajorAlarm</uei>
- <event-label>Quintum - Major Alarm</event-label>
- <descr>&lt;p&gt;Quintum IP Address - %parm[#3]%&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- %parm[all]%&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Major Alarm - %parm[#3]%&lt;/p&gt;</logmsg>
- <severity>Major</severity>
-</event>
-<!-- Start of Quintum MIB: Minor Alert -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- <varbind>
-  <vbnumber>2</vbnumber> 
-  <vbvalue>.1.3.6.1.4.1.6618.2.0.3</vbvalue> 
-  </varbind>
-</mask>
- <uei>uei.opennms.org/vendor/Quintum/traps/QuintumMinorAlarm</uei>
- <event-label>Quintum - Minor Alarm</event-label>
- <descr>&lt;p&gt;Quintum IP Address - %parm[#3]%&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- %parm[all]%&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Minor Alarm - %parm[#3]%&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
-</event>
-<!-- Start of Quintum MIB: Warning -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- <varbind>
-  <vbnumber>2</vbnumber> 
-  <vbvalue>.1.3.6.1.4.1.6618.2.0.4</vbvalue> 
-  </varbind>
-</mask>
- <uei>uei.opennms.org/vendor/Quintum/traps/QuintumWarningStatus</uei>
- <event-label>Quintum - Warning</event-label>
- <descr>&lt;p&gt;Quintum IP Address - %parm[#3]%&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- %parm[all]%&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Warning - %parm[#3]%&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-<!-- Start of Quintum MIB: Normal Status2 -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- <varbind>
-  <vbnumber>2</vbnumber> 
-  <vbvalue>.1.3.6.1.4.1.6618.2.0.0</vbvalue> 
-  </varbind>
-</mask>
- <uei>uei.opennms.org/vendor/Quintum/traps/QuintumNormalStatus</uei>
- <event-label>Quintum - Status Normal</event-label>
- <descr>&lt;p&gt;Quintum IP Address - %parm[#3]%&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- %parm[all]%&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Status Normal - %parm[#3]%&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
-</event>
-<!-- End of Quintum Traps -->
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>.1.3.6.1.4.1.6618.2.0.1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/Quintum/traps/QuintumCriticalAlarm</uei>
+      <event-label>Quintum - Critical Alarm</event-label>
+      <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ %parm[all]%&lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Quintum Event - Critical Alarm - %parm[#3]%&lt;/p></logmsg>
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>.1.3.6.1.4.1.6618.2.0.2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/Quintum/traps/QuintumMajorAlarm</uei>
+      <event-label>Quintum - Major Alarm</event-label>
+      <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ %parm[all]%&lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Quintum Event - Major Alarm - %parm[#3]%&lt;/p></logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>.1.3.6.1.4.1.6618.2.0.3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/Quintum/traps/QuintumMinorAlarm</uei>
+      <event-label>Quintum - Minor Alarm</event-label>
+      <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ %parm[all]%&lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Quintum Event - Minor Alarm - %parm[#3]%&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>.1.3.6.1.4.1.6618.2.0.4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/Quintum/traps/QuintumWarningStatus</uei>
+      <event-label>Quintum - Warning</event-label>
+      <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ %parm[all]%&lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Quintum Event - Warning - %parm[#3]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6618.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>.1.3.6.1.4.1.6618.2.0.0</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/Quintum/traps/QuintumNormalStatus</uei>
+      <event-label>Quintum - Status Normal</event-label>
+      <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ %parm[all]%&lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/b>&lt;/td>&lt;td>
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Quintum Event - Status Normal - %parm[#3]%&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
 </events>

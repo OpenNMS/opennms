@@ -1,1052 +1,978 @@
-<!-- Start of auto generated data from MIB: POLYCOM-VIDEO-MIB -->
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Viewstation Traps -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/loginOK</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: loginOK</event-label>
-	<descr>
-&lt;p&gt;Sent when an administrator logs in via embedded UI, ftp, telnet or web.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/loginOK</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: loginOK</event-label>
+      <descr>&lt;p>Sent when an administrator logs in via embedded UI, ftp, telnet or web.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSAuthLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	polycomVSAuthLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSAuthClientAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSAuthClientAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			loginOK trap received 
 			polycomVSAuthLocation=%parm[#1]% 
-			polycomVSAuthClientAddress=%parm[#2]%&lt;/p&gt;
+			polycomVSAuthClientAddress=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/loginFail</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: loginFail</event-label>
-	<descr>
-&lt;p&gt;Sent when an attempt to log in as an administrator fails via embedded UI, ftp, telnet or web.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/loginFail</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: loginFail</event-label>
+      <descr>&lt;p>Sent when an attempt to log in as an administrator fails via embedded UI, ftp, telnet or web.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSAuthLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	polycomVSAuthLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSAuthClientAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSAuthClientAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			loginFail trap received 
 			polycomVSAuthLocation=%parm[#1]% 
-			polycomVSAuthClientAddress=%parm[#2]%&lt;/p&gt;
+			polycomVSAuthClientAddress=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/lowBattery</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: lowBattery</event-label>
-	<descr>
-&lt;p&gt;Sent when the remote has a low battery.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			lowBattery trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/lowBattery</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: lowBattery</event-label>
+      <descr>&lt;p>Sent when the remote has a low battery.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			lowBattery trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/callUp</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: callUp</event-label>
-	<descr>
-&lt;p&gt;When a call is successfully connected, this notifies the SNMP manager of the far site number.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/callUp</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: callUp</event-label>
+      <descr>&lt;p>When a call is successfully connected, this notifies the SNMP manager of the far site number.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSPhoneNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSPhoneNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			callUp trap received 
-			polycomVSPhoneNumber=%parm[#1]%&lt;/p&gt;
+			polycomVSPhoneNumber=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/callDown</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: callDown</event-label>
-	<descr>
-&lt;p&gt;When a call is disconnected with normal call clearing, this notifies the SNMP manager of the far site number.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/callDown</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: callDown</event-label>
+      <descr>&lt;p>When a call is disconnected with normal call clearing, this notifies the SNMP manager of the far site number.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSPhoneNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSPhoneNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			callDown trap received 
-			polycomVSPhoneNumber=%parm[#1]%&lt;/p&gt;
+			polycomVSPhoneNumber=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/callFail</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: callFail</event-label>
-	<descr>
-&lt;p&gt;When a call is disconnected with a cause code other than normal, this notifies the SNMP manager
-of the reason.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/callFail</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: callFail</event-label>
+      <descr>&lt;p>When a call is disconnected with a cause code other than normal, this notifies the SNMP manager
+of the reason.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	polycomVSReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSPhoneNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSPhoneNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			callFail trap received 
 			polycomVSReason=%parm[#1]% 
-			polycomVSPhoneNumber=%parm[#2]%&lt;/p&gt;
+			polycomVSPhoneNumber=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/userAssist</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: userAssist</event-label>
-	<descr>
-&lt;p&gt;Sent when a user sends a help request to GMS.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/userAssist</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: userAssist</event-label>
+      <descr>&lt;p>Sent when a user sends a help request to GMS.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSPlead&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSPlead&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			userAssist trap received 
-			polycomVSPlead=%parm[#1]%&lt;/p&gt;
+			polycomVSPlead=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/visualConcertUp</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: visualConcertUp</event-label>
-	<descr>
-&lt;p&gt;Sent when a visual concert pod is connected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			visualConcertUp trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/visualConcertUp</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: visualConcertUp</event-label>
+      <descr>&lt;p>Sent when a visual concert pod is connected.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			visualConcertUp trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/visualConcertOff</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: visualConcertOff</event-label>
-	<descr>
-&lt;p&gt;Sent when a visual concert pod is disconnected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			visualConcertOff trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/visualConcertOff</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: visualConcertOff</event-label>
+      <descr>&lt;p>Sent when a visual concert pod is disconnected.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			visualConcertOff trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/micChange</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: micChange</event-label>
-	<descr>
-&lt;p&gt;Sent when a mic pod or VTX is connected or disconnected and includes the total mic count.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/micChange</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: micChange</event-label>
+      <descr>&lt;p>Sent when a mic pod or VTX is connected or disconnected and includes the total mic count.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSMicData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSMicData&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			micChange trap received 
-			polycomVSMicData=%parm[#1]%&lt;/p&gt;
+			polycomVSMicData=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>11</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/autoAnswerChange</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: autoAnswerChange</event-label>
-	<descr>
-&lt;p&gt;Sent when the auto answer setting is changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/autoAnswerChange</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: autoAnswerChange</event-label>
+      <descr>&lt;p>Sent when the auto answer setting is changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSAutoAnswerSetting&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSAutoAnswerSetting&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			autoAnswerChange trap received 
-			polycomVSAutoAnswerSetting=%parm[#1]%&lt;/p&gt;
+			polycomVSAutoAnswerSetting=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/timeServerUp</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: timeServerUp</event-label>
-	<descr>
-&lt;p&gt;Sent when the time server successfully connects.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/timeServerUp</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: timeServerUp</event-label>
+      <descr>&lt;p>Sent when the time server successfully connects.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSTimeServerAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSTimeServerAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			timeServerUp trap received 
-			polycomVSTimeServerAddress=%parm[#1]%&lt;/p&gt;
+			polycomVSTimeServerAddress=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>13</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/timeServerDown</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: timeServerDown</event-label>
-	<descr>
-&lt;p&gt;Sent when the time server is enabled but does not connect correctly.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/timeServerDown</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: timeServerDown</event-label>
+      <descr>&lt;p>Sent when the time server is enabled but does not connect correctly.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSTimeServerAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSTimeServerAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			timeServerDown trap received 
-			polycomVSTimeServerAddress=%parm[#1]%&lt;/p&gt;
+			polycomVSTimeServerAddress=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/timeServerOn</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: timeServerOn</event-label>
-	<descr>
-&lt;p&gt;Sent when the time server is enabled.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/timeServerOn</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: timeServerOn</event-label>
+      <descr>&lt;p>Sent when the time server is enabled.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSTimeServerSetting&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSTimeServerSetting&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			timeServerOn trap received 
-			polycomVSTimeServerSetting=%parm[#1]%&lt;/p&gt;
+			polycomVSTimeServerSetting=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>15</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/timeServerOff</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: timeServerOff</event-label>
-	<descr>
-&lt;p&gt;Sent when the time server is disabled.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			timeServerOff trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/timeServerOff</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: timeServerOff</event-label>
+      <descr>&lt;p>Sent when the time server is disabled.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			timeServerOff trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>16</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/gdsUp</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: gdsUp</event-label>
-	<descr>
-&lt;p&gt;Sent when a global directory server successfully connects.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/gdsUp</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: gdsUp</event-label>
+      <descr>&lt;p>Sent when a global directory server successfully connects.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSGDSAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSGDSAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			gdsUp trap received 
-			polycomVSGDSAddress=%parm[#1]%&lt;/p&gt;
+			polycomVSGDSAddress=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>17</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/gdsDown</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: gdsDown</event-label>
-	<descr>
-&lt;p&gt;Sent when a global directory server is enabled, but not connected correctly.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/gdsDown</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: gdsDown</event-label>
+      <descr>&lt;p>Sent when a global directory server is enabled, but not connected correctly.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSGDSAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSGDSAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			gdsDown trap received 
-			polycomVSGDSAddress=%parm[#1]%&lt;/p&gt;
+			polycomVSGDSAddress=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>18</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/gdsOff</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: gdsOff</event-label>
-	<descr>
-&lt;p&gt;Sent when a global directory server is disabled.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/gdsOff</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: gdsOff</event-label>
+      <descr>&lt;p>Sent when a global directory server is disabled.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSGDSAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSGDSAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			gdsOff trap received 
-			polycomVSGDSAddress=%parm[#1]%&lt;/p&gt;
+			polycomVSGDSAddress=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>19</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/gatekeeperReg</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: gatekeeperReg</event-label>
-	<descr>
-&lt;p&gt;Sent when a gatekeeper is registered successfully.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/gatekeeperReg</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: gatekeeperReg</event-label>
+      <descr>&lt;p>Sent when a gatekeeper is registered successfully.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSGatekeeperAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSGatekeeperAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			gatekeeperReg trap received 
-			polycomVSGatekeeperAddress=%parm[#1]%&lt;/p&gt;
+			polycomVSGatekeeperAddress=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>20</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/gatekeeperDown</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: gatekeeperDown</event-label>
-	<descr>
-&lt;p&gt;Sent when a gatekeeper is specified, but not registered successfully.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/gatekeeperDown</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: gatekeeperDown</event-label>
+      <descr>&lt;p>Sent when a gatekeeper is specified, but not registered successfully.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSGatekeeperAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSGatekeeperAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			gatekeeperDown trap received 
-			polycomVSGatekeeperAddress=%parm[#1]%&lt;/p&gt;
+			polycomVSGatekeeperAddress=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>21</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/gatekeeperOff</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: gatekeeperOff</event-label>
-	<descr>
-&lt;p&gt;Sent when a gatekeeper is disabled.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			gatekeeperOff trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/gatekeeperOff</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: gatekeeperOff</event-label>
+      <descr>&lt;p>Sent when a gatekeeper is disabled.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			gatekeeperOff trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>22</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/ipAddressChange</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: ipAddressChange</event-label>
-	<descr>
-&lt;p&gt;Sent when the system IP address has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/ipAddressChange</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: ipAddressChange</event-label>
+      <descr>&lt;p>Sent when the system IP address has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSPreviousIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	polycomVSPreviousIPAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSCurrentIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSCurrentIPAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			ipAddressChange trap received 
 			polycomVSPreviousIPAddress=%parm[#1]% 
-			polycomVSCurrentIPAddress=%parm[#2]%&lt;/p&gt;
+			polycomVSCurrentIPAddress=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>23</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/interfaceTypeChange</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: interfaceTypeChange</event-label>
-	<descr>
-&lt;p&gt;Sent when the system network interface card type has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/interfaceTypeChange</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: interfaceTypeChange</event-label>
+      <descr>&lt;p>Sent when the system network interface card type has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSPreviousNicType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	polycomVSPreviousNicType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSCurrentNicType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSCurrentNicType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			interfaceTypeChange trap received 
 			polycomVSPreviousNicType=%parm[#1]% 
-			polycomVSCurrentNicType=%parm[#2]%&lt;/p&gt;
+			polycomVSCurrentNicType=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>24</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/lineEnabled</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: lineEnabled</event-label>
-	<descr>
-&lt;p&gt;Sent when a V.35 or ISDN line has been enabled.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/lineEnabled</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: lineEnabled</event-label>
+      <descr>&lt;p>Sent when a V.35 or ISDN line has been enabled.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSNicLineNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSNicLineNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lineEnabled trap received 
-			polycomVSNicLineNumber=%parm[#1]%&lt;/p&gt;
+			polycomVSNicLineNumber=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>25</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/lineDisabled</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: lineDisabled</event-label>
-	<descr>
-&lt;p&gt;Sent when a V.35 or ISDN line has been disabled.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/lineDisabled</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: lineDisabled</event-label>
+      <descr>&lt;p>Sent when a V.35 or ISDN line has been disabled.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSNicLineNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSNicLineNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lineDisabled trap received 
-			polycomVSNicLineNumber=%parm[#1]%&lt;/p&gt;
+			polycomVSNicLineNumber=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>26</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/lineUp</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: lineUp</event-label>
-	<descr>
-&lt;p&gt;Sent when a V.35 or ISDN line has been enabled and becomes available for placing a call.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>26</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/lineUp</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: lineUp</event-label>
+      <descr>&lt;p>Sent when a V.35 or ISDN line has been enabled and becomes available for placing a call.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSNicLineNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSNicLineNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lineUp trap received 
-			polycomVSNicLineNumber=%parm[#1]%&lt;/p&gt;
+			polycomVSNicLineNumber=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>27</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/lineDown</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: lineDown</event-label>
-	<descr>
-&lt;p&gt;Sent when a V.35 or ISDN line has been enabled, but is not working correctly.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>27</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/lineDown</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: lineDown</event-label>
+      <descr>&lt;p>Sent when a V.35 or ISDN line has been enabled, but is not working correctly.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSNicLineNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSNicLineNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lineDown trap received 
-			polycomVSNicLineNumber=%parm[#1]%&lt;/p&gt;
+			polycomVSNicLineNumber=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>28</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/v35PortsEnabled</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: v35PortsEnabled</event-label>
-	<descr>
-&lt;p&gt;Sent when the V.35 enabled ports setting has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>28</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/v35PortsEnabled</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: v35PortsEnabled</event-label>
+      <descr>&lt;p>Sent when the V.35 enabled ports setting has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSV35PortsEnabled&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSV35PortsEnabled&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			v35PortsEnabled trap received 
-			polycomVSV35PortsEnabled=%parm[#1]%&lt;/p&gt;
+			polycomVSV35PortsEnabled=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>29</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/lineCountChange</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: lineCountChange</event-label>
-	<descr>
-&lt;p&gt;Sent when the total of available V.35 or ISDN lines has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>29</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/lineCountChange</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: lineCountChange</event-label>
+      <descr>&lt;p>Sent when the total of available V.35 or ISDN lines has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSPreviousNicLineCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	polycomVSPreviousNicLineCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSCurrentNicLineCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSCurrentNicLineCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lineCountChange trap received 
 			polycomVSPreviousNicLineCount=%parm[#1]% 
-			polycomVSCurrentNicLineCount=%parm[#2]%&lt;/p&gt;
+			polycomVSCurrentNicLineCount=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>30</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/mainCameraUp</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: mainCameraUp</event-label>
-	<descr>
-&lt;p&gt;Sent when the main camera is working correctly.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			mainCameraUp trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>30</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/mainCameraUp</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: mainCameraUp</event-label>
+      <descr>&lt;p>Sent when the main camera is working correctly.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			mainCameraUp trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>31</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/mainCameraDown</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: mainCameraDown</event-label>
-	<descr>
-&lt;p&gt;Sent when the main camera is not working correctly.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			mainCameraDown trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>31</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/mainCameraDown</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: mainCameraDown</event-label>
+      <descr>&lt;p>Sent when the main camera is not working correctly.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			mainCameraDown trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>32</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/upnpChange</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: upnpChange</event-label>
-	<descr>
-&lt;p&gt;Sent when the state of the UPnP device changes.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>32</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/upnpChange</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: upnpChange</event-label>
+      <descr>&lt;p>Sent when the state of the UPnP device changes.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSUPnPStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSUPnPStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			upnpChange trap received 
-			polycomVSUPnPStatus=%parm[#1]%&lt;/p&gt;
+			polycomVSUPnPStatus=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>33</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/percentPacketLossExcessive</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: percentPacketLossExcessive</event-label>
-	<descr>
-&lt;p&gt;Sent when the combined tx/rx percentage of packet loss exceeds 1 percent based on 1 minute samples.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>33</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/percentPacketLossExcessive</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: percentPacketLossExcessive</event-label>
+      <descr>&lt;p>Sent when the combined tx/rx percentage of packet loss exceeds 1 percent based on 1 minute samples.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSPercentPacketLoss&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSPercentPacketLoss&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			percentPacketLossExcessive trap received 
-			polycomVSPercentPacketLoss=%parm[#1]%&lt;/p&gt;
+			polycomVSPercentPacketLoss=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>34</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/jitterExcessive</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: jitterExcessive</event-label>
-	<descr>
-&lt;p&gt;Sent when the combined tx/rx average jitter exceeds 35 ms based on 1 minute samples.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>34</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/jitterExcessive</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: jitterExcessive</event-label>
+      <descr>&lt;p>Sent when the combined tx/rx average jitter exceeds 35 ms based on 1 minute samples.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSJitter&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSJitter&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			jitterExcessive trap received 
-			polycomVSJitter=%parm[#1]%&lt;/p&gt;
+			polycomVSJitter=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>35</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/polycom/traps/latencyExcessive</uei>
-	<event-label>POLYCOM-VIDEO-MIB defined trap event: latencyExcessive</event-label>
-	<descr>
-&lt;p&gt;Sent when the combined tx/rx average latency exceeds 150 ms based on 1 minute samples.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2684.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>35</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/polycom/traps/latencyExcessive</uei>
+      <event-label>POLYCOM-VIDEO-MIB defined trap event: latencyExcessive</event-label>
+      <descr>&lt;p>Sent when the combined tx/rx average latency exceeds 150 ms based on 1 minute samples.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	polycomVSLatency&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	polycomVSLatency&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			latencyExcessive trap received 
-			polycomVSLatency=%parm[#1]%&lt;/p&gt;
+			polycomVSLatency=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End Viewstation Traps-->
-<!-- End of auto generated data from MIB: POLYCOM-VIDEO-MIB -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

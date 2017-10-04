@@ -1,124 +1,116 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: CV-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.231.2.43.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>22</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/primecluster/traps/cvNodeStateChanged</uei>
-	<event-label>CV-MIB defined trap event: cvNodeStateChanged</event-label>
-	<descr>
-&lt;p&gt;The state of a node in the cluster has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.231.2.43.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/primecluster/traps/cvNodeStateChanged</uei>
+      <event-label>CV-MIB defined trap event: cvNodeStateChanged</event-label>
+      <descr>&lt;p>The state of a node in the cluster has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cvNodeNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cvNodeNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cvNodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cvNodeName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cvNodeState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cvNodeState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cvNodeStateChanged trap received 
 			cvNodeNumber=%parm[#1]% 
 			cvNodeName=%parm[#2]% 
-			cvNodeState=%parm[#3]%&lt;/p&gt;
+			cvNodeState=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.231.2.43.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>23</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/primecluster/traps/cvServiceStateChanged</uei>
-	<event-label>CV-MIB defined trap event: cvServiceStateChanged</event-label>
-	<descr>
-&lt;p&gt;The state of a service in the cluster has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.231.2.43.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/primecluster/traps/cvServiceStateChanged</uei>
+      <event-label>CV-MIB defined trap event: cvServiceStateChanged</event-label>
+      <descr>&lt;p>The state of a service in the cluster has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cvServiceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cvServiceNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cvServiceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cvServiceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cvServiceState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cvServiceState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cvServiceStateChanged trap received 
 			cvServiceNumber=%parm[#1]% 
 			cvServiceName=%parm[#2]% 
-			cvServiceState=%parm[#3]%&lt;/p&gt;
+			cvServiceState=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.231.2.43.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>24</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/primecluster/traps/cvProductStateChanged</uei>
-	<event-label>CV-MIB defined trap event: cvProductStateChanged</event-label>
-	<descr>
-&lt;p&gt;The state of a product in the cluster has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.231.2.43.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/primecluster/traps/cvProductStateChanged</uei>
+      <event-label>CV-MIB defined trap event: cvProductStateChanged</event-label>
+      <descr>&lt;p>The state of a product in the cluster has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cvProductNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cvProductNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cvProductName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cvProductName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cvProductState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cvProductState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cvProductStateChanged trap received 
 			cvProductNumber=%parm[#1]% 
 			cvProductName=%parm[#2]% 
-			cvProductState=%parm[#3]%&lt;/p&gt;
+			cvProductState=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: CV-MIB -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

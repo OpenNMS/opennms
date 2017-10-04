@@ -1,118 +1,112 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!--  event definitions for traps from IEEE802.11 MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.2.840.10036.1.6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IEEE802dot11/dot11Disassociate</uei>
-	<event-label>IEEE802dot11-MIB defined trap event: dot11Disassociate</event-label>
-	<descr>
-&lt;p&gt;The disassociate notification shall be sent when the STA
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.2.840.10036.1.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IEEE802dot11/dot11Disassociate</uei>
+      <event-label>IEEE802dot11-MIB defined trap event: dot11Disassociate</event-label>
+      <descr>&lt;p>The disassociate notification shall be sent when the STA
 sends a Disassociation frame. The value of the notification
 shall include the MAC address of the MAC to which the Disassociation
 frame was sent and the reason for the disassociation.
 
     ifIndex - Each 802.11 interface is represented by an
     ifEntry.  Interface tables in this MIB module are indexed
-    by ifIndex.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+    by ifIndex.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	dot11DisassociateReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	dot11DisassociateReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	dot11DisassociateStation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	dot11DisassociateStation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			IEEE 802.11 Event: dot11Disassociate trap received 
 			ifIndex=%parm[#1]% 
 			dot11DisassociateReason=%parm[#2]% 
-			dot11DisassociateStation=%parm[#3]%&lt;/p&gt;
+			dot11DisassociateStation=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.2.840.10036.1.6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IEEE802dot11/dot11Deauthenticate</uei>
-	<event-label>IEEE802dot11-MIB defined trap event: dot11Deauthenticate</event-label>
-	<descr>
-&lt;p&gt;The deauthenticate notification shall be sent when the STA
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.2.840.10036.1.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IEEE802dot11/dot11Deauthenticate</uei>
+      <event-label>IEEE802dot11-MIB defined trap event: dot11Deauthenticate</event-label>
+      <descr>&lt;p>The deauthenticate notification shall be sent when the STA
 sends a Deauthentication frame. The value of the notification
 shall include the MAC address of the MAC to which the Deauthentication
 frame was sent and the reason for the deauthentication.
 
     ifIndex - Each 802.11 interface is represented by an
     ifEntry.  Interface tables in this MIB module are indexed
-    by ifIndex.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+    by ifIndex.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	dot11DeauthenticateReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	dot11DeauthenticateReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	dot11DeauthenticateStation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	dot11DeauthenticateStation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			IEEE 802.11 Event: dot11Deauthenticate trap received 
 			ifIndex=%parm[#1]% 
 			dot11DeauthenticateReason=%parm[#2]% 
-			dot11DeauthenticateStation=%parm[#3]%&lt;/p&gt;
+			dot11DeauthenticateStation=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.2.840.10036.1.6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IEEE802dot11/dot11AuthenticateFail</uei>
-	<event-label>IEEE802dot11-MIB defined trap event: dot11AuthenticateFail</event-label>
-	<descr>
-&lt;p&gt;The authenticate failure notification shall be sent when the STA
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.2.840.10036.1.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IEEE802dot11/dot11AuthenticateFail</uei>
+      <event-label>IEEE802dot11-MIB defined trap event: dot11AuthenticateFail</event-label>
+      <descr>&lt;p>The authenticate failure notification shall be sent when the STA
 sends an Authentication frame with a status code other than 
 successful. The value of the notification
 shall include the MAC address of the MAC to which the Authentication
@@ -120,26 +114,25 @@ frame was sent and the reason for the authentication failure.
 
     ifIndex - Each 802.11 interface is represented by an
     ifEntry.  Interface tables in this MIB module are indexed
-    by ifIndex.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+    by ifIndex.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	dot11AuthenticateFailStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	dot11AuthenticateFailStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	dot11AuthenticateFailStation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	dot11AuthenticateFailStation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			IEEE 802.11 Event: dot11AuthenticateFail trap received 
 			ifIndex=%parm[#1]% 
 			dot11AuthenticateFailStatus=%parm[#2]% 
-			dot11AuthenticateFailStation=%parm[#3]%&lt;/p&gt;
+			dot11AuthenticateFailStation=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
+      <severity>Indeterminate</severity>
+   </event>
 </events>
