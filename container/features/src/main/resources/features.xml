@@ -212,8 +212,8 @@
       <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
 
-    <feature name="commons-net" description="Apache :: commons-net" version="3.3">
-      <bundle>mvn:commons-net/commons-net/3.3</bundle>
+    <feature name="commons-net" description="Apache :: commons-net" version="3.6">
+      <bundle>mvn:commons-net/commons-net/3.6</bundle>
     </feature>
 
     <feature name="dnsjava" description="dnsjava" version="${dnsjavaVersion}">
