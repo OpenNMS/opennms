@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -1161,13 +1162,21 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append(linkDetail.getType());
-        if (sourceInterface != null && targetInterface != null
-                && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress()
-                && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText.append(" Layer3/Layer2");
-        } else {
-            tooltipText.append(" Layer2");
+        String layerText = " Layer 2";
+        if (sourceInterface != null && targetInterface != null) {
+            final List<OnmsIpInterface> sourceNonLoopback = sourceInterface.getIpInterfaces().stream().filter(iface -> {
+                return !iface.getNetMask().isLoopbackAddress();
+            }).collect(Collectors.toList());
+            final List<OnmsIpInterface> targetNonLoopback = targetInterface.getIpInterfaces().stream().filter(iface -> {
+                return !iface.getNetMask().isLoopbackAddress();
+            }).collect(Collectors.toList());
+
+            if (!sourceNonLoopback.isEmpty() && !targetNonLoopback.isEmpty()) {
+                // if both the source and target have non-loopback IP interfaces, assume this is a layer3 edge
+                layerText = " Layer3/Layer2";
+            }
         }
+        tooltipText.append(layerText);
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);

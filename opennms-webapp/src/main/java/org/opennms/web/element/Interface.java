@@ -28,8 +28,6 @@
 
 package org.opennms.web.element;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -60,8 +58,6 @@ public class Interface {
     char m_isManaged;
 
     String m_ipLastCapsdPoll;
-
-    String m_snmpIpAdEntNetMask;
 
     String m_snmpPhysAddr;
 
@@ -106,7 +102,6 @@ public class Interface {
         }
         
         m_snmpIfIndex = snmpIface.getIfIndex();
-        m_snmpIpAdEntNetMask = str(snmpIface.getNetMask());
         m_snmpPhysAddr = snmpIface.getPhysAddr();
         m_snmpIfDescr = snmpIface.getIfDescr();
         m_snmpIfName = snmpIface.getIfName();
@@ -252,15 +247,6 @@ public class Interface {
      */
     public int getSnmpIfIndex() {
         return m_snmpIfIndex;
-    }
-
-    /**
-     * <p>getSnmpIpAdEntNetMask</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getSnmpIpAdEntNetMask() {
-        return m_snmpIpAdEntNetMask;
     }
 
     /**

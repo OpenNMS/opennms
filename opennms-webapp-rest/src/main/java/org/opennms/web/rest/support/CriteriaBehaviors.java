@@ -226,6 +226,7 @@ public abstract class CriteriaBehaviors {
         IP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("ipLastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("ipAddress", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
+        IP_INTERFACE_BEHAVIORS.put("netMask", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
 
         MONITORED_SERVICE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         MONITORED_SERVICE_BEHAVIORS.put("lastFail", new CriteriaBehavior<Date>(DATE_CONVERTER));
@@ -322,6 +323,5 @@ public abstract class CriteriaBehaviors {
         SNMP_INTERFACE_BEHAVIORS.put("ifSpeed", new CriteriaBehavior<Long>(LONG_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastSnmpPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
-        SNMP_INTERFACE_BEHAVIORS.put("netMask", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
     }
 }

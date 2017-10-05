@@ -227,7 +227,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
 
             final InetAddress mask = getNetMask(inetAddr);
             if (mask != null) {
-                snmpIf.setNetMask(mask);
+                ipIf.setNetMask(mask);
             }
 
             snmpIf.setCollectionEnabled(true);

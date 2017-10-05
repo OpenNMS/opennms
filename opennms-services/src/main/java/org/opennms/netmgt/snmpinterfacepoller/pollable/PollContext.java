@@ -71,11 +71,12 @@ public interface PollContext {
      * @param uei a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param address a {@link java.lang.String} object.
+     * @param netMask a {@link java.lang.String} object.
      * @param date a {@link java.util.Date} object.
      * @return the event
      * @param snmpinterface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
-    public Event createEvent(String uei, int nodeId, String address, Date date, OnmsSnmpInterface snmpinterface);
+    public Event createEvent(String uei, int nodeId, String address, String netMask, Date date, OnmsSnmpInterface snmpinterface);
     
     /**
      * <p>get</p>
