@@ -1,4 +1,4 @@
-<bsf-northbounder-config>
+<drools-northbounder-config>
 
     <enabled>false</enabled>
     <nagles-delay>1000</nagles-delay>
@@ -24,4 +24,4 @@
 
     -->
 
-</bsf-northbounder-config>
+</drools-northbounder-config>
