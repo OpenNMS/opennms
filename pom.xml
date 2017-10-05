@@ -1301,15 +1301,15 @@
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <fopVersion>1.0</fopVersion>
     <freemarkerVersion>2.3.21</freemarkerVersion>
-    <groovyVersion>2.4.5</groovyVersion>
+    <groovyVersion>2.4.11</groovyVersion>
     <guavaVersion>18.0</guavaVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>
-    <httpcoreVersion>4.4.4</httpcoreVersion>
-    <httpclientVersion>4.5.2</httpclientVersion>
+    <httpcoreVersion>4.4.6</httpcoreVersion>
+    <httpclientVersion>4.5.3</httpclientVersion>
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jackson2Version>2.6.6</jackson2Version>
@@ -1322,9 +1322,9 @@
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jnaVersion>4.4.0</jnaVersion>
-    <jodaTimeVersion>2.1</jodaTimeVersion>
+    <jodaTimeVersion>2.3</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
-    <jsoupVersion>1.7.2</jsoupVersion>
+    <jsoupVersion>1.10.2</jsoupVersion>
     <karafVersion>4.0.8</karafVersion>
     <felixVersion>3.0.0</felixVersion>
     <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
@@ -2931,7 +2931,7 @@
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.8.2</version>
+        <version>1.10.1</version>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
@@ -3018,7 +3018,7 @@
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
-        <version>2.2.2</version>
+        <version>3.1</version>
       </dependency>
       <dependency>
         <groupId>com.mchange</groupId>
@@ -3202,7 +3202,7 @@
       <dependency>
         <groupId>org.dbunit</groupId>
         <artifactId>dbunit</artifactId>
-        <version>2.4.8</version>
+        <version>2.5.3</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3243,7 +3243,7 @@
       <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
-        <version>0.9.10</version>
+        <version>0.9.11</version>
       </dependency>
       <dependency>
         <groupId>com.googlecode.concurrent-locks</groupId>
@@ -3336,7 +3336,7 @@
       <dependency>
         <groupId>net.sf.json-lib</groupId>
         <artifactId>json-lib</artifactId>
-        <version>2.2.3</version>
+        <version>2.4</version>
         <classifier>jdk15</classifier>
       </dependency>
       <dependency>
@@ -3368,7 +3368,7 @@
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
-        <version>1.8.0</version>
+        <version>2.2.0</version>
         <type>pom</type>
       </dependency>
       <dependency>
@@ -3687,7 +3687,7 @@
       <dependency>
         <groupId>com.jcraft</groupId>
         <artifactId>jsch</artifactId>
-        <version>0.1.51</version>
+        <version>0.1.54</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
@@ -3729,7 +3729,7 @@
       <dependency>
         <groupId>org.skyscreamer</groupId>
         <artifactId>jsonassert</artifactId>
-        <version>1.2.3</version>
+        <version>1.5.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3753,7 +3753,7 @@
       <dependency>
         <groupId>net.sourceforge.jwebunit</groupId>
         <artifactId>jwebunit-htmlunit-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.3</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3948,7 +3948,7 @@
       <dependency>
         <groupId>org.tuckey</groupId>
         <artifactId>urlrewritefilter</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
@@ -3973,7 +3973,7 @@
       <dependency>
         <groupId>com.ximpleware</groupId>
         <artifactId>vtd-xml</artifactId>
-        <version>2.11</version>
+        <version>2.13</version>
       </dependency>
       <dependency>
         <groupId>wsdl4j</groupId>
@@ -4009,7 +4009,7 @@
       <dependency>
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
-        <version>1.5</version>
+        <version>1.6</version>
         <scope>test</scope>
       </dependency>
       <dependency>

@@ -296,10 +296,10 @@
       <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
     </feature>
 
-    <feature name="json-lib" description="json-lib" version="2.2.3">
+    <feature name="json-lib" description="json-lib" version="2.4">
       <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6</bundle>
       <!-- Use the jdk15 qualifier -->
-      <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3/jar/jdk15</bundle>
+      <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.4/jar/jdk15</bundle>
     </feature>
 
     <feature name="lmax-disruptor" description="LMAX :: Disruptor" version="3.3.2">
