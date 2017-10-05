@@ -60,14 +60,6 @@
           <artifactId>spring-context</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>net.sf.ehcache</groupId>
-          <artifactId>ehcache-terracotta</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.terracotta</groupId>
-          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
         </exclusion>
@@ -87,14 +79,6 @@
           <artifactId>spring-context</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>net.sf.ehcache</groupId>
-          <artifactId>ehcache-terracotta</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.terracotta</groupId>
-          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
         </exclusion>
@@ -112,14 +96,6 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.sf.ehcache</groupId>
-          <artifactId>ehcache-terracotta</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.terracotta</groupId>
-          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.slf4j</groupId>
