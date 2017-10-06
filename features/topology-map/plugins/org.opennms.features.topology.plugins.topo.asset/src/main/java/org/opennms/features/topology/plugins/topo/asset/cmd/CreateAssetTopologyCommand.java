@@ -29,13 +29,10 @@
 package org.opennms.features.topology.plugins.topo.asset.cmd;
 
 
-import java.io.StringWriter;
-
-import javax.xml.bind.JAXB;
-
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigBuilder;
@@ -84,12 +81,8 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 			.build();
 
 		// Build output
-		StringWriter generatorConfigString = new StringWriter();
-		JAXB.marshal(generatorConfig, generatorConfigString);
-
-		final StringBuilder msg = new StringBuilder("Creating Asset Topology from configuration:");
-		msg.append(generatorConfigString.toString());
-		System.out.println(msg.toString());
+		System.out.println("Creating Asset Topology from configuration:");
+		System.out.print(JaxbUtils.marshal(generatorConfig));
 
 		assetGraphMLProvider.createAssetTopology(generatorConfig);
 		System.out.println("Asset Topology created");

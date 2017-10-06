@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,8 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
-
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,7 @@ public class MeasurementDataSource implements JRRewindableDataSource {
     private int currentRow = -1;
 
     public MeasurementDataSource(InputStream inputStream) {
-        this(inputStream != null ? JAXB.unmarshal(inputStream, QueryResponse.class) : null);
+        this(inputStream != null ? JaxbUtils.unmarshal(QueryResponse.class, inputStream) : null);
     }
 
     public MeasurementDataSource(QueryResponse queryResponse) {
@@ -116,7 +115,7 @@ public class MeasurementDataSource implements JRRewindableDataSource {
         return fields;
     }
 
-    protected static JRField createField(String name, Class clazz) {
+    protected static JRField createField(String name, Class<?> clazz) {
         final JRDesignField field = new JRDesignField();
         field.setValueClass(clazz);
         field.setName(name);

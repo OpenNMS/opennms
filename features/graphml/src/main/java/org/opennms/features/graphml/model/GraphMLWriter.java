@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,10 @@
 package org.opennms.features.graphml.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXB;
 
 import org.graphdrawing.graphml.DataType;
 import org.graphdrawing.graphml.EdgeType;
@@ -43,11 +42,15 @@ import org.graphdrawing.graphml.KeyForType;
 import org.graphdrawing.graphml.KeyType;
 import org.graphdrawing.graphml.KeyTypeType;
 import org.graphdrawing.graphml.NodeType;
+import org.opennms.core.xml.JaxbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Persists GraphML files.
  */
 public class GraphMLWriter {
+    private static final Logger LOG = LoggerFactory.getLogger(GraphMLWriter.class);
 
     public interface ProcessHook {
         void process(GraphML input, GraphmlType result);
@@ -64,7 +67,12 @@ public class GraphMLWriter {
                 eachHook.process(graphML, graphmlType);
             }
         }
-        JAXB.marshal(graphmlType, file);
+        try {
+            JaxbUtils.marshal(graphmlType, file);
+        } catch (final IOException e) {
+            LOG.error("Unable to write GraphML to {}", file, e);
+            throw new InvalidGraphException(e);
+        }
     }
 
     public static GraphmlType convert(GraphML graphML) throws InvalidGraphException {

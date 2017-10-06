@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,10 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.JAXB;
-
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
@@ -217,8 +215,6 @@ public class UiModel {
 	 }
 
 	private static String marshal(Object anyObject) {
-		StringWriter stringWriter = new StringWriter();
-		JAXB.marshal(anyObject, stringWriter);
-		return stringWriter.getBuffer().toString();
+		return JaxbUtils.marshal(anyObject);
 	}
 }

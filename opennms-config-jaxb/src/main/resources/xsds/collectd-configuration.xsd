@@ -34,12 +34,15 @@
 				</element>
 			</sequence>
 
-			<attribute name="threads" type="int" use="required">
+			<attribute name="threads" use="optional" default="50">
 				<annotation>
-					<documentation>The maximum number of threads used for data
-						collection.
-					</documentation>
+					<documentation>The maximum number of threads used for data collection.</documentation>
 				</annotation>
+				<simpleType>
+					<restriction base="int">
+						<minInclusive value="1" />
+					</restriction>
+				</simpleType>
 			</attribute>
 		</complexType>
 	</element>

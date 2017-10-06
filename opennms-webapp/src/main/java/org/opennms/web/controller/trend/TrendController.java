@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,14 +38,13 @@ import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXB;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.trend.TrendConfiguration;
 import org.opennms.netmgt.config.trend.TrendDefinition;
 import org.slf4j.Logger;
@@ -157,7 +156,7 @@ public class TrendController extends AbstractController implements InitializingB
     }
 
     public TrendConfiguration getConfiguration() {
-        return JAXB.unmarshal(CONFIG_FILE, TrendConfiguration.class);
+        return JaxbUtils.unmarshal(TrendConfiguration.class, CONFIG_FILE);
     }
 
     public List<Double> lookupData(final String query) throws SQLException {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
 import com.google.common.collect.Collections2;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.FilterCriteria;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQuery;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
@@ -49,7 +50,6 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
-import javax.xml.bind.JAXB;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -219,8 +219,8 @@ public class JmxDatacollectionConfiggenerator {
         return false;
     }
 
-    public void writeJmxConfigFile(JmxDatacollectionConfig jmxDatacollectionConfigModel, String outFile) {
-        JAXB.marshal(jmxDatacollectionConfigModel, new File(outFile));
+    public void writeJmxConfigFile(JmxDatacollectionConfig jmxDatacollectionConfigModel, String outFile) throws IOException {
+        JaxbUtils.marshal(jmxDatacollectionConfigModel, new File(outFile));
     }
 
     private Mbean createMbean(ObjectName objectName) {

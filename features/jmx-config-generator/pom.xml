@@ -123,7 +123,6 @@
             <plugin>
                 <groupId>org.dstovall</groupId>
                 <artifactId>onejar-maven-plugin</artifactId>
-                <version>1.4.4</version>
                 <configuration>
                     <filename>${project.artifactId}-${project.version}-onejar.jar</filename>
                     <mainClass>org.opennms.features.jmxconfiggenerator.Starter</mainClass>
@@ -132,6 +131,16 @@
         </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.xml</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.name-cutter</artifactId>

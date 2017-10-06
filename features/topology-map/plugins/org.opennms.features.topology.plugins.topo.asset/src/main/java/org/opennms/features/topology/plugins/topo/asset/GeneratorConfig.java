@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.asset;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,10 +39,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlID;
 
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
-import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class GeneratorConfig {
@@ -61,14 +60,11 @@ public class GeneratorConfig {
 
     @XmlElement(name="filter")
     @XmlElementWrapper(name="filters")
-    private List<String> filters;
+    private List<String> filters = new ArrayList<>();
 
     @XmlElementWrapper(name="layers")
     @XmlElement(name="layer")
-    private List<String> layerHierarchies = Lists.newArrayList(
-            NodeParamLabels.ASSET_REGION,
-            NodeParamLabels.ASSET_BUILDING,
-            NodeParamLabels.ASSET_RACK);
+    private List<String> layerHierarchies = new ArrayList<>();
 
     public String getLabel() {
         return label;
@@ -107,15 +103,19 @@ public class GeneratorConfig {
     }
 
     public void setLayerHierarchies(List<String> layers) {
-        this.layerHierarchies = layers;
-    }
-
-    public void setFilters(List<String> filters) {
-        this.filters = filters;
+        if (layers == this.layerHierarchies) return;
+        this.layerHierarchies.clear();
+        if (layers != null) this.layerHierarchies.addAll(layers);
     }
 
     public List<String> getFilters() {
         return filters;
+    }
+
+    public void setFilters(List<String> filters) {
+        if (filters == this.filters) return;
+        this.filters.clear();
+        if (filters != null) this.filters.addAll(filters);
     }
 
     @Override

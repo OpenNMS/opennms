@@ -49,7 +49,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
  */
 @XmlRootElement(name = "surveillance-view-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("surveillance-view-configuration.xsd")
+@ValidateUsing("surveillance-views.xsd")
 public class SurveillanceViewConfiguration implements Serializable {
     private static final long serialVersionUID = 2L;
 

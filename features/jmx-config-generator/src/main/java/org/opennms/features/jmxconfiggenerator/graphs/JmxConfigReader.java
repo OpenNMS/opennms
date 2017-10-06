@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.features.jmxconfiggenerator.graphs;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.jmxconfiggenerator.log.LogAdapter;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
@@ -37,7 +38,6 @@ import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxCollection;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 
-import javax.xml.bind.JAXB;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -61,17 +61,12 @@ public class JmxConfigReader {
     }
 
     protected Collection<Report> generateReportsByJmxDatacollectionConfig(InputStream inputConfigStream) {
-        return generateReportsByJmxDatacollectionConfig(
-                JAXB.unmarshal(
-                        inputConfigStream,
-                        JmxDatacollectionConfig.class));
+        return generateReportsByJmxDatacollectionConfig(JaxbUtils.unmarshal(JmxDatacollectionConfig.class, inputConfigStream));
     }
 
     public Collection<Report> generateReportsByJmxDatacollectionConfig(String inputConfigFileName) {
-        return generateReportsByJmxDatacollectionConfig(
-                JAXB.unmarshal(
-                    new File(inputConfigFileName), 
-                    JmxDatacollectionConfig.class));
+        final JmxDatacollectionConfig config = JaxbUtils.unmarshal(JmxDatacollectionConfig.class, new File(inputConfigFileName));
+        return generateReportsByJmxDatacollectionConfig(config);
     }
 
     public Collection<Report> generateReportsByJmxDatacollectionConfig(JmxDatacollectionConfig inputConfig) {
