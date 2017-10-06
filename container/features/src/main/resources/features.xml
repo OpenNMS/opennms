@@ -558,6 +558,15 @@
       <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/0.10.1.1_1</bundle>
     </feature>
 
+    <feature name='opennms-aws-sqs' description="OpenNMS :: Features :: AWS SQS" version="${project.version}">
+      <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/1.11.209$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="1.11.209"</bundle>
+      <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-sqs/1.11.209$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="1.11.209"</bundle>
+      <bundle dependency="true">wrap:mvn:com.amazonaws/amazon-sqs-java-messaging-lib/1.0.4$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="1.0.4"</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.6.6</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.6.6</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
+    </feature>
+
     <feature name="opennms-core-ipc-sink-api" description="OpenNMS :: Core :: IPC :: Sink :: API" version="${project.version}">
       <feature>org.json</feature>
       <feature>javax.mail</feature>
@@ -581,6 +590,13 @@
       <feature>opennms-kafka</feature>
       <feature>opennms-core-camel</feature>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.kafka-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-sink-aws-sqs" description="OpenNMS :: Core :: IPC :: Sink :: AWS SQS Impl." version="${project.version}">
+      <feature>opennms-core-ipc-sink-api</feature>
+      <feature>opennms-aws-sqs</feature>
+      <feature>opennms-core-camel</feature>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.aws-sqs-impl/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-rpc" description="OpenNMS :: Core :: IPC :: RPC" version="${project.version}">
