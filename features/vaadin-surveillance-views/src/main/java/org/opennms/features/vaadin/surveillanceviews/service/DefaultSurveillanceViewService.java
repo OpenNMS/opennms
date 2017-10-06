@@ -50,10 +50,10 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
-import org.opennms.features.vaadin.surveillanceviews.model.Category;
-import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.surveillanceViews.Category;
+import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.GraphDao;
@@ -83,6 +83,7 @@ import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+
 
 /**
  * Service class that encapsulate helper methods for surveillance views.

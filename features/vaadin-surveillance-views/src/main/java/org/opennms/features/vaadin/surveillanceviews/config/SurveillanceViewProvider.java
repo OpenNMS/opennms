@@ -33,8 +33,8 @@ import java.io.IOException;
 import javax.xml.bind.JAXB;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration;
-import org.opennms.features.vaadin.surveillanceviews.model.View;
+import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
+import org.opennms.netmgt.config.surveillanceViews.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

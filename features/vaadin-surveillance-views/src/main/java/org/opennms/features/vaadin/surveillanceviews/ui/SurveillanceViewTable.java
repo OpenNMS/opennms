@@ -27,27 +27,29 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
-import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
-import org.opennms.features.vaadin.surveillanceviews.model.View;
-import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetail;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.SurveillanceStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetail;
+import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
+import org.opennms.netmgt.config.surveillanceViews.RowDef;
+import org.opennms.netmgt.config.surveillanceViews.View;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.SurveillanceStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Table;
 
 /**
  * This class represents the surveillance view table itself.
@@ -186,8 +188,11 @@ public class SurveillanceViewTable extends Table {
             addGeneratedColumn(columnDef.getLabel(), new Table.ColumnGenerator() {
                 public Object generateCell(Table source, final Object itemId, Object columnId) {
 
-                    int rowIndex = view.getRows().indexOf(view.getRowDef((String) itemId));
-                    int colIndex = view.getColumns().indexOf(view.getColumnDef((String) columnId));
+                    final Optional<RowDef> rowDef = view.getRowDef((String) itemId);
+                    final Optional<ColumnDef> columnDef = view.getColumnDef((String) columnId);
+
+                    int rowIndex = view.getRows().indexOf(rowDef.orElse(null));
+                    int colIndex = view.getColumns().indexOf(columnDef.orElse(null));
 
                     SurveillanceStatus surveillanceStatus = m_cells[rowIndex][colIndex];
 
@@ -263,6 +268,8 @@ public class SurveillanceViewTable extends Table {
                 @Override
                 public void itemClick(ItemClickEvent itemClickEvent) {
                     String selectedColumn = (String) itemClickEvent.getPropertyId();
+                    final Optional<ColumnDef> columnDef = view.getColumnDef((String) itemClickEvent.getPropertyId());
+                    final Optional<RowDef> rowDef = view.getRowDef((String) itemClickEvent.getItemId());
                     if (!"".equals(selectedColumn)) {
                         /**
                          * this handles cell clicks
@@ -272,8 +279,8 @@ public class SurveillanceViewTable extends Table {
 
                         Notification.show(m_selectedItemId + "/" + m_selectedPropertyId + " selected");
 
-                        m_selectedRowCategories = getOnmsCategoriesForNames(view.getRowDef((String) itemClickEvent.getItemId()).getCategoryNames());
-                        m_selectedColumnCategories = getOnmsCategoriesForNames(view.getColumnDef((String) itemClickEvent.getPropertyId()).getCategoryNames());
+                        if (columnDef.isPresent()) m_selectedRowCategories = getOnmsCategoriesForNames(rowDef.get().getCategoryNames());
+                        if (rowDef.isPresent()) m_selectedColumnCategories = getOnmsCategoriesForNames(columnDef.get().getCategoryNames());
                     } else {
                         /**
                          * this handles row clicks
@@ -283,7 +290,7 @@ public class SurveillanceViewTable extends Table {
 
                         Notification.show(m_selectedItemId + " selected");
 
-                        m_selectedRowCategories = getOnmsCategoriesForNames(view.getRowDef((String) itemClickEvent.getItemId()).getCategoryNames());
+                        if (rowDef.isPresent()) m_selectedRowCategories = getOnmsCategoriesForNames(rowDef.get().getCategoryNames());
                         m_selectedColumnCategories = m_allColumnCategories;
                     }
 
@@ -317,7 +324,8 @@ public class SurveillanceViewTable extends Table {
                         m_selectedPropertyId = headerClickEvent.getPropertyId();
 
                         m_selectedRowCategories = m_allRowCategories;
-                        m_selectedColumnCategories = getOnmsCategoriesForNames(view.getColumnDef((String) headerClickEvent.getPropertyId()).getCategoryNames());
+                        final Optional<ColumnDef> columnDef = view.getColumnDef((String) headerClickEvent.getPropertyId());
+                        if (columnDef.isPresent()) m_selectedColumnCategories = getOnmsCategoriesForNames(columnDef.get().getCategoryNames());
 
                         Notification.show(m_selectedPropertyId + " selected");
                     }

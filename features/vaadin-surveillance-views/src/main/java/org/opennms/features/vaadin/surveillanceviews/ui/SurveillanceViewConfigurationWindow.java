@@ -27,6 +27,18 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
+import org.opennms.netmgt.config.surveillanceViews.Def;
+import org.opennms.netmgt.config.surveillanceViews.RowDef;
+import org.opennms.netmgt.config.surveillanceViews.View;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.DefaultItemSorter;
@@ -44,17 +56,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
-import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
-import org.opennms.features.vaadin.surveillanceviews.model.Def;
-import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
-import org.opennms.features.vaadin.surveillanceviews.model.View;
-import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is used to display the surveillance view configuration dialog.
