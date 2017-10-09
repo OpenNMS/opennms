@@ -121,21 +121,51 @@ public class Normalizer {
      *
      * @param args the arguments
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) throws Exception {
         try {
             if (args == null || args.length < 1) {
-                System.err.println("Please specify the configuration directory to normalize");
+                usage();
                 System.exit(1);
             }
-            File configHome = new File(args[0]);
-            if (!configHome.exists()) {
-                System.err.println("The configuration directory " + configHome + " doesn't exist");
+
+            File sourceFile = new File(args[0]);
+            if (!sourceFile.exists()) {
+                System.err.println("Configuration source '" + sourceFile + "' doesn't exist.");
                 System.exit(1);
             }
-            new Normalizer(configHome).normalize();
+
+            if (sourceFile.isFile()) {
+                // source File is an individual file
+                final String className = args[1];
+                if (className == null) {
+                    usage();
+                    System.exit(1);
+                }
+                final Class<?> c = Class.forName(className);
+                final Source source = new Source(sourceFile, c);
+                Normalizer.unmarshal(source);
+            } else {
+                // source File is a config directory
+                new Normalizer(sourceFile).normalize();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void usage() {
+        System.err.print(
+            "usage: normalizer <directory|file> [class]\n"
+            + "\n"
+            + "Normalizing the OpenNMS etc directory:\n"
+            + "$ normalizer /path/to/etc/directory\n"
+            + "eg: $ normalizer /home/you/git/opennms/opennms-base-assembly/src/main/filtered/etc\n"
+            + "\n"
+            + "Normalizing an individual file:\n"
+            + "$ normalizer /path/to/config/file.xml org.opennms.the.ClassName\n"
+            + "eg: $ normalizer poller-configuration.xml org.opennms.netmgt.config.poller.PollerConfiguration\n"
+            + "\n"
+        );
     }
 
     /** The configuration home. */
@@ -260,8 +290,8 @@ public class Normalizer {
      * @throws Exception the exception
      */
     public void normalize() throws Exception {
-        for (Source source : configSources) {
-            unmarshall(source);
+        for (final Source source : configSources) {
+            Normalizer.unmarshal(source);
         }
     }
 
@@ -270,7 +300,7 @@ public class Normalizer {
      *
      * @param source the source
      */
-    public void unmarshall(Source source) {
+    public static void unmarshal(Source source) {
         try {
             System.out.println("Normalizing " + source.configFile);
             final Resource resource = new FileSystemResource(source.configFile);
