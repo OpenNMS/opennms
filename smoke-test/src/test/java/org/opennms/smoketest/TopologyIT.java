@@ -29,6 +29,8 @@
 package org.opennms.smoketest;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
@@ -328,26 +330,26 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         private final OpenNMSSeleniumTestCase testCase;
 
         public TopologyInfo(OpenNMSSeleniumTestCase testCase) {
-           this.testCase = Objects.requireNonNull(testCase);
-       }
+            this.testCase = Objects.requireNonNull(testCase);
+        }
 
-       public String getTitle() {
-           try {
-               testCase.setImplicitWait(1, TimeUnit.SECONDS);
-               return testCase.findElementByXpath("//*[@id='topologyInfo']/*[1]").getText();
-           } finally {
-               testCase.setImplicitWait();
-           }
-       }
+        public String getTitle() {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                return testCase.findElementByXpath("//*[@id='topologyInfo']/*[1]").getText();
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
 
-       public String getDescription() {
-           try {
-               testCase.setImplicitWait(1, TimeUnit.SECONDS);
-               return testCase.findElementByXpath("//*[@id='topologyInfo']/*[2]").getText();
-           } finally {
-               testCase.setImplicitWait();
-           }
-       }
+        public String getDescription() {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                return testCase.findElementByXpath("//*[@id='topologyInfo']/*[2]").getText();
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
     }
 
     /**
@@ -428,6 +430,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 clickOnMenuItemsWithLabels("View", "Automatic Refresh");
             } else {
                 LOG.info("setAutomaticRefresh: refresh is already {}", enabled ? "enabled" : "disabled");
+                resetMenu(); // ensure menu is reset, otherwise test may fail
             }
             return this;
         }
@@ -680,6 +683,38 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         public TopologyInfo getTopologyInfo() {
             return new TopologyInfo(testCase);
         }
+
+        public TopologyUIPage searchAndSelect(String query) {
+            search(query).selectItemThatContains(query);
+            return this;
+        }
+
+        public NoFocusDefinedWindow getNoFocusDefinedWindow() {
+            return new NoFocusDefinedWindow(testCase);
+        }
+
+    }
+
+    public static class NoFocusDefinedWindow {
+        private final OpenNMSSeleniumTestCase testCase;
+
+        private NoFocusDefinedWindow(OpenNMSSeleniumTestCase testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        public boolean isVisible() {
+            try {
+                // Reduce the timeout so we don't wait around for too long if there are no vertices in focus
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                try {
+                    return testCase.findElementById("no-focus-defined-window").isDisplayed();
+                } catch (NoSuchElementException ex) {
+                    return false;
+                }
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
     }
 
     public static class SaveLayoutButton {
@@ -876,6 +911,28 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         topologyUiPage.selectTopologyProvider(TopologyProvider.PATH_OUTAGE);
         Assert.assertThat(topologyUiPage.getTopologyInfo().getTitle(), not(containsString("Undefined")));
         Assert.assertThat(topologyUiPage.getTopologyInfo().getDescription(), not(containsString("No description available")));
+    }
+
+    /**
+     * This method tests that selecting an empty category does not cause a default "No focus defined" window to pop up.
+     * <p>
+     *     Temporary solution which only works if the category name is unused
+     * </p>
+     */
+    @Test
+    public void verifyCollapsibleCriteriaNoDefaultFocusWindow() throws IOException, InterruptedException {
+        topologyUiPage.clearFocus();
+        Assert.assertThat(topologyUiPage.getNoFocusDefinedWindow().isVisible(), is(true));
+
+        topologyUiPage.searchAndSelect("Servers");
+        Assert.assertThat(topologyUiPage.getFocusedVertices(), hasSize(1));
+        Assert.assertThat(topologyUiPage.getVisibleVertices(), hasSize(0));
+        Assert.assertThat(topologyUiPage.getNoFocusDefinedWindow().isVisible(), is(false));
+
+        topologyUiPage.getFocusedVertices().get(0).collapse();
+        Assert.assertThat(topologyUiPage.getFocusedVertices(), hasSize(1));
+        Assert.assertThat(topologyUiPage.getVisibleVertices(), hasSize(1));
+        Assert.assertThat(topologyUiPage.getNoFocusDefinedWindow().isVisible(), is(false));
     }
 
     /**

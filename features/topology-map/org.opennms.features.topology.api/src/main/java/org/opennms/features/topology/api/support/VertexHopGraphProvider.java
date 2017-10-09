@@ -370,9 +370,8 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
 
         // If we didn't find any matching nodes among the focus nodes...
         if (focusNodes.size() < 1) {
-            // ...then return an empty list of vertices
-            return Collections.emptyList();
-            // return allVertices;
+            // ...then return an empty list of vertices, but include collapsed vertices
+            collapseVertices(Collections.emptySet(), getCollapsibleCriteria(criteria, false));
         }
 
 
@@ -434,26 +433,26 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     public static Set<Vertex> collapseVertices(Set<Vertex> vertices, CollapsibleCriteria[] criteria) {
-        // Make a map of all of the vertices to their new collapsed representations
-        Map<VertexRef,Set<Vertex>> vertexToCollapsedVertices = getMapOfVerticesToCollapsedVertices(criteria);
+        final Set<Vertex> retval = new HashSet<>();
+        final Set<Vertex> verticesToProcess = new HashSet<>(vertices);
 
-        if (vertexToCollapsedVertices.size() > 0) {
-            Set<Vertex> retval = new HashSet<Vertex>();
-            for (Vertex vertex : vertices) {
-                // If the source vertex is in the collapsed list...
-                Set<Vertex> collapsedVertices = vertexToCollapsedVertices.get(vertex);
-                if (collapsedVertices != null) {
-                    for (Vertex collapsedEndpoint : collapsedVertices) {
-                        retval.add(collapsedEndpoint);
-                    }
-                } else {
-                    retval.add(vertex);
-                }
+        // Replace all vertices by its collapsed representation
+        for (CollapsibleCriteria collapsibleCriteria : criteria) {
+            if (collapsibleCriteria.isCollapsed()) {
+                final Set<VertexRef> verticesRepresentedByCollapsible = collapsibleCriteria.getVertices().stream()
+                        .filter(v -> vertices.contains(v))
+                        .collect(Collectors.toSet());
+                verticesToProcess.removeAll(verticesRepresentedByCollapsible);
+                retval.add(collapsibleCriteria.getCollapsedRepresentation());
             }
-            return retval;
-        } else {
-            return vertices;
         }
+
+        // Not all vertices may be represented by a collapsed version - either their criteria is not collapsed
+        // or it is a pure vertex - therefore those are added afterwards
+        retval.addAll(verticesToProcess);
+        verticesToProcess.clear();
+
+        return retval;
     }
 
     public static Map<VertexRef,Set<Vertex>> getMapOfVerticesToCollapsedVertices(CollapsibleCriteria[] criteria) {
