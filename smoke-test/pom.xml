@@ -356,6 +356,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.adapters</groupId>
+      <artifactId>org.opennms.features.telemetry.adapters.jti</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-elasticsearch</artifactId>
       <version>${camelVersion}</version>
