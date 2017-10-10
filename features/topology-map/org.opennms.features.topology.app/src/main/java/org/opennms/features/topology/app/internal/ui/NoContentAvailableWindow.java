@@ -48,6 +48,7 @@ public class NoContentAvailableWindow extends Window {
     public NoContentAvailableWindow(final GraphContainer graphContainer) {
         super("No focus defined");
 
+        setId("no-focus-defined-window");
         setResizable(false);
         setClosable(false);
         setDraggable(true);

@@ -42,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.time.ZonedDateTimeBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
@@ -457,5 +458,84 @@ public class BufferParserTest {
 		Event event = ConvertToEvent.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
 		assertEquals("main", event.getParm("messageid").getValue().getContent());
 		assertEquals("foo%d", event.getParm("process").getValue().getContent());
+	}
+
+	/**
+	 * The cause of NMS-9522 was that the parser tree generation
+	 * was considering the {@code %{STRING:timezone}} and 
+	 * {@code %{STRING:hostname}} clauses as identical because the 
+	 * {@code m_resultConsumer} function wasn't
+	 * being taken into account in the {@code equals()} method for
+	 * the parser stages.
+	 * 
+	 * @see https://issues.opennms.org/browse/NMS-9522
+	 */
+	@Test
+	public void testHostnameVersusTimezoneNms9522() {
+		RadixTreeParser radixParser = new RadixTreeParser();
+		// Put the more-precise timezone match first in the parser tree
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:timezone} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+
+		System.out.println("Parser tree: " + radixParser.tree.toString());
+		System.out.println("Parser tree size: " + radixParser.tree.size());
+
+		verifyNms9522Message1(radixParser);
+		verifyNms9522Message2(radixParser);
+
+		radixParser.performEdgeCompression();
+
+		System.out.println("Parser tree (after compression): " + radixParser.tree.toString());
+		System.out.println("Parser tree size (after compression): " + radixParser.tree.size());
+
+		// Make sure that everything works after edge compression as well
+		verifyNms9522Message1(radixParser);
+		verifyNms9522Message2(radixParser);
+	}
+
+	private static void verifyNms9522Message1(RadixTreeParser radixParser) {
+		SyslogMessage message;
+		message = radixParser.parse(ByteBuffer.wrap("<14> Nov 16 00:01:25 localhost postfix/smtpd[1713]: connect from www.opennms.org[10.1.1.1]".getBytes(StandardCharsets.US_ASCII))).join();
+		assertNotNull(message);
+		assertNull(message.getMessageID());
+		assertEquals("postfix/smtpd", message.getProcessName());
+		assertEquals("1713", message.getProcessId());
+		//assertEquals(2010, message.getYear().intValue());
+		assertEquals(11, message.getMonth().intValue());
+		assertEquals(16, message.getDayOfMonth().intValue());
+		assertEquals(0, message.getHourOfDay().intValue());
+		assertEquals(1, message.getMinute().intValue());
+		assertEquals(25, message.getSecond().intValue());
+		assertNull(message.getMillisecond());
+		assertNull(message.getZoneId());
+		assertEquals("localhost", message.getHostName());
+		assertEquals("connect from www.opennms.org[10.1.1.1]", message.getMessage());
+
+		Event event = ConvertToEvent.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
+		assertEquals("localhost", event.getParm("hostname").getValue().getContent());
+		assertEquals("postfix/smtpd", event.getParm("process").getValue().getContent());
+	}
+
+	private static void verifyNms9522Message2(RadixTreeParser radixParser) {
+		SyslogMessage message;
+		message = radixParser.parse(ByteBuffer.wrap("<19> Nov 17 14:28:48 CST %AUTHPRIV-3-SYSTEM_MSG[0]: Authentication failed from 7.40.16.188 - sshd[20189]".getBytes(StandardCharsets.US_ASCII))).join();
+		assertNotNull(message);
+		assertNull(message.getMessageID());
+		assertEquals("%AUTHPRIV-3-SYSTEM_MSG", message.getProcessName());
+		assertEquals("0", message.getProcessId());
+		//assertEquals(2010, message.getYear().intValue());
+		assertEquals(11, message.getMonth().intValue());
+		assertEquals(17, message.getDayOfMonth().intValue());
+		assertEquals(14, message.getHourOfDay().intValue());
+		assertEquals(28, message.getMinute().intValue());
+		assertEquals(48, message.getSecond().intValue());
+		assertNull(message.getMillisecond());
+		assertEquals(ZonedDateTimeBuilder.parseZoneId("CST"), message.getZoneId());
+		assertNull(message.getHostName());
+		assertEquals("Authentication failed from 7.40.16.188 - sshd[20189]", message.getMessage());
+
+		Event event = ConvertToEvent.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
+		assertNull(event.getParm("hostname").getValue().getContent());
+		assertEquals("%AUTHPRIV-3-SYSTEM_MSG", event.getParm("process").getValue().getContent());
 	}
 }
