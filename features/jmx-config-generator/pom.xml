@@ -56,38 +56,6 @@
             </plugin>
             -->
 
-            <!-- We need this to generate the JmxConfig.xml data model for the config generator tool.
-            The one defined by opennms-config cannot be used, because it describes the whole config file.
-            We only need a sub set of the overall schema, which makes it easier to program.
-            However the subset defined in "jmx-datacollection.config.xsd" must be compatible with the one
-            defined in opennms-config. -->
-            <plugin>
-              <groupId>org.apache.cxf</groupId>
-              <artifactId>cxf-xjc-plugin</artifactId>
-              <configuration>
-                <extensions>
-                  <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:${cxfXjcVersion}</extension>
-                </extensions>
-              </configuration>
-              <executions>
-                <execution>
-                  <id>generate-sources-trans</id>
-                  <phase>generate-sources</phase>
-                  <goals>
-                    <goal>xsdtojava</goal>
-                  </goals>
-                  <configuration>
-                    <sourceRoot>${project.build.directory}/generated-sources/jaxb</sourceRoot>
-                    <xsdOptions>
-                      <xsdOption>
-                        <xsd>src/main/resources/jmx-datacollection-config.xsd</xsd>
-                        <packagename>org.opennms.xmlns.xsd.config.jmx_datacollection</packagename>
-                      </xsdOption>
-                    </xsdOptions>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -104,17 +72,6 @@
                                     <classifier>features</classifier>
                                 </artifact>
                             </artifacts>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.directory}/generated-sources/jaxb</source>
-                            </sources>
                         </configuration>
                     </execution>
                 </executions>
@@ -150,6 +107,10 @@
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-config-jaxb</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>

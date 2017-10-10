@@ -37,7 +37,7 @@ import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 
 /**
  * This class wraps the <code>JmxDatacollectionConfig</code> and provides some
@@ -100,9 +100,9 @@ public class UiModel {
 	 * @return true if valid, false otherwise
 	 */
 	private boolean isValid(JmxDatacollectionConfig rawModel) {
-		return !(rawModel.getJmxCollection().isEmpty()
-				|| rawModel.getJmxCollection().get(0) == null
-				|| rawModel.getJmxCollection().get(0).getMbeans() == null);
+		return !(rawModel.getJmxCollectionList().isEmpty()
+				|| rawModel.getJmxCollectionList().get(0) == null
+				|| rawModel.getJmxCollectionList().get(0).getMbeans() == null);
 	}
 
 	public JmxDatacollectionConfig getRawModel() {

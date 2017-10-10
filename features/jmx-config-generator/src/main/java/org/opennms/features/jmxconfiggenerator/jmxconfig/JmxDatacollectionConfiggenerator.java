@@ -28,28 +28,6 @@
 
 package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
-import com.google.common.collect.Collections2;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.jmxconfiggenerator.jmxconfig.query.FilterCriteria;
-import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQuery;
-import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
-import org.opennms.features.jmxconfiggenerator.jmxconfig.query.QueryResult;
-import org.opennms.features.jmxconfiggenerator.log.LogAdapter;
-import org.opennms.features.namecutter.NameCutter;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxCollection;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbeans;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Rrd;
-
-import javax.management.JMException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.openmbean.CompositeData;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,6 +36,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.management.JMException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
+
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.query.FilterCriteria;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQuery;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.query.QueryResult;
+import org.opennms.features.jmxconfiggenerator.log.LogAdapter;
+import org.opennms.features.namecutter.NameCutter;
+import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.config.collectd.jmx.Rrd;
+
+import com.google.common.collect.Collections2;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
@@ -70,8 +72,6 @@ public class JmxDatacollectionConfiggenerator {
     private final List<String> standardVmBeans;
 
     private final List<String> numbers;
-
-    private final List<String> rras;
 
     protected final Map<String, Integer> aliasMap = new HashMap<>();
 
@@ -105,14 +105,12 @@ public class JmxDatacollectionConfiggenerator {
 
         // rrd setup
         rrd = new Rrd();
-        rras = new ArrayList<>();
         rrd.setStep(300);
-        rras.add("RRA:AVERAGE:0.5:1:2016");
-        rras.add("RRA:AVERAGE:0.5:12:1488");
-        rras.add("RRA:AVERAGE:0.5:288:366");
-        rras.add("RRA:MAX:0.5:288:366");
-        rras.add("RRA:MIN:0.5:288:366");
-        rrd.getRra().addAll(rras);
+        rrd.addRra("RRA:AVERAGE:0.5:1:2016");
+        rrd.addRra("RRA:AVERAGE:0.5:12:1488");
+        rrd.addRra("RRA:AVERAGE:0.5:288:366");
+        rrd.addRra("RRA:MAX:0.5:288:366");
+        rrd.addRra("RRA:MIN:0.5:288:366");
     }
 
     /**
@@ -144,7 +142,7 @@ public class JmxDatacollectionConfiggenerator {
 
         final QueryResult queryResult = queryMbeanServer(ids, mBeanServerConnection, runStandardVmBeans);
         final JmxDatacollectionConfig xmlJmxDatacollectionConfig = createJmxDataCollectionConfig(serviceName, rrd);
-        final JmxCollection xmlJmxCollection = xmlJmxDatacollectionConfig.getJmxCollection().get(0);
+        final JmxCollection xmlJmxCollection = xmlJmxDatacollectionConfig.getJmxCollectionList().get(0);
 
         for (QueryResult.MBeanResult eachMBeanResult : queryResult.getMBeanResults()) {
             final ObjectName objectName = eachMBeanResult.objectName;
@@ -156,24 +154,24 @@ public class JmxDatacollectionConfiggenerator {
                 if ("javax.management.openmbean.CompositeData".equals(jmxBeanAttributeInfo.getType())) {
                     CompAttrib compAttrib = createCompAttrib(mBeanServerConnection, objectName, jmxBeanAttributeInfo, skipNonNumber);
                     if (compAttrib != null) {
-                        xmlMbean.getCompAttrib().add(compAttrib);
+                        xmlMbean.addCompAttrib(compAttrib);
                     }
                 }
                 if (skipNonNumber && !numbers.contains(jmxBeanAttributeInfo.getType())) {
                     logger.warn("The type of attribute '{}' is '{}' and '--skipNonNumber' is set. Ignoring.", jmxBeanAttributeInfo.getName(), jmxBeanAttributeInfo.getType());
                 } else {
                     Attrib xmlJmxAttribute = createAttr(jmxBeanAttributeInfo);
-                    xmlMbean.getAttrib().add(xmlJmxAttribute);
+                    xmlMbean.addAttrib(xmlJmxAttribute);
                 }
             }
 
-            if (!xmlMbean.getAttrib().isEmpty()  || !xmlMbean.getCompAttrib().isEmpty()) {
-                xmlJmxCollection.getMbeans().getMbean().add(xmlMbean);
+            if (!xmlMbean.getAttribList().isEmpty()  || !xmlMbean.getCompAttribList().isEmpty()) {
+                xmlJmxCollection.addMbean(xmlMbean);
             }
         }
 
-        if (xmlJmxCollection.getMbeans().getMbean().size() != queryResult.getMBeanResults().size()) {
-            logger.warn("Queried {} MBeans, but only got {} in the result set.", queryResult.getMBeanResults().size(), xmlJmxCollection.getMbeans().getMbean().size());
+        if (xmlJmxCollection.getMbeans().size() != queryResult.getMBeanResults().size()) {
+            logger.warn("Queried {} MBeans, but only got {} in the result set.", queryResult.getMBeanResults().size(), xmlJmxCollection.getMbeans().size());
         }
 
         return xmlJmxDatacollectionConfig;
@@ -185,8 +183,7 @@ public class JmxDatacollectionConfiggenerator {
 
         xmlJmxCollection.setName("JSR160-" + serviceName);
         xmlJmxCollection.setRrd(rrd);
-        xmlJmxDatacollectionConfig.getJmxCollection().add(xmlJmxCollection);
-        xmlJmxCollection.setMbeans(new Mbeans());
+        xmlJmxDatacollectionConfig.addJmxCollection(xmlJmxCollection);
         return xmlJmxDatacollectionConfig;
     }
 
@@ -263,8 +260,8 @@ public class JmxDatacollectionConfiggenerator {
                     String alias = nameCutter.trimByDictionary(jmxMBeanAttributeInfo.getName() + capitalize(key));
                     alias = createAndRegisterUniqueAlias(alias);
                     xmlCompMember.setAlias(alias);
-                    xmlCompMember.setType("gauge");
-                    xmlCompAttrib.getCompMember().add(xmlCompMember);
+                    xmlCompMember.setType(AttributeType.GAUGE);
+                    xmlCompAttrib.addCompMember(xmlCompMember);
                 }
             }
         }
@@ -277,7 +274,7 @@ public class JmxDatacollectionConfiggenerator {
 
     private Attrib createAttr(MBeanAttributeInfo jmxMBeanAttributeInfo) {
         Attrib xmlJmxAttribute = new Attrib();
-        xmlJmxAttribute.setType("gauge");
+        xmlJmxAttribute.setType(AttributeType.GAUGE);
         xmlJmxAttribute.setName(jmxMBeanAttributeInfo.getName());
         String alias = nameCutter.trimByDictionary(jmxMBeanAttributeInfo.getName());
         alias = createAndRegisterUniqueAlias(alias);
