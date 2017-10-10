@@ -375,7 +375,7 @@
           <th width="05%"><%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node&nbsp;Location"  , favorite)%></th>
           <th width="14%"><%=this.makeSortLink(callback, parms, SortStyle.INTERFACE,     SortStyle.REVERSE_INTERFACE,     "interface",    "Interface"           , favorite)%></th>
           <th width="8%"><%=this.makeSortLink(callback, parms, SortStyle.SERVICE,       SortStyle.REVERSE_SERVICE,       "service",      "Service"              , favorite)%></th>
-          <th width="5%"><%=this.makeSortLink(callback, parms, SortStyle.ALARMID,       SortStyle.REVERSE_ALARMID,       "alarm",      "Alarm"                  , favorite)%></th>
+          <th width="5%"><%=this.makeSortLink(callback, parms, SortStyle.ALARMID,       SortStyle.REVERSE_ALARMID,       "alarm",      "Alarm ID"                  , favorite)%></th>
         </tr>
         </thead>     
       <% for( int i=0; i < events.length; i++ ) {
