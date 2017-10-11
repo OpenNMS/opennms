@@ -1315,7 +1315,7 @@
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
-    <owaspEncoderVersion>1.2</owaspEncoderVersion>
+    <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
     <quartzVersion>1.6.5</quartzVersion>
     <slf4jVersion>1.7.21</slf4jVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
