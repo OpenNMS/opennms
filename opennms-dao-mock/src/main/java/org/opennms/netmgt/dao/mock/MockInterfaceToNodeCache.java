@@ -29,24 +29,25 @@
 package org.opennms.netmgt.dao.mock;
 
 import java.net.InetAddress;
+import java.util.Collections;
 
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 
 public class MockInterfaceToNodeCache implements InterfaceToNodeCache {
 
     @Override
-    public int setNodeId(String location, InetAddress ipAddr, int nodeId) {
-        return 0;
+    public boolean setNodeId(String location, InetAddress ipAddr, int nodeId) {
+        return false;
     }
 
     @Override
-    public int removeNodeId(String location, InetAddress ipAddr) {
-        return 0;
+    public boolean removeNodeId(String location, InetAddress ipAddr, int nodeId) {
+        return false;
     }
 
     @Override
-    public int getNodeId(String location, InetAddress ipAddr) {
-        return 0;
+    public Iterable<Integer> getNodeId(String location, InetAddress ipAddr) {
+        return Collections.emptySet();
     }
 
     @Override
