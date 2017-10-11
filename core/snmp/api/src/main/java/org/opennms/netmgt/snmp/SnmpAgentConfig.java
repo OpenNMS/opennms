@@ -109,7 +109,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
      */
     @Override
     public String toString() {
-        StringBuffer buff = new StringBuffer("SnmpAgentConfig[");
+        final StringBuilder buff = new StringBuilder("SnmpAgentConfig[");
         buff.append("Address: " + InetAddrUtils.str(m_address));
         buff.append(", ProxyForAddress: " + InetAddrUtils.str(m_proxyFor));
         buff.append(", Port: " + getPort());

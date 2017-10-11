@@ -45,12 +45,12 @@ import org.opennms.web.alarm.filter.NodeFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
 
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndContentImpl;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntryImpl;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndFeedImpl;
 
 /**
  * <p>AlarmFeed class.</p>
@@ -79,7 +79,7 @@ public class AlarmFeed extends AbstractFeed {
     /**
      * <p>getFeed</p>
      *
-     * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
+     * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
      */
     @Override
     public SyndFeed getFeed() {
@@ -89,9 +89,9 @@ public class AlarmFeed extends AbstractFeed {
         feed.setDescription("OpenNMS Alarms");
         feed.setLink(getUrlBase() + "alarm/list.htm");
 
-        List<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<SyndEntry> entries = new ArrayList<>();
 
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
         if (this.getRequest().getParameter("node") != null) {
             Integer nodeId = WebSecurityUtils.safeParseInt(this.getRequest().getParameter("node"));
             filters.add(new NodeFilter(nodeId, getServletContext()));

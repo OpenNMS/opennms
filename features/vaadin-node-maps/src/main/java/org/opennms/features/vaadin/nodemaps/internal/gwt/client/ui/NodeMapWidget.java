@@ -426,7 +426,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private void sendSelectionToBackend() {
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override public void execute() {
-                final List<Integer> nodeIds = new ArrayList<Integer>();
+                final List<Integer> nodeIds = new ArrayList<>();
                 for (final JSNodeMarker marker : m_markerContainer.getMarkers()) {
                     final Integer nodeId = marker.getNodeId();
                     if (nodeId != null) {

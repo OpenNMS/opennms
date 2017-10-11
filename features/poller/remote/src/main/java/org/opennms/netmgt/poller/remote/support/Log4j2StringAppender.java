@@ -57,7 +57,9 @@ public class Log4j2StringAppender extends AbstractOutputStreamAppender<Log4j2Str
 	private final static Configuration LOGGER_CONTEXT_CONFIGURATION = LOGGER_CONTEXT.getConfiguration();
 
 	/**
-	 * Create an appender with {@link PatternLayout#createDefaultLayout()} as the layout.
+	 * <p>Create an appender with the following pattern as the layout (to match our log file layout):</p>
+	 * 
+	 * {@code %d %-5p [%t] %c{1.}: %m%n}
 	 * 
 	 * @param name
 	 * @param filter
@@ -65,7 +67,7 @@ public class Log4j2StringAppender extends AbstractOutputStreamAppender<Log4j2Str
 	 * @param immediateFlush
 	 */
 	private Log4j2StringAppender(String name, Filter filter, boolean ignoreExceptions, boolean immediateFlush) {
-		this(name, PatternLayout.createDefaultLayout(), filter, ignoreExceptions, immediateFlush);
+		this(name, PatternLayout.newBuilder().withPattern("%d %-5p [%t] %c{1.}: %m%n").build(), filter, ignoreExceptions, immediateFlush);
 	}
 
 	/**

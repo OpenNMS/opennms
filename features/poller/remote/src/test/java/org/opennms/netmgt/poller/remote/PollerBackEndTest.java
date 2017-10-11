@@ -487,7 +487,7 @@ public class PollerBackEndTest extends TestCase {
 
     public void testGetServiceMonitorLocators() {
 
-        Collection<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
+        Collection<ServiceMonitorLocator> locators = new ArrayList<>();
 
         expect(m_pollerConfig.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR)).andReturn(locators);
 
@@ -801,7 +801,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_scanReportDao.save(EasyMock.anyObject(ScanReport.class))).andReturn("");
         m_mocks.replayAll();
 
-        List<ScanReportPollResult> scanReportPollResults = new ArrayList<ScanReportPollResult>();
+        List<ScanReportPollResult> scanReportPollResults = new ArrayList<>();
         scanReportPollResults.add(new ScanReportPollResult("ICMP", 1, "Test Node", 1, "127.0.0.1", PollStatus.available(20.0)));
         scanReportPollResults.add(new ScanReportPollResult("HTTP", 2, "Test Node", 1, "127.0.0.1", PollStatus.unavailable("Weasels ate my HTTP server")));
         scanReportPollResults.add(new ScanReportPollResult("SNMP", 3, "Test Node", 1, "127.0.0.1", PollStatus.available(400.0)));

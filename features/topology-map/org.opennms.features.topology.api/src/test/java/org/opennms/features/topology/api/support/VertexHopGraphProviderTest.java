@@ -79,7 +79,7 @@ public class VertexHopGraphProviderTest {
 
 		@Override
 		public Set<VertexRef> getVertices() {
-			Set<VertexRef> retval = new HashSet<VertexRef>();
+			Set<VertexRef> retval = new HashSet<>();
 			retval.add(new DefaultVertexRef("nodes", "g0", "g0"));
 			retval.add(new DefaultVertexRef("nodes", "g1", "g1"));
 			retval.add(new DefaultVertexRef("nodes", "g2", "g2"));
@@ -145,7 +145,7 @@ public class VertexHopGraphProviderTest {
 			
 			@Override
 			public Set<VertexRef> getVertices() {
-				Set<VertexRef> retval = new HashSet<VertexRef>();
+				Set<VertexRef> retval = new HashSet<>();
 				retval.add(new DefaultVertexRef("nodes", "g2"));
 				return retval;
 			}

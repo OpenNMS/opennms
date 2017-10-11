@@ -53,9 +53,6 @@ import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy;
-import org.opennms.netmgt.eventd.adaptors.EventReceiver;
-import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
-import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
@@ -208,21 +205,8 @@ public class OpenNMSITCase {
                 List<EventHandler> eventHandlers = new ArrayList<EventHandler>(1);
                 eventHandlers.add(proxy);
                 
-                TcpEventReceiver tcpEventReceiver = new TcpEventReceiver();
-                tcpEventReceiver.setPort(5837);
-                tcpEventReceiver.setEventHandlers(eventHandlers);
-                
-                UdpEventReceiver udpEventReceiver = new UdpEventReceiver();
-                udpEventReceiver.setPort(5837);
-                tcpEventReceiver.setEventHandlers(eventHandlers);
-                
-                List<EventReceiver> eventReceivers = new ArrayList<EventReceiver>(2);
-                eventReceivers.add(tcpEventReceiver);
-                eventReceivers.add(udpEventReceiver);
-
                 m_eventd = new Eventd();
                 m_eventd.setEventdServiceManager(eventdServiceManager);
-                m_eventd.setEventReceivers(eventReceivers);
                 m_eventd.setReceiver(new BroadcastEventProcessor(m_eventdIpcMgr, eventConfDao));
                 
                 m_eventd.init();

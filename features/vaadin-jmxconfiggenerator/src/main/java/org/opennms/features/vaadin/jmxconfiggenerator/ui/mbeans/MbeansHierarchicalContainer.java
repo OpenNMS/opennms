@@ -111,7 +111,7 @@ public class MbeansHierarchicalContainer extends HierarchicalContainer {
 
 	@Override
 	public String toString() {
-		StringBuilder string = new StringBuilder();
+		final StringBuilder string = new StringBuilder();
 		string.append(getClass().getName() + ":\n");
 		for (Object eachRootItemId : rootItemIds()) {
 			string.append(printInternalTree(eachRootItemId, 0));

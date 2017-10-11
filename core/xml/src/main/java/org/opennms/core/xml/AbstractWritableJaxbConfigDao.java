@@ -110,7 +110,7 @@ public abstract class AbstractWritableJaxbConfigDao<K,V> extends AbstractJaxbCon
      * @throws java.io.IOException
      *             if any.
      */
-    public void update() throws IOException {
+    public void update() {
         getReadLock().lock();
         try {
             getContainer().reload();

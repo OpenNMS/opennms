@@ -162,22 +162,24 @@ public class IsisISAdjTableTracker extends TableTracker {
 	    }
 
 	    public IsIsLink getIsisLink() {
-            LOG.info( "getIsisLink: row count: {}", getColumnCount());
+            LOG.debug( "getIsisLink: row count: {}", getColumnCount());
             IsIsLink link = new IsIsLink();
             link.setIsisCircIndex(getIsisCircIndex());
-            LOG.info( "getIsisLink: IS-IS Circ Index: {}",  link.getIsisCircIndex());
             link.setIsisISAdjIndex(getIsisISAdjIndex());
-            LOG.info( "getIsisLink: IS-IS IS Adj Index: {}",  link.getIsisISAdjIndex());
             link.setIsisISAdjState(IsisISAdjState.get(getIsisISAdjStatus()));
-            LOG.info( "getIsisLink: IS-IS IS Adj State: {}",  IsisISAdjState.getTypeString(getIsisISAdjStatus()));
             link.setIsisISAdjNeighSNPAAddress(getIsisISAdjNeighSnpaAddress());
-            LOG.info( "getIsisLink: IS-IS IS Adj Neigh SNPA Address: {}",  link.getIsisISAdjNeighSNPAAddress());
             link.setIsisISAdjNeighSysType(IsisISAdjNeighSysType.get(getIsisISAdjNeighSysType()));
-            LOG.info( "getIsisLink: IS-IS IS Adj Neigh Sys Type: {}",  IsisISAdjNeighSysType.getTypeString(getIsisISAdjNeighSysType()));
             link.setIsisISAdjNeighSysID(getIsisISAdjNeighSysID());
-            LOG.info( "getIsisLink: IS-IS IS Adj Neigh Sys ID: {}",  link.getIsisISAdjNeighSysID());
             link.setIsisISAdjNbrExtendedCircID(getIsisISAdjNbrExtendedCircID());
-            LOG.info( "getIsisLink: IS-IS IS Adj Nbr Extended Circ ID: {}",  link.getIsisISAdjNbrExtendedCircID());
+            LOG.debug( "getIsisLink: Circ Index: {}, Adj Index: {}, Adj State: {}, Adj Neigh SNPA Address: {},"
+                    + "\n Adj Neigh Sys Type: {}, Adj Neigh Sys ID: {}, Adj Nbr Extended Circ ID: {}",
+                      link.getIsisCircIndex(),
+                      link.getIsisISAdjIndex(),
+                      IsisISAdjState.getTypeString(getIsisISAdjStatus()),
+                      link.getIsisISAdjNeighSNPAAddress(),
+                      IsisISAdjNeighSysType.getTypeString(getIsisISAdjNeighSysType()),
+                      link.getIsisISAdjNeighSysID(),
+                      link.getIsisISAdjNbrExtendedCircID());
             return link;
 	    }
     }

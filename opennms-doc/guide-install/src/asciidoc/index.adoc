@@ -9,7 +9,7 @@
 
 [[gi]]
 = Installation Guide
-:author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2017 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -44,6 +44,7 @@ include::text/r/introduction.adoc[]
 include::text/r/rhel.adoc[]
 include::text/r/debian.adoc[]
 
+ifndef::opennms-prime[]
 // Installation Guide for Minion
 include::text/minion/introduction.adoc[]
 include::text/minion/install.adoc[]
@@ -51,3 +52,4 @@ include::text/minion/configure-opennms.adoc[]
 include::text/minion/configure-minion.adoc[]
 include::text/minion/advanced-configuration.adoc[]
 include::text/minion/troubleshooting.adoc[]
+endif::opennms-prime[]

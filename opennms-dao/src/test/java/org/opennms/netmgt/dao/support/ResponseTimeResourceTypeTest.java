@@ -72,7 +72,7 @@ public class ResponseTimeResourceTypeTest {
 
     private OnmsIpInterface ipInterface = createMock(OnmsIpInterface.class);
 
-    private Set<OnmsIpInterface> ipInterfaces = new HashSet<OnmsIpInterface>();
+    private Set<OnmsIpInterface> ipInterfaces = new HashSet<>();
 
     private ResponseTimeResourceType responseTimeResourceType = new ResponseTimeResourceType(resourceStorageDao, ipInterfaceDao);
 

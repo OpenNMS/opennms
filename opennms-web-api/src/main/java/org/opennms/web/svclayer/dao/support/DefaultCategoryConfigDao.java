@@ -76,7 +76,7 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 	@Override
 	public Collection<Category> findAll() {
 		
-		List<Category> catList = new ArrayList<Category>();
+		List<Category> catList = new ArrayList<>();
 		Catinfo catInfo = CategoryFactory.getInstance().getConfig();
 		List<CategoryGroup> catGroupList = catInfo.getCategoryGroups();
 		if (catGroupList != null) {

@@ -53,7 +53,7 @@ public class ParameterList {
      * <p>Constructor for ParameterList.</p>
      */
     public ParameterList() {
-        parameter = new LinkedList<PluginParameter>();
+        parameter = new LinkedList<>();
     }
 
     /**
@@ -62,7 +62,7 @@ public class ParameterList {
      * @param m a {@link java.util.Map} object.
      */
     public ParameterList(Map<String,String> m) {
-        parameter = new LinkedList<PluginParameter>();
+        parameter = new LinkedList<>();
         for (Map.Entry<String,String> e : m.entrySet()) {
             parameter.add(new PluginParameter(e));
         }

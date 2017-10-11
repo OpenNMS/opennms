@@ -71,7 +71,7 @@ public class SyslogNorthbounderConfig implements Serializable {
 
     /** The destinations. */
     @XmlElement(name = "destination")
-    private List<SyslogDestination> m_destinations = new ArrayList<SyslogDestination>();
+    private List<SyslogDestination> m_destinations = new ArrayList<>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)

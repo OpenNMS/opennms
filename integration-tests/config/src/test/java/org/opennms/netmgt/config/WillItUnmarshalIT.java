@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.ifttt.config.IfTttConfig;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
@@ -50,6 +51,8 @@ import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
+import org.opennms.netmgt.alarmd.northbounder.bsf.BSFNorthbounderConfig;
+import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -162,7 +165,7 @@ public class WillItUnmarshalIT {
      * 
      * See {@link #files()} for detailed information.
      */
-    public static final ArrayList<Object[]> FILES = new ArrayList<Object[]>();
+    public static final ArrayList<Object[]> FILES = new ArrayList<>();
 
     private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl, final boolean lenient, final String exceptionMessage) {
         FILES.add(new Object[] {source, file, clazz, impl, lenient, exceptionMessage});
@@ -189,6 +192,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.JAXB);
+        addFile(Source.CONFIG, "bsf-northbounder-configuration.xml", BSFNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
@@ -201,6 +205,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, Impl.JAXB);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.JAXB);
+        addFile(Source.CONFIG, "drools-northbounder-configuration.xml", DroolsNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, Impl.JAXB);
@@ -208,6 +213,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.CONFIG, "ifttt-config.xml", IfTttConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, Impl.JAXB);
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "jms-northbounder-configuration.xml", JmsNorthbounderConfig.class, Impl.JAXB);

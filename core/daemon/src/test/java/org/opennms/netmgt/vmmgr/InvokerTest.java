@@ -132,7 +132,7 @@ public class InvokerTest {
     }
 
     private static Service[] getServiceList() throws Exception {
-        List<Service> serviceList = new ArrayList<Service>();
+        List<Service> serviceList = new ArrayList<>();
 
         serviceList.add(JaxbUtils.unmarshal(Service.class, new StringReader("  <service>\n" + 
         		"    <name>:Name=XSLTProcessor</name>\n" + 

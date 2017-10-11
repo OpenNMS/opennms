@@ -281,7 +281,7 @@ public class TimelineRestService extends OnmsRestService {
             graphics2D.setColor(ONMS_RED);
             int n1 = (int) ((p1 - start) / (delta / width));
             int n2 = (int) ((p2 - start) / (delta / width));
-            StringBuffer stringBuffer = new StringBuffer();
+            final StringBuilder stringBuffer = new StringBuilder();
             stringBuffer.append("<area shape=\"rect\" coords=\"");
             stringBuffer.append(n1);
             stringBuffer.append(",2,");
@@ -297,7 +297,7 @@ public class TimelineRestService extends OnmsRestService {
     /**
      * The static list of timescales
      */
-    public static final ArrayList<TimescaleDescriptor> TIMESCALE_DESCRIPTORS = new ArrayList<TimescaleDescriptor>();
+    public static final ArrayList<TimescaleDescriptor> TIMESCALE_DESCRIPTORS = new ArrayList<>();
 
     /**
      * Initialization of the timescale list
@@ -412,7 +412,7 @@ public class TimelineRestService extends OnmsRestService {
 
         int numLabels = TimescaleDescriptor.computeNumberOfLabels(graphics2D, delta, width);
 
-        StringBuffer htmlBuffer = new StringBuffer();
+        final StringBuilder htmlBuffer = new StringBuilder();
 
         htmlBuffer.append("<img src=\"/opennms/rest/timeline/image/");
         htmlBuffer.append(nodeId);

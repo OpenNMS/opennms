@@ -524,9 +524,9 @@ public class JRobinRrdStrategyTest {
         m_fileAnticipator.initialize();
         String rrdExtension = m_strategy.getDefaultFileExtension();
         
-        List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
+        List<RrdDataSource> dataSources = new ArrayList<>();
         dataSources.add(new RrdDataSource("bar", RrdAttributeType.GAUGE, 3000, "U", "U"));
-        List<String> rraList = new ArrayList<String>();
+        List<String> rraList = new ArrayList<>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
         RrdDef def = m_strategy.createDefinition("hello!", m_fileAnticipator.getTempDir().getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
         m_strategy.createFile(def);

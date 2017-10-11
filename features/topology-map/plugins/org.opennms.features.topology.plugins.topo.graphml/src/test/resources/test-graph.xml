@@ -55,7 +55,8 @@
             <data key="label">West 1</data>
         </node>
         <node id="west.2">
-            <data key="label">West 2</data>
+            <data key="label">West 2</data>>
+            <data key="nodeID">4</data>
         </node>
         <node id="west.3">
             <data key="label">West 3</data>
@@ -76,10 +77,12 @@
             <data key="label">South 4</data>
         </node>
         <node id="east.1">
-            <data key="label">East 1</data>
+            <data key="label">East 1</data>>
+            <data key="nodeID">5</data>
         </node>
         <node id="east.2">
-            <data key="label">East 2</data>
+            <data key="label">East 2</data>>
+            <data key="nodeID">6</data>
         </node>
         <node id="east.3">
             <data key="label">East 3</data>

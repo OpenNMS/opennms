@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<resource-types>
+    <!-- Resource Type for WinRM TCP/IP Network Interfaces -->
+    <resourceType name="wrmTcpipNetworkInterface" label="Windows TCP/IP Network Interface"
+                 resourceLabel="${wrmIpNetIfName}">
+     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+       <parameter key="sibling-column-name" value="wrmIpNetIfName" />
+       <parameter key="replace-all" value="s/://" />
+       <parameter key="replace-all" value="s/\s/_/" />
+       <parameter key="replace-all" value="s/[+]/-/" />
+     </storageStrategy>
+   </resourceType>
+
+    <!-- Resource Type for WinRM CPUs -->
+    <resourceType name="wrmOSCpu" label="Windows Processor"
+                 resourceLabel="CPU ${wrmOSCpuName}">
+     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+       <parameter key="sibling-column-name" value="wrmOSCpuName" />
+     </storageStrategy>
+   </resourceType>
+
+    <!-- Resource Type for WinRM Physical Disks -->
+    <resourceType name="wrmPhysicalDisk" label="Windows Physical Disk"
+                 resourceLabel="${wrmPDName}">
+     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+       <parameter key="sibling-column-name" value="wrmPDName" />
+       <parameter key="replace-all" value="s/://" />
+       <parameter key="replace-all" value="s/\s/_/" />
+       <parameter key="replace-all" value="s/[+]/-/" />
+     </storageStrategy>
+   </resourceType>
+
+    <!-- Resource Type for WinRM Logical Disks -->
+    <resourceType name="wrmLogicalDisk" label="Windows Logical Disk"
+                 resourceLabel="${wrmLDName}">
+     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+       <parameter key="sibling-column-name" value="wrmLDName" />
+       <parameter key="replace-all" value="s/://" />
+       <parameter key="replace-all" value="s/\s/_/" />
+       <parameter key="replace-all" value="s/[+]/-/" />
+     </storageStrategy>
+   </resourceType>
+
+    <!-- Resource Type for WinRM Web Requests -->
+    <resourceType name="wrmW3" label="Windows Web Requests" resourceLabel="${wrmW3Name}">
+     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+       <parameter key="sibling-column-name" value="wrmW3Name" />
+       <parameter key="replace-all" value="s/://" />
+       <parameter key="replace-all" value="s/\s/_/" />
+       <parameter key="replace-all" value="s/[+]/-/" />
+     </storageStrategy>
+   </resourceType>
+</resource-types>

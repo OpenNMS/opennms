@@ -214,7 +214,7 @@ public class DuplicatePrimaryAddressIT {
 
         Assert.assertNotSame(ip1.getNode().getId(), ip2.getNode().getId());
 
-        List<OnmsIpInterface> initialIfs = new ArrayList<OnmsIpInterface>();
+        List<OnmsIpInterface> initialIfs = new ArrayList<>();
         if (scheduleExistingNodes) {
             initialIfs.add(ip1);
             initialIfs.add(ip2);

@@ -98,7 +98,7 @@ public abstract class CorrelationExample {
     	}
 
     	final Map<Integer, Node> m_nodes = new HashMap<Integer, Node>();
-    	final List<SimItem> m_eventSequence = new LinkedList<SimItem>();
+    	final List<SimItem> m_eventSequence = new LinkedList<>();
     	
     	public void load(final InputStream in) {
     		

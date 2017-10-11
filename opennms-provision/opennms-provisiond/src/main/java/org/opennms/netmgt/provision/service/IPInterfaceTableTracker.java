@@ -39,7 +39,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,10 +120,10 @@ public class IPInterfaceTableTracker extends TableTracker {
 
             final InetAddress inetAddress = InetAddressUtils.addr(ipAddr);
             final OnmsIpInterface iface = new OnmsIpInterface(inetAddress, null);
+            iface.setNetMask(netMask);
 
             if (ifIndex != null) {
                 final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
-                snmpIface.setNetMask(netMask);
                 snmpIface.setCollectionEnabled(true);
                 iface.setSnmpInterface(snmpIface);
                 iface.setIfIndex(ifIndex);

@@ -252,7 +252,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
                             return null;
                         }
 
-                        StringBuffer indexSubString = new StringBuffer();
+                        final StringBuilder indexSubString = new StringBuilder();
                         for (int i = start; i < end; i++) {
                             if (indexSubString.length() != 0) {
                                 indexSubString.append(".");
@@ -269,7 +269,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
                         String subSymbol = getSymbolValue(hexMatcher.group(1));
                         List<String> indexElements = tokenizeIndex(subSymbol);
                         
-                        StringBuffer hexString = new StringBuffer();
+                        final StringBuilder hexString = new StringBuilder();
                         for (String indexElement : indexElements) {
                             if (hexString.length() > 0) {
                                 hexString.append(":");
@@ -314,7 +314,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
                 }
 
                 private List<String> tokenizeIndex(final String index) {
-                    List<String> indexElements = new ArrayList<String>();
+                    List<String> indexElements = new ArrayList<>();
                     StringTokenizer t = new StringTokenizer(index, ".");
                     while (t.hasMoreTokens()) {
                         indexElements.add(t.nextToken());

@@ -78,7 +78,7 @@ public class SpringSecurityUser implements UserDetails {
     }
 
     public void addAuthority(GrantedAuthority authority) {
-        final Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        final Set<GrantedAuthority> authorities = new HashSet<>();
         if (m_authorities != null) authorities.addAll(m_authorities);
         authorities.add(authority);
         m_authorities = authorities;

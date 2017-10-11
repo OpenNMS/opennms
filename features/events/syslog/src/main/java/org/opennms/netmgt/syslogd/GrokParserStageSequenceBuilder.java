@@ -260,7 +260,7 @@ public abstract class GrokParserStageSequenceBuilder {
 			case secondFraction:
 				return (s,v) -> {
 					if (v >= 1000) {
-						s.message.setMillisecond(Math.round(v / 1000));
+						s.message.setMillisecond(Math.round(v / 1000f));
 					} else {
 						s.message.setMillisecond(v);
 					}
@@ -375,8 +375,8 @@ public abstract class GrokParserStageSequenceBuilder {
 		GrokState state = GrokState.TEXT;
 		ParserStageSequenceBuilder factory = new ParserStageSequenceBuilder();
 
-		StringBuffer pattern = new StringBuffer();
-		StringBuffer semantic = new StringBuffer();
+		StringBuilder pattern = new StringBuilder();
+		StringBuilder semantic = new StringBuilder();
 
 		for (char c : grok.toCharArray()) {
 			switch(state) {
@@ -456,8 +456,8 @@ public abstract class GrokParserStageSequenceBuilder {
 						factory.monthString(semanticIntegerToField(semanticString));
 						break;
 					}
-					pattern = new StringBuffer();
-					semantic = new StringBuffer();
+					pattern = new StringBuilder();
+					semantic = new StringBuilder();
 					state = GrokState.ESCAPE_PATTERN;
 					continue;
 				case '%':
@@ -478,8 +478,8 @@ public abstract class GrokParserStageSequenceBuilder {
 						factory.monthString(semanticIntegerToField(semanticString));
 						break;
 					}
-					pattern = new StringBuffer();
-					semantic = new StringBuffer();
+					pattern = new StringBuilder();
+					semantic = new StringBuilder();
 					state = GrokState.START_PATTERN;
 					continue;
 				case ' ':
@@ -519,8 +519,8 @@ public abstract class GrokParserStageSequenceBuilder {
 						break;
 					}
 				}
-				pattern = new StringBuffer();
-				semantic = new StringBuffer();
+				pattern = new StringBuilder();
+				semantic = new StringBuilder();
 				state = GrokState.TEXT;
 				continue;
 			}

@@ -54,6 +54,9 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
     @XmlAttribute(name = "location")
     private String location;
 
+    @XmlAttribute(name="system-id")
+    private String systemId;
+
     @XmlAttribute(name = "class-name")
     private String className;
 
@@ -74,6 +77,15 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
     }
 
     public List<DetectorAttributeDTO> getDetectorAttributes() {
@@ -143,7 +155,8 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, detectorAttributes, runtimeAttributes, className, address);
+        return Objects.hash(location, systemId, detectorAttributes, runtimeAttributes,
+                className, address);
     }
 
     @Override
@@ -156,7 +169,7 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
             return false;
         final DetectorRequestDTO other = (DetectorRequestDTO) obj;
         return Objects.equals(this.location, other.location)
-                && Objects.equals(this.location, other.location)
+                && Objects.equals(this.systemId, other.systemId)
                 && Objects.equals(this.detectorAttributes, other.detectorAttributes)
                 && Objects.equals(this.runtimeAttributes, other.runtimeAttributes)
                 && Objects.equals(this.className, other.className)

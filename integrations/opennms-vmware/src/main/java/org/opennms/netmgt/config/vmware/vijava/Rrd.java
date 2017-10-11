@@ -54,7 +54,7 @@ public class Rrd implements java.io.Serializable {
 
     public Rrd() {
         super();
-        this._rraList = new java.util.ArrayList<java.lang.String>();
+        this._rraList = new java.util.ArrayList<>();
     }
 
     /**

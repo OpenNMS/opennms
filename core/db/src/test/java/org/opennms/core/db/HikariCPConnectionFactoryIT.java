@@ -95,7 +95,7 @@ public class HikariCPConnectionFactoryIT {
             }
 
             if (t1 != null || t2 != null) {
-                StringBuffer message = new StringBuffer();
+                final StringBuilder message = new StringBuilder();
                 message.append("Could not successfully close both C3P0 factories.  Future tests might fail.");
 
                 Throwable choice;

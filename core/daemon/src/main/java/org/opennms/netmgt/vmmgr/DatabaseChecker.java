@@ -64,8 +64,8 @@ public class DatabaseChecker {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DatabaseChecker.class);
 	
-    private static List<String> m_required = new ArrayList<String>();
-    private static List<String> m_optional = new ArrayList<String>();
+    private static List<String> m_required = new ArrayList<>();
+    private static List<String> m_optional = new ArrayList<>();
     private Map<String,JdbcDataSource> m_dataSources = new HashMap<String,JdbcDataSource>();
 
     static {

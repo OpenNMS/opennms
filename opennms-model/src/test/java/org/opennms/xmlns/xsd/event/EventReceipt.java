@@ -99,7 +99,7 @@ public class EventReceipt {
      */
     public List<String> getUuid() {
         if (uuid == null) {
-            uuid = new ArrayList<String>();
+            uuid = new ArrayList<>();
         }
         return this.uuid;
     }

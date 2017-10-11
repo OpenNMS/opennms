@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<alarm id="34" type="1" count="1" severity="MINOR">
+  <uei>uei.opennms.org/nodes/interfaceDown</uei>
+  <location>Default</location>
+  <nodeId>1</nodeId>
+  <nodeLabel>n1</nodeLabel>
+  <ipAddress>10.8.0.30</ipAddress>
+  <serviceType id="3">
+    <name>ICMP</name>
+  </serviceType>
+  <reductionKey>uei.opennms.org/nodes/interfaceDown::1:10.8.0.30</reductionKey>
+  <firstEventTime>##DATE##</firstEventTime>
+  <description>All services are down on interface 10.8.0.30.</description>
+  <logMessage>Interface 10.8.0.30 is down.</logMessage>
+  <troubleTicket>NMS-9587</troubleTicket>
+  <troubleTicketState>0</troubleTicketState>
+  <troubleTicketLink>https://issues.opennms.org/browse/NMS-9587</troubleTicketLink>
+  <suppressedUntil>##DATE##</suppressedUntil>
+  <suppressedTime>##DATE##</suppressedTime>
+  <lastEvent id="2035" severity="MINOR" log="Y" display="Y">
+    <uei>uei.opennms.org/nodes/interfaceDown</uei>
+    <label>OpenNMS-defined node event: interfaceDown</label>
+    <time>##DATE##</time>
+    <host>noise</host>
+    <source>OpenNMS.Poller.DefaultPollContext</source>
+    <ipAddress>10.8.0.30</ipAddress>
+    <serviceType id="3">
+      <name>ICMP</name>
+    </serviceType>
+    <parameters>
+      <parameter name="test" value="testVal" type="string"/>
+    </parameters>
+    <createTime>##DATE##</createTime>
+    <description>All services are down on interface 10.8.0.30.</description>
+    <logMessage>Interface 10.8.0.30 is down.</logMessage>
+    <nodeId>1</nodeId>
+    <nodeLabel>n1</nodeLabel>
+    <location>Default</location>
+  </lastEvent>
+  <parameters>
+    <parameter name="test" value="testVal" type="string"/>
+  </parameters>
+  <lastEventTime>##DATE##</lastEventTime>
+  <x733ProbableCause>0</x733ProbableCause>
+</alarm>

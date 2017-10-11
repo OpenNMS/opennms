@@ -79,11 +79,13 @@ import org.springframework.core.style.ToStringCreator;
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
-    private static final long serialVersionUID = 5202941338689399917L;
+    private static final long serialVersionUID = 8463903013592837114L;
 
     private Integer m_id;
 
     private InetAddress m_ipAddress;
+
+    private InetAddress m_netMask;
 
     private String m_ipHostName;
 
@@ -95,7 +97,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private OnmsNode m_node;
 
-    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<OnmsMonitoredService>();
+    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<>();
 
     private OnmsSnmpInterface m_snmpInterface;
 
@@ -427,6 +429,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         return new ToStringCreator(this)
         .append("id", m_id)
         .append("ipAddr", InetAddressUtils.str(m_ipAddress))
+        .append("netMask", InetAddressUtils.str(m_netMask))
         .append("ipHostName", m_ipHostName)
         .append("isManaged", m_isManaged)
         .append("isSnmpPrimary", m_isSnmpPrimary)
@@ -469,6 +472,17 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_ipAddress = ipaddr;
     }
 
+    @Column(name = "netmask")
+    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    public InetAddress getNetMask() {
+        return m_netMask;
+    }
+
+    public void setNetMask(final InetAddress netMask) {
+        m_netMask = netMask;
+    }
+    
     /**
      * <p>isDown</p>
      *
@@ -518,6 +532,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         
         if (hasNewValue(scannedIface.getIfIndex(), getIfIndex())) {
             setIfIndex(scannedIface.getIfIndex());
+        }
+    
+        if (hasNewValue(scannedIface.getNetMask(), getNetMask())) {
+            setNetMask(scannedIface.getNetMask());
         }
     
         if (hasNewValue(scannedIface.getIsManaged(), getIsManaged())) {

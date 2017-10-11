@@ -128,7 +128,7 @@ public class LightweightMeasurementSet implements MeasurementSet {
 
     @Override
     public String getJson() {
-        StringBuilder buf = new StringBuilder("[");
+        final StringBuilder buf = new StringBuilder("[");
 
         boolean first = true;
         for (Measurement m : getMeasurements()) {

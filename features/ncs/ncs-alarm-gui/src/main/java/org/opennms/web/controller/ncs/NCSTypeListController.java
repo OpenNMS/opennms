@@ -68,7 +68,7 @@ public class NCSTypeListController {
     }
     
     private String getComponentHTML(NCSComponent component) {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         
         if(component != null) {
             Set<NCSComponent> subcomponents = component.getSubcomponents();

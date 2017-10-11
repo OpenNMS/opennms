@@ -40,6 +40,8 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -117,6 +119,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         // Reload daemon
         final Button reloadButton = UIHelper.createButton("Reload Daemon", "Reloads the Business Service State Machine", FontAwesome.RETWEET, (Button.ClickListener) event -> {
             m_businessServiceManager.triggerDaemonReload();
+            Notification.show("Reloading", "Business Service daemon is being reloaded.", Type.TRAY_NOTIFICATION);
         });
         reloadButton.setId("reloadButton");
 

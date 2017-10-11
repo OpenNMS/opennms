@@ -79,7 +79,7 @@ public class RTCNode {
     /**
      * List of the categories this node belongs to
      */
-    private final List<String> m_categories = new ArrayList<String>();
+    private final List<String> m_categories = new ArrayList<>();
 
     /**
      * <p>Constructor for RTCNode.</p>

@@ -79,7 +79,7 @@ final public class DskTableMonitor extends SnmpMonitorStrategy {
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = svc.getAddress();
 
-        ArrayList<String> errorStringReturn = new ArrayList<String>();
+        ArrayList<String> errorStringReturn = new ArrayList<>();
 
         // Retrieve this interface's SNMP peer object
         final SnmpAgentConfig agentConfig = getAgentConfig(svc, parameters);

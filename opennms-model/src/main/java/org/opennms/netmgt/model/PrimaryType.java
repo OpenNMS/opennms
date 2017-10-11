@@ -140,7 +140,7 @@ public class PrimaryType implements Comparable<PrimaryType>, Serializable {
     }
 
     public static List<PrimaryType> getAllTypes() {
-        final List<PrimaryType> types = new ArrayList<PrimaryType>();
+        final List<PrimaryType> types = new ArrayList<>();
         for (final char c : s_order) {
             types.add(PrimaryType.get(c));
         }

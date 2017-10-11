@@ -110,7 +110,7 @@ public class TcpRrdStrategyTest {
                             PerformanceDataProtos.PerformanceDataReadings messages = PerformanceDataProtos.PerformanceDataReadings.parseFrom(socket.getInputStream());
                             LOG.debug("Number of messages in current packet: " + messages.getMessageCount());
                             for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
-                                StringBuffer values = new StringBuffer();
+                                final StringBuilder values = new StringBuilder();
                                 values.append("{ ");
                                 for (int i = 0; i < message.getDblValueCount(); i++) {
                                     if (i != 0) { values.append(", "); }
@@ -232,9 +232,9 @@ public class TcpRrdStrategyTest {
         // properties.setProperty("org.opennms.rrd.fileExtension", rrdExtension);
         // RrdConfig.getInstance().setProperties(properties);
 
-        List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
+        List<RrdDataSource> dataSources = new ArrayList<>();
         dataSources.add(new RrdDataSource("bar", RrdAttributeType.GAUGE, 3000, "U", "U"));
-        List<String> rraList = new ArrayList<String>();
+        List<String> rraList = new ArrayList<>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
         File tempDir = m_fileAnticipator.getTempDir(); 
         // Create an '/rrd/snmp/1' directory in the temp directory so that the

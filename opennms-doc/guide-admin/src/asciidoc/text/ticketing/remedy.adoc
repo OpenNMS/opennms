@@ -1,0 +1,88 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-ticketing-remedy]]
+=== Remedy Ticketing Plugin
+
+The _Remedy Ticketing Plugin_ is used to create requests in the BMC Remedy ARS Help Desk Module in response to _{opennms-product-name}_ alarms.
+
+==== Remedy Product Overview
+It's important to be specific when discussing Remedy, because BMC Remedy is a suite of products.
+The _{opennms-product-name}_ Remedy Ticketing Plugin requires the core Remedy ARS and the Help Desk Module.
+The Help Desk Module contains a Help Desk Interface Web Service, which serves as the endpoint for creating, updating, and fetching tickets.
+
+The Help Desk Interface (HDI) Web Service requires extensive configuration for its basic operation, and may need additional customization to interoperate with the _{opennms-product-name}_ Remedy Ticketing Plugin.
+Contact your Remedy administrator for help with required configuration tasks.
+
+==== Supported Remedy Product Versions
+Currently supported Remedy product versions are listed below:
+
+[options="header, autowidth"]
+|===
+| Product            | Version
+| Remedy ARS         | 7.6.04 Service Pack 2
+| Help Desk Module   | 7.6.04 Service Pack 1
+| HDI Web Service    | Same as Help Desk Module
+|===
+
+[[ga-ticketing-remedy-setup]]
+==== Setup
+
+The Remedy Ticketing Plugin and its dependencies are part of the _{opennms-product-name}_ core packages.
+
+Start by enabling the plugin and the ticket controls in the _{opennms-product-name}_ web interface, by setting the following properties in `${OPENNMS_HOME}/etc/opennms.properties`:
+
+[source]
+----
+opennms.ticketer.plugin=org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin
+opennms.alarmTroubleTicketEnabled = true
+----
+
+In the same file, set the property `opennms.alarmTroubleTicketLinkTemplate` to a value appropriate for constructing a link to tickets in the Remedy web interface.
+A sample value is provided but must be customized for your site; the token `${id}` will be replaced with the Remedy ticket ID when the link is rendered.
+
+Now configure the plugin itself by setting the following properties in `${OPENNMS_HOME}/etc/remedy.properties`:
+
+[options="header, autowidth"]
+|===
+| Name                                         | Required | Description
+| `remedy.username`                            | required | Username for authenticating to Remedy
+| `remedy.password`                            | required | Password for authenticating to Remedy
+| `remedy.authentication`                      | optional | Authentication style to use
+| `remedy.locale`                              | optional | Locale for text when creating and updating tickets
+| `remedy.timezone`                            | optional | Timezone for interaction with Remedy
+| `remedy.endpoint`                            | required | The endpoint URL of the HPD web service
+| `remedy.portname`                            | required | The Port name of the HPD web service
+| `remedy.createendpoint`                      | required | The endpoint location of the Create-HPD web service
+| `remedy.createportname`                      | required | The Port name of the Create-HPD web service
+| `remedy.targetgroups`                        | optional | Colon-separated list of Remedy groups to which created tickets may be assigned (`{group}` below refers to values from this list)
+| `remedy.assignedgroup.{group}`               | optional | Assigned group for the target group `{group}`
+| `remedy.assignedsupportcompany.{group}`      | optional | Assigned support company for the target group `{group}`
+| `remedy.assignedsupportorganization.{group}` | optional | Assigned support organization for the target group `{group}`
+| `remedy.assignedgroup`                       | required | Default group to assign the ticket in case the ticket itself lacks information about a target assigned group
+| `remedy.firstname`                           | required | First name for ticket creation and updating. Must exist in Remedy.
+| `remedy.lastname`                            | required | Last name for ticket creation and updating. Must exist in Remedy.
+| `remedy.serviceCI`                           | required | A valid Remedy Service CI for ticket creation
+| `remedy.serviceCIReconID`                    | required | A valid Remedy Service CI Reconciliation ID for ticket creation
+| `remedy.assignedsupportcompany`              | required | A valid default assigned support company for ticket creation
+| `remedy.assignedsupportorganization`         | required | A valid default assigned support organization for ticket creation
+| `remedy.categorizationtier1`                 | required | A valid categorization tier (primary) for ticket creation
+| `remedy.categorizationtier2`                 | required | A valid categorization tier (secondary) for ticket creation
+| `remedy.categorizationtier3`                 | required | A valid categorization tier (tertiary) for ticket creation
+| `remedy.serviceType`                         | required | A valid service type for ticket creation
+| `remedy.reportedSource`                      | required | A valid Reported Source for ticket creation
+| `remedy.impact`                              | required | A valid value for Impact, used in ticket creation
+| `remedy.urgency`                             | required | A valid value for Urgency, used in ticket creation
+| `remedy.reason.reopen`                       | required | The reason code set in Remedy when the ticket is reopened in _{opennms-product-name}_
+| `remedy.resolution`                          | required | The reason code set in Remedy when the ticket is closed in _{opennms-product-name}_
+| `remedy.reason.cancelled`                    | required | The reason code set in Remedy when the ticket is cancelled in _{opennms-product-name}_
+|===
+
+NOTE: The values for many of the required properties are site-specific; contact your Remedy administrator for assistance.
+
+Restart _{opennms-product-name}_.
+
+The plugin should be ready to use. When troubleshooting, consult the following log files:
+
+* ${OPENNMS_HOME}/logs/trouble-ticketer.log

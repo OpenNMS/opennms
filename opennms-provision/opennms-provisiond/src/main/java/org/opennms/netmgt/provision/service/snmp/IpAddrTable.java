@@ -34,13 +34,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -96,7 +96,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @return a {@link java.util.Set} object.
      */
     public Set<Integer> getIfIndices() {
-        Set<Integer> ifIndices = new TreeSet<Integer>();
+        Set<Integer> ifIndices = new TreeSet<>();
         for(IpAddrTableEntry entry : getEntries()) {
             Integer ifIndex = entry.getIpAdEntIfIndex();
             if (ifIndex != null) {
@@ -219,7 +219,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
 
             final InetAddress mask = getNetMask(inetAddr);
             if (mask != null) {
-                snmpIf.setNetMask(mask);
+                ipIf.setNetMask(mask);
             }
 
             snmpIf.setCollectionEnabled(true);
@@ -237,7 +237,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @return a {@link java.util.Set} object.
      */
     public Set<String> getIpAddresses() {
-        Set<String> ipAddrs = new LinkedHashSet<String>();
+        Set<String> ipAddrs = new LinkedHashSet<>();
         for(SnmpInstId inst : getInstances()) {
             ipAddrs.add(inst.toString());
         }

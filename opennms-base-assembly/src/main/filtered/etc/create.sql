@@ -57,6 +57,7 @@ drop table monitoringlocationscollectionpackages cascade;
 drop table monitoringlocationstags cascade;
 drop table monitoringsystems cascade;
 drop table events cascade;
+drop table event_parameters cascade;
 drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
@@ -511,8 +512,6 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 --# This table provides the following information:
 --#
 --#  nodeID             : Unique identifier for node to which this if belongs
---#  snmpIpAdEntNetMask : SNMP MIB-2 ipAddrTable.ipAddrEntry.ipAdEntNetMask
---#                       Value is interface's subnet mask
 --#  snmpPhysAddr       : SNMP MIB-2 ifTable.ifEntry.ifPhysAddress
 --#                       Value is interface's MAC Address
 --#  snmpIfIndex        : SNMP MIB-2 ifTable.ifEntry.ifIndex
@@ -545,15 +544,12 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 --#
 --# NOTE:  Although not marked as "not null" the snmpIfIndex field
 --#        should never be null.  This table is considered to be uniquely
---#        keyed by nodeId and snmpIfIndex.  Eventually ipAddr and
---#        snmpIpAdEntNetMask will be removed and netmask added to
---#        the ipInterface table.
+--#        keyed by nodeId and snmpIfIndex.
 --########################################################################
 
 create table snmpInterface (
     id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
-	snmpIpAdEntNetMask	varchar(45),
 	snmpPhysAddr		varchar(32),
 	snmpIfIndex		integer not null,
 	snmpIfDescr		varchar(256),
@@ -584,6 +580,7 @@ create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
 --#
 --#  nodeID          : Unique identifier of the node that "owns" this interface
 --#  ipAddr          : IP Address associated with this interface
+--#  netmask         : Netmask associated with this interface
 --#  ifIndex	     : SNMP index of interface, used to uniquely identify
 --# 		           unnumbered interfaces, or null if there is no mapping to
 --#                    snmpInterface table.  Can be -100 if old code added an
@@ -621,10 +618,11 @@ create table ipInterface (
     id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
 	ipAddr			text not null,
+	netmask			varchar(45),
 	ipHostname		varchar(256),
 	isManaged		char(1),
 	ipStatus		integer,
-    ipLastCapsdPoll timestamp with time zone,
+	ipLastCapsdPoll timestamp with time zone,
 	isSnmpPrimary   char(1),
 	snmpInterfaceId	integer,
 
@@ -822,7 +820,6 @@ create table events (
 	eventSnmphost		varchar(256),
 	serviceID		integer,
 	eventSnmp		varchar(256),
-	eventParms		text,
 	eventCreateTime		timestamp with time zone not null,
 	eventDescr		text,
 	eventLoggroup		varchar(32),
@@ -863,6 +860,16 @@ create index events_ackuser_idx on events(eventAckUser);
 create index events_acktime_idx on events(eventAckTime);
 create index events_alarmid_idx on events(alarmID);
 create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, eventackuser);
+
+create table event_parameters (
+	eventID			integer not null,
+	name        varchar(256) not null,
+	value		    text not null,
+	type		    varchar(256) not null,
+
+	constraint pk_eventParameters primary key (eventID, name),
+	constraint fk_eventParametersEventID foreign key (eventID) references events (eventID) ON DELETE CASCADE
+);
 
 --########################################################################
 --#
@@ -1077,7 +1084,6 @@ create table alarms (
     qosAlarmState           VARCHAR(31),
     ifIndex                 INTEGER,
     clearKey                VARCHAR(256),
-    eventParms              text,
     stickymemo              INTEGER, CONSTRAINT fk_stickyMemo FOREIGN KEY (stickymemo) REFERENCES memos (id) ON DELETE CASCADE
 );
 
@@ -1438,7 +1444,7 @@ CREATE TABLE location_specific_status_changes (
     ifServiceId INTEGER NOT NULL,
     statusCode INTEGER NOT NULL,
     statusTime timestamp with time zone NOT NULL,
-    statusReason VARCHAR(255),
+    statusReason TEXT,
     responseTime DOUBLE PRECISION,
 
     CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
@@ -2474,3 +2480,46 @@ CREATE TABLE topo_layout_vertex_positions (
 	CONSTRAINT fk_topo_layout_vertex_positions_vertex_position_id FOREIGN KEY (vertex_position_id)
 	REFERENCES topo_vertex_position (id) ON DELETE CASCADE
 );
+
+--##################################################################
+--# Status views
+--##################################################################
+
+CREATE VIEW node_alarm_status AS SELECT node.nodeid,
+  COALESCE(
+        (SELECT max(
+              CASE
+                  WHEN alarms.severity IS NULL OR alarms.severity < 3 THEN 3
+                  ELSE alarms.severity
+              END)
+        FROM alarms
+        WHERE alarms.nodeid = node.nodeid), 3) AS max_alarm_severity,
+  COALESCE(
+        (SELECT max(
+              CASE
+                  WHEN alarms.severity IS NULL OR alarms.severity < 3 THEN 3
+                  ELSE alarms.severity
+              END)
+         FROM alarms
+         WHERE alarms.nodeid = node.nodeid AND alarms.alarmacktime IS NULL), 3) AS max_alarm_severity_unack,
+  (SELECT count(alarms.alarmid)
+         FROM alarms
+        WHERE alarms.nodeid = node.nodeid AND alarms.alarmacktime IS NULL) AS alarm_count_unack,
+  (SELECT count(*)
+         FROM alarms
+        WHERE alarms.nodeid = node.nodeid) AS alarm_count
+ FROM node;
+
+CREATE VIEW node_outage_status AS
+ SELECT node.nodeid,
+      CASE
+          WHEN tmp.severity IS NULL OR tmp.severity < 3 THEN 3
+          ELSE tmp.severity
+      END AS max_outage_severity
+ FROM ( SELECT events.nodeid,
+          max(events.eventseverity) AS severity
+         FROM events
+           JOIN outages ON outages.svclosteventid = events.eventid
+        WHERE outages.svcregainedeventid IS NULL
+        GROUP BY events.nodeid) tmp
+ RIGHT JOIN node ON tmp.nodeid = node.nodeid;

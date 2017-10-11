@@ -301,7 +301,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
 
     private final class TestTrapListener implements TrapNotificationListener {
         private List<TrapInformation> m_traps = new ArrayList<>();
-        private List<String> m_errors = new ArrayList<String>();
+        private List<String> m_errors = new ArrayList<>();
 
         @Override
         public void trapReceived(final TrapInformation trapInformation) {

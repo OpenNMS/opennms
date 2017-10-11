@@ -64,6 +64,9 @@ public class CollectCommand extends OsgiCommandSupport {
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String location;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String systemId;
+
     @Option(name = "-t", aliases = "--ttl", description = "Time to live in milliseconds", required = false, multiValued = false)
     Long ttlInMs;
 
@@ -105,6 +108,7 @@ public class CollectCommand extends OsgiCommandSupport {
         final CollectionAgent agent = getCollectionAgent();
         final CompletableFuture<CollectionSet> future = locationAwareCollectorClient.collect()
                 .withAgent(agent)
+                .withSystemId(systemId)
                 .withCollector(collector)
                 .withTimeToLive(ttlInMs)
                 .withAttributes(parse(attributes))

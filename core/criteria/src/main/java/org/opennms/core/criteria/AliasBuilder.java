@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +46,46 @@ public class AliasBuilder {
     final Map<String, Alias> m_aliases = new HashMap<String, Alias>();
 
     public final AliasBuilder alias(final String associationPath, final String alias, final JoinType type, final Restriction joinCondition) {
-        if (m_aliases.containsKey(alias)) {
-            LOG.debug("alias '{}' already associated with associationPath '{}', skipping.", alias, associationPath);
-        } else {
+        Alias existing = m_aliases.get(alias);
+        if (existing == null) {
             if (joinCondition == null) {
                 m_aliases.put(alias, new Alias(associationPath, alias, type));
             } else {
                 m_aliases.put(alias, new Alias(associationPath, alias, type, joinCondition));
+            }
+        } else {
+            if (joinCondition == null) {
+                LOG.debug("alias '{}' already associated with associationPath '{}', skipping.", alias, associationPath);
+            } else {
+                if (existing.hasJoinCondition()) {
+                    // Combine the JOIN conditions
+                    LOG.debug("alias '{}' already associated with associationPath '{}', appending join condition.", alias, associationPath);
+                    existing.setJoinCondition(Restrictions.and(existing.getJoinCondition(), joinCondition));
+                } else {
+                    LOG.debug("alias '{}' already associated with associationPath '{}', adding join condition.", alias, associationPath);
+                    existing.setJoinCondition(joinCondition);
+                }
+            }
+        }
+        return this;
+    }
+
+    public final AliasBuilder alias(final Alias alias) {
+        Alias existing = m_aliases.get(alias.getAlias());
+        if (existing == null) {
+            m_aliases.put(alias.getAlias(), alias);
+        } else {
+            if (alias.hasJoinCondition()) {
+                if (existing.hasJoinCondition()) {
+                    // Combine the JOIN conditions
+                    LOG.debug("alias '{}' already associated with associationPath '{}', appending join condition.", alias.getAlias(), alias.getAssociationPath());
+                    existing.setJoinCondition(Restrictions.and(existing.getJoinCondition(), alias.getJoinCondition()));
+                } else {
+                    LOG.debug("alias '{}' already associated with associationPath '{}', adding join condition.", alias.getAlias(), alias.getAssociationPath());
+                    existing.setJoinCondition(alias.getJoinCondition());
+                }
+            } else {
+                LOG.debug("alias '{}' already associated with associationPath '{}', skipping.", alias.getAlias(), alias.getAssociationPath());
             }
         }
         return this;

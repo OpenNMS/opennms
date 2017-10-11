@@ -50,6 +50,9 @@ public class Detect extends OsgiCommandSupport {
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String m_systemId;
+
     @Argument(index = 0, name = "detectorType", description = "Service to detect", required = true, multiValued = false)
     String serviceName;
 
@@ -66,6 +69,7 @@ public class Detect extends OsgiCommandSupport {
         System.out.printf("Trying to detect '%s' on '%s' ", serviceName, m_host);
         final CompletableFuture<Boolean> future = locationAwareDetectorClient.detect()
                 .withLocation(m_location)
+                .withSystemId(m_systemId)
                 .withServiceName(serviceName)
                 .withAddress(InetAddress.getByName(m_host))
                 .withAttributes(parse(attributes))

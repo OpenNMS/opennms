@@ -58,6 +58,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.svclayer.SiteStatusViewService;
 import org.opennms.web.svclayer.model.AggregateStatus;
@@ -157,7 +158,7 @@ public class DefaultSiteStatusServiceIT implements InitializingBean {
         outageEvent.setEventTime(new Date());
         outageEvent.setEventSource("Me");
         outageEvent.setEventCreateTime(new Date());
-        outageEvent.setEventSeverity(0);
+        outageEvent.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         outageEvent.setEventLog("L");
         outageEvent.setEventDisplay("D");
         m_eventDao.save(outageEvent);
@@ -176,7 +177,7 @@ public class DefaultSiteStatusServiceIT implements InitializingBean {
         createOutageForNodeInCategory("Routers");
         createOutageForNodeInCategory("Servers");
 
-        Set<AggregateStatusDefinition> defs = new LinkedHashSet<AggregateStatusDefinition>();
+        Set<AggregateStatusDefinition> defs = new LinkedHashSet<>();
 
         AggregateStatusDefinition definition;
         definition = new AggregateStatusDefinition("Routers", Collections.singleton(new OnmsCategory("Routers")));

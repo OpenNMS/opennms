@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
@@ -206,7 +207,7 @@ abstract public class XmlTest<T> {
     }
 
     @Test
-    public void marshalJaxbUnmarshalJaxb() throws Exception {
+    public void marshalJaxbUnmarshalJaxb() {
         final String xml = marshalToXmlWithJaxb();
         final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
         LOG.debug("Sample object: {}\n\nJAXB object: {}", getSampleObject(), obj);
@@ -270,10 +271,11 @@ abstract public class XmlTest<T> {
     }
 
     public static void assertXmlEquals(final String expectedXml, final String actualXml) {
-        // ugly hack alert!
-        final XmlTest<Object> test = new XmlTest<Object>(null, null, null) {
-        };
-        test._assertXmlEquals(expectedXml, actualXml);
+        final List<Difference> differences = XmlTest.getDifferencesSimple(expectedXml, actualXml);
+        if (differences.size() > 0) {
+            LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
+        }
+        assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
     }
 
     protected void _assertXmlEquals(final String expectedXml, final String actualXml) {
@@ -303,17 +305,28 @@ abstract public class XmlTest<T> {
     }
 
     protected List<Difference> getDifferences(final String xmlA, final String xmlB) {
+        return getDifferences(xmlA, xmlB, this::ignoreNamespace, this::ignorePrefix, this::ignoreDifference);
+    }
+
+    public static List<Difference> getDifferencesSimple(final String xmlA, final String xmlB) {
+        return getDifferences(xmlA, xmlB, p -> true, p -> true, p -> false);
+    }
+
+    public static List<Difference> getDifferences(final String xmlA, final String xmlB,
+                                                  final Predicate<String> ignoreNamespace,
+                                                  final Predicate<String> ignorePrefix,
+                                                  final Predicate<Difference> ignoreDifference) {
         DetailedDiff myDiff;
         try {
             myDiff = new DetailedDiff(XMLUnit.compareXML(xmlA, xmlB));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
-        final List<Difference> retDifferences = new ArrayList<Difference>();
-        @SuppressWarnings("unchecked")
-        final List<Difference> allDifferences = myDiff.getAllDifferences();
+        final List<Difference> retDifferences = new ArrayList<>();
+        @SuppressWarnings("unchecked") final List<Difference> allDifferences = myDiff.getAllDifferences();
         if (allDifferences.size() > 0) {
-            DIFFERENCES: for (final Difference d : allDifferences) {
+            DIFFERENCES:
+            for (final Difference d : allDifferences) {
                 final NodeDetail controlNodeDetail = d.getControlNodeDetail();
                 final String control = controlNodeDetail.getValue();
                 final NodeDetail testNodeDetail = d.getTestNodeDetail();
@@ -321,36 +334,36 @@ abstract public class XmlTest<T> {
 
                 if (d.getDescription().equals("namespace URI")) {
                     if (control != null && !"null".equals(control)) {
-                        if (ignoreNamespace(control.toLowerCase())) {
+                        if (ignoreNamespace.test(control.toLowerCase())) {
                             LOG.trace("Ignoring {}: {}", d.getDescription(), d);
                             continue DIFFERENCES;
                         }
                     }
                     if (test != null && !"null".equals(test)) {
-                        if (ignoreNamespace(test.toLowerCase())) {
+                        if (ignoreNamespace.test(test.toLowerCase())) {
                             LOG.trace("Ignoring {}: {}", d.getDescription(), d);
                             continue DIFFERENCES;
                         }
                     }
                 } else if (d.getDescription().equals("namespace prefix")) {
                     if (control != null && !"null".equals(control)) {
-                        if (ignorePrefix(control.toLowerCase())) {
+                        if (ignorePrefix.test(control.toLowerCase())) {
                             LOG.trace("Ignoring {}: {}", d.getDescription(), d);
                             continue DIFFERENCES;
                         }
                     }
                     if (test != null && !"null".equals(test)) {
-                        if (ignorePrefix(test.toLowerCase())) {
+                        if (ignorePrefix.test(test.toLowerCase())) {
                             LOG.trace("Ignoring {}: {}", d.getDescription(), d);
                             continue DIFFERENCES;
                         }
                     }
                 } else if (d.getDescription().equals("xsi:schemaLocation attribute")) {
-                    LOG.debug("Schema location '{}' does not match.  Ignoring.", controlNodeDetail.getValue() == null? testNodeDetail.getValue() : controlNodeDetail.getValue());
+                    LOG.debug("Schema location '{}' does not match.  Ignoring.", controlNodeDetail.getValue() == null ? testNodeDetail.getValue() : controlNodeDetail.getValue());
                     continue DIFFERENCES;
                 }
 
-                if (ignoreDifference(d)) {
+                if (ignoreDifference.test(d)) {
                     LOG.debug("ignoreDifference matched.  Ignoring difference: {}: {}", d.getDescription(), d);
                     continue DIFFERENCES;
                 } else {
@@ -405,7 +418,7 @@ abstract public class XmlTest<T> {
         final BeanWrapper expectedWrapper = new BeanWrapperImpl(expected);
         final BeanWrapper actualWrapper   = new BeanWrapperImpl(actual);
 
-        final Set<String> properties = new TreeSet<String>();
+        final Set<String> properties = new TreeSet<>();
         for (final PropertyDescriptor descriptor : expectedWrapper.getPropertyDescriptors()) {
             properties.add(descriptor.getName());
         }

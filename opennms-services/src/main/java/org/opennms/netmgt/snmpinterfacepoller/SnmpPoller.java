@@ -251,15 +251,16 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     protected void schedulePollableInterface(OnmsIpInterface iface) {
         String ipaddress = iface.getIpAddress().getHostAddress();
+        String netmask = iface.getNetMask().getHostAddress();
         Integer nodeid = iface.getNode().getId();
         if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
             String pkgName = getPollerConfig().getPackageName(ipaddress);
             if (pkgName != null) {
                 LOG.debug("Scheduling snmppolling for node: {} ip address: {} - Found package interface with name: {}", nodeid, ipaddress, pkgName);
-                scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,pkgName), pkgName);
+                scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,netmask,pkgName), pkgName);
             } else if (!getPollerConfig().useCriteriaFilters()) {
                 LOG.debug("No SNMP Poll Package found for node: {} ip address: {}. - Scheduling according with default interval", nodeid, ipaddress);
-                scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, "null"), "null");
+                scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress,netmask, "null"), "null");
             }
         }
     }

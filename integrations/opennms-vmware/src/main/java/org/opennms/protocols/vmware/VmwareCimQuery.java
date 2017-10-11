@@ -28,18 +28,23 @@
 
 package org.opennms.protocols.vmware;
 
-import com.vmware.vim25.mo.HostSystem;
-import com.vmware.vim25.mo.ManagedEntity;
-
-import org.apache.commons.cli.*;
-import org.sblim.wbem.cim.CIMObject;
-
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.sblim.wbem.cim.CIMObject;
+
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.ManagedEntity;
 
 public abstract class VmwareCimQuery {
     public static Map<Integer, String> m_healthStates;
@@ -115,13 +120,7 @@ public abstract class VmwareCimQuery {
 
                 String ipAddress;
 
-                try {
-                    ipAddress = vmwareViJavaAccess.getPrimaryHostSystemIpAddress(hostSystem);
-                } catch (RemoteException remoteException) {
-                    System.out.println("Exception:");
-                    remoteException.printStackTrace();
-                    continue;
-                }
+                ipAddress = vmwareViJavaAccess.getPrimaryHostSystemIpAddress(hostSystem);
 
                 if (ipAddress != null) {
                     System.out.print(ipAddress + "\n  Querying host system " + hostSystem.getName() + " for numeric sensors... ");

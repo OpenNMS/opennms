@@ -1,6 +1,6 @@
 {
     "count": 1, 
-    "offset": null, 
+    "offset": 0, 
     "outage": [
         {
             "foreignId": "1", 
@@ -9,6 +9,7 @@
             "ifLostService": 1436881548292, 
             "ifRegainedService": 1436881548292, 
             "ipAddress": "192.168.1.1", 
+            "locationName": "Default", 
             "monitoredService": {
                 "applications": [], 
                 "down": true, 

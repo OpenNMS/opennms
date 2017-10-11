@@ -131,7 +131,7 @@
             return null;
         }
         
-        List<InetAddress> ips = new ArrayList<InetAddress>();
+        List<InetAddress> ips = new ArrayList<>();
         for (Service service : services) {
             ips.add(InetAddressUtils.addr(service.getIpAddress()));
         }
@@ -225,7 +225,7 @@
 	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 	final ServiceRegistry registry = webAppContext.getBean(ServiceRegistry.class);
 
-	final List<String> renderedLinks = new ArrayList<String>();
+	final List<String> renderedLinks = new ArrayList<>();
 	final Collection<ConditionalPageNavEntry> navLinks = registry.findProviders(ConditionalPageNavEntry.class, "(Page=node)");
 	for (final ConditionalPageNavEntry link : navLinks) {
 	    final DisplayStatus displayStatus = link.evaluate(request, node_db);
@@ -239,7 +239,7 @@
 	
 	pageContext.setAttribute("navEntries", renderedLinks);
 
-    final List<String> schedOutages = new ArrayList<String>();
+    final List<String> schedOutages = new ArrayList<>();
     PollOutagesConfigFactory f = PollOutagesConfigFactory.getInstance();
     for (final Outage outage : f.getOutages()) {
         if (f.isCurTimeInOutage(outage)) {

@@ -147,7 +147,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     private TimeAdjustment m_timeAdjustment;
 
     // listeners
-    private List<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<PropertyChangeListener>();
+    private List<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<>();
 
     // current configuration
     private PollerConfiguration m_pollerConfiguration;

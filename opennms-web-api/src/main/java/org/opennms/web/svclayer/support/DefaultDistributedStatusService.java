@@ -346,7 +346,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         List<OnmsMonitoredService> sortedServices = new ArrayList<OnmsMonitoredService>(services);
         Collections.sort(sortedServices);
                                                                      
-        List<OnmsLocationSpecificStatus> status = new LinkedList<OnmsLocationSpecificStatus>();
+        List<OnmsLocationSpecificStatus> status = new LinkedList<>();
         for (OnmsMonitoredService service : sortedServices) {
             for (OnmsLocationMonitor locationMonitor : sortedLocationMonitors) {
                 OnmsLocationSpecificStatus currentStatus = m_locationMonitorDao.getMostRecentStatusChange(locationMonitor, service);
@@ -384,7 +384,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         Collection<OnmsLocationSpecificStatus> mostRecentStatuses = m_locationMonitorDao.getAllMostRecentStatusChanges();
 
-        Collection<OnmsLocationSpecificStatus> statusesPeriod = new HashSet<OnmsLocationSpecificStatus>();
+        Collection<OnmsLocationSpecificStatus> statusesPeriod = new HashSet<>();
         statusesPeriod.addAll(m_locationMonitorDao.getAllStatusChangesAt(start));
         statusesPeriod.addAll(m_locationMonitorDao.getStatusChangesBetween(start, end));
 
@@ -465,7 +465,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     private Set<OnmsLocationSpecificStatus> filterStatus(Collection<OnmsLocationSpecificStatus> statuses,
                                                          Collection<OnmsLocationMonitor> monitors,
                                                          Collection<OnmsMonitoredService> services) {
-        Set<OnmsLocationSpecificStatus> filteredStatuses = new HashSet<OnmsLocationSpecificStatus>();
+        Set<OnmsLocationSpecificStatus> filteredStatuses = new HashSet<>();
         
         for (OnmsLocationSpecificStatus status : statuses) {
             if (!monitors.contains(status.getLocationMonitor())) {
@@ -539,7 +539,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     public Severity calculateCurrentStatus(OnmsLocationMonitor monitor,
             Collection<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses) {
-        Set<PollStatus> pollStatuses = new HashSet<PollStatus>();
+        Set<PollStatus> pollStatuses = new HashSet<>();
         
         for (OnmsMonitoredService service : applicationServices) {
             boolean foundIt = false;
@@ -714,7 +714,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     public DistributedStatusHistoryModel createHistoryModel(
             String locationName, String monitorId, String applicationName,
             String timeSpan, String previousLocationName) {
-        List<String> errors = new LinkedList<String>();
+        List<String> errors = new LinkedList<>();
         
         List<OnmsMonitoringLocation> locationDefinitions = m_monitoringLocationDao.findAll();
 

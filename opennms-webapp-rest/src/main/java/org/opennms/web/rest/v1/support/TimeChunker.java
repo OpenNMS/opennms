@@ -83,7 +83,7 @@ public class TimeChunker {
     private Date m_startDate;
     private Date m_endDate;
     
-    private List<TimeChunk> m_resolutionSegments = new ArrayList<TimeChunk>();
+    private List<TimeChunk> m_resolutionSegments = new ArrayList<>();
     private Iterator<TimeChunk> m_itr;
     private long m_resolution;
     

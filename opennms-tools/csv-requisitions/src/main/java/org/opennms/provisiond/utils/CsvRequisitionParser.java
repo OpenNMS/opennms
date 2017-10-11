@@ -88,9 +88,9 @@ public class CsvRequisitionParser {
     private static String m_dbUser = "opennms";
     private static String m_dbPass = "opennms";
 	private static Boolean m_useNodeId = false;
-	private static List<String> m_categoryList = new ArrayList<String>();
+	private static List<String> m_categoryList = new ArrayList<>();
 	private static Boolean m_categoryAddExisting = true;
-	private static List<String> m_serviceList = new ArrayList<String>();
+	private static List<String> m_serviceList = new ArrayList<>();
 	private static Boolean m_addOnly = true;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
@@ -265,7 +265,7 @@ public class CsvRequisitionParser {
 
 				ResultSet crs = categoriesStatement.executeQuery(categoriesQueryString);
 
-				Set<String> categories = new LinkedHashSet<String>();
+				Set<String> categories = new LinkedHashSet<>();
 				while(crs.next()) {
 					categories.add(crs.getString("categoryname"));
 				}

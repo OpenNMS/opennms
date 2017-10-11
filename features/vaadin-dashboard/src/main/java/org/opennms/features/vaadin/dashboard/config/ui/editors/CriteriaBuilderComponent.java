@@ -46,7 +46,7 @@ public class CriteriaBuilderComponent extends Panel {
     /**
      * list of criteria components
      */
-    private List<CriteriaRestrictionComponent> m_criteriaRestrictionComponents = new ArrayList<CriteriaRestrictionComponent>();
+    private List<CriteriaRestrictionComponent> m_criteriaRestrictionComponents = new ArrayList<>();
     /**
      * the {@link CriteriaBuilderHelper} instance
      */

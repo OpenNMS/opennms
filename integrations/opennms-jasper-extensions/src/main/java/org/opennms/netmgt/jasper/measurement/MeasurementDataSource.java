@@ -99,7 +99,7 @@ public class MeasurementDataSource implements JRRewindableDataSource {
      * @return The supported fields.
      */
     protected List<JRField> getFields() {
-        List<JRField> fields = new ArrayList<JRField>();
+        List<JRField> fields = new ArrayList<>();
 
         // constant fields
         fields.add(createField("step", Long.class));

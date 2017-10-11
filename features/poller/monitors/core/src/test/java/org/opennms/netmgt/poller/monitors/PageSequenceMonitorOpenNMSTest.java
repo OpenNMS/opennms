@@ -94,7 +94,7 @@ public class PageSequenceMonitorOpenNMSTest {
     @Ignore
     public void testOpenNMSUserInterface() throws Exception {
 
-        StringBuffer config = new StringBuffer();
+        final StringBuilder config = new StringBuilder();
         LineNumberReader in = new LineNumberReader(
             new InputStreamReader(
                 Thread.currentThread().getContextClassLoader().getResourceAsStream("opennmsPageSequence.xml"),

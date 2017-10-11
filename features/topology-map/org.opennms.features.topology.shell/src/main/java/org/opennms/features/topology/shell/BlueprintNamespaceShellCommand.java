@@ -48,7 +48,7 @@ public class BlueprintNamespaceShellCommand extends OsgiCommandSupport {
     		final Bundle bundle = sr.getBundle();
     		final Object rawNamespaces = sr.getProperty("osgi.service.blueprint.namespace");
 
-    		final ArrayList<String> namespaces = new ArrayList<String>();
+    		final ArrayList<String> namespaces = new ArrayList<>();
     		if (rawNamespaces instanceof String) {
     			namespaces.add((String)rawNamespaces);
     		} else if (rawNamespaces instanceof Object[]) {

@@ -80,7 +80,7 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
     private int distY;
     private final Map<V, Integer> levelMap = Maps.newHashMap();
     private transient Point m_currentPoint = new Point();
-    private transient Set<V> alreadyDone = new HashSet<V>();
+    private transient Set<V> alreadyDone = new HashSet<>();
 
     /**
      * Used for sorting vertices from left to right

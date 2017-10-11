@@ -77,6 +77,7 @@ import org.sblim.wbem.cim.CIMObjectPath;
 import org.sblim.wbem.cim.CIMProperty;
 import org.sblim.wbem.cim.CIMValue;
 import org.sblim.wbem.client.CIMClient;
+import org.sblim.wbem.util.SessionProperties;
 
 import com.vmware.vim25.AboutInfo;
 import com.vmware.vim25.ElementDescription;
@@ -302,11 +303,11 @@ public class VmwareViJavaAccessTest {
         mockHostNetworkSystem = createMock(HostNetworkSystem.class);
 
         // setup CIMClient
-        mockCIMClient = createPartialMock(CIMClient.class, "enumerateInstances");
+        mockCIMClient = createPartialMock(CIMClient.class, "enumerateInstances", "getSessionProperties");
 
         // setup the cim objects
 
-        cimObjects = new ArrayList<CIMObject>();
+        cimObjects = new ArrayList<>();
 
         int cimObjectCount = 5;
 
@@ -325,6 +326,9 @@ public class VmwareViJavaAccessTest {
         suppress(method(CIMClient.class, "useMPost"));
 
         expect(mockCIMClient.enumerateInstances(new CIMObjectPath("cimClass"))).andReturn(Collections.enumeration(cimObjects)).anyTimes();
+
+        SessionProperties sessionProperties = new SessionProperties();
+        expect(mockCIMClient.getSessionProperties()).andReturn(sessionProperties).anyTimes();
     }
 
     @Test
@@ -469,6 +473,7 @@ public class VmwareViJavaAccessTest {
         try {
             returnedCimObjects = vmwareViJavaAccess.queryCimObjects(mockHostSystem, "cimClass");
         } catch (Exception e) {
+            e.printStackTrace();
             Assert.fail(e.getMessage());
         }
 

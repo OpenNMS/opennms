@@ -55,7 +55,7 @@ public class RrdValidator {
     }
 
     public List<File> findRrds(final File topDirectory) {
-        final List<File> files = new ArrayList<File>();
+        final List<File> files = new ArrayList<>();
         findRrds(topDirectory, files);
         return files;
     }

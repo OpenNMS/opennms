@@ -46,7 +46,7 @@ public class PercentileDataAnalyzer implements DataAnalyzer {
 	}
 	
 	public List<Integer> findSamplesInViolation(double[] values) {
-		List<Integer> violatorIndices = new ArrayList<Integer>();
+		List<Integer> violatorIndices = new ArrayList<>();
 		
 		calculatePercentile(values);
 		double absThreshold = m_percentileValue * m_thresholdMultiplier;
@@ -70,7 +70,7 @@ public class PercentileDataAnalyzer implements DataAnalyzer {
 		if (m_verbose) {
 			SpikeHunter.printToUser("Before removing NaN values, " + values.length + " values are in the set");
 		}
-		ArrayList<Double> sortedValues = new ArrayList<Double>();
+		ArrayList<Double> sortedValues = new ArrayList<>();
 		for (double thisVal : values) {
 			if (! Double.toString(thisVal).equals(Double.toString(Double.NaN))) {
 				sortedValues.add(thisVal);

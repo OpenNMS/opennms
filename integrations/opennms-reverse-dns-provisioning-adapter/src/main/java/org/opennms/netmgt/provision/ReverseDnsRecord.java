@@ -91,7 +91,7 @@ public class ReverseDnsRecord {
             throw new IllegalArgumentException("array must contain " +
                                          "4 or 16 elements");
               
-      StringBuffer sb = new StringBuffer();
+      final StringBuilder sb = new StringBuilder();
       if (addr.length == 4) {
           for (int i = addr.length - 2; i >= 0; i--) {
               sb.append(addr[i] & 0xFF);
@@ -108,7 +108,7 @@ public class ReverseDnsRecord {
             throw new IllegalArgumentException("array must contain " +
                                          "4 or 16 elements");
               
-      StringBuffer sb = new StringBuffer();
+      final StringBuilder sb = new StringBuilder();
       if (addr.length == 4) {
           for (int i = addr.length - 3; i >= 0; i--) {
               sb.append(addr[i] & 0xFF);
@@ -125,7 +125,7 @@ public class ReverseDnsRecord {
             throw new IllegalArgumentException("array must contain " +
                                          "4 or 16 elements");
               
-      StringBuffer sb = new StringBuffer();
+      final StringBuilder sb = new StringBuilder();
       if (addr.length == 4) {
           for (int i = addr.length - 4; i >= 0; i--) {
               sb.append(addr[i] & 0xFF);

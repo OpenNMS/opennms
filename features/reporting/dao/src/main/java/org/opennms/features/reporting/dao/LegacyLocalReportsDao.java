@@ -122,7 +122,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
      */
     @Override
     public List<BasicReportDefinition> getReports() {
-        ArrayList<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
+        ArrayList<BasicReportDefinition> resultList = new ArrayList<>();
         for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
             resultList.add(report);
         }
@@ -134,7 +134,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
      */
     @Override
     public List<BasicReportDefinition> getOnlineReports() {
-        List<BasicReportDefinition> onlineReports = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> onlineReports = new ArrayList<>();
         for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
             if (report.getOnline()) {
                 onlineReports.add(report);

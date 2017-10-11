@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,8 +67,8 @@ public class Migrator {
 	private static final Logger LOG = LoggerFactory.getLogger(Migrator.class);
 	
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
-    public static final float POSTGRES_MIN_VERSION = 7.4f;
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.9f;
+    private static final float POSTGRESQL_MIN_VERSION_INCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.minVersion", "9.1"));
+    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "11.0"));
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
@@ -184,12 +184,12 @@ public class Migrator {
             } finally {
                 cleanUpDatabase(c, null, st, rs);
             }
-
             final Matcher m = POSTGRESQL_VERSION_PATTERN.matcher(versionString);
 
             if (!m.find()) {
                 throw new MigrationException("Could not parse version number out of version string: " + versionString);
             }
+
             m_databaseVersion = Float.parseFloat(m.group(1));
         }
 
@@ -217,10 +217,10 @@ public class Migrator {
                                              "Unsupported database version \"%f\" -- you need at least %f and less than %f.  "
                                                      + "Use the \"-Q\" option to disable this check if you feel brave and are willing "
                                                      + "to find and fix bugs found yourself.",
-                                                     dbv.floatValue(), POSTGRES_MIN_VERSION, POSTGRES_MAX_VERSION_PLUS_ONE
+                                                     dbv, POSTGRESQL_MIN_VERSION_INCLUSIVE, POSTGRESQL_MAX_VERSION_EXCLUSIVE
                 );
 
-        if (dbv < POSTGRES_MIN_VERSION || dbv >= POSTGRES_MAX_VERSION_PLUS_ONE) {
+        if (dbv < POSTGRESQL_MIN_VERSION_INCLUSIVE || dbv >= POSTGRESQL_MAX_VERSION_EXCLUSIVE) {
             throw new MigrationException(message);
         }
     }
@@ -494,7 +494,7 @@ public class Migrator {
      */
     protected ResourceLoader getMigrationResourceLoader(final Migration migration) {
         final File changeLog = new File(migration.getChangeLog());
-        final List<URL> urls = new ArrayList<URL>();
+        final List<URL> urls = new ArrayList<>();
         try {
             if (changeLog.exists()) {
                 urls.add(changeLog.getParentFile().toURI().toURL());

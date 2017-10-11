@@ -171,7 +171,7 @@ public class OwnedInterval extends TimeInterval {
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         if (m_owners.isEmpty()) {
             sb.append("UNOWNED");
         } else {

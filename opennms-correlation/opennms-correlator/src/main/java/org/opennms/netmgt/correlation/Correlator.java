@@ -36,10 +36,12 @@ import java.util.Map;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -55,7 +57,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 
 	private EventIpcManager m_eventIpcManager;
 	private Map<String,CorrelationEngine> m_engines = new HashMap<>();
-	private final List<EngineAdapter> m_adapters = new LinkedList<EngineAdapter>();
+	private final List<EngineAdapter> m_adapters = new LinkedList<>();
 	private boolean m_initialized = false;
 	
 	
@@ -69,13 +71,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 			m_name = m_engine.getClass().getSimpleName() + '-' + m_engine.getName() ;
 			Map<String,String> mdc = Logging.getCopyOfContextMap();
 			Logging.putPrefix(m_name);
-			final List<String> interesting = m_engine.getInterestingEvents();
-			if (interesting.contains(EventHandler.ALL_UEIS)) {
-				LOG.warn("Registering engine {} for ALL events", m_engine.getName());
-				m_eventIpcManager.addEventListener(this);
-			} else {
-				m_eventIpcManager.addEventListener(this, interesting);
-			}
+			registerEventListeners();
 			Logging.setContextMap(mdc);
 		}
 
@@ -86,9 +82,46 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 
 		@Override
 		public void onEvent(final Event e) {
-			m_engine.correlate(e);
+		    if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
+		        m_eventIpcManager.removeEventListener(this);
+		        handleReloadEvent(e);
+		        registerEventListeners();
+		        return;
+		    }
+		    m_engine.correlate(e);
 		}
-		
+
+		public void tearDown() {
+		    m_eventIpcManager.removeEventListener(this);
+		}
+
+		private void registerEventListeners() {
+                    final List<String> interesting = m_engine.getInterestingEvents();
+                    if (interesting.contains(EventHandler.ALL_UEIS)) {
+                            LOG.warn("Registering engine {} for ALL events", m_engine.getName());
+                            m_eventIpcManager.addEventListener(this);
+                    } else {
+                            m_eventIpcManager.addEventListener(this, interesting);
+                            m_eventIpcManager.addEventListener(this, EventConstants.RELOAD_DAEMON_CONFIG_UEI);
+                    }
+		}
+
+		private void handleReloadEvent(Event e) {
+		    List<Parm> parmCollection = e.getParmCollection();
+		    for (Parm parm : parmCollection) {
+		        String parmName = parm.getParmName();
+		        if(EventConstants.PARM_DAEMON_NAME.equals(parmName)) {
+		            if (parm.getValue() == null || parm.getValue().getContent() == null) {
+		                LOG.warn("The daemonName parameter has no value, ignoring.");
+		                return;
+		            }
+		            if (parm.getValue().getContent().contains(getName())) {
+		                m_engine.reloadConfig();
+		                return;
+		            }
+		        }
+		    }
+		}
 	}
 
 	/**
@@ -149,10 +182,20 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
     public void addCorrelationEngine(final CorrelationEngine engine) {
         m_engines.put(engine.getName(), engine);
         if (m_initialized) {
+            LOG.debug("addCorrelationEngine: adding engine {}", engine.getName());
             m_adapters.add(new EngineAdapter(engine));
         }
     }
     
+    public void removeCorrelationEngine(final String engineName) {
+        m_adapters.stream().filter(a -> a.getName().endsWith(engineName)).findFirst().ifPresent(a -> {
+            LOG.debug("removeCorrelationEngine: removing engine {}", engineName);
+            a.tearDown();
+            m_adapters.remove(a);
+            m_engines.get(engineName).tearDown();
+            m_engines.remove(engineName);
+        });
+    }
     
 
     @Override

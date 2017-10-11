@@ -105,7 +105,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      */
     @Override
     public String toString() {
-    	StringBuffer buffer = new StringBuffer();
+    	final StringBuilder buffer = new StringBuilder();
 
     	buffer.append("CollectionAgent: ");
     	buffer.append(m_agent);
@@ -259,7 +259,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     List<SnmpAttributeType> getCombinedIndexedAttributes() {
-    	List<SnmpAttributeType> attributes = new LinkedList<SnmpAttributeType>();
+    	List<SnmpAttributeType> attributes = new LinkedList<>();
 
     	attributes.addAll(getIfResourceType().getAttributeTypes());
     	attributes.addAll(getIfAliasResourceType().getAttributeTypes());
@@ -274,7 +274,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      * @return a {@link java.util.Collection} object.
      */
     protected Collection<SnmpAttributeType> getGenericIndexAttributeTypes() {
-    	Collection<SnmpAttributeType> attributeTypes = new LinkedList<SnmpAttributeType>();
+    	Collection<SnmpAttributeType> attributeTypes = new LinkedList<>();
     	Collection<ResourceType> resourceTypes = getGenericIndexResourceTypes();
     	for (ResourceType resourceType : resourceTypes) {
     		attributeTypes.addAll(resourceType.getAttributeTypes());

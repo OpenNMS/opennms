@@ -110,7 +110,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Set<String> getActiveForeignSourceNames() {
         m_readLock.lock();
         try {
-            final Set<String> activeForeignSourceNames = new TreeSet<String>();
+            final Set<String> activeForeignSourceNames = new TreeSet<>();
             activeForeignSourceNames.addAll(getForeignSourcesDirectoryWatcher().getBaseNamesWithExtension(".xml"));
             activeForeignSourceNames.addAll(getRequisitionsDirectoryWatcher().getBaseNamesWithExtension(".xml"));
             return activeForeignSourceNames;
@@ -139,7 +139,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Set<ForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            final Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
+            final Set<ForeignSource> foreignSources = new TreeSet<>();
             for(String baseName : getForeignSourcesDirectoryWatcher().getBaseNamesWithExtension(".xml")) {
                 try {
                     ForeignSource contents = getForeignSourcesDirectoryWatcher().getContents(baseName + ".xml");
@@ -181,7 +181,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            final Set<Requisition> requisitions = new TreeSet<Requisition>();
+            final Set<Requisition> requisitions = new TreeSet<>();
             for(String baseName : getRequisitionsDirectoryWatcher().getBaseNamesWithExtension(".xml")) {
                 try {
                     Requisition contents = getRequisitionsDirectoryWatcher().getContents(baseName + ".xml");

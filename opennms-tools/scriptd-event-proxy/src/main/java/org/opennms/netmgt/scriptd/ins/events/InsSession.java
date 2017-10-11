@@ -103,7 +103,7 @@ class InsSession extends InsAbstractSession {
 
 	private int status = STARTING_SESSION_STATUS;
 	
-	private List<Event> m_events = new ArrayList<Event>();
+	private List<Event> m_events = new ArrayList<>();
 
 	InsSession(Socket server) throws IOException {
 		this.server = server;

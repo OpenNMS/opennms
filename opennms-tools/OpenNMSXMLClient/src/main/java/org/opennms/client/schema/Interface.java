@@ -105,8 +105,8 @@ public class Interface implements java.io.Serializable {
 
     public Interface() {
         super();
-        this._monitoredServiceList = new java.util.ArrayList<org.opennms.client.schema.MonitoredService>();
-        this._categoryList = new java.util.ArrayList<org.opennms.client.schema.Category>();
+        this._monitoredServiceList = new java.util.ArrayList<>();
+        this._categoryList = new java.util.ArrayList<>();
     }
 
 

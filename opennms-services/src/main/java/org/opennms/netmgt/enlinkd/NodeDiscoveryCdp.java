@@ -82,14 +82,12 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: node [{}]: Agent error while scanning the cdpGlobalGroup table",
-                    getNodeId(),
-                    e);
+           LOG.info("run: node [{}]: ExecutionException: cdpGlobalGroup: {}", 
+                    getNodeId(), e.getMessage());
            return;
        } catch (final InterruptedException e) {
-           LOG.info("run: node [{}]: Cdp cdpGlobalGroup collection interrupted, exiting",
-                    getNodeId(),
-                    e);
+           LOG.info("run: node [{}]: InterruptedException: cdpGlobalGroup: {}", 
+                    getNodeId(), e.getMessage());
            return;
        }
        if (cdpGlobalGroup.getCdpDeviceId() == null ) {
@@ -105,7 +103,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
            return;
        }
         
-       List<CdpLink> links = new ArrayList<CdpLink>();
+       List<CdpLink> links = new ArrayList<>();
         CdpCacheTableTracker cdpCacheTable = new CdpCacheTableTracker() {
 
             public void processCdpCacheRow(final CdpCacheRow row) {
@@ -120,19 +118,18 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.error("run: node [{}]: collection execution failed, exiting",
-                      getNodeId(),
-                      e);
+            LOG.info("run: node [{}]: ExecutionException: cdpCacheTable: {}", 
+                     getNodeId(), e.getMessage());
             return;
         } catch (final InterruptedException e) {
-            LOG.error("run: node [{}]: Cdp Linkd collection interrupted, exiting",
-                      getNodeId(),
-                      e);
+            LOG.info("run: node [{}]: InterruptedException: cdpCacheTable: {}", 
+                     getNodeId(), e.getMessage());
             return;
         }
         final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(peer, 
                                                                                                      m_linkd.getLocationAwareSnmpClient(),
-                                                                                                     getLocation());
+                                                                                                     getLocation(),
+                                                                                                     getNodeId());
         for (CdpLink link: links)
             m_linkd.getQueryManager().store(getNodeId(),cdpInterfacePortNameGetter.get(link));
         

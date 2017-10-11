@@ -55,7 +55,7 @@ public class XmlResourceKey implements Serializable, Comparable<XmlResourceKey>,
 
     /** The key-path list. */
     @XmlElement(name="key-xpath", required=true)
-    private List<String> m_keyXpathList = new ArrayList<String>();
+    private List<String> m_keyXpathList = new ArrayList<>();
 
     /**
      * Instantiates a new XML object.

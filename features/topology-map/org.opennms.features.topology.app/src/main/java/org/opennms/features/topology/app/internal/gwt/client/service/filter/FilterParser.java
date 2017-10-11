@@ -100,7 +100,7 @@ public class FilterParser {
         }
 
         String readText() {
-            StringBuilder bldr = new StringBuilder();
+            final StringBuilder bldr = new StringBuilder();
             Character ch = peekChar();
             while(!isTokenStart(ch)) {
                 if (ch == '\\') {
@@ -156,7 +156,7 @@ public class FilterParser {
                 }
                 return String.valueOf(new char[] { ch, eq });
             default:
-                StringBuilder bldr = new StringBuilder();
+                final StringBuilder bldr = new StringBuilder();
                 bldr.append(ch);
                 bldr.append(readText());
                 return bldr.toString();
@@ -169,7 +169,7 @@ public class FilterParser {
                 throw new IllegalStateException("Cannot compute charTil while a peeked token exists.");
             }
             
-            StringBuilder buf = new StringBuilder();
+            final StringBuilder buf = new StringBuilder();
             boolean escaped = false;
             
             Character ch = peekChar();
@@ -244,7 +244,7 @@ public class FilterParser {
         if ("(".equals(token)) {
             filters = filterList();
         } else {
-            filters = new LinkedList<Filter>();
+            filters = new LinkedList<>();
         }
         filters.addFirst(filter);
         return filters;

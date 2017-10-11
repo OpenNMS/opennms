@@ -48,7 +48,7 @@ public class Categories implements java.io.Serializable {
     private java.util.List<Category> categoryList;
 
     public Categories() {
-        this.categoryList = new java.util.ArrayList<Category>();
+        this.categoryList = new java.util.ArrayList<>();
     }
 
     /**

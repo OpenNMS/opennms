@@ -61,7 +61,7 @@ public class MockAccessPointDao extends AbstractMockDao<OnmsAccessPoint,String> 
 
     @Override
     public List<String> findDistinctPackagesLike(final String pkg) {
-        final Set<String> packages = new HashSet<String>();
+        final Set<String> packages = new HashSet<>();
         for (final OnmsAccessPoint ap : findAll()) {
             packages.add(ap.getPollingPackage());
         }

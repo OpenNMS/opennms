@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -364,17 +364,17 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
     /**
      * We have to ignore this test until there is a DNS service available in the test harness
-     * 
+     *
      * @throws ForeignSourceRepositoryException
      * @throws MalformedURLException
      */
     @Test(timeout=300000)
     @JUnitDNSServer(port=9153, zones={
-            @DNSZone(name="opennms.com.", v4address="1.2.3.4", entries={
-                    @DNSEntry(hostname="www", address="1.2.3.4")
-                    // V6 support is only in master right now
-                    // @DNSEntry(hostname="www", address="::1:2:3:4", ipv6=true)
-            })
+        @DNSZone(name = "opennms.com.", v4address = "1.2.3.4", entries = {
+            @DNSEntry(hostname = "www", data = "1.2.3.4")
+            ,
+            @DNSEntry(hostname = "www", data = "::1:2:3:4", type = "AAAA")
+        })
     })
     public void testDnsVisit() throws ForeignSourceRepositoryException, MalformedURLException {
         final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost:9153/opennms.com"));
@@ -1163,7 +1163,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
      * from the import file.
-     * 
+     *
      * @throws ModelImportException
      */
     @Test(timeout=300000)
@@ -1173,7 +1173,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"), Boolean.TRUE.toString());
 
         assertEquals(1, getNodeDao().countAll());
-        // \u00f1 is unicode for n~ 
+        // \u00f1 is unicode for n~
         final OnmsNode onmsNode = getNodeDao().get(nextNodeId);
         LOG.debug("node = {}", onmsNode);
         assertEquals("\u00f1ode2", onmsNode.getLabel());
@@ -1183,7 +1183,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
      * from the import file.
-     * 
+     *
      * @throws ModelImportException
      */
     @Test(timeout=300000)
@@ -1447,7 +1447,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     /**
      * Test that the parent-foreign-source attribute in a requisition can add a parent to a
      * node that resides in a different provisioning group.
-     * 
+     *
      * @see http://issues.opennms.org/browse/NMS-4109
      */
     @Test(timeout=300000)
@@ -1780,13 +1780,13 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     private static Event nodeDeleted(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
-        return bldr.getEvent();        
+        return bldr.getEvent();
     }
 
     private static Event deleteNode(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
-        return bldr.getEvent();        
+        return bldr.getEvent();
     }
 
     private static Event interfaceDeleted(int nodeid, String ipaddr) {
@@ -1888,8 +1888,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         protected int m_svcCategoryCompleted;
         protected int m_assetCount;
         protected int m_assetCompleted;
-        protected List<OnmsNodeRequisition> m_nodes = new ArrayList<OnmsNodeRequisition>();
-        protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<OnmsIpInterfaceRequisition>();
+        protected List<OnmsNodeRequisition> m_nodes = new ArrayList<>();
+        protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<>();
 
         public List<OnmsNodeRequisition> getNodes() {
             return m_nodes;

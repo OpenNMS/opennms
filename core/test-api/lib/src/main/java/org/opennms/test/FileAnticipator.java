@@ -124,7 +124,7 @@ public class FileAnticipator extends Assert {
                 File f = i.previous();
                 if (!f.exists()) continue;
                 if (!FileUtils.deleteQuietly(f)) {
-                    final StringBuffer b = new StringBuffer();
+                    final StringBuilder b = new StringBuilder();
                     b.append("Could not delete " + f.getAbsolutePath() + ": is it a non-empty directory?");
                     b.append("\nDirectory listing:");
                     if (f.listFiles() != null) {
@@ -208,7 +208,7 @@ public class FileAnticipator extends Assert {
         byte[] bytes = new byte[length];
         random.nextBytes(bytes);
         
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
             sb.append(String.format("%02x", b));
         }
@@ -506,7 +506,7 @@ public class FileAnticipator extends Assert {
                 if (f.isDirectory()) {
                     String[] files = f.list();
                     if (files.length > 0) {
-                        StringBuffer fileList = new StringBuffer("{ ");
+                        final StringBuilder fileList = new StringBuilder("{ ");
                         fileList.append(files[0]);
                         for (int j = 1; j < files.length; j++) {
                             fileList.append(", ").append(files[j]);

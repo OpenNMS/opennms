@@ -334,7 +334,7 @@ public class OnmsSnmpCollection {
      * @return a {@link java.util.List} object.
      */
     public List<SnmpAttributeType> getIndexedAttributeTypesForResourceType(SnmpCollectionAgent agent, ResourceType resourceType) {
-        LinkedList<SnmpAttributeType> resAttrTypes = new LinkedList<SnmpAttributeType>();
+        LinkedList<SnmpAttributeType> resAttrTypes = new LinkedList<>();
         for(SnmpAttributeType attrType : getIndexedAttributeTypes(agent)) {
             if (attrType.getResourceType().equals(resourceType)) {
                 resAttrTypes.add(attrType);
@@ -370,7 +370,7 @@ public class OnmsSnmpCollection {
 
         Map<String, AttributeGroupType> groupTypes = new HashMap<String, AttributeGroupType>();
 
-        List<SnmpAttributeType> typeList = new LinkedList<SnmpAttributeType>();
+        List<SnmpAttributeType> typeList = new LinkedList<>();
         for (MibObject mibObject : oidList) {
             String instanceName = mibObject.getInstance();
             AttributeGroupType groupType = findGroup(groupTypes, mibObject);
@@ -494,7 +494,7 @@ public class OnmsSnmpCollection {
      * @return a {@link java.util.Collection} object.
      */
     public Collection<SnmpAttributeType> getAttributeTypes(SnmpCollectionAgent agent) {
-        HashSet<SnmpAttributeType> set = new HashSet<SnmpAttributeType>();
+        HashSet<SnmpAttributeType> set = new HashSet<>();
         for (ResourceType resourceType : getResourceTypes(agent)) {
             set.addAll(resourceType.getAttributeTypes());
         }
@@ -509,7 +509,7 @@ public class OnmsSnmpCollection {
      * @return a {@link java.util.Collection} object.
      */
     public Collection<? extends CollectionResource> getResources(SnmpCollectionAgent agent) {
-        LinkedList<CollectionResource> resources = new LinkedList<CollectionResource>();
+        LinkedList<CollectionResource> resources = new LinkedList<>();
         for (ResourceType resourceType : getResourceTypes(agent)) {
             resources.addAll(resourceType.getResources());
         }

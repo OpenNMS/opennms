@@ -159,7 +159,7 @@ public class Collection {
      */
     public List<String> getIncludeSystemDefinition() {
         if (includeSystemDefinition == null) {
-            includeSystemDefinition = new ArrayList<String>();
+            includeSystemDefinition = new ArrayList<>();
         }
         return this.includeSystemDefinition;
     }

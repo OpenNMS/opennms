@@ -42,7 +42,7 @@ import com.google.gwt.event.shared.GwtEvent;
 public class MapPanelBoundsChangedEvent extends GwtEvent<MapPanelBoundsChangedEventHandler> {
     
     /** Constant <code>TYPE</code> */
-    public static Type<MapPanelBoundsChangedEventHandler> TYPE = new Type<MapPanelBoundsChangedEventHandler>();
+    public static Type<MapPanelBoundsChangedEventHandler> TYPE = new Type<>();
     private GWTBounds m_newBounds;
     
     /**

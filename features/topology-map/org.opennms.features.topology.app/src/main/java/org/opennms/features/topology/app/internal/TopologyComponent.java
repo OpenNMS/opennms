@@ -160,13 +160,13 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
     private final GraphContainer m_graphContainer;
     private Graph m_graph;
-    private final List<MenuUpdateListener> m_menuItemStateListener = new ArrayList<MenuUpdateListener>();
+    private final List<MenuUpdateListener> m_menuItemStateListener = new ArrayList<>();
     private final ContextMenuHandler m_contextMenuHandler;
     private final IconRepositoryManager m_iconRepoManager;
     private String m_activeTool = "pan";
     private boolean m_blockSelectionEvents = false;
 
-    private Set<VertexUpdateListener> m_vertexUpdateListeners = new CopyOnWriteArraySet<VertexUpdateListener>();
+    private Set<VertexUpdateListener> m_vertexUpdateListeners = new CopyOnWriteArraySet<>();
 
     public TopologyComponent(GraphContainer dataSource, IconRepositoryManager iconRepositoryManager, ContextMenuHandler contextMenuHandler) {
         m_graphContainer = dataSource;
@@ -236,7 +236,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private void selectVertices(boolean shiftModifierPressed, boolean ctrlModifierPressed, String... vertexKeys) {
         m_blockSelectionEvents = true;
         List<VertexRef> vertexRefsToSelect = new ArrayList<VertexRef>(vertexKeys.length);
-        List<VertexRef> vertexRefsToDeselect = new ArrayList<VertexRef>();
+        List<VertexRef> vertexRefsToDeselect = new ArrayList<>();
         boolean add = shiftModifierPressed || ctrlModifierPressed;
         for (String eachVertexKey : vertexKeys) {
             if (ctrlModifierPressed
@@ -355,7 +355,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         if(selectionContext.getSelectedVertexRefs().size() > 0) {
             Collection<? extends Vertex> visible = m_graphContainer.getGraph().getDisplayVertices();
             Collection<VertexRef> selected = selectionContext.getSelectedVertexRefs();
-            Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
+            Collection<VertexRef> vRefs = new ArrayList<>();
             for(VertexRef vRef : selected) {
                 if(visible.contains(vRef)) {
                     vRefs.add(vRef);

@@ -162,7 +162,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
 
     private List<OnmsResource> getNodeResources(ResourcePath parent, Set<String> intfNames, OnmsNode node) {
             
-        ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
+        ArrayList<OnmsResource> resources = new ArrayList<>();
 
         Set<OnmsSnmpInterface> snmpInterfaces = node.getSnmpInterfaces();
         Map<String, OnmsSnmpInterface> intfMap = new HashMap<String, OnmsSnmpInterface>();
@@ -219,8 +219,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             if (snmpInterface == null) {
                 label = intfName + " (*)";
             } else {
-                StringBuffer descr = new StringBuffer();
-                StringBuffer parenString = new StringBuffer();
+                final StringBuilder descr = new StringBuilder();
+                final StringBuilder parenString = new StringBuilder();
 
                 if (snmpInterface.getIfAlias() != null) {
                     parenString.append(snmpInterface.getIfAlias());

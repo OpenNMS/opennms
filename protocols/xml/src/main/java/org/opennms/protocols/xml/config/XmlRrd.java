@@ -59,7 +59,7 @@ public class XmlRrd implements Serializable, Comparable<XmlRrd>, Cloneable {
 
     /** The XML RRAs list. */
     @XmlElement(name="rra")
-    private List<String> m_xmlRras = new ArrayList<String>();
+    private List<String> m_xmlRras = new ArrayList<>();
 
     /**
      * Instantiates a new XML RRD.

@@ -79,7 +79,7 @@ public class RwsRancidlistreport implements java.io.Serializable {
     private List<GroupXSet> groupXSetList;
 
     public RwsRancidlistreport() {
-        this.groupXSetList = new ArrayList<GroupXSet>();
+        this.groupXSetList = new ArrayList<>();
     }
 
     /**

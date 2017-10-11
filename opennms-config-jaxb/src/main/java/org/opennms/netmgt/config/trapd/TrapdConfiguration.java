@@ -138,7 +138,7 @@ public class TrapdConfiguration implements  Serializable {
     public TrapdConfiguration() {
         super();
         setSnmpTrapAddress("*");
-        this._snmpv3UserList = new java.util.ArrayList<Snmpv3User>();
+        this._snmpv3UserList = new java.util.ArrayList<>();
     }
     
     /*
@@ -148,7 +148,7 @@ public class TrapdConfiguration implements  Serializable {
         super();
         setSnmpTrapAddress(snmpTrapAddress);
         this._snmpTrapPort = _snmpTrapPort;
-        this._snmpv3UserList = new java.util.ArrayList<Snmpv3User>();
+        this._snmpv3UserList = new java.util.ArrayList<>();
     }
 
     /**

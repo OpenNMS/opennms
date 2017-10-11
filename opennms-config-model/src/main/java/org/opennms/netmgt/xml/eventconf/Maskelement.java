@@ -116,7 +116,7 @@ public class Maskelement implements Serializable {
     private String m_name;
 
     @XmlElement(name="mevalue", required=true)
-    private List<String> m_values = new ArrayList<String>();
+    private List<String> m_values = new ArrayList<>();
 
     public void addMevalue(final String value) {
         m_values.add(value.intern());

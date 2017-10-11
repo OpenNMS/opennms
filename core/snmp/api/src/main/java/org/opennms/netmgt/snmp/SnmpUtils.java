@@ -119,7 +119,7 @@ public abstract class SnmpUtils {
 
     public static List<SnmpValue> getColumns(final SnmpAgentConfig agentConfig, final String name, final SnmpObjId oid)  throws InterruptedException {
 
-        final List<SnmpValue> results = new ArrayList<SnmpValue>();
+        final List<SnmpValue> results = new ArrayList<>();
         
         try(SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
             @Override

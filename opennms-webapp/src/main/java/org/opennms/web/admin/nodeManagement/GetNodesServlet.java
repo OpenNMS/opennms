@@ -82,7 +82,7 @@ public class GetNodesServlet extends HttpServlet {
      */
     private List<ManagedInterface> getAllNodes(HttpSession userSession) throws SQLException {
         Connection connection = null;
-        List<ManagedInterface> allNodes = new ArrayList<ManagedInterface>();
+        List<ManagedInterface> allNodes = new ArrayList<>();
         int lineCount = 0;
 
         final DBUtils d = new DBUtils(getClass());

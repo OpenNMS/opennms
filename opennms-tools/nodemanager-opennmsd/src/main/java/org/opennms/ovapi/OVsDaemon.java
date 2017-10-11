@@ -123,7 +123,7 @@ public abstract class OVsDaemon {
     private int m_ovspmdFd;
     private boolean m_finished = false;
     
-    private List<ScheduledTask> m_scheduledTasks = new LinkedList<ScheduledTask>();
+    private List<ScheduledTask> m_scheduledTasks = new LinkedList<>();
     private long m_selectedMillis;
 
     protected abstract String onInit();

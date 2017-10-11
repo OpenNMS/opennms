@@ -76,7 +76,7 @@ public class SlackNotificationStrategyIT {
         try {
 
             final NotificationStrategy ns = new SlackNotificationStrategy();
-            final List<Argument> arguments = new ArrayList<Argument>();
+            final List<Argument> arguments = new ArrayList<>();
 
             // Set these properties. We will override them with Args on the first run.
             System.setProperty("org.opennms.netmgt.notifd.slack.webhookURL", "http://localhost:" + port + "/hooks/abunchofstuffthatidentifiesawebhook");

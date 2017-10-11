@@ -172,7 +172,7 @@ public class BridgePort {
     }
     
     public String printTopology() {
-        StringBuffer strbfr = new StringBuffer();
+        final StringBuilder strbfr = new StringBuilder();
 
         strbfr.append("bridge port:[nodeid:["); 
         strbfr.append(getNode().getId());

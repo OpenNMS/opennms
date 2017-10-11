@@ -161,7 +161,7 @@ public class TrendController extends AbstractController implements InitializingB
     }
 
     public List<Double> lookupData(final String query) throws SQLException {
-        final List<Double> dataSet = new ArrayList<Double>();
+        final List<Double> dataSet = new ArrayList<>();
 
         Connection connection = null;
 

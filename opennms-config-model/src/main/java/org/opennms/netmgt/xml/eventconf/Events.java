@@ -231,7 +231,17 @@ public class Events implements Serializable {
 
             m_loadedEventFiles.put(eventFile, events);
         }
-    }
+
+		// Re-order the loaded event files to match the order specified in the root configuration
+		final Map<String, Events> orderedAndLoadedEventFiles = new LinkedHashMap<>();
+		for (String eventFile : m_eventFiles) {
+			final Events loadedEvents = m_loadedEventFiles.get(eventFile);
+			if (loadedEvents != null) {
+				orderedAndLoadedEventFiles.put(eventFile, loadedEvents);
+			}
+		}
+		m_loadedEventFiles = orderedAndLoadedEventFiles;
+	}
 
     public boolean isSecureTag(final String tag) {
         return m_global == null ? false : m_global.isSecureTag(tag);
@@ -355,6 +365,8 @@ public class Events implements Serializable {
     private void indexEventsByUei() {
         m_eventsByUei.clear();
 
+        final Set<String> ueisWithManyEventDefinitions = new HashSet<>();
+
         // Build a map of UEI to Event definition
         forEachEvent((e) -> {
             final String uei = e.getUei();
@@ -362,9 +374,15 @@ public class Events implements Serializable {
                 // Skip events with no UEI
                 return;
             }
-            // Don't overwrite existing keys, first one wins
-            m_eventsByUei.putIfAbsent(uei, e);
+
+            if (m_eventsByUei.putIfAbsent(uei, e) != null) {
+                // Keep trap of the UEIs that have many event definitions
+                ueisWithManyEventDefinitions.add(uei);
+            }
         });
+
+        // Remove UEIs for which there are many event definitions
+        ueisWithManyEventDefinitions.forEach(m_eventsByUei::remove);
 
         // Now remove event definitions from the index if any
         // mask elements from any other event definitions match

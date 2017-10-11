@@ -52,6 +52,9 @@ public class PingRequestDTO implements RpcRequest {
     @XmlAttribute(name="location")
     private String location;
 
+    @XmlAttribute(name="system-id")
+    private String systemId;
+
     @XmlAttribute(name="retries")
     private int retries;
 
@@ -64,6 +67,15 @@ public class PingRequestDTO implements RpcRequest {
     @Override
     public String getLocation() {
         return location;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
     }
 
     @Override
@@ -129,11 +141,13 @@ public class PingRequestDTO implements RpcRequest {
                 Objects.equals(timeout, that.timeout) &&
                 Objects.equals(packetSize, that.packetSize) &&
                 Objects.equals(inetAddress, that.inetAddress) &&
-                Objects.equals(location, that.location);
+                Objects.equals(location, that.location) &&
+                Objects.equals(systemId, that.systemId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(inetAddress, location, retries, timeout, packetSize);
+        return Objects.hash(inetAddress, location, systemId, retries,
+                timeout, packetSize);
     }
 }

@@ -62,7 +62,7 @@ public class VmwareCollection implements java.io.Serializable {
 
     public VmwareCollection() {
         super();
-        this._vmwareGroupList = new java.util.ArrayList<org.opennms.netmgt.config.vmware.vijava.VmwareGroup>();
+        this._vmwareGroupList = new java.util.ArrayList<>();
     }
 
     /**

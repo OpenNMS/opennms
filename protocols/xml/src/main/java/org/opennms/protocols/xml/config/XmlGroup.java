@@ -86,7 +86,7 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup>, Cloneable {
 
     /** The XML objects list. */
     @XmlElement(name="xml-object", required=true)
-    private List<XmlObject> m_xmlObjects = new ArrayList<XmlObject>();
+    private List<XmlObject> m_xmlObjects = new ArrayList<>();
     
     /** The m_xml resource key. */
     @XmlElement(name="resource-key", required=false)

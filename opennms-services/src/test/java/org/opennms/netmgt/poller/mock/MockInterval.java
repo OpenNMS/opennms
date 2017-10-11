@@ -39,7 +39,7 @@ public class MockInterval implements ScheduleInterval {
     
     private Timer m_timer;
     private long m_interval;
-    private List<Suspension> m_suspensions = new LinkedList<Suspension>();
+    private List<Suspension> m_suspensions = new LinkedList<>();
     
     /**
      * @param l

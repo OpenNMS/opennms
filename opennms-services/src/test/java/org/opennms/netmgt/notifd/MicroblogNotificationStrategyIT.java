@@ -77,7 +77,7 @@ public class MicroblogNotificationStrategyIT {
     }
     
     public List<Argument> configureArgs() {
-        List<Argument> arguments = new ArrayList<Argument>();
+        List<Argument> arguments = new ArrayList<>();
         Argument arg = null;
         arg = new Argument("-tm", null, "text message for " + getClass().getSimpleName() + " at " + new Date(), false);
         arguments.add(arg);        

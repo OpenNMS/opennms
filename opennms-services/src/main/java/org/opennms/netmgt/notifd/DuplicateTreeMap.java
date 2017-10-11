@@ -58,7 +58,7 @@ public class DuplicateTreeMap<K, V> extends TreeMap<K, List<V>> {
         if (super.containsKey(key)) {
             l = super.get(key);
         } else {
-            l = new LinkedList<V>();
+            l = new LinkedList<>();
             put(key, l);
         }
         
@@ -73,7 +73,7 @@ public class DuplicateTreeMap<K, V> extends TreeMap<K, List<V>> {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         for (List<V> list : values()) {
             for (V item : list) {

@@ -55,7 +55,7 @@ public class VmwareDatacollectionConfig implements java.io.Serializable {
 
     public VmwareDatacollectionConfig() {
         super();
-        this._vmwareCollectionList = new java.util.ArrayList<org.opennms.netmgt.config.vmware.vijava.VmwareCollection>();
+        this._vmwareCollectionList = new java.util.ArrayList<>();
     }
 
     /**

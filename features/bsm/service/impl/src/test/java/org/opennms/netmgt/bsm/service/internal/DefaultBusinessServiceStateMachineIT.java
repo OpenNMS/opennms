@@ -52,7 +52,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
-import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
+import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.service.AlarmProvider;
@@ -171,7 +171,7 @@ public class DefaultBusinessServiceStateMachineIT {
         for (String eachKey : uniqueReductionKeys) {
             final OnmsAlarm alarm = new OnmsAlarm();
             alarm.setUei("custom");
-            alarm.setAlarmType(1);
+            alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setDescription("dummy");
             alarm.setLogMsg("dummy");
             alarm.setSeverity(OnmsSeverity.WARNING);

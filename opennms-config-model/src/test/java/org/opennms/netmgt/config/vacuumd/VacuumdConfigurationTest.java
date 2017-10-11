@@ -53,7 +53,7 @@ public class VacuumdConfigurationTest extends
 
         // A config with every option set
         VacuumdConfiguration vacuumdConfig;
-        List<Statement> statements = new ArrayList<Statement>();
+        List<Statement> statements = new ArrayList<>();
         Statement statement = new Statement(
                                             "INSERT 1000000 INTO bankaccount;",
                                             false);
@@ -74,8 +74,7 @@ public class VacuumdConfigurationTest extends
 
         List<Assignment> assignments = Arrays.asList(new Assignment("field", "uei", "testUei"));
 
-        List<ActionEvent> actionEvents = Arrays.asList(new ActionEvent("testActionEvent", true,
-                                                  true, assignments));
+        List<ActionEvent> actionEvents = Arrays.asList(new ActionEvent("testActionEvent", true, assignments));
 
         vacuumdConfig = new VacuumdConfiguration(1, statements, automations,
                                                  triggers, actions,
@@ -115,7 +114,7 @@ public class VacuumdConfigurationTest extends
                                 + "    </auto-event>"
                                 + "</auto-events>"
                                 + "<action-events>"
-                                + "    <action-event name=\"testActionEvent\" for-each-result=\"true\" add-all-parms=\"true\">"
+                                + "    <action-event name=\"testActionEvent\" for-each-result=\"true\">"
                                 + "        <assignment type=\"field\" name=\"uei\" value=\"testUei\"/>"
                                 + "    </action-event>" + "</action-events>"
                                 + "</VacuumdConfiguration>",

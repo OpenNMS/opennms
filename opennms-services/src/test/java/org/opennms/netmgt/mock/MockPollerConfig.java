@@ -75,7 +75,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     private boolean m_outageProcessingEnabled = false;
 
-    private Vector<Package> m_pkgs = new Vector<Package>();
+    private Vector<Package> m_pkgs = new Vector<>();
 
     private Map<String, ServiceMonitor> m_svcMonitors = new TreeMap<String, ServiceMonitor>();
 

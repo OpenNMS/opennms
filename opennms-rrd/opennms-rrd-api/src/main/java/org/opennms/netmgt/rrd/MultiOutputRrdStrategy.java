@@ -128,7 +128,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     public List<Object> createDefinition(String creator, String directory, String rrdName,
             int step, List<RrdDataSource> dataSources, List<String> rraList)
             throws Exception {
-        List<Object> retval = new ArrayList<Object>();
+        List<Object> retval = new ArrayList<>();
         for (RrdStrategy<Object, Object> strategy : m_strategies) {
             retval.add(strategy.createDefinition(creator, directory, rrdName, step, dataSources, rraList));
         }
@@ -226,7 +226,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      */
     @Override
     public String getStats() {
-        StringBuffer retval = new StringBuffer();
+        final StringBuilder retval = new StringBuilder();
         for (RrdStrategy<?, ?> strategy : m_strategies) {
             retval.append(strategy.getStats());
             retval.append("\n");
@@ -237,7 +237,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     /** {@inheritDoc} */
     @Override
     public List<Object> openFile(String fileName) throws Exception {
-        List<Object> retval = new ArrayList<Object>();
+        List<Object> retval = new ArrayList<>();
         for (RrdStrategy<Object, Object> strategy : m_strategies) {
             retval.add(strategy.openFile(fileName));
         }

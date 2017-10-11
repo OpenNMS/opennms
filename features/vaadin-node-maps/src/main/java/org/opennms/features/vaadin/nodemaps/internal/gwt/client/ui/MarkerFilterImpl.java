@@ -114,7 +114,7 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
 
         final String searchProperty;
         final MatchType matchType;
-        final List<String> searchFor = new ArrayList<String>();
+        final List<String> searchFor = new ArrayList<>();
 
         final MatchResult m = m_searchPattern.exec(m_searchString);
         if (m != null) {

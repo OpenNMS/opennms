@@ -66,14 +66,25 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         return new DefaultTopologyProviderInfo(name, description, true);
     }
 
+    public enum VertexStatusProviderType {
+        NO_STATUS_PROVIDER,
+        DEFAULT_STATUS_PROVIDER,
+        SCRIPT_STATUS_PROVIDER,
+        PROPAGATE_STATUS_PROVIDER,
+    }
+
+    private final GraphMLMetaTopologyProvider metaTopologyProvider;
     private final int defaultSzl;
     private final String preferredLayout;
     private final FocusStrategy focusStrategy;
     private final List<String> focusIds;
-    private final Boolean requiresStatusProvider;
+    private final VertexStatusProviderType vertexStatusProviderType;
 
-    public GraphMLTopologyProvider(GraphMLGraph graph, GraphMLServiceAccessor serviceAccessor) {
+    public GraphMLTopologyProvider(final GraphMLMetaTopologyProvider metaTopologyProvider,
+                                   final GraphMLGraph graph,
+                                   final GraphMLServiceAccessor serviceAccessor) {
         super(graph.getProperty(GraphMLProperties.NAMESPACE));
+        this.metaTopologyProvider = metaTopologyProvider;
 
         m_serviceAccessor = serviceAccessor;
 
@@ -97,7 +108,9 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         focusStrategy = getFocusStrategy(graph);
         focusIds = getFocusIds(graph);
         preferredLayout = graph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
-        requiresStatusProvider = graph.getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
+
+        this.vertexStatusProviderType = getVertexProviderTypeFromGraph(graph);
+
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
             LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
         }
@@ -185,7 +198,32 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
     }
 
-    public boolean requiresStatusProvider() {
-        return requiresStatusProvider;
+    public VertexStatusProviderType getVertexStatusProviderType() {
+        return this.vertexStatusProviderType;
+    }
+
+    private static VertexStatusProviderType getVertexProviderTypeFromGraph(final GraphMLGraph graph) {
+        final Object vertexStatusProviderType = graph.<Object>getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
+        if (vertexStatusProviderType instanceof Boolean) {
+            if (vertexStatusProviderType == Boolean.TRUE) {
+                return VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
+            } else {
+                return VertexStatusProviderType.NO_STATUS_PROVIDER;
+            }
+
+        } else if (vertexStatusProviderType instanceof String) {
+            if ("default".equalsIgnoreCase((String)vertexStatusProviderType)) {
+                return VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
+            } else if ("script".equalsIgnoreCase((String)vertexStatusProviderType)) {
+                return VertexStatusProviderType.SCRIPT_STATUS_PROVIDER;
+            } else if ("propagate".equalsIgnoreCase((String)vertexStatusProviderType)) {
+                return VertexStatusProviderType.PROPAGATE_STATUS_PROVIDER;
+            } else {
+                LOG.warn("Unknown GraphML vertex status provider type: {}", vertexStatusProviderType);
+                return VertexStatusProviderType.NO_STATUS_PROVIDER;
+            }
+        } else {
+            return VertexStatusProviderType.NO_STATUS_PROVIDER;
+        }
     }
 }

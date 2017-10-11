@@ -44,7 +44,7 @@ public class AggregateTracker extends CollectionTracker {
     private static final Logger LOG = LoggerFactory.getLogger(AggregateTracker.class);
 
     private static final class ChildTrackerPduBuilder extends PduBuilder {
-        private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
+        private List<SnmpObjId> m_oids = new ArrayList<>();
         private int m_nonRepeaters = 0;
         private int m_maxRepititions = 0;
         private ResponseProcessor m_responseProcessor;

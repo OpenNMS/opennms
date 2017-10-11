@@ -60,7 +60,7 @@ public class SnmpManagedNode {
      * <p>Constructor for SnmpManagedNode.</p>
      */
     public SnmpManagedNode() {
-        interfaces = new ArrayList<SnmpManagedInterface>();
+        interfaces = new ArrayList<>();
     }
 
     /**

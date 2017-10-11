@@ -82,7 +82,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      * @return Collection of the names of datasources
      */
     public List<String> getFilterDatasources() {
-        final List<String> dataSources = new ArrayList<String>();
+        final List<String> dataSources = new ArrayList<>();
         for (ResourceFilter s : getBasethresholddef().getResourceFilters()) {
             dataSources.add(s.getField());
         }

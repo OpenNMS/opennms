@@ -63,7 +63,7 @@ public class TcaDataCollectionConfig implements Serializable, Comparable<TcaData
 
     /** The TCA data collections list. */
     @XmlElement(name="tca-collection")
-    private List<TcaDataCollection> m_tcaDataCollections = new ArrayList<TcaDataCollection>();
+    private List<TcaDataCollection> m_tcaDataCollections = new ArrayList<>();
 
     /**
      * Instantiates a new TCA data collection configuration.

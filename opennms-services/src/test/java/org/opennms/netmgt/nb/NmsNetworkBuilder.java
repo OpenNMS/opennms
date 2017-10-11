@@ -35,8 +35,8 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 
 /**
  * 
@@ -1480,7 +1480,6 @@ public abstract class NmsNetworkBuilder {
                                       setIfName(ifindextoifnamemap.get(ifIndex)).
                                       setIfAlias(getSuitableString(ifindextoifalias, ifIndex)).
                                       setIfSpeed(100000000).
-                                      setNetMask(getMask(ifindextonetmaskmap,ifIndex)).
                                       setPhysAddr(getSuitableString(ifindextomacmap, ifIndex)).setIfDescr(getSuitableString(ifindextoifdescrmap,ifIndex)));
         }
         
@@ -1492,24 +1491,28 @@ public abstract class NmsNetworkBuilder {
             if (ifIndex == null)
                 nb.addInterface(ipaddr.getHostAddress()).setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");
             else {
-                nb.addInterface(ipaddr.getHostAddress(), ifindexsnmpbuildermap.get(ifIndex).getSnmpInterface()).
-                setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");            }
+                final InetAddress mask = getMask(ifindextonetmaskmap, ifIndex);
+                nb.addInterface(ipaddr.getHostAddress(), ifindexsnmpbuildermap.get(ifIndex).getSnmpInterface())
+                    .setNetMask(mask)
+                    .setIsSnmpPrimary(isSnmpPrimary)
+                    .setIsManaged("M");            }
         }
             
         return nb.getCurrentNode();
     }
     
-    private InetAddress getMask(
-            Map<Integer, InetAddress> ifindextonetmaskmap, Integer ifIndex) {
-        if (ifindextonetmaskmap.containsKey(ifIndex))
+    private InetAddress getMask(Map<Integer, InetAddress> ifindextonetmaskmap, Integer ifIndex) {
+        if (ifindextonetmaskmap.containsKey(ifIndex)) {
             return ifindextonetmaskmap.get(ifIndex);
+        }
         return null;
     }
 
     private String getSuitableString(Map<Integer,String> ifindextomacmap, Integer ifIndex) {
         String value = "";
-        if (ifindextomacmap.containsKey(ifIndex))
+        if (ifindextomacmap.containsKey(ifIndex)) {
             value = ifindextomacmap.get(ifIndex);
+        }
         return value;
     }
     

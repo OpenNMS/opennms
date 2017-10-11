@@ -151,7 +151,7 @@ public class CustomViewController extends AbstractController implements Initiali
       
         // Get the list of available prefabricated graph options 
         Map<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
-        Set<PrefabGraph> prefabGraphs = new TreeSet<PrefabGraph>();
+        Set<PrefabGraph> prefabGraphs = new TreeSet<>();
         if (removeBrokenGraphsFromReport(report) && reportId > -1) {
             m_kscReportFactory.setReport(reportId, report);
             m_kscReportFactory.saveCurrent();

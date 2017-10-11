@@ -59,11 +59,11 @@ public class RequisitionNode {
     protected String m_location;
 
     @XmlElement(name = "interface")
-    protected List<RequisitionInterface> m_interfaces = new ArrayList<RequisitionInterface>();
+    protected List<RequisitionInterface> m_interfaces = new ArrayList<>();
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
+    protected List<RequisitionCategory> m_categories = new ArrayList<>();
     @XmlElement(name="asset")
-    protected List<RequisitionAsset> m_assets = new ArrayList<RequisitionAsset>();
+    protected List<RequisitionAsset> m_assets = new ArrayList<>();
     
     @XmlAttribute(name = "building")
     protected String m_building;
@@ -123,7 +123,7 @@ public class RequisitionNode {
      */
     public void setInterfaces(Collection<RequisitionInterface> interfaces) {
         if (interfaces == null) {
-            interfaces = new TreeSet<RequisitionInterface>();
+            interfaces = new TreeSet<>();
         }
         if (m_interfaces == interfaces) return;
         m_interfaces.clear();
@@ -218,7 +218,7 @@ public class RequisitionNode {
      */
     public void setCategories(Collection<RequisitionCategory> categories) {
         if (categories == null) {
-            categories = new TreeSet<RequisitionCategory>();
+            categories = new TreeSet<>();
         }
         if (m_categories == categories) return;
         m_categories.clear();
@@ -315,7 +315,7 @@ public class RequisitionNode {
      */
     public void setAssets(Collection<RequisitionAsset> assets) {
         if (assets == null) {
-            assets = new TreeSet<RequisitionAsset>();
+            assets = new TreeSet<>();
         }
         if (m_assets == assets) return;
         m_assets.clear();

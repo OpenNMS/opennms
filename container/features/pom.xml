@@ -132,6 +132,9 @@
             <!-- Internal Plugins Descriptor -->
             <repository>mvn:org.opennms.plugins/internal-plugins-descriptor/${project.version}/xml/features</repository>
 
+            <!-- IFTTT Integration -->
+            <repository>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}/xml/features</repository>
+
           </repositories>
 
           <!--
@@ -329,6 +332,9 @@
             <feature>alarm-change-notifier</feature>
             <feature>opennms-es-rest</feature>
             <feature>internal-plugins-descriptor</feature>
+
+            <!-- IFTTT Integration -->
+            <feature>ifttt-integration</feature>
           </features>
         </configuration>
       </plugin>
@@ -568,6 +574,13 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>vaadin-dashboard</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.ifttt</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

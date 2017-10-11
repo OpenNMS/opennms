@@ -43,7 +43,7 @@ public class DefaultMapViewManager implements MapViewManager{
     private int m_viewPortHeight = 100;
     private double m_scale = 0.0;
     private Point m_center = new Point(0,0);
-    private Set<MapViewManagerListener> m_listeners = new CopyOnWriteArraySet<MapViewManagerListener>();
+    private Set<MapViewManagerListener> m_listeners = new CopyOnWriteArraySet<>();
     
     @Override
     public void addListener(MapViewManagerListener listener) {

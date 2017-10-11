@@ -286,8 +286,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
         }
     }
 
+    protected MockHttpServletRequest createRequest(final String requestType, final String urlPath) {
+        return createRequest(servletContext, requestType, urlPath, getUser(), getUserRoles());
+    }
+
     protected static MockHttpServletResponse createResponse() {
-        return new MockHttpServletResponse();
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        return response;
     }
 
     protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath) {
@@ -440,6 +446,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     protected String sendRequest(final String requestType, final String url, final Map<?,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
         final MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
+        request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         request.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
@@ -447,7 +454,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected static String getQueryString(final Map<?,?> parameters) {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
 
         try {
             for (final Entry<?,?> entry : parameters.entrySet()) {
@@ -493,7 +500,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final String xml = response.getContentAsString();
         if (xml != null && !xml.isEmpty()) {
             try {
-                System.err.println(StringUtils.prettyXml(xml));
+                if (request.getHeader("Accept").contains("json")) {
+                    System.err.println(xml);
+                } else {
+                    System.err.println(StringUtils.prettyXml(xml));
+                }
             } catch (Exception e) {
                 System.err.println(xml);
             }

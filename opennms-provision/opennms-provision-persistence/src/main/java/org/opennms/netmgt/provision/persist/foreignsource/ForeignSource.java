@@ -77,11 +77,11 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
 
     @XmlElementWrapper(name="detectors")
     @XmlElement(name="detector")
-    private List<PluginConfig> m_detectors = new ArrayList<PluginConfig>();
+    private List<PluginConfig> m_detectors = new ArrayList<>();
     
     @XmlElementWrapper(name="policies")
     @XmlElement(name="policy")
-    private List<PluginConfig> m_policies = new ArrayList<PluginConfig>();
+    private List<PluginConfig> m_policies = new ArrayList<>();
 
     private boolean m_default;
 

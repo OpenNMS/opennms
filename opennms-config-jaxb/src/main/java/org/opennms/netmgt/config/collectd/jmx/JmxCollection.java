@@ -62,7 +62,7 @@ public class JmxCollection implements java.io.Serializable {
     private List<Mbean> m_mbeans = new ArrayList<>();
 
     @XmlElement(name="import-mbeans", required=false)
-    private List<String> m_importMbeansList = new ArrayList<String>();
+    private List<String> m_importMbeansList = new ArrayList<>();
 
     /**
      * Gets the import MBeans list.

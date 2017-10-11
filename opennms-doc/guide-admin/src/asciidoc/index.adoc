@@ -10,7 +10,7 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2017 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -272,6 +272,7 @@ include::text/system-properties/introduction.adoc[]
 == Ticketing
 include::text/ticketing/introduction.adoc[]
 include::text/ticketing/jira.adoc[]
+include::text/ticketing/remedy.adoc[]
 
 // TSRM Ticketer
 include::text/ticketing/tsrm.adoc[]
@@ -280,9 +281,11 @@ include::text/ticketing/tsrm.adoc[]
 == Enabling RMI
 include::text/rmi.adoc[]
 
+ifndef::opennms-prime[]
 [[ga-minion]]
 == Minion
 include::text/minion/kafka.adoc[]
+endif::opennms-prime[]
 
 [[ga-opennms-plugin-manager]]
 == Plugin Manager
@@ -302,3 +305,7 @@ include::text/plugins/opennms-es-rest-mapping-table.adoc[]
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds
 include::text/workarounds/snmp.adoc[]
+
+[[ga-ifttt]]
+== IFTTT Integration
+include::text/ifttt/ifttt-integration.adoc[]

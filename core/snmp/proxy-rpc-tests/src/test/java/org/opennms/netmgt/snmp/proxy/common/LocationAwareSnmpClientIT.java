@@ -151,7 +151,7 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
         ExpectedResults.compareToKnownIpAddressList(tracker.getIpAddresses());
 
         // Now determine their interface indices using a different type of tracker
-        final Set<SnmpInstId> ipAddrs = new TreeSet<SnmpInstId>();
+        final Set<SnmpInstId> ipAddrs = new TreeSet<>();
         for(final String ipAddr : tracker.getIpAddresses()) {
             ipAddrs.add(new SnmpInstId(InetAddressUtils.toOid(InetAddressUtils.addr(ipAddr))));
         }
@@ -190,7 +190,7 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
         ExpectedResults.compareToKnownIpAddressList(tracker.getIpAddresses());
 
         // Now determine their interface indices using a different type of tracker
-        final Set<SnmpInstId> ipAddrs = new TreeSet<SnmpInstId>();
+        final Set<SnmpInstId> ipAddrs = new TreeSet<>();
         for(final String ipAddr : tracker.getIpAddresses()) {
             ipAddrs.add(new SnmpInstId(InetAddressUtils.toOid(InetAddressUtils.addr(ipAddr))));
         }

@@ -293,7 +293,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     /** {@inheritDoc} */
     @Override
     public List<Event> translateEvent(Event e) {
-        ArrayList<Event> events = new ArrayList<Event>();
+        ArrayList<Event> events = new ArrayList<>();
         for (TranslationSpec spec : getTranslationSpecs()) {
             events.addAll(spec.translate(e));
         }
@@ -325,7 +325,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             if (!ueiMatches(e)) return Collections.emptyList();
 
             // uei matches now go thru the mappings
-            ArrayList<Event> events = new ArrayList<Event>();
+            ArrayList<Event> events = new ArrayList<>();
             for (TranslationMapping mapping : getTranslationMappings()) {
                 Event translatedEvent = mapping.translate(e);
                 if (translatedEvent != null)
@@ -432,7 +432,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
         private List<AssignmentSpec> constructAssignmentSpecs() {
             Mapping mapping = getMapping();
-            List<AssignmentSpec> assignments = new ArrayList<AssignmentSpec>();
+            List<AssignmentSpec> assignments = new ArrayList<>();
             for (Assignment assign : mapping.getAssignments()) {
                 AssignmentSpec assignSpec = 
                         ("parameter".equals(assign.getType()) ? 
@@ -624,7 +624,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         }
 
         private List<ValueSpec> constructNestedValues() {
-            List<ValueSpec> nestedValues = new ArrayList<ValueSpec>();
+            List<ValueSpec> nestedValues = new ArrayList<>();
             for (Value val : m_val.getValues()) {
                 nestedValues.add(EventTranslatorConfigFactory.this.getValueSpec(val));
             }

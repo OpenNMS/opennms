@@ -71,7 +71,7 @@ public class WillItUnmarshalCoverageMetaIT {
      * 
      * See {@link #files()} for detailed information.
      */
-    private static SortedSet<String> FILES = new TreeSet<String>();
+    private static SortedSet<String> FILES = new TreeSet<>();
     
     /**
      * Adds all .xml files in the given directory to the list of files to test
@@ -165,7 +165,7 @@ public class WillItUnmarshalCoverageMetaIT {
     /**
      * The set of files covered by the {@link WillItUnmarshalIT}.
      */
-    final static Set<File> COVERED_FILES = new HashSet<File>();
+    final static Set<File> COVERED_FILES = new HashSet<>();
     
     @BeforeClass
     public static void setUpClass() throws Exception {

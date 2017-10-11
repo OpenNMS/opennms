@@ -56,7 +56,7 @@ public class HwInventoryAdapterConfiguration implements Serializable {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
-    List<HwExtension> m_extensions = new ArrayList<HwExtension>();
+    List<HwExtension> m_extensions = new ArrayList<>();
 
     @XmlElement(name="hw-extension")
     public List<HwExtension> getExtensions() {
@@ -80,7 +80,7 @@ public class HwInventoryAdapterConfiguration implements Serializable {
      * @return the vendor OID
      */
     public List<SnmpObjId> getVendorOid(final String nodeSysOid) {
-        final List<SnmpObjId> vendorOidList = new ArrayList<SnmpObjId>();
+        final List<SnmpObjId> vendorOidList = new ArrayList<>();
         for (final HwExtension ext : getExtensions()) {
             if (nodeSysOid.startsWith(ext.getSysOidMask())) {
                 for (final MibObj obj : ext.getMibObjects()) {

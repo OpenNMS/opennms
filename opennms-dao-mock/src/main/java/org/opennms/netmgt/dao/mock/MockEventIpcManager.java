@@ -190,7 +190,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
     };
 
-    private List<ListenerKeeper> m_listeners = new ArrayList<ListenerKeeper>();
+    private List<ListenerKeeper> m_listeners = new ArrayList<>();
 
     private AtomicInteger m_pendingEvents = new AtomicInteger();
 
@@ -426,7 +426,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
      * Resets the event listeners and resets the event anticipator.
      */
     public void reset() {
-        m_listeners = new ArrayList<ListenerKeeper>();
+        m_listeners = new ArrayList<>();
         m_anticipator.reset();
     }
 

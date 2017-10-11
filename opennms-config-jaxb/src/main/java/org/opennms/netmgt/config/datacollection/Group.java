@@ -109,16 +109,16 @@ public class Group implements Serializable {
      * a MIB object
      */
     @XmlElement(name="mibObj")
-    private List<MibObj> m_mibObjects = new ArrayList<MibObj>();
+    private List<MibObj> m_mibObjects = new ArrayList<>();
 
     /**
      * sub group
      */
     @XmlElement(name="includeGroup")
-    private List<String> m_includeGroups = new ArrayList<String>();
+    private List<String> m_includeGroups = new ArrayList<>();
 
     @XmlElement(name="property")
-    private List<MibObjProperty> m_mibObjProperties = new ArrayList<MibObjProperty>();
+    private List<MibObjProperty> m_mibObjProperties = new ArrayList<>();
 
     public Group() {
         super();

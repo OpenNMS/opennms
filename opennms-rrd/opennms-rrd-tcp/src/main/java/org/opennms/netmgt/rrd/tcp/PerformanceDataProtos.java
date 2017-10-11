@@ -180,7 +180,7 @@ public final class PerformanceDataProtos {
             }
             case 33: {
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-                dblValue_ = new java.util.ArrayList<java.lang.Double>();
+                dblValue_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000008;
               }
               dblValue_.add(input.readDouble());
@@ -190,7 +190,7 @@ public final class PerformanceDataProtos {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
-                dblValue_ = new java.util.ArrayList<java.lang.Double>();
+                dblValue_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000008;
               }
               while (input.getBytesUntilLimit() > 0) {
@@ -1188,7 +1188,7 @@ public final class PerformanceDataProtos {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                message_ = new java.util.ArrayList<org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading>();
+                message_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000001;
               }
               message_.add(input.readMessage(org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading.PARSER, extensionRegistry));

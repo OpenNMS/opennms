@@ -68,7 +68,7 @@ public class EventReceipt implements Serializable {
 
     public EventReceipt() {
         super();
-        this._uuidList = new java.util.ArrayList<java.lang.String>();
+        this._uuidList = new java.util.ArrayList<>();
     }
 
 

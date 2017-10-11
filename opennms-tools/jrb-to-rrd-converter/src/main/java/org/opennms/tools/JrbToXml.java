@@ -54,7 +54,7 @@ public class JrbToXml extends Thread {
     /**
      * Queue for files to convert
      */
-    private Queue<String> m_queue = new ConcurrentLinkedQueue<String>();
+    private Queue<String> m_queue = new ConcurrentLinkedQueue<>();
 
     /**
      * Queue closed status

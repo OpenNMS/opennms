@@ -894,7 +894,7 @@
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.6.2</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -943,6 +943,7 @@
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
             <runPingTests>${runPingTests}</runPingTests>
+            <skipIpv6Tests>${skipIpv6Tests}</skipIpv6Tests>
             <proxy.port>${proxy.port}</proxy.port>
             <opennms.version>${project.version}</opennms.version>
             <!-- <opennms.unit.test>true</opennms.unit.test> -->
@@ -1155,7 +1156,7 @@
 
       Add target/endorsed as an endorsed API directory in case projects require it.
     -->
-    <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+    <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed -Dpoller.logfile=/tmp/remote-poller.log</argLine>
     <skipITs>true</skipITs>
 
     <!--
@@ -1234,6 +1235,7 @@
     <install.perl.bin>/usr/bin/perl</install.perl.bin>
 
     <runMailTests>true</runMailTests>
+    <poller.logfile>/tmp/remote-poller.log</poller.logfile>
   
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>
@@ -1283,12 +1285,12 @@
     <commonsCsvVersion>1.1</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
-    <commonsIoVersion>2.4</commonsIoVersion>
+    <commonsIoVersion>2.5</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.4</commonsLang3Version>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsMath3Version>3.5</commonsMath3Version>
-    <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
+    <commonsValidatorVersion>1.6</commonsValidatorVersion>
     <c3p0Version>0.9.5.2</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
     <cxfVersion>3.1.11</cxfVersion>
@@ -1297,6 +1299,7 @@
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
+    <fopVersion>1.0</fopVersion>
     <freemarkerVersion>2.3.21</freemarkerVersion>
     <groovyVersion>2.4.5</groovyVersion>
     <guavaVersion>18.0</guavaVersion>
@@ -1305,9 +1308,9 @@
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>
-    <httpcoreVersion>4.3.3</httpcoreVersion>
-    <httpclientVersion>4.3.6</httpclientVersion>
-    <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
+    <httpcoreVersion>4.4.4</httpcoreVersion>
+    <httpclientVersion>4.5.2</httpclientVersion>
+    <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jackson2Version>2.6.6</jackson2Version>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
@@ -1318,6 +1321,7 @@
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
+    <jnaVersion>4.4.0</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
@@ -1327,9 +1331,9 @@
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.8.2</log4j2Version>
-    <minaVersion>2.0.13</minaVersion>
-    <minionKarafVersion>${karafVersion}</minionKarafVersion>
-    <netty4Version>4.0.45.Final</netty4Version>
+    <mapstructVersion>1.2.0.CR1</mapstructVersion>
+    <minaVersion>2.0.16</minaVersion>
+    <netty4Version>4.1.9.Final</netty4Version>
     <newtsVersion>1.4.3</newtsVersion>
     <paxExamVersion>4.9.2</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
@@ -1706,6 +1710,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core.ipc.rpc</groupId>
+        <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.ipc.rpc</groupId>
         <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1876,6 +1885,11 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.name-cutter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.notifications</groupId>
+        <artifactId>org.opennms.features.notifications.api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2146,6 +2160,16 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-alarm-northbounder-jms</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarm-northbounder-bsf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarm-northbounder-drools</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3073,7 +3097,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
-        <version>1.2</version>
+        <version>1.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -3146,7 +3170,7 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.3</version>
+        <version>3.6</version>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -3300,14 +3324,14 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ognl</groupId>
+        <groupId>opensymphony</groupId>
         <artifactId>ognl</artifactId>
-        <version>2.6.9</version>
+        <version>2.6.11</version>
       </dependency>
       <dependency>
-        <groupId>net.sf.opencsv</groupId>
+        <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
-        <version>2.3</version>
+        <version>3.9</version>
       </dependency>
       <dependency>
         <groupId>net.sf.json-lib</groupId>
@@ -3927,9 +3951,9 @@
         <version>4.0.3</version>
       </dependency>
       <dependency>
-        <groupId>poi</groupId>
+        <groupId>org.apache.poi</groupId>
         <artifactId>poi</artifactId>
-        <version>2.5.1-final-20040804</version>
+        <version>3.16</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -3942,9 +3966,9 @@
         <version>${protobufVersion}</version>
       </dependency>
       <dependency>
-        <groupId>rome</groupId>
+        <groupId>com.rometools</groupId>
         <artifactId>rome</artifactId>
-        <version>1.0</version>
+        <version>1.7.2</version>
       </dependency>
       <dependency>
         <groupId>com.ximpleware</groupId>
@@ -3976,11 +4000,6 @@
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis</artifactId>
         <version>${xmlApisVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>xmlrpc</groupId>
-        <artifactId>xmlrpc</artifactId>
-        <version>2.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.krupczak</groupId>

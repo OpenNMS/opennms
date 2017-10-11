@@ -169,7 +169,7 @@ public class SnmpTimeTicks extends SnmpUInt32 {
      */
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         long time = getValue();
         long tmp = 0;
         if ((tmp = (time / (24 * 3600 * 100))) > 0) {

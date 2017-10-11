@@ -89,7 +89,7 @@ function toggleDiv(divName) {
 </p>
 
 <%
-StringBuilder stBuilder = new StringBuilder();
+final StringBuilder stBuilder = new StringBuilder();
 
 if (exception != null) {
   if (exception instanceof ServletException && ((ServletException)exception).getRootCause() != null) {

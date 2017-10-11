@@ -369,7 +369,7 @@ public class NtpMessage {
         double r = 0.0;
 
         for (int i = 0; i < 8; i++) {
-            r += unsignedByteToShort(array[pointer + i]) * Math.pow(2, (3 - i) * 8);
+            r += unsignedByteToShort(array[pointer + i]) * Math.pow(2d, (3d - i) * 8d);
         }
 
         return r;
@@ -386,7 +386,7 @@ public class NtpMessage {
         // Converts a double into a 64-bit fixed point
         for (int i = 0; i < 8; i++) {
             // 2^24, 2^16, 2^8, .. 2^-32
-            double base = Math.pow(2, (3 - i) * 8);
+            double base = Math.pow(2d, (3d - i) * 8d);
 
             // Capture byte value
             array[pointer + i] = (byte) (timestamp / base);

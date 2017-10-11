@@ -75,7 +75,7 @@ public class JmxConfigReader {
     }
 
     public Collection<Report> generateReportsByJmxDatacollectionConfig(JmxDatacollectionConfig inputConfig) {
-        Collection<Report> reports = new ArrayList<Report>();
+        Collection<Report> reports = new ArrayList<>();
         for (JmxCollection jmxCollection : inputConfig.getJmxCollection()) {
             logger.debug("jmxCollection: '{}'", jmxCollection.getName());
             for (Mbean mbean : jmxCollection.getMbeans().getMbean()) {
@@ -90,7 +90,7 @@ public class JmxConfigReader {
     }
 
     private Collection<Report> generateAttributeReportsByMBean(Mbean mbean) {
-        Collection<Report> reports = new ArrayList<Report>();
+        Collection<Report> reports = new ArrayList<>();
         for (Attrib attrib : mbean.getAttrib()) {
             final String title = String.format("%s[%s]", mbean.getObjectname().toString() , attrib.getName());
             final String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + attrib.getAlias() + "." + ATTRIBUTEREPORT;
@@ -103,7 +103,7 @@ public class JmxConfigReader {
     }
 
     private Collection<Report> generateMbeanReportsByMBean(Mbean mbean) {
-        Collection<Report> reports = new ArrayList<Report>();
+        Collection<Report> reports = new ArrayList<>();
         if (!mbean.getAttrib().isEmpty()) {
 
             String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + MBEANREPORT;
@@ -118,7 +118,7 @@ public class JmxConfigReader {
     }
 
     private Collection<Report> generateCompositeReportsByMBean(Mbean mbean) {
-        Collection<Report> reports = new ArrayList<Report>();
+        Collection<Report> reports = new ArrayList<>();
 
         for (CompAttrib compAttrib : mbean.getCompAttrib()) {
 
@@ -135,7 +135,7 @@ public class JmxConfigReader {
     }
 
     private Collection<Report> generateCompositeMemberReportsByMBean(Mbean mbean) {
-        Collection<Report> reports = new ArrayList<Report>();
+        Collection<Report> reports = new ArrayList<>();
 
         for (CompAttrib compAttrib : mbean.getCompAttrib()) {
             for (CompMember compMember : compAttrib.getCompMember()) {

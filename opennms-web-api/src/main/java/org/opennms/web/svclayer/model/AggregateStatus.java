@@ -58,7 +58,7 @@ public class AggregateStatus implements SurveillanceStatus {
 
     private Integer m_totalEntityCount;
 
-    private final List<OnmsNode> m_downNodes = new ArrayList<OnmsNode>();
+    private final List<OnmsNode> m_downNodes = new ArrayList<>();
 
     private String m_status;
 
@@ -156,7 +156,7 @@ public class AggregateStatus implements SurveillanceStatus {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(m_label == null ? "null" : m_label);
+        final StringBuilder sb = new StringBuilder(m_label == null ? "null" : m_label);
         sb.append(": ");
         sb.append(m_downNodes == null ? -1 : m_downNodes.size());
         sb.append(" down of ");
@@ -167,7 +167,7 @@ public class AggregateStatus implements SurveillanceStatus {
 
     final static class AggregateStatusVisitor extends AbstractEntityVisitor {
 
-        Set<OnmsNode> m_downNodes = new LinkedHashSet<OnmsNode>();
+        Set<OnmsNode> m_downNodes = new LinkedHashSet<>();
 
         String m_status = AggregateStatus.ALL_NODES_UP;
 

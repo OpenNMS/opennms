@@ -90,7 +90,7 @@ public class MockLogAppender {
      *
      */
     public static LoggingEvent[] getEventsGreaterOrEqual(final Level level) {
-        LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
+        LinkedList<LoggingEvent> matching = new LinkedList<>();
 
         synchronized (s_events) {
             for (final LoggingEvent event : s_events) {
@@ -110,7 +110,7 @@ public class MockLogAppender {
      * 
      */
     public static LoggingEvent[] getEventsAtLevel(final Level level) {
-        final LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
+        final LinkedList<LoggingEvent> matching = new LinkedList<>();
 
         synchronized (s_events) {
             for (final LoggingEvent event : s_events) {
@@ -283,7 +283,7 @@ public class MockLogAppender {
             return;
         }
 
-        StringBuffer message = new StringBuffer("Log messages at or greater than the log level ").append(level).append(" received:");
+        final StringBuilder message = new StringBuilder("Log messages at or greater than the log level ").append(level).append(" received:");
 
         for (final LoggingEvent event : events) {
             message.append("\n\t[").append(event.getLevel()).append("] ")

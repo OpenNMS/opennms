@@ -69,6 +69,7 @@ import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
@@ -1087,9 +1088,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     public void graphChanged(GraphContainer graphContainer) {
         // are there any vertices to display?
         boolean verticesAvailable = !graphContainer.getGraph().getDisplayVertices().isEmpty();
+        boolean collapsibleCriteriaInFocus = hasCollapsibleCriteriaInFocus(graphContainer);
 
         // toggle view
-        if (verticesAvailable) {
+        if (verticesAvailable || collapsibleCriteriaInFocus) {
             m_noContentWindow.setVisible(false);
             removeWindow(m_noContentWindow);
             m_topologyComponent.setEnabled(true);
@@ -1099,7 +1101,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             if(!m_noContentWindow.isAttached()){
                 addWindow(m_noContentWindow);
             }
-
         }
 
         updateTabVisibility();
@@ -1108,6 +1109,15 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         if (m_currentHudDisplay != null) {
             m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
         }
+    }
+
+    private boolean hasCollapsibleCriteriaInFocus(GraphContainer graphContainer) {
+        for (Criteria criteria : graphContainer.getCriteria()) {
+            if (criteria instanceof CollapsibleCriteria) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int getFocusVertices(GraphContainer graphContainer) {

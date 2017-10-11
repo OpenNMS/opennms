@@ -79,7 +79,7 @@ public class ObjIdMonitor extends SingleInstanceTracker {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         
         buffer.append(getClass().getName());
         buffer.append("@");

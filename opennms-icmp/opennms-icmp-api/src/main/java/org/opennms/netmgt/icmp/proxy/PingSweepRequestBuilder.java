@@ -36,6 +36,8 @@ public interface PingSweepRequestBuilder {
 
     PingSweepRequestBuilder withLocation(String location);
 
+    PingSweepRequestBuilder withSystemId(String systemId);
+
     PingSweepRequestBuilder withPacketSize(int packetSize);
 
     PingSweepRequestBuilder withPacketsPerSecond(double packetsPerSecond);

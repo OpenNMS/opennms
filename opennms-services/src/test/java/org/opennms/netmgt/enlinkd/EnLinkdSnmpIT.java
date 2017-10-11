@@ -147,7 +147,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testCdpInterfaceGetter() throws Exception {
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(RPict001_IP));
-        CdpInterfacePortNameGetter get = new CdpInterfacePortNameGetter(config,m_client,null);
+        CdpInterfacePortNameGetter get = new CdpInterfacePortNameGetter(config,m_client,null,0);
 
         assertEquals("FastEthernet0", get.getInterfaceNameFromCiscoCdpMib(1).toDisplayString());
         assertEquals("FastEthernet1", get.getInterfaceNameFromCiscoCdpMib(2).toDisplayString());
@@ -291,7 +291,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(TruthValue.FALSE, ospfElement.getOspfBdrRtrStatus());
         assertEquals(TruthValue.FALSE, ospfElement.getOspfASBdrRtrStatus());
 
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null);
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null,0);
 
         OspfElement ospfElementN = ipAddrTableGetter.get(ospfElement);
         assertEquals(InetAddress.getByName("192.168.100.246"), ospfElementN.getOspfRouterId());
@@ -344,7 +344,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testOspfIfTableWalk() throws Exception {
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
         String trackerName = "ospfIfTable";
-        final List<OspfLink> links = new ArrayList<OspfLink>();
+        final List<OspfLink> links = new ArrayList<>();
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
 
         	public void processOspfIfRow(final OspfIfRow row) {
@@ -363,7 +363,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             return;
         }
         
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null);
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null,0);
         for (OspfLink link: links) {
                 link = ipAddrTableGetter.get(link);
 			assertEquals(0, link.getOspfAddressLessIndex().intValue());
@@ -444,7 +444,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
                 
-        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
+        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null,0);
         
                 LldpLink link = new LldpLink();
                 link.setLldpLocalPortNum(1);
@@ -559,7 +559,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
 		
-    	final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
+    	final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null,0);
 		LldpLink link = new LldpLink();
 		link.setLldpLocalPortNum(9);
 		link = lldpLocPort.getLldpLink(link);
@@ -586,7 +586,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH2_IP));
                 
-        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
+        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null,0);
         LldpLink link = new LldpLink();
         link.setLldpLocalPortNum(1);
         link = lldpLocPort.getLldpLink(link);
@@ -612,7 +612,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void test3LldpRemoteTableWalk() throws Exception {
 
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH2_IP));
-        final List<LldpLink> links = new ArrayList<LldpLink>();
+        final List<LldpLink> links = new ArrayList<>();
                 
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
@@ -637,7 +637,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         }
         final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,
                                                                     m_client,
-                                                                    null);
+                                                                    null,0);
 
         for (LldpLink link : links) {
             assertNotNull(link);
@@ -732,7 +732,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testIsisISAdjTableWalk() throws Exception {
 
-    	final List<IsIsLink> links = new ArrayList<IsIsLink>();
+    	final List<IsIsLink> links = new ArrayList<>();
     	String trackerName = "isisISAdjTable";
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
         IsisISAdjTableTracker tracker = new IsisISAdjTableTracker() {
@@ -780,7 +780,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testIsisCircTableWalk() throws Exception {
 
-    	final List<IsIsLink> links = new ArrayList<IsIsLink>();
+    	final List<IsIsLink> links = new ArrayList<>();
     	String trackerName = "isisCircTable";
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
         IsisCircTableTracker tracker = new IsisCircTableTracker() {
@@ -854,7 +854,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testIpNetToMediaTableWalk() throws Exception {
 
-    	final List<IpNetToMedia> rows = new ArrayList<IpNetToMedia>();
+    	final List<IpNetToMedia> rows = new ArrayList<>();
     	String trackerName = "ipNetToMediaTable";
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(MIKROTIK_IP));
         IpNetToMediaTableTracker tracker = new IpNetToMediaTableTracker() {
@@ -944,7 +944,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testDot1dBasePortTableWalk() throws Exception {
 
     	String trackerName = "dot1dbasePortTable";
-    	final List<Dot1dBasePortRow> rows = new ArrayList<Dot1dBasePortTableTracker.Dot1dBasePortRow>();
+    	final List<Dot1dBasePortRow> rows = new ArrayList<>();
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dBasePortTableTracker tracker = new Dot1dBasePortTableTracker() {
             @Override
@@ -979,7 +979,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testDot1dStpPortTableWalk() throws Exception {
 
     	String trackerName = "dot1dbaseStpTable";
-    	final List<BridgeStpLink> links = new ArrayList<BridgeStpLink>();
+    	final List<BridgeStpLink> links = new ArrayList<>();
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dStpPortTableTracker tracker = new Dot1dStpPortTableTracker() {
             @Override
@@ -1025,7 +1025,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testDot1dTpFdbTableWalk() throws Exception {
 
     	String trackerName = "dot1dTpFdbTable";
-    	final List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
+    	final List<BridgeMacLink> links = new ArrayList<>();
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dTpFdbTableTracker tracker = new Dot1dTpFdbTableTracker() {
             @Override

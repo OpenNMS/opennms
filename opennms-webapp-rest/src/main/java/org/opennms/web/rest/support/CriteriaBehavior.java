@@ -30,6 +30,7 @@ package org.opennms.web.rest.support;
 
 import java.util.function.Function;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.cxf.jaxrs.ext.search.ConditionType;
 import org.opennms.core.criteria.CriteriaBuilder;
 
@@ -64,16 +65,8 @@ public class CriteriaBehavior<T> {
     private final Function<String,T> m_converter;
     private boolean m_skipProperty = false;
 
-    public CriteriaBehavior(String name) {
-        this(name, null, (b,v,c,w)-> {});
-    }
-
     public CriteriaBehavior(Function<String,T> converter) {
         this(null, converter, (b,v,c,w) -> {});
-    }
-
-    public CriteriaBehavior(String name, BeforeVisit beforeVisit) {
-        this(name, null, beforeVisit);
     }
 
     public CriteriaBehavior(String name, Function<String,T> converter) {
@@ -90,6 +83,10 @@ public class CriteriaBehavior<T> {
         return m_criteriaPropertyName;
     }
 
+    public Function<String,T> getConverter() {
+        return m_converter;
+    }
+
     public void beforeVisit(CriteriaBuilder builder, Object value, ConditionType c, boolean isWildcard) {
         m_beforeVisit.accept(builder, value, c, isWildcard);
     }
@@ -98,11 +95,21 @@ public class CriteriaBehavior<T> {
         return m_converter.apply(value);
     }
 
-    public void setSkipProperty(boolean skip) {
+    public void setSkipPropertyByDefault(boolean skip) {
         m_skipProperty = skip;
     }
 
-    public boolean shouldSkipProperty() {
+    public boolean shouldSkipProperty(ConditionType condition, boolean wildcard) {
         return m_skipProperty;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("criteriaPropertyName", m_criteriaPropertyName)
+            .append("converter", m_converter)
+            .append("beforeVisit", m_beforeVisit)
+            .append("skipProperty", m_skipProperty)
+            .build();
     }
 }

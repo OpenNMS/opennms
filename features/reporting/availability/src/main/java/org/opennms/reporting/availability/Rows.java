@@ -48,7 +48,7 @@ public class Rows implements java.io.Serializable {
     private java.util.List<Row> rowList;
 
     public Rows() {
-        this.rowList = new java.util.ArrayList<Row>();
+        this.rowList = new java.util.ArrayList<>();
     }
 
     /**

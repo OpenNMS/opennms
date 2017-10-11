@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="cpape" id="21.0.0-node-alarm-status-view">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <viewExists viewName="node_alarm_status"/>
+      </not>
+    </preConditions>
+    <sql>
+      CREATE VIEW node_alarm_status AS (
+
+        SELECT
+          node.nodeid as nodeid,
+
+          COALESCE(
+            (SELECT MAX(CASE WHEN alarms.severity IS NULL OR alarms.severity &lt; 3 THEN 3 ELSE alarms.severity END) FROM alarms WHERE alarms.nodeid = node.nodeid),
+            3
+          ) AS max_alarm_severity,
+
+          COALESCE(
+            (SELECT MAX(CASE WHEN alarms.severity IS NULL OR alarms.severity &lt; 3 THEN 3 ELSE alarms.severity END) FROM alarms WHERE alarms.nodeid = node.nodeid and alarms.alarmAckTime IS NULL),
+            3
+          ) AS max_alarm_severity_unack,
+
+          (SELECT COUNT(alarms.alarmid) FROM alarms WHERE alarms.nodeid = node.nodeid and alarms.alarmAckTime IS NULL) AS alarm_count_unack,
+
+          (SELECT count(*) FROM alarms WHERE alarms.nodeid=node.nodeid) AS alarm_count
+
+        FROM node
+      );
+    </sql>
+  </changeSet>
+  <changeSet author="mvrueden" id="21.0.0-node-outage-status-view">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <viewExists viewName="node_outage_status"/>
+      </not>
+    </preConditions>
+    <sql>
+      CREATE VIEW node_outage_status AS (
+        SELECT
+          node.nodeid,
+          (CASE WHEN severity IS NULL OR severity &lt; 3 THEN 3 ELSE severity END) AS max_outage_severity
+        FROM
+          (
+            SELECT events.nodeid, max(events.eventseverity) AS severity
+            FROM events
+            JOIN outages ON outages.svclosteventid = events.eventid
+            WHERE outages.svcregainedeventid IS NULL
+            GROUP BY events.nodeid
+          ) AS tmp
+        RIGHT JOIN node ON tmp.nodeid = node.nodeid
+      );
+    </sql>
+  </changeSet>
+  <changeSet id="21.0.0-event-parameters" author="fooker">
+    <createTable tableName="event_parameters">
+      <column name="eventid" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(256)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type" type="VARCHAR(256)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="event_parameters"
+                   columnNames="eventid,name"
+                   constraintName="pk_eventparameters" />
+    <addForeignKeyConstraint baseTableName="event_parameters" baseColumnNames="eventid"
+                             constraintName="fk_eventparameterseventid"
+                             referencedTableName="events"
+                             referencedColumnNames="eventid"
+                             onDelete="CASCADE"/>
+
+    <dropColumn tableName="alarms" columnName="eventparms" />
+  </changeSet>
+
+  <changeSet id="21.0.0-event-parameters-remove-column" author="cpape">
+    <preConditions onFail="CONTINUE">
+      <sqlCheck expectedResult="t">
+        SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'events') AND attname = 'eventparms')
+      </sqlCheck>
+      <sqlCheck expectedResult="f">
+        SELECT EXISTS (SELECT 1 FROM events WHERE eventparms IS NOT NULL LIMIT 1);
+      </sqlCheck>
+    </preConditions>
+    <dropColumn tableName="events" columnName="eventparms"/>
+  </changeSet>
+
+  <changeSet id="21.0.0-move-netmask-to-ipinterface" author="rangerrick">
+    <addColumn tableName="ipinterface">
+      <column name="netmask" type="character varying(45)" />
+    </addColumn>
+    <sql>
+      UPDATE ipinterface
+        SET netmask=snmpipadentnetmask
+      FROM ipinterface I
+      INNER JOIN snmpinterface S
+        ON I.nodeid=S.nodeid
+        AND I.snmpinterfaceid=S.id
+    </sql>
+    <dropColumn tableName="snmpinterface" columnName="snmpipadentnetmask" />
+  </changeSet>
+
+
+</databaseChangeLog>

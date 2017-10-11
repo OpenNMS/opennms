@@ -88,9 +88,10 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
-        "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml"
+        "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
+        "classpath:/overrideEventdPort.xml"
 })
-@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
+@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=ADVANCED" })
 @JUnitTemporaryDatabase
 public class SyslogdEventdLoadIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdEventdLoadIT.class);
@@ -109,7 +110,11 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
     @Autowired
     private Eventd m_eventd;
-    
+
+    @Autowired
+    @Qualifier("eventdPort")
+    private int m_eventdPort;
+
     private Syslogd m_syslogd;
 
     private SyslogdConfigFactory m_config;
@@ -186,7 +191,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
         int eventCount = 100;
         
-        List<Integer> foos = new ArrayList<Integer>();
+        List<Integer> foos = new ArrayList<>();
 
         for (int i = 0; i < eventCount; i++) {
             int eventNum = Double.valueOf(Math.random() * 10000).intValue();
@@ -311,8 +316,8 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
     }
 
-    private static EventProxy createEventProxy() throws UnknownHostException {
-        return new TcpEventProxy(new InetSocketAddress(InetAddressUtils.ONE_TWENTY_SEVEN, 5817), TcpEventProxy.DEFAULT_TIMEOUT);
+    private EventProxy createEventProxy() throws UnknownHostException {
+        return new TcpEventProxy(new InetSocketAddress(InetAddressUtils.ONE_TWENTY_SEVEN, m_eventdPort), TcpEventProxy.DEFAULT_TIMEOUT);
     }
 
     public static class EventCounter implements EventListener {

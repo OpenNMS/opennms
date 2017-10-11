@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
 
 public class ApplicationInitializedEvent extends OpenNMSEvent<ApplicationInitializedEventHandler> {
-    public static Type<ApplicationInitializedEventHandler> TYPE = new Type<ApplicationInitializedEventHandler>();
+    public static Type<ApplicationInitializedEventHandler> TYPE = new Type<>();
 
     public ApplicationInitializedEvent() {
     }

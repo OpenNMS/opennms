@@ -53,7 +53,7 @@ public class EntityPhysicalTableTracker extends TableTracker {
     private static final Logger LOG = LoggerFactory.getLogger(EntityPhysicalTableTracker.class);
 
     /** The entities. */
-    private List<OnmsHwEntity> entities = new ArrayList<OnmsHwEntity>();
+    private List<OnmsHwEntity> entities = new ArrayList<>();
 
     /** The vendor attributes. */
     private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes;

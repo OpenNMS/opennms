@@ -287,8 +287,8 @@ public class SnmpPortal extends Object {
                 return;
             }
 
-            final LinkedList<DatagramPacket> fastReceiverQ = new LinkedList<DatagramPacket>();
-            final LinkedList<byte[]> usedBuffers = new LinkedList<byte[]>();
+            final LinkedList<DatagramPacket> fastReceiverQ = new LinkedList<>();
+            final LinkedList<byte[]> usedBuffers = new LinkedList<>();
             Thread fastReceiver = new Thread(new Runnable() {
                 @Override
                 public void run() {

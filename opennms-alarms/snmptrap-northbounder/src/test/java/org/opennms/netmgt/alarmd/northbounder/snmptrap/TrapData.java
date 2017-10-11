@@ -47,7 +47,7 @@ public class TrapData {
     private int specific;
 
     /** The parameters. */
-    private List<TrapParameter> parameters = new ArrayList<TrapParameter>();
+    private List<TrapParameter> parameters = new ArrayList<>();
 
     /**
      * Instantiates a new trap data.

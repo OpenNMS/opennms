@@ -39,11 +39,15 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.dao.jaxb.DefaultJavamailConfigurationDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.springframework.core.io.FileSystemResource;
+
+import com.google.common.collect.Lists;
 
 /**
  * The Class EmailNorthbounderTest.
@@ -124,7 +128,11 @@ public class EmailNorthbounderTest {
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
-        onmsAlarm.setEventParms("alarmId=10(Int32,text);alarmMessage=this is a test(string,text);");
+        onmsAlarm.setLastEvent(new OnmsEvent() {{
+            this.setEventParameters(Lists.newArrayList(
+                    new OnmsEventParameter(this, "alarmId", "10", "Int32"),
+                    new OnmsEventParameter(this, "alarmMessage", "this is a test", "string")));
+        }});
         onmsAlarm.setLogMsg("Test log message");
         onmsAlarm.setDescription("Test description");
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
@@ -172,7 +180,11 @@ public class EmailNorthbounderTest {
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
-        onmsAlarm.setEventParms("alarmId=10(Int32,text);alarmMessage=this is a test(string,text);");
+        onmsAlarm.setLastEvent(new OnmsEvent() {{
+            this.setEventParameters(Lists.newArrayList(
+                    new OnmsEventParameter(this, "alarmId", "10", "Int32"),
+                    new OnmsEventParameter(this, "alarmMessage", "this is a test", "string")));
+        }});
         onmsAlarm.setLogMsg("Test log message");
         onmsAlarm.setDescription("Test description");
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);

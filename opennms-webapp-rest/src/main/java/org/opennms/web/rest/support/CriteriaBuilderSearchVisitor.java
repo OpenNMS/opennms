@@ -41,6 +41,7 @@ import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchConditionVisitor;
 import org.apache.cxf.jaxrs.ext.search.SearchUtils;
 import org.apache.cxf.jaxrs.ext.search.visitor.AbstractSearchConditionVisitor;
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restriction;
@@ -144,14 +145,14 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 
 					// If we're using CriteriaBehaviors, assume that the value is a String
 					// and convert it to the value that will be used in the Criteria
-					value = behavior.convert(NULL_VALUE.equals((String)clsValue.getValue()) ? null : (String)clsValue.getValue());
+					value = NULL_VALUE.equals((String)clsValue.getValue()) ? null : behavior.convert((String)clsValue.getValue());
 
 					// Execute any beforeVisit() actions for this query term such as adding
 					// additional JOIN aliases
 					behavior.beforeVisit(m_criteriaBuilder, value, sc.getConditionType(), isWildcard);
 
 					// If the behavior indicates that we should skip this search term, then return
-					if (behavior.shouldSkipProperty()) {
+					if (behavior.shouldSkipProperty(sc.getConditionType(), isWildcard)) {
 						return;
 					}
 				} else {
@@ -222,7 +223,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 				}
 			}
 		} else {
-			List<Restriction> subRestrictions = new ArrayList<Restriction>();
+			List<Restriction> subRestrictions = new ArrayList<>();
 			for (SearchCondition<Q> condition : sc.getSearchConditions()) {
 				// Create a new CriteriaBuilder
 				CriteriaBuilder builder = null;
@@ -239,8 +240,18 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 				// Visit the children
 				condition.accept(newVisitor);
 
+				Criteria newCriteria = newVisitor.getQuery().toCriteria();
+
+				// Add any aliases from the subcriteria
+				Collection<Alias> aliases = newCriteria.getAliases();
+				if (aliases != null) {
+					for (Alias alias : aliases) {
+						m_criteriaBuilder.alias(alias);
+					}
+				}
+
 				// Fetch the rendered restrictions
-				Collection<Restriction> restrictions = newVisitor.getQuery().toCriteria().getRestrictions();
+				Collection<Restriction> restrictions = newCriteria.getRestrictions();
 				// If there are restrictions...
 				if (restrictions != null && restrictions.size() > 0) {
 					final Restriction subRestriction;

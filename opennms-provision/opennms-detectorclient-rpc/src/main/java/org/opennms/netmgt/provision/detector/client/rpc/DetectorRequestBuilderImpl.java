@@ -48,6 +48,8 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     private String location;
 
+    private String systemId;
+
     private String className;
 
     private InetAddress address;
@@ -65,6 +67,12 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
     @Override
     public DetectorRequestBuilder withLocation(String location) {
         this.location = location;
+        return this;
+    }
+
+    @Override
+    public DetectorRequestBuilder withSystemId(String systemId) {
+        this.systemId = systemId;
         return this;
     }
 
@@ -130,6 +138,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         // Store all of the request details in the DTO
         final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
         detectorRequestDTO.setLocation(location);
+        detectorRequestDTO.setSystemId(systemId);
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
         detectorRequestDTO.addDetectorAttributes(attributes);

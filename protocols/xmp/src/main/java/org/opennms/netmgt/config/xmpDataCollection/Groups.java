@@ -57,7 +57,7 @@ package org.opennms.netmgt.config.xmpDataCollection;
 
     public Groups() {
         super();
-        this._groupList = new java.util.ArrayList<org.opennms.netmgt.config.xmpDataCollection.Group>();
+        this._groupList = new java.util.ArrayList<>();
     }
 
 

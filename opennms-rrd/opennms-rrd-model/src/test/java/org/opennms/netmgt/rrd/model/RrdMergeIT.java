@@ -60,7 +60,7 @@ public class RrdMergeIT {
         // Retrieve a list of the time stamps of the rows with data from tempA.rrd
         // Verify the max value
         Double value = Double.NEGATIVE_INFINITY;
-        List<Long> timestampsA = new ArrayList<Long>();
+        List<Long> timestampsA = new ArrayList<>();
         for (RRA rra : tempA.getRras()) {
             for (Row row : rra.getRows()) {
                 if (!row.isNan()) {
@@ -76,7 +76,7 @@ public class RrdMergeIT {
 
         // Retrieve a list of the time stamps of the rows with data from tempB.rrd
         value = Double.NEGATIVE_INFINITY;
-        List<Long> timestampsB = new ArrayList<Long>();
+        List<Long> timestampsB = new ArrayList<>();
         for (RRA rra : tempB.getRras()) {
             for (Row row : rra.getRows()) {
                 if (!row.isNan()) {
@@ -107,7 +107,7 @@ public class RrdMergeIT {
 
         // Retrieve the list of the non NaN rows from the updated tempB.rrd
         value = Double.NEGATIVE_INFINITY;
-        List<Long> timestampsFinal = new ArrayList<Long>();
+        List<Long> timestampsFinal = new ArrayList<>();
         for (RRA rra : tempB.getRras()) {
             for (Row row : rra.getRows()) {
                 if (!row.isNan()) {

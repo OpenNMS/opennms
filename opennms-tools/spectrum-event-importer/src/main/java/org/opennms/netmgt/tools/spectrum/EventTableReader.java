@@ -89,7 +89,7 @@ public class EventTableReader {
         
         EventTable eventTable = new EventTable(tableName);
         String thisKey = null;
-        StringBuilder thisValueBuilder = null;
+        final StringBuilder thisValueBuilder = null;
         
         boolean justHitEol = true;
         boolean gotKey = false;

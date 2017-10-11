@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
@@ -63,33 +65,61 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
     public static final String PARM_RESOLUTION_TYPE_BOTH = "both";
     public static final String PARM_RESOLUTION_TYPE_EITHER = "either";
     public static final String PARM_RESOLUTION_TYPE_DEFAULT = PARM_RESOLUTION_TYPE_EITHER;
+    public static final String PARM_RECORD_TYPES = "record-types";
+    public static final String PARM_RECORD_TYPE_A = "A";
+    public static final String PARM_RECORD_TYPE_AAAA = "AAAA";
+    public static final String PARM_RECORD_TYPE_CNAME = "CNAME";
+    public static final String PARM_RECORD_TYPE_NS = "NS";
+    public static final String PARM_RECORD_TYPE_MX = "MX";
+    public static final String PARM_RECORD_TYPE_PTR = "PTR";
+    public static final String PARM_RECORD_TYPE_SOA = "SOA";
+    public static final String PARM_RECORD_TYPE_SRV = "SRV";
+    public static final String PARM_RECORD_TYPE_TXT = "TXT";
 
     public static final String PARM_NAMESERVER = "nameserver";
+    public static final String PARM_LOOKUP = "lookup";
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         // Get the name to query for
         final Name name;
+        final String lookup = ParameterMap.getKeyedString(parameters, PARM_LOOKUP, svc.getNodeLabel());
         try {
-            name = new Name(svc.getNodeLabel());
+            name = new Name(lookup);
 
         } catch (final TextParseException e) {
-            return PollStatus.unavailable("Invalid record name '" + svc.getNodeLabel() + "': " + e.getMessage());
+            return PollStatus.unavailable("Invalid record name '" + lookup + "': " + e.getMessage());
         }
 
+        Set<Integer> recordTypes = new TreeSet<>();
         // Determine if records for IPv4 and/or IPv6 re required
-        final String resolutionType = ParameterMap.getKeyedString(parameters,
-                                                                  PARM_RESOLUTION_TYPE,
-                                                                  PARM_RESOLUTION_TYPE_DEFAULT);
-        final boolean ipv4Required = PARM_RESOLUTION_TYPE_V4.equalsIgnoreCase(resolutionType) ||
-                                     PARM_RESOLUTION_TYPE_BOTH.equals(resolutionType);
-        final boolean ipv6Required = PARM_RESOLUTION_TYPE_V6.equalsIgnoreCase(resolutionType) ||
-                                     PARM_RESOLUTION_TYPE_BOTH.equals(resolutionType);
+        final String resolutionType = ParameterMap.getKeyedString(parameters, PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_DEFAULT);
+        final String recordTypesParam = ParameterMap.getKeyedString(parameters, PARM_RECORD_TYPES, "");
+        Boolean matchAll = Boolean.TRUE;
+
+        if ("".equals(recordTypesParam)) {
+            if (PARM_RESOLUTION_TYPE_V4.equalsIgnoreCase(resolutionType) || PARM_RESOLUTION_TYPE_BOTH.equalsIgnoreCase(resolutionType) || PARM_RESOLUTION_TYPE_EITHER.equalsIgnoreCase(resolutionType)) {
+                recordTypes.add(Type.A);
+            }
+            if (PARM_RESOLUTION_TYPE_V6.equalsIgnoreCase(resolutionType) || PARM_RESOLUTION_TYPE_BOTH.equalsIgnoreCase(resolutionType) || PARM_RESOLUTION_TYPE_EITHER.equalsIgnoreCase(resolutionType)) {
+                recordTypes.add(Type.AAAA);
+            }
+            if (PARM_RESOLUTION_TYPE_EITHER.equals(resolutionType)) {
+                matchAll = Boolean.FALSE;
+            }
+        } else {
+            for (final String type : recordTypesParam.split(",")) {
+                final Integer typeValue = Type.value(type);
+                if (typeValue == -1) {
+                    LOG.error("Invalid record type '{}' specified in record-types list.", type);
+                } else {
+                    recordTypes.add(typeValue);
+                }
+            }
+        }
 
         // Build a resolver object used for lookups
-        final String nameserver = ParameterMap.getKeyedString(parameters,
-                                                              PARM_NAMESERVER,
-                                                              null);
+        final String nameserver = ParameterMap.getKeyedString(parameters, PARM_NAMESERVER, null);
 
         final Resolver resolver;
         try {
@@ -97,7 +127,30 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
                 // Use system-defined resolvers
                 resolver = new ExtendedResolver();
             } else {
-                resolver = new SimpleResolver(nameserver);
+                if ("::1".equals(nameserver)) {
+                    resolver = new SimpleResolver(nameserver);
+                } else if (nameserver.matches("^\\[[\\d:]+\\]:\\d+$")) {
+                    // IPv6 address with port number
+                    final Integer pos = nameserver.lastIndexOf(":");
+                    String hostname = nameserver.substring(0, pos);
+                    hostname = hostname.substring(1, hostname.length() - 1);
+                    final Integer port = Integer.valueOf(nameserver.substring(pos + 1));
+                    LOG.debug("nameserver: hostname={}, port={}", hostname, port);
+                    resolver = new SimpleResolver(hostname);
+                    resolver.setPort(port);
+                } else if (nameserver.matches("^\\S+:\\d+$")) {
+                    // hostname with port number
+                    final Integer pos = nameserver.lastIndexOf(":");
+                    final String hostname = nameserver.substring(0, pos);
+                    final String port = nameserver.substring(pos + 1);
+                    LOG.debug("nameserver: hostname={}, port={}", hostname, port);
+                    resolver = new SimpleResolver(hostname);
+                    resolver.setPort(Integer.getInteger(port));
+
+                } else {
+                    // hostname or ip address
+                    resolver = new SimpleResolver(nameserver);
+                }
             }
 
         } catch (final UnknownHostException e) {
@@ -108,21 +161,28 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
         final long start = System.currentTimeMillis();
 
         // Resolve the name
-        final boolean ipv4Found = resolve(name, resolver, Type.A);
-        final boolean ipv6Found = resolve(name, resolver, Type.AAAA);
+        Set<String> foundTypes = new TreeSet<>();
+        Set<String> notFoundTypes = new TreeSet<>();
+        recordTypes.forEach((type) -> {
+            if (resolve(name, resolver, type)) {
+                foundTypes.add(Type.string(type));
+            } else {
+                LOG.warn("Unable to resolve host '{}' for type '{}'", name, Type.string(type));
+                notFoundTypes.add(Type.string(type));
+            }
+        });
 
         // Resolving succeeded - checking results
         final long end = System.currentTimeMillis();
 
+        LOG.debug("foundTypes: {}", foundTypes);
+        LOG.debug("notFoundTypes: {}", notFoundTypes);
         // Check if result is valid
-        if (!ipv4Found && !ipv6Found) {
+        if (foundTypes.isEmpty() && !notFoundTypes.isEmpty()) {
             return PollStatus.unavailable("Unable to resolve host '" + name + "'");
 
-        } else  if (ipv4Required && !ipv4Found) {
-            return PollStatus.unavailable("'" + name + "' could be resolved to an IPv6 address (AAAA record) but not an IPv4 address (A record)");
-
-        } else if (ipv6Required && !ipv6Found) {
-            return PollStatus.unavailable("'" + name + "' could be resolved to an IPv4 address (A record) but not an IPv6 address (AAAA record)");
+        } else if (!foundTypes.isEmpty() && !notFoundTypes.isEmpty() && matchAll) {
+            return PollStatus.unavailable("'" + name + "' could be resolved to types [" + foundTypes + "], but not for types [" + notFoundTypes + "]");
 
         } else {
             return PollStatus.available((double) (end - start));

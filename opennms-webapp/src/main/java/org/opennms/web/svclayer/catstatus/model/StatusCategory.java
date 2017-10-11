@@ -55,7 +55,7 @@ public class StatusCategory {
 	 */
 	public StatusCategory(){
 	
-		m_nodelist = new ArrayList<StatusNode>();
+		m_nodelist = new ArrayList<>();
 	
 	}
 	

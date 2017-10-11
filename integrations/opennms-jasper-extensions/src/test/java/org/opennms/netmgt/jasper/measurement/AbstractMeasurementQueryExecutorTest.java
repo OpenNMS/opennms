@@ -87,7 +87,7 @@ public class AbstractMeasurementQueryExecutorTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(9999);
 
-    private final List<Request> requestList = new ArrayList<Request>();
+    private final List<Request> requestList = new ArrayList<>();
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 

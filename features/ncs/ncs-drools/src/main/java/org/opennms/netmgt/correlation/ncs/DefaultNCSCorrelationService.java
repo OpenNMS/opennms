@@ -75,7 +75,7 @@ public class DefaultNCSCorrelationService implements NCSCorrelationService {
 		
 		List<NCSComponent> components = m_componentRepo.findComponentsByNodeId(e.getNodeid().intValue());
 
-		List<NCSComponent> matching = new LinkedList<NCSComponent>();
+		List<NCSComponent> matching = new LinkedList<>();
 		for(NCSComponent component : components)
 		{
 			if (matches(component, e, parameterNames)) {
@@ -129,7 +129,7 @@ public class DefaultNCSCorrelationService implements NCSCorrelationService {
         
         List<NCSComponent> components = m_componentRepo.findComponentsByNodeId(e.getNodeid().intValue());
 
-        List<NCSComponent> matching = new LinkedList<NCSComponent>();
+        List<NCSComponent> matching = new LinkedList<>();
         for(NCSComponent component : components)
         {
             if (matches(component, e, parameterMap)) {

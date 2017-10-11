@@ -51,7 +51,7 @@ public class Alias {
 
     private final JoinType m_type;
 
-    private final Restriction m_joinCondition;
+    private Restriction m_joinCondition;
 
     public Alias(final String associationPath, final String alias, final JoinType type, final Restriction joinCondition) {
         m_alias = alias.intern();
@@ -82,6 +82,10 @@ public class Alias {
 
     public Restriction getJoinCondition() {
         return m_joinCondition;
+    }
+
+    public void setJoinCondition(Restriction joinCondition) {
+        m_joinCondition = joinCondition;
     }
 
     @Override

@@ -333,7 +333,7 @@ public class OnmsAcknowledgment {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuilder bldr = new StringBuilder("Acknowledgment ID:");
+        final StringBuilder bldr = new StringBuilder("Acknowledgment ID:");
         bldr.append(m_id);
         bldr.append(" User:");
         bldr.append(m_ackUser);

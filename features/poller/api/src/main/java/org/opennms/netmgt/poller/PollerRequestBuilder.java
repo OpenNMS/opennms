@@ -35,6 +35,8 @@ public interface PollerRequestBuilder {
 
     PollerRequestBuilder withService(MonitoredService service);
 
+    PollerRequestBuilder withSystemId(String systemId);
+
     PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor);
 
     PollerRequestBuilder withMonitorClassName(String className);
