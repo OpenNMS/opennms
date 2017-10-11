@@ -38,6 +38,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -77,7 +78,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         public Key(String location, InetAddress ipAddress) {
             // Use the default location when location is null
-            this.location = location != null ? location : MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+            this.location = LocationUtils.getEffectiveLocationName(location);
             this.ipAddress = Objects.requireNonNull(ipAddress);
         }
 
@@ -304,9 +305,10 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         m_lock.writeLock().lock();
         try {
-            return m_managedAddresses.remove(new Key(location, address), new Value(nodeId, PrimaryType.PRIMARY)) ||
-                    m_managedAddresses.remove(new Key(location, address), new Value(nodeId, PrimaryType.SECONDARY)) ||
-                    m_managedAddresses.remove(new Key(location, address), new Value(nodeId, PrimaryType.NOT_ELIGIBLE));
+            final Key key = new Key(location, address);
+            return m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.PRIMARY)) ||
+                    m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.SECONDARY)) ||
+                    m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.NOT_ELIGIBLE));
         } finally {
             m_lock.writeLock().unlock();
         }

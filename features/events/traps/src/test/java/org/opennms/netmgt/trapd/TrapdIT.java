@@ -83,9 +83,6 @@ public class TrapdIT implements InitializingBean {
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
 
-    @Autowired
-    private InterfaceToNodeCache m_cache;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
