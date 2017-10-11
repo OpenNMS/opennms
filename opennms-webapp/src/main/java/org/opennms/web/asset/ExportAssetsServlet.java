@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.element.NetworkElementFactory;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
 
 /**
  *
