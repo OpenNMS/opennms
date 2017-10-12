@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -55,11 +55,11 @@
     String url = "/opennms/rest/heatmap/";
 
     if (request.getParameterMap().containsKey("mode")) {
-        mode = request.getParameter("mode");
+        mode = WebSecurityUtils.sanitizeString(request.getParameter("mode"));
     }
 
     if (request.getParameterMap().containsKey("heatmap")) {
-        heatmap = request.getParameter("heatmap");
+        heatmap = WebSecurityUtils.sanitizeString(request.getParameter("heatmap"));
     }
 
     if ("services".equals(heatmap)) {
@@ -79,19 +79,19 @@
     url += mode + "/" + heatmap + "/";
 
     if ("nodesByForeignSource".equals(heatmap)) {
-        foreignSource = request.getParameter("foreignSource");
+        foreignSource = WebSecurityUtils.sanitizeString(request.getParameter("foreignSource"));
         url += foreignSource;
         title += " (Nodes by ForeignSource '" + foreignSource + "')";
     }
 
     if ("nodesByCategory".equals(heatmap)) {
-        category = request.getParameter("category");
+        category = WebSecurityUtils.sanitizeString(request.getParameter("category"));
         url += category;
         title += " (Nodes by Category '" + category + "')";
     }
 
     if ("nodesByMonitoredService".equals(heatmap)) {
-        monitoredService = request.getParameter("monitoredService");
+        monitoredService = WebSecurityUtils.sanitizeString(request.getParameter("monitoredService"));
         url += monitoredService;
         title += " (Nodes by Service '" +monitoredService + "')";
     }
