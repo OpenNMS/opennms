@@ -100,24 +100,41 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
             return;
         }
         // remove from known nodes
-        m_cache.removeNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress());
+        m_cache.removeNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
     }
 
     @EventHandler(uei=EventConstants.INTERFACE_REPARENTED_EVENT_UEI)
     @Transactional
     public void handleInterfaceReparented(Event event) {
         LOG.debug("Received event: {}", event.getUei());
-        Long nodeId = event.getNodeid();
-        if (nodeId == null) {
+
+        final String oldNodeId = event.getParm(EventConstants.PARM_OLD_NODEID).getValue().getContent();
+        final String newNodeId = event.getParm(EventConstants.PARM_NEW_NODEID).getValue().getContent();
+
+        if (oldNodeId == null) {
             LOG.error(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Event with no node ID: " + event.toString());
             return;
         }
-        OnmsNode node = m_nodeDao.get(nodeId.intValue());
-        if (node == null) {
-            LOG.warn(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+
+        if (newNodeId == null) {
+            LOG.error(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Event with no node ID: " + event.toString());
             return;
         }
+
+        final OnmsNode oldNode = m_nodeDao.get(oldNodeId);
+        if (oldNode == null) {
+            LOG.warn(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Cannot find node in DB: " + oldNodeId);
+            return;
+        }
+
+        final OnmsNode newNode = m_nodeDao.get(newNodeId);
+        if (newNode == null) {
+            LOG.warn(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Cannot find node in DB: " + newNodeId);
+            return;
+        }
+
         // add to known nodes
-        m_cache.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
+        m_cache.removeNodeId(oldNode.getLocation().getLocationName(), event.getInterfaceAddress(), oldNode.getId());
+        m_cache.setNodeId(newNode.getLocation().getLocationName(), event.getInterfaceAddress(), newNode.getId());
     }
 }
