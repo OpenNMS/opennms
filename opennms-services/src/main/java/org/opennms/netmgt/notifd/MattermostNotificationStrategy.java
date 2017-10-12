@@ -80,8 +80,11 @@ public class MattermostNotificationStrategy extends AbstractSlackCompatibleNotif
 
     @Override
 	protected String decorateMessageSubject(String subject) {
-    	final StringBuilder bldr = new StringBuilder("#### ");
-    	bldr.append(subject).append("\n");
+    	if ("".equals(subject)) {
+    		return "";
+    	}
+    	final StringBuilder bldr = new StringBuilder("**");
+    	bldr.append(subject).append("**").append("\n");
     	return bldr.toString();
     }
     
