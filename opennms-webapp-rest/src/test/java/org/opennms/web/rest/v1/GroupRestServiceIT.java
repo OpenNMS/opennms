@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,11 +34,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
-import java.io.StringReader;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXB;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -231,7 +229,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         createGroup("testGroup");
         String xml = sendRequest(GET, "/groups/testGroup/categories", 200);
         assertNotNull(xml);
-        OnmsCategoryCollection categories = JAXB.unmarshal(new StringReader(xml), OnmsCategoryCollection.class);
+        OnmsCategoryCollection categories = JaxbUtils.unmarshal(OnmsCategoryCollection.class, xml);
         assertNotNull(categories);
         assertTrue(categories.getCategories().isEmpty());
 
@@ -241,7 +239,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(PUT, "/groups/testGroup/categories/testCategory", 204); // should not fail, because Category is now there
         xml = sendRequest(GET, "/groups/testGroup/categories/testCategory", 200); // get data
         assertNotNull(xml);
-        OnmsCategory category = JAXB.unmarshal(new StringReader(xml), OnmsCategory.class);
+        OnmsCategory category = JaxbUtils.unmarshal(OnmsCategory.class, xml);
         assertNotNull(category);
         assertEquals("testCategory", category.getName());
 

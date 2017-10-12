@@ -1,325 +1,318 @@
-<?xml version="1.0"?>
-<jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
-    <jmx-collection name="jsr160">
-        <rrd step="300">
-            <rra>RRA:AVERAGE:0.5:1:2016</rra>
-            <rra>RRA:AVERAGE:0.5:12:1488</rra>
-            <rra>RRA:AVERAGE:0.5:288:366</rra>
-            <rra>RRA:MAX:0.5:288:366</rra>
-            <rra>RRA:MIN:0.5:288:366</rra>
-        </rrd>
-        <mbeans>
-            <mbean name="OpenNMS Queued" objectname="OpenNMS:Name=Queued">
-                <attrib name="CreatesCompleted" alias="ONMSQueCreates" type="counter"/>
-                <attrib name="DequeuedItems" alias="ONMSQueItemDeque" type="counter"/>
-                <attrib name="DequeuedOperations" alias="ONMSQueDequeOps" type="counter"/>
-                <attrib name="EnqueuedOperations" alias="ONMSQueEnqueOps" type="counter"/>
-                <attrib name="Errors" alias="ONMSQueErrors" type="counter"/>
-                <attrib name="PromotionCount" alias="ONMSQuePromo" type="counter"/>
-                <attrib name="SignificantOpsCompleted" alias="ONMSQueSigOpsCompl" type="counter"/>
-                <attrib name="SignificantOpsDequeued" alias="ONMSQueSigOpsDeque" type="counter"/>
-                <attrib name="SignificantOpsEnqueued" alias="ONMSQueSigOpsEnque" type="counter"/>
-                <attrib name="TotalOperationsPending" alias="ONMSQueOpsPend" type="gauge"/>
-                <attrib name="UpdatesCompleted" alias="ONMSQueUpdates" type="counter"/>
-            </mbean>
-            <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
-                <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
-                <attrib name="ActiveThreads" alias="ONMSPollerThreadAct" type="gauge"/>
-                <attrib name="TasksTotal" alias="ONMSPollerTasksTot" type="counter"/>
-                <attrib name="TasksCompleted" alias="ONMSPollerTasksCpt" type="counter"/>
-                <attrib name="TaskQueuePendingCount" alias="ONMSPollerTskQPCnt" type="gauge"/>
-                <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
-            </mbean>
-            <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
-                <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
-            </mbean>
-            <mbean name="OpenNMS Collectd" objectname="OpenNMS:Name=Collectd">
-                <attrib name="ActiveThreads" alias="ONMSCollectThrdAct" type="gauge"/>
-                <attrib name="NumPoolThreads" alias="ONMSCollectPoolThrd" type="gauge"/>
-                <attrib name="MaxPoolThreads" alias="ONMSCollectPoolMax" type="gauge"/>
-                <attrib name="PeakPoolThreads" alias="ONMSCollectPoolPeak" type="gauge"/>
-                <attrib name="TasksTotal" alias="ONMSCollectTasksTot" type="counter"/>
-                <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt" type="counter"/>
-                <attrib name="CollectableServiceCount" alias="ONMSCollectSvcCount" type="gauge"/>
-                <attrib name="TaskQueuePendingCount" alias="ONMSCollectTskQPCnt" type="gauge"/>
-                <attrib name="TaskQueueRemainingCapacity" alias="ONMSCollectTskQRCap" type="gauge"/>
-            </mbean>
-            <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
-                <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
-                <attrib name="HttpsConnectionsOpen" alias="HttpsConnOpen" type="gauge"/>
-                <attrib name="HttpsConnectionsOpenMax" alias="HttpsConnOpenMax" type="gauge"/>
-                <attrib name="HttpConnectionsTotal" alias="HttpConnTotal" type="counter"/>
-                <attrib name="HttpConnectionsOpen" alias="HttpConnOpen" type="gauge"/>
-                <attrib name="HttpConnectionsOpenMax" alias="HttpConnOpenMax" type="gauge"/>
-            </mbean>
-            <mbean name="OpenNMS.Statsd" objectname="OpenNMS:Name=Statsd">
-                <attrib name="ReportsStarted" alias="StaReportsStarted" type="counter"/>
-                <attrib name="ReportsCompleted" alias="StaReportsCompleted" type="counter"/>
-                <attrib name="ReportsPersisted" alias="StaReportsPersisted" type="counter"/>
-                <attrib name="ReportRunTime" alias="StaReportRunTime" type="counter"/>
-            </mbean>
-            <mbean name="OpenNMS.Trapd" objectname="OpenNMS:Name=Trapd">
-                <attrib name="TrapsDiscarded" alias="TrapsDiscarded" type="counter"/>
-                <attrib name="TrapsErrored" alias="TrapsErrored" type="counter"/>
-                <attrib name="V1TrapsReceived" alias="V1TrapsReceived" type="counter"/>
-                <attrib name="V2cTrapsReceived" alias="V2cTrapsReceived" type="counter"/>
-                <attrib name="V3TrapsReceived" alias="V3TrapsReceived" type="counter"/>
-            </mbean>
-            <mbean name="OpenNMS.Notifd" objectname="OpenNMS:Name=Notifd">
-                <attrib name="NotificationTasksQueued" alias="NotificTasksQueued" type="counter"/>
-                <attrib name="BinaryNoticesAttempted" alias="BinaryNoticeAttemp" type="counter"/>
-                <attrib name="JavaNoticesAttempted" alias="JavaNoticesAttempt" type="counter"/>
-                <attrib name="BinaryNoticesSucceeded" alias="BinaryNoticeSuccee" type="counter"/>
-                <attrib name="JavaNoticesSucceeded" alias="JavaNoticesSucceed" type="counter"/>
-                <attrib name="BinaryNoticesFailed" alias="BinaryNoticeFailed" type="counter"/>
-                <attrib name="JavaNoticesFailed" alias="JavaNoticesFailed" type="counter"/>
-                <attrib name="BinaryNoticesInterrupted" alias="BinaryNoticeInterr" type="counter"/>
-                <attrib name="JavaNoticesInterrupted" alias="JavaNoticesInterru" type="counter"/>
-                <attrib name="UnknownNoticesInterrupted" alias="UnknowNoticeInterr" type="counter"/>
-            </mbean>
-            <mbean name="OpenNMS.Manager" objectname="OpenNMS:Name=Manager">
-                <attrib name="onmsUptime" alias="Uptime" type="gauge"/>
-            </mbean>
-            <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
-                <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
-                <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
-                <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
-                <attrib name="TotalSwapSpaceSize" alias="TotalSwapSpace" type="gauge"/>
-            </mbean>
-            <mbean name="JVM Threading" objectname="java.lang:type=Threading">
-                <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>
-                <attrib name="PeakThreadCount" alias="PeakThreadCount" type="gauge"/>
-                <attrib name="DaemonThreadCount" alias="DaemonThreadCount" type="gauge"/>
-                <attrib name="CurrentThreadCpuTime" alias="CurThreadCpuTime" type="gauge"/>
-            </mbean>
-            <mbean name="JVM ClassLoading" objectname="java.lang:type=ClassLoading">
-                <attrib name="TotalLoadedClassCount" alias="TotLoadedClasses" type="gauge"/>
-                <attrib name="LoadedClassCount" alias="LoadedClasses" type="gauge"/>
-                <attrib name="UnloadedClassCount" alias="UnloadedClass" type="gauge"/>
-            </mbean>
-            <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
-                <attrib name="CollectionUsageThreshold" alias="EdenCollUseThrsh" type="gauge"/>
-                <attrib name="CollectionUsageThresholdCount" alias="EdenCollUseThrshCnt" type="gauge"/>
-                <comp-attrib name="Usage" type="Composite" alias="EdenUsage">
-                    <comp-member name="init" type="gauge" alias="EdenUsageInit"/>
-                    <comp-member name="max" type="gauge" alias="EdenUsageMax"/>
-                    <comp-member name="used" type="gauge" alias="EdenUsageUsed"/>
-                    <comp-member name="committed" type="gauge" alias="EdenUsgCmmttd"/>
-                </comp-attrib>
-                <comp-attrib name="PeakUsage" type="Composite" alias="EdenPeakUsage">
-                    <comp-member name="init" type="gauge" alias="EdenPeakUsageInit"/>
-                    <comp-member name="max" type="gauge" alias="EdenPeakUsageMax"/>
-                    <comp-member name="used" type="gauge" alias="EdenPeakUsageUsed"/>
-                    <comp-member name="committed" type="gauge" alias="EdenPeakUsgCmmttd"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
-                <attrib name="CollectionUsageThreshold" alias="SurvCollUseThresh" type="gauge"/>
-                <attrib name="CollectionUsageThresholdCount" alias="SurvCollUseThrshCnt" type="gauge"/>
-                <comp-attrib name="Usage" type="Composite" alias="SurvUsage">
-                    <comp-member name="init" type="gauge" alias="SurvUsageInit"/>
-                    <comp-member name="max" type="gauge" alias="SurvUsageMax"/>
-                    <comp-member name="used" type="gauge" alias="SurvUsageUsed"/>
-                    <comp-member name="committed" type="gauge" alias="SurvUsgCmmttd"/>
-                </comp-attrib>
-                <comp-attrib name="PeakUsage" type="Composite" alias="SurvPeakUsage">
-                    <comp-member name="init" type="gauge" alias="SurvPeakUsageInit"/>
-                    <comp-member name="max" type="gauge" alias="SurvPeakUsageMax"/>
-                    <comp-member name="used" type="gauge" alias="SurvPeakUsageUsed"/>
-                    <comp-member name="committed" type="gauge" alias="SurvPeakUsgCmmttd"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM MemoryPool:Perm Gen" objectname="java.lang:type=MemoryPool,name=Perm Gen">
-                <attrib name="CollectionUsageThreshold" alias="PermCollUseThresh" type="gauge"/>
-                <attrib name="CollectionUsageThresholdCount" alias="PermCollUseThrshCnt" type="gauge"/>
-                <comp-attrib name="Usage" type="Composite" alias="PermUsage">
-                    <comp-member name="init" type="gauge" alias="PermUsageInit"/>
-                    <comp-member name="max" type="gauge" alias="PermUsageMax"/>
-                    <comp-member name="used" type="gauge" alias="PermUsageUsed"/>
-                    <comp-member name="committed" type="gauge" alias="PermUsgCmmttd"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM MemoryPool:Old Gen" objectname="java.lang:type=MemoryPool,name=Old Gen">
-                <attrib name="CollectionUsageThreshold" alias="OGenCollUseThresh" type="gauge"/>
-                <attrib name="CollectionUsageThresholdCount" alias="OGenCollUseThrshCnt" type="gauge"/>
-                <comp-attrib name="Usage" type="Composite" alias="OGenUsage">
-                    <comp-member name="init" type="gauge" alias="OGenUsageInit"/>
-                    <comp-member name="max" type="gauge" alias="OGenUsageMax"/>
-                    <comp-member name="used" type="gauge" alias="OGenUsageUsed"/>
-                    <comp-member name="committed" type="gauge" alias="OGenUsgCmmttd"/>
-                </comp-attrib>
-            </mbean>
-
-            <mbean name="JVM GarbageCollector:Copy" objectname="java.lang:type=GarbageCollector,name=Copy">
-                <attrib name="CollectionCount" alias="CopyCollCnt" type="counter"/>
-                <attrib name="CollectionTime" alias="CopyCollTime" type="counter"/>
-                <comp-attrib name="LastGcInfo" type="Composite" alias="CopyLastGcInfo">
-                    <comp-member name="GcThreadCount" type="gauge" alias="CopyGcThreadCnt"/>
-                    <comp-member name="duration" type="gauge" alias="CopyDuration"/>
-                    <comp-member name="endTime" type="gauge" alias="CopyEndTime"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM GarbageCollector:MarkSweepCompact"
-                   objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
-                <attrib name="CollectionCount" alias="MSCCollCnt" type="counter"/>
-                <attrib name="CollectionTime" alias="MSCCollTime" type="counter"/>
-                <comp-attrib name="LastGcInfo" type="Composite" alias="MSCLastGcInfo">
-                    <comp-member name="GcThreadCount" type="gauge" alias="MSCGcThreadCnt"/>
-                    <comp-member name="duration" type="gauge" alias="MSCDuration"/>
-                    <comp-member name="endTime" type="gauge" alias="MSCEndTime"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM GarbageCollector:ParNew" objectname="java.lang:type=GarbageCollector,name=ParNew">
-                <attrib name="CollectionCount" alias="ParNewCollCnt" type="counter"/>
-                <attrib name="CollectionTime" alias="ParNewCollTime" type="counter"/>
-                <comp-attrib name="LastGcInfo" type="Composite" alias="ParNewLastGcInfo">
-                    <comp-member name="GcThreadCount" type="gauge" alias="ParNewGcThreadCnt"/>
-                    <comp-member name="duration" type="gauge" alias="ParNewDuration"/>
-                    <comp-member name="endTime" type="gauge" alias="ParNewEndTime"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM GarbageCollector:ConcurrentMarkSweep"
-                   objectname="java.lang:type=GarbageCollector,name=ConcurrentMarkSweep">
-                <attrib name="CollectionCount" alias="CMSCollCnt" type="counter"/>
-                <attrib name="CollectionTime" alias="CMSCollTime" type="counter"/>
-                <comp-attrib name="LastGcInfo" type="Composite" alias="CMSLastGcInfo">
-                    <comp-member name="GcThreadCount" type="gauge" alias="CMSGcThreadCnt"/>
-                    <comp-member name="duration" type="gauge" alias="CMSDuration"/>
-                    <comp-member name="endTime" type="gauge" alias="CMSEndTime"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM GarbageCollector:PS MarkSweep"
-                   objectname="java.lang:type=GarbageCollector,name=PS MarkSweep">
-                <attrib name="CollectionCount" alias="PSMSCollCnt" type="counter"/>
-                <attrib name="CollectionTime" alias="PSMSCollTime" type="counter"/>
-                <comp-attrib name="LastGcInfo" type="Composite" alias="PSMSLastGcInfo">
-                    <comp-member name="GcThreadCount" type="gauge" alias="PSMSGcThreadCnt"/>
-                    <comp-member name="duration" type="gauge" alias="PSMSDuration"/>
-                    <comp-member name="endTime" type="gauge" alias="PSMSEndTime"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM GarbageCollector:PS Scavenge"
-                   objectname="java.lang:type=GarbageCollector,name=PS Scavenge">
-                <attrib name="CollectionCount" alias="PSSCollCnt" type="counter"/>
-                <attrib name="CollectionTime" alias="PSSCollTime" type="counter"/>
-                <comp-attrib name="LastGcInfo" type="Composite" alias="PSSLastGcInfo">
-                    <comp-member name="GcThreadCount" type="gauge" alias="PSSGcThreadCnt"/>
-                    <comp-member name="duration" type="gauge" alias="PSSDuration"/>
-                    <comp-member name="endTime" type="gauge" alias="PSSEndTime"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM GarbageCollector:G1 Old Generation" objectname="java.lang:type=GarbageCollector,name=G1 Old Generation">
-                <attrib name="CollectionCount" alias="G1OldCollCnt" type="counter"/>
-                <attrib name="CollectionTime" alias="G1OldCollTime" type="counter"/>
-                <comp-attrib name="LastGcInfo" type="Composite" alias="G1OldLastGcInfo">
-                    <comp-member name="GcThreadCount" type="gauge" alias="G1OldGcThreadCnt"/>
-                    <comp-member name="duration" type="gauge" alias="G1OldDuration"/>
-                    <comp-member name="endTime" type="gauge" alias="G1OldEndTime"/>
-                </comp-attrib>
-            </mbean>
-            <mbean name="JVM GarbageCollector:G1 Young Generation" objectname="java.lang:type=GarbageCollector,name=G1 Young Generation">
-                <attrib name="CollectionCount" alias="G1YngCollCnt" type="counter"/>
-                <attrib name="CollectionTime" alias="G1YngCollTime" type="counter"/>
-                <comp-attrib name="LastGcInfo" type="Composite" alias="G1YngLastGcInfo">
-                    <comp-member name="GcThreadCount" type="gauge" alias="G1YngGcThreadCnt"/>
-                    <comp-member name="duration" type="gauge" alias="G1YngDuration"/>
-                    <comp-member name="endTime" type="gauge" alias="G1YngEndTime"/>
-                </comp-attrib>
-            </mbean>
-
-            <!-- Newts specifics beans - available when using the Newts time series strategy -->
-            <mbean name="org.opennms.newts.ring-buffer.size" objectname="org.opennms.newts:name=ring-buffer.size">
-                <attrib name="Value" alias="NewtsRingBufSize" type="gauge"/>
-            </mbean>
-            <mbean name="org.opennms.newts.ring-buffer.max-size" objectname="org.opennms.newts:name=ring-buffer.max-size">
-                <attrib name="Value" alias="NewtsRingBufMaxSize" type="gauge"/>
-            </mbean>
-            <mbean name="org.opennms.newts.cache.size" objectname="org.opennms.newts:name=cache.size">
-                <attrib name="Value" alias="NewtsCacheSize" type="gauge"/>
-            </mbean>
-            <mbean name="org.opennms.newts.cache.max-size" objectname="org.opennms.newts:name=cache.max-size">
-                <attrib name="Value" alias="NewtsMaxCacheSize" type="gauge"/>
-            </mbean>
-            <mbean name="org.opennms.newts.repository.insert-timer" objectname="org.opennms.newts:name=repository.insert-timer">
-                <attrib name="50thPercentile" alias="NewtsInsert50" type="gauge"/>
-                <attrib name="75thPercentile" alias="NewtsInsert75" type="gauge"/>
-                <attrib name="95thPercentile" alias="NewtsInsert95" type="gauge"/>
-                <attrib name="98thPercentile" alias="NewtsInsert98" type="gauge"/>
-                <attrib name="99thPercentile" alias="NewtsInsert99" type="gauge"/>
-                <attrib name="999thPercentile" alias="NewtsInsert999" type="gauge"/>
-                <attrib name="Count" alias="NewtsInsertCnt" type="counter"/>
-            </mbean>
-            <mbean name="org.opennms.newts.repository.measurement-select-timer" objectname="org.opennms.newts:name=repository.measurement-select-timer">
-                <attrib name="50thPercentile" alias="NewtsMeasSelct50" type="gauge"/>
-                <attrib name="75thPercentile" alias="NewtsMeasSelct75" type="gauge"/>
-                <attrib name="95thPercentile" alias="NewtsMeasSelct95" type="gauge"/>
-                <attrib name="98thPercentile" alias="NewtsMeasSelct98" type="gauge"/>
-                <attrib name="99thPercentile" alias="NewtsMeasSelct99" type="gauge"/>
-                <attrib name="999thPercentile" alias="NewtsMeasSelct999" type="gauge"/>
-                <attrib name="Count" alias="NewtsMeasSelctCnt" type="counter"/>
-            </mbean>
-            <mbean name="org.opennms.newts.repository.sample-select-timer" objectname="org.opennms.newts:name=repository.sample-select-timer">
-                <attrib name="50thPercentile" alias="NewtsSmplSelct50" type="gauge"/>
-                <attrib name="75thPercentile" alias="NewtsSmplSelct75" type="gauge"/>
-                <attrib name="95thPercentile" alias="NewtsSmplSelct95" type="gauge"/>
-                <attrib name="98thPercentile" alias="NewtsSmplSelct98" type="gauge"/>
-                <attrib name="99thPercentile" alias="NewtsSmplSelct99" type="gauge"/>
-                <attrib name="999thPercentile" alias="NewtsSmplSelct999" type="gauge"/>
-                <attrib name="Count" alias="NewtsSmplSelctCnt" type="counter"/>
-            </mbean>
-            <mbean name="org.opennms.newts.repository.samples-inserted" objectname="org.opennms.newts:name=repository.samples-inserted">
-                <attrib name="Count" alias="NewtsSmplsInsertd" type="counter"/>
-            </mbean>
-            <mbean name="org.opennms.newts.repository.samples-selected" objectname="org.opennms.newts:name=repository.samples-selected">
-                <attrib name="Count" alias="NewtsSmplsSelctd" type="counter"/>
-            </mbean>
-            <mbean name="org.opennms.newts.search.update" objectname="org.opennms.newts:name=search.update">
-                <attrib name="50thPercentile" alias="NewtsSearchUpd50" type="gauge"/>
-                <attrib name="75thPercentile" alias="NewtsSearchUpd75" type="gauge"/>
-                <attrib name="95thPercentile" alias="NewtsSearchUpd95" type="gauge"/>
-                <attrib name="98thPercentile" alias="NewtsSearchUpd98" type="gauge"/>
-                <attrib name="99thPercentile" alias="NewtsSearchUpd99" type="gauge"/>
-                <attrib name="999thPercentile" alias="NewtsSearchUpd999" type="gauge"/>
-                <attrib name="Count" alias="NewtsSearchUpdCnt" type="counter"/>
-            </mbean>
-            <mbean name="org.opennms.newts.search.delete" objectname="org.opennms.newts:name=search.delete">
-                <attrib name="50thPercentile" alias="NewtsSearchDel50" type="gauge"/>
-                <attrib name="75thPercentile" alias="NewtsSearchDel75" type="gauge"/>
-                <attrib name="95thPercentile" alias="NewtsSearchDel95" type="gauge"/>
-                <attrib name="98thPercentile" alias="NewtsSearchDel98" type="gauge"/>
-                <attrib name="99thPercentile" alias="NewtsSearchDel99" type="gauge"/>
-                <attrib name="999thPercentile" alias="NewtsSearchDel999" type="gauge"/>
-                <attrib name="Count" alias="NewtsSearchDelCnt" type="counter"/>
-            </mbean>
-            <mbean name="org.opennms.newts.search.inserts" objectname="org.opennms.newts:name=search.inserts">
-                <attrib name="Count" alias="NewtsSearchInserts" type="counter"/>
-            </mbean>
-            <mbean name="cluster1-metrics.requests" objectname="cluster1-metrics:name=requests">
-                <attrib name="50thPercentile" alias="CasCluster1Req50" type="gauge"/>
-                <attrib name="75thPercentile" alias="CasCluster1Req75" type="gauge"/>
-                <attrib name="95thPercentile" alias="CasCluster1Req95" type="gauge"/>
-                <attrib name="98thPercentile" alias="CasCluster1Req98" type="gauge"/>
-                <attrib name="99thPercentile" alias="CasCluster1Req99" type="gauge"/>
-                <attrib name="999thPercentile" alias="CasCluster1Req999" type="gauge"/>
-                <attrib name="Count" alias="CasCluster1ReqCnt" type="counter"/>
-            </mbean>
-            <mbean name="org.apache.activemq" objectname="org.apache.activemq:type=Broker,brokerName=localhost">
-                <attrib name="TotalConnectionsCount" alias="TtlConCnt" type="counter"/>
-                <attrib name="TotalEnqueueCount" alias="TtlEnqCnt" type="counter"/>
-                <attrib name="TotalDequeueCount" alias="TtlDeqCnt" type="counter"/>
-                <attrib name="TotalConsumerCount" alias="TtlConsumerCnt" type="gauge"/>
-                <attrib name="TotalProducerCount" alias="TtlProdCnt" type="gauge"/>
-                <attrib name="TotalMessageCount" alias="TtlMsgCnt" type="counter"/>
-                <attrib name="AverageMessageSize" alias="AvgMsgSize" type="gauge"/>
-                <attrib name="MaxMessageSize" alias="MaxMsgSize" type="gauge"/>
-                <attrib name="MinMessageSize" alias="MinMsgSize" type="gauge"/>
-                <attrib name="MemoryLimit" alias="MemLimit" type="gauge"/>
-                <attrib name="MemoryPercentUsage" alias="MemPctUsage" type="gauge"/>
-                <attrib name="StoreLimit" alias="StoreLimit" type="gauge"/>
-                <attrib name="StorePercentUsage" alias="StorePctUsage" type="gauge"/>
-                <attrib name="TempLimit" alias="TempLimit" type="gauge"/>
-                <attrib name="TempPercentUsage" alias="TempPctUsage" type="gauge"/>
-            </mbean>
-        </mbeans>
-    </jmx-collection>
+<jmx-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/jmx-datacollection" rrdRepository="${install.share.dir}/rrd/snmp/">
+   <jmx-collection name="jsr160">
+      <rrd step="300">
+         <rra>RRA:AVERAGE:0.5:1:2016</rra>
+         <rra>RRA:AVERAGE:0.5:12:1488</rra>
+         <rra>RRA:AVERAGE:0.5:288:366</rra>
+         <rra>RRA:MAX:0.5:288:366</rra>
+         <rra>RRA:MIN:0.5:288:366</rra>
+      </rrd>
+      <mbeans>
+         <mbean name="OpenNMS Queued" objectname="OpenNMS:Name=Queued">
+            <attrib name="CreatesCompleted" alias="ONMSQueCreates" type="counter"/>
+            <attrib name="DequeuedItems" alias="ONMSQueItemDeque" type="counter"/>
+            <attrib name="DequeuedOperations" alias="ONMSQueDequeOps" type="counter"/>
+            <attrib name="EnqueuedOperations" alias="ONMSQueEnqueOps" type="counter"/>
+            <attrib name="Errors" alias="ONMSQueErrors" type="counter"/>
+            <attrib name="PromotionCount" alias="ONMSQuePromo" type="counter"/>
+            <attrib name="SignificantOpsCompleted" alias="ONMSQueSigOpsCompl" type="counter"/>
+            <attrib name="SignificantOpsDequeued" alias="ONMSQueSigOpsDeque" type="counter"/>
+            <attrib name="SignificantOpsEnqueued" alias="ONMSQueSigOpsEnque" type="counter"/>
+            <attrib name="TotalOperationsPending" alias="ONMSQueOpsPend" type="gauge"/>
+            <attrib name="UpdatesCompleted" alias="ONMSQueUpdates" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
+            <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
+            <attrib name="ActiveThreads" alias="ONMSPollerThreadAct" type="gauge"/>
+            <attrib name="TasksTotal" alias="ONMSPollerTasksTot" type="counter"/>
+            <attrib name="TasksCompleted" alias="ONMSPollerTasksCpt" type="counter"/>
+            <attrib name="TaskQueuePendingCount" alias="ONMSPollerTskQPCnt" type="gauge"/>
+            <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
+         </mbean>
+         <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
+            <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS Collectd" objectname="OpenNMS:Name=Collectd">
+            <attrib name="ActiveThreads" alias="ONMSCollectThrdAct" type="gauge"/>
+            <attrib name="NumPoolThreads" alias="ONMSCollectPoolThrd" type="gauge"/>
+            <attrib name="MaxPoolThreads" alias="ONMSCollectPoolMax" type="gauge"/>
+            <attrib name="PeakPoolThreads" alias="ONMSCollectPoolPeak" type="gauge"/>
+            <attrib name="TasksTotal" alias="ONMSCollectTasksTot" type="counter"/>
+            <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt" type="counter"/>
+            <attrib name="CollectableServiceCount" alias="ONMSCollectSvcCount" type="gauge"/>
+            <attrib name="TaskQueuePendingCount" alias="ONMSCollectTskQPCnt" type="gauge"/>
+            <attrib name="TaskQueueRemainingCapacity" alias="ONMSCollectTskQRCap" type="gauge"/>
+         </mbean>
+         <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
+            <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
+            <attrib name="HttpsConnectionsOpen" alias="HttpsConnOpen" type="gauge"/>
+            <attrib name="HttpsConnectionsOpenMax" alias="HttpsConnOpenMax" type="gauge"/>
+            <attrib name="HttpConnectionsTotal" alias="HttpConnTotal" type="counter"/>
+            <attrib name="HttpConnectionsOpen" alias="HttpConnOpen" type="gauge"/>
+            <attrib name="HttpConnectionsOpenMax" alias="HttpConnOpenMax" type="gauge"/>
+         </mbean>
+         <mbean name="OpenNMS.Statsd" objectname="OpenNMS:Name=Statsd">
+            <attrib name="ReportsStarted" alias="StaReportsStarted" type="counter"/>
+            <attrib name="ReportsCompleted" alias="StaReportsCompleted" type="counter"/>
+            <attrib name="ReportsPersisted" alias="StaReportsPersisted" type="counter"/>
+            <attrib name="ReportRunTime" alias="StaReportRunTime" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS.Trapd" objectname="OpenNMS:Name=Trapd">
+            <attrib name="TrapsDiscarded" alias="TrapsDiscarded" type="counter"/>
+            <attrib name="TrapsErrored" alias="TrapsErrored" type="counter"/>
+            <attrib name="V1TrapsReceived" alias="V1TrapsReceived" type="counter"/>
+            <attrib name="V2cTrapsReceived" alias="V2cTrapsReceived" type="counter"/>
+            <attrib name="V3TrapsReceived" alias="V3TrapsReceived" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS.Notifd" objectname="OpenNMS:Name=Notifd">
+            <attrib name="NotificationTasksQueued" alias="NotificTasksQueued" type="counter"/>
+            <attrib name="BinaryNoticesAttempted" alias="BinaryNoticeAttemp" type="counter"/>
+            <attrib name="JavaNoticesAttempted" alias="JavaNoticesAttempt" type="counter"/>
+            <attrib name="BinaryNoticesSucceeded" alias="BinaryNoticeSuccee" type="counter"/>
+            <attrib name="JavaNoticesSucceeded" alias="JavaNoticesSucceed" type="counter"/>
+            <attrib name="BinaryNoticesFailed" alias="BinaryNoticeFailed" type="counter"/>
+            <attrib name="JavaNoticesFailed" alias="JavaNoticesFailed" type="counter"/>
+            <attrib name="BinaryNoticesInterrupted" alias="BinaryNoticeInterr" type="counter"/>
+            <attrib name="JavaNoticesInterrupted" alias="JavaNoticesInterru" type="counter"/>
+            <attrib name="UnknownNoticesInterrupted" alias="UnknowNoticeInterr" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS.Manager" objectname="OpenNMS:Name=Manager">
+            <attrib name="onmsUptime" alias="Uptime" type="gauge"/>
+         </mbean>
+         <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
+            <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
+            <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
+            <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
+            <attrib name="TotalSwapSpaceSize" alias="TotalSwapSpace" type="gauge"/>
+         </mbean>
+         <mbean name="JVM Threading" objectname="java.lang:type=Threading">
+            <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>
+            <attrib name="PeakThreadCount" alias="PeakThreadCount" type="gauge"/>
+            <attrib name="DaemonThreadCount" alias="DaemonThreadCount" type="gauge"/>
+            <attrib name="CurrentThreadCpuTime" alias="CurThreadCpuTime" type="gauge"/>
+         </mbean>
+         <mbean name="JVM ClassLoading" objectname="java.lang:type=ClassLoading">
+            <attrib name="TotalLoadedClassCount" alias="TotLoadedClasses" type="gauge"/>
+            <attrib name="LoadedClassCount" alias="LoadedClasses" type="gauge"/>
+            <attrib name="UnloadedClassCount" alias="UnloadedClass" type="gauge"/>
+         </mbean>
+         <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
+            <attrib name="CollectionUsageThreshold" alias="EdenCollUseThrsh" type="gauge"/>
+            <attrib name="CollectionUsageThresholdCount" alias="EdenCollUseThrshCnt" type="gauge"/>
+            <comp-attrib name="Usage" alias="EdenUsage" type="Composite">
+               <comp-member name="init" alias="EdenUsageInit" type="gauge"/>
+               <comp-member name="max" alias="EdenUsageMax" type="gauge"/>
+               <comp-member name="used" alias="EdenUsageUsed" type="gauge"/>
+               <comp-member name="committed" alias="EdenUsgCmmttd" type="gauge"/>
+            </comp-attrib>
+            <comp-attrib name="PeakUsage" alias="EdenPeakUsage" type="Composite">
+               <comp-member name="init" alias="EdenPeakUsageInit" type="gauge"/>
+               <comp-member name="max" alias="EdenPeakUsageMax" type="gauge"/>
+               <comp-member name="used" alias="EdenPeakUsageUsed" type="gauge"/>
+               <comp-member name="committed" alias="EdenPeakUsgCmmttd" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
+            <attrib name="CollectionUsageThreshold" alias="SurvCollUseThresh" type="gauge"/>
+            <attrib name="CollectionUsageThresholdCount" alias="SurvCollUseThrshCnt" type="gauge"/>
+            <comp-attrib name="Usage" alias="SurvUsage" type="Composite">
+               <comp-member name="init" alias="SurvUsageInit" type="gauge"/>
+               <comp-member name="max" alias="SurvUsageMax" type="gauge"/>
+               <comp-member name="used" alias="SurvUsageUsed" type="gauge"/>
+               <comp-member name="committed" alias="SurvUsgCmmttd" type="gauge"/>
+            </comp-attrib>
+            <comp-attrib name="PeakUsage" alias="SurvPeakUsage" type="Composite">
+               <comp-member name="init" alias="SurvPeakUsageInit" type="gauge"/>
+               <comp-member name="max" alias="SurvPeakUsageMax" type="gauge"/>
+               <comp-member name="used" alias="SurvPeakUsageUsed" type="gauge"/>
+               <comp-member name="committed" alias="SurvPeakUsgCmmttd" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM MemoryPool:Perm Gen" objectname="java.lang:type=MemoryPool,name=Perm Gen">
+            <attrib name="CollectionUsageThreshold" alias="PermCollUseThresh" type="gauge"/>
+            <attrib name="CollectionUsageThresholdCount" alias="PermCollUseThrshCnt" type="gauge"/>
+            <comp-attrib name="Usage" alias="PermUsage" type="Composite">
+               <comp-member name="init" alias="PermUsageInit" type="gauge"/>
+               <comp-member name="max" alias="PermUsageMax" type="gauge"/>
+               <comp-member name="used" alias="PermUsageUsed" type="gauge"/>
+               <comp-member name="committed" alias="PermUsgCmmttd" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM MemoryPool:Old Gen" objectname="java.lang:type=MemoryPool,name=Old Gen">
+            <attrib name="CollectionUsageThreshold" alias="OGenCollUseThresh" type="gauge"/>
+            <attrib name="CollectionUsageThresholdCount" alias="OGenCollUseThrshCnt" type="gauge"/>
+            <comp-attrib name="Usage" alias="OGenUsage" type="Composite">
+               <comp-member name="init" alias="OGenUsageInit" type="gauge"/>
+               <comp-member name="max" alias="OGenUsageMax" type="gauge"/>
+               <comp-member name="used" alias="OGenUsageUsed" type="gauge"/>
+               <comp-member name="committed" alias="OGenUsgCmmttd" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM GarbageCollector:Copy" objectname="java.lang:type=GarbageCollector,name=Copy">
+            <attrib name="CollectionCount" alias="CopyCollCnt" type="counter"/>
+            <attrib name="CollectionTime" alias="CopyCollTime" type="counter"/>
+            <comp-attrib name="LastGcInfo" alias="CopyLastGcInfo" type="Composite">
+               <comp-member name="GcThreadCount" alias="CopyGcThreadCnt" type="gauge"/>
+               <comp-member name="duration" alias="CopyDuration" type="gauge"/>
+               <comp-member name="endTime" alias="CopyEndTime" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM GarbageCollector:MarkSweepCompact" objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
+            <attrib name="CollectionCount" alias="MSCCollCnt" type="counter"/>
+            <attrib name="CollectionTime" alias="MSCCollTime" type="counter"/>
+            <comp-attrib name="LastGcInfo" alias="MSCLastGcInfo" type="Composite">
+               <comp-member name="GcThreadCount" alias="MSCGcThreadCnt" type="gauge"/>
+               <comp-member name="duration" alias="MSCDuration" type="gauge"/>
+               <comp-member name="endTime" alias="MSCEndTime" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM GarbageCollector:ParNew" objectname="java.lang:type=GarbageCollector,name=ParNew">
+            <attrib name="CollectionCount" alias="ParNewCollCnt" type="counter"/>
+            <attrib name="CollectionTime" alias="ParNewCollTime" type="counter"/>
+            <comp-attrib name="LastGcInfo" alias="ParNewLastGcInfo" type="Composite">
+               <comp-member name="GcThreadCount" alias="ParNewGcThreadCnt" type="gauge"/>
+               <comp-member name="duration" alias="ParNewDuration" type="gauge"/>
+               <comp-member name="endTime" alias="ParNewEndTime" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM GarbageCollector:ConcurrentMarkSweep" objectname="java.lang:type=GarbageCollector,name=ConcurrentMarkSweep">
+            <attrib name="CollectionCount" alias="CMSCollCnt" type="counter"/>
+            <attrib name="CollectionTime" alias="CMSCollTime" type="counter"/>
+            <comp-attrib name="LastGcInfo" alias="CMSLastGcInfo" type="Composite">
+               <comp-member name="GcThreadCount" alias="CMSGcThreadCnt" type="gauge"/>
+               <comp-member name="duration" alias="CMSDuration" type="gauge"/>
+               <comp-member name="endTime" alias="CMSEndTime" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM GarbageCollector:PS MarkSweep" objectname="java.lang:type=GarbageCollector,name=PS MarkSweep">
+            <attrib name="CollectionCount" alias="PSMSCollCnt" type="counter"/>
+            <attrib name="CollectionTime" alias="PSMSCollTime" type="counter"/>
+            <comp-attrib name="LastGcInfo" alias="PSMSLastGcInfo" type="Composite">
+               <comp-member name="GcThreadCount" alias="PSMSGcThreadCnt" type="gauge"/>
+               <comp-member name="duration" alias="PSMSDuration" type="gauge"/>
+               <comp-member name="endTime" alias="PSMSEndTime" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM GarbageCollector:PS Scavenge" objectname="java.lang:type=GarbageCollector,name=PS Scavenge">
+            <attrib name="CollectionCount" alias="PSSCollCnt" type="counter"/>
+            <attrib name="CollectionTime" alias="PSSCollTime" type="counter"/>
+            <comp-attrib name="LastGcInfo" alias="PSSLastGcInfo" type="Composite">
+               <comp-member name="GcThreadCount" alias="PSSGcThreadCnt" type="gauge"/>
+               <comp-member name="duration" alias="PSSDuration" type="gauge"/>
+               <comp-member name="endTime" alias="PSSEndTime" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM GarbageCollector:G1 Old Generation" objectname="java.lang:type=GarbageCollector,name=G1 Old Generation">
+            <attrib name="CollectionCount" alias="G1OldCollCnt" type="counter"/>
+            <attrib name="CollectionTime" alias="G1OldCollTime" type="counter"/>
+            <comp-attrib name="LastGcInfo" alias="G1OldLastGcInfo" type="Composite">
+               <comp-member name="GcThreadCount" alias="G1OldGcThreadCnt" type="gauge"/>
+               <comp-member name="duration" alias="G1OldDuration" type="gauge"/>
+               <comp-member name="endTime" alias="G1OldEndTime" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+         <mbean name="JVM GarbageCollector:G1 Young Generation" objectname="java.lang:type=GarbageCollector,name=G1 Young Generation">
+            <attrib name="CollectionCount" alias="G1YngCollCnt" type="counter"/>
+            <attrib name="CollectionTime" alias="G1YngCollTime" type="counter"/>
+            <comp-attrib name="LastGcInfo" alias="G1YngLastGcInfo" type="Composite">
+               <comp-member name="GcThreadCount" alias="G1YngGcThreadCnt" type="gauge"/>
+               <comp-member name="duration" alias="G1YngDuration" type="gauge"/>
+               <comp-member name="endTime" alias="G1YngEndTime" type="gauge"/>
+            </comp-attrib>
+         </mbean>
+	 <!-- Newts specifics beans - available when using the Newts time series strategy -->
+         <mbean name="org.opennms.newts.ring-buffer.size" objectname="org.opennms.newts:name=ring-buffer.size">
+            <attrib name="Value" alias="NewtsRingBufSize" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.ring-buffer.max-size" objectname="org.opennms.newts:name=ring-buffer.max-size">
+            <attrib name="Value" alias="NewtsRingBufMaxSize" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.cache.size" objectname="org.opennms.newts:name=cache.size">
+            <attrib name="Value" alias="NewtsCacheSize" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.cache.max-size" objectname="org.opennms.newts:name=cache.max-size">
+            <attrib name="Value" alias="NewtsMaxCacheSize" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.insert-timer" objectname="org.opennms.newts:name=repository.insert-timer">
+            <attrib name="50thPercentile" alias="NewtsInsert50" type="gauge"/>
+            <attrib name="75thPercentile" alias="NewtsInsert75" type="gauge"/>
+            <attrib name="95thPercentile" alias="NewtsInsert95" type="gauge"/>
+            <attrib name="98thPercentile" alias="NewtsInsert98" type="gauge"/>
+            <attrib name="99thPercentile" alias="NewtsInsert99" type="gauge"/>
+            <attrib name="999thPercentile" alias="NewtsInsert999" type="gauge"/>
+            <attrib name="Count" alias="NewtsInsertCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.measurement-select-timer" objectname="org.opennms.newts:name=repository.measurement-select-timer">
+            <attrib name="50thPercentile" alias="NewtsMeasSelct50" type="gauge"/>
+            <attrib name="75thPercentile" alias="NewtsMeasSelct75" type="gauge"/>
+            <attrib name="95thPercentile" alias="NewtsMeasSelct95" type="gauge"/>
+            <attrib name="98thPercentile" alias="NewtsMeasSelct98" type="gauge"/>
+            <attrib name="99thPercentile" alias="NewtsMeasSelct99" type="gauge"/>
+            <attrib name="999thPercentile" alias="NewtsMeasSelct999" type="gauge"/>
+            <attrib name="Count" alias="NewtsMeasSelctCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.sample-select-timer" objectname="org.opennms.newts:name=repository.sample-select-timer">
+            <attrib name="50thPercentile" alias="NewtsSmplSelct50" type="gauge"/>
+            <attrib name="75thPercentile" alias="NewtsSmplSelct75" type="gauge"/>
+            <attrib name="95thPercentile" alias="NewtsSmplSelct95" type="gauge"/>
+            <attrib name="98thPercentile" alias="NewtsSmplSelct98" type="gauge"/>
+            <attrib name="99thPercentile" alias="NewtsSmplSelct99" type="gauge"/>
+            <attrib name="999thPercentile" alias="NewtsSmplSelct999" type="gauge"/>
+            <attrib name="Count" alias="NewtsSmplSelctCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.samples-inserted" objectname="org.opennms.newts:name=repository.samples-inserted">
+            <attrib name="Count" alias="NewtsSmplsInsertd" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.samples-selected" objectname="org.opennms.newts:name=repository.samples-selected">
+            <attrib name="Count" alias="NewtsSmplsSelctd" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.search.update" objectname="org.opennms.newts:name=search.update">
+            <attrib name="50thPercentile" alias="NewtsSearchUpd50" type="gauge"/>
+            <attrib name="75thPercentile" alias="NewtsSearchUpd75" type="gauge"/>
+            <attrib name="95thPercentile" alias="NewtsSearchUpd95" type="gauge"/>
+            <attrib name="98thPercentile" alias="NewtsSearchUpd98" type="gauge"/>
+            <attrib name="99thPercentile" alias="NewtsSearchUpd99" type="gauge"/>
+            <attrib name="999thPercentile" alias="NewtsSearchUpd999" type="gauge"/>
+            <attrib name="Count" alias="NewtsSearchUpdCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.search.delete" objectname="org.opennms.newts:name=search.delete">
+            <attrib name="50thPercentile" alias="NewtsSearchDel50" type="gauge"/>
+            <attrib name="75thPercentile" alias="NewtsSearchDel75" type="gauge"/>
+            <attrib name="95thPercentile" alias="NewtsSearchDel95" type="gauge"/>
+            <attrib name="98thPercentile" alias="NewtsSearchDel98" type="gauge"/>
+            <attrib name="99thPercentile" alias="NewtsSearchDel99" type="gauge"/>
+            <attrib name="999thPercentile" alias="NewtsSearchDel999" type="gauge"/>
+            <attrib name="Count" alias="NewtsSearchDelCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.search.inserts" objectname="org.opennms.newts:name=search.inserts">
+            <attrib name="Count" alias="NewtsSearchInserts" type="counter"/>
+         </mbean>
+         <mbean name="cluster1-metrics.requests" objectname="cluster1-metrics:name=requests">
+            <attrib name="50thPercentile" alias="CasCluster1Req50" type="gauge"/>
+            <attrib name="75thPercentile" alias="CasCluster1Req75" type="gauge"/>
+            <attrib name="95thPercentile" alias="CasCluster1Req95" type="gauge"/>
+            <attrib name="98thPercentile" alias="CasCluster1Req98" type="gauge"/>
+            <attrib name="99thPercentile" alias="CasCluster1Req99" type="gauge"/>
+            <attrib name="999thPercentile" alias="CasCluster1Req999" type="gauge"/>
+            <attrib name="Count" alias="CasCluster1ReqCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.activemq" objectname="org.apache.activemq:type=Broker,brokerName=localhost">
+            <attrib name="TotalConnectionsCount" alias="TtlConCnt" type="counter"/>
+            <attrib name="TotalEnqueueCount" alias="TtlEnqCnt" type="counter"/>
+            <attrib name="TotalDequeueCount" alias="TtlDeqCnt" type="counter"/>
+            <attrib name="TotalConsumerCount" alias="TtlConsumerCnt" type="gauge"/>
+            <attrib name="TotalProducerCount" alias="TtlProdCnt" type="gauge"/>
+            <attrib name="TotalMessageCount" alias="TtlMsgCnt" type="counter"/>
+            <attrib name="AverageMessageSize" alias="AvgMsgSize" type="gauge"/>
+            <attrib name="MaxMessageSize" alias="MaxMsgSize" type="gauge"/>
+            <attrib name="MinMessageSize" alias="MinMsgSize" type="gauge"/>
+            <attrib name="MemoryLimit" alias="MemLimit" type="gauge"/>
+            <attrib name="MemoryPercentUsage" alias="MemPctUsage" type="gauge"/>
+            <attrib name="StoreLimit" alias="StoreLimit" type="gauge"/>
+            <attrib name="StorePercentUsage" alias="StorePctUsage" type="gauge"/>
+            <attrib name="TempLimit" alias="TempLimit" type="gauge"/>
+            <attrib name="TempPercentUsage" alias="TempPctUsage" type="gauge"/>
+         </mbean>
+      </mbeans>
+   </jmx-collection>
 </jmx-datacollection-config>

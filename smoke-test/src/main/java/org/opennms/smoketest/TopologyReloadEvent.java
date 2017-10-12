@@ -28,13 +28,11 @@
 
 package org.opennms.smoketest;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.xml.bind.JAXB;
-
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 
@@ -51,10 +49,7 @@ public class TopologyReloadEvent {
         final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
         builder.setTime(new Date());
         builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            JAXB.marshal(builder.getEvent(), outputStream);
-            testCase.sendPost("/rest/events", new String(outputStream.toByteArray()), 204);
-        }
+        testCase.sendPost("/rest/events", JaxbUtils.marshal(builder.getEvent()), 204);
         Thread.sleep(5000); // Wait to allow the event to be processed
     }
 }

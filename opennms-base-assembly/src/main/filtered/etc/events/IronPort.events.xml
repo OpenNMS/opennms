@@ -1,320 +1,300 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: ASYNCOS-MAIL-MIB -->
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>1</mevalue>
-                </maskelement>
-                <varbind>
-                        <vbnumber>1</vbnumber>
-                        <vbvalue>2</vbvalue>
-                </varbind>
-        </mask>
-        <uei>uei.opennms.org/vendor/ironport/traps/resourceConservationMode</uei>
-        <event-label>ASYNCOS-MAIL-MIB defined trap event:
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/resourceConservationMode</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event:
 resourceConservationMode</event-label>
-        <descr>
-&lt;p&gt;Memory or queue utilization caused system to enter resource
-conservation mode.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <descr>&lt;p>Memory or queue utilization caused system to enter resource
+conservation mode.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        resourceConservationReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+        resourceConservationReason&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>
                 noResourceConservation(1)
                 memoryShortage(2)
                 queueSpaceShortage(3)
                 queueFull(4)
-        &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+        &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         IronPort Event: resourceConservationMode trap received 
-                        resourceConservationReason=%parm[#1]%&lt;/p&gt;
+                        resourceConservationReason=%parm[#1]%&lt;/p>
                 </logmsg>
-        <severity>Cleared</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>1</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/ironport/traps/resourceConservationMode</uei>
-        <event-label>ASYNCOS-MAIL-MIB defined trap event:
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/resourceConservationMode</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event:
 resourceConservationMode</event-label>
-        <descr>
-&lt;p&gt;Memory or queue utilization caused system to enter resource
-conservation mode.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <descr>&lt;p>Memory or queue utilization caused system to enter resource
+conservation mode.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        resourceConservationReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+        resourceConservationReason&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>
                 noResourceConservation(1)
                 memoryShortage(2)
                 queueSpaceShortage(3)
                 queueFull(4)
-        &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+        &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         IronPort Event: resourceConservationMode trap received 
-                        resourceConservationReason=%parm[#1]%&lt;/p&gt;
+                        resourceConservationReason=%parm[#1]%&lt;/p>
                 </logmsg>
-        <severity>Major</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>2</mevalue>
-                </maskelement>
-                <varbind>
-                        <vbnumber>1</vbnumber>
-                        <vbvalue>2</vbvalue>
-                </varbind>
-        </mask>
-        <uei>uei.opennms.org/vendor/ironport/traps/powerSupplyStatusChange</uei>
-        <event-label>ASYNCOS-MAIL-MIB defined trap event:
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/powerSupplyStatusChange</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event:
 powerSupplyStatusChange</event-label>
-        <descr>
-&lt;p&gt;Sent when power supply status changes.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <descr>&lt;p>Sent when power supply status changes.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        powerSupplyStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+        powerSupplyStatus&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>
                 powerSupplyNotInstalled(1)
                 powerSupplyHealthy(2)
                 powerSupplyNoAC(3)
                 powerSupplyFaulty(4)
-        &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+        &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         IronPort Event: powerSupplyStatusChange trap received 
-                        powerSupplyStatus=%parm[#1]%&lt;/p&gt;
+                        powerSupplyStatus=%parm[#1]%&lt;/p>
                 </logmsg>
-        <severity>Cleared</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>2</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/ironport/traps/powerSupplyStatusChange</uei>
-        <event-label>ASYNCOS-MAIL-MIB defined trap event:
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/powerSupplyStatusChange</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event:
 powerSupplyStatusChange</event-label>
-        <descr>
-&lt;p&gt;Sent when power supply status changes.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <descr>&lt;p>Sent when power supply status changes.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        powerSupplyStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+        powerSupplyStatus&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>
                 powerSupplyNotInstalled(1)
                 powerSupplyHealthy(2)
                 powerSupplyNoAC(3)
                 powerSupplyFaulty(4)
-        &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+        &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         IronPort Event: powerSupplyStatusChange trap received 
-                        powerSupplyStatus=%parm[#1]%&lt;/p&gt;
+                        powerSupplyStatus=%parm[#1]%&lt;/p>
                 </logmsg>
-        <severity>Minor</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>3</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/ironport/traps/highTemperature</uei>
-        <event-label>ASYNCOS-MAIL-MIB defined trap event:
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/highTemperature</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event:
 highTemperature</event-label>
-        <descr>
-&lt;p&gt;Temperature has exceeded a recoverable failure
-threshold.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <descr>&lt;p>Temperature has exceeded a recoverable failure
+threshold.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        temperatureName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        temperatureName&lt;/b>&lt;/td>&lt;td>
        
-%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         IronPort Event: highTemperature trap received 
-                        temperatureName=%parm[#1]%&lt;/p&gt;
+                        temperatureName=%parm[#1]%&lt;/p>
                 </logmsg>
-        <severity>Minor</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>4</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/ironport/traps/fanFailure</uei>
-        <event-label>ASYNCOS-MAIL-MIB defined trap event:
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/fanFailure</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event:
 fanFailure</event-label>
-        <descr>
-&lt;p&gt;Speed of fan fanName has gone to zero.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <descr>&lt;p>Speed of fan fanName has gone to zero.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        fanName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        fanName&lt;/b>&lt;/td>&lt;td>
        
-%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         IronPort Event: fanFailure trap received 
-                        fanName=%parm[#1]%&lt;/p&gt;
+                        fanName=%parm[#1]%&lt;/p>
                 </logmsg>
-        <severity>Major</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>5</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/ironport/traps/keyExpiration</uei>
-        <event-label>ASYNCOS-MAIL-MIB defined trap event:
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/keyExpiration</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event:
 keyExpiration</event-label>
-        <descr>
-&lt;p&gt;Key will expire.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <descr>&lt;p>Key will expire.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        keyDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        keyDescription&lt;/b>&lt;/td>&lt;td>
        
-%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         IronPort Event: keyExpiration trap received 
-                        keyDescription=%parm[#1]%&lt;/p&gt;
+                        keyDescription=%parm[#1]%&lt;/p>
                 </logmsg>
-        <severity>Minor</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/ironport/traps/updateFailure</uei>
-        <event-label>ASYNCOS-MAIL-MIB defined trap event:
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/updateFailure</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event:
 updateFailure</event-label>
-        <descr>
-&lt;p&gt;Update failure (spam rules, virus patterns, outbreak updates,
-etc.)&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <descr>&lt;p>Update failure (spam rules, virus patterns, outbreak updates,
+etc.)&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        updateServiceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        updateServiceName&lt;/b>&lt;/td>&lt;td>
        
-%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         IronPort Event: updateFailure trap received 
-                        updateServiceName=%parm[#1]%&lt;/p&gt;
+                        updateServiceName=%parm[#1]%&lt;/p>
                 </logmsg>
-        <severity>Minor</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>7</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/ironport/traps/raidStatusChange</uei>
-        <event-label>ASYNCOS-MAIL-MIB defined trap event:
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/raidStatusChange</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event:
 raidStatusChange</event-label>
-        <descr>
-&lt;p&gt;Drive with ID: RAIDID has changed status.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <descr>&lt;p>Drive with ID: RAIDID has changed status.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        raidID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        raidID&lt;/b>&lt;/td>&lt;td>
        
-%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         IronPort Event: raidStatusChange trap received 
-                        raidID=%parm[#1]%&lt;/p&gt;
+                        raidID=%parm[#1]%&lt;/p>
                 </logmsg>
-        <severity>Major</severity>
-</event>
-<!-- End of auto generated data from MIB: ASYNCOS-MAIL-MIB -->
+      <severity>Major</severity>
+   </event>
 </events>

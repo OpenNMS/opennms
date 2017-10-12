@@ -28,25 +28,6 @@
 
 package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
-import com.google.common.base.Throwables;
-import org.apache.commons.lang.StringUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
-import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.management.JMException;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -55,6 +36,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import org.apache.commons.lang.StringUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
+import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Throwables;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
@@ -66,55 +68,57 @@ public class JmxDatacollectionConfiggeneratorTest {
 
     private JmxDatacollectionConfiggenerator jmxConfiggenerator;
     private MBeanServer platformMBeanServer;
+    private JmxTestDummyMBean testMBean;
+    private ObjectName testObjectName;
     private Map<String, String> dictionary = new HashMap<String, String>();
 
     @Before
     public void setUp() throws Exception {
         jmxConfiggenerator = new JmxDatacollectionConfiggenerator(new Slf4jLogAdapter(JmxDatacollectionConfiggenerator.class));
         platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
-        ObjectName objectName = new ObjectName("org.opennms.tools.jmxconfiggenerator.jmxconfig:type=JmxTest");
-        JmxTestDummyMBean testMBean = new JmxTestDummy();
-        platformMBeanServer.registerMBean(testMBean, objectName);
+        testObjectName = new ObjectName("org.opennms.tools.jmxconfiggenerator.jmxconfig:type=JmxTest");
+        testMBean = new JmxTestDummy();
+        platformMBeanServer.registerMBean(testMBean, testObjectName);
     }
 
     @After
     public void tearDown() throws Exception {
         jmxConfiggenerator = null;
-        platformMBeanServer.unregisterMBean(new ObjectName("org.opennms.tools.jmxconfiggenerator.jmxconfig:type=JmxTest"));
+        platformMBeanServer.unregisterMBean(testObjectName);
         platformMBeanServer = null;
     }
 
     @Test
     public void testGenerateJmxConfigModelSkipNonNumber() throws MBeanServerQueryException, IOException, JMException {
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, false, dictionary);
-        Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
-        Assert.assertTrue(10 < jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
+        Assert.assertEquals(1, jmxConfigModel.getJmxCollectionList().size());
+        Assert.assertTrue(10 < jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
 
         Mbean mbean = findMbean(jmxConfigModel, "org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxTest");
         Assert.assertNotNull(mbean);
-        Assert.assertEquals(5, mbean.getAttrib().size());
+        Assert.assertEquals(5, mbean.getAttribList().size());
         LOG.info(prettyPrint(jmxConfigModel));
     }
 
     @Test
     public void testGenerateJmxConfigModelSkipJvmMBeans() throws MBeanServerQueryException, IOException, JMException {
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", false, true, dictionary);
-        Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
-        Assert.assertEquals(1, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
-        Assert.assertEquals("org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxTest", jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getName());
-        Assert.assertEquals(4, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getAttrib().size());
+        Assert.assertEquals(1, jmxConfigModel.getJmxCollectionList().size());
+        Assert.assertEquals(1, jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
+        Assert.assertEquals("org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxTest", jmxConfigModel.getJmxCollectionList().get(0).getMbeans().get(0).getName());
+        Assert.assertEquals(4, jmxConfigModel.getJmxCollectionList().get(0).getMbeans().get(0).getAttribList().size());
         LOG.info(prettyPrint(jmxConfigModel));
     }
 
     @Test
     public void testGenerateJmxConfigModelRunJvmMBeans() throws MBeanServerQueryException, IOException, JMException {
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, true, dictionary);
-        Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
-        Assert.assertTrue(10 < jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
+        Assert.assertEquals(1, jmxConfigModel.getJmxCollectionList().size());
+        Assert.assertTrue(10 < jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
 
         Mbean mbean = findMbean(jmxConfigModel, "org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxTest");
         Assert.assertNotNull(mbean);
-        Assert.assertEquals(4, mbean.getAttrib().size());
+        Assert.assertEquals(4, mbean.getAttribList().size());
         LOG.info(prettyPrint(jmxConfigModel));
     }
 
@@ -127,10 +131,10 @@ public class JmxDatacollectionConfiggeneratorTest {
         Assert.assertNotNull(jmxConfigModel);
         LOG.info(prettyPrint(jmxConfigModel));
 
-        Assert.assertEquals(2, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
-        for (Mbean eachMbean : jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean()) {
-            Assert.assertEquals(2, eachMbean.getAttrib().size());
-            Assert.assertEquals(0, eachMbean.getCompAttrib().size());
+        Assert.assertEquals(2, jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
+        for (Mbean eachMbean : jmxConfigModel.getJmxCollectionList().get(0).getMbeans()) {
+            Assert.assertEquals(2, eachMbean.getAttribList().size());
+            Assert.assertEquals(0, eachMbean.getCompAttribList().size());
         }
     }
 
@@ -143,10 +147,10 @@ public class JmxDatacollectionConfiggeneratorTest {
         Assert.assertNotNull(jmxConfigModel);
         LOG.info(prettyPrint(jmxConfigModel));
 
-        Assert.assertEquals(2, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
-        for (Mbean eachMbean : jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean()) {
-            Assert.assertEquals(1, eachMbean.getAttrib().size());
-            Assert.assertEquals(0, eachMbean.getCompAttrib().size());
+        Assert.assertEquals(2, jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
+        for (Mbean eachMbean : jmxConfigModel.getJmxCollectionList().get(0).getMbeans()) {
+            Assert.assertEquals(1, eachMbean.getAttribList().size());
+            Assert.assertEquals(0, eachMbean.getCompAttribList().size());
         }
     }
 
@@ -178,7 +182,7 @@ public class JmxDatacollectionConfiggeneratorTest {
      * @return The Mbean when names are matching, null otherwise.
      */
     private Mbean findMbean(JmxDatacollectionConfig jmxConfigModel, String mbeanName) {
-        for (Mbean eachMbean : jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean()) {
+        for (Mbean eachMbean : jmxConfigModel.getJmxCollectionList().get(0).getMbeans()) {
             if (Objects.equals(eachMbean.getName(), mbeanName)) {
                 return eachMbean;
             }

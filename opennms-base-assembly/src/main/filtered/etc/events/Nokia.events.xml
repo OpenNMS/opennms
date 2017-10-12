@@ -1,51 +1,49 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmNew</uei>
- <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmNew</event-label>
- <descr>&lt;p&gt;This notification is used when a fault situation 
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmNew</uei>
+      <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmNew</event-label>
+      <descr>&lt;p>This notification is used when a fault situation 
 occurs in the NE and the agent send the alarm 
 notification to inform the OS about the fault.
 
 The value 'cleared' for the noiAlarmPerceivedSeverity
-is not allowed for an alarm notification.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSystemDN&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSpecificProblem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmPerceivedSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;indeterminate(0) critical(1) major(2) minor(3) warning(4) cleared(5)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmAdditionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmProbableCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;m3100Indeterminate(0) m3100AlarmIndicationSignal(1) m3100CallSetupFailure(2) m3100DegradedSignal(3) m3100FarEndReceiverFailure(4) m3100FramingError(5) m3100LossOfFrame(6) m3100LossOfPointer(7) m3100LossOfSignal(8) m3100PayloadTypeMismatch(9) m3100TransmissionError(10) m3100RemoteAlarmInterface(11) m3100ExcessiveBitErrorRate(12) m3100PathTraceMismatch(13) m3100Unavailable(14) m3100SignalLabelMismatch(15) m3100LossOfMultiFrame(16) m3100BackPlaneFailure(51) m3100DataSetProblem(52) m3100EquipmentIdentifierDuplication(53) m3100ExternalIfDeviceProblem(54) m3100LineCardProblem(55) m3100MultiplexerProblem(56) m3100NeIdentifierDuplication(57) m3100PowerProblem(58) m3100ProcessorProblem(59) m3100ProtectionPathFailure(60) m3100ReceiverFailure(61) m3100ReplaceableUnitMissing(62) m3100ReplaceableUnitTypeMismatch(63) m3100SynchronisationSourceMismatch(64) m3100TerminalProblem(65) m3100TimingProblem(66) m3100TransmitterFailure(67) m3100TrunkCardProblem(68) m3100ReplaceableUnitProblem(69) m3100AirCompressorFailure(101) m3100AirConditioningFailure(102) m3100AirDryerFailure(103) m3100BatteryDischarging(104) m3100BatteryFailure(105) m3100CommercialPowerFailure(106) m3100CoolingFanFailure(107) m3100EngineFailure(108) m3100FireDetectorFailure(109) m3100FuseFailure(110) m3100GeneratorFailure(111) m3100LowBatteryThreshold(112) m3100PumpFailure(113) m3100RectifierFailure(114) m3100RectifierHighVoltage(115) m3100RectifierLowVoltage(116) m3100VentilationSystemFailure(117) m3100EnclosureDoorOpen(118) m3100ExplosiveGas(119) m3100Fire(120) m3100Flood(121) m3100HighHumidity(122) m3100HighTemperature(123) m3100HighWind(124) m3100IceBuildUp(125) m3100LowFuel(127) m3100LowHumidity(128) m3100LowCablePressure(129) m3100LowTemperature(130) m3100LowWater(131) m3100Smoke(132) m3100ToxicGas(133) m3100StorageCapacityProblem(151) m3100MemoryMismatch(152) m3100CorruptData(153) m3100OutOfCPUCycles(154) m3100SoftwareEnvironmentProblem(155) m3100SoftwareDownloadFailure(156) x733AdapterError(1000001) x733ApplicationSubsystemFailure(1000002) x733BandwidthReduced(1000003) x733CommunicationsProtocolError(1000005) x733CommunicationsSubsystemFailure(1000006) x733ConfigurationOrCustomizationError(1000007) x733Congestion(1000008) x733CpuCyclesLimitExceeded(1000010) x733DataSetOrModemError(1000011) x733DTEDCEInterfaceError(1000013) x733EquipmentMalfunction(1000015) x733ExcessiveVibration(1000016) x733FileError(1000017) x733HeatingOrVentilationOrCoolingSystemProblem(1000021) x733HumidityUnacceptable(1000022) x733InputOutputDeviceError(1000023) x733InputDeviceError(1000024) x733LANError(1000025) x733LeakDetected(1000026) x733LocalNodeTransmissionError(1000027) x733MaterialSupplyExhausted(1000030) x733OutOfMemory(1000032) x733OuputDeviceError(1000033) x733PerformanceDegraded(1000034) x733PressureUnacceptable(1000036) x733QueueSizeExceeded(1000039) x733ReceiveFailure(1000040) x733RemoteNodeTransmissionError(1000042) x733ResourceAtOrNearingCapacity(1000043) x733ResponseTimeExcessive(1000044) x733RetransmissionRateExcessive(1000045) x733SoftwareError(1000046) x733SoftwareProgramAbnormallyTerminated(1000047) x733SoftwareProgramError(1000048) x733TemperatureUnacceptable(1000050) x733ThresholdCrossed(1000051) x733ToxicLeakDetected(1000053) x733TransmitFailure(1000054) x733UnderlyingResourceUnavailable(1000056) x733VersionMismatch(1000057) x736AuthenticationFailure(2000001) x736BreachOfConfidentiality(2000002) x736CableTamper(2000003) x736DelayedInformation(2000004) x736DenialOfService(2000005) x736DuplicateInformation(2000006) x736InformationMissing(2000007) x736InformationModificationDetected(2000008) x736InformationOutOfSequence(2000009) x736IntrusionDetection(2000010) x736KeyExpired(2000011) x736NonRepudiationFailure(2000012) x736OutOfHoursActivity(2000013) x736OutOfService(2000014) x736ProceduralError(2000015) x736UnauthorizedAccessAttempt(2000016) x736UnexpectedInformation(2000017) x736UnspecifiedReason(2000018) gsm1211AbisToBTSInterfaceFailure(3000001) gsm1211AbisToTRXInterfaceFailure(3000002) gsm1211AntennaProblem(3000003) gsm1211BatteryBreakdown(3000004) gsm1211BatteryChargingFault(3000005) gsm1211CombinerProblem(3000007) gsm1211DiskProblem(3000008) gsm1211ExcessiveReceiverTemperature(3000010) gsm1211ExcessiveTransmitterOutputPower(3000011) gsm1211ExcessiveTransmitterTemperature(3000012) gsm1211FrequencyHoppingDegraded(3000013) gsm1211FrequencyHoppingFailure(3000014) gsm1211FrequencyRedefinitionFailed(3000015) gsm1211LineInterfaceFailure(3000016) gsm1211LinkFailure(3000017) gsm1211LossOfSynchronisation(3000018) gsm1211LostRedundancy(3000019) gsm1211MainsBreakdownWithBatteryBackUp(3000020) gsm1211MainsBreakdownWithoutBatteryBackUp(3000021) gsm1211PowerSupplyFailure(3000022) gsm1211ReceiverAntennaFault(3000023) gsm1211ReceiverMulticouplerFailure(3000025) gsm1211ReducedTransmitterOutputPower(3000026) gsm1211SignalQualityEvaluationFault(3000027) gsm1211TimeslotHardwareFailure(3000028) gsm1211TransceiverProblem(3000029) gsm1211TranscoderProblem(3000030) gsm1211TranscoderOrRateAdapterProblem(3000031) gsm1211TransmitterAntennaFailure(3000032) gsm1211TransmitterAntennaNotAdjusted(3000033) gsm1211TransmitterLowVoltageOrCurrent(3000035) gsm1211TransmitterOffFrequency(3000036) gsm1211DatabaseInconsistency(3000037) gsm1211FileSystemCallUnsuccessful(3000038) gsm1211InputParameterOutOfRange(3000039) gsm1211InvalidParameter(3000040) gsm1211InvalidPointer(3000041) gsm1211MessageNotExpected(3000042) gsm1211MessageNotInitialised(3000043) gsm1211MessageOutOfSequence(3000044) gsm1211SystemCallUnsuccessful(3000045) gsm1211TimeoutExpired(3000046) gsm1211VariableOutOfRange(3000047) gsm1211WatchDogTimerExpired(3000048) gsm1211CoolingSystemFailure(3000049) gsm1211ExternalEquipmentFailure(3000050) gsm1211ExternalPowerSupplyFailure(3000051) gsm1211ExternalTransmissionDeviceFailure(3000052) gsm1211ReducedAlarmReporting(3000061) gsm1211ReducedEventReporting(3000062) gsm1211ReducedLoggingCapability(3000063) gsm1211SystemResourcesOverload(3000064) gsm1211BroadcastChannelFailure(3000065) gsm1211ConnectionEstablishmentError(3000066) gsm1211InvalidMessageReceived(3000067) gsm1211InvalidMSUReceived(3000068) gsm1211LAPDLinkProtocolFailure(3000069) gsm1211LocalAlarmIndication(3000070) gsm1211RemoteAlarmIndication(3000071) gsm1211RoutingFailure(3000072) gsm1211SS7ProtocolFailure(3000073) gsm1211TransmissionError(3000074) gsm1211ClockSynchronisationProblem(30000056)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#9]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;unknown(0) communicationsAlarm(2) environmentalAlarm(3) equipmentAlarm(4) processingErrorAlarm(10) qualityOfServiceAlarm(11)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmNotificationId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#10]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: noiAlarmNew trap received noiAlarmSystemDN=%parm[#1]% noiAlarmId=%parm[#2]% noiAlarmEventTime=%parm[#3]% noiAlarmSpecificProblem=%parm[#4]% noiAlarmText=%parm[#5]% noiAlarmPerceivedSeverity=%parm[#6]% noiAlarmAdditionalText=%parm[#7]% noiAlarmProbableCause=%parm[#8]% noiAlarmEventType=%parm[#9]% noiAlarmNotificationId=%parm[#10]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>2</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmCleared</uei>
- <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmCleared</event-label>
- <descr>&lt;p&gt;This notification is used when an alarm is cleared.
+is not allowed for an alarm notification.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>noiAlarmSystemDN&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmId&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmSpecificProblem&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmText&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmPerceivedSeverity&lt;/b>&lt;/td>&lt;td>%parm[#6]%&lt;/td>&lt;td>&lt;p;>indeterminate(0) critical(1) major(2) minor(3) warning(4) cleared(5)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmAdditionalText&lt;/b>&lt;/td>&lt;td>%parm[#7]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmProbableCause&lt;/b>&lt;/td>&lt;td>%parm[#8]%&lt;/td>&lt;td>&lt;p;>m3100Indeterminate(0) m3100AlarmIndicationSignal(1) m3100CallSetupFailure(2) m3100DegradedSignal(3) m3100FarEndReceiverFailure(4) m3100FramingError(5) m3100LossOfFrame(6) m3100LossOfPointer(7) m3100LossOfSignal(8) m3100PayloadTypeMismatch(9) m3100TransmissionError(10) m3100RemoteAlarmInterface(11) m3100ExcessiveBitErrorRate(12) m3100PathTraceMismatch(13) m3100Unavailable(14) m3100SignalLabelMismatch(15) m3100LossOfMultiFrame(16) m3100BackPlaneFailure(51) m3100DataSetProblem(52) m3100EquipmentIdentifierDuplication(53) m3100ExternalIfDeviceProblem(54) m3100LineCardProblem(55) m3100MultiplexerProblem(56) m3100NeIdentifierDuplication(57) m3100PowerProblem(58) m3100ProcessorProblem(59) m3100ProtectionPathFailure(60) m3100ReceiverFailure(61) m3100ReplaceableUnitMissing(62) m3100ReplaceableUnitTypeMismatch(63) m3100SynchronisationSourceMismatch(64) m3100TerminalProblem(65) m3100TimingProblem(66) m3100TransmitterFailure(67) m3100TrunkCardProblem(68) m3100ReplaceableUnitProblem(69) m3100AirCompressorFailure(101) m3100AirConditioningFailure(102) m3100AirDryerFailure(103) m3100BatteryDischarging(104) m3100BatteryFailure(105) m3100CommercialPowerFailure(106) m3100CoolingFanFailure(107) m3100EngineFailure(108) m3100FireDetectorFailure(109) m3100FuseFailure(110) m3100GeneratorFailure(111) m3100LowBatteryThreshold(112) m3100PumpFailure(113) m3100RectifierFailure(114) m3100RectifierHighVoltage(115) m3100RectifierLowVoltage(116) m3100VentilationSystemFailure(117) m3100EnclosureDoorOpen(118) m3100ExplosiveGas(119) m3100Fire(120) m3100Flood(121) m3100HighHumidity(122) m3100HighTemperature(123) m3100HighWind(124) m3100IceBuildUp(125) m3100LowFuel(127) m3100LowHumidity(128) m3100LowCablePressure(129) m3100LowTemperature(130) m3100LowWater(131) m3100Smoke(132) m3100ToxicGas(133) m3100StorageCapacityProblem(151) m3100MemoryMismatch(152) m3100CorruptData(153) m3100OutOfCPUCycles(154) m3100SoftwareEnvironmentProblem(155) m3100SoftwareDownloadFailure(156) x733AdapterError(1000001) x733ApplicationSubsystemFailure(1000002) x733BandwidthReduced(1000003) x733CommunicationsProtocolError(1000005) x733CommunicationsSubsystemFailure(1000006) x733ConfigurationOrCustomizationError(1000007) x733Congestion(1000008) x733CpuCyclesLimitExceeded(1000010) x733DataSetOrModemError(1000011) x733DTEDCEInterfaceError(1000013) x733EquipmentMalfunction(1000015) x733ExcessiveVibration(1000016) x733FileError(1000017) x733HeatingOrVentilationOrCoolingSystemProblem(1000021) x733HumidityUnacceptable(1000022) x733InputOutputDeviceError(1000023) x733InputDeviceError(1000024) x733LANError(1000025) x733LeakDetected(1000026) x733LocalNodeTransmissionError(1000027) x733MaterialSupplyExhausted(1000030) x733OutOfMemory(1000032) x733OuputDeviceError(1000033) x733PerformanceDegraded(1000034) x733PressureUnacceptable(1000036) x733QueueSizeExceeded(1000039) x733ReceiveFailure(1000040) x733RemoteNodeTransmissionError(1000042) x733ResourceAtOrNearingCapacity(1000043) x733ResponseTimeExcessive(1000044) x733RetransmissionRateExcessive(1000045) x733SoftwareError(1000046) x733SoftwareProgramAbnormallyTerminated(1000047) x733SoftwareProgramError(1000048) x733TemperatureUnacceptable(1000050) x733ThresholdCrossed(1000051) x733ToxicLeakDetected(1000053) x733TransmitFailure(1000054) x733UnderlyingResourceUnavailable(1000056) x733VersionMismatch(1000057) x736AuthenticationFailure(2000001) x736BreachOfConfidentiality(2000002) x736CableTamper(2000003) x736DelayedInformation(2000004) x736DenialOfService(2000005) x736DuplicateInformation(2000006) x736InformationMissing(2000007) x736InformationModificationDetected(2000008) x736InformationOutOfSequence(2000009) x736IntrusionDetection(2000010) x736KeyExpired(2000011) x736NonRepudiationFailure(2000012) x736OutOfHoursActivity(2000013) x736OutOfService(2000014) x736ProceduralError(2000015) x736UnauthorizedAccessAttempt(2000016) x736UnexpectedInformation(2000017) x736UnspecifiedReason(2000018) gsm1211AbisToBTSInterfaceFailure(3000001) gsm1211AbisToTRXInterfaceFailure(3000002) gsm1211AntennaProblem(3000003) gsm1211BatteryBreakdown(3000004) gsm1211BatteryChargingFault(3000005) gsm1211CombinerProblem(3000007) gsm1211DiskProblem(3000008) gsm1211ExcessiveReceiverTemperature(3000010) gsm1211ExcessiveTransmitterOutputPower(3000011) gsm1211ExcessiveTransmitterTemperature(3000012) gsm1211FrequencyHoppingDegraded(3000013) gsm1211FrequencyHoppingFailure(3000014) gsm1211FrequencyRedefinitionFailed(3000015) gsm1211LineInterfaceFailure(3000016) gsm1211LinkFailure(3000017) gsm1211LossOfSynchronisation(3000018) gsm1211LostRedundancy(3000019) gsm1211MainsBreakdownWithBatteryBackUp(3000020) gsm1211MainsBreakdownWithoutBatteryBackUp(3000021) gsm1211PowerSupplyFailure(3000022) gsm1211ReceiverAntennaFault(3000023) gsm1211ReceiverMulticouplerFailure(3000025) gsm1211ReducedTransmitterOutputPower(3000026) gsm1211SignalQualityEvaluationFault(3000027) gsm1211TimeslotHardwareFailure(3000028) gsm1211TransceiverProblem(3000029) gsm1211TranscoderProblem(3000030) gsm1211TranscoderOrRateAdapterProblem(3000031) gsm1211TransmitterAntennaFailure(3000032) gsm1211TransmitterAntennaNotAdjusted(3000033) gsm1211TransmitterLowVoltageOrCurrent(3000035) gsm1211TransmitterOffFrequency(3000036) gsm1211DatabaseInconsistency(3000037) gsm1211FileSystemCallUnsuccessful(3000038) gsm1211InputParameterOutOfRange(3000039) gsm1211InvalidParameter(3000040) gsm1211InvalidPointer(3000041) gsm1211MessageNotExpected(3000042) gsm1211MessageNotInitialised(3000043) gsm1211MessageOutOfSequence(3000044) gsm1211SystemCallUnsuccessful(3000045) gsm1211TimeoutExpired(3000046) gsm1211VariableOutOfRange(3000047) gsm1211WatchDogTimerExpired(3000048) gsm1211CoolingSystemFailure(3000049) gsm1211ExternalEquipmentFailure(3000050) gsm1211ExternalPowerSupplyFailure(3000051) gsm1211ExternalTransmissionDeviceFailure(3000052) gsm1211ReducedAlarmReporting(3000061) gsm1211ReducedEventReporting(3000062) gsm1211ReducedLoggingCapability(3000063) gsm1211SystemResourcesOverload(3000064) gsm1211BroadcastChannelFailure(3000065) gsm1211ConnectionEstablishmentError(3000066) gsm1211InvalidMessageReceived(3000067) gsm1211InvalidMSUReceived(3000068) gsm1211LAPDLinkProtocolFailure(3000069) gsm1211LocalAlarmIndication(3000070) gsm1211RemoteAlarmIndication(3000071) gsm1211RoutingFailure(3000072) gsm1211SS7ProtocolFailure(3000073) gsm1211TransmissionError(3000074) gsm1211ClockSynchronisationProblem(30000056)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventType&lt;/b>&lt;/td>&lt;td>%parm[#9]%&lt;/td>&lt;td>&lt;p;>unknown(0) communicationsAlarm(2) environmentalAlarm(3) equipmentAlarm(4) processingErrorAlarm(10) qualityOfServiceAlarm(11)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmNotificationId&lt;/b>&lt;/td>&lt;td>%parm[#10]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: noiAlarmNew trap received noiAlarmSystemDN=%parm[#1]% noiAlarmId=%parm[#2]% noiAlarmEventTime=%parm[#3]% noiAlarmSpecificProblem=%parm[#4]% noiAlarmText=%parm[#5]% noiAlarmPerceivedSeverity=%parm[#6]% noiAlarmAdditionalText=%parm[#7]% noiAlarmProbableCause=%parm[#8]% noiAlarmEventType=%parm[#9]% noiAlarmNotificationId=%parm[#10]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmCleared</uei>
+      <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmCleared</event-label>
+      <descr>&lt;p>This notification is used when an alarm is cleared.
 The only permitted value for the 
 'noiAlarmPerceivedSeverity' is 'cleared'
 The value of noiAlarmId must be equal to the value
@@ -66,30 +64,29 @@ the alarm table.
 If the agent does not support the concept of 
 acknowledgement, than the alarm will be removed from 
 the alarm table when this notification is send by the 
-agent&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSystemDN&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSpecificProblem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmPerceivedSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;indeterminate(0) critical(1) major(2) minor(3) warning(4) cleared(5)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmAdditionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmProbableCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;m3100Indeterminate(0) m3100AlarmIndicationSignal(1) m3100CallSetupFailure(2) m3100DegradedSignal(3) m3100FarEndReceiverFailure(4) m3100FramingError(5) m3100LossOfFrame(6) m3100LossOfPointer(7) m3100LossOfSignal(8) m3100PayloadTypeMismatch(9) m3100TransmissionError(10) m3100RemoteAlarmInterface(11) m3100ExcessiveBitErrorRate(12) m3100PathTraceMismatch(13) m3100Unavailable(14) m3100SignalLabelMismatch(15) m3100LossOfMultiFrame(16) m3100BackPlaneFailure(51) m3100DataSetProblem(52) m3100EquipmentIdentifierDuplication(53) m3100ExternalIfDeviceProblem(54) m3100LineCardProblem(55) m3100MultiplexerProblem(56) m3100NeIdentifierDuplication(57) m3100PowerProblem(58) m3100ProcessorProblem(59) m3100ProtectionPathFailure(60) m3100ReceiverFailure(61) m3100ReplaceableUnitMissing(62) m3100ReplaceableUnitTypeMismatch(63) m3100SynchronisationSourceMismatch(64) m3100TerminalProblem(65) m3100TimingProblem(66) m3100TransmitterFailure(67) m3100TrunkCardProblem(68) m3100ReplaceableUnitProblem(69) m3100AirCompressorFailure(101) m3100AirConditioningFailure(102) m3100AirDryerFailure(103) m3100BatteryDischarging(104) m3100BatteryFailure(105) m3100CommercialPowerFailure(106) m3100CoolingFanFailure(107) m3100EngineFailure(108) m3100FireDetectorFailure(109) m3100FuseFailure(110) m3100GeneratorFailure(111) m3100LowBatteryThreshold(112) m3100PumpFailure(113) m3100RectifierFailure(114) m3100RectifierHighVoltage(115) m3100RectifierLowVoltage(116) m3100VentilationSystemFailure(117) m3100EnclosureDoorOpen(118) m3100ExplosiveGas(119) m3100Fire(120) m3100Flood(121) m3100HighHumidity(122) m3100HighTemperature(123) m3100HighWind(124) m3100IceBuildUp(125) m3100LowFuel(127) m3100LowHumidity(128) m3100LowCablePressure(129) m3100LowTemperature(130) m3100LowWater(131) m3100Smoke(132) m3100ToxicGas(133) m3100StorageCapacityProblem(151) m3100MemoryMismatch(152) m3100CorruptData(153) m3100OutOfCPUCycles(154) m3100SoftwareEnvironmentProblem(155) m3100SoftwareDownloadFailure(156) x733AdapterError(1000001) x733ApplicationSubsystemFailure(1000002) x733BandwidthReduced(1000003) x733CommunicationsProtocolError(1000005) x733CommunicationsSubsystemFailure(1000006) x733ConfigurationOrCustomizationError(1000007) x733Congestion(1000008) x733CpuCyclesLimitExceeded(1000010) x733DataSetOrModemError(1000011) x733DTEDCEInterfaceError(1000013) x733EquipmentMalfunction(1000015) x733ExcessiveVibration(1000016) x733FileError(1000017) x733HeatingOrVentilationOrCoolingSystemProblem(1000021) x733HumidityUnacceptable(1000022) x733InputOutputDeviceError(1000023) x733InputDeviceError(1000024) x733LANError(1000025) x733LeakDetected(1000026) x733LocalNodeTransmissionError(1000027) x733MaterialSupplyExhausted(1000030) x733OutOfMemory(1000032) x733OuputDeviceError(1000033) x733PerformanceDegraded(1000034) x733PressureUnacceptable(1000036) x733QueueSizeExceeded(1000039) x733ReceiveFailure(1000040) x733RemoteNodeTransmissionError(1000042) x733ResourceAtOrNearingCapacity(1000043) x733ResponseTimeExcessive(1000044) x733RetransmissionRateExcessive(1000045) x733SoftwareError(1000046) x733SoftwareProgramAbnormallyTerminated(1000047) x733SoftwareProgramError(1000048) x733TemperatureUnacceptable(1000050) x733ThresholdCrossed(1000051) x733ToxicLeakDetected(1000053) x733TransmitFailure(1000054) x733UnderlyingResourceUnavailable(1000056) x733VersionMismatch(1000057) x736AuthenticationFailure(2000001) x736BreachOfConfidentiality(2000002) x736CableTamper(2000003) x736DelayedInformation(2000004) x736DenialOfService(2000005) x736DuplicateInformation(2000006) x736InformationMissing(2000007) x736InformationModificationDetected(2000008) x736InformationOutOfSequence(2000009) x736IntrusionDetection(2000010) x736KeyExpired(2000011) x736NonRepudiationFailure(2000012) x736OutOfHoursActivity(2000013) x736OutOfService(2000014) x736ProceduralError(2000015) x736UnauthorizedAccessAttempt(2000016) x736UnexpectedInformation(2000017) x736UnspecifiedReason(2000018) gsm1211AbisToBTSInterfaceFailure(3000001) gsm1211AbisToTRXInterfaceFailure(3000002) gsm1211AntennaProblem(3000003) gsm1211BatteryBreakdown(3000004) gsm1211BatteryChargingFault(3000005) gsm1211CombinerProblem(3000007) gsm1211DiskProblem(3000008) gsm1211ExcessiveReceiverTemperature(3000010) gsm1211ExcessiveTransmitterOutputPower(3000011) gsm1211ExcessiveTransmitterTemperature(3000012) gsm1211FrequencyHoppingDegraded(3000013) gsm1211FrequencyHoppingFailure(3000014) gsm1211FrequencyRedefinitionFailed(3000015) gsm1211LineInterfaceFailure(3000016) gsm1211LinkFailure(3000017) gsm1211LossOfSynchronisation(3000018) gsm1211LostRedundancy(3000019) gsm1211MainsBreakdownWithBatteryBackUp(3000020) gsm1211MainsBreakdownWithoutBatteryBackUp(3000021) gsm1211PowerSupplyFailure(3000022) gsm1211ReceiverAntennaFault(3000023) gsm1211ReceiverMulticouplerFailure(3000025) gsm1211ReducedTransmitterOutputPower(3000026) gsm1211SignalQualityEvaluationFault(3000027) gsm1211TimeslotHardwareFailure(3000028) gsm1211TransceiverProblem(3000029) gsm1211TranscoderProblem(3000030) gsm1211TranscoderOrRateAdapterProblem(3000031) gsm1211TransmitterAntennaFailure(3000032) gsm1211TransmitterAntennaNotAdjusted(3000033) gsm1211TransmitterLowVoltageOrCurrent(3000035) gsm1211TransmitterOffFrequency(3000036) gsm1211DatabaseInconsistency(3000037) gsm1211FileSystemCallUnsuccessful(3000038) gsm1211InputParameterOutOfRange(3000039) gsm1211InvalidParameter(3000040) gsm1211InvalidPointer(3000041) gsm1211MessageNotExpected(3000042) gsm1211MessageNotInitialised(3000043) gsm1211MessageOutOfSequence(3000044) gsm1211SystemCallUnsuccessful(3000045) gsm1211TimeoutExpired(3000046) gsm1211VariableOutOfRange(3000047) gsm1211WatchDogTimerExpired(3000048) gsm1211CoolingSystemFailure(3000049) gsm1211ExternalEquipmentFailure(3000050) gsm1211ExternalPowerSupplyFailure(3000051) gsm1211ExternalTransmissionDeviceFailure(3000052) gsm1211ReducedAlarmReporting(3000061) gsm1211ReducedEventReporting(3000062) gsm1211ReducedLoggingCapability(3000063) gsm1211SystemResourcesOverload(3000064) gsm1211BroadcastChannelFailure(3000065) gsm1211ConnectionEstablishmentError(3000066) gsm1211InvalidMessageReceived(3000067) gsm1211InvalidMSUReceived(3000068) gsm1211LAPDLinkProtocolFailure(3000069) gsm1211LocalAlarmIndication(3000070) gsm1211RemoteAlarmIndication(3000071) gsm1211RoutingFailure(3000072) gsm1211SS7ProtocolFailure(3000073) gsm1211TransmissionError(3000074) gsm1211ClockSynchronisationProblem(30000056)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#9]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;unknown(0) communicationsAlarm(2) environmentalAlarm(3) equipmentAlarm(4) processingErrorAlarm(10) qualityOfServiceAlarm(11)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmNotificationId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#10]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: noiAlarmCleared trap received noiAlarmSystemDN=%parm[#1]% noiAlarmId=%parm[#2]% noiAlarmEventTime=%parm[#3]% noiAlarmSpecificProblem=%parm[#4]% noiAlarmText=%parm[#5]% noiAlarmPerceivedSeverity=%parm[#6]% noiAlarmAdditionalText=%parm[#7]% noiAlarmProbableCause=%parm[#8]% noiAlarmEventType=%parm[#9]% noiAlarmNotificationId=%parm[#10]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmListRebuild</uei>
- <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmListRebuild</event-label>
- <descr>&lt;p&gt;This notification is used when the alarm table in the 
+agent&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>noiAlarmSystemDN&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmId&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmSpecificProblem&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmText&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmPerceivedSeverity&lt;/b>&lt;/td>&lt;td>%parm[#6]%&lt;/td>&lt;td>&lt;p;>indeterminate(0) critical(1) major(2) minor(3) warning(4) cleared(5)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmAdditionalText&lt;/b>&lt;/td>&lt;td>%parm[#7]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmProbableCause&lt;/b>&lt;/td>&lt;td>%parm[#8]%&lt;/td>&lt;td>&lt;p;>m3100Indeterminate(0) m3100AlarmIndicationSignal(1) m3100CallSetupFailure(2) m3100DegradedSignal(3) m3100FarEndReceiverFailure(4) m3100FramingError(5) m3100LossOfFrame(6) m3100LossOfPointer(7) m3100LossOfSignal(8) m3100PayloadTypeMismatch(9) m3100TransmissionError(10) m3100RemoteAlarmInterface(11) m3100ExcessiveBitErrorRate(12) m3100PathTraceMismatch(13) m3100Unavailable(14) m3100SignalLabelMismatch(15) m3100LossOfMultiFrame(16) m3100BackPlaneFailure(51) m3100DataSetProblem(52) m3100EquipmentIdentifierDuplication(53) m3100ExternalIfDeviceProblem(54) m3100LineCardProblem(55) m3100MultiplexerProblem(56) m3100NeIdentifierDuplication(57) m3100PowerProblem(58) m3100ProcessorProblem(59) m3100ProtectionPathFailure(60) m3100ReceiverFailure(61) m3100ReplaceableUnitMissing(62) m3100ReplaceableUnitTypeMismatch(63) m3100SynchronisationSourceMismatch(64) m3100TerminalProblem(65) m3100TimingProblem(66) m3100TransmitterFailure(67) m3100TrunkCardProblem(68) m3100ReplaceableUnitProblem(69) m3100AirCompressorFailure(101) m3100AirConditioningFailure(102) m3100AirDryerFailure(103) m3100BatteryDischarging(104) m3100BatteryFailure(105) m3100CommercialPowerFailure(106) m3100CoolingFanFailure(107) m3100EngineFailure(108) m3100FireDetectorFailure(109) m3100FuseFailure(110) m3100GeneratorFailure(111) m3100LowBatteryThreshold(112) m3100PumpFailure(113) m3100RectifierFailure(114) m3100RectifierHighVoltage(115) m3100RectifierLowVoltage(116) m3100VentilationSystemFailure(117) m3100EnclosureDoorOpen(118) m3100ExplosiveGas(119) m3100Fire(120) m3100Flood(121) m3100HighHumidity(122) m3100HighTemperature(123) m3100HighWind(124) m3100IceBuildUp(125) m3100LowFuel(127) m3100LowHumidity(128) m3100LowCablePressure(129) m3100LowTemperature(130) m3100LowWater(131) m3100Smoke(132) m3100ToxicGas(133) m3100StorageCapacityProblem(151) m3100MemoryMismatch(152) m3100CorruptData(153) m3100OutOfCPUCycles(154) m3100SoftwareEnvironmentProblem(155) m3100SoftwareDownloadFailure(156) x733AdapterError(1000001) x733ApplicationSubsystemFailure(1000002) x733BandwidthReduced(1000003) x733CommunicationsProtocolError(1000005) x733CommunicationsSubsystemFailure(1000006) x733ConfigurationOrCustomizationError(1000007) x733Congestion(1000008) x733CpuCyclesLimitExceeded(1000010) x733DataSetOrModemError(1000011) x733DTEDCEInterfaceError(1000013) x733EquipmentMalfunction(1000015) x733ExcessiveVibration(1000016) x733FileError(1000017) x733HeatingOrVentilationOrCoolingSystemProblem(1000021) x733HumidityUnacceptable(1000022) x733InputOutputDeviceError(1000023) x733InputDeviceError(1000024) x733LANError(1000025) x733LeakDetected(1000026) x733LocalNodeTransmissionError(1000027) x733MaterialSupplyExhausted(1000030) x733OutOfMemory(1000032) x733OuputDeviceError(1000033) x733PerformanceDegraded(1000034) x733PressureUnacceptable(1000036) x733QueueSizeExceeded(1000039) x733ReceiveFailure(1000040) x733RemoteNodeTransmissionError(1000042) x733ResourceAtOrNearingCapacity(1000043) x733ResponseTimeExcessive(1000044) x733RetransmissionRateExcessive(1000045) x733SoftwareError(1000046) x733SoftwareProgramAbnormallyTerminated(1000047) x733SoftwareProgramError(1000048) x733TemperatureUnacceptable(1000050) x733ThresholdCrossed(1000051) x733ToxicLeakDetected(1000053) x733TransmitFailure(1000054) x733UnderlyingResourceUnavailable(1000056) x733VersionMismatch(1000057) x736AuthenticationFailure(2000001) x736BreachOfConfidentiality(2000002) x736CableTamper(2000003) x736DelayedInformation(2000004) x736DenialOfService(2000005) x736DuplicateInformation(2000006) x736InformationMissing(2000007) x736InformationModificationDetected(2000008) x736InformationOutOfSequence(2000009) x736IntrusionDetection(2000010) x736KeyExpired(2000011) x736NonRepudiationFailure(2000012) x736OutOfHoursActivity(2000013) x736OutOfService(2000014) x736ProceduralError(2000015) x736UnauthorizedAccessAttempt(2000016) x736UnexpectedInformation(2000017) x736UnspecifiedReason(2000018) gsm1211AbisToBTSInterfaceFailure(3000001) gsm1211AbisToTRXInterfaceFailure(3000002) gsm1211AntennaProblem(3000003) gsm1211BatteryBreakdown(3000004) gsm1211BatteryChargingFault(3000005) gsm1211CombinerProblem(3000007) gsm1211DiskProblem(3000008) gsm1211ExcessiveReceiverTemperature(3000010) gsm1211ExcessiveTransmitterOutputPower(3000011) gsm1211ExcessiveTransmitterTemperature(3000012) gsm1211FrequencyHoppingDegraded(3000013) gsm1211FrequencyHoppingFailure(3000014) gsm1211FrequencyRedefinitionFailed(3000015) gsm1211LineInterfaceFailure(3000016) gsm1211LinkFailure(3000017) gsm1211LossOfSynchronisation(3000018) gsm1211LostRedundancy(3000019) gsm1211MainsBreakdownWithBatteryBackUp(3000020) gsm1211MainsBreakdownWithoutBatteryBackUp(3000021) gsm1211PowerSupplyFailure(3000022) gsm1211ReceiverAntennaFault(3000023) gsm1211ReceiverMulticouplerFailure(3000025) gsm1211ReducedTransmitterOutputPower(3000026) gsm1211SignalQualityEvaluationFault(3000027) gsm1211TimeslotHardwareFailure(3000028) gsm1211TransceiverProblem(3000029) gsm1211TranscoderProblem(3000030) gsm1211TranscoderOrRateAdapterProblem(3000031) gsm1211TransmitterAntennaFailure(3000032) gsm1211TransmitterAntennaNotAdjusted(3000033) gsm1211TransmitterLowVoltageOrCurrent(3000035) gsm1211TransmitterOffFrequency(3000036) gsm1211DatabaseInconsistency(3000037) gsm1211FileSystemCallUnsuccessful(3000038) gsm1211InputParameterOutOfRange(3000039) gsm1211InvalidParameter(3000040) gsm1211InvalidPointer(3000041) gsm1211MessageNotExpected(3000042) gsm1211MessageNotInitialised(3000043) gsm1211MessageOutOfSequence(3000044) gsm1211SystemCallUnsuccessful(3000045) gsm1211TimeoutExpired(3000046) gsm1211VariableOutOfRange(3000047) gsm1211WatchDogTimerExpired(3000048) gsm1211CoolingSystemFailure(3000049) gsm1211ExternalEquipmentFailure(3000050) gsm1211ExternalPowerSupplyFailure(3000051) gsm1211ExternalTransmissionDeviceFailure(3000052) gsm1211ReducedAlarmReporting(3000061) gsm1211ReducedEventReporting(3000062) gsm1211ReducedLoggingCapability(3000063) gsm1211SystemResourcesOverload(3000064) gsm1211BroadcastChannelFailure(3000065) gsm1211ConnectionEstablishmentError(3000066) gsm1211InvalidMessageReceived(3000067) gsm1211InvalidMSUReceived(3000068) gsm1211LAPDLinkProtocolFailure(3000069) gsm1211LocalAlarmIndication(3000070) gsm1211RemoteAlarmIndication(3000071) gsm1211RoutingFailure(3000072) gsm1211SS7ProtocolFailure(3000073) gsm1211TransmissionError(3000074) gsm1211ClockSynchronisationProblem(30000056)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventType&lt;/b>&lt;/td>&lt;td>%parm[#9]%&lt;/td>&lt;td>&lt;p;>unknown(0) communicationsAlarm(2) environmentalAlarm(3) equipmentAlarm(4) processingErrorAlarm(10) qualityOfServiceAlarm(11)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmNotificationId&lt;/b>&lt;/td>&lt;td>%parm[#10]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: noiAlarmCleared trap received noiAlarmSystemDN=%parm[#1]% noiAlarmId=%parm[#2]% noiAlarmEventTime=%parm[#3]% noiAlarmSpecificProblem=%parm[#4]% noiAlarmText=%parm[#5]% noiAlarmPerceivedSeverity=%parm[#6]% noiAlarmAdditionalText=%parm[#7]% noiAlarmProbableCause=%parm[#8]% noiAlarmEventType=%parm[#9]% noiAlarmNotificationId=%parm[#10]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmListRebuild</uei>
+      <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmListRebuild</event-label>
+      <descr>&lt;p>This notification is used when the alarm table in the 
 agent has been rebuild. The notification will be 
 emitted after a successful rebuild.
 On reception of this notification, the manager
@@ -102,30 +99,29 @@ into the alarm table.
 The agent can decide to log this notification in the 
 alarm log like any other notification. The objects,
 which are not used for this notification shall remain empty
-(strings) or use default value (0) for integer types.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSystemDN&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmNotificationId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: noiAlarmListRebuild trap received noiAlarmSystemDN=%parm[#1]% noiAlarmEventTime=%parm[#2]% noiAlarmNotificationId=%parm[#3]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmListRebuildInitiated</uei>
- <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmListRebuildInitiated</event-label>
- <descr>&lt;p&gt;This notification is used when the alarm table in the 
+(strings) or use default value (0) for integer types.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>noiAlarmSystemDN&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventTime&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmNotificationId&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: noiAlarmListRebuild trap received noiAlarmSystemDN=%parm[#1]% noiAlarmEventTime=%parm[#2]% noiAlarmNotificationId=%parm[#3]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmListRebuildInitiated</uei>
+      <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmListRebuildInitiated</event-label>
+      <descr>&lt;p>This notification is used when the alarm table in the 
 agent is about the be rebuild. The notification will be 
 emitted prior to the rebuild, immediately after
 dropping the content of the alarm table.
@@ -135,30 +131,29 @@ with the agent.
 The agent can decide to log this notification in the 
 alarm log like any other notification. The objects,
 which are not used for this notification shall remain empty
-(strings) or use default value (0) for integer types &lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSystemDN&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmNotificationId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: noiAlarmListRebuildInitiated trap received noiAlarmSystemDN=%parm[#1]% noiAlarmEventTime=%parm[#2]% noiAlarmNotificationId=%parm[#3]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>5</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmChanged</uei>
- <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmChanged</event-label>
- <descr>&lt;p&gt;This notification is used when the severity of an alarm
+(strings) or use default value (0) for integer types &lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>noiAlarmSystemDN&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventTime&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmNotificationId&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: noiAlarmListRebuildInitiated trap received noiAlarmSystemDN=%parm[#1]% noiAlarmEventTime=%parm[#2]% noiAlarmNotificationId=%parm[#3]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmChanged</uei>
+      <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmChanged</event-label>
+      <descr>&lt;p>This notification is used when the severity of an alarm
 has changed. The value 'cleared' is not allowed in 
 conjunction with this notification.
 The value of noiAlarmID must be equal to the value
@@ -170,30 +165,29 @@ must be equal to the values of the correlated alarm.
 The agent may use a different noiAlarmAdditionalText than 
 the original alarm.
 The noiAlarmEventTime is naturally different from the
-original alarm&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSystemDN&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSpecificProblem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmPerceivedSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;indeterminate(0) critical(1) major(2) minor(3) warning(4) cleared(5)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmAdditionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmProbableCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;m3100Indeterminate(0) m3100AlarmIndicationSignal(1) m3100CallSetupFailure(2) m3100DegradedSignal(3) m3100FarEndReceiverFailure(4) m3100FramingError(5) m3100LossOfFrame(6) m3100LossOfPointer(7) m3100LossOfSignal(8) m3100PayloadTypeMismatch(9) m3100TransmissionError(10) m3100RemoteAlarmInterface(11) m3100ExcessiveBitErrorRate(12) m3100PathTraceMismatch(13) m3100Unavailable(14) m3100SignalLabelMismatch(15) m3100LossOfMultiFrame(16) m3100BackPlaneFailure(51) m3100DataSetProblem(52) m3100EquipmentIdentifierDuplication(53) m3100ExternalIfDeviceProblem(54) m3100LineCardProblem(55) m3100MultiplexerProblem(56) m3100NeIdentifierDuplication(57) m3100PowerProblem(58) m3100ProcessorProblem(59) m3100ProtectionPathFailure(60) m3100ReceiverFailure(61) m3100ReplaceableUnitMissing(62) m3100ReplaceableUnitTypeMismatch(63) m3100SynchronisationSourceMismatch(64) m3100TerminalProblem(65) m3100TimingProblem(66) m3100TransmitterFailure(67) m3100TrunkCardProblem(68) m3100ReplaceableUnitProblem(69) m3100AirCompressorFailure(101) m3100AirConditioningFailure(102) m3100AirDryerFailure(103) m3100BatteryDischarging(104) m3100BatteryFailure(105) m3100CommercialPowerFailure(106) m3100CoolingFanFailure(107) m3100EngineFailure(108) m3100FireDetectorFailure(109) m3100FuseFailure(110) m3100GeneratorFailure(111) m3100LowBatteryThreshold(112) m3100PumpFailure(113) m3100RectifierFailure(114) m3100RectifierHighVoltage(115) m3100RectifierLowVoltage(116) m3100VentilationSystemFailure(117) m3100EnclosureDoorOpen(118) m3100ExplosiveGas(119) m3100Fire(120) m3100Flood(121) m3100HighHumidity(122) m3100HighTemperature(123) m3100HighWind(124) m3100IceBuildUp(125) m3100LowFuel(127) m3100LowHumidity(128) m3100LowCablePressure(129) m3100LowTemperature(130) m3100LowWater(131) m3100Smoke(132) m3100ToxicGas(133) m3100StorageCapacityProblem(151) m3100MemoryMismatch(152) m3100CorruptData(153) m3100OutOfCPUCycles(154) m3100SoftwareEnvironmentProblem(155) m3100SoftwareDownloadFailure(156) x733AdapterError(1000001) x733ApplicationSubsystemFailure(1000002) x733BandwidthReduced(1000003) x733CommunicationsProtocolError(1000005) x733CommunicationsSubsystemFailure(1000006) x733ConfigurationOrCustomizationError(1000007) x733Congestion(1000008) x733CpuCyclesLimitExceeded(1000010) x733DataSetOrModemError(1000011) x733DTEDCEInterfaceError(1000013) x733EquipmentMalfunction(1000015) x733ExcessiveVibration(1000016) x733FileError(1000017) x733HeatingOrVentilationOrCoolingSystemProblem(1000021) x733HumidityUnacceptable(1000022) x733InputOutputDeviceError(1000023) x733InputDeviceError(1000024) x733LANError(1000025) x733LeakDetected(1000026) x733LocalNodeTransmissionError(1000027) x733MaterialSupplyExhausted(1000030) x733OutOfMemory(1000032) x733OuputDeviceError(1000033) x733PerformanceDegraded(1000034) x733PressureUnacceptable(1000036) x733QueueSizeExceeded(1000039) x733ReceiveFailure(1000040) x733RemoteNodeTransmissionError(1000042) x733ResourceAtOrNearingCapacity(1000043) x733ResponseTimeExcessive(1000044) x733RetransmissionRateExcessive(1000045) x733SoftwareError(1000046) x733SoftwareProgramAbnormallyTerminated(1000047) x733SoftwareProgramError(1000048) x733TemperatureUnacceptable(1000050) x733ThresholdCrossed(1000051) x733ToxicLeakDetected(1000053) x733TransmitFailure(1000054) x733UnderlyingResourceUnavailable(1000056) x733VersionMismatch(1000057) x736AuthenticationFailure(2000001) x736BreachOfConfidentiality(2000002) x736CableTamper(2000003) x736DelayedInformation(2000004) x736DenialOfService(2000005) x736DuplicateInformation(2000006) x736InformationMissing(2000007) x736InformationModificationDetected(2000008) x736InformationOutOfSequence(2000009) x736IntrusionDetection(2000010) x736KeyExpired(2000011) x736NonRepudiationFailure(2000012) x736OutOfHoursActivity(2000013) x736OutOfService(2000014) x736ProceduralError(2000015) x736UnauthorizedAccessAttempt(2000016) x736UnexpectedInformation(2000017) x736UnspecifiedReason(2000018) gsm1211AbisToBTSInterfaceFailure(3000001) gsm1211AbisToTRXInterfaceFailure(3000002) gsm1211AntennaProblem(3000003) gsm1211BatteryBreakdown(3000004) gsm1211BatteryChargingFault(3000005) gsm1211CombinerProblem(3000007) gsm1211DiskProblem(3000008) gsm1211ExcessiveReceiverTemperature(3000010) gsm1211ExcessiveTransmitterOutputPower(3000011) gsm1211ExcessiveTransmitterTemperature(3000012) gsm1211FrequencyHoppingDegraded(3000013) gsm1211FrequencyHoppingFailure(3000014) gsm1211FrequencyRedefinitionFailed(3000015) gsm1211LineInterfaceFailure(3000016) gsm1211LinkFailure(3000017) gsm1211LossOfSynchronisation(3000018) gsm1211LostRedundancy(3000019) gsm1211MainsBreakdownWithBatteryBackUp(3000020) gsm1211MainsBreakdownWithoutBatteryBackUp(3000021) gsm1211PowerSupplyFailure(3000022) gsm1211ReceiverAntennaFault(3000023) gsm1211ReceiverMulticouplerFailure(3000025) gsm1211ReducedTransmitterOutputPower(3000026) gsm1211SignalQualityEvaluationFault(3000027) gsm1211TimeslotHardwareFailure(3000028) gsm1211TransceiverProblem(3000029) gsm1211TranscoderProblem(3000030) gsm1211TranscoderOrRateAdapterProblem(3000031) gsm1211TransmitterAntennaFailure(3000032) gsm1211TransmitterAntennaNotAdjusted(3000033) gsm1211TransmitterLowVoltageOrCurrent(3000035) gsm1211TransmitterOffFrequency(3000036) gsm1211DatabaseInconsistency(3000037) gsm1211FileSystemCallUnsuccessful(3000038) gsm1211InputParameterOutOfRange(3000039) gsm1211InvalidParameter(3000040) gsm1211InvalidPointer(3000041) gsm1211MessageNotExpected(3000042) gsm1211MessageNotInitialised(3000043) gsm1211MessageOutOfSequence(3000044) gsm1211SystemCallUnsuccessful(3000045) gsm1211TimeoutExpired(3000046) gsm1211VariableOutOfRange(3000047) gsm1211WatchDogTimerExpired(3000048) gsm1211CoolingSystemFailure(3000049) gsm1211ExternalEquipmentFailure(3000050) gsm1211ExternalPowerSupplyFailure(3000051) gsm1211ExternalTransmissionDeviceFailure(3000052) gsm1211ReducedAlarmReporting(3000061) gsm1211ReducedEventReporting(3000062) gsm1211ReducedLoggingCapability(3000063) gsm1211SystemResourcesOverload(3000064) gsm1211BroadcastChannelFailure(3000065) gsm1211ConnectionEstablishmentError(3000066) gsm1211InvalidMessageReceived(3000067) gsm1211InvalidMSUReceived(3000068) gsm1211LAPDLinkProtocolFailure(3000069) gsm1211LocalAlarmIndication(3000070) gsm1211RemoteAlarmIndication(3000071) gsm1211RoutingFailure(3000072) gsm1211SS7ProtocolFailure(3000073) gsm1211TransmissionError(3000074) gsm1211ClockSynchronisationProblem(30000056)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#9]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;unknown(0) communicationsAlarm(2) environmentalAlarm(3) equipmentAlarm(4) processingErrorAlarm(10) qualityOfServiceAlarm(11)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmNotificationId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#10]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: noiAlarmChanged trap received noiAlarmSystemDN=%parm[#1]% noiAlarmId=%parm[#2]% noiAlarmEventTime=%parm[#3]% noiAlarmSpecificProblem=%parm[#4]% noiAlarmText=%parm[#5]% noiAlarmPerceivedSeverity=%parm[#6]% noiAlarmAdditionalText=%parm[#7]% noiAlarmProbableCause=%parm[#8]% noiAlarmEventType=%parm[#9]% noiAlarmNotificationId=%parm[#10]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmAckStateChanged</uei>
- <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmAckStateChanged</event-label>
- <descr>&lt;p&gt;This notification is used when the acknowledgement 
+original alarm&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>noiAlarmSystemDN&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmId&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmSpecificProblem&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmText&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmPerceivedSeverity&lt;/b>&lt;/td>&lt;td>%parm[#6]%&lt;/td>&lt;td>&lt;p;>indeterminate(0) critical(1) major(2) minor(3) warning(4) cleared(5)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmAdditionalText&lt;/b>&lt;/td>&lt;td>%parm[#7]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmProbableCause&lt;/b>&lt;/td>&lt;td>%parm[#8]%&lt;/td>&lt;td>&lt;p;>m3100Indeterminate(0) m3100AlarmIndicationSignal(1) m3100CallSetupFailure(2) m3100DegradedSignal(3) m3100FarEndReceiverFailure(4) m3100FramingError(5) m3100LossOfFrame(6) m3100LossOfPointer(7) m3100LossOfSignal(8) m3100PayloadTypeMismatch(9) m3100TransmissionError(10) m3100RemoteAlarmInterface(11) m3100ExcessiveBitErrorRate(12) m3100PathTraceMismatch(13) m3100Unavailable(14) m3100SignalLabelMismatch(15) m3100LossOfMultiFrame(16) m3100BackPlaneFailure(51) m3100DataSetProblem(52) m3100EquipmentIdentifierDuplication(53) m3100ExternalIfDeviceProblem(54) m3100LineCardProblem(55) m3100MultiplexerProblem(56) m3100NeIdentifierDuplication(57) m3100PowerProblem(58) m3100ProcessorProblem(59) m3100ProtectionPathFailure(60) m3100ReceiverFailure(61) m3100ReplaceableUnitMissing(62) m3100ReplaceableUnitTypeMismatch(63) m3100SynchronisationSourceMismatch(64) m3100TerminalProblem(65) m3100TimingProblem(66) m3100TransmitterFailure(67) m3100TrunkCardProblem(68) m3100ReplaceableUnitProblem(69) m3100AirCompressorFailure(101) m3100AirConditioningFailure(102) m3100AirDryerFailure(103) m3100BatteryDischarging(104) m3100BatteryFailure(105) m3100CommercialPowerFailure(106) m3100CoolingFanFailure(107) m3100EngineFailure(108) m3100FireDetectorFailure(109) m3100FuseFailure(110) m3100GeneratorFailure(111) m3100LowBatteryThreshold(112) m3100PumpFailure(113) m3100RectifierFailure(114) m3100RectifierHighVoltage(115) m3100RectifierLowVoltage(116) m3100VentilationSystemFailure(117) m3100EnclosureDoorOpen(118) m3100ExplosiveGas(119) m3100Fire(120) m3100Flood(121) m3100HighHumidity(122) m3100HighTemperature(123) m3100HighWind(124) m3100IceBuildUp(125) m3100LowFuel(127) m3100LowHumidity(128) m3100LowCablePressure(129) m3100LowTemperature(130) m3100LowWater(131) m3100Smoke(132) m3100ToxicGas(133) m3100StorageCapacityProblem(151) m3100MemoryMismatch(152) m3100CorruptData(153) m3100OutOfCPUCycles(154) m3100SoftwareEnvironmentProblem(155) m3100SoftwareDownloadFailure(156) x733AdapterError(1000001) x733ApplicationSubsystemFailure(1000002) x733BandwidthReduced(1000003) x733CommunicationsProtocolError(1000005) x733CommunicationsSubsystemFailure(1000006) x733ConfigurationOrCustomizationError(1000007) x733Congestion(1000008) x733CpuCyclesLimitExceeded(1000010) x733DataSetOrModemError(1000011) x733DTEDCEInterfaceError(1000013) x733EquipmentMalfunction(1000015) x733ExcessiveVibration(1000016) x733FileError(1000017) x733HeatingOrVentilationOrCoolingSystemProblem(1000021) x733HumidityUnacceptable(1000022) x733InputOutputDeviceError(1000023) x733InputDeviceError(1000024) x733LANError(1000025) x733LeakDetected(1000026) x733LocalNodeTransmissionError(1000027) x733MaterialSupplyExhausted(1000030) x733OutOfMemory(1000032) x733OuputDeviceError(1000033) x733PerformanceDegraded(1000034) x733PressureUnacceptable(1000036) x733QueueSizeExceeded(1000039) x733ReceiveFailure(1000040) x733RemoteNodeTransmissionError(1000042) x733ResourceAtOrNearingCapacity(1000043) x733ResponseTimeExcessive(1000044) x733RetransmissionRateExcessive(1000045) x733SoftwareError(1000046) x733SoftwareProgramAbnormallyTerminated(1000047) x733SoftwareProgramError(1000048) x733TemperatureUnacceptable(1000050) x733ThresholdCrossed(1000051) x733ToxicLeakDetected(1000053) x733TransmitFailure(1000054) x733UnderlyingResourceUnavailable(1000056) x733VersionMismatch(1000057) x736AuthenticationFailure(2000001) x736BreachOfConfidentiality(2000002) x736CableTamper(2000003) x736DelayedInformation(2000004) x736DenialOfService(2000005) x736DuplicateInformation(2000006) x736InformationMissing(2000007) x736InformationModificationDetected(2000008) x736InformationOutOfSequence(2000009) x736IntrusionDetection(2000010) x736KeyExpired(2000011) x736NonRepudiationFailure(2000012) x736OutOfHoursActivity(2000013) x736OutOfService(2000014) x736ProceduralError(2000015) x736UnauthorizedAccessAttempt(2000016) x736UnexpectedInformation(2000017) x736UnspecifiedReason(2000018) gsm1211AbisToBTSInterfaceFailure(3000001) gsm1211AbisToTRXInterfaceFailure(3000002) gsm1211AntennaProblem(3000003) gsm1211BatteryBreakdown(3000004) gsm1211BatteryChargingFault(3000005) gsm1211CombinerProblem(3000007) gsm1211DiskProblem(3000008) gsm1211ExcessiveReceiverTemperature(3000010) gsm1211ExcessiveTransmitterOutputPower(3000011) gsm1211ExcessiveTransmitterTemperature(3000012) gsm1211FrequencyHoppingDegraded(3000013) gsm1211FrequencyHoppingFailure(3000014) gsm1211FrequencyRedefinitionFailed(3000015) gsm1211LineInterfaceFailure(3000016) gsm1211LinkFailure(3000017) gsm1211LossOfSynchronisation(3000018) gsm1211LostRedundancy(3000019) gsm1211MainsBreakdownWithBatteryBackUp(3000020) gsm1211MainsBreakdownWithoutBatteryBackUp(3000021) gsm1211PowerSupplyFailure(3000022) gsm1211ReceiverAntennaFault(3000023) gsm1211ReceiverMulticouplerFailure(3000025) gsm1211ReducedTransmitterOutputPower(3000026) gsm1211SignalQualityEvaluationFault(3000027) gsm1211TimeslotHardwareFailure(3000028) gsm1211TransceiverProblem(3000029) gsm1211TranscoderProblem(3000030) gsm1211TranscoderOrRateAdapterProblem(3000031) gsm1211TransmitterAntennaFailure(3000032) gsm1211TransmitterAntennaNotAdjusted(3000033) gsm1211TransmitterLowVoltageOrCurrent(3000035) gsm1211TransmitterOffFrequency(3000036) gsm1211DatabaseInconsistency(3000037) gsm1211FileSystemCallUnsuccessful(3000038) gsm1211InputParameterOutOfRange(3000039) gsm1211InvalidParameter(3000040) gsm1211InvalidPointer(3000041) gsm1211MessageNotExpected(3000042) gsm1211MessageNotInitialised(3000043) gsm1211MessageOutOfSequence(3000044) gsm1211SystemCallUnsuccessful(3000045) gsm1211TimeoutExpired(3000046) gsm1211VariableOutOfRange(3000047) gsm1211WatchDogTimerExpired(3000048) gsm1211CoolingSystemFailure(3000049) gsm1211ExternalEquipmentFailure(3000050) gsm1211ExternalPowerSupplyFailure(3000051) gsm1211ExternalTransmissionDeviceFailure(3000052) gsm1211ReducedAlarmReporting(3000061) gsm1211ReducedEventReporting(3000062) gsm1211ReducedLoggingCapability(3000063) gsm1211SystemResourcesOverload(3000064) gsm1211BroadcastChannelFailure(3000065) gsm1211ConnectionEstablishmentError(3000066) gsm1211InvalidMessageReceived(3000067) gsm1211InvalidMSUReceived(3000068) gsm1211LAPDLinkProtocolFailure(3000069) gsm1211LocalAlarmIndication(3000070) gsm1211RemoteAlarmIndication(3000071) gsm1211RoutingFailure(3000072) gsm1211SS7ProtocolFailure(3000073) gsm1211TransmissionError(3000074) gsm1211ClockSynchronisationProblem(30000056)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventType&lt;/b>&lt;/td>&lt;td>%parm[#9]%&lt;/td>&lt;td>&lt;p;>unknown(0) communicationsAlarm(2) environmentalAlarm(3) equipmentAlarm(4) processingErrorAlarm(10) qualityOfServiceAlarm(11)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmNotificationId&lt;/b>&lt;/td>&lt;td>%parm[#10]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: noiAlarmChanged trap received noiAlarmSystemDN=%parm[#1]% noiAlarmId=%parm[#2]% noiAlarmEventTime=%parm[#3]% noiAlarmSpecificProblem=%parm[#4]% noiAlarmText=%parm[#5]% noiAlarmPerceivedSeverity=%parm[#6]% noiAlarmAdditionalText=%parm[#7]% noiAlarmProbableCause=%parm[#8]% noiAlarmEventType=%parm[#9]% noiAlarmNotificationId=%parm[#10]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.7.1.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/noiAlarmAckStateChanged</uei>
+      <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP defined trap event: noiAlarmAckStateChanged</event-label>
+      <descr>&lt;p>This notification is used when the acknowledgement 
 state of an alarm has changed.
 The value of noiAlarmID must be equal to the value
 ff the noiAlarmId of the correlated alarm
@@ -209,547 +203,510 @@ If the alarm in the alarm table is not cleared, it remains
 in the table. Values of noiAlarmAckState , noiAlarmAckTime,
 noiAlarmAckUserId are updated.
 If the agent does not support the concept of acknowledgment
-for alarms, than this notification shall not be supported.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSystemDN&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmSpecificProblem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmPerceivedSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;indeterminate(0) critical(1) major(2) minor(3) warning(4) cleared(5)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmAdditionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmProbableCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;m3100Indeterminate(0) m3100AlarmIndicationSignal(1) m3100CallSetupFailure(2) m3100DegradedSignal(3) m3100FarEndReceiverFailure(4) m3100FramingError(5) m3100LossOfFrame(6) m3100LossOfPointer(7) m3100LossOfSignal(8) m3100PayloadTypeMismatch(9) m3100TransmissionError(10) m3100RemoteAlarmInterface(11) m3100ExcessiveBitErrorRate(12) m3100PathTraceMismatch(13) m3100Unavailable(14) m3100SignalLabelMismatch(15) m3100LossOfMultiFrame(16) m3100BackPlaneFailure(51) m3100DataSetProblem(52) m3100EquipmentIdentifierDuplication(53) m3100ExternalIfDeviceProblem(54) m3100LineCardProblem(55) m3100MultiplexerProblem(56) m3100NeIdentifierDuplication(57) m3100PowerProblem(58) m3100ProcessorProblem(59) m3100ProtectionPathFailure(60) m3100ReceiverFailure(61) m3100ReplaceableUnitMissing(62) m3100ReplaceableUnitTypeMismatch(63) m3100SynchronisationSourceMismatch(64) m3100TerminalProblem(65) m3100TimingProblem(66) m3100TransmitterFailure(67) m3100TrunkCardProblem(68) m3100ReplaceableUnitProblem(69) m3100AirCompressorFailure(101) m3100AirConditioningFailure(102) m3100AirDryerFailure(103) m3100BatteryDischarging(104) m3100BatteryFailure(105) m3100CommercialPowerFailure(106) m3100CoolingFanFailure(107) m3100EngineFailure(108) m3100FireDetectorFailure(109) m3100FuseFailure(110) m3100GeneratorFailure(111) m3100LowBatteryThreshold(112) m3100PumpFailure(113) m3100RectifierFailure(114) m3100RectifierHighVoltage(115) m3100RectifierLowVoltage(116) m3100VentilationSystemFailure(117) m3100EnclosureDoorOpen(118) m3100ExplosiveGas(119) m3100Fire(120) m3100Flood(121) m3100HighHumidity(122) m3100HighTemperature(123) m3100HighWind(124) m3100IceBuildUp(125) m3100LowFuel(127) m3100LowHumidity(128) m3100LowCablePressure(129) m3100LowTemperature(130) m3100LowWater(131) m3100Smoke(132) m3100ToxicGas(133) m3100StorageCapacityProblem(151) m3100MemoryMismatch(152) m3100CorruptData(153) m3100OutOfCPUCycles(154) m3100SoftwareEnvironmentProblem(155) m3100SoftwareDownloadFailure(156) x733AdapterError(1000001) x733ApplicationSubsystemFailure(1000002) x733BandwidthReduced(1000003) x733CommunicationsProtocolError(1000005) x733CommunicationsSubsystemFailure(1000006) x733ConfigurationOrCustomizationError(1000007) x733Congestion(1000008) x733CpuCyclesLimitExceeded(1000010) x733DataSetOrModemError(1000011) x733DTEDCEInterfaceError(1000013) x733EquipmentMalfunction(1000015) x733ExcessiveVibration(1000016) x733FileError(1000017) x733HeatingOrVentilationOrCoolingSystemProblem(1000021) x733HumidityUnacceptable(1000022) x733InputOutputDeviceError(1000023) x733InputDeviceError(1000024) x733LANError(1000025) x733LeakDetected(1000026) x733LocalNodeTransmissionError(1000027) x733MaterialSupplyExhausted(1000030) x733OutOfMemory(1000032) x733OuputDeviceError(1000033) x733PerformanceDegraded(1000034) x733PressureUnacceptable(1000036) x733QueueSizeExceeded(1000039) x733ReceiveFailure(1000040) x733RemoteNodeTransmissionError(1000042) x733ResourceAtOrNearingCapacity(1000043) x733ResponseTimeExcessive(1000044) x733RetransmissionRateExcessive(1000045) x733SoftwareError(1000046) x733SoftwareProgramAbnormallyTerminated(1000047) x733SoftwareProgramError(1000048) x733TemperatureUnacceptable(1000050) x733ThresholdCrossed(1000051) x733ToxicLeakDetected(1000053) x733TransmitFailure(1000054) x733UnderlyingResourceUnavailable(1000056) x733VersionMismatch(1000057) x736AuthenticationFailure(2000001) x736BreachOfConfidentiality(2000002) x736CableTamper(2000003) x736DelayedInformation(2000004) x736DenialOfService(2000005) x736DuplicateInformation(2000006) x736InformationMissing(2000007) x736InformationModificationDetected(2000008) x736InformationOutOfSequence(2000009) x736IntrusionDetection(2000010) x736KeyExpired(2000011) x736NonRepudiationFailure(2000012) x736OutOfHoursActivity(2000013) x736OutOfService(2000014) x736ProceduralError(2000015) x736UnauthorizedAccessAttempt(2000016) x736UnexpectedInformation(2000017) x736UnspecifiedReason(2000018) gsm1211AbisToBTSInterfaceFailure(3000001) gsm1211AbisToTRXInterfaceFailure(3000002) gsm1211AntennaProblem(3000003) gsm1211BatteryBreakdown(3000004) gsm1211BatteryChargingFault(3000005) gsm1211CombinerProblem(3000007) gsm1211DiskProblem(3000008) gsm1211ExcessiveReceiverTemperature(3000010) gsm1211ExcessiveTransmitterOutputPower(3000011) gsm1211ExcessiveTransmitterTemperature(3000012) gsm1211FrequencyHoppingDegraded(3000013) gsm1211FrequencyHoppingFailure(3000014) gsm1211FrequencyRedefinitionFailed(3000015) gsm1211LineInterfaceFailure(3000016) gsm1211LinkFailure(3000017) gsm1211LossOfSynchronisation(3000018) gsm1211LostRedundancy(3000019) gsm1211MainsBreakdownWithBatteryBackUp(3000020) gsm1211MainsBreakdownWithoutBatteryBackUp(3000021) gsm1211PowerSupplyFailure(3000022) gsm1211ReceiverAntennaFault(3000023) gsm1211ReceiverMulticouplerFailure(3000025) gsm1211ReducedTransmitterOutputPower(3000026) gsm1211SignalQualityEvaluationFault(3000027) gsm1211TimeslotHardwareFailure(3000028) gsm1211TransceiverProblem(3000029) gsm1211TranscoderProblem(3000030) gsm1211TranscoderOrRateAdapterProblem(3000031) gsm1211TransmitterAntennaFailure(3000032) gsm1211TransmitterAntennaNotAdjusted(3000033) gsm1211TransmitterLowVoltageOrCurrent(3000035) gsm1211TransmitterOffFrequency(3000036) gsm1211DatabaseInconsistency(3000037) gsm1211FileSystemCallUnsuccessful(3000038) gsm1211InputParameterOutOfRange(3000039) gsm1211InvalidParameter(3000040) gsm1211InvalidPointer(3000041) gsm1211MessageNotExpected(3000042) gsm1211MessageNotInitialised(3000043) gsm1211MessageOutOfSequence(3000044) gsm1211SystemCallUnsuccessful(3000045) gsm1211TimeoutExpired(3000046) gsm1211VariableOutOfRange(3000047) gsm1211WatchDogTimerExpired(3000048) gsm1211CoolingSystemFailure(3000049) gsm1211ExternalEquipmentFailure(3000050) gsm1211ExternalPowerSupplyFailure(3000051) gsm1211ExternalTransmissionDeviceFailure(3000052) gsm1211ReducedAlarmReporting(3000061) gsm1211ReducedEventReporting(3000062) gsm1211ReducedLoggingCapability(3000063) gsm1211SystemResourcesOverload(3000064) gsm1211BroadcastChannelFailure(3000065) gsm1211ConnectionEstablishmentError(3000066) gsm1211InvalidMessageReceived(3000067) gsm1211InvalidMSUReceived(3000068) gsm1211LAPDLinkProtocolFailure(3000069) gsm1211LocalAlarmIndication(3000070) gsm1211RemoteAlarmIndication(3000071) gsm1211RoutingFailure(3000072) gsm1211SS7ProtocolFailure(3000073) gsm1211TransmissionError(3000074) gsm1211ClockSynchronisationProblem(30000056)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmEventType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#9]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;unknown(0) communicationsAlarm(2) environmentalAlarm(3) equipmentAlarm(4) processingErrorAlarm(10) qualityOfServiceAlarm(11)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmNotificationId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#10]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmAckState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#11]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;acknowledged(1) unacknowledged(2) indeterminate(3)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmAckTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#12]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiAlarmAckUserId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#13]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: noiAlarmAckStateChanged trap received noiAlarmSystemDN=%parm[#1]% noiAlarmId=%parm[#2]% noiAlarmEventTime=%parm[#3]% noiAlarmSpecificProblem=%parm[#4]% noiAlarmText=%parm[#5]% noiAlarmPerceivedSeverity=%parm[#6]% noiAlarmAdditionalText=%parm[#7]% noiAlarmProbableCause=%parm[#8]% noiAlarmEventType=%parm[#9]% noiAlarmNotificationId=%parm[#10]% noiAlarmAckState=%parm[#11]% noiAlarmAckTime=%parm[#12]% noiAlarmAckUserId=%parm[#13]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-ALARM-IRP -->
-<!-- Start of auto generated data from MIB: NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-COMMON-DEFINITION -->
-<!-- End of auto generated data from MIB: NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-COMMON-DEFINITION -->
-<!-- Start of auto generated data from MIB: NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-PM-COMMON-DEFINITION -->
-<!-- End of auto generated data from MIB: NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-PM-COMMON-DEFINITION -->
-<!-- Start of auto generated data from MIB: NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-PM-IRP -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.7.3.3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/noiMeasurementResultReady</uei>
- <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-PM-IRP defined trap event: noiMeasurementResultReady</event-label>
- <descr>&lt;p&gt;This notification is used when a new measurement data 
+for alarms, than this notification shall not be supported.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>noiAlarmSystemDN&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmId&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmSpecificProblem&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmText&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmPerceivedSeverity&lt;/b>&lt;/td>&lt;td>%parm[#6]%&lt;/td>&lt;td>&lt;p;>indeterminate(0) critical(1) major(2) minor(3) warning(4) cleared(5)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmAdditionalText&lt;/b>&lt;/td>&lt;td>%parm[#7]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmProbableCause&lt;/b>&lt;/td>&lt;td>%parm[#8]%&lt;/td>&lt;td>&lt;p;>m3100Indeterminate(0) m3100AlarmIndicationSignal(1) m3100CallSetupFailure(2) m3100DegradedSignal(3) m3100FarEndReceiverFailure(4) m3100FramingError(5) m3100LossOfFrame(6) m3100LossOfPointer(7) m3100LossOfSignal(8) m3100PayloadTypeMismatch(9) m3100TransmissionError(10) m3100RemoteAlarmInterface(11) m3100ExcessiveBitErrorRate(12) m3100PathTraceMismatch(13) m3100Unavailable(14) m3100SignalLabelMismatch(15) m3100LossOfMultiFrame(16) m3100BackPlaneFailure(51) m3100DataSetProblem(52) m3100EquipmentIdentifierDuplication(53) m3100ExternalIfDeviceProblem(54) m3100LineCardProblem(55) m3100MultiplexerProblem(56) m3100NeIdentifierDuplication(57) m3100PowerProblem(58) m3100ProcessorProblem(59) m3100ProtectionPathFailure(60) m3100ReceiverFailure(61) m3100ReplaceableUnitMissing(62) m3100ReplaceableUnitTypeMismatch(63) m3100SynchronisationSourceMismatch(64) m3100TerminalProblem(65) m3100TimingProblem(66) m3100TransmitterFailure(67) m3100TrunkCardProblem(68) m3100ReplaceableUnitProblem(69) m3100AirCompressorFailure(101) m3100AirConditioningFailure(102) m3100AirDryerFailure(103) m3100BatteryDischarging(104) m3100BatteryFailure(105) m3100CommercialPowerFailure(106) m3100CoolingFanFailure(107) m3100EngineFailure(108) m3100FireDetectorFailure(109) m3100FuseFailure(110) m3100GeneratorFailure(111) m3100LowBatteryThreshold(112) m3100PumpFailure(113) m3100RectifierFailure(114) m3100RectifierHighVoltage(115) m3100RectifierLowVoltage(116) m3100VentilationSystemFailure(117) m3100EnclosureDoorOpen(118) m3100ExplosiveGas(119) m3100Fire(120) m3100Flood(121) m3100HighHumidity(122) m3100HighTemperature(123) m3100HighWind(124) m3100IceBuildUp(125) m3100LowFuel(127) m3100LowHumidity(128) m3100LowCablePressure(129) m3100LowTemperature(130) m3100LowWater(131) m3100Smoke(132) m3100ToxicGas(133) m3100StorageCapacityProblem(151) m3100MemoryMismatch(152) m3100CorruptData(153) m3100OutOfCPUCycles(154) m3100SoftwareEnvironmentProblem(155) m3100SoftwareDownloadFailure(156) x733AdapterError(1000001) x733ApplicationSubsystemFailure(1000002) x733BandwidthReduced(1000003) x733CommunicationsProtocolError(1000005) x733CommunicationsSubsystemFailure(1000006) x733ConfigurationOrCustomizationError(1000007) x733Congestion(1000008) x733CpuCyclesLimitExceeded(1000010) x733DataSetOrModemError(1000011) x733DTEDCEInterfaceError(1000013) x733EquipmentMalfunction(1000015) x733ExcessiveVibration(1000016) x733FileError(1000017) x733HeatingOrVentilationOrCoolingSystemProblem(1000021) x733HumidityUnacceptable(1000022) x733InputOutputDeviceError(1000023) x733InputDeviceError(1000024) x733LANError(1000025) x733LeakDetected(1000026) x733LocalNodeTransmissionError(1000027) x733MaterialSupplyExhausted(1000030) x733OutOfMemory(1000032) x733OuputDeviceError(1000033) x733PerformanceDegraded(1000034) x733PressureUnacceptable(1000036) x733QueueSizeExceeded(1000039) x733ReceiveFailure(1000040) x733RemoteNodeTransmissionError(1000042) x733ResourceAtOrNearingCapacity(1000043) x733ResponseTimeExcessive(1000044) x733RetransmissionRateExcessive(1000045) x733SoftwareError(1000046) x733SoftwareProgramAbnormallyTerminated(1000047) x733SoftwareProgramError(1000048) x733TemperatureUnacceptable(1000050) x733ThresholdCrossed(1000051) x733ToxicLeakDetected(1000053) x733TransmitFailure(1000054) x733UnderlyingResourceUnavailable(1000056) x733VersionMismatch(1000057) x736AuthenticationFailure(2000001) x736BreachOfConfidentiality(2000002) x736CableTamper(2000003) x736DelayedInformation(2000004) x736DenialOfService(2000005) x736DuplicateInformation(2000006) x736InformationMissing(2000007) x736InformationModificationDetected(2000008) x736InformationOutOfSequence(2000009) x736IntrusionDetection(2000010) x736KeyExpired(2000011) x736NonRepudiationFailure(2000012) x736OutOfHoursActivity(2000013) x736OutOfService(2000014) x736ProceduralError(2000015) x736UnauthorizedAccessAttempt(2000016) x736UnexpectedInformation(2000017) x736UnspecifiedReason(2000018) gsm1211AbisToBTSInterfaceFailure(3000001) gsm1211AbisToTRXInterfaceFailure(3000002) gsm1211AntennaProblem(3000003) gsm1211BatteryBreakdown(3000004) gsm1211BatteryChargingFault(3000005) gsm1211CombinerProblem(3000007) gsm1211DiskProblem(3000008) gsm1211ExcessiveReceiverTemperature(3000010) gsm1211ExcessiveTransmitterOutputPower(3000011) gsm1211ExcessiveTransmitterTemperature(3000012) gsm1211FrequencyHoppingDegraded(3000013) gsm1211FrequencyHoppingFailure(3000014) gsm1211FrequencyRedefinitionFailed(3000015) gsm1211LineInterfaceFailure(3000016) gsm1211LinkFailure(3000017) gsm1211LossOfSynchronisation(3000018) gsm1211LostRedundancy(3000019) gsm1211MainsBreakdownWithBatteryBackUp(3000020) gsm1211MainsBreakdownWithoutBatteryBackUp(3000021) gsm1211PowerSupplyFailure(3000022) gsm1211ReceiverAntennaFault(3000023) gsm1211ReceiverMulticouplerFailure(3000025) gsm1211ReducedTransmitterOutputPower(3000026) gsm1211SignalQualityEvaluationFault(3000027) gsm1211TimeslotHardwareFailure(3000028) gsm1211TransceiverProblem(3000029) gsm1211TranscoderProblem(3000030) gsm1211TranscoderOrRateAdapterProblem(3000031) gsm1211TransmitterAntennaFailure(3000032) gsm1211TransmitterAntennaNotAdjusted(3000033) gsm1211TransmitterLowVoltageOrCurrent(3000035) gsm1211TransmitterOffFrequency(3000036) gsm1211DatabaseInconsistency(3000037) gsm1211FileSystemCallUnsuccessful(3000038) gsm1211InputParameterOutOfRange(3000039) gsm1211InvalidParameter(3000040) gsm1211InvalidPointer(3000041) gsm1211MessageNotExpected(3000042) gsm1211MessageNotInitialised(3000043) gsm1211MessageOutOfSequence(3000044) gsm1211SystemCallUnsuccessful(3000045) gsm1211TimeoutExpired(3000046) gsm1211VariableOutOfRange(3000047) gsm1211WatchDogTimerExpired(3000048) gsm1211CoolingSystemFailure(3000049) gsm1211ExternalEquipmentFailure(3000050) gsm1211ExternalPowerSupplyFailure(3000051) gsm1211ExternalTransmissionDeviceFailure(3000052) gsm1211ReducedAlarmReporting(3000061) gsm1211ReducedEventReporting(3000062) gsm1211ReducedLoggingCapability(3000063) gsm1211SystemResourcesOverload(3000064) gsm1211BroadcastChannelFailure(3000065) gsm1211ConnectionEstablishmentError(3000066) gsm1211InvalidMessageReceived(3000067) gsm1211InvalidMSUReceived(3000068) gsm1211LAPDLinkProtocolFailure(3000069) gsm1211LocalAlarmIndication(3000070) gsm1211RemoteAlarmIndication(3000071) gsm1211RoutingFailure(3000072) gsm1211SS7ProtocolFailure(3000073) gsm1211TransmissionError(3000074) gsm1211ClockSynchronisationProblem(30000056)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmEventType&lt;/b>&lt;/td>&lt;td>%parm[#9]%&lt;/td>&lt;td>&lt;p;>unknown(0) communicationsAlarm(2) environmentalAlarm(3) equipmentAlarm(4) processingErrorAlarm(10) qualityOfServiceAlarm(11)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmNotificationId&lt;/b>&lt;/td>&lt;td>%parm[#10]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmAckState&lt;/b>&lt;/td>&lt;td>%parm[#11]%&lt;/td>&lt;td>&lt;p;>acknowledged(1) unacknowledged(2) indeterminate(3)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmAckTime&lt;/b>&lt;/td>&lt;td>%parm[#12]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiAlarmAckUserId&lt;/b>&lt;/td>&lt;td>%parm[#13]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: noiAlarmAckStateChanged trap received noiAlarmSystemDN=%parm[#1]% noiAlarmId=%parm[#2]% noiAlarmEventTime=%parm[#3]% noiAlarmSpecificProblem=%parm[#4]% noiAlarmText=%parm[#5]% noiAlarmPerceivedSeverity=%parm[#6]% noiAlarmAdditionalText=%parm[#7]% noiAlarmProbableCause=%parm[#8]% noiAlarmEventType=%parm[#9]% noiAlarmNotificationId=%parm[#10]% noiAlarmAckState=%parm[#11]% noiAlarmAckTime=%parm[#12]% noiAlarmAckUserId=%parm[#13]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.7.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/noiMeasurementResultReady</uei>
+      <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-PM-IRP defined trap event: noiMeasurementResultReady</event-label>
+      <descr>&lt;p>This notification is used when a new measurement data 
 file has been created and a new entry in the 
-measurement table has been inserted.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiMeasurementResultIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiMeasurementFileDirectory&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiMeasurementFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiPmEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: noiMeasurementResultReady trap received noiMeasurementResultIdentifier=%parm[#1]% noiMeasurementFileDirectory=%parm[#2]% noiMeasurementFileName=%parm[#3]% noiPmEventTime=%parm[#4]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.7.3.3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>2</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/noiMeasurementResultTableRebuild</uei>
- <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-PM-IRP defined trap event: noiMeasurementResultTableRebuild</event-label>
- <descr>&lt;p&gt;This notification is used when the measurement table
+measurement table has been inserted.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>noiMeasurementResultIdentifier&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiMeasurementFileDirectory&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiMeasurementFileName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiPmEventTime&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: noiMeasurementResultReady trap received noiMeasurementResultIdentifier=%parm[#1]% noiMeasurementFileDirectory=%parm[#2]% noiMeasurementFileName=%parm[#3]% noiPmEventTime=%parm[#4]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.7.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/noiMeasurementResultTableRebuild</uei>
+      <event-label>NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-PM-IRP defined trap event: noiMeasurementResultTableRebuild</event-label>
+      <descr>&lt;p>This notification is used when the measurement table
 in the agent has been rebuild. The notification will be 
 emitted after the measurement table has been dropped
-and all previously stored entries have been removed&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiPmAdditionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;noiPmEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: noiMeasurementResultTableRebuild trap received noiPmAdditionalText=%parm[#1]% noiPmEventTime=%parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: NOKIA-ENHANCED-SNMP-SOLUTION-SUITE-PM-IRP -->
-<!-- Start of auto generated data from MIB: NOKIA-HWM-MIB -->
-<!-- End of auto generated data from MIB: NOKIA-HWM-MIB -->
-<!-- Start of auto generated data from MIB: NOKIA-IPSO-LBCLUSTER-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>2</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBClusterMemberJoin</uei>
- <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBClusterMemberJoin</event-label>
- <descr>&lt;p&gt;This trap is sent when a member node joins the cluster by the master&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ClusterID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;MemberID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: ipsoLBClusterMemberJoin trap received ClusterID=%parm[#1]% MemberID=%parm[#2]% ipsoMemberIPAddress=%parm[#3]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBClusterMemberLeft</uei>
- <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBClusterMemberLeft</event-label>
- <descr>&lt;p&gt;This trap is sent when a member node leaves the cluster by the master.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ClusterID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;MemberID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: ipsoLBClusterMemberLeft trap received ClusterID=%parm[#1]% MemberID=%parm[#2]% ipsoMemberIPAddress=%parm[#3]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBClusterNewMaster</uei>
- <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBClusterNewMaster</event-label>
- <descr>&lt;p&gt;This trap is sent when a cluster is formed and a new master is elected.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ClusterID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoLBClusterNewMasterReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;oldMasterHelloTimeout(1) iamBetterMaster(2) initalizedAsMaster(3) unknown(4)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: ipsoLBClusterNewMaster trap received ClusterID=%parm[#1]% ipsoLBClusterNewMasterReason=%parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>5</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBJoinReject</uei>
- <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBJoinReject</event-label>
- <descr>&lt;p&gt;This trap is sent when a member's request to join the cluster
-is rejected&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ClusterID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberRejectErcode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberRejectWrongIntf&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberRejectPrimaryIntf&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberRejectCip&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberRejectHash&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: ipsoLBJoinReject trap received ClusterID=%parm[#1]% ipsoMemberIPAddress=%parm[#2]% ipsoMemberRejectErcode=%parm[#3]% ipsoMemberRejectWrongIntf=%parm[#4]% ipsoMemberRejectPrimaryIntf=%parm[#5]% ipsoMemberRejectCip=%parm[#6]% ipsoMemberRejectHash=%parm[#7]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>14</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBClusterNewProtocol</uei>
- <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBClusterNewProtocol</event-label>
- <descr>&lt;p&gt;This trap is sent when a cluster protocol interface changes.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ClusterID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;MemberID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberInterfaceAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoMemberInterfaceNetmask&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: ipsoLBClusterNewProtocol trap received ClusterID=%parm[#1]% MemberID=%parm[#2]% ipsoMemberInterfaceAddr=%parm[#3]% ipsoMemberInterfaceNetmask=%parm[#4]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: NOKIA-IPSO-LBCLUSTER-MIB -->
-<!-- Start of auto generated data from MIB: NOKIA-IPSO-REGISTRATION-MIB -->
-<!-- End of auto generated data from MIB: NOKIA-IPSO-REGISTRATION-MIB -->
-<!-- Start of auto generated data from MIB: NOKIA-IPSO-SYSTEM-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapConfigurationChange</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapConfigurationChange</event-label>
- <descr>&lt;p&gt;The trap which indicates a temporary configuration change.&lt;/p&gt;&lt;table&gt;
-&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapConfigurationChange trap received&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>2</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapConfigurationFileChange</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapConfigurationFileChange</event-label>
- <descr>&lt;p&gt;The trap which indicates a change in the configuration file.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoConfigFilePath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapConfigurationFileChange trap received ipsoConfigFilePath=%parm[#1]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapConfigurationSaveChange</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapConfigurationSaveChange</event-label>
- <descr>&lt;p&gt;The trap which indicates a permanent configuration change 
-which is written to the configuration file.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoConfigFilePath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapConfigurationSaveChange trap received ipsoConfigFilePath=%parm[#1]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapLowDiskSpace</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapLowDiskSpace</event-label>
- <descr>&lt;p&gt;The trap which indicates if the disk space is low.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;hrPartitionIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;hrPartitionLabel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;hrPartitionSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;hrFSMountPoint&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapLowDiskSpace trap received hrPartitionIndex=%parm[#1]% hrPartitionLabel=%parm[#2]% hrPartitionSize=%parm[#3]% hrFSMountPoint=%parm[#4]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>5</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapNoDiskSpace</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapNoDiskSpace</event-label>
- <descr>&lt;p&gt;The trap which indicates that there is no more disk space
-available.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;hrPartitionIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;hrPartitionLabel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;hrPartitionSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;hrFSMountPoint&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapNoDiskSpace trap received hrPartitionIndex=%parm[#1]% hrPartitionLabel=%parm[#2]% hrPartitionSize=%parm[#3]% hrFSMountPoint=%parm[#4]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskFailure</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskFailure</event-label>
- <descr>&lt;p&gt;The trap which indicates that a particular disk drive has
-failed , means giving no response for read/write operation. &lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskDriveIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapDiskFailure trap received ipsoDiskDriveIndex=%parm[#1]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>7</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskMirrorSetCreate</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskMirrorSetCreate</event-label>
- <descr>&lt;p&gt;The trap which indicates that a particular mirror set has 
-been created on the system. &lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskMirrorSetIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskMirrorSetSourceDriveIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskMirrorSetDestinationDriveIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskDriveLocationSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskDriveLocationDest&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapDiskMirrorSetCreate trap received ipsoDiskMirrorSetIndex=%parm[#1]% ipsoDiskMirrorSetSourceDriveIndex=%parm[#2]% ipsoDiskMirrorSetDestinationDriveIndex=%parm[#3]% ipsoDiskDriveLocationSrc=%parm[#4]% ipsoDiskDriveLocationDest=%parm[#5]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>8</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskMirrorSetDelete</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskMirrorSetDelete</event-label>
- <descr>&lt;p&gt;The trap which indicates that a particular mirror set has 
-been deleted from the system. &lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskMirrorSetIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskMirrorSetSourceDriveIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskMirrorSetDestinationDriveIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskDriveLocationSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskDriveLocationDest&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapDiskMirrorSetDelete trap received ipsoDiskMirrorSetIndex=%parm[#1]% ipsoDiskMirrorSetSourceDriveIndex=%parm[#2]% ipsoDiskMirrorSetDestinationDriveIndex=%parm[#3]% ipsoDiskDriveLocationSrc=%parm[#4]% ipsoDiskDriveLocationDest=%parm[#5]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>9</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapSnmpProcessShutdown</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapSnmpProcessShutdown</event-label>
- <descr>&lt;p&gt;The trap which indicates that the snmp process is going down.&lt;/p&gt;&lt;table&gt;
-&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapSnmpProcessShutdown trap received&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>10</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskMirrorSyncFailure</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskMirrorSyncFailure</event-label>
- <descr>&lt;p&gt;The trap which indicates that a particular mirror set sync
-has failed.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskMirrorSetIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapDiskMirrorSyncFailure trap received ipsoDiskMirrorSetIndex=%parm[#1]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>11</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskMirrorSyncSuccess</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskMirrorSyncSuccess</event-label>
- <descr>&lt;p&gt;The trap which indicates that a particular mirror set sync
-has succeeded.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDiskMirrorSetIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapDiskMirrorSyncSuccess trap received ipsoDiskMirrorSetIndex=%parm[#1]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>12</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemOverTemperature</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemOverTemperature</event-label>
- <descr>&lt;p&gt;The trap which indicates that the temperature
-of the system has crossed the threshold.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoTempSensorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemOverTemperature trap received ipsoTempSensorId=%parm[#1]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>13</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemPowerFailure</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemPowerFailure</event-label>
- <descr>&lt;p&gt;The trap which indicates that a particular power supply
-failed.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoPowerSupplyIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemPowerFailure trap received ipsoPowerSupplyIndex=%parm[#1]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>14</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemFanFailure</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemFanFailure</event-label>
- <descr>&lt;p&gt;The trap which indicates that a particular fan failed.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoFanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemFanFailure trap received ipsoFanIndex=%parm[#1]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>16</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapLicense</uei>
- <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapLicense</event-label>
- <descr>&lt;p&gt;The trap indicates the product is about to expire/expired.
+and all previously stored entries have been removed&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>noiPmAdditionalText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>noiPmEventTime&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: noiMeasurementResultTableRebuild trap received noiPmAdditionalText=%parm[#1]% noiPmEventTime=%parm[#2]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBClusterMemberJoin</uei>
+      <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBClusterMemberJoin</event-label>
+      <descr>&lt;p>This trap is sent when a member node joins the cluster by the master&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ClusterID&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>MemberID&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberIPAddress&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: ipsoLBClusterMemberJoin trap received ClusterID=%parm[#1]% MemberID=%parm[#2]% ipsoMemberIPAddress=%parm[#3]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBClusterMemberLeft</uei>
+      <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBClusterMemberLeft</event-label>
+      <descr>&lt;p>This trap is sent when a member node leaves the cluster by the master.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ClusterID&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>MemberID&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberIPAddress&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: ipsoLBClusterMemberLeft trap received ClusterID=%parm[#1]% MemberID=%parm[#2]% ipsoMemberIPAddress=%parm[#3]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBClusterNewMaster</uei>
+      <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBClusterNewMaster</event-label>
+      <descr>&lt;p>This trap is sent when a cluster is formed and a new master is elected.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ClusterID&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoLBClusterNewMasterReason&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>oldMasterHelloTimeout(1) iamBetterMaster(2) initalizedAsMaster(3) unknown(4)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: ipsoLBClusterNewMaster trap received ClusterID=%parm[#1]% ipsoLBClusterNewMasterReason=%parm[#2]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBJoinReject</uei>
+      <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBJoinReject</event-label>
+      <descr>&lt;p>This trap is sent when a member's request to join the cluster
+is rejected&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ClusterID&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberIPAddress&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberRejectErcode&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberRejectWrongIntf&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberRejectPrimaryIntf&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberRejectCip&lt;/b>&lt;/td>&lt;td>%parm[#6]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberRejectHash&lt;/b>&lt;/td>&lt;td>%parm[#7]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: ipsoLBJoinReject trap received ClusterID=%parm[#1]% ipsoMemberIPAddress=%parm[#2]% ipsoMemberRejectErcode=%parm[#3]% ipsoMemberRejectWrongIntf=%parm[#4]% ipsoMemberRejectPrimaryIntf=%parm[#5]% ipsoMemberRejectCip=%parm[#6]% ipsoMemberRejectHash=%parm[#7]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/ipsoLBClusterNewProtocol</uei>
+      <event-label>NOKIA-IPSO-LBCLUSTER-MIB defined trap event: ipsoLBClusterNewProtocol</event-label>
+      <descr>&lt;p>This trap is sent when a cluster protocol interface changes.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ClusterID&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>MemberID&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberInterfaceAddr&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoMemberInterfaceNetmask&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: ipsoLBClusterNewProtocol trap received ClusterID=%parm[#1]% MemberID=%parm[#2]% ipsoMemberInterfaceAddr=%parm[#3]% ipsoMemberInterfaceNetmask=%parm[#4]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapConfigurationChange</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapConfigurationChange</event-label>
+      <descr>&lt;p>The trap which indicates a temporary configuration change.&lt;/p>&lt;table>
+&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapConfigurationChange trap received&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapConfigurationFileChange</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapConfigurationFileChange</event-label>
+      <descr>&lt;p>The trap which indicates a change in the configuration file.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoConfigFilePath&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapConfigurationFileChange trap received ipsoConfigFilePath=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapConfigurationSaveChange</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapConfigurationSaveChange</event-label>
+      <descr>&lt;p>The trap which indicates a permanent configuration change 
+which is written to the configuration file.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoConfigFilePath&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapConfigurationSaveChange trap received ipsoConfigFilePath=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapLowDiskSpace</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapLowDiskSpace</event-label>
+      <descr>&lt;p>The trap which indicates if the disk space is low.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>hrPartitionIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>hrPartitionLabel&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>hrPartitionSize&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>hrFSMountPoint&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapLowDiskSpace trap received hrPartitionIndex=%parm[#1]% hrPartitionLabel=%parm[#2]% hrPartitionSize=%parm[#3]% hrFSMountPoint=%parm[#4]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapNoDiskSpace</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapNoDiskSpace</event-label>
+      <descr>&lt;p>The trap which indicates that there is no more disk space
+available.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>hrPartitionIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>hrPartitionLabel&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>hrPartitionSize&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>hrFSMountPoint&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapNoDiskSpace trap received hrPartitionIndex=%parm[#1]% hrPartitionLabel=%parm[#2]% hrPartitionSize=%parm[#3]% hrFSMountPoint=%parm[#4]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskFailure</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskFailure</event-label>
+      <descr>&lt;p>The trap which indicates that a particular disk drive has
+failed , means giving no response for read/write operation. &lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoDiskDriveIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapDiskFailure trap received ipsoDiskDriveIndex=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskMirrorSetCreate</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskMirrorSetCreate</event-label>
+      <descr>&lt;p>The trap which indicates that a particular mirror set has 
+been created on the system. &lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoDiskMirrorSetIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoDiskMirrorSetSourceDriveIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoDiskMirrorSetDestinationDriveIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoDiskDriveLocationSrc&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoDiskDriveLocationDest&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapDiskMirrorSetCreate trap received ipsoDiskMirrorSetIndex=%parm[#1]% ipsoDiskMirrorSetSourceDriveIndex=%parm[#2]% ipsoDiskMirrorSetDestinationDriveIndex=%parm[#3]% ipsoDiskDriveLocationSrc=%parm[#4]% ipsoDiskDriveLocationDest=%parm[#5]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskMirrorSetDelete</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskMirrorSetDelete</event-label>
+      <descr>&lt;p>The trap which indicates that a particular mirror set has 
+been deleted from the system. &lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoDiskMirrorSetIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoDiskMirrorSetSourceDriveIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoDiskMirrorSetDestinationDriveIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoDiskDriveLocationSrc&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoDiskDriveLocationDest&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapDiskMirrorSetDelete trap received ipsoDiskMirrorSetIndex=%parm[#1]% ipsoDiskMirrorSetSourceDriveIndex=%parm[#2]% ipsoDiskMirrorSetDestinationDriveIndex=%parm[#3]% ipsoDiskDriveLocationSrc=%parm[#4]% ipsoDiskDriveLocationDest=%parm[#5]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapSnmpProcessShutdown</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapSnmpProcessShutdown</event-label>
+      <descr>&lt;p>The trap which indicates that the snmp process is going down.&lt;/p>&lt;table>
+&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapSnmpProcessShutdown trap received&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskMirrorSyncFailure</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskMirrorSyncFailure</event-label>
+      <descr>&lt;p>The trap which indicates that a particular mirror set sync
+has failed.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoDiskMirrorSetIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapDiskMirrorSyncFailure trap received ipsoDiskMirrorSetIndex=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapDiskMirrorSyncSuccess</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapDiskMirrorSyncSuccess</event-label>
+      <descr>&lt;p>The trap which indicates that a particular mirror set sync
+has succeeded.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoDiskMirrorSetIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapDiskMirrorSyncSuccess trap received ipsoDiskMirrorSetIndex=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemOverTemperature</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemOverTemperature</event-label>
+      <descr>&lt;p>The trap which indicates that the temperature
+of the system has crossed the threshold.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoTempSensorId&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemOverTemperature trap received ipsoTempSensorId=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemPowerFailure</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemPowerFailure</event-label>
+      <descr>&lt;p>The trap which indicates that a particular power supply
+failed.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoPowerSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemPowerFailure trap received ipsoPowerSupplyIndex=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemFanFailure</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemFanFailure</event-label>
+      <descr>&lt;p>The trap which indicates that a particular fan failed.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoFanIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemFanFailure trap received ipsoFanIndex=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.94.1.21.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/Nokia/traps/systemTrapLicense</uei>
+      <event-label>NOKIA-IPSO-SYSTEM-MIB defined trap event: systemTrapLicense</event-label>
+      <descr>&lt;p>The trap indicates the product is about to expire/expired.
 A zero value for the NoOfDays means the product has
-	 expired.&lt;/p&gt;&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoFeatureName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;ipsoDaysToExpire&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Nokia Event: systemTrapLicense trap received ipsoFeatureName=%parm[#1]% ipsoDaysToExpire=%parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Indeterminate</severity>
-</event>
+	 expired.&lt;/p>&lt;table>
+&lt;tr>&lt;td>&lt;b>ipsoFeatureName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>ipsoDaysToExpire&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Nokia Event: systemTrapLicense trap received ipsoFeatureName=%parm[#1]% ipsoDaysToExpire=%parm[#2]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
 </events>

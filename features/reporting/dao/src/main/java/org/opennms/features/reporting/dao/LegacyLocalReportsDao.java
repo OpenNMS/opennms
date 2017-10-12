@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,8 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
-
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.slf4j.Logger;
@@ -95,7 +94,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
             logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
 
-        setLegacyLocalReportsDefinition(JAXB.unmarshal(file, LegacyLocalReportsDefinition.class));
+        setLegacyLocalReportsDefinition(JaxbUtils.unmarshal(LegacyLocalReportsDefinition.class, file));
         Assert.notNull(m_legacyLocalReportsDefinition, "unmarshall config file returned a null value.");
         logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
         logger.debug("Local report definitions assigned: '{}'", m_legacyLocalReportsDefinition.toString());

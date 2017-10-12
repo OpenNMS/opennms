@@ -29,10 +29,9 @@
 package org.opennms.features.topology.plugins.topo.asset.cmd;
 
 
-import javax.xml.bind.JAXB;
-
 import org.apache.felix.gogo.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigList;
 import org.slf4j.Logger;
@@ -53,7 +52,7 @@ public class ListAssetTopologiesCommand extends OsgiCommandSupport {
 		GeneratorConfigList configDefinitions = assetGraphDefinitionRepository.getAllConfigDefinitions();
 
 		System.out.println("List of installed asset topology definitions:");
-		JAXB.marshal(configDefinitions, System.out);
+		System.out.print(JaxbUtils.marshal(configDefinitions));
 		return null;
 	}
 }

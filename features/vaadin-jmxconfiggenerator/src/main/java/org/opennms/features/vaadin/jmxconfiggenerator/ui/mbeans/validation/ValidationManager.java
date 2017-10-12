@@ -28,16 +28,16 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
+import java.util.Collection;
+import java.util.Objects;
+
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.MbeansHierarchicalContainer;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.NameProvider;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.SelectionManager;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-
-import java.util.Collection;
-import java.util.Objects;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
 public class ValidationManager {
 

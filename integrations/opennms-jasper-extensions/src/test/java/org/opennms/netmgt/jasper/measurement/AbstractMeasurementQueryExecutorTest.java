@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.jasper.measurement;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -41,8 +40,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.JAXB;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.Request;
@@ -69,6 +66,7 @@ import org.junit.Rule;
 import org.opennms.core.test.Level;
 import org.opennms.core.test.LoggingEvent;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.api.QueryRequestValidator;
 import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
 import org.opennms.netmgt.measurements.model.QueryRequest;
@@ -137,7 +135,7 @@ public class AbstractMeasurementQueryExecutorTest {
         // VERIFY that the Request Body is a valid QueryRequest
         Assert.assertEquals(number, requestList.size());
         for (Request eachRequest : requestList) {
-            QueryRequest queryRequest = JAXB.unmarshal(new ByteArrayInputStream(eachRequest.getBody()), QueryRequest.class);
+            QueryRequest queryRequest = JaxbUtils.unmarshal(QueryRequest.class, eachRequest.getBodyAsString());
             try {
                 new QueryRequestValidator().validate(queryRequest);
             } catch (ValidationException e) {

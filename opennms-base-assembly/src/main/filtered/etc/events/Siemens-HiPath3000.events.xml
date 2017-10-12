@@ -1,23 +1,22 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.231.7.2.9.6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/siemens/traps/hipath3000/sendAlarm</uei>
-        <event-label>H150E-MIB defined trap event: sendAlarm</event-label>
-        <descr>
-            &lt;p>If an error occurs, there will be checked if the errorClass is configured&#xd;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.231.7.2.9.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/siemens/traps/hipath3000/sendAlarm</uei>
+      <event-label>H150E-MIB defined trap event: sendAlarm</event-label>
+      <descr>&lt;p>If an error occurs, there will be checked if the errorClass is configured&#xd;
             to trigger an immediate signalling. If so, a trap will be send to the&#xd;
             management station containing the information shown above.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
@@ -67,9 +66,8 @@
             minor(3)
             major(4)
             critical(5)
-            &lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             sendAlarm trap received
             h150eErrorIndex=%parm[#1]%
             h150eErrorDateTime=%parm[#2]%
@@ -81,43 +79,42 @@
             h150eSysState=%parm[#8]%
             h150eErrorSeverity=%parm[#9]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-        <varbindsdecode>
-            <parmid>parm[#8]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="normal"/>
-            <decode varbindvalue="2" varbinddecodedstring="warning"/>
-            <decode varbindvalue="3" varbinddecodedstring="minor"/>
-            <decode varbindvalue="4" varbinddecodedstring="major"/>
-            <decode varbindvalue="5" varbinddecodedstring="critical"/>
-        </varbindsdecode>
-        <varbindsdecode>
-            <parmid>parm[#9]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="normal"/>
-            <decode varbindvalue="2" varbinddecodedstring="warning"/>
-            <decode varbindvalue="3" varbinddecodedstring="minor"/>
-            <decode varbindvalue="4" varbinddecodedstring="major"/>
-            <decode varbindvalue="5" varbinddecodedstring="critical"/>
-        </varbindsdecode>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.231.7.2.9.6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>2</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/siemens/traps/hipath3000/sendCdrNotification</uei>
-        <event-label>H150E-MIB defined trap event: sendCdrNotification</event-label>
-        <descr>
-            &lt;p>The CDR notification trap is sent to trigger further actions by the management&#xd;
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#8]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="warning"/>
+         <decode varbindvalue="3" varbinddecodedstring="minor"/>
+         <decode varbindvalue="4" varbinddecodedstring="major"/>
+         <decode varbindvalue="5" varbinddecodedstring="critical"/>
+      </varbindsdecode>
+      <varbindsdecode>
+         <parmid>parm[#9]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="warning"/>
+         <decode varbindvalue="3" varbinddecodedstring="minor"/>
+         <decode varbindvalue="4" varbinddecodedstring="major"/>
+         <decode varbindvalue="5" varbinddecodedstring="critical"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.231.7.2.9.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/siemens/traps/hipath3000/sendCdrNotification</uei>
+      <event-label>H150E-MIB defined trap event: sendCdrNotification</event-label>
+      <descr>&lt;p>The CDR notification trap is sent to trigger further actions by the management&#xd;
             station, for instance download of CDR data.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
 
@@ -130,67 +127,63 @@
             &lt;tr>&lt;td>&lt;b>
 
             h150eDescriptionOfLastCdrNotificationTrap&lt;/b>&lt;/td>&lt;td>
-            %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             sendCdrNotification trap received
             h150eIndexOfLastCdrNotificationTrap=%parm[#1]%
             h150etypeOfLastCdrNotificationTrap=%parm[#2]%
             h150eDescriptionOfLastCdrNotificationTrap=%parm[#3]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.231.7.2.9.6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>3</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/siemens/traps/hipath3000/sendPortStatusNotification</uei>
-        <event-label>H150E-MIB defined trap event: sendPortStatusNotification</event-label>
-        <descr>
-            &lt;p>The 'port status change' notification trap is sent to trigger a polling of the&#xd;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.231.7.2.9.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/siemens/traps/hipath3000/sendPortStatusNotification</uei>
+      <event-label>H150E-MIB defined trap event: sendPortStatusNotification</event-label>
+      <descr>&lt;p>The 'port status change' notification trap is sent to trigger a polling of the&#xd;
             port table by a management station. It indicates one or more changes in port&#xd;
             states.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
 
             indexOfLastPortStatusNotificationTrap&lt;/b>&lt;/td>&lt;td>
-            %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             sendPortStatusNotification trap received
             indexOfLastPortStatusNotificationTrap=%parm[#1]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.231.7.2.9.6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>4</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/siemens/traps/hipath3000/sendUmRelatedChangeNotification</uei>
-        <event-label>H150E-MIB defined trap event: sendUmRelatedChangeNotification</event-label>
-        <descr>
-            &lt;p>This trap is sent (to UM proxy), as the system detects changes.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.231.7.2.9.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/siemens/traps/hipath3000/sendUmRelatedChangeNotification</uei>
+      <event-label>H150E-MIB defined trap event: sendUmRelatedChangeNotification</event-label>
+      <descr>&lt;p>This trap is sent (to UM proxy), as the system detects changes.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
 
             umTrapIdentifier&lt;/b>&lt;/td>&lt;td>
@@ -210,21 +203,20 @@
             &lt;tr>&lt;td>&lt;b>
 
             umNetworkElementKey&lt;/b>&lt;/td>&lt;td>
-            %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             sendUmRelatedChangeNotification trap received
             umTrapIdentifier=%parm[#1]%
             umTrapType=%parm[#2]%
             umTrapLogicalPortNumber=%parm[#3]%
             umNetworkElementKey=%parm[#4]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-        <varbindsdecode>
-            <parmid>parm[#2]</parmid>
-            <decode varbindvalue="0" varbinddecodedstring="startup"/>
-            <decode varbindvalue="1" varbinddecodedstring="modifyGeneral"/>
-            <decode varbindvalue="2" varbinddecodedstring="modifySubscriber"/>
-        </varbindsdecode>
-    </event>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="startup"/>
+         <decode varbindvalue="1" varbinddecodedstring="modifyGeneral"/>
+         <decode varbindvalue="2" varbinddecodedstring="modifySubscriber"/>
+      </varbindsdecode>
+   </event>
 </events>

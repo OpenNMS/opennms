@@ -1,143 +1,135 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: DSR2010-TRAP-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010RebootStartedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010RebootStartedTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance is in the process of rebooting.
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010RebootStartedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010RebootStartedTrap</event-label>
+      <descr>&lt;p>The appliance is in the process of rebooting.
 
 The name of the user who initiated the reboot is contained in
 avctDSR2010TrapObjectUserName.  If the reboot is initated from
 the serial menu, then the value of this object will be the
 following string
 
-  local user&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+  local user&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010RebootStartedTrap trap received 
-			avctDSR2010TrapObjectUserName=%parm[#1]%&lt;/p&gt;
+			avctDSR2010TrapObjectUserName=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010VideoSessionStartedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010VideoSessionStartedTrap</event-label>
-	<descr>
-&lt;p&gt;A video session has started.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010VideoSessionStartedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010VideoSessionStartedTrap</event-label>
+      <descr>&lt;p>A video session has started.
 
 The name of the user who is connected to the session
 is contained in avctDSR2010TrapObjectUserName.
 
 The session identifier is contained in
-avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectSessionIdentifier.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010VideoSessionStartedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
-			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
+			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010VideoSessionStoppedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010VideoSessionStoppedTrap</event-label>
-	<descr>
-&lt;p&gt;A video session has stoppped.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010VideoSessionStoppedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010VideoSessionStoppedTrap</event-label>
+      <descr>&lt;p>A video session has stoppped.
 
 The name of the user who was connected to the session
 is contained in avctDSR2010TrapObjectUserName.
 
 The session identifier is contained in
-avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectSessionIdentifier.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010VideoSessionStoppedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
-			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
+			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010VideoSessionTerminatedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010VideoSessionTerminatedTrap</event-label>
-	<descr>
-&lt;p&gt;A video session has been terminated by another
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010VideoSessionTerminatedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010VideoSessionTerminatedTrap</event-label>
+      <descr>&lt;p>A video session has been terminated by another
 user.
 
 The name of the user who terminated the session is
@@ -147,154 +139,146 @@ The name of the user who was terminated from the session
 is contained in avctDSR2010TrapObjectTargetUserName.
 
 The session identifier is contained in
-avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectSessionIdentifier.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectTargetUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010VideoSessionTerminatedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
 			avctDSR2010TrapObjectTargetUserName=%parm[#2]% 
-			avctDSR2010TrapObjectSessionIdentifier=%parm[#3]%&lt;/p&gt;
+			avctDSR2010TrapObjectSessionIdentifier=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010LocalPortViewingStartedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010LocalPortViewingStartedTrap</event-label>
-	<descr>
-&lt;p&gt;A user on the local port has started viewing a server.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010LocalPortViewingStartedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010LocalPortViewingStartedTrap</event-label>
+      <descr>&lt;p>A user on the local port has started viewing a server.
 
 The session identifier is contained in
-avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectSessionIdentifier.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010LocalPortViewingStartedTrap trap received 
-			avctDSR2010TrapObjectSessionIdentifier=%parm[#1]%&lt;/p&gt;
+			avctDSR2010TrapObjectSessionIdentifier=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010LocalPortViewingStoppedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010LocalPortViewingStoppedTrap</event-label>
-	<descr>
-&lt;p&gt;A user on the local port has stopped viewing a server.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010LocalPortViewingStoppedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010LocalPortViewingStoppedTrap</event-label>
+      <descr>&lt;p>A user on the local port has stopped viewing a server.
 
 The session identifier is contained in
-avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectSessionIdentifier.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010LocalPortViewingStoppedTrap trap received 
-			avctDSR2010TrapObjectSessionIdentifier=%parm[#1]%&lt;/p&gt;
+			avctDSR2010TrapObjectSessionIdentifier=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010LocalPortViewingTerminatedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010LocalPortViewingTerminatedTrap</event-label>
-	<descr>
-&lt;p&gt;A local port session has been terminated by another user.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010LocalPortViewingTerminatedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010LocalPortViewingTerminatedTrap</event-label>
+      <descr>&lt;p>A local port session has been terminated by another user.
 
 The name of the user who terminated the session is
 contained in avctDSR2010TrapObjectUserName.
 
 The session identifier is contained in
-avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectSessionIdentifier.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010LocalPortViewingTerminatedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
-			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
+			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010ImageUpgradeStarted</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010ImageUpgradeStarted</event-label>
-	<descr>
-&lt;p&gt;The appliance has started a TFTP upgrade of an image.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010ImageUpgradeStarted</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010ImageUpgradeStarted</event-label>
+      <descr>&lt;p>The appliance has started a TFTP upgrade of an image.
 
 The name of the user who initiated the TFTP image upgrade is
 contained in avctDSR2010TrapObjectUserName.
@@ -306,130 +290,124 @@ The version of the image that the appliance is upgrading to is
 contained in avctDSR2010TrapObjectImageNewVersion.
 
 The version of the image that the appliance is currently running
-is contained in avctDSR2010TrapObjectImageCurrentVersion.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+is contained in avctDSR2010TrapObjectImageCurrentVersion.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectImageType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectImageType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectImageNewVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectImageNewVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectImageCurrentVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010ImageUpgradeStarted trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
 			avctDSR2010TrapObjectImageType=%parm[#2]% 
 			avctDSR2010TrapObjectImageNewVersion=%parm[#3]% 
-			avctDSR2010TrapObjectImageCurrentVersion=%parm[#4]%&lt;/p&gt;
+			avctDSR2010TrapObjectImageCurrentVersion=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010DSRIQAddedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010DSRIQAddedTrap</event-label>
-	<descr>
-&lt;p&gt;A DSRIQ was added. The ID of the DSRIQ which was added is
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010DSRIQAddedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010DSRIQAddedTrap</event-label>
+      <descr>&lt;p>A DSRIQ was added. The ID of the DSRIQ which was added is
 contained in avctDSR2010TrapObjectDSRIQId.
 
 The session identifier is contained in
-avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectSessionIdentifier.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectDSRIQId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectDSRIQId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010DSRIQAddedTrap trap received 
 			avctDSR2010TrapObjectDSRIQId=%parm[#1]% 
-			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
+			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010DSRIQRemovedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010DSRIQRemovedTrap</event-label>
-	<descr>
-&lt;p&gt;A DSRIQ was removed. The ID of the DSRIQ which was removed is
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010DSRIQRemovedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010DSRIQRemovedTrap</event-label>
+      <descr>&lt;p>A DSRIQ was removed. The ID of the DSRIQ which was removed is
 contained in avctDSR2010TrapObjectDSRIQId.
 
 The session identifier is contained in
-avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectSessionIdentifier.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectDSRIQId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectDSRIQId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010DSRIQRemovedTrap trap received 
 			avctDSR2010TrapObjectDSRIQId=%parm[#1]% 
-			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
+			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>11</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010SubsystemUpgradeStartedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010SubsystemUpgradeStartedTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance has started a Subsystem Upgrade.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010SubsystemUpgradeStartedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010SubsystemUpgradeStartedTrap</event-label>
+      <descr>&lt;p>The appliance has started a Subsystem Upgrade.
 
 This can be a download from the DModule to the Main Board, or
 a DSRIQ or other subsystem download from the Main Board...
@@ -441,94 +419,90 @@ The session identifier is contained in
 avctDSR2010TrapObjectSessionIdentifier.
 
 Information about the subsystem being updated is stored in the
-avctDSR2010TrapObjectFirmwareCondition object.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectFirmwareCondition object.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectDSRIQId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectDSRIQId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectFirmwareCondition&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectFirmwareCondition&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010SubsystemUpgradeStartedTrap trap received 
 			avctDSR2010TrapObjectDSRIQId=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]% 
-			avctDSR2010TrapObjectFirmwareCondition=%parm[#3]%&lt;/p&gt;
+			avctDSR2010TrapObjectFirmwareCondition=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010SubsystemRestartTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010SubsystemRestartTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance has completed a download and is restarting the
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010SubsystemRestartTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010SubsystemRestartTrap</event-label>
+      <descr>&lt;p>The appliance has completed a download and is restarting the
 subsystem specified in the avctDSR2010TrapObjectFirmwareCondition object.
 
 The ID of the DSRIQ which is restarting is contained in
 avctDSR2010TrapObjectDSRIQId.
 
 The session identifier is contained in
-avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectSessionIdentifier.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectDSRIQId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectDSRIQId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectFirmwareCondition&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectFirmwareCondition&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010SubsystemRestartTrap trap received 
 			avctDSR2010TrapObjectDSRIQId=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]% 
-			avctDSR2010TrapObjectFirmwareCondition=%parm[#3]%&lt;/p&gt;
+			avctDSR2010TrapObjectFirmwareCondition=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>13</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010ScreenResolutionChangedTrap</uei>
-	<event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010ScreenResolutionChangedTrap</event-label>
-	<descr>
-&lt;p&gt;The screen resolution of a target server has changed.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.7.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctDSR2010ScreenResolutionChangedTrap</uei>
+      <event-label>DSR2010-TRAP-MIB defined trap event: avctDSR2010ScreenResolutionChangedTrap</event-label>
+      <descr>&lt;p>The screen resolution of a target server has changed.
 
 The name of the user who is connected to the session
 is contained in avctDSR2010TrapObjectUserName.
@@ -540,32 +514,30 @@ The previous screen resolution is contained in
 avctDSR2010TrapObjectPreviousScreenResolution
 
 The current screen resolution is contained in
-avctDSR2010TrapObjectCurrentScreenResolution&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+avctDSR2010TrapObjectCurrentScreenResolution&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectSessionIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectPreviousScreenResolution&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	avctDSR2010TrapObjectPreviousScreenResolution&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	avctDSR2010TrapObjectCurrentScreenResolution&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	avctDSR2010TrapObjectCurrentScreenResolution&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctDSR2010ScreenResolutionChangedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]% 
 			avctDSR2010TrapObjectPreviousScreenResolution=%parm[#3]% 
-			avctDSR2010TrapObjectCurrentScreenResolution=%parm[#4]%&lt;/p&gt;
+			avctDSR2010TrapObjectCurrentScreenResolution=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<!-- End of auto generated data from MIB: DSR2010-TRAP-MIB -->
+      <severity>Normal</severity>
+   </event>
 </events>

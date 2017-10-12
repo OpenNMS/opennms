@@ -27,12 +27,13 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.opennms.netmgt.config.surveillanceViews.View;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import org.opennms.features.vaadin.surveillanceviews.model.View;
-import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 
 /**
  * Class implementing {@link com.vaadin.ui.Button.ClickListener} for creating the preview window.
