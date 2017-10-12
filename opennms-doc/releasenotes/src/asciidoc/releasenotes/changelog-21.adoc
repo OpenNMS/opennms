@@ -1,0 +1,12 @@
+[[release-21-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-21.0.0]]
+==== Release 21.0.0
+
+Release 21.0.0 is the latest stable release of OpenNMS.
+It contains a bug fixes and performance updates!
+For a high-level overview of what's changed in OpenNMS 21, see link:http://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
+
+The codename for 21.0.0 is _link:http://example.com[Unknowable]_.
+
