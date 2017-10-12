@@ -578,7 +578,7 @@
       <version>20100506</version>
     </dependency>
     <dependency>
-      <groupId>ognl</groupId>
+      <groupId>opensymphony</groupId>
       <artifactId>ognl</artifactId>
     </dependency>
     <dependency>

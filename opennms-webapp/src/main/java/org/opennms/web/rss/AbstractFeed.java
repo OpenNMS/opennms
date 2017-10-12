@@ -36,8 +36,8 @@ import javax.servlet.ServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedOutput;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.SyndFeedOutput;
 
 /**
  * <p>AbstractFeed class.</p>
@@ -151,7 +151,7 @@ public abstract class AbstractFeed implements Feed {
     /**
      * <p>getFeed</p>
      *
-     * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
+     * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
      */
     public abstract SyndFeed getFeed();
 
