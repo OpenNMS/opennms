@@ -59,7 +59,9 @@ public abstract class WebSecurityUtils {
 			// Allows HTTP, HTTPS, MAILTO, and relative links.
 			.and(Sanitizers.LINKS)
 			// Allows certain safe CSS properties in style="..." attributes.
-			.and(Sanitizers.STYLES);
+			.and(Sanitizers.STYLES)
+			// Allows common table elements.
+			.and(Sanitizers.TABLES);
 
     /**
      * <p>sanitizeString</p>
