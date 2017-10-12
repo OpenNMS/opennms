@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>org.opennms.features.flows</artifactId>
+    <version>21.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.flows</groupId>
+  <artifactId>org.opennms.features.flows.api</artifactId>
+  <packaging>bundle</packaging>
+  <name>OpenNMS :: Features :: Flows :: API</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <!-- TODO MVR fix the following problem -->
+    <!-- The flows.api module is living in the lib folder.
+    By defining version 2.3.1 we re-use the already existing version of
+    the selenium-monitor. The gson version 2.3.1 mismatches the required
+    jest-osgi-complete gson version (which is 2.6.2). This is not a problem, for now.
+    -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.3.1</version> <!-- See comment above about the used version here -->
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>
