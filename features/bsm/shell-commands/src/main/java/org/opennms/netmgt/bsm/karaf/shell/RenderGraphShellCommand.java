@@ -29,26 +29,25 @@
 package org.opennms.netmgt.bsm.karaf.shell;
 
 import java.io.File;
-import java.util.Objects;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 
 @Command(scope = "bsm", name = "render-graph", description="Renders the current state machine graph to a .png file.")
-public class RenderGraphShellCommand extends OsgiCommandSupport {
+@Service
+public class RenderGraphShellCommand implements Action {
 
-    private BusinessServiceStateMachine businessServiceStateMachine;
+    @Reference
+    public BusinessServiceStateMachine businessServiceStateMachine;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         File tempFile = File.createTempFile("bsm-state-machine", ".png");
         businessServiceStateMachine.renderGraphToPng(tempFile);
         System.out.println("Succesfully rendered state machine graph to " + tempFile.getAbsolutePath());
         return null;
-    }
-
-    public void setBusinessServiceStateMachine(BusinessServiceStateMachine businessServiceStateMachine) {
-        this.businessServiceStateMachine = Objects.requireNonNull(businessServiceStateMachine);
     }
 }

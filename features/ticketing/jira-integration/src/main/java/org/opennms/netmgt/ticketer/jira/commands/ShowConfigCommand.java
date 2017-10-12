@@ -30,20 +30,30 @@ package org.opennms.netmgt.ticketer.jira.commands;
 
 import java.util.Properties;
 
-import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin;
 
 @Command(scope = "jira", name = "show-config", description="Shows the current configuration for the Jira Ticketer Plugin")
-public class ShowConfigCommand extends OsgiCommandSupport {
+@org.apache.karaf.shell.commands.Command(scope = "jira", name = "show-config", description="Shows the current configuration for the Jira Ticketer Plugin")
+@Service
+public class ShowConfigCommand extends OsgiCommandSupport implements Action {
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         Properties properties = JiraTicketerPlugin.getConfig().getProperties();
         for (String eachKey : properties.stringPropertyNames()) {
             System.out.println(eachKey + " = " + properties.getProperty(eachKey));
         }
         return null;
+    }
+
+    @Override
+    @Deprecated
+    protected final Object doExecute() throws Exception {
+        return execute();
     }
 
 }

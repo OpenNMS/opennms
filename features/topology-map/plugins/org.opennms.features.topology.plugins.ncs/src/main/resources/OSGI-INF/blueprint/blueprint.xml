@@ -43,8 +43,8 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	<reference id="ncsComponentRepository" interface="org.opennms.netmgt.model.ncs.NCSComponentRepository" availability="mandatory" />
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 
-	<command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-		<command name="ncs/listcomponents">
+	<command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
+		<command>
 			<action class="org.opennms.features.topology.plugins.ncs.ComponentCommand" />
 		</command>
 	</command-bundle>

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collection.commands;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -45,9 +44,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -76,8 +77,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @author jwhite
  */
 @Command(scope = "metrics", name = "stress", description="Stress the current persistence strategy with generated collection sets.")
-public class StressCommand extends OsgiCommandSupport {
+@Service
+public class StressCommand implements Action {
 
+    @Reference
     private PersisterFactory persisterFactory;
 
     @Option(name="-b", aliases="--burst", description="generate the collection sets in bursts instead of continously inserting them, defaults to false", required=false, multiValued=false)
@@ -132,7 +135,7 @@ public class StressCommand extends OsgiCommandSupport {
     private AtomicInteger seed = new AtomicInteger();
 
     @Override
-    protected Void doExecute() {
+    public Void execute() throws Exception {
         // Apply sane lower bounds to all of the configurable options
         intervalInSeconds = Math.max(1, intervalInSeconds);
         numberOfNodes = Math.max(1, numberOfNodes);
@@ -311,10 +314,6 @@ public class StressCommand extends OsgiCommandSupport {
             }
         }
         return builder.build();
-    }
-
-    public void setPersisterFactory(PersisterFactory persisterFactory) {
-        this.persisterFactory = persisterFactory;
     }
 
     private static class MockCollectionAgent implements CollectionAgent {
