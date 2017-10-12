@@ -154,12 +154,13 @@ public class Telemetryd implements SpringServiceDaemon {
         // Stop the dispatchers
         for (AsyncDispatcher<?> dispatcher : dispatchers) {
             try {
-                LOG.debug("Closing dispatcher.", dispatcher);
+                LOG.info("Closing dispatcher.", dispatcher);
+                dispatcher.close();
             } catch (Exception e) {
                 LOG.warn("Error while closing dispatcher.", e);
             }
         }
-        listeners.clear();
+        dispatchers.clear();
 
         // Stop the consumers
         for (TelemetryMessageConsumer consumer : consumers) {

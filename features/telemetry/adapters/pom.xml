@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.telemetry</groupId>
   <artifactId>org.opennms.features.telemetry.adapters</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS :: Features :: Adapters</name>
+  <name>OpenNMS :: Features :: Telemetry :: Adapters</name>
   <modules>
     <module>api</module>
   </modules>

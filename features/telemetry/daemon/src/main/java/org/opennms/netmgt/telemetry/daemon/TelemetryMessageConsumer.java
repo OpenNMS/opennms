@@ -71,7 +71,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     }
 
     @PostConstruct
-    public void setUp() throws Exception {
+    public void init() throws Exception {
         // Pre-emptively instantiate the adapters
         for (org.opennms.netmgt.telemetry.config.model.Adapter adapterDef : protocolDef.getAdapters()) {
             try {
@@ -100,9 +100,15 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
 
     private Adapter buildAdapter(org.opennms.netmgt.telemetry.config.model.Adapter adapterDef) throws Exception {
         // Instantiate the associated class
-        final Class<?> clazz = Class.forName(adapterDef.getClassName());
-        final Constructor<?> ctor = clazz.getConstructor();
-        final Object adapterInstance = ctor.newInstance();
+        final Object adapterInstance;
+        try {
+            final Class<?> clazz = Class.forName(adapterDef.getClassName());
+            final Constructor<?> ctor = clazz.getConstructor();
+            adapterInstance = ctor.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Failed to instantiate adapter with class name '%s'.",
+                    adapterDef.getClassName(), e));
+        }
 
         // Cast
         if (!(adapterInstance instanceof Adapter)) {

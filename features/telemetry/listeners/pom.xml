@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.telemetry</groupId>
   <artifactId>org.opennms.features.telemetry.listeners</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS :: Features :: Listeners</name>
+  <name>OpenNMS :: Features :: Telemetry :: Listeners</name>
   <modules>
     <module>api</module>
     <module>udp</module>

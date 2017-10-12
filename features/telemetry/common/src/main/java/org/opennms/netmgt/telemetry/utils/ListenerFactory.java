@@ -41,9 +41,15 @@ public class ListenerFactory {
 
     public static Listener buildListener(ListenerDefinition listenerDef, AsyncDispatcher<TelemetryMessage> dispatcher) throws Exception {
         // Instantiate the associated class
-        final Class<?> clazz = Class.forName(listenerDef.getClassName());
-        final Constructor<?> ctor = clazz.getConstructor();
-        final Object listenerInstance = ctor.newInstance();
+        final Object listenerInstance;
+        try {
+            final Class<?> clazz = Class.forName(listenerDef.getClassName());
+            final Constructor<?> ctor = clazz.getConstructor();
+            listenerInstance = ctor.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Failed to instantiate listener with class name '%s'.",
+                    listenerDef.getClassName(), e));
+        }
 
         // Cast
         if (!(listenerInstance instanceof Listener)) {

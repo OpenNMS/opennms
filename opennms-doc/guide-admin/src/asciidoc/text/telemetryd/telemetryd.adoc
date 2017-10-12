@@ -4,7 +4,7 @@
 
 The telemetry daemon (_telemetryd_) provides an extensible framework that can be used to handle sensor pushed to _{opennms-product-name}_.
 
-_telemetryd_ allows operators to define a series of protocols, each of which has at least one listeners, and one adapter.
+_telemetryd_ allows operators to define a series of protocols, each of which has at least one listener, and at least one adapter.
 A listener is responsible for receiving sensor data from some external source.
 This may include listening for packets from a UDP socket, retrieving messages from an MQTT topic, etc...
 An adapters is responsible for processing the byte streams dispatched by the listeners.

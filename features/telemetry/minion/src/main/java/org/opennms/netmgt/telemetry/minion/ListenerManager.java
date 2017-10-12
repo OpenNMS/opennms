@@ -46,6 +46,15 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * This {@link ManagedServiceFactory} for service pids that contain
+ * telemetry listener definitions and manages their lifecycle by starting/updating
+ * and stopping them accordingly.
+ *
+ * See {@link MapBasedListenerDef} for a list of supported properties.
+ *
+ * @author jwhite
+ */
 public class ListenerManager implements ManagedServiceFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ListenerManager.class);
 
