@@ -37,17 +37,21 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Completion;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
 @Command(scope = "poller", name = "poll", description = "Used to invoke a monitor against a host at a specified location")
-public class Poll extends OsgiCommandSupport {
+@Service
+public class Poll implements Action {
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String location;
@@ -59,6 +63,7 @@ public class Poll extends OsgiCommandSupport {
     Long ttlInMs;
 
     @Argument(index = 0, name = "monitorClass", description = "Monitor class", required = true, multiValued = false)
+    @Completion(MonitorClassNameCompleter.class)
     String className;
 
     @Argument(index = 1, name = "host", description = "Hostname or IP Address of the system to poll", required = true, multiValued = false)
@@ -67,10 +72,11 @@ public class Poll extends OsgiCommandSupport {
     @Argument(index = 2, name = "attributes", description = "Monitor specific attributes in key=value form", multiValued = true)
     List<String> attributes;
 
-    private LocationAwarePollerClient locationAwarePollerClient;
+    @Reference
+    public LocationAwarePollerClient locationAwarePollerClient;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll()
                 .withService(new SimpleMonitoredService(InetAddress.getByName(host), "SVC", location))
                 .withSystemId(systemId)
@@ -111,10 +117,6 @@ public class Poll extends OsgiCommandSupport {
             System.out.flush();
         }
         return null;
-    }
-
-    public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
-        this.locationAwarePollerClient = locationAwarePollerClient;
     }
 
     protected static Map<String, Object> parse(List<String> attributeList) {

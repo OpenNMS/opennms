@@ -28,15 +28,18 @@
 
 package org.opennms.netmgt.ticketer.jira.commands;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.base.Strings;
 
 @Command(scope = "jira", name = "list-versions", description="Uses the JIRA ReST API to list all versions")
-public class ListVersionsCommand extends AbstractJiraCommand {
+@Service
+public class ListVersionsCommand extends AbstractJiraCommand implements Action {
 
     @Option(name="-k", aliases="--project-key", description="A project key to limit issue types. If defined it overwrites the default defined in the jira ticketer plugin configuration")
     String projectKey;

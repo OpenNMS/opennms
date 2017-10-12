@@ -35,8 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.ticketer.jira.JiraClientUtils;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
@@ -46,7 +48,8 @@ import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.google.common.base.Strings;
 
 @Command(scope = "jira", name = "list-fields", description="Uses the JIRA ReST API to list all fields available")
-public class ListFieldsCommand extends AbstractJiraCommand {
+@Service
+public class ListFieldsCommand extends AbstractJiraCommand implements Action {
 
     @Option(name="-k", aliases="--project-key", description = "The project key to filter for.")
     String projectKey;

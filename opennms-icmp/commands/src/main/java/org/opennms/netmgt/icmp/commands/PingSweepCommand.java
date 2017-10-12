@@ -34,18 +34,22 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingSweepSummary;
 
 @Command(scope = "ping", name = "sweep", description = "Ping-Sweep")
-public class PingSweepCommand extends OsgiCommandSupport {
+@Service
+public class PingSweepCommand implements Action {
 
-    private LocationAwarePingClient locationAwarePingClient;
+    @Reference
+    public LocationAwarePingClient locationAwarePingClient;
 
     @Option(name = "-l", aliases = "--location", description = "location")
     String m_location;
@@ -72,7 +76,7 @@ public class PingSweepCommand extends OsgiCommandSupport {
     String m_end;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         final InetAddress begin = InetAddress.getByName(m_begin);
         final InetAddress end = InetAddress.getByName(m_end);
 
@@ -118,9 +122,4 @@ public class PingSweepCommand extends OsgiCommandSupport {
         }
         return null;
     }
-
-    public void setLocationAwarePingClient(LocationAwarePingClient locationAwarePingClient) {
-        this.locationAwarePingClient = locationAwarePingClient;
-    }
-
 }

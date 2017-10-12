@@ -28,24 +28,22 @@
 
 package org.opennms.features.datachoices.shell.internal;
 
-import java.util.Objects;
-
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.datachoices.internal.StateManager;
 
 @Command(scope = "datachoices", name = "reset-system-id", description="Regenerate the system id.")
-public class ResetSystemIdCommand extends OsgiCommandSupport {
+@Service
+public class ResetSystemIdCommand implements Action {
 
-    private StateManager m_stateManager;
+    @Reference
+    public StateManager m_stateManager;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         System.out.println("New system id: " + m_stateManager.getAndRegenerateSystemId());
         return null;
-    }
-
-    public void setStateManager(StateManager stateManager) {
-        m_stateManager = Objects.requireNonNull(stateManager);
     }
 }

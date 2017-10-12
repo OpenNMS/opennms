@@ -28,14 +28,16 @@
 
 package org.opennms.netmgt.ticketer.jira.commands;
 
-
-import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.Priority;
 
 @Command(scope = "jira", name = "list-priorities", description="Uses the JIRA ReST API to list all priorities")
-public class ListPrioritiesCommand extends AbstractJiraCommand {
+@Service
+public class ListPrioritiesCommand extends AbstractJiraCommand implements Action {
 
     @Override
     protected void doExecute(JiraRestClient jiraRestClient) throws Exception {

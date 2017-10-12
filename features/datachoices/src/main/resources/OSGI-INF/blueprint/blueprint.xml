@@ -70,22 +70,4 @@
         </service-properties>
     </service>
 
-    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-        <command name="datachoices:send-usage-report">
-            <action class="org.opennms.features.datachoices.shell.internal.SendUsageReportCommand">
-                <property name="usageStatisticsReporter" ref="usageStatisticsReporter"/>
-            </action>
-        </command>
-        <command name="datachoices:display-usage-report">
-            <action class="org.opennms.features.datachoices.shell.internal.DisplayUsageReportCommand">
-                <property name="usageStatisticsReporter" ref="usageStatisticsReporter"/>
-            </action>
-        </command>
-        <command name="datachoices:reset-system-id">
-            <action class="org.opennms.features.datachoices.shell.internal.ResetSystemIdCommand">
-                <property name="stateManager" ref="stateManager"/>
-            </action>
-        </command>
-    </command-bundle>
-
 </blueprint>

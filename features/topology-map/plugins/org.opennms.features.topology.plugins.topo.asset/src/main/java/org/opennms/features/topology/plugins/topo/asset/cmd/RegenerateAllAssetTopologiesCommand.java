@@ -28,25 +28,24 @@
 
 package org.opennms.features.topology.plugins.topo.asset.cmd;
 
-
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Command(scope = "asset-topology", name = "regenerateall", description="Uses Best Effort to regenerate all asset topologies.")
-public class RegenerateAllAssetTopologiesCommand extends OsgiCommandSupport {
+@Service
+public class RegenerateAllAssetTopologiesCommand implements Action {
 	private static final Logger LOG = LoggerFactory.getLogger(RegenerateAllAssetTopologiesCommand.class);
 
-	private final AssetGraphMLProvider assetGraphMLProvider;
-
-	public RegenerateAllAssetTopologiesCommand(AssetGraphMLProvider assetGraphMLProvider) {
-		this.assetGraphMLProvider = assetGraphMLProvider;
-	}
+	@Reference
+	public AssetGraphMLProvider assetGraphMLProvider;
 
 	@Override
-	protected Object doExecute() throws Exception {
+	public Object execute() throws Exception {
 		System.out.println("Trying to regenerate all asset topologies");
 		assetGraphMLProvider.regenerateAllAssetTopologies();
 		System.out.println("Regenerated all asset topologies");

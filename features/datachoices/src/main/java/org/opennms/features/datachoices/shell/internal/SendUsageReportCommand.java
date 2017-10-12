@@ -28,24 +28,22 @@
 
 package org.opennms.features.datachoices.shell.internal;
 
-import java.util.Objects;
-
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
 
 @Command(scope = "datachoices", name = "send-usage-report", description="Generate and upload the usage statistics report.")
-public class SendUsageReportCommand extends OsgiCommandSupport {
+@Service
+public class SendUsageReportCommand implements Action {
 
-    private UsageStatisticsReporter m_usageStatisticsReporter;
+    @Reference
+    public UsageStatisticsReporter m_usageStatisticsReporter;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         m_usageStatisticsReporter.sendSync();
         return null;
-    }
-
-    public void setUsageStatisticsReporter(UsageStatisticsReporter usageStatisticsReporter) {
-        m_usageStatisticsReporter = Objects.requireNonNull(usageStatisticsReporter);
     }
 }

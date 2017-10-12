@@ -33,9 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.PollerConfig;
@@ -58,10 +59,11 @@ import org.springframework.transaction.support.TransactionOperations;
  * and was migrated to the Karaf shell as part of NMS-9095.
  *
  * @author Alejandro Galue <agalue@opennms.org>
- * @autho jwhite
+ * @author jwhite
  */
 @Command(scope = "poller", name = "test", description = "Execute a poller test from the command line using current settings from poller-configuration.xml")
-public class Test extends OsgiCommandSupport {
+@org.apache.karaf.shell.api.action.lifecycle.Service
+public class Test implements Action {
 
     @Option(name = "-i", aliases = "--ipaddress", description = "IP Address to test", required = true, multiValued = false)
     String ipAddress;
@@ -78,12 +80,17 @@ public class Test extends OsgiCommandSupport {
     @Option(name = "-c", aliases = "--class", description = "Monitor Class", required = false, multiValued = false)
     String monitorClass;
 
-    private ServiceMonitorRegistry registry;
-    private IpInterfaceDao ipInterfaceDao;
-    private TransactionOperations transactionTemplate;
+    @Reference
+    public ServiceMonitorRegistry registry;
+
+    @Reference
+    public IpInterfaceDao ipInterfaceDao;
+
+    @Reference
+    public TransactionOperations transactionTemplate;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         // Parse/validate the IP address
         final InetAddress addr = InetAddressUtils.addr(ipAddress);
         if (addr == null) {
@@ -180,17 +187,5 @@ public class Test extends OsgiCommandSupport {
             System.err.printf("Error: Polling is not enabled for service %s using IP %s%n", serviceName, ipAddress);
         }
         return null;
-    }
-
-    public void setRegistry(ServiceMonitorRegistry registry) {
-        this.registry = registry;
-    }
-
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        this.ipInterfaceDao = ipInterfaceDao;
-    }
-
-    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
     }
 }

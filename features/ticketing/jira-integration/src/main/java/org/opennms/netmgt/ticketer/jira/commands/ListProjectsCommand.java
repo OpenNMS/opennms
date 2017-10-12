@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.ticketer.jira.commands;
 
-import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 
 @Command(scope = "jira", name = "list-projects", description="Uses the JIRA ReST API to determine all existing projects")
-public class ListProjectsCommand extends AbstractJiraCommand {
+@Service
+public class ListProjectsCommand extends AbstractJiraCommand implements Action {
 
     @Override
     protected void doExecute(JiraRestClient jiraRestClient) throws Exception {

@@ -28,30 +28,30 @@
 
 package org.opennms.features.topology.plugins.topo.asset.cmd;
 
-
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Command(scope = "asset-topology", name = "remove", description="Removes Asset Topology. Uses default config if options not supplied")
-public class RemoveAssetTopologyCommand extends OsgiCommandSupport {
+@Service
+public class RemoveAssetTopologyCommand implements Action {
+
 	private static final Logger LOG = LoggerFactory.getLogger(RemoveAssetTopologyCommand.class);
 
-	private final AssetGraphMLProvider assetGraphMLProvider;
-
-	public RemoveAssetTopologyCommand(AssetGraphMLProvider assetGraphMLProvider) {
-		this.assetGraphMLProvider = assetGraphMLProvider;
-	}
+	@Reference
+	public AssetGraphMLProvider assetGraphMLProvider;
 
 	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology (optional)", required = false, multiValued = false)
 	String providerId = new GeneratorConfig().getProviderId();
 
 	@Override
-	protected Object doExecute() throws Exception {
+	public Object execute() throws Exception {
 		if( providerId == null || providerId.trim().isEmpty()){
 			providerId = new GeneratorConfig().getProviderId();
 		}

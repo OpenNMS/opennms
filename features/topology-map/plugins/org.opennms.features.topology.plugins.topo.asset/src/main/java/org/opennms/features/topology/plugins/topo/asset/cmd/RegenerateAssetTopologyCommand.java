@@ -28,34 +28,32 @@
 
 package org.opennms.features.topology.plugins.topo.asset.cmd;
 
-
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Command(scope = "asset-topology", name = "regenerate", description="Regeneates the asset topology for given providerId")
-public class RegenerateAssetTopologyCommand extends OsgiCommandSupport {
+@Service
+public class RegenerateAssetTopologyCommand implements Action {
 	private static final Logger LOG = LoggerFactory.getLogger(RegenerateAssetTopologyCommand.class);
 
-	private final AssetGraphMLProvider assetGraphMLProvider;
-
-	public RegenerateAssetTopologyCommand(AssetGraphMLProvider assetGraphMLProvider) {
-		this.assetGraphMLProvider = assetGraphMLProvider;
-	}
+	@Reference
+	public AssetGraphMLProvider assetGraphMLProvider;
 
 	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology (optional)", required = false, multiValued = false)
 	String providerId = new GeneratorConfig().getProviderId();
 
 	@Override
-	protected Object doExecute() throws Exception {
+	public Object execute() throws Exception {
 		System.out.println("Regenerating Asset Topology for providerId=" + providerId);
 		assetGraphMLProvider.regenerateAssetTopology(providerId);
 		System.out.println("Regenerating Asset Topology for providerId=" + providerId);
 		return null;
 	}
 }
-

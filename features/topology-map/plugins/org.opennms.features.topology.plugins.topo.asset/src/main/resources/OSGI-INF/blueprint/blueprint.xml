@@ -12,8 +12,7 @@
 
   <service id="assetGraphDefinitionRepository" ref="assetGraphDefinitionRepo" interface="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository" />
 
-  <bean id="assetGraphDefinitionRepo" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepositoryImpl">
-  </bean>
+  <bean id="assetGraphDefinitionRepo" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepositoryImpl"/>
 
   <bean id="assetGraphMLProvider" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" init-method="init" destroy-method="destroy">
     <argument ref="graphmlRepository" />
@@ -26,37 +25,6 @@
   <bean id="nodeProvider" class="org.opennms.features.topology.plugins.topo.asset.layers.PersistenceNodeProvider">
     <argument ref="genericPersistenceAccessor" />
   </bean>
-
-  <!-- command line commands -->
-  <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-
-    <!-- Asset Topology Service Commands -->
-    <command name="asset-topology/create">
-      <action class="org.opennms.features.topology.plugins.topo.asset.cmd.CreateAssetTopologyCommand">
-        <argument ref="assetGraphMLProvider" />
-      </action>
-    </command>
-    <command name="asset-topology/remove">
-      <action class="org.opennms.features.topology.plugins.topo.asset.cmd.RemoveAssetTopologyCommand">
-        <argument ref="assetGraphMLProvider" />
-      </action>
-    </command>
-    <command name="asset-topology/regenerate">
-      <action class="org.opennms.features.topology.plugins.topo.asset.cmd.RegenerateAssetTopologyCommand">
-        <argument ref="assetGraphMLProvider" />
-      </action>
-    </command>
-    <command name="asset-topology/regenerateAll">
-      <action class="org.opennms.features.topology.plugins.topo.asset.cmd.RegenerateAllAssetTopologiesCommand">
-        <argument ref="assetGraphMLProvider" />
-      </action>
-    </command>
-    <command name="asset-topology/list">
-      <action class="org.opennms.features.topology.plugins.topo.asset.cmd.ListAssetTopologiesCommand">
-        <argument ref="assetGraphDefinitionRepo" />
-      </action>
-    </command>
-  </command-bundle>
 
 </blueprint>
 

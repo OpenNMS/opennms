@@ -28,15 +28,18 @@
 
 package org.opennms.netmgt.ticketer.jira.commands;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.google.common.base.Strings;
 
 @Command(scope = "jira", name = "list-components", description="Uses the JIRA ReST API to list all components")
-public class ListComponentsCommand extends AbstractJiraCommand {
+@Service
+public class ListComponentsCommand extends AbstractJiraCommand implements Action {
 
     @Option(name="-k", aliases="--project-key", description="A project key to limit the components to. If defined it overwrites the one defined in the jira ticketer plugin configuration", required = true)
     String projectKey;

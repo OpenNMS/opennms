@@ -29,8 +29,8 @@
 package org.opennms.netmgt.ticketer.jira.commands;
 
 
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Option;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.netmgt.ticketer.jira.Config;
 import org.opennms.netmgt.ticketer.jira.JiraConnectionFactory;
@@ -39,7 +39,7 @@ import org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.google.common.base.Strings;
 
-public abstract class AbstractJiraCommand extends OsgiCommandSupport {
+public abstract class AbstractJiraCommand implements Action {
 
     protected static final String LINE = "------------------------------";
 
@@ -70,7 +70,7 @@ public abstract class AbstractJiraCommand extends OsgiCommandSupport {
     }
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         JiraRestClient jiraClient = createJiraClient();
         try {
             doExecute(jiraClient);

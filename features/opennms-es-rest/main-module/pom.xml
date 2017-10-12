@@ -22,10 +22,7 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <!-- <Import-Package> -->
-            <!-- org.apache.felix.service.command, -->
-            <!-- * -->
-            <!-- </Import-Package> -->
+            <Karaf-Commands>*</Karaf-Commands>
           </instructions>
         </configuration>
       </plugin>
@@ -149,7 +146,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
-      <artifactId>org.apache.karaf.shell.console</artifactId>
+      <artifactId>org.apache.karaf.shell.core</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

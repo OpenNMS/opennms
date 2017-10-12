@@ -31,12 +31,14 @@ package org.opennms.plugins.elasticsearch.rest.archive.cmd;
 import java.net.URL;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.plugins.elasticsearch.rest.archive.OpenNMSHistoricEventsToEs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * command example: elastic-search:send-historic-events 100 0 admin admin http://localhost:8980 false
  * this retrieves 110 alarms from the local machine using the local node cache for node label
@@ -44,11 +46,13 @@ import org.slf4j.LoggerFactory;
  * command example: elastic-search:send-historic-events 100 0 demo demo http://demo.opennms.org true
  * this retrieves 110 alarms from the remote machine using the node label
  * 
- * @author admin
+ * @author Craig Gallen <cgallen@opennms.org>
  *
  */
 @Command(scope = "elastic-search", name = "send-historic-events", description="Sends events in selected OpenNMS to Elasticsearch")
-public class SendEventsToEsCommand extends OsgiCommandSupport {
+@Service
+public class SendEventsToEsCommand implements Action {
+
 	private static final Logger LOG = LoggerFactory.getLogger(SendEventsToEsCommand.class);
 
 	private OpenNMSHistoricEventsToEs openNMSHistoricEventsToEs;
@@ -81,7 +85,7 @@ public class SendEventsToEsCommand extends OsgiCommandSupport {
 
 	
 	@Override
-	protected Object doExecute() throws Exception {
+	public Object execute() throws Exception {
 		try{
 			
 			// use defaults if arguments not set

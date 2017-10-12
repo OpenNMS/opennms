@@ -18,6 +18,7 @@
           <configuration>
             <instructions>
               <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+              <Karaf-Commands>*</Karaf-Commands>
             </instructions>
           </configuration>
         </plugin>
@@ -45,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.shell</groupId>
-            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <artifactId>org.apache.karaf.shell.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
