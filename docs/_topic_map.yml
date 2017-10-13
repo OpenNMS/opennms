@@ -87,8 +87,8 @@ Topics:
         File: debian
       - Name: Microsoft Windows
         File: windows
-      - Name: Compatibility Matrix
-        File: compatibility-matrix
+      - Name: Compatibility
+        File: compatibility
   - Name: R Statistic System
     Dir: r-statistics
     Topics:
