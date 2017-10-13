@@ -1,0 +1,10 @@
+[[compatibility]]
+== Compatibility
+
+This version of {opennms-product-name} {opennms-version} is compatible with
+
+[options="header, autowidth"]
+|===
+| Java | PostgreSQL | Newts | Cassandra     | Grafana  | AMQP | Elasticsearch | Kafka
+| 8    | 9.3+       | 1.4.3 | 1.2, 2.x, 3.0 | 3.x, 4.x | 1.0  | 2.X, 5.X      | 0.10
+|===
