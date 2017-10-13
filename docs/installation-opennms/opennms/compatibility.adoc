@@ -1,0 +1,10 @@
+[[compatibility]]
+= Compatibility
+
+This version of _{product-title} {product-version}_ is compatible with
+
+[options="header, autowidth"]
+|===
+| Java | PostgreSQL | Newts | Cassandra | Grafana | Elasticsearch | Kafka
+| 8    | 9.2+       | 1.4.3 | 3.x       | 4.4.x   | 2.X, 5.X      | 0.10
+|===
