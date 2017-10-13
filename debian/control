@@ -9,7 +9,6 @@ Package: opennms
 Architecture: all
 Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version})
 Recommends: opennms-source (=${binary:Version})
-Suggests: opennms-doc
 Description: Enterprise-grade Open-source Network Management Platform (Full Install)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -195,21 +194,6 @@ Description: Enterprise-grade Open-source Network Management Platform (Required 
  events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
  .
  This package provides the external Java libraries required by OpenNMS.
-
-Package: opennms-doc
-Section: contrib/doc
-Architecture: all
-Description: Enterprise-grade Open-source Network Management Platform (Documentation)
- OpenNMS is an enterprise-grade network management system written in Java.
- .
- OpenNMS can monitor various network services to determine status and service
- level availability.  Data collection is performed using protocols such as SNMP
- to generate reports and alert on thresholds.  An extensible event management
- and notification system handles both internally and externally generated
- events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
- .
- This package provides the user, administration, and programming documentation
- for OpenNMS.
 
 Package: opennms-contrib
 Architecture: all

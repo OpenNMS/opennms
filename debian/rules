@@ -327,12 +327,6 @@ install: build
 	find debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 
 	##
-	## Setup the opennms-doc package
-	##
-	mv debian/temp/docs/* debian/opennms-doc/usr/share/doc/opennms/
-	find debian/opennms-doc/usr/share/doc/opennms -type f -execdir chmod 644 {} \;
-
-	##
 	## Setup the opennms-contrib package
 	##
 	mv debian/temp/contrib/* debian/opennms-contrib/usr/share/opennms/contrib/
