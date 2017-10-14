@@ -50,6 +50,7 @@ import org.opennms.netmgt.poller.mock.MockMonitoredService;
  *
  * @author brozow
  */
+@org.junit.Ignore("this relies on assuming local resolution that isn't necessarily correct")
 public class DNSResolutionMonitorTest {
     
     @Before
