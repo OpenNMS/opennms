@@ -187,6 +187,16 @@
           	<% } %>
                 </td>
         </tr>
+
+          <% if (event.getAlarmId() != null && event.getAlarmId().intValue() != 0) { %>
+            <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+              <th class="col-md-1">Alarm ID</th>
+              <td colspan="5" class="col-md-11">
+                  <a href="alarm/detail.htm?id=<%=event.getAlarmId()%>"><%=event.getAlarmId()%></a>
+              </td>
+            </tr>
+          <% }%>
+
       </table>
     </div>
 
