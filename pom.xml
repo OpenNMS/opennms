@@ -477,6 +477,18 @@
           </archive>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-services-maven-plugin</artifactId>
+        <version>${karafVersion}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>service-metadata-generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <!-- Make sure that this version of gmaven roughly matches the version of groovy that we depend on -->
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
