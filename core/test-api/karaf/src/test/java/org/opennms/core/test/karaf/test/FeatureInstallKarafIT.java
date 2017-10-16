@@ -28,8 +28,6 @@
 
 package org.opennms.core.test.karaf.test;
 
-import static org.ops4j.pax.exam.CoreOptions.maven;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.karaf.KarafTestCase;
@@ -57,8 +55,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("diagnostic");
         installFeature("eventadmin");
         installFeature("feature");
-        // The 'framework-security' feature installation causes a refresh of 
-        // basically the entire container so avoid it during this test
         //installFeature("framework-security");
         installFeature("http");
         installFeature("http-whiteboard");
@@ -73,10 +69,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("log");
         installFeature("management");
         installFeature("minimal");
-        // The 'obr' feature installation causes a refresh of 
-        // the 'org.apache.karaf.deployer.features' bundle so
-        // avoid it during this test
-        //installFeature("obr");
+        installFeature("obr");
         installFeature("package");
         installFeature("profile");
         installFeature("scheduler");
@@ -103,18 +96,16 @@ public class FeatureInstallKarafIT extends KarafTestCase {
      */
     @Test
     public void testInstallAllSpringFeatures() {
-        addFeaturesUrl(maven().groupId("org.apache.karaf.features").artifactId("spring-legacy").version("4.1.2").type("xml").classifier("features").getURL());
-
-        installFeature("spring", "4.2.9.RELEASE_1");
-        installFeature("spring-aspects", "4.2.9.RELEASE_1");
-        installFeature("spring-instrument", "4.2.9.RELEASE_1");
-        installFeature("spring-jdbc", "4.2.9.RELEASE_1");
-        installFeature("spring-jms", "4.2.9.RELEASE_1");
-        //installFeature("spring-test", "4.2.9.RELEASE_1");
-        installFeature("spring-orm", "4.2.9.RELEASE_1");
-        installFeature("spring-oxm", "4.2.9.RELEASE_1");
-        installFeature("spring-tx", "4.2.9.RELEASE_1");
-        installFeature("spring-web", "4.2.9.RELEASE_1");
+        installFeature("spring", "4.2.8.RELEASE_1");
+        installFeature("spring-aspects", "4.2.8.RELEASE_1");
+        installFeature("spring-instrument", "4.2.8.RELEASE_1");
+        installFeature("spring-jdbc", "4.2.8.RELEASE_1");
+        installFeature("spring-jms", "4.2.8.RELEASE_1");
+        //installFeature("spring-test", "4.2.8.RELEASE_1");
+        installFeature("spring-orm", "4.2.8.RELEASE_1");
+        installFeature("spring-oxm", "4.2.8.RELEASE_1");
+        installFeature("spring-tx", "4.2.8.RELEASE_1");
+        installFeature("spring-web", "4.2.8.RELEASE_1");
         //installFeature("spring-web-portlet");
         //installFeature("spring-websocket");
         //installFeature("spring-security");

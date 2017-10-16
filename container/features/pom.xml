@@ -31,7 +31,6 @@
             <value>framework-${karafVersion}</value>
             <value>enterprise-${karafVersion}</value>
             <value>spring-${karafVersion}</value>
-            <value>spring-legacy-${karafVersion}</value>
             <value>standard-${karafVersion}</value>
 
             <!-- Apache CXF -->
@@ -151,6 +150,7 @@
             <feature>framework</feature>
 
             <!-- Karaf standard features -->
+            <feature>aries-annotation</feature>
             <feature>aries-blueprint</feature>
             <feature>aries-proxy</feature>
             <feature>blueprint-web</feature>
@@ -161,16 +161,14 @@
             <feature>eventadmin</feature>
             <feature>feature</feature>
             <feature>framework-security</feature>
-            <feature>httplite</feature>
             <feature>http</feature>
             <feature>http-whiteboard</feature>
             <feature>instance</feature>
             <feature>jaas-boot</feature>
             <feature>jaas</feature>
             <feature>jasypt-encryption</feature>
-            <!-- TODO: Should we import both versions of Jetty? -->
-            <feature>jetty/8.1.14.v20131031</feature>
-            <feature>jetty/9.3.9.v20160517</feature>
+            <!-- TODO: Figure out how to import 2 versions of Jetty? -->
+            <feature>jetty</feature>
             <feature>jolokia</feature>
             <feature>kar</feature>
             <feature>log</feature>
@@ -178,8 +176,6 @@
             <feature>minimal</feature>
             <feature>obr</feature>
             <feature>package</feature>
-            <!-- Replaced by opennms-bridge-http-service -->
-            <!-- <feature>pax-http-service</feature> -->
             <feature>profile</feature>
             <feature>scheduler</feature>
             <feature>scr</feature>

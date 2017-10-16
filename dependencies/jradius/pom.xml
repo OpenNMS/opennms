@@ -9,10 +9,10 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jradius-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS :: Dependencies :: JRadius</name>
+  <name>OpenNMS :: Dependencies :: RADIUS</name>
   <description>
-    This module is used to provide a single artifact that the OpenNMS project
-    can depend on to use the JRadius library.
+    This module is used to provide a single artifact that the opennms project
+    can depend on to use the JRadius library
   </description>
   <dependencies>
     <!-- add this commons stuff to keep JNLP app from getting confused by versions -->
@@ -60,6 +60,14 @@
           <artifactId>spring-context</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>net.sf.ehcache</groupId>
+          <artifactId>ehcache-terracotta</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.terracotta</groupId>
+          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
         </exclusion>
@@ -79,6 +87,14 @@
           <artifactId>spring-context</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>net.sf.ehcache</groupId>
+          <artifactId>ehcache-terracotta</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.terracotta</groupId>
+          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
         </exclusion>
@@ -88,11 +104,32 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Use our shaded package for jradius-extended instead of the original artifact-->
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>org.opennms.dependencies.jradius-extended</artifactId>
-      <version>${project.version}</version>
+      <groupId>net.jradius</groupId>
+      <artifactId>jradius-extended</artifactId>
+      <version>1.1.5</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.sf.ehcache</groupId>
+          <artifactId>ehcache-terracotta</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.terracotta</groupId>
+          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

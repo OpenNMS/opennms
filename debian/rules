@@ -171,6 +171,8 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/nsclient*.xml                        debian/opennms-plugin-protocol-nsclient/var/lib/opennms/etc-pristine/
 	
 	# RADIUS
+	mv debian/temp/lib/jradius-*.jar                                                           debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
+	mv debian/temp/lib/bcprov-jdk15*.jar                                                       debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
 	mv debian/temp/lib/*radius*.jar                                                            debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
 	
 	# VTD-XML

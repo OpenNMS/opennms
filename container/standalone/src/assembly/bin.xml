@@ -16,7 +16,7 @@
 
         <!-- Expanded Karaf Standard Distribution -->
         <fileSet>
-            <directory>${project.build.directory}/dependency/apache-karaf-${karafVersion}</directory>
+            <directory>${project.build.directory}/dependencies/apache-karaf-${karafVersion}</directory>
             <!-- Output to the root directory -->
             <outputDirectory></outputDirectory>
             <excludes>
@@ -46,7 +46,7 @@
 
         <!-- Copy over bin/* separately to get the correct file mode -->
         <fileSet>
-            <directory>${project.build.directory}/dependency/apache-karaf-${karafVersion}</directory>
+            <directory>${project.build.directory}/dependencies/apache-karaf-${karafVersion}</directory>
             <!-- Output to the root directory -->
             <outputDirectory></outputDirectory>
             <includes>
@@ -80,25 +80,16 @@
 
     <files>
         <file>
-            <source>${project.build.directory}/dependency/apache-karaf-${karafVersion}/bin/karaf</source>
+            <source>${project.build.directory}/dependencies/apache-karaf-${karafVersion}/bin/karaf</source>
             <outputDirectory>bin</outputDirectory>
             <destName>karaf</destName>
             <fileMode>0755</fileMode>
             <lineEnding>unix</lineEnding>
         </file>
         <file>
-            <source>${project.build.directory}/dependency/opennms-branding.jar</source>
+            <source>${project.build.directory}/dependencies/opennms-branding.jar</source>
             <outputDirectory>lib</outputDirectory>
             <destName>opennms-branding.jar</destName>
-        </file>
-        <!-- Work around bug KARAF-5384 by including mina-core in the system repository -->
-        <file>
-            <source>${project.build.directory}/dependency/mina-core-${minaVersion}.jar</source>
-            <outputDirectory>system/org/apache/mina/mina-core/${minaVersion}</outputDirectory>
-        </file>
-        <file>
-            <source>${project.build.directory}/dependency/mina-core-${minaVersion}.jar.sha1</source>
-            <outputDirectory>system/org/apache/mina/mina-core/${minaVersion}</outputDirectory>
         </file>
     </files>
 

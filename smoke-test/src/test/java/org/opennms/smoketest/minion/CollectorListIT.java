@@ -132,8 +132,7 @@ public class CollectorListIT {
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
             // Parse the output
-            String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
-
+            String shellOutput = sshClient.getStdout();
             shellOutput = StringUtils.substringAfter(shellOutput, "collection:list-collectors");
             LOG.info("Collectors output: {}", shellOutput);
             Set<String> collectors = new HashSet<>();
