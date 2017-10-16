@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.netmgt.telemetry.listeners.api;
 
-import java.nio.ByteBuffer;
+import java.util.Map;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+public interface ListenerDefinition {
 
-public class ByteBufferXmlAdapter extends XmlAdapter<byte[], ByteBuffer> {
+    String getName();
 
-    @Override
-    public ByteBuffer unmarshal(byte[] bytes) {
-        return ByteBuffer.wrap(bytes);
-    }
+    String getClassName();
 
-    @Override
-    public byte[] marshal(ByteBuffer bb) {
-        if (bb.hasArray()) {
-            // Use the backing array when available
-            return bb.array();
-        } else {
-            // Otherwise, create a new array, and copy the available
-            // bytes while preserving the original position
-            final int originalPosition = bb.position();
-            bb.rewind();
-            byte[] bytes = new byte[bb.remaining()];
-            bb.get(bytes);
-            bb.position(originalPosition);
-            return bytes;
-        }
-    }
+    Map<String, String> getParameterMap();
 
 }

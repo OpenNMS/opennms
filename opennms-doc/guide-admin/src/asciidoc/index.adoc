@@ -309,3 +309,8 @@ include::text/workarounds/snmp.adoc[]
 [[ga-ifttt]]
 == IFTTT Integration
 include::text/ifttt/ifttt-integration.adoc[]
+
+[[ga-telemetryd]]
+== Telemetryd
+include::text/telemetryd/telemetryd.adoc[]
+
