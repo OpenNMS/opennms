@@ -49,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -2337,7 +2338,13 @@ public class InstallerDb {
                     final long diff = currentDatabaseTime.getTime() - currentSystemTime;
                     if (Math.abs(diff) > 1000) {
                         m_out.println("NOT OK");
-                        throw new Exception("Database time and system time differ. Please update either the database time or the system time");
+                        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+                        final String databaseDateString = simpleDateFormat.format(new Date(currentDatabaseTime.getTime()));
+                        final String systemtimeDateString = simpleDateFormat.format(new Date(currentSystemTime));
+                        throw new Exception("Database time and system time differ."
+                                + "System time: " + systemtimeDateString + ", database time: " + databaseDateString
+                                + ", diff: " + Math.abs(diff) + "ms. The maximum allowed difference is 1000ms."
+                                + " Please update either the database time or system time");
                     }
                     m_out.println("OK");
                 }
