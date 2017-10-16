@@ -104,6 +104,11 @@
       <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.config</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.jmx</groupId>
       <artifactId>org.opennms.core.jmx.api</artifactId>
       <version>${project.version}</version>

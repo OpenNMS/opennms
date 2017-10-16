@@ -44,6 +44,7 @@ import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -338,32 +339,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadEvent(Event e) {
         LOG.info("Received a reload configuration event: {}", e);
-
-        final Parm daemonNameParm = e.getParm(EventConstants.PARM_DAEMON_NAME);
-        if (daemonNameParm == null || daemonNameParm.getValue() == null) {
-            LOG.warn("The {} parameter has no value. Ignoring.", EventConstants.PARM_DAEMON_NAME);
-            return;
-        }
-
-        if (NAME.equalsIgnoreCase(daemonNameParm.getValue().getContent())) {
-            LOG.info("Reloading bsmd.");
-
-            EventBuilder ebldr = null;
-            try {
-                handleConfigurationChanged();
-
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, NAME);
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, NAME);
-                LOG.info("Reload successful.");
-            } catch (Throwable t) {
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, NAME);
-                ebldr.addParam(EventConstants.PARM_REASON, t.getLocalizedMessage().substring(0, 128));
-                LOG.error("Reload failed.", t);
-            }
-
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, NAME);
-            m_eventIpcManager.sendNow(ebldr.getEvent());
-        }
+        DaemonTools.handleReloadEvent(e, Bsmd.NAME, (event) -> handleConfigurationChanged());
     }
 
     @Override

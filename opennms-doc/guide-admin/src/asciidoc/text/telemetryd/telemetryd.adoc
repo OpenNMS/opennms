@@ -1,0 +1,46 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+The telemetry daemon (_telemetryd_) provides an extensible framework that can be used to handle sensor pushed to _{opennms-product-name}_.
+
+_telemetryd_ allows operators to define a series of protocols, each of which has at least one listener, and at least one adapter.
+A listener is responsible for receiving sensor data from some external source.
+This may include listening for packets from a UDP socket, retrieving messages from an MQTT topic, etc...
+An adapters is responsible for processing the byte streams dispatched by the listeners.
+For example, this may include decoding a specific JSON format, persisting metrics and/or generating events.
+
+The framework does not make any assumption about the data about being received or processed, leaving this up to the listener and adapter implementations.
+
+Listeners may run on either _{opennms-product-name}_ or _Minion_, whereas adapters run exclusively on _{opennms-product-name}_.
+If a listener is running on _Minion_, the received messages will be automatically dispatched to the associated adapter(s) running in _{opennms-product-name}_.
+
+=== Supported protocols
+
+No protocols are currently supported.
+
+=== Listener Reference
+
+==== UDP Listener
+
+The UDP listener can be used to open a simple UDP socket and build messages from the received packets.
+
+===== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.listeners.udp.UdpListener`
+| Supported on Minion | `Yes`
+|===
+
+===== Parameters
+
+.Listener specific parameters for the UdpListener
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                       | Required | Default value
+| `host`           | IP address on which to bind the UDP port                          | optional | `0.0.0.0`
+| `port`           | UDP port number on which to listen                                | optional | `50000`
+| `maxPacketSize`  | Maximum packet size in bytes (anything greater will be truncated) | optional | `8096`
+|===
+
