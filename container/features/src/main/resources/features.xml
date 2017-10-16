@@ -261,7 +261,7 @@
       <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Export-Package=org.owasp.encoder</bundle>
     </feature>
 
-    <feature name="owasp-html-sanitizer" description="OWASP :: HTML Sanitizer" version="${waspHtmlSanitizerVersion}">
+    <feature name="owasp-html-sanitizer" description="OWASP :: HTML Sanitizer" version="${owaspHtmlSanitizerVersion}">
       <feature>guava</feature>
       <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}$Export-Package=org.owasp.html</bundle>
     </feature>
