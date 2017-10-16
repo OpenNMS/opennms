@@ -1,1269 +1,1221 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: UMSEVENT-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGGenericEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGGenericEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGGenericEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGGenericEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGGenericEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGGenericEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGGenericEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGGenericEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGGenericEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGGenericEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGGenericEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGGenericEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGGenericEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGGenericEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGGenericEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGGenericEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGGenericEvent trap received 
 			iBMPSGGenericEventIdentifier=%parm[#1]% 
 			iBMPSGGenericEventSourceObjectPath=%parm[#2]% 
 			iBMPSGGenericEventTargetObjectPath=%parm[#3]% 
 			iBMPSGGenericEventdescription=%parm[#4]% 
 			iBMPSGGenericEventSeverity=%parm[#5]% 
-			iBMPSGGenericEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGGenericEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGTemperatureEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGTemperatureEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGTemperatureEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGTemperatureEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGTemperatureEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGTemperatureEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGTemperatureEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGTemperatureEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGTemperatureEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGTemperatureEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGTemperatureEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGTemperatureEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGTemperatureEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGTemperatureEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGTemperatureEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGTemperatureEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGTemperatureEvent trap received 
 			iBMPSGTemperatureEventIdentifier=%parm[#1]% 
 			iBMPSGTemperatureEventSourceObjectPath=%parm[#2]% 
 			iBMPSGTemperatureEventTargetObjectPath=%parm[#3]% 
 			iBMPSGTemperatureEventSeverity=%parm[#4]% 
 			iBMPSGTemperatureEventdescription=%parm[#5]% 
-			iBMPSGTemperatureEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGTemperatureEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGVoltageEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGVoltageEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGVoltageEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGVoltageEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGVoltageEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGVoltageEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGVoltageEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGVoltageEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGVoltageEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGVoltageEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGVoltageEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGVoltageEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGVoltageEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGVoltageEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGVoltageEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGVoltageEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGVoltageEvent trap received 
 			iBMPSGVoltageEventIdentifier=%parm[#1]% 
 			iBMPSGVoltageEventSourceObjectPath=%parm[#2]% 
 			iBMPSGVoltageEventTargetObjectPath=%parm[#3]% 
 			iBMPSGVoltageEventSeverity=%parm[#4]% 
 			iBMPSGVoltageEventdescription=%parm[#5]% 
-			iBMPSGVoltageEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGVoltageEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGChassisEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGChassisEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGChassisEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGChassisEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGChassisEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGChassisEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGChassisEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGChassisEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGChassisEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGChassisEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGChassisEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGChassisEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGChassisEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGChassisEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGChassisEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGChassisEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGChassisEvent trap received 
 			iBMPSGChassisEventIdentifier=%parm[#1]% 
 			iBMPSGChassisEventSourceObjectPath=%parm[#2]% 
 			iBMPSGChassisEventTargetObjectPath=%parm[#3]% 
 			iBMPSGChassisEventSeverity=%parm[#4]% 
 			iBMPSGChassisEventdescription=%parm[#5]% 
-			iBMPSGChassisEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGChassisEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGFanEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGFanEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGFanEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGFanEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGFanEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGFanEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGFanEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGFanEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGFanEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGFanEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGFanEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGFanEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGFanEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGFanEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGFanEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGFanEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGFanEvent trap received 
 			iBMPSGFanEventIdentifier=%parm[#1]% 
 			iBMPSGFanEventSourceObjectPath=%parm[#2]% 
 			iBMPSGFanEventTargetObjectPath=%parm[#3]% 
 			iBMPSGFanEventSeverity=%parm[#4]% 
 			iBMPSGFanEventdescription=%parm[#5]% 
-			iBMPSGFanEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGFanEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGProcessorEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGProcessorEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGProcessorEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGProcessorEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGProcessorEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGProcessorEvent trap received 
 			iBMPSGProcessorEventIdentifier=%parm[#1]% 
 			iBMPSGProcessorEventSourceObjectPath=%parm[#2]% 
 			iBMPSGProcessorEventTargetObjectPath=%parm[#3]% 
 			iBMPSGProcessorEventSeverity=%parm[#4]% 
 			iBMPSGProcessorEventdescription=%parm[#5]% 
-			iBMPSGProcessorEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGProcessorEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGStorageEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGStorageEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGStorageEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGStorageEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGStorageEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGStorageEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGStorageEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGStorageEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGStorageEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGStorageEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGStorageEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGStorageEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGStorageEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGStorageEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGStorageEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGStorageEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGStorageEvent trap received 
 			iBMPSGStorageEventIdentifier=%parm[#1]% 
 			iBMPSGStorageEventSourceObjectPath=%parm[#2]% 
 			iBMPSGStorageEventTargetObjectPath=%parm[#3]% 
 			iBMPSGStorageEventSeverity=%parm[#4]% 
 			iBMPSGStorageEventdescription=%parm[#5]% 
-			iBMPSGStorageEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGStorageEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGAssetEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGAssetEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGAssetEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGAssetEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGAssetEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGAssetEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGAssetEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGAssetEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGAssetEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGAssetEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGAssetEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGAssetEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGAssetEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGAssetEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGAssetEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGAssetEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGAssetEvent trap received 
 			iBMPSGAssetEventIdentifier=%parm[#1]% 
 			iBMPSGAssetEventSourceObjectPath=%parm[#2]% 
 			iBMPSGAssetEventTargetObjectPath=%parm[#3]% 
 			iBMPSGAssetEventSeverity=%parm[#4]% 
 			iBMPSGAssetEventdescription=%parm[#5]% 
-			iBMPSGAssetEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGAssetEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGSMARTEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGSMARTEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGSMARTEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGSMARTEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGSMARTEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGSMARTEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGSMARTEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGSMARTEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGSMARTEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGSMARTEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGSMARTEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGSMARTEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGSMARTEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGSMARTEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGSMARTEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGSMARTEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGSMARTEvent trap received 
 			iBMPSGSMARTEventIdentifier=%parm[#1]% 
 			iBMPSGSMARTEventSourceObjectPath=%parm[#2]% 
 			iBMPSGSMARTEventTargetObjectPath=%parm[#3]% 
 			iBMPSGSMARTEventSeverity=%parm[#4]% 
 			iBMPSGSMARTEventdescription=%parm[#5]% 
-			iBMPSGSMARTEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGSMARTEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGPOSTEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGPOSTEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGPOSTEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGPOSTEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPOSTEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPOSTEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPOSTEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPOSTEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPOSTEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPOSTEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPOSTEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPOSTEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPOSTEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPOSTEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPOSTEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGPOSTEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGPOSTEvent trap received 
 			iBMPSGPOSTEventIdentifier=%parm[#1]% 
 			iBMPSGPOSTEventSourceObjectPath=%parm[#2]% 
 			iBMPSGPOSTEventTargetObjectPath=%parm[#3]% 
 			iBMPSGPOSTEventSeverity=%parm[#4]% 
 			iBMPSGPOSTEventdescription=%parm[#5]% 
-			iBMPSGPOSTEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGPOSTEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>11</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGConfigurationChangeEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGConfigurationChangeEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGConfigurationChangeEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGConfigurationChangeEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGConfigurationChangeEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGConfigurationChangeEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGConfigurationChangeEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGConfigurationChangeEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGConfigurationChangeEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGConfigurationChangeEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGConfigurationChangeEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGConfigurationChangeEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGConfigurationChangeEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGConfigurationChangeEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGConfigurationChangeEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGConfigurationChangeEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGConfigurationChangeEvent trap received 
 			iBMPSGConfigurationChangeEventIdentifier=%parm[#1]% 
 			iBMPSGConfigurationChangeEventSourceObjectPath=%parm[#2]% 
 			iBMPSGConfigurationChangeEventTargetObjectPath=%parm[#3]% 
 			iBMPSGConfigurationChangeEventSeverity=%parm[#4]% 
 			iBMPSGConfigurationChangeEventdescription=%parm[#5]% 
-			iBMPSGConfigurationChangeEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGConfigurationChangeEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGLANLeashEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGLANLeashEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGLANLeashEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGLANLeashEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLANLeashEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLANLeashEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLANLeashEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLANLeashEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLANLeashEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLANLeashEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLANLeashEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLANLeashEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLANLeashEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLANLeashEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLANLeashEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGLANLeashEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGLANLeashEvent trap received 
 			iBMPSGLANLeashEventIdentifier=%parm[#1]% 
 			iBMPSGLANLeashEventSourceObjectPath=%parm[#2]% 
 			iBMPSGLANLeashEventTargetObjectPath=%parm[#3]% 
 			iBMPSGLANLeashEventSeverity=%parm[#4]% 
 			iBMPSGLANLeashEventdescription=%parm[#5]% 
-			iBMPSGLANLeashEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGLANLeashEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>13</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGLeaseExpirationEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGLeaseExpirationEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGLeaseExpirationEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGLeaseExpirationEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLeaseExpirationEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLeaseExpirationEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLeaseExpirationEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLeaseExpirationEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLeaseExpirationEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLeaseExpirationEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLeaseExpirationEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLeaseExpirationEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLeaseExpirationEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGLeaseExpirationEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGLeaseExpirationEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGLeaseExpirationEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGLeaseExpirationEvent trap received 
 			iBMPSGLeaseExpirationEventIdentifier=%parm[#1]% 
 			iBMPSGLeaseExpirationEventSourceObjectPath=%parm[#2]% 
 			iBMPSGLeaseExpirationEventTargetObjectPath=%parm[#3]% 
 			iBMPSGLeaseExpirationEventSeverity=%parm[#4]% 
 			iBMPSGLeaseExpirationEventdescription=%parm[#5]% 
-			iBMPSGLeaseExpirationEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGLeaseExpirationEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGWarrantyExpirationEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGWarrantyExpirationEvent</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGWarrantyExpirationEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGWarrantyExpirationEvent</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGWarrantyExpirationEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGWarrantyExpirationEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGWarrantyExpirationEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGWarrantyExpirationEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGWarrantyExpirationEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGWarrantyExpirationEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGWarrantyExpirationEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGWarrantyExpirationEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGWarrantyExpirationEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGWarrantyExpirationEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGWarrantyExpirationEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGWarrantyExpirationEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGWarrantyExpirationEvent trap received 
 			iBMPSGWarrantyExpirationEventIdentifier=%parm[#1]% 
 			iBMPSGWarrantyExpirationEventSourceObjectPath=%parm[#2]% 
 			iBMPSGWarrantyExpirationEventTargetObjectPath=%parm[#3]% 
 			iBMPSGWarrantyExpirationEventSeverity=%parm[#4]% 
 			iBMPSGWarrantyExpirationEventdescription=%parm[#5]% 
-			iBMPSGWarrantyExpirationEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGWarrantyExpirationEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>15</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGRedundantNetworkAdapterEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGRedundantNetworkAdapterEvent</event-label>
-	<descr>
-&lt;p&gt;(null)&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGRedundantNetworkAdapterEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGRedundantNetworkAdapterEvent</event-label>
+      <descr>&lt;p>(null)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGRedundantNetworkAdapterEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGRedundantNetworkAdapterEvent trap received 
 			iBMPSGRedundantNetworkAdapterEventIdentifier=%parm[#1]% 
 			iBMPSGRedundantNetworkAdapterEventSourceObjectPath=%parm[#2]% 
 			iBMPSGRedundantNetworkAdapterEventTargetObjectPath=%parm[#3]% 
 			iBMPSGRedundantNetworkAdapterEventSeverity=%parm[#4]% 
 			iBMPSGRedundantNetworkAdapterEventdescription=%parm[#5]% 
-			iBMPSGRedundantNetworkAdapterEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGRedundantNetworkAdapterEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>16</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGRedundantNetworkAdapterSwitchoverEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGRedundantNetworkAdapterSwitchoverEvent</event-label>
-	<descr>
-&lt;p&gt;(null)&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGRedundantNetworkAdapterSwitchoverEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGRedundantNetworkAdapterSwitchoverEvent</event-label>
+      <descr>&lt;p>(null)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchoverEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchoverEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchoverEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchoverEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchoverEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchoverEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchoverEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchoverEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchoverEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchoverEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchoverEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGRedundantNetworkAdapterSwitchoverEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGRedundantNetworkAdapterSwitchoverEvent trap received 
 			iBMPSGRedundantNetworkAdapterSwitchoverEventIdentifier=%parm[#1]% 
 			iBMPSGRedundantNetworkAdapterSwitchoverEventSourceObjectPath=%parm[#2]% 
 			iBMPSGRedundantNetworkAdapterSwitchoverEventTargetObjectPath=%parm[#3]% 
 			iBMPSGRedundantNetworkAdapterSwitchoverEventSeverity=%parm[#4]% 
 			iBMPSGRedundantNetworkAdapterSwitchoverEventdescription=%parm[#5]% 
-			iBMPSGRedundantNetworkAdapterSwitchoverEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGRedundantNetworkAdapterSwitchoverEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>17</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGRedundantNetworkAdapterSwitchbackEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGRedundantNetworkAdapterSwitchbackEvent</event-label>
-	<descr>
-&lt;p&gt;(null)&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGRedundantNetworkAdapterSwitchbackEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGRedundantNetworkAdapterSwitchbackEvent</event-label>
+      <descr>&lt;p>(null)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchbackEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchbackEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchbackEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchbackEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchbackEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchbackEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchbackEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchbackEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchbackEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRedundantNetworkAdapterSwitchbackEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRedundantNetworkAdapterSwitchbackEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGRedundantNetworkAdapterSwitchbackEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGRedundantNetworkAdapterSwitchbackEvent trap received 
 			iBMPSGRedundantNetworkAdapterSwitchbackEventIdentifier=%parm[#1]% 
 			iBMPSGRedundantNetworkAdapterSwitchbackEventSourceObjectPath=%parm[#2]% 
 			iBMPSGRedundantNetworkAdapterSwitchbackEventTargetObjectPath=%parm[#3]% 
 			iBMPSGRedundantNetworkAdapterSwitchbackEventSeverity=%parm[#4]% 
 			iBMPSGRedundantNetworkAdapterSwitchbackEventdescription=%parm[#5]% 
-			iBMPSGRedundantNetworkAdapterSwitchbackEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGRedundantNetworkAdapterSwitchbackEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>18</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGProcessorPFEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGProcessorPFEvent</event-label>
-	<descr>
-&lt;p&gt;(null)&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGProcessorPFEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGProcessorPFEvent</event-label>
+      <descr>&lt;p>(null)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorPFEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorPFEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorPFEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorPFEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorPFEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorPFEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorPFEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorPFEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorPFEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGProcessorPFEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGProcessorPFEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGProcessorPFEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGProcessorPFEvent trap received 
 			iBMPSGProcessorPFEventIdentifier=%parm[#1]% 
 			iBMPSGProcessorPFEventSourceObjectPath=%parm[#2]% 
 			iBMPSGProcessorPFEventTargetObjectPath=%parm[#3]% 
 			iBMPSGProcessorPFEventSeverity=%parm[#4]% 
 			iBMPSGProcessorPFEventdescription=%parm[#5]% 
-			iBMPSGProcessorPFEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGProcessorPFEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>19</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGMemoryPFEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGMemoryPFEvent</event-label>
-	<descr>
-&lt;p&gt;(null)&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGMemoryPFEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGMemoryPFEvent</event-label>
+      <descr>&lt;p>(null)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGMemoryPFEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGMemoryPFEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGMemoryPFEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGMemoryPFEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGMemoryPFEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGMemoryPFEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGMemoryPFEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGMemoryPFEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGMemoryPFEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGMemoryPFEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGMemoryPFEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGMemoryPFEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGMemoryPFEvent trap received 
 			iBMPSGMemoryPFEventIdentifier=%parm[#1]% 
 			iBMPSGMemoryPFEventSourceObjectPath=%parm[#2]% 
 			iBMPSGMemoryPFEventTargetObjectPath=%parm[#3]% 
 			iBMPSGMemoryPFEventSeverity=%parm[#4]% 
 			iBMPSGMemoryPFEventdescription=%parm[#5]% 
-			iBMPSGMemoryPFEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGMemoryPFEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>22</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGPFAEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGPFAEvent</event-label>
-	<descr>
-&lt;p&gt;(null)&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGPFAEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGPFAEvent</event-label>
+      <descr>&lt;p>(null)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPFAEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPFAEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPFAEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPFAEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPFAEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPFAEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPFAEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPFAEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPFAEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPFAEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPFAEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGPFAEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGPFAEvent trap received 
 			iBMPSGPFAEventIdentifier=%parm[#1]% 
 			iBMPSGPFAEventSourceObjectPath=%parm[#2]% 
 			iBMPSGPFAEventTargetObjectPath=%parm[#3]% 
 			iBMPSGPFAEventSeverity=%parm[#4]% 
 			iBMPSGPFAEventdescription=%parm[#5]% 
-			iBMPSGPFAEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGPFAEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>23</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGPowerSupplyEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGPowerSupplyEvent</event-label>
-	<descr>
-&lt;p&gt;(null)&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGPowerSupplyEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGPowerSupplyEvent</event-label>
+      <descr>&lt;p>(null)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPowerSupplyEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPowerSupplyEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPowerSupplyEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPowerSupplyEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPowerSupplyEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPowerSupplyEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPowerSupplyEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPowerSupplyEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPowerSupplyEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGPowerSupplyEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGPowerSupplyEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGPowerSupplyEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGPowerSupplyEvent trap received 
 			iBMPSGPowerSupplyEventIdentifier=%parm[#1]% 
 			iBMPSGPowerSupplyEventSourceObjectPath=%parm[#2]% 
 			iBMPSGPowerSupplyEventTargetObjectPath=%parm[#3]% 
 			iBMPSGPowerSupplyEventSeverity=%parm[#4]% 
 			iBMPSGPowerSupplyEventdescription=%parm[#5]% 
-			iBMPSGPowerSupplyEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGPowerSupplyEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>24</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGErrorLogEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGErrorLogEvent</event-label>
-	<descr>
-&lt;p&gt;(null)&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGErrorLogEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGErrorLogEvent</event-label>
+      <descr>&lt;p>(null)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGErrorLogEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGErrorLogEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGErrorLogEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGErrorLogEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGErrorLogEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGErrorLogEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGErrorLogEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGErrorLogEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGErrorLogEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGErrorLogEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGErrorLogEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGErrorLogEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGErrorLogEvent trap received 
 			iBMPSGErrorLogEventIdentifier=%parm[#1]% 
 			iBMPSGErrorLogEventSourceObjectPath=%parm[#2]% 
 			iBMPSGErrorLogEventTargetObjectPath=%parm[#3]% 
 			iBMPSGErrorLogEventSeverity=%parm[#4]% 
 			iBMPSGErrorLogEventdescription=%parm[#5]% 
-			iBMPSGErrorLogEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGErrorLogEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>25</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/traps/iBMPSGRemoteLoginEvent</uei>
-	<event-label>UMSEVENT-MIB defined trap event: iBMPSGRemoteLoginEvent</event-label>
-	<descr>
-&lt;p&gt;(null)&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.159.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/traps/iBMPSGRemoteLoginEvent</uei>
+      <event-label>UMSEVENT-MIB defined trap event: iBMPSGRemoteLoginEvent</event-label>
+      <descr>&lt;p>(null)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRemoteLoginEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRemoteLoginEventIdentifier&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRemoteLoginEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRemoteLoginEventSourceObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRemoteLoginEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRemoteLoginEventTargetObjectPath&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRemoteLoginEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRemoteLoginEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRemoteLoginEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	iBMPSGRemoteLoginEventdescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	iBMPSGRemoteLoginEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	iBMPSGRemoteLoginEventTimeStamp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			iBMPSGRemoteLoginEvent trap received 
 			iBMPSGRemoteLoginEventIdentifier=%parm[#1]% 
 			iBMPSGRemoteLoginEventSourceObjectPath=%parm[#2]% 
 			iBMPSGRemoteLoginEventTargetObjectPath=%parm[#3]% 
 			iBMPSGRemoteLoginEventSeverity=%parm[#4]% 
 			iBMPSGRemoteLoginEventdescription=%parm[#5]% 
-			iBMPSGRemoteLoginEventTimeStamp=%parm[#6]%&lt;/p&gt;
+			iBMPSGRemoteLoginEventTimeStamp=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: UMSEVENT-MIB -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

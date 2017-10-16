@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,14 +30,11 @@ package org.opennms.smoketest.topo;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
-import javax.xml.bind.JAXB;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -52,6 +49,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -275,10 +273,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
         builder.setTime(new Date());
         builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            JAXB.marshal(builder.getEvent(), outputStream);
-            sendPost("/rest/events", new String(outputStream.toByteArray()), 204);
-        }
+        sendPost("/rest/events", JaxbUtils.marshal(builder.getEvent()), 204);
         Thread.sleep(5000); // Wait to allow the event to be processed
     }
 

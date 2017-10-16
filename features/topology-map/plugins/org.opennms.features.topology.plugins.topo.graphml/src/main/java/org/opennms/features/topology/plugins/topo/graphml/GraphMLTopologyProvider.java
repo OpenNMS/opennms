@@ -63,7 +63,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     private static TopologyProviderInfo createTopologyProviderInfo(GraphMLGraph graph) {
         String name = graph.getProperty(GraphMLProperties.LABEL, graph.getId());
         String description = graph.getProperty(GraphMLProperties.DESCRIPTION, DEFAULT_DESCRIPTION);
-        return new DefaultTopologyProviderInfo(name, description, true);
+        return new DefaultTopologyProviderInfo(name, description, null, true);
     }
 
     public enum VertexStatusProviderType {

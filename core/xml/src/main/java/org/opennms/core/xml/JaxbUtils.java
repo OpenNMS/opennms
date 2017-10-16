@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
@@ -206,6 +207,22 @@ public abstract class JaxbUtils {
 
     public static <T> T unmarshal(final Class<T> clazz, final Reader reader, final boolean validate) {
         return unmarshal(clazz, new InputSource(reader), null, validate);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputStream stream) {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            return unmarshal(clazz, reader, VALIDATE_IF_POSSIBLE);
+        } catch (final IOException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
+        }
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputStream stream, final boolean validate) {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            return unmarshal(clazz, new InputSource(reader), null, validate);
+        } catch (final IOException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
+        }
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final String xml) {

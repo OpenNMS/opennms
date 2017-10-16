@@ -28,20 +28,28 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
+import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.collection.api.AttributeType;
 
 @XmlRootElement(name = "comp-member")
 @XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("all")
-public class CompMember implements java.io.Serializable {
+public class CompMember implements Serializable, Comparable<CompMember> {
+
+    private static final Comparator COMPARATOR = new Comparator<CompMember>() {
+        @Override
+        public int compare(final CompMember o1, final CompMember o2) {
+            return o1.getName().compareTo(o2.getName());
+        }
+    };
 
     @XmlAttribute(name = "name", required = true)
     private String _name;
@@ -134,6 +142,11 @@ public class CompMember implements java.io.Serializable {
         attrib.setType(_type);
         attrib.setName(_name);
         return attrib;
+    }
+
+    @Override
+    public int compareTo(final CompMember o) {
+        return Objects.compare(this, o, COMPARATOR);
     }
 
 }

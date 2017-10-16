@@ -1,49 +1,45 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: IPV6-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.55.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rfc2465/traps/ipv6IfStateChange</uei>
-	<event-label>IPV6-MIB defined trap event: ipv6IfStateChange</event-label>
-	<descr>
-&lt;p&gt;An ipv6IfStateChange notification signifies
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.55.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc2465/traps/ipv6IfStateChange</uei>
+      <event-label>IPV6-MIB defined trap event: ipv6IfStateChange</event-label>
+      <descr>&lt;p>An ipv6IfStateChange notification signifies
 that there has been a change in the state of
 an ipv6 interface.  This notification should
 be generated when the interface's operational
-status transitions to or from the up(1) state.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+status transitions to or from the up(1) state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipv6IfDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	ipv6IfDescr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipv6IfOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	ipv6IfOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		up(1)
 		down(2)
 		noIfIdentifier(3)
 		unknown(4)
 		notPresent(5)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			ipv6IfStateChange trap received 
 			ipv6IfDescr=%parm[#1]% 
-			ipv6IfOperStatus=%parm[#2]%&lt;/p&gt;
+			ipv6IfOperStatus=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<!-- End of auto generated data from MIB: IPV6-MIB -->
+      <severity>Normal</severity>
+   </event>
 </events>

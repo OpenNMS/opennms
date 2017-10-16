@@ -1,718 +1,650 @@
-<!-- Start of auto generated data from MIB: COLUBRIS-802DOT11-MIB -->
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.4.5</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/coDot11SNRLevelNotification</uei>
-    <event-label>COLUBRIS-802DOT11-MIB defined trap event: coDot11SNRLevelNotification</event-label>
-    <descr>
-      &lt;p&gt;The average SNR level for all the stations using this virtual ap during the last three intervals is low.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coVirtualApSSID&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11CurrentSNRLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; coDot11SNRLevelNotification trap received ifIndex=%parm[#1]% ifDescr=%parm[#2]% coVirtualApSSID=%parm[#3]% coDot11CurrentSNRLevel=%parm[#4]%&lt;/p&gt;</logmsg>
-    <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%" alarm-type="1" />
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.4.5</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>2</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/coDot11AssociationNotification</uei>
-    <event-label>COLUBRIS-802DOT11-MIB defined trap event: coDot11AssociationNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when a new association is made or sent periodically using interval specified by coDot11AssociationNotificationInterval object.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11StationName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11StationSSID&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11StationIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11StationMACAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11SignalLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11SNR&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11TransmitRate&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11NumberOfUsers&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt; coDot11AssociationNotification trap received ifIndex=%parm[#1]% ifDescr=%parm[#2]% coDot11StationName=%parm[#3]% coDot11StationSSID=%parm[#4]% coDot11StationIPAddress=%parm[#5]% coDot11StationMACAddress=%parm[#6]% coDot11SignalLevel=%parm[#7]%
-      coDot11SNR=%parm[#8]% coDot11TransmitRate=%parm[#9]% coDot11NumberOfUsers=%parm[#10]%&lt;/p&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.4.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/coDot11SNRLevelNotification</uei>
+      <event-label>COLUBRIS-802DOT11-MIB defined trap event: coDot11SNRLevelNotification</event-label>
+      <descr>&lt;p>The average SNR level for all the stations using this virtual ap during the last three intervals is low.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      ifIndex&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifDescr&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coVirtualApSSID&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11CurrentSNRLevel&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> coDot11SNRLevelNotification trap received ifIndex=%parm[#1]% ifDescr=%parm[#2]% coVirtualApSSID=%parm[#3]% coDot11CurrentSNRLevel=%parm[#4]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%" alarm-type="1"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.4.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/coDot11AssociationNotification</uei>
+      <event-label>COLUBRIS-802DOT11-MIB defined trap event: coDot11AssociationNotification</event-label>
+      <descr>&lt;p>Sent when a new association is made or sent periodically using interval specified by coDot11AssociationNotificationInterval object.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      ifIndex&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifDescr&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11StationName&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11StationSSID&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11StationIPAddress&lt;/b>&lt;/td>&lt;td> %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11StationMACAddress&lt;/b>&lt;/td>&lt;td> %parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11SignalLevel&lt;/b>&lt;/td>&lt;td> %parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11SNR&lt;/b>&lt;/td>&lt;td> %parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11TransmitRate&lt;/b>&lt;/td>&lt;td> %parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11NumberOfUsers&lt;/b>&lt;/td>&lt;td> %parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">
+      &lt;p> coDot11AssociationNotification trap received ifIndex=%parm[#1]% ifDescr=%parm[#2]% coDot11StationName=%parm[#3]% coDot11StationSSID=%parm[#4]% coDot11StationIPAddress=%parm[#5]% coDot11StationMACAddress=%parm[#6]% coDot11SignalLevel=%parm[#7]%
+      coDot11SNR=%parm[#8]% coDot11TransmitRate=%parm[#9]% coDot11NumberOfUsers=%parm[#10]%&lt;/p>
     </logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.4.5</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>3</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/coDot11UnauthorizedAPNotification</uei>
-    <event-label>COLUBRIS-802DOT11-MIB defined trap event: coDot11UnauthorizedAPNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when a new unauthorized AP is detected.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11ScanSSID&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11ScanMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11ScanChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      coDot11ScanPHYType&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt; ieee802dot11a(1) ieee802dot11b(2) ieee802dot11g(3) &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; coDot11UnauthorizedAPNotification trap received ifIndex=%parm[#1]% ifDescr=%parm[#2]% coDot11ScanSSID=%parm[#3]% coDot11ScanMacAddress=%parm[#4]% coDot11ScanChannel=%parm[#5]% coDot11ScanPHYType=%parm[#6]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <!-- End of auto generated data from MIB: COLUBRIS-802DOT11-MIB -->
-  <!-- Start of auto generated data from MIB: COLUBRIS-MAINTENANCE-MIB -->
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/configurationUpdateNotification</uei>
-    <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: configurationUpdateNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when a configuration update was attempted from a remote server.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      configurationUpdateInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemConfigurationVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; configurationUpdateNotification trap received configurationUpdateInfo=%parm[#1]% systemConfigurationVersion=%parm[#2]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>2</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/configurationLocalUpdateNotification</uei>
-    <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: configurationLocalUpdateNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent whenever the configuration changes.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      configurationUpdateInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; configurationLocalUpdateNotification trap received configurationUpdateInfo=%parm[#1]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>3</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/certificateAboutToExpireNotification</uei>
-    <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: certificateAboutToExpireNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when a certificate is about to expire.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      certificateExpiryDate&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; certificateAboutToExpireNotification trap received certificateExpiryDate=%parm[#1]%&lt;/p&gt;</logmsg>
-    <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%" alarm-type="1" />
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>4</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/certificateExpiredNotification</uei>
-    <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: certificateExpiredNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when a certificate has expired.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      certificateExpiryDate&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; certificateExpiredNotification trap received certificateExpiryDate=%parm[#1]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>5</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/firmwareUpdateNotification</uei>
-    <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: firmwareUpdateNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when a firmware update was attempted from a remote server.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      firmwareUpdateInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemFirmwareRevision&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; firmwareUpdateNotification trap received firmwareUpdateInfo=%parm[#1]% systemFirmwareRevision=%parm[#2]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <!-- End of auto generated data from MIB: COLUBRIS-MAINTENANCE-MIB -->
-  <!-- Start of auto generated data from MIB: COLUBRIS-PUBLIC-ACCESS-MIB -->
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessStatusChangedTrap</uei>
-    <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessStatusChangedTrap</event-label>
-    <descr>
-      &lt;p&gt;This notification is sent whenever the authentication system status changes (up or down).&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt; up(1) down(2) &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessStatusChangedCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; publicAccessStatusChangedTrap trap received publicAccessStatus=%parm[#1]% publicAccessStatusChangedCause=%parm[#2]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>2</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersThresholdTrap</uei>
-    <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersThresholdTrap</event-label>
-    <descr>
-      &lt;p&gt;This notification is sent whenever publicAccessUsersThreshold is exceeded.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUsersCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; publicAccessUsersThresholdTrap trap received publicAccessUsersCount=%parm[#1]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>3</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersSessionStartTrap</uei>
-    <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersSessionStartTrap</event-label>
-    <descr>
-      &lt;p&gt;When a user successfully authenticate itself a trap is generated if the publicAccessUsersSessionTrapEnabled is set to True.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; publicAccessUsersSessionStartTrap trap received publicAccessUserName=%parm[#1]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>4</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersSessionStopTrap</uei>
-    <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersSessionStopTrap</event-label>
-    <descr>
-      &lt;p&gt;When a user terminate his session a trap is generated if the publicAccessUsersSessionTrapEnabled is set to True.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; publicAccessUsersSessionStopTrap trap received publicAccessUserName=%parm[#1]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>5</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersSessionFailTrap</uei>
-    <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersSessionFailTrap</event-label>
-    <descr>
-      &lt;p&gt;When a user authentication fail a trap is generated if the publicAccessUsersSessionTrapEnabled is set to True.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; publicAccessUsersSessionFailTrap trap received publicAccessUserName=%parm[#1]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersLoggedInTrap</uei>
-    <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersLoggedInTrap</event-label>
-    <descr>
-      &lt;p&gt;This is sent when a user is authenticated or periodically (see publicAccessUSersLoggedInTrapInterval) if the publicAccessUsersLoggedInTrapEnabled is set to True.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUsersCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserStationIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserApMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserConnectedInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserSessionDuration&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserBytesReceived&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessUserBytesSent&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt; publicAccessUsersLoggedInTrap trap received publicAccessUsersCount=%parm[#1]% publicAccessUserName=%parm[#2]% publicAccessUserStationIpAddress=%parm[#3]% publicAccessUserStationMacAddress=%parm[#4]% publicAccessUserApMacAddress=%parm[#5]%
-      publicAccessUserConnectedInterface=%parm[#6]% publicAccessUserSessionDuration=%parm[#7]% publicAccessUserBytesReceived=%parm[#8]% publicAccessUserBytesSent=%parm[#9]%&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.4.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/coDot11UnauthorizedAPNotification</uei>
+      <event-label>COLUBRIS-802DOT11-MIB defined trap event: coDot11UnauthorizedAPNotification</event-label>
+      <descr>&lt;p>Sent when a new unauthorized AP is detected.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      ifIndex&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifDescr&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11ScanSSID&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11ScanMacAddress&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11ScanChannel&lt;/b>&lt;/td>&lt;td> %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      coDot11ScanPHYType&lt;/b>&lt;/td>&lt;td> %parm[#6]%;&lt;/td>&lt;td>&lt;p;> ieee802dot11a(1) ieee802dot11b(2) ieee802dot11g(3) &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> coDot11UnauthorizedAPNotification trap received ifIndex=%parm[#1]% ifDescr=%parm[#2]% coDot11ScanSSID=%parm[#3]% coDot11ScanMacAddress=%parm[#4]% coDot11ScanChannel=%parm[#5]% coDot11ScanPHYType=%parm[#6]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/configurationUpdateNotification</uei>
+      <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: configurationUpdateNotification</event-label>
+      <descr>&lt;p>Sent when a configuration update was attempted from a remote server.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      configurationUpdateInfo&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      systemConfigurationVersion&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> configurationUpdateNotification trap received configurationUpdateInfo=%parm[#1]% systemConfigurationVersion=%parm[#2]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/configurationLocalUpdateNotification</uei>
+      <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: configurationLocalUpdateNotification</event-label>
+      <descr>&lt;p>Sent whenever the configuration changes.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      configurationUpdateInfo&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> configurationLocalUpdateNotification trap received configurationUpdateInfo=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/certificateAboutToExpireNotification</uei>
+      <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: certificateAboutToExpireNotification</event-label>
+      <descr>&lt;p>Sent when a certificate is about to expire.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      certificateExpiryDate&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> certificateAboutToExpireNotification trap received certificateExpiryDate=%parm[#1]%&lt;/p></logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%" alarm-type="1"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/certificateExpiredNotification</uei>
+      <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: certificateExpiredNotification</event-label>
+      <descr>&lt;p>Sent when a certificate has expired.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      certificateExpiryDate&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> certificateExpiredNotification trap received certificateExpiryDate=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/firmwareUpdateNotification</uei>
+      <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: firmwareUpdateNotification</event-label>
+      <descr>&lt;p>Sent when a firmware update was attempted from a remote server.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      firmwareUpdateInfo&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      systemFirmwareRevision&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> firmwareUpdateNotification trap received firmwareUpdateInfo=%parm[#1]% systemFirmwareRevision=%parm[#2]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/publicAccessStatusChangedTrap</uei>
+      <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessStatusChangedTrap</event-label>
+      <descr>&lt;p>This notification is sent whenever the authentication system status changes (up or down).&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      publicAccessStatus&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;> up(1) down(2) &lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessStatusChangedCause&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> publicAccessStatusChangedTrap trap received publicAccessStatus=%parm[#1]% publicAccessStatusChangedCause=%parm[#2]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersThresholdTrap</uei>
+      <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersThresholdTrap</event-label>
+      <descr>&lt;p>This notification is sent whenever publicAccessUsersThreshold is exceeded.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      publicAccessUsersCount&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> publicAccessUsersThresholdTrap trap received publicAccessUsersCount=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersSessionStartTrap</uei>
+      <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersSessionStartTrap</event-label>
+      <descr>&lt;p>When a user successfully authenticate itself a trap is generated if the publicAccessUsersSessionTrapEnabled is set to True.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserName&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> publicAccessUsersSessionStartTrap trap received publicAccessUserName=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersSessionStopTrap</uei>
+      <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersSessionStopTrap</event-label>
+      <descr>&lt;p>When a user terminate his session a trap is generated if the publicAccessUsersSessionTrapEnabled is set to True.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserName&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> publicAccessUsersSessionStopTrap trap received publicAccessUserName=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersSessionFailTrap</uei>
+      <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersSessionFailTrap</event-label>
+      <descr>&lt;p>When a user authentication fail a trap is generated if the publicAccessUsersSessionTrapEnabled is set to True.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserName&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> publicAccessUsersSessionFailTrap trap received publicAccessUserName=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersLoggedInTrap</uei>
+      <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersLoggedInTrap</event-label>
+      <descr>&lt;p>This is sent when a user is authenticated or periodically (see publicAccessUSersLoggedInTrapInterval) if the publicAccessUsersLoggedInTrapEnabled is set to True.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      publicAccessUsersCount&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserName&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserStationIpAddress&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserStationMacAddress&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserApMacAddress&lt;/b>&lt;/td>&lt;td> %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserConnectedInterface&lt;/b>&lt;/td>&lt;td> %parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserSessionDuration&lt;/b>&lt;/td>&lt;td> %parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserBytesReceived&lt;/b>&lt;/td>&lt;td> %parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessUserBytesSent&lt;/b>&lt;/td>&lt;td> %parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">
+      &lt;p> publicAccessUsersLoggedInTrap trap received publicAccessUsersCount=%parm[#1]% publicAccessUserName=%parm[#2]% publicAccessUserStationIpAddress=%parm[#3]% publicAccessUserStationMacAddress=%parm[#4]% publicAccessUserApMacAddress=%parm[#5]%
+      publicAccessUserConnectedInterface=%parm[#6]% publicAccessUserSessionDuration=%parm[#7]% publicAccessUserBytesReceived=%parm[#8]% publicAccessUserBytesSent=%parm[#9]%&lt;/p>
     </logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <!-- End of auto generated data from MIB: COLUBRIS-PUBLIC-ACCESS-MIB -->
-  <!-- Start of auto generated data from MIB: COLUBRIS-PUBLIC-ACCESS-RETENTION-MIB -->
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.15.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessRetentionSessionMaxCountReachedTrap</uei>
-    <event-label>COLUBRIS-PUBLIC-ACCESS-RETENTION-MIB defined trap event: publicAccessRetentionSessionMaxCountReachedTrap</event-label>
-    <descr>
-      &lt;p&gt;This notification is sent whenever the number of session exceed the value of publicAccessRetentionSessionsMaxCount.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessRetentionSessionsMaxCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      publicAccessRetentionSessionsMaxTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; publicAccessRetentionSessionMaxCountReachedTrap trap received publicAccessRetentionSessionsMaxCount=%parm[#1]% publicAccessRetentionSessionsMaxTime=%parm[#2]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <!-- End of auto generated data from MIB: COLUBRIS-PUBLIC-ACCESS-RETENTION-MIB -->
-  <!-- Start of auto generated data from MIB: COLUBRIS-SATELLITE-MANAGEMENT-MIB -->
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.7.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/satelliteUpNotification</uei>
-    <event-label>COLUBRIS-SATELLITE-MANAGEMENT-MIB defined trap event: satelliteUpNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when a new satellite is detected.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteSSID&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; satelliteUpNotification trap received satelliteName=%parm[#1]% satelliteDeviceId=%parm[#2]% satelliteMacAddress=%parm[#3]% satelliteIpAddress=%parm[#4]% satelliteSSID=%parm[#5]%&lt;/p&gt;</logmsg>
-    <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%" alarm-type="1" />
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.7.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>2</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/satelliteDownNotification</uei>
-    <event-label>COLUBRIS-SATELLITE-MANAGEMENT-MIB defined trap event: satelliteDownNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when a satellite becomes unreachable.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      satelliteSSID&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; satelliteDownNotification trap received satelliteName=%parm[#1]% satelliteDeviceId=%parm[#2]% satelliteMacAddress=%parm[#3]% satelliteIpAddress=%parm[#4]% satelliteSSID=%parm[#5]%&lt;/p&gt;</logmsg>
-    <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%" alarm-type="1" />
-  </event>
-  <!-- End of auto generated data from MIB: COLUBRIS-SATELLITE-MANAGEMENT-MIB -->
-  <!-- Start of auto generated data from MIB: COLUBRIS-SYSLOG-MIB -->
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.3.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/syslogSeverityNotification</uei>
-    <event-label>COLUBRIS-SYSLOG-MIB defined trap event: syslogSeverityNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when the device generated a syslog message that is of the right severity level. This severity level is set by syslogTrapSeverityLevel.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      syslogMsgNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      syslogMsgFacility&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      syslogMsgSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt; emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) info(7) debug(8) &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      syslogMsgText&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; syslogSeverityNotification trap received syslogMsgNumber=%parm[#1]% syslogMsgFacility=%parm[#2]% syslogMsgSeverity=%parm[#3]% syslogMsgText=%parm[#4]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.3.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>2</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/syslogRegExMatchNotification</uei>
-    <event-label>COLUBRIS-SYSLOG-MIB defined trap event: syslogRegExMatchNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when the device generated a syslog message that matches the regular expression specified in syslogMessageRegEx.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      syslogMsgNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      syslogMsgFacility&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      syslogMsgSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt; emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) info(7) debug(8) &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      syslogMsgText&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; syslogRegExMatchNotification trap received syslogMsgNumber=%parm[#1]% syslogMsgFacility=%parm[#2]% syslogMsgSeverity=%parm[#3]% syslogMsgText=%parm[#4]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <!-- End of auto generated data from MIB: COLUBRIS-SYSLOG-MIB -->
-  <!-- Start of auto generated data from MIB: COLUBRIS-SYSTEM-MIB -->
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.6.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/adminAccessAuthFailureNotification</uei>
-    <event-label>COLUBRIS-SYSTEM-MIB defined trap event: adminAccessAuthFailureNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent after an administrator authentication failure.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      adminAccessInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; adminAccessAuthFailureNotification trap received adminAccessInfo=%parm[#1]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.6.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>2</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/adminAccessLoginNotification</uei>
-    <event-label>COLUBRIS-SYSTEM-MIB defined trap event: adminAccessLoginNotification</event-label>
-    <descr>&lt;p&gt;Sent after an administrator is sucessfully authenticated.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; adminAccessLoginNotification trap received&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.6.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>3</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/systemColdStart</uei>
-    <event-label>COLUBRIS-SYSTEM-MIB defined trap event: systemColdStart</event-label>
-    <descr>
-      &lt;p&gt;Sent at system boot up.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemProductName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemFirmwareRevision&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemConfigurationVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; systemColdStart trap received systemProductName=%parm[#1]% systemFirmwareRevision=%parm[#2]% systemConfigurationVersion=%parm[#3]% systemSerialNumber=%parm[#4]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.6.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>4</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/systemHeartbeatNotification</uei>
-    <event-label>COLUBRIS-SYSTEM-MIB defined trap event: systemHeartbeatNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent every heartbeatPeriod.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemWanPortIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      systemUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifOutUcastPkts&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifInUcastPkts&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifOutErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifInErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifOutUcastPkts&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifInUcastPkts&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifOutErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifInErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifOutUcastPkts&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifInUcastPkts&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifOutErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#15]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      ifInErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#16]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt; systemHeartbeatNotification trap received systemSerialNumber=%parm[#1]% systemMacAddress=%parm[#2]% systemWanPortIpAddress=%parm[#3]% systemUpTime=%parm[#4]% ifOutUcastPkts=%parm[#5]% ifInUcastPkts=%parm[#6]% ifOutErrors=%parm[#7]%
-      ifInErrors=%parm[#8]% ifOutUcastPkts=%parm[#9]% ifInUcastPkts=%parm[#10]% ifOutErrors=%parm[#11]% ifInErrors=%parm[#12]% ifOutUcastPkts=%parm[#13]% ifInUcastPkts=%parm[#14]% ifOutErrors=%parm[#15]% ifInErrors=%parm[#16]%&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.15.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/publicAccessRetentionSessionMaxCountReachedTrap</uei>
+      <event-label>COLUBRIS-PUBLIC-ACCESS-RETENTION-MIB defined trap event: publicAccessRetentionSessionMaxCountReachedTrap</event-label>
+      <descr>&lt;p>This notification is sent whenever the number of session exceed the value of publicAccessRetentionSessionsMaxCount.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      publicAccessRetentionSessionsMaxCount&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      publicAccessRetentionSessionsMaxTime&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> publicAccessRetentionSessionMaxCountReachedTrap trap received publicAccessRetentionSessionsMaxCount=%parm[#1]% publicAccessRetentionSessionsMaxTime=%parm[#2]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.7.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/satelliteUpNotification</uei>
+      <event-label>COLUBRIS-SATELLITE-MANAGEMENT-MIB defined trap event: satelliteUpNotification</event-label>
+      <descr>&lt;p>Sent when a new satellite is detected.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      satelliteName&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      satelliteDeviceId&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      satelliteMacAddress&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      satelliteIpAddress&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      satelliteSSID&lt;/b>&lt;/td>&lt;td> %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> satelliteUpNotification trap received satelliteName=%parm[#1]% satelliteDeviceId=%parm[#2]% satelliteMacAddress=%parm[#3]% satelliteIpAddress=%parm[#4]% satelliteSSID=%parm[#5]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%" alarm-type="1"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.7.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/satelliteDownNotification</uei>
+      <event-label>COLUBRIS-SATELLITE-MANAGEMENT-MIB defined trap event: satelliteDownNotification</event-label>
+      <descr>&lt;p>Sent when a satellite becomes unreachable.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      satelliteName&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      satelliteDeviceId&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      satelliteMacAddress&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      satelliteIpAddress&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      satelliteSSID&lt;/b>&lt;/td>&lt;td> %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> satelliteDownNotification trap received satelliteName=%parm[#1]% satelliteDeviceId=%parm[#2]% satelliteMacAddress=%parm[#3]% satelliteIpAddress=%parm[#4]% satelliteSSID=%parm[#5]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%" alarm-type="1"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.3.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/syslogSeverityNotification</uei>
+      <event-label>COLUBRIS-SYSLOG-MIB defined trap event: syslogSeverityNotification</event-label>
+      <descr>&lt;p>Sent when the device generated a syslog message that is of the right severity level. This severity level is set by syslogTrapSeverityLevel.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      syslogMsgNumber&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      syslogMsgFacility&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      syslogMsgSeverity&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;> emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) info(7) debug(8) &lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      syslogMsgText&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> syslogSeverityNotification trap received syslogMsgNumber=%parm[#1]% syslogMsgFacility=%parm[#2]% syslogMsgSeverity=%parm[#3]% syslogMsgText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.3.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/syslogRegExMatchNotification</uei>
+      <event-label>COLUBRIS-SYSLOG-MIB defined trap event: syslogRegExMatchNotification</event-label>
+      <descr>&lt;p>Sent when the device generated a syslog message that matches the regular expression specified in syslogMessageRegEx.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      syslogMsgNumber&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      syslogMsgFacility&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      syslogMsgSeverity&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;> emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) info(7) debug(8) &lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      syslogMsgText&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> syslogRegExMatchNotification trap received syslogMsgNumber=%parm[#1]% syslogMsgFacility=%parm[#2]% syslogMsgSeverity=%parm[#3]% syslogMsgText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.6.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/adminAccessAuthFailureNotification</uei>
+      <event-label>COLUBRIS-SYSTEM-MIB defined trap event: adminAccessAuthFailureNotification</event-label>
+      <descr>&lt;p>Sent after an administrator authentication failure.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      adminAccessInfo&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> adminAccessAuthFailureNotification trap received adminAccessInfo=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.6.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/adminAccessLoginNotification</uei>
+      <event-label>COLUBRIS-SYSTEM-MIB defined trap event: adminAccessLoginNotification</event-label>
+      <descr>&lt;p>Sent after an administrator is sucessfully authenticated.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> adminAccessLoginNotification trap received&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.6.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/systemColdStart</uei>
+      <event-label>COLUBRIS-SYSTEM-MIB defined trap event: systemColdStart</event-label>
+      <descr>&lt;p>Sent at system boot up.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      systemProductName&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      systemFirmwareRevision&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      systemConfigurationVersion&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      systemSerialNumber&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> systemColdStart trap received systemProductName=%parm[#1]% systemFirmwareRevision=%parm[#2]% systemConfigurationVersion=%parm[#3]% systemSerialNumber=%parm[#4]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.6.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/systemHeartbeatNotification</uei>
+      <event-label>COLUBRIS-SYSTEM-MIB defined trap event: systemHeartbeatNotification</event-label>
+      <descr>&lt;p>Sent every heartbeatPeriod.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      systemSerialNumber&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      systemMacAddress&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      systemWanPortIpAddress&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      systemUpTime&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifOutUcastPkts&lt;/b>&lt;/td>&lt;td> %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifInUcastPkts&lt;/b>&lt;/td>&lt;td> %parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifOutErrors&lt;/b>&lt;/td>&lt;td> %parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifInErrors&lt;/b>&lt;/td>&lt;td> %parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifOutUcastPkts&lt;/b>&lt;/td>&lt;td> %parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifInUcastPkts&lt;/b>&lt;/td>&lt;td> %parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifOutErrors&lt;/b>&lt;/td>&lt;td> %parm[#11]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifInErrors&lt;/b>&lt;/td>&lt;td> %parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifOutUcastPkts&lt;/b>&lt;/td>&lt;td> %parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifInUcastPkts&lt;/b>&lt;/td>&lt;td> %parm[#14]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifOutErrors&lt;/b>&lt;/td>&lt;td> %parm[#15]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      ifInErrors&lt;/b>&lt;/td>&lt;td> %parm[#16]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">
+      &lt;p> systemHeartbeatNotification trap received systemSerialNumber=%parm[#1]% systemMacAddress=%parm[#2]% systemWanPortIpAddress=%parm[#3]% systemUpTime=%parm[#4]% ifOutUcastPkts=%parm[#5]% ifInUcastPkts=%parm[#6]% ifOutErrors=%parm[#7]%
+      ifInErrors=%parm[#8]% ifOutUcastPkts=%parm[#9]% ifInUcastPkts=%parm[#10]% ifOutErrors=%parm[#11]% ifInErrors=%parm[#12]% ifOutUcastPkts=%parm[#13]% ifInUcastPkts=%parm[#14]% ifOutErrors=%parm[#15]% ifInErrors=%parm[#16]%&lt;/p>
     </logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <!-- End of auto generated data from MIB: COLUBRIS-SYSTEM-MIB -->
-  <!-- Start of auto generated data from MIB: COLUBRIS-TOOLS-MIB -->
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.12.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/traceStatusNotification</uei>
-    <event-label>COLUBRIS-TOOLS-MIB defined trap event: traceStatusNotification</event-label>
-    <descr>
-      &lt;p&gt;Sent when the user trigs the IP Trace tool either by starting a new trace or stopping an existing session.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      traceCaptureStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt; stop(1) start(2) &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; traceStatusNotification trap received traceCaptureStatus=%parm[#1]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <!-- End of auto generated data from MIB: COLUBRIS-TOOLS-MIB -->
-  <!-- Start of auto generated data from MIB: COLUBRIS-VPN-MIB -->
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.10.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/colubrisVpnNewUserNotification</uei>
-    <event-label>COLUBRIS-VPN-MIB defined trap event: colubrisVpnNewUserNotification</event-label>
-    <descr>
-      &lt;p&gt;Generated when a VPN user has been granted access to the system.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      vpnClientConnectionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      vpnClientIdentity&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      vpnClientRemoteIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; colubrisVpnNewUserNotification trap received vpnClientConnectionType=%parm[#1]% vpnClientIdentity=%parm[#2]% vpnClientRemoteIpAddress=%parm[#3]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.8744.5.10.2</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>2</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendors/colubris/traps/colubrisVpnRemoveUserNotification</uei>
-    <event-label>COLUBRIS-VPN-MIB defined trap event: colubrisVpnRemoveUserNotification</event-label>
-    <descr>
-      &lt;p&gt;Generated when a VPN user disconnects from the system.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      vpnClientIdentity&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-      vpnClientUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-    </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; colubrisVpnRemoveUserNotification trap received vpnClientIdentity=%parm[#1]% vpnClientUpTime=%parm[#2]%&lt;/p&gt;</logmsg>
-    <severity>Indeterminate</severity>
-  </event>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.12.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/traceStatusNotification</uei>
+      <event-label>COLUBRIS-TOOLS-MIB defined trap event: traceStatusNotification</event-label>
+      <descr>&lt;p>Sent when the user trigs the IP Trace tool either by starting a new trace or stopping an existing session.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      traceCaptureStatus&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;> stop(1) start(2) &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> traceStatusNotification trap received traceCaptureStatus=%parm[#1]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.10.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/colubrisVpnNewUserNotification</uei>
+      <event-label>COLUBRIS-VPN-MIB defined trap event: colubrisVpnNewUserNotification</event-label>
+      <descr>&lt;p>Generated when a VPN user has been granted access to the system.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      vpnClientConnectionType&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      vpnClientIdentity&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      vpnClientRemoteIpAddress&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> colubrisVpnNewUserNotification trap received vpnClientConnectionType=%parm[#1]% vpnClientIdentity=%parm[#2]% vpnClientRemoteIpAddress=%parm[#3]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8744.5.10.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/colubris/traps/colubrisVpnRemoveUserNotification</uei>
+      <event-label>COLUBRIS-VPN-MIB defined trap event: colubrisVpnRemoveUserNotification</event-label>
+      <descr>&lt;p>Generated when a VPN user disconnects from the system.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>
+      vpnClientIdentity&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr> &lt;tr>&lt;td>&lt;b>
+      vpnClientUpTime&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> colubrisVpnRemoveUserNotification trap received vpnClientIdentity=%parm[#1]% vpnClientUpTime=%parm[#2]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+   </event>
 </events>
-<!-- End of auto generated data from MIB: COLUBRIS-VPN-MIB -->

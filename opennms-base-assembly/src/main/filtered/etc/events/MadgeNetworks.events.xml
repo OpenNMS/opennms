@@ -1,226 +1,212 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: MADGECAU-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/backupPathStateChange</uei>
-	<event-label>MADGECAU-MIB defined trap event: backupPathStateChange</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when the state of the backup 
-ring changes.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/backupPathStateChange</uei>
+      <event-label>MADGECAU-MIB defined trap event: backupPathStateChange</event-label>
+      <descr>&lt;p>This trap is sent when the state of the backup 
+ring changes.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauTopBackupRing&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	madgeCauTopBackupRing&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		beaconing(1)
 		normal(2)
 		badly-cabled(3)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			backupPathStateChange trap received 
-			madgeCauTopBackupRing=%parm[#1]%&lt;/p&gt;
+			madgeCauTopBackupRing=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/backupPathStateUse</uei>
-	<event-label>MADGECAU-MIB defined trap event: backupPathStateUse</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when the state of the backup 
-usage changes.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/backupPathStateUse</uei>
+      <event-label>MADGECAU-MIB defined trap event: backupPathStateUse</event-label>
+      <descr>&lt;p>This trap is sent when the state of the backup 
+usage changes.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauTopBackupUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	madgeCauTopBackupUsed&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unUsed(1)
 		used(2)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			backupPathStateUse trap received 
-			madgeCauTopBackupUsed=%parm[#1]%&lt;/p&gt;
+			madgeCauTopBackupUsed=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/wrapStateChange</uei>
-	<event-label>MADGECAU-MIB defined trap event: wrapStateChange</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when the wrap state of the cau  
-changes.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/wrapStateChange</uei>
+      <event-label>MADGECAU-MIB defined trap event: wrapStateChange</event-label>
+      <descr>&lt;p>This trap is sent when the wrap state of the cau  
+changes.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauTopWrap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	madgeCauTopWrap&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		normal(1)
 		wrap-ri(2)
 		wrap-ro(3)
 		wrap-both(4)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			wrapStateChange trap received 
-			madgeCauTopWrap=%parm[#1]%&lt;/p&gt;
+			madgeCauTopWrap=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/lamPortDisabled</uei>
-	<event-label>MADGECAU-MIB defined trap event: lamPortDisabled</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when a LAM port is disabled due to
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/lamPortDisabled</uei>
+      <event-label>MADGECAU-MIB defined trap event: lamPortDisabled</event-label>
+      <descr>&lt;p>This trap is sent when a LAM port is disabled due to
 either a wrong speed node inserting or a faulty node
-being detected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			lamPortDisabled trap received&lt;/p&gt;
+being detected.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			lamPortDisabled trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/mCaufanSpeedFailed</uei>
-	<event-label>MADGECAU-MIB defined trap event: mCaufanSpeedFailed</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when the fan has failed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/mCaufanSpeedFailed</uei>
+      <event-label>MADGECAU-MIB defined trap event: mCaufanSpeedFailed</event-label>
+      <descr>&lt;p>This trap is sent when the fan has failed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauInfoFanSpeed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	madgeCauInfoFanSpeed&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			mCaufanSpeedFailed trap received 
-			madgeCauInfoFanSpeed=%parm[#1]%&lt;/p&gt;
+			madgeCauInfoFanSpeed=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/temperatureExceeded</uei>
-	<event-label>MADGECAU-MIB defined trap event: temperatureExceeded</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when the temperature of the 
-device has exceeded safe limits.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/temperatureExceeded</uei>
+      <event-label>MADGECAU-MIB defined trap event: temperatureExceeded</event-label>
+      <descr>&lt;p>This trap is sent when the temperature of the 
+device has exceeded safe limits.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauInfoTherm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	madgeCauInfoTherm&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			temperatureExceeded trap received 
-			madgeCauInfoTherm=%parm[#1]%&lt;/p&gt;
+			madgeCauInfoTherm=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/killInformation</uei>
-	<event-label>MADGECAU-MIB defined trap event: killInformation</event-label>
-	<descr>
-&lt;p&gt;A node has been noticed, and possibly removed from or
-reinserted onto the ring.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/killInformation</uei>
+      <event-label>MADGECAU-MIB defined trap event: killInformation</event-label>
+      <descr>&lt;p>A node has been noticed, and possibly removed from or
+reinserted onto the ring.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauKillNodeAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	madgeCauKillNodeAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauKillReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	madgeCauKillReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		reasonUnknown(1)
 		pmViolation(2)
 		pmUnsafe(3)
@@ -231,56 +217,54 @@ reinserted onto the ring.&lt;/p&gt;&lt;table&gt;
 		ringPurges(8)
 		isolatingErrors(9)
 		wrongNode(10)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauKillStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	madgeCauKillStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		information(1)
 		aboutToKill(2)
 		killFailed(3)
 		killed(4)
 		killAbandoned(5)
 		resurrected(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			killInformation trap received 
 			madgeCauKillNodeAddress=%parm[#1]% 
 			madgeCauKillReason=%parm[#2]% 
-			madgeCauKillStatus=%parm[#3]%&lt;/p&gt;
+			madgeCauKillStatus=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/killInformation2</uei>
-	<event-label>MADGECAU-MIB defined trap event: killInformation2</event-label>
-	<descr>
-&lt;p&gt;A node has been noticed, and possibly removed from or
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/killInformation2</uei>
+      <event-label>MADGECAU-MIB defined trap event: killInformation2</event-label>
+      <descr>&lt;p>A node has been noticed, and possibly removed from or
 reinserted onto the ring. Same as killInformation
-but with extra information.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+but with extra information.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauKillNodeAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	madgeCauKillNodeAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauKillReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	madgeCauKillReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		reasonUnknown(1)
 		pmViolation(2)
 		pmUnsafe(3)
@@ -291,123 +275,117 @@ but with extra information.&lt;/p&gt;&lt;table&gt;
 		ringPurges(8)
 		isolatingErrors(9)
 		wrongNode(10)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauKillStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	madgeCauKillStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		information(1)
 		aboutToKill(2)
 		killFailed(3)
 		killed(4)
 		killAbandoned(5)
 		resurrected(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauKillLamNo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	madgeCauKillLamNo&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauKillPortNo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	madgeCauKillPortNo&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			killInformation2 trap received 
 			madgeCauKillNodeAddress=%parm[#1]% 
 			madgeCauKillReason=%parm[#2]% 
 			madgeCauKillStatus=%parm[#3]% 
 			madgeCauKillLamNo=%parm[#4]% 
-			madgeCauKillPortNo=%parm[#5]%&lt;/p&gt;
+			madgeCauKillPortNo=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/lamPortDisabled2</uei>
-	<event-label>MADGECAU-MIB defined trap event: lamPortDisabled2</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when a LAM port is disabled due to
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/lamPortDisabled2</uei>
+      <event-label>MADGECAU-MIB defined trap event: lamPortDisabled2</event-label>
+      <descr>&lt;p>This trap is sent when a LAM port is disabled due to
 either a wrong speed node inserting or a faulty node
-being detected.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+being detected.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauTrapInfoLamNo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	madgeCauTrapInfoLamNo&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauTrapInfoPortNo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	madgeCauTrapInfoPortNo&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauTrapInfoState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	madgeCauTrapInfoState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		noNode(1)
 		inserted(2)
 		wrongSpeed(3)
 		fault(4)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lamPortDisabled2 trap received 
 			madgeCauTrapInfoLamNo=%parm[#1]% 
 			madgeCauTrapInfoPortNo=%parm[#2]% 
-			madgeCauTrapInfoState=%parm[#3]%&lt;/p&gt;
+			madgeCauTrapInfoState=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.494.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/madge/traps/lamStateChanged</uei>
-	<event-label>MADGECAU-MIB defined trap event: lamStateChanged</event-label>
-	<descr>
-&lt;p&gt;A LAM has joined or left the ring.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.494.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/madge/traps/lamStateChanged</uei>
+      <event-label>MADGECAU-MIB defined trap event: lamStateChanged</event-label>
+      <descr>&lt;p>A LAM has joined or left the ring.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauTrapInfoLamNo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	madgeCauTrapInfoLamNo&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	madgeCauTrapInfoState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	madgeCauTrapInfoState&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		noNode(1)
 		inserted(2)
 		wrongSpeed(3)
 		fault(4)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lamStateChanged trap received 
 			madgeCauTrapInfoLamNo=%parm[#1]% 
-			madgeCauTrapInfoState=%parm[#2]%&lt;/p&gt;
+			madgeCauTrapInfoState=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<!-- End of auto generated data from MIB: MADGECAU-MIB -->
+      <severity>Warning</severity>
+   </event>
 </events>

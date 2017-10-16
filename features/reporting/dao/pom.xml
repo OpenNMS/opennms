@@ -34,6 +34,10 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.xml</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.model</artifactId>
     </dependency>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,20 @@
 
 package org.opennms.features.jmxconfiggenerator.graphs;
 
-import org.apache.commons.lang.StringUtils;
-import org.opennms.features.jmxconfiggenerator.log.LogAdapter;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxCollection;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-
-import javax.xml.bind.JAXB;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.apache.commons.lang.StringUtils;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.jmxconfiggenerator.log.LogAdapter;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
@@ -61,24 +61,19 @@ public class JmxConfigReader {
     }
 
     protected Collection<Report> generateReportsByJmxDatacollectionConfig(InputStream inputConfigStream) {
-        return generateReportsByJmxDatacollectionConfig(
-                JAXB.unmarshal(
-                        inputConfigStream,
-                        JmxDatacollectionConfig.class));
+        return generateReportsByJmxDatacollectionConfig(JaxbUtils.unmarshal(JmxDatacollectionConfig.class, inputConfigStream));
     }
 
     public Collection<Report> generateReportsByJmxDatacollectionConfig(String inputConfigFileName) {
-        return generateReportsByJmxDatacollectionConfig(
-                JAXB.unmarshal(
-                    new File(inputConfigFileName), 
-                    JmxDatacollectionConfig.class));
+        final JmxDatacollectionConfig config = JaxbUtils.unmarshal(JmxDatacollectionConfig.class, new File(inputConfigFileName));
+        return generateReportsByJmxDatacollectionConfig(config);
     }
 
     public Collection<Report> generateReportsByJmxDatacollectionConfig(JmxDatacollectionConfig inputConfig) {
         Collection<Report> reports = new ArrayList<>();
-        for (JmxCollection jmxCollection : inputConfig.getJmxCollection()) {
+        for (JmxCollection jmxCollection : inputConfig.getJmxCollectionList()) {
             logger.debug("jmxCollection: '{}'", jmxCollection.getName());
-            for (Mbean mbean : jmxCollection.getMbeans().getMbean()) {
+            for (Mbean mbean : jmxCollection.getMbeans()) {
                 reports.addAll(generateMbeanReportsByMBean(mbean));
                 reports.addAll(generateAttributeReportsByMBean(mbean));
 
@@ -91,7 +86,7 @@ public class JmxConfigReader {
 
     private Collection<Report> generateAttributeReportsByMBean(Mbean mbean) {
         Collection<Report> reports = new ArrayList<>();
-        for (Attrib attrib : mbean.getAttrib()) {
+        for (Attrib attrib : mbean.getAttribList()) {
             final String title = String.format("%s[%s]", mbean.getObjectname().toString() , attrib.getName());
             final String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + attrib.getAlias() + "." + ATTRIBUTEREPORT;
             Report report = new Report(reportId, title, title, "verticalLabel");
@@ -104,11 +99,11 @@ public class JmxConfigReader {
 
     private Collection<Report> generateMbeanReportsByMBean(Mbean mbean) {
         Collection<Report> reports = new ArrayList<>();
-        if (!mbean.getAttrib().isEmpty()) {
+        if (!mbean.getAttribList().isEmpty()) {
 
             String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + MBEANREPORT;
             Report report = new Report(reportId, mbean.getName(), mbean.getName(), "verticalLabel");
-            for (Attrib attrib : mbean.getAttrib()) {
+            for (Attrib attrib : mbean.getAttribList()) {
                 report.addGraph(new Graph(attrib.getAlias(), attrib.getName(), attrib.getAlias(), Colors.getNextColor(), Colors.getNextColor(), Colors.getNextColor()));
             }
             reports.add(report);
@@ -120,12 +115,12 @@ public class JmxConfigReader {
     private Collection<Report> generateCompositeReportsByMBean(Mbean mbean) {
         Collection<Report> reports = new ArrayList<>();
 
-        for (CompAttrib compAttrib : mbean.getCompAttrib()) {
+        for (CompAttrib compAttrib : mbean.getCompAttribList()) {
 
             String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + compAttrib.getName() + "." + COMPOSITEREPORT;
 
             Report report = new Report(reportId, reportId, reportId, "verticalLabel");
-            for (CompMember compMember : compAttrib.getCompMember()) {
+            for (CompMember compMember : compAttrib.getCompMemberList()) {
                 report.addGraph(new Graph(compMember.getAlias(), compMember.getName(), compMember.getAlias(), Colors.getNextColor(), Colors.getNextColor(), Colors.getNextColor()));
             }
             reports.add(report);
@@ -137,8 +132,8 @@ public class JmxConfigReader {
     private Collection<Report> generateCompositeMemberReportsByMBean(Mbean mbean) {
         Collection<Report> reports = new ArrayList<>();
 
-        for (CompAttrib compAttrib : mbean.getCompAttrib()) {
-            for (CompMember compMember : compAttrib.getCompMember()) {
+        for (CompAttrib compAttrib : mbean.getCompAttribList()) {
+            for (CompMember compMember : compAttrib.getCompMemberList()) {
 
                 String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + compAttrib.getName() + "." + compMember.getName() + "." + COMPOSITATTRIBEREPORT;
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,9 +37,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Properties;
 
-import javax.xml.bind.JAXB;
-
 import org.graphdrawing.graphml.GraphmlType;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.graphml.service.GraphmlRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +63,7 @@ public class GraphmlRepositoryImpl implements GraphmlRepository {
         if (!exists(name)) {
             throw new NoSuchElementException("No GraphML file found with name  " + name);
         }
-        GraphmlType graphmlType = JAXB.unmarshal(new File(buildGraphmlFilepath(name)), GraphmlType.class);
+        GraphmlType graphmlType = JaxbUtils.unmarshal(GraphmlType.class, new File(buildGraphmlFilepath(name)));
         return graphmlType;
     }
 
@@ -89,7 +88,7 @@ public class GraphmlRepositoryImpl implements GraphmlRepository {
         cfgFile.getParentFile().mkdirs();
 
         // Write file to disk
-        JAXB.marshal(graphmlType, graphFile);
+        JaxbUtils.marshal(graphmlType, graphFile);
 
         // create Cfg file
         Properties properties = new Properties();

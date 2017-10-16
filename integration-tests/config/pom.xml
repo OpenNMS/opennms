@@ -76,6 +76,10 @@
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.lib</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.xml</artifactId>
+    </dependency>
 
     <!-- Contains beans for ServiceConfigurationPublicConstructorTest -->
     <dependency>
@@ -101,7 +105,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -219,6 +222,11 @@
       <artifactId>org.opennms.features.telemetry.daemon</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-   </dependency>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

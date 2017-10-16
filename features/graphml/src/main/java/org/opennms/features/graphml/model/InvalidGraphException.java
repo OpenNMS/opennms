@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,11 @@ package org.opennms.features.graphml.model;
  * Exception which is thrown if the {@link GraphMLReader} or {@link GraphMLWriter} cannot process the graph.
  */
 public class InvalidGraphException extends Exception {
+    private static final long serialVersionUID = 1L;
     public InvalidGraphException(String errorMessage) {
         super(errorMessage);
+    }
+    public InvalidGraphException(Exception cause) {
+        super(cause);
     }
 }

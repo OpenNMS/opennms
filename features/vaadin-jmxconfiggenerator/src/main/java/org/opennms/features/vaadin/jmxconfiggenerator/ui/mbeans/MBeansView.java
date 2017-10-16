@@ -28,22 +28,23 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
-import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.JmxCollectionCloner;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.ButtonPanel;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -172,7 +173,7 @@ public class MBeansView extends VerticalLayout implements ClickListener, View {
 		 * At second we remove all MBeans from original data and get only
 		 * selected once.
 		 */
-		List<Mbean> exportBeans = clone.getJmxCollection().get(0).getMbeans().getMbean();
+		List<Mbean> exportBeans = clone.getJmxCollectionList().get(0).getMbeans();
 		exportBeans.clear();
 		Iterable<Mbean> selectedMbeans = selectionManager.getSelectedMbeans();
 		for (Mbean mbean : selectedMbeans) {
@@ -181,13 +182,13 @@ public class MBeansView extends VerticalLayout implements ClickListener, View {
 			 * selected ones.
 			 */
 			Mbean exportBean = JmxCollectionCloner.clone(mbean);
-			exportBean.getAttrib().clear(); // we only want selected ones :)
+			exportBean.clearAttribs(); // we only want selected ones :)
 			for (Attrib att : selectionManager.getSelectedAttributes(mbean)) {
-				exportBean.getAttrib().add(JmxCollectionCloner.clone(att));
+				exportBean.addAttrib(JmxCollectionCloner.clone(att));
 			}
 			// if the parent is selected, but no attributes are,
 			// we do not add the parent
-			if (!exportBean.getAttrib().isEmpty()) {
+			if (!exportBean.getAttribList().isEmpty()) {
 				exportBeans.add(exportBean);
 			}
 
@@ -195,17 +196,17 @@ public class MBeansView extends VerticalLayout implements ClickListener, View {
 			 * We remove all CompAttribs and CompMembers from MBean,
 			 * because we only want selected ones.
 			 */
-			exportBean.getCompAttrib().clear();
+			exportBean.clearCompAttribs();
 			for (CompAttrib compAtt : selectionManager.getSelectedCompositeAttributes(mbean)) {
 				CompAttrib cloneCompAtt = JmxCollectionCloner.clone(compAtt);
-				cloneCompAtt.getCompMember().clear();
+				cloneCompAtt.clearCompMembers();
 				for (CompMember compMember : selectionManager.getSelectedCompositeMembers(compAtt)) {
-					cloneCompAtt.getCompMember().add(JmxCollectionCloner.clone(compMember));
+					cloneCompAtt.addCompMember(JmxCollectionCloner.clone(compMember));
 				}
 				// if the parent is selected, but no attributes are,
 				// we do not add the child
-				if (!cloneCompAtt.getCompMember().isEmpty()) {
-					exportBean.getCompAttrib().add(cloneCompAtt);
+				if (!cloneCompAtt.getCompMemberList().isEmpty()) {
+					exportBean.addCompAttrib(cloneCompAtt);
 				}
 			}
 		}
@@ -214,7 +215,7 @@ public class MBeansView extends VerticalLayout implements ClickListener, View {
 		sort(exportBeans);
 
 		// Last but not least, we need to update the service name
-		clone.getJmxCollection().get(0).setName(uiModel.getServiceName());
+		clone.getJmxCollectionList().get(0).setName(uiModel.getServiceName());
 		return clone;
 	}
 
@@ -230,29 +231,20 @@ public class MBeansView extends VerticalLayout implements ClickListener, View {
 		// 2nd sort the mbean tree (attributes, composite attributes, composite members)
 		for (Mbean eachMbean : input) {
 			// Sort attributes
-			Collections.sort(eachMbean.getAttrib(), new Comparator<Attrib>() {
-				@Override
-				public int compare(Attrib o1, Attrib o2) {
-					return o1.getName().compareTo(o2.getName());
-				}
-			});
+			final List<Attrib> attribs = new ArrayList<>(eachMbean.getAttribList());
+			Collections.sort(attribs);
+			eachMbean.setAttribCollection(attribs);
 
 			// sort Composite Attributes
-			Collections.sort(eachMbean.getCompAttrib(), new Comparator<CompAttrib>() {
-				@Override
-				public int compare(CompAttrib o1, CompAttrib o2) {
-					return o1.getName().compareTo(o2.getName());
-				}
-			});
+			final List<CompAttrib> compAttribs = new ArrayList<>(eachMbean.getCompAttribList());
+			Collections.sort(compAttribs);
+			eachMbean.setCompAttribCollection(compAttribs);
 
 			// Sort Composite Members
-			for (CompAttrib eachCompAttrib : eachMbean.getCompAttrib()) {
-				Collections.sort(eachCompAttrib.getCompMember(), new Comparator<CompMember>() {
-					@Override
-					public int compare(CompMember o1, CompMember o2) {
-						return o1.getName().compareTo(o2.getName());
-					}
-				});
+			for (CompAttrib eachCompAttrib : eachMbean.getCompAttribList()) {
+	                        final List<CompMember> compMembers = new ArrayList<>(eachCompAttrib.getCompMemberList());
+				Collections.sort(compMembers);
+				eachCompAttrib.setCompMemberList(compMembers);
 			}
 		}
 	}

@@ -28,8 +28,11 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
-import com.google.common.base.Strings;
-import com.vaadin.data.Validator;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,14 +40,12 @@ import org.opennms.features.vaadin.jmxconfiggenerator.Config;
 import org.opennms.features.vaadin.jmxconfiggenerator.TestHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.NameProvider;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.SelectionManager;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import com.google.common.base.Strings;
+import com.vaadin.data.Validator;
 
 
 public class AttributeValidatorTest {

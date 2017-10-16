@@ -1,496 +1,449 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: ALLOT-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alDeviceConfChangeTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alDeviceConfChangeTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Is to be send when one of generic status
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alDeviceConfChangeTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alDeviceConfChangeTrap</event-label>
+      <descr>&lt;p>Is to be send when one of generic status
 variables is changed. The mentioned statuses are defined
 on the device level. The actual variable is defined via
-alGenericLastChangeVar</p><table>
-	<tr><td><b>
+alGenericLastChangeVar&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alGenericLastChangeVar</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alGenericLastChangeVar&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alGenericLastChangeIntVal</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alGenericLastChangeIntVal&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alGenericLastChangeStrVal</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alGenericLastChangeStrVal&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alGenericLastChangeAddrVal</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alGenericLastChangeAddrVal&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alDeviceConfChangeTrap trap received 
 			alGenericLastChangeVar=%parm[#1]% 
 			alGenericLastChangeIntVal=%parm[#2]% 
 			alGenericLastChangeStrVal=%parm[#3]% 
-			alGenericLastChangeAddrVal=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alCatalogConfChangeTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alCatalogConfChangeTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Configuration change event on one of the catalogs</p><table>
-	<tr><td><b>
+			alGenericLastChangeAddrVal=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alCatalogConfChangeTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alCatalogConfChangeTrap</event-label>
+      <descr>&lt;p>Configuration change event on one of the catalogs&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alCatalogLastCommand</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alCatalogLastCommand&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		create(1)
 		update(2)
 		delete(3)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alCatalogLastChangeOrigin</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alCatalogLastChangeOrigin&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alCatalogConfChangeTrap trap received 
 			alCatalogLastCommand=%parm[#1]% 
-			alCatalogLastChangeOrigin=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alLineConfChangeTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alLineConfChangeTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Configuration change occurs on one of the lines</p><table>
-	<tr><td><b>
+			alCatalogLastChangeOrigin=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alLineConfChangeTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alLineConfChangeTrap</event-label>
+      <descr>&lt;p>Configuration change occurs on one of the lines&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLineLastCommand</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alLineLastCommand&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		create(1)
 		update(2)
 		delete(3)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLineLastChangeOrigin</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alLineLastChangeOrigin&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alLineConfChangeTrap trap received 
 			alLineLastCommand=%parm[#1]% 
-			alLineLastChangeOrigin=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alPipeConfChangeTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alPipeConfChangeTrap</event-label>
-	<descr>
-<![CDATA[
-<p>The configuration change occurs on one of the pipes</p><table>
-	<tr><td><b>
+			alLineLastChangeOrigin=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alPipeConfChangeTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alPipeConfChangeTrap</event-label>
+      <descr>&lt;p>The configuration change occurs on one of the pipes&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alPipeLastCommand</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alPipeLastCommand&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		create(1)
 		update(2)
 		delete(3)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alPipeLastChangeOrigin</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alPipeLastChangeOrigin&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alPipeConfChangeTrap trap received 
 			alPipeLastCommand=%parm[#1]% 
-			alPipeLastChangeOrigin=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alVCConfChangeTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alVCConfChangeTrap</event-label>
-	<descr>
-<![CDATA[
-<p>The configuration change occurs on one of the VCs</p><table>
-	<tr><td><b>
+			alPipeLastChangeOrigin=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alVCConfChangeTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alVCConfChangeTrap</event-label>
+      <descr>&lt;p>The configuration change occurs on one of the VCs&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alVCLastCommand</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alVCLastCommand&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		create(1)
 		update(2)
 		delete(3)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alVCLastChangeOrigin</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alVCLastChangeOrigin&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alVCConfChangeTrap trap received 
 			alVCLastCommand=%parm[#1]% 
-			alVCLastChangeOrigin=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alAlertRisingTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alAlertRisingTrap</event-label>
-	<descr>
-<![CDATA[
-<p>One of the alerts crossed the threshold</p><table>
-	<tr><td><b>
+			alVCLastChangeOrigin=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alAlertRisingTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alAlertRisingTrap</event-label>
+      <descr>&lt;p>One of the alerts crossed the threshold&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAlertConfVariable</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alAlertConfVariable&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAlertConfValue</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alAlertConfValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAlertConfThreshold</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alAlertConfThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAlertConfRegInterval</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alAlertConfRegInterval&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alAlertRisingTrap trap received 
 			alAlertConfVariable=%parm[#1]% 
 			alAlertConfValue=%parm[#2]% 
 			alAlertConfThreshold=%parm[#3]% 
-			alAlertConfRegInterval=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alAlertFallingTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alAlertFallingTrap</event-label>
-	<descr>
-<![CDATA[
-<p>The alert' value returned to the normal level</p><table>
-	<tr><td><b>
+			alAlertConfRegInterval=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alAlertFallingTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alAlertFallingTrap</event-label>
+      <descr>&lt;p>The alert' value returned to the normal level&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAlertConfVariable</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alAlertConfVariable&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAlertConfValue</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alAlertConfValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAlertConfNormal</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alAlertConfNormal&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAlertConfUnRegInterval</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alAlertConfUnRegInterval&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alAlertFallingTrap trap received 
 			alAlertConfVariable=%parm[#1]% 
 			alAlertConfValue=%parm[#2]% 
 			alAlertConfNormal=%parm[#3]% 
-			alAlertConfUnRegInterval=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alDosAttackOnTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alDosAttackOnTrap</event-label>
-	<descr>
-<![CDATA[
-<p>DOS attack is identified</p><table>
-	<tr><td><b>
+			alAlertConfUnRegInterval=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alDosAttackOnTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alDosAttackOnTrap</event-label>
+      <descr>&lt;p>DOS attack is identified&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alDOSAttackStatus</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alDOSAttackStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		finish(2)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alDosAttackOnTrap trap received 
-			alDOSAttackStatus=%parm[#1]%</p>
-]]>		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alDosAttackOffTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alDosAttackOffTrap</event-label>
-	<descr>
-<![CDATA[
-<p>DOS attack is over</p><table>
-	<tr><td><b>
+			alDOSAttackStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alDosAttackOffTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alDosAttackOffTrap</event-label>
+      <descr>&lt;p>DOS attack is over&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alDOSAttackStatus</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alDOSAttackStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		finish(2)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alDosAttackOffTrap trap received 
-			alDOSAttackStatus=%parm[#1]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alDataSourceDownTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alDataSourceDownTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Data source is unreachable</p><table>
-	<tr><td><b>
+			alDOSAttackStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alDataSourceDownTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alDataSourceDownTrap</event-label>
+      <descr>&lt;p>Data source is unreachable&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alDataSourceIPAddr</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alDataSourceIPAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alDataSourceType</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alDataSourceType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		dns(1)
 		dhcp(2)
 		ldap(3)
 		radius(4)
 		tftp(5)
 		ntp(6)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alDataSourceDownTrap trap received 
 			alDataSourceIPAddr=%parm[#1]% 
-			alDataSourceType=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>11</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alDataSourceUpTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alDataSourceUpTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Data source is now reachable</p><table>
-	<tr><td><b>
+			alDataSourceType=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alDataSourceUpTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alDataSourceUpTrap</event-label>
+      <descr>&lt;p>Data source is now reachable&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alDataSourceIPAddr</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alDataSourceIPAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alDataSourceType</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alDataSourceType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		dns(1)
 		dhcp(2)
 		ldap(3)
 		radius(4)
 		tftp(5)
 		ntp(6)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alDataSourceUpTrap trap received 
 			alDataSourceIPAddr=%parm[#1]% 
-			alDataSourceType=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alSoftwareProblemTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alSoftwareProblemTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Severe problem occured. The trap can't be
-blocked (disabled).</p><table>
-	<tr><td><b>
+			alDataSourceType=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alSoftwareProblemTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alSoftwareProblemTrap</event-label>
+      <descr>&lt;p>Severe problem occured. The trap can't be
+blocked (disabled).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alSevereSoftwareProblem</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alSevereSoftwareProblem&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unknown(1)
 		reboot(2)
 		processUp(3)
@@ -500,271 +453,243 @@ blocked (disabled).</p><table>
 		picoCheckFalure(12)
 		picoSaveFalure(13)
 		wrongTrapOrder(21)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLastMessage</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alLastMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alSoftwareProblemTrap trap received 
 			alSevereSoftwareProblem=%parm[#1]% 
-			alLastMessage=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>13</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alAccessViolationTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alAccessViolationTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Access violation attempt is discovered</p><table>
-	<tr><td><b>
+			alLastMessage=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alAccessViolationTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alAccessViolationTrap</event-label>
+      <descr>&lt;p>Access violation attempt is discovered&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLastMessage</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alLastMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alAccessViolationTrap trap received 
-			alLastMessage=%parm[#1]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alIpAddrConfChangeTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alIpAddrConfChangeTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Ip Address added or removed.</p><table>
-	<tr><td><b>
+			alLastMessage=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alIpAddrConfChangeTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alIpAddrConfChangeTrap</event-label>
+      <descr>&lt;p>Ip Address added or removed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alIpXEntryStatus</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alIpXEntryStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		notInService(2)
 		notReady(3)
 		createAndGo(4)
 		createAndWait(5)
 		destroy(6)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alIpXAddr</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alIpXAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alIpAddrConfChangeTrap trap received 
 			alIpXEntryStatus=%parm[#1]% 
-			alIpXAddr=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>15</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alConnRouteConfChangeTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alConnRouteConfChangeTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Connection routing configuration change trap</p><table>
-	<tr><td><b>
+			alIpXAddr=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alConnRouteConfChangeTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alConnRouteConfChangeTrap</event-label>
+      <descr>&lt;p>Connection routing configuration change trap&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alConnRouteEntryStatus</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alConnRouteEntryStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		notInService(2)
 		notReady(3)
 		createAndGo(4)
 		createAndWait(5)
 		destroy(6)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alConnRouteIfIndex</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alConnRouteIfIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alConnRouteConfChangeTrap trap received 
 			alConnRouteEntryStatus=%parm[#1]% 
-			alConnRouteIfIndex=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>16</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alDeviceStatusUpTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alDeviceStatusUpTrap</event-label>
-	<descr>
-<![CDATA[
-<p></p><table>
-	<tr><td><b>
+			alConnRouteIfIndex=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alDeviceStatusUpTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alDeviceStatusUpTrap</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alGenericLastChangeVar</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alGenericLastChangeVar&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alGenericLastChangeIntVal</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alGenericLastChangeIntVal&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alDeviceStatusUpTrap trap received 
 			alGenericLastChangeVar=%parm[#1]% 
-			alGenericLastChangeIntVal=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>17</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alDeviceStatusDownTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alDeviceStatusDownTrap</event-label>
-	<descr>
-<![CDATA[
-<p></p><table>
-	<tr><td><b>
+			alGenericLastChangeIntVal=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alDeviceStatusDownTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alDeviceStatusDownTrap</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alGenericLastChangeVar</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alGenericLastChangeVar&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alGenericLastChangeIntVal</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alGenericLastChangeIntVal&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alDeviceStatusDownTrap trap received 
 			alGenericLastChangeVar=%parm[#1]% 
-			alGenericLastChangeIntVal=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>18</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alApplicationInfoTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alApplicationInfoTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Application general information trap
-blocked (disabled).</p><table>
-	<tr><td><b>
+			alGenericLastChangeIntVal=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alApplicationInfoTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alApplicationInfoTrap</event-label>
+      <descr>&lt;p>Application general information trap
+blocked (disabled).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLastMessage</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alLastMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alApplicationInfoTrap trap received 
-			alLastMessage=%parm[#1]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>19</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alBoardStatusChangeTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alBoardStatusChangeTrap</event-label>
-	<descr>
-<![CDATA[
-<p>This trap is sent on changing software or hardware status of board</p><table>
-	<tr><td><b>
+			alLastMessage=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alBoardStatusChangeTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alBoardStatusChangeTrap</event-label>
+      <descr>&lt;p>This trap is sent on changing software or hardware status of board&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alBoardType</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alBoardType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		thirdParty(1)
 		apc(2)
 		dpic(3)
@@ -778,89 +703,85 @@ blocked (disabled).</p><table>
 		vas(11)
 		exc-cc(13)
 		exc-sbh(14)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alBoardSoftwareStatus</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alBoardSoftwareStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		notActive(1)
 		active(2)
 		standBy(3)
 		notApplicable(4)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alBoardHWStatus</b></td><td>
-	%parm[#3]%;</td><td><p>
+	alBoardHWStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		off(1)
 		on(2)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alBoardStatusChangeTrap trap received 
 			alBoardType=%parm[#1]% 
 			alBoardSoftwareStatus=%parm[#2]% 
-			alBoardHWStatus=%parm[#3]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-        <varbindsdecode>
-                <parmid>parm[#1]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="thirdParty"/>
-                <decode varbindvalue="2" varbinddecodedstring="apc"/>
-                <decode varbindvalue="3" varbinddecodedstring="dpic"/>
-                <decode varbindvalue="4" varbinddecodedstring="host"/>
-                <decode varbindvalue="5" varbinddecodedstring="byc"/>
-                <decode varbindvalue="6" varbinddecodedstring="spider"/>
-                <decode varbindvalue="7" varbinddecodedstring="scorpion"/>
-                <decode varbindvalue="8" varbinddecodedstring="switch"/>
-                <decode varbindvalue="9" varbinddecodedstring="dispatcher"/>
-                <decode varbindvalue="10" varbinddecodedstring="byp"/>
-                <decode varbindvalue="11" varbinddecodedstring="vas"/>
-                <decode varbindvalue="13" varbinddecodedstring="exc-cc"/>
-                <decode varbindvalue="14" varbinddecodedstring="exc-sbh"/>
-        </varbindsdecode>
-        <varbindsdecode>
-                <parmid>parm[#2]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="notActive"/>
-                <decode varbindvalue="2" varbinddecodedstring="active"/>
-                <decode varbindvalue="3" varbinddecodedstring="standBy"/>
-                <decode varbindvalue="4" varbinddecodedstring="notApplicable"/>
-        </varbindsdecode>
-        <varbindsdecode>
-                <parmid>parm[#3]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="on"/>
-                <decode varbindvalue="2" varbinddecodedstring="off"/>
-        </varbindsdecode>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>20</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alWebUpdateTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alWebUpdateTrap</event-label>
-	<descr>
-<![CDATA[
-<p>This trap will be sent for each attempted web update</p><table>
-	<tr><td><b>
+			alBoardHWStatus=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="thirdParty"/>
+         <decode varbindvalue="2" varbinddecodedstring="apc"/>
+         <decode varbindvalue="3" varbinddecodedstring="dpic"/>
+         <decode varbindvalue="4" varbinddecodedstring="host"/>
+         <decode varbindvalue="5" varbinddecodedstring="byc"/>
+         <decode varbindvalue="6" varbinddecodedstring="spider"/>
+         <decode varbindvalue="7" varbinddecodedstring="scorpion"/>
+         <decode varbindvalue="8" varbinddecodedstring="switch"/>
+         <decode varbindvalue="9" varbinddecodedstring="dispatcher"/>
+         <decode varbindvalue="10" varbinddecodedstring="byp"/>
+         <decode varbindvalue="11" varbinddecodedstring="vas"/>
+         <decode varbindvalue="13" varbinddecodedstring="exc-cc"/>
+         <decode varbindvalue="14" varbinddecodedstring="exc-sbh"/>
+      </varbindsdecode>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="notActive"/>
+         <decode varbindvalue="2" varbinddecodedstring="active"/>
+         <decode varbindvalue="3" varbinddecodedstring="standBy"/>
+         <decode varbindvalue="4" varbinddecodedstring="notApplicable"/>
+      </varbindsdecode>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="on"/>
+         <decode varbindvalue="2" varbinddecodedstring="off"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alWebUpdateTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alWebUpdateTrap</event-label>
+      <descr>&lt;p>This trap will be sent for each attempted web update&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alCurrentVersion</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alCurrentVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLastUpdateStatus</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alLastUpdateStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		success(1)
 		generalError(2)
 		wrongVersion(3)
@@ -868,130 +789,118 @@ blocked (disabled).</p><table>
 		binaryFileCorrupted(5)
 		aSyncSwapRequest(6)
 		requestTimeout(7)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alWebUpdateTrap trap received 
 			alCurrentVersion=%parm[#1]% 
-			alLastUpdateStatus=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>21</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alAsymmetricRemoteDeviceConfTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alAsymmetricRemoteDeviceConfTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Configuration of the asymmetric remote device is changed or device added/removed.</p><table>
-	<tr><td><b>
+			alLastUpdateStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alAsymmetricRemoteDeviceConfTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alAsymmetricRemoteDeviceConfTrap</event-label>
+      <descr>&lt;p>Configuration of the asymmetric remote device is changed or device added/removed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAsymmetricGroupId</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alAsymmetricGroupId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAsymmetricEntryStatus</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alAsymmetricEntryStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		notInService(2)
 		notReady(3)
 		createAndGo(4)
 		createAndWait(5)
 		destroy(6)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alAsymmetricRemoteDeviceConfTrap trap received 
 			alAsymmetricGroupId=%parm[#1]% 
-			alAsymmetricEntryStatus=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>22</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alAsymmetricRemoteDeviceStatusTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alAsymmetricRemoteDeviceStatusTrap</event-label>
-	<descr>
-<![CDATA[
-<p>Is to be send when health check of remote device is changed</p><table>
-	<tr><td><b>
+			alAsymmetricEntryStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alAsymmetricRemoteDeviceStatusTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alAsymmetricRemoteDeviceStatusTrap</event-label>
+      <descr>&lt;p>Is to be send when health check of remote device is changed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAsymmetricGroupId</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alAsymmetricGroupId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAsymmetricOwnDeviceId</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alAsymmetricOwnDeviceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alAsymmetricHealthCheckStatus</b></td><td>
-	%parm[#3]%;</td><td><p>
+	alAsymmetricHealthCheckStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		notApplicable(1)
 		up(2)
 		down(3)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alAsymmetricRemoteDeviceStatusTrap trap received 
 			alAsymmetricGroupId=%parm[#1]% 
 			alAsymmetricOwnDeviceId=%parm[#2]% 
-			alAsymmetricHealthCheckStatus=%parm[#3]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>23</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alLicenseWarnEventTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alLicenseWarnEventTrap</event-label>
-	<descr>
-<![CDATA[
-<p>This trap is sent on Erroneous states of the license</p><table>
-	<tr><td><b>
+			alAsymmetricHealthCheckStatus=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alLicenseWarnEventTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alLicenseWarnEventTrap</event-label>
+      <descr>&lt;p>This trap is sent on Erroneous states of the license&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLicenseAttrType</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alLicenseAttrType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		global(0)
 		qos(1)
 		rtReportMode(2)
@@ -1005,11 +914,11 @@ blocked (disabled).</p><table>
 		trafficSteering(10)
 		spMitigation(11)
 		mediaSwift(12)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLicenseLimitType</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alLicenseLimitType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		featureState(1)
 		noOfSgcc(2)
 		bandwidth(3)
@@ -1018,11 +927,11 @@ blocked (disabled).</p><table>
 		expirationDate(6)
 		activeSubscribersIp(7)
 		activeSubscribers(8)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLicenseEventType</b></td><td>
-	%parm[#3]%;</td><td><p>
+	alLicenseEventType&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		noLicense(1)
 		licenseExpired(2)
 		licenseExprWarn(3)
@@ -1030,46 +939,42 @@ blocked (disabled).</p><table>
 		licenseLimitBreachWarn(5)
 		licenseLimitBreachSet(6)
 		licenseLimitBreachUnSet(7)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLastMessage</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alLastMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alLicenseWarnEventTrap trap received 
 			alLicenseAttrType=%parm[#1]% 
 			alLicenseLimitType=%parm[#2]% 
 			alLicenseEventType=%parm[#3]% 
-			alLastMessage=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>24</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alLicenseCritEventTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alLicenseCritEventTrap</event-label>
-	<descr>
-<![CDATA[
-<p>This trap is sent in for critical level conditions of the license</p><table>
-	<tr><td><b>
+			alLastMessage=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alLicenseCritEventTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alLicenseCritEventTrap</event-label>
+      <descr>&lt;p>This trap is sent in for critical level conditions of the license&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLicenseAttrType</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alLicenseAttrType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		global(0)
 		qos(1)
 		rtReportMode(2)
@@ -1083,11 +988,11 @@ blocked (disabled).</p><table>
 		trafficSteering(10)
 		spMitigation(11)
 		mediaSwift(12)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLicenseLimitType</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alLicenseLimitType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		featureState(1)
 		noOfSgcc(2)
 		bandwidth(3)
@@ -1096,11 +1001,11 @@ blocked (disabled).</p><table>
 		expirationDate(6)
 		activeSubscribersIp(7)
 		activeSubscribers(8)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLicenseEventType</b></td><td>
-	%parm[#3]%;</td><td><p>
+	alLicenseEventType&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		noLicense(1)
 		licenseExpired(2)
 		licenseExprWarn(3)
@@ -1108,46 +1013,42 @@ blocked (disabled).</p><table>
 		licenseLimitBreachWarn(5)
 		licenseLimitBreachSet(6)
 		licenseLimitBreachUnSet(7)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alLastMessage</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alLastMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alLicenseCritEventTrap trap received 
 			alLicenseAttrType=%parm[#1]% 
 			alLicenseLimitType=%parm[#2]% 
 			alLicenseEventType=%parm[#3]% 
-			alLastMessage=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>25</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alBoardTemperatureStatusTrap</uei>
-	<event-label>ALLOT-MIB defined trap event: alBoardTemperatureStatusTrap</event-label>
-	<descr>
-<![CDATA[
-<p>This trap is sent when temperature crosses range border</p><table>
-	<tr><td><b>
+			alLastMessage=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alBoardTemperatureStatusTrap</uei>
+      <event-label>ALLOT-MIB defined trap event: alBoardTemperatureStatusTrap</event-label>
+      <descr>&lt;p>This trap is sent when temperature crosses range border&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alBoardType</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alBoardType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		thirdParty(1)
 		apc(2)
 		dpic(3)
@@ -1161,45 +1062,42 @@ blocked (disabled).</p><table>
 		vas(11)
 		exc-cc(13)
 		exc-sbh(14)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alBoardTemperatureRange</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alBoardTemperatureRange&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		low(1)
 		middle(2)
 		high(3)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alBoardTemperatureStatusTrap trap received 
 			alBoardType=%parm[#1]% 
-			alBoardTemperatureRange=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Major</severity>
-        <varbindsdecode>
-                <parmid>parm[#1]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="thirdParty"/>
-                <decode varbindvalue="2" varbinddecodedstring="apc"/>
-                <decode varbindvalue="3" varbinddecodedstring="dpic"/>
-                <decode varbindvalue="4" varbinddecodedstring="host"/>
-                <decode varbindvalue="5" varbinddecodedstring="byc"/>
-                <decode varbindvalue="6" varbinddecodedstring="spider"/>
-                <decode varbindvalue="7" varbinddecodedstring="scorpion"/>
-                <decode varbindvalue="8" varbinddecodedstring="switch"/>
-                <decode varbindvalue="9" varbinddecodedstring="dispatcher"/>
-                <decode varbindvalue="10" varbinddecodedstring="byp"/>
-                <decode varbindvalue="11" varbinddecodedstring="vas"/>
-                <decode varbindvalue="13" varbinddecodedstring="exc-cc"/>
-                <decode varbindvalue="14" varbinddecodedstring="exc-sbh"/>
-        </varbindsdecode>
-        <varbindsdecode>
-                <parmid>parm[#2]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="low"/>
-                <decode varbindvalue="2" varbinddecodedstring="middle"/>
-                <decode varbindvalue="3" varbinddecodedstring="high"/>
-        </varbindsdecode>
-</event>
-<!-- End of auto generated data from MIB: ALLOT-MIB -->
+			alBoardTemperatureRange=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="thirdParty"/>
+         <decode varbindvalue="2" varbinddecodedstring="apc"/>
+         <decode varbindvalue="3" varbinddecodedstring="dpic"/>
+         <decode varbindvalue="4" varbinddecodedstring="host"/>
+         <decode varbindvalue="5" varbinddecodedstring="byc"/>
+         <decode varbindvalue="6" varbinddecodedstring="spider"/>
+         <decode varbindvalue="7" varbinddecodedstring="scorpion"/>
+         <decode varbindvalue="8" varbinddecodedstring="switch"/>
+         <decode varbindvalue="9" varbinddecodedstring="dispatcher"/>
+         <decode varbindvalue="10" varbinddecodedstring="byp"/>
+         <decode varbindvalue="11" varbinddecodedstring="vas"/>
+         <decode varbindvalue="13" varbinddecodedstring="exc-cc"/>
+         <decode varbindvalue="14" varbinddecodedstring="exc-sbh"/>
+      </varbindsdecode>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="low"/>
+         <decode varbindvalue="2" varbinddecodedstring="middle"/>
+         <decode varbindvalue="3" varbinddecodedstring="high"/>
+      </varbindsdecode>
+   </event>
 </events>

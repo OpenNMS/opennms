@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,8 @@
 
 package org.opennms.netmgt.jasper.helper;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import javax.xml.bind.JAXB;
-
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,22 +90,10 @@ public abstract class MeasurementsHelper {
     }
 
     public static QueryRequest unmarshal(String query) throws JRException {
-        try (ByteArrayInputStream input = new ByteArrayInputStream(query.getBytes())) {
-            QueryRequest request = JAXB.unmarshal(input, QueryRequest.class);
-            return request;
-        } catch (IOException e) {
-            LOG.error("An error occurred while unmarshalling the query string", e);
-            throw new JRException(e);
-        }
+        return JaxbUtils.unmarshal(QueryRequest.class, query);
     }
 
     public static String marshal(QueryRequest queryRequest) throws JRException {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            JAXB.marshal(queryRequest, outputStream);
-            return outputStream.toString();
-        } catch (IOException e) {
-            LOG.error("An error occurred while marshalling the query request", e);
-            throw new JRException(e);
-        }
+        return JaxbUtils.marshal(queryRequest);
     }
 }

@@ -28,17 +28,6 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.server.Resource;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.StringRenderer;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +36,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.opennms.features.vaadin.jmxconfiggenerator.data.StringRenderer;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.server.Resource;
 
 public class MbeansHierarchicalContainer extends HierarchicalContainer {
 
@@ -140,7 +141,7 @@ public class MbeansHierarchicalContainer extends HierarchicalContainer {
 			Object eachNode = it.next();
 			boolean hasChildren = it.hasNext();
 			if (eachNode instanceof Mbean) {
-				hasChildren |= ((Mbean)eachNode).getCompAttrib() != null && !((Mbean) eachNode).getCompAttrib().isEmpty();
+				hasChildren |= ((Mbean)eachNode).getCompAttribList() != null && !((Mbean) eachNode).getCompAttribList().isEmpty();
 			}
 			rootItemId = addNode(rootItemId, eachNode, hasChildren);
 		}
@@ -162,8 +163,8 @@ public class MbeansHierarchicalContainer extends HierarchicalContainer {
 		String rootItemId = addNodes(newNodeList);
 
 		// add optional comp attributes, if there are any
-		if (mbean.getCompAttrib() != null && !mbean.getCompAttrib().isEmpty()) {
-			for (CompAttrib eachCompAttrib : mbean.getCompAttrib()) {
+		if (mbean.getCompAttribList() != null && !mbean.getCompAttribList().isEmpty()) {
+			for (CompAttrib eachCompAttrib : mbean.getCompAttribList()) {
 				addNode(rootItemId, eachCompAttrib, false);
 			}
 		}

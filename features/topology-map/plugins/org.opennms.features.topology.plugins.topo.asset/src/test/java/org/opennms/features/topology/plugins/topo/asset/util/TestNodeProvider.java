@@ -28,13 +28,13 @@
 
 package org.opennms.features.topology.plugins.topo.asset.util;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXB;
-
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.plugins.topo.asset.NodeProvider;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
 import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
@@ -46,7 +46,8 @@ public class TestNodeProvider implements NodeProvider {
 
     @Override
     public List<OnmsNode> getNodes(List<LayerDefinition> definitions) {
-            NodeInfoRepositoryXML nodeInfoRepositoryXML = JAXB.unmarshal(getClass().getResourceAsStream(NODE_TEST_DATA_FILE_NAME), NodeInfoRepositoryXML.class);
+            final InputStream nodeTestDataStream = getClass().getResourceAsStream(NODE_TEST_DATA_FILE_NAME);
+            NodeInfoRepositoryXML nodeInfoRepositoryXML = JaxbUtils.unmarshal(NodeInfoRepositoryXML.class, nodeTestDataStream);
             final List<OnmsNode> nodes = nodeInfoRepositoryXML.getNodeInfoList().stream().map(eachEntry -> {
                 final NodeBuilder nodeBuilder = new NodeBuilder().withId(eachEntry.getNodeId());
                 final Map<String, String> parameters = eachEntry.getParameters();

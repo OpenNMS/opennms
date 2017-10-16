@@ -1,55 +1,52 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickError</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickError</event-label>
-	<descr>
-&lt;p&gt;Brick Error.
-An internal error has been reported on	the Brick.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickError</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickError</event-label>
+      <descr>&lt;p>Brick Error.
+An internal error has been reported on	the Brick.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLastErrorCodeNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmLastErrorCodeNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickError trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -57,61 +54,59 @@ An internal error has been reported on	the Brick.&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmLogEntry=%parm[#4]% 
 			lsmsAlarmBrkName=%parm[#5]% 
 			lsmsAlarmTriggerName=%parm[#6]% 
-			lsmsAlarmLastErrorCodeNumber=%parm[#7]%&lt;/p&gt;
+			lsmsAlarmLastErrorCodeNumber=%parm[#7]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsSMSError</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsSMSError</event-label>
-	<descr>
-&lt;p&gt;SMS Error.
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsSMSError</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsSMSError</event-label>
+      <descr>&lt;p>SMS Error.
 An internal error has been reported on
-Security Management Server.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+Security Management Server.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmSMSSubsystemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmSMSSubsystemName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLastErrorCodeNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmLastErrorCodeNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsSMSError trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -119,67 +114,65 @@ Security Management Server.&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmLogEntry=%parm[#4]% 
 			lsmsAlarmTriggerName=%parm[#5]% 
 			lsmsAlarmSMSSubsystemName=%parm[#6]% 
-			lsmsAlarmLastErrorCodeNumber=%parm[#7]%&lt;/p&gt;
+			lsmsAlarmLastErrorCodeNumber=%parm[#7]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsUnauthSMSConn</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsUnauthSMSConn</event-label>
-	<descr>
-&lt;p&gt;Unauthorized SMS Connection Attempt.
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsUnauthSMSConn</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsUnauthSMSConn</event-label>
+      <descr>&lt;p>Unauthorized SMS Connection Attempt.
 An unauthorized connection attempt has been reported
 on the Security Management Server.  Someone tried to
 login to the SMS and gave an incorrect account	or
-password.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+password.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserSourceIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmUserSourceIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmSMSUserId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmSMSUserId&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUnauthSMSConnReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmUnauthSMSConnReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsUnauthSMSConn trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -188,145 +181,141 @@ password.&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmTriggerName=%parm[#5]% 
 			lsmsAlarmUserSourceIpAddress=%parm[#6]% 
 			lsmsAlarmSMSUserId=%parm[#7]% 
-			lsmsAlarmUnauthSMSConnReason=%parm[#8]%&lt;/p&gt;
+			lsmsAlarmUnauthSMSConnReason=%parm[#8]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickLost</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickLost</event-label>
-	<descr>
-&lt;p&gt;The Lucent Security Management Server
-(LSMS) has lost contact with the Brick.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickLost</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickLost</event-label>
+      <descr>&lt;p>The Lucent Security Management Server
+(LSMS) has lost contact with the Brick.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickLost trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
 			lsmsAlarmDetails=%parm[#3]% 
 			lsmsAlarmLogEntry=%parm[#4]% 
 			lsmsAlarmBrkName=%parm[#5]% 
-			lsmsAlarmTriggerName=%parm[#6]%&lt;/p&gt;
+			lsmsAlarmTriggerName=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsZoneAlarm</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsZoneAlarm</event-label>
-	<descr>
-&lt;p&gt;Zone Alarm from the Lucent Managed Firewall.
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsZoneAlarm</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsZoneAlarm</event-label>
+      <descr>&lt;p>Zone Alarm from the Lucent Managed Firewall.
 An alarm has been triggered on a firewall zone	rule.
-Check the SMS for further details.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+Check the SMS for further details.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmCodeNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmCodeNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneRuleNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneRuleNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneRuleSourceIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneRuleSourceIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneRuleSourcePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneRuleSourcePort&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneRuleDestIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneRuleDestIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneRuleDestPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneRuleDestPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneRuleProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmZoneRuleProtocol&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsZoneAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -341,96 +330,94 @@ Check the SMS for further details.&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmZoneRuleSourcePort=%parm[#11]% 
 			lsmsAlarmZoneRuleDestIpAddress=%parm[#12]% 
 			lsmsAlarmZoneRuleDestPort=%parm[#13]% 
-			lsmsAlarmZoneRuleProtocol=%parm[#14]%&lt;/p&gt;
+			lsmsAlarmZoneRuleProtocol=%parm[#14]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsISSAlarm</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsISSAlarm</event-label>
-	<descr>
-&lt;p&gt;The Security Management Server has received
-a message from the RealSecure Internet Security System (ISS).&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsISSAlarm</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsISSAlarm</event-label>
+      <descr>&lt;p>The Security Management Server has received
+a message from the RealSecure Internet Security System (ISS).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmISSEvent&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSRealSecureEngineName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmISSRealSecureEngineName&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSEventSourceIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmISSEventSourceIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSEventSourcePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmISSEventSourcePort&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSEventSourceGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmISSEventSourceGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSEventDestIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmISSEventDestIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSEventDestPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmISSEventDestPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSEventDestGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmISSEventDestGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSEventProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#15]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmISSEventProtocol&lt;/b>&lt;/td>&lt;td>
+	%parm[#15]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmISSEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#16]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmISSEventSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#16]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsISSAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -447,62 +434,60 @@ a message from the RealSecure Internet Security System (ISS).&lt;/p&gt;&lt;table
 			lsmsAlarmISSEventDestPort=%parm[#13]% 
 			lsmsAlarmISSEventDestGroupName=%parm[#14]% 
 			lsmsAlarmISSEventProtocol=%parm[#15]% 
-			lsmsAlarmISSEventSeverity=%parm[#16]%&lt;/p&gt;
+			lsmsAlarmISSEventSeverity=%parm[#16]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickPMAlarm</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickPMAlarm</event-label>
-	<descr>
-&lt;p&gt;Brick Proactive Monitoring Alarm
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickPMAlarm</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickPMAlarm</event-label>
+      <descr>&lt;p>Brick Proactive Monitoring Alarm
 An alarm has been triggered as one of the
 configured parameters for the brick crossed
-the threshold. Check the SMS for further details.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+the threshold. Check the SMS for further details.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrickPMFirstExceededParameter&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmBrickPMFirstExceededParameter&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickPMAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -510,147 +495,143 @@ the threshold. Check the SMS for further details.&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmLogEntry=%parm[#4]% 
 			lsmsAlarmBrkName=%parm[#5]% 
 			lsmsAlarmTriggerName=%parm[#6]% 
-			lsmsAlarmBrickPMFirstExceededParameter=%parm[#7]%&lt;/p&gt;
+			lsmsAlarmBrickPMFirstExceededParameter=%parm[#7]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsSMSPMAlarm</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsSMSPMAlarm</event-label>
-	<descr>
-&lt;p&gt;SMS Proactive Monitoring Alarm
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsSMSPMAlarm</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsSMSPMAlarm</event-label>
+      <descr>&lt;p>SMS Proactive Monitoring Alarm
 An alarm has been triggered as one of the
 configured parameters for the SMS crossed
-the threshold. Check the SMS for further details.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+the threshold. Check the SMS for further details.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmSMSPMFirstExceededParameter&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmSMSPMFirstExceededParameter&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsSMSPMAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
 			lsmsAlarmDetails=%parm[#3]% 
 			lsmsAlarmLogEntry=%parm[#4]% 
 			lsmsAlarmTriggerName=%parm[#5]% 
-			lsmsAlarmSMSPMFirstExceededParameter=%parm[#6]%&lt;/p&gt;
+			lsmsAlarmSMSPMFirstExceededParameter=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsUserAuthAlarm</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsUserAuthAlarm</event-label>
-	<descr>
-&lt;p&gt;User Authentication Failure Alarm
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsUserAuthAlarm</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsUserAuthAlarm</event-label>
+      <descr>&lt;p>User Authentication Failure Alarm
 A user failed to authenticate. Check SMS for
-further details.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+further details.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserAuthGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmUserAuthGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserAuthSourceIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmUserAuthSourceIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserAuthSourcePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmUserAuthSourcePort&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserAuthDestIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmUserAuthDestIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserAuthDestPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmUserAuthDestPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserAuthProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmUserAuthProtocol&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserAuthUserId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmUserAuthUserId&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserAuthAuthType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmUserAuthAuthType&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmUserAuthReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmUserAuthReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsUserAuthAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -665,65 +646,63 @@ further details.&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmUserAuthProtocol=%parm[#11]% 
 			lsmsAlarmUserAuthUserId=%parm[#12]% 
 			lsmsAlarmUserAuthAuthType=%parm[#13]% 
-			lsmsAlarmUserAuthReason=%parm[#14]%&lt;/p&gt;
+			lsmsAlarmUserAuthReason=%parm[#14]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsVGCLocalMapPoolAlarm</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsVGCLocalMapPoolAlarm</event-label>
-	<descr>
-&lt;p&gt;VGC Local Map Pool Alarm
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsVGCLocalMapPoolAlarm</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsVGCLocalMapPoolAlarm</event-label>
+      <descr>&lt;p>VGC Local Map Pool Alarm
 VGC Local Map Pool is below the threshold.
-Check SMS for further details.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+Check SMS for further details.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLocalTEPIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmLocalTEPIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsVGCLocalMapPoolAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -732,63 +711,61 @@ Check SMS for further details.&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmBrkName=%parm[#5]% 
 			lsmsAlarmZoneName=%parm[#6]% 
 			lsmsAlarmTriggerName=%parm[#7]% 
-			lsmsAlarmLocalTEPIpAddress=%parm[#8]%&lt;/p&gt;
+			lsmsAlarmLocalTEPIpAddress=%parm[#8]%&lt;/p>
 		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>13</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickInterfaceDown</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickInterfaceDown</event-label>
-	<descr>
-&lt;p&gt;Brick Interface is down.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickInterfaceDown</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickInterfaceDown</event-label>
+      <descr>&lt;p>Brick Interface is down.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickInterfaceDown trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -797,124 +774,120 @@ Check SMS for further details.&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmBrkName=%parm[#5]% 
 			lsmsAlarmTriggerName=%parm[#6]% 
 			lsmsAlarmBrkIfDesc=%parm[#7]% 
-			lsmsAlarmBrkIfIndex=%parm[#8]%&lt;/p&gt;
+			lsmsAlarmBrkIfIndex=%parm[#8]%&lt;/p>
 		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickFailoverEvent</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickFailoverEvent</event-label>
-	<descr>
-&lt;p&gt;Brick FailOver Alarm
-Brick failover occured. Active Brick switched over to standby.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickFailoverEvent</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickFailoverEvent</event-label>
+      <descr>&lt;p>Brick FailOver Alarm
+Brick failover occured. Active Brick switched over to standby.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickFailoverEvent trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
 			lsmsAlarmDetails=%parm[#3]% 
 			lsmsAlarmLogEntry=%parm[#4]% 
 			lsmsAlarmBrkName=%parm[#5]% 
-			lsmsAlarmTriggerName=%parm[#6]%&lt;/p&gt;
+			lsmsAlarmTriggerName=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>15</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsLanToLanTunnelDown</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsLanToLanTunnelDown</event-label>
-	<descr>
-&lt;p&gt;Lan To Lan Tunnel Alarm - Missed two heart beat intervals
-for this tunnel&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsLanToLanTunnelDown</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsLanToLanTunnelDown</event-label>
+      <descr>&lt;p>Lan To Lan Tunnel Alarm - Missed two heart beat intervals
+for this tunnel&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLocalTEPDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLocalTEPDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLocalTEPIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLocalTEPIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmRemoteTEPDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmRemoteTEPDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmRemoteTEPIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmRemoteTEPIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsLanToLanTunnelDown trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -924,69 +897,67 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmLocalTEPDeviceName=%parm[#6]% 
 			lsmsAlarmLocalTEPIpAddress=%parm[#7]% 
 			lsmsAlarmRemoteTEPDeviceName=%parm[#8]% 
-			lsmsAlarmRemoteTEPIpAddress=%parm[#9]%&lt;/p&gt;
+			lsmsAlarmRemoteTEPIpAddress=%parm[#9]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>16</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsLSMSStatusChange</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsLSMSStatusChange</event-label>
-	<descr>
-&lt;p&gt;LSMS Failover or Status Change Event&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsLSMSStatusChange</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsLSMSStatusChange</event-label>
+      <descr>&lt;p>LSMS Failover or Status Change Event&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLSMSPeerType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmLSMSPeerType&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
 		source(-4195544)
 		target(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLSMSName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLSMSName&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLSMSPeerStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmLSMSPeerStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>
 		lost(-4195544)
 		contacted(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsLSMSStatusChange trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -995,119 +966,115 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmTriggerName=%parm[#5]% 
 			lsmsAlarmLSMSPeerType=%parm[#6]% 
 			lsmsAlarmLSMSName=%parm[#7]% 
-			lsmsAlarmLSMSPeerStatus=%parm[#8]%&lt;/p&gt;
+			lsmsAlarmLSMSPeerStatus=%parm[#8]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>17</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickFound</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickFound</event-label>
-	<descr>
-&lt;p&gt;The Lucent Security Management Server
-(LSMS) has (re)gained contact with a Brick.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickFound</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickFound</event-label>
+      <descr>&lt;p>The Lucent Security Management Server
+(LSMS) has (re)gained contact with a Brick.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickFound trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
 			lsmsAlarmDetails=%parm[#3]% 
 			lsmsAlarmLogEntry=%parm[#4]% 
 			lsmsAlarmBrkName=%parm[#5]% 
-			lsmsAlarmTriggerName=%parm[#6]%&lt;/p&gt;
+			lsmsAlarmTriggerName=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>18</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickInterfaceUp</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickInterfaceUp</event-label>
-	<descr>
-&lt;p&gt;Brick Interface is up.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickInterfaceUp</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickInterfaceUp</event-label>
+      <descr>&lt;p>Brick Interface is up.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickInterfaceUp trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1116,98 +1083,96 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmBrkName=%parm[#5]% 
 			lsmsAlarmTriggerName=%parm[#6]% 
 			lsmsAlarmBrkIfDesc=%parm[#7]% 
-			lsmsAlarmBrkIfIndex=%parm[#8]%&lt;/p&gt;
+			lsmsAlarmBrkIfIndex=%parm[#8]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>19</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosBWExceeded</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosBWExceeded</event-label>
-	<descr>
-&lt;p&gt;Brick QoS Rule explicit bandwidth exceeded.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosBWExceeded</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosBWExceeded</event-label>
+      <descr>&lt;p>Brick QoS Rule explicit bandwidth exceeded.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneRuleNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneRuleNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosDirection&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosUnits&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsQosBWExceeded trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1222,98 +1187,96 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmQosDirection=%parm[#11]% 
 			lsmsAlarmQosType=%parm[#12]% 
 			lsmsAlarmQosValue=%parm[#13]% 
-			lsmsAlarmQosUnits=%parm[#14]%&lt;/p&gt;
+			lsmsAlarmQosUnits=%parm[#14]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>20</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosRuleLimitThrottle</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosRuleLimitThrottle</event-label>
-	<descr>
-&lt;p&gt;Brick QoS Rule Limit reached - packets may be delayed or dropped.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosRuleLimitThrottle</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosRuleLimitThrottle</event-label>
+      <descr>&lt;p>Brick QoS Rule Limit reached - packets may be delayed or dropped.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneRuleNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneRuleNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosDirection&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosUnits&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsQosRuleLimitThrottle trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1328,94 +1291,92 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmQosDirection=%parm[#11]% 
 			lsmsAlarmQosType=%parm[#12]% 
 			lsmsAlarmQosValue=%parm[#13]% 
-			lsmsAlarmQosUnits=%parm[#14]%&lt;/p&gt;
+			lsmsAlarmQosUnits=%parm[#14]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>21</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosZoneLimitThrottle</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosZoneLimitThrottle</event-label>
-	<descr>
-&lt;p&gt;Brick QoS Zone Limit reached - packets may be delayed or dropped.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosZoneLimitThrottle</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosZoneLimitThrottle</event-label>
+      <descr>&lt;p>Brick QoS Zone Limit reached - packets may be delayed or dropped.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosDirection&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosUnits&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsQosZoneLimitThrottle trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1429,98 +1390,96 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmQosDirection=%parm[#10]% 
 			lsmsAlarmQosType=%parm[#11]% 
 			lsmsAlarmQosValue=%parm[#12]% 
-			lsmsAlarmQosUnits=%parm[#13]%&lt;/p&gt;
+			lsmsAlarmQosUnits=%parm[#13]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>22</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosRuleGuaranteeUnmet</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosRuleGuaranteeUnmet</event-label>
-	<descr>
-&lt;p&gt;Brick QoS Rule Guarantee unmeetable - packets may be delayed or dropped.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosRuleGuaranteeUnmet</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosRuleGuaranteeUnmet</event-label>
+      <descr>&lt;p>Brick QoS Rule Guarantee unmeetable - packets may be delayed or dropped.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneRuleNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneRuleNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosDirection&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosUnits&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsQosRuleGuaranteeUnmet trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1535,94 +1494,92 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmQosDirection=%parm[#11]% 
 			lsmsAlarmQosType=%parm[#12]% 
 			lsmsAlarmQosValue=%parm[#13]% 
-			lsmsAlarmQosUnits=%parm[#14]%&lt;/p&gt;
+			lsmsAlarmQosUnits=%parm[#14]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>23</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosZoneGuaranteeUnmet</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosZoneGuaranteeUnmet</event-label>
-	<descr>
-&lt;p&gt;Brick QoS Zone Guarantee unmeetable - packets may be delayed or dropped.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsQosZoneGuaranteeUnmet</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsQosZoneGuaranteeUnmet</event-label>
+      <descr>&lt;p>Brick QoS Zone Guarantee unmeetable - packets may be delayed or dropped.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosDirection&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmQosUnits&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsQosZoneGuaranteeUnmet trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1636,63 +1593,61 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmQosDirection=%parm[#10]% 
 			lsmsAlarmQosType=%parm[#11]% 
 			lsmsAlarmQosValue=%parm[#12]% 
-			lsmsAlarmQosUnits=%parm[#13]%&lt;/p&gt;
+			lsmsAlarmQosUnits=%parm[#13]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>24</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsSLARoundTripDelayAlarm</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsSLARoundTripDelayAlarm</event-label>
-	<descr>
-&lt;p&gt;Lan To Lan Tunnel Service Level Agreement round trip delay alarm.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsSLARoundTripDelayAlarm</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsSLARoundTripDelayAlarm</event-label>
+      <descr>&lt;p>Lan To Lan Tunnel Service Level Agreement round trip delay alarm.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmSLAProbeID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmSLAProbeID&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmSLAPercentAboveThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmSLAPercentAboveThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmSLAConfiguredThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmSLAConfiguredThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsSLARoundTripDelayAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1701,67 +1656,65 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmTriggerName=%parm[#5]% 
 			lsmsAlarmSLAProbeID=%parm[#6]% 
 			lsmsAlarmSLAPercentAboveThreshold=%parm[#7]% 
-			lsmsAlarmSLAConfiguredThreshold=%parm[#8]%&lt;/p&gt;
+			lsmsAlarmSLAConfiguredThreshold=%parm[#8]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>25</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsLanToLanTunnelUp</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsLanToLanTunnelUp</event-label>
-	<descr>
-&lt;p&gt;Lan To Lan Tunnel back up after being down.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsLanToLanTunnelUp</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsLanToLanTunnelUp</event-label>
+      <descr>&lt;p>Lan To Lan Tunnel back up after being down.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLocalTEPDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLocalTEPDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLocalTEPIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLocalTEPIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmRemoteTEPDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmRemoteTEPDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmRemoteTEPIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmRemoteTEPIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsLanToLanTunnelUp trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1771,73 +1724,71 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmLocalTEPDeviceName=%parm[#6]% 
 			lsmsAlarmLocalTEPIpAddress=%parm[#7]% 
 			lsmsAlarmRemoteTEPDeviceName=%parm[#8]% 
-			lsmsAlarmRemoteTEPIpAddress=%parm[#9]%&lt;/p&gt;
+			lsmsAlarmRemoteTEPIpAddress=%parm[#9]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>26</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickICMAlarm</uei>
-	<event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickICMAlarm</event-label>
-	<descr>
-&lt;p&gt;Brick Intelligent Cache Management Alarm.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1751.1.56.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>26</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/alcatellucent/traps/lsmsBrickICMAlarm</uei>
+      <event-label>LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB defined trap event: lsmsBrickICMAlarm</event-label>
+      <descr>&lt;p>Brick Intelligent Cache Management Alarm.
 Sessions have been removed from brick cache as specified
-in brick ICM configuration.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in brick ICM configuration.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmLogEntry&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmPercentBrkCacheUsedBeforeICM&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmPercentBrkCacheUsedBeforeICM&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmPercentBrkCacheUsedAfterICM&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmPercentBrkCacheUsedAfterICM&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkSessionsBeforeICM&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	lsmsAlarmBrkSessionsBeforeICM&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	lsmsAlarmBrkSessionsAfterICM&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	lsmsAlarmBrkSessionsAfterICM&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickICMAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1848,9 +1799,8 @@ in brick ICM configuration.&lt;/p&gt;&lt;table&gt;
 			lsmsAlarmPercentBrkCacheUsedBeforeICM=%parm[#7]% 
 			lsmsAlarmPercentBrkCacheUsedAfterICM=%parm[#8]% 
 			lsmsAlarmBrkSessionsBeforeICM=%parm[#9]% 
-			lsmsAlarmBrkSessionsAfterICM=%parm[#10]%&lt;/p&gt;
+			lsmsAlarmBrkSessionsAfterICM=%parm[#10]%&lt;/p>
 		</logmsg>
-	<severity>Critical</severity>
-</event>
-<!-- End of auto generated data from MIB: LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB -->
+      <severity>Critical</severity>
+   </event>
 </events>

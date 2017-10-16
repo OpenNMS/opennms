@@ -1,6 +1,94 @@
 [[release-20-changelog]]
 === Changelog
 
+[releasenotes-changelog-20.1.0]
+==== Release 20.1.0
+
+Release 20.1.0 is the latest stable release of OpenNMS.
+It is based on OpenNMS 20.0.2 plus additional work done in preparation for Meridian 2017, including a new ReST API to support enhanced OpenNMS Grafana inetgration.
+For a high-level overview of what's changed in OpenNMS 20, see link:http://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-20[What's New in OpenNMS 20].
+
+The codename for 20.1.0 is _link:http://fifth-element.wikia.com/wiki/Jean-Baptiste_Zorg[Zorg]_
+
+===== Bug
+
+* noSuchInstance causing problems during provision scan (Issue http://issues.opennms.org/browse/NMS-8046[NMS-8046])
+* "Manually Add an Interface" seems broken (Issue http://issues.opennms.org/browse/NMS-9108[NMS-9108])
+* NullPointerException during nodeScan on devices with broken IP-MIB::ipAddressIfIndex (Issue http://issues.opennms.org/browse/NMS-9415[NMS-9415])
+* No bounds-checking in processing of DHCP Options (Issue http://issues.opennms.org/browse/NMS-9420[NMS-9420])
+* The alarm-type for BSM event definitions is conceptually incorrect (Issue http://issues.opennms.org/browse/NMS-9497[NMS-9497])
+* Update copyright date in docs (Issue http://issues.opennms.org/browse/NMS-9516[NMS-9516])
+* The reason parameter for a nodeLostService event is limited to 255 characters (Issue http://issues.opennms.org/browse/NMS-9550[NMS-9550])
+* reloadDaemonConfig doesn't work for Eventd, only eventsConfigChange works (Issue http://issues.opennms.org/browse/NMS-9555[NMS-9555])
+* Apache CXF is not decoding url parameters correctly. (Issue http://issues.opennms.org/browse/NMS-9578[NMS-9578])
+* Custom security roles files is not mentioned on the documentation (Issue http://issues.opennms.org/browse/NMS-9579[NMS-9579])
+* ExceptionMapper does not update the entity type accordingly (Issue http://issues.opennms.org/browse/NMS-9598[NMS-9598])
+* offset=0 is rendering as offset=null in ReSTv2 collections (Issue http://issues.opennms.org/browse/NMS-9599[NMS-9599])
+* Remove any mention of using Atomikos as a valid DB Connection Pool to avoid unwanted side effects (Issue http://issues.opennms.org/browse/NMS-9609[NMS-9609])
+* vmware importer fails with NPE (Issue http://issues.opennms.org/browse/NMS-9611[NMS-9611])
+* Basic syslog messages with Informational severity turn into unknown events (Issue http://issues.opennms.org/browse/NMS-9615[NMS-9615])
+* quick add node is broken (Issue http://issues.opennms.org/browse/NMS-9618[NMS-9618])
+* Missing visual aid on BSM Admin Page after hitting Reload Daemon (Issue http://issues.opennms.org/browse/NMS-9624[NMS-9624])
+* Remote Poller log path incorrect when using the NSIS installer (Issue http://issues.opennms.org/browse/NMS-9631[NMS-9631])
+* Pristine installation with an empty content for etc/drools-engine.d/ncs which is invalid  (Issue http://issues.opennms.org/browse/NMS-9636[NMS-9636])
+* MomentJS warning after running sample code (Issue http://issues.opennms.org/browse/NMS-9637[NMS-9637])
+
+===== Story
+
+* Add an alarms endpoint to the v2 REST API (Issue http://issues.opennms.org/browse/HZN-1061[HZN-1061])
+* Add support for perform ticket related actions on alarm (Issue http://issues.opennms.org/browse/HZN-1062[HZN-1062])
+* Add scriptable vertex status support to GraphML topologies (Issue http://issues.opennms.org/browse/HZN-1063[HZN-1063])
+* Enhance the v2 REST API to return endpoint meta-data (Issue http://issues.opennms.org/browse/HZN-1098[HZN-1098])
+* Use DTOs in REST v2 endpoints for events and alarms (Issue http://issues.opennms.org/browse/HZN-1143[HZN-1143])
+* Allow acknowledging alarms on behalf of another user without require admin (Issue http://issues.opennms.org/browse/HZN-1150[HZN-1150])
+
+===== Enhancement
+
+* Add foreignSource and foreignId parameters when sending events as an alternative to nodeId (Issue http://issues.opennms.org/browse/NMS-8919[NMS-8919])
+* Finishing the implementation of the missing endpoints for ReST v2 (Issue http://issues.opennms.org/browse/NMS-9278[NMS-9278])
+* add HTTPS response time datacollection and graph defintions (Issue http://issues.opennms.org/browse/NMS-9465[NMS-9465])
+* Add parameterized SQL support to Criteria API (Issue http://issues.opennms.org/browse/NMS-9480[NMS-9480])
+* Programmable Northbounder Interfaces (Issue http://issues.opennms.org/browse/NMS-9513[NMS-9513])
+
+
+[[releasenotes-changelog-20.0.2]]
+==== Release 20.0.2
+
+Release 20.0.2 is the latest stable release of OpenNMS.
+It contains a number of important bug fixes and a few small new enhancements.
+For a high-level overview of what's changed in OpenNMS 20, see link:http://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-20[What's New in OpenNMS 20].
+
+The codename for 20.0.2 is _link:http://fifth-element.wikia.com/wiki/Ruby_Rhod[Ruby Rhod]_.
+
+===== Bug
+
+* noSuchInstance causing problems during provision scan (Issue http://issues.opennms.org/browse/NMS-8046[NMS-8046])
+* Security issue for all admin vaadin applications exposed as OSGI Service (Issue http://issues.opennms.org/browse/NMS-8431[NMS-8431])
+* Updating assets/categories through ReST affects Forced Unmanaged services. (Issue http://issues.opennms.org/browse/NMS-8879[NMS-8879])
+* Fix CORS section to include /api/* besides /rest  (Issue http://issues.opennms.org/browse/NMS-9133[NMS-9133])
+* enlinkd thread throws StackOverflowError (Issue http://issues.opennms.org/browse/NMS-9464[NMS-9464])
+* SQL injection in DefaultSurveillanceViewService (Issue http://issues.opennms.org/browse/NMS-9476[NMS-9476])
+* "query" parameter allows SQL injection (Issue http://issues.opennms.org/browse/NMS-9478[NMS-9478])
+* Using maskelements based on nodeID (and maybe other fields) to match event definition doesn't work (Issue http://issues.opennms.org/browse/NMS-9496[NMS-9496])
+* EnhancedLinked blocks service startup (Issue http://issues.opennms.org/browse/NMS-9505[NMS-9505])
+* Using varbind to match event definition doesn't work (when using the same UEI in many definitions) (Issue http://issues.opennms.org/browse/NMS-9507[NMS-9507])
+* ConcurrentModificationException thrown by Statsd (Issue http://issues.opennms.org/browse/NMS-9511[NMS-9511])
+* Update copyright date in docs (Issue http://issues.opennms.org/browse/NMS-9516[NMS-9516])
+* Document supported products and versions for Remedy integration (Issue http://issues.opennms.org/browse/NMS-9538[NMS-9538])
+* Microsoft IE and Edge doesn't like relative path on Angular apps (Issue http://issues.opennms.org/browse/NMS-9542[NMS-9542])
+* Possible FileDescriptor Leak in Provisiond (Issue http://issues.opennms.org/browse/NMS-9545[NMS-9545])
+* initial-delay="null" when adding a new destination path (Issue http://issues.opennms.org/browse/NMS-9548[NMS-9548])
+* Eventd does not respect event configuration order when reloading (Issue http://issues.opennms.org/browse/NMS-9551[NMS-9551])
+* users.xml being overwritten on installation (Issue http://issues.opennms.org/browse/NMS-9573[NMS-9573])
+
+===== Enhancement
+
+* Make an automation to clear pathOutage alarms (Issue http://issues.opennms.org/browse/NMS-8857[NMS-8857])
+* Reload Drools configuration without restart OpenNMS (Issue http://issues.opennms.org/browse/NMS-9290[NMS-9290])
+* Add support for retrieving the SNMPv2 agent address from a specific varbind (Issue http://issues.opennms.org/browse/NMS-9449[NMS-9449])
+* Check LOG printTopology (Issue http://issues.opennms.org/browse/NMS-9561[NMS-9561])
+
+
 [[releasenotes-changelog-20.0.1]]
 ==== Release 20.0.1
 

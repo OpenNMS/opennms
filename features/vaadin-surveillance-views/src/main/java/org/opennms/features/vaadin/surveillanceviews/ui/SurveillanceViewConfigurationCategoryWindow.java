@@ -27,6 +27,21 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.opennms.netmgt.config.surveillanceViews.Category;
+import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
+import org.opennms.netmgt.config.surveillanceViews.Def;
+import org.opennms.netmgt.config.surveillanceViews.RowDef;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Sizeable;
@@ -39,20 +54,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import org.opennms.features.vaadin.surveillanceviews.model.Category;
-import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
-import org.opennms.features.vaadin.surveillanceviews.model.Def;
-import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
-import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This class represents the category chooser window for column/row definitions.

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,8 +32,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import javax.xml.bind.JAXB;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +40,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
@@ -74,9 +73,7 @@ public class TrendConfigurationIT {
 
     @Test
     public void verifySqlStatements() throws Exception {
-        final TrendConfiguration trendConfiguration = JAXB.unmarshal(
-                ConfigurationTestUtils.getFileForConfigFile("trend-configuration.xml"),
-                TrendConfiguration.class);
+        final TrendConfiguration trendConfiguration = JaxbUtils.unmarshal(TrendConfiguration.class, ConfigurationTestUtils.getFileForConfigFile("trend-configuration.xml"));
 
         for (final TrendDefinition trendDefinition : trendConfiguration.getTrendDefinitions()) {
             LOG.info("validating query for definition '{}'...", trendDefinition.getName());

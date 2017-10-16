@@ -37,7 +37,7 @@ import java.util.Map.Entry;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
 /**
  * This class is a helper to build a tree representation or the MBean's
