@@ -37,16 +37,15 @@
         <plugins>
 
             <plugin>
-                <!--
-                 | the following instructions build a simple set of public/private classes into an OSGi bundle
-                -->
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>
+                        <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                        <Vaadin-Widgetsets>org.opennms.features.vaadin.surveillanceviews.SurveillanceViewsWidgetSet</Vaadin-Widgetsets>
+                        <Include-Resource>{maven-resources},target/gwt/</Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>
