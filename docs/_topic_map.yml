@@ -23,20 +23,11 @@
 ---
 Name: About
 Dir: about
-Distros: .*
 Topics:
   - Name: Welcome
-    Distros: horizon
-    File: index-opennms
-  - Name: Welcome
-    Distros: minion
-    File: index-minion
+    File: index
   - Name: Overview
-    Distros: horizon
-    File: opennms-overview
-  - Name: Overview
-    Distros: minion
-    File: minion-overview
+    File: overview
   - Name: Legal Notice
     File: legal-notice
 ---
@@ -45,7 +36,6 @@ Topics:
 #
 Name: Release Notes
 Dir: horizon-release-notes
-Distros: horizon
 Topics:
   - Name: Preface
     File: preface
@@ -59,7 +49,6 @@ Topics:
 #
 Name: Installation
 Dir: installation-opennms
-Distros: horizon
 Topics:
   - Name: Java
     Dir: java
@@ -114,9 +103,26 @@ Topics:
       - Name: Configuration
         File: configuration
 ---
+Name: Minion
+Dir: installation-minion
+Topics:
+  - Name: RHEL
+    File: rhel
+  - Name: Debian
+    File: debian
+  - Name: Configuring OpenNMS
+    File: configure-opennms
+  - Name: Configuring Minion
+    File: configure-minion
+  - Name: Advanced Configuration
+    File: advanced-configuration
+  - Name: Kafka
+    File: kafka
+  - Name: Troubleshooting
+    File: troubleshooting
+---
 Name: Development Environment
 Dir: dev-env-opennms
-Distros: horizon
 Topics:
   - Name: Guide for developers
     File: dev-guide
@@ -124,10 +130,17 @@ Topics:
     File: write-the-docs
   - Name: How to build the docs
     File: how-to-build-docs
+  - Name: Karaf Container
+    File: karaf-container
+  - Name: Packaging
+    File: packaging
+  - Name: Guidelines
+    File: guidelines
+  - Name: Testing
+    File: testing
 ---
 Name: Operation
 Dir: operation
-Distros: horizon
 Topics:
     - Name: SSL
       File: ssl
@@ -164,7 +177,6 @@ Topics:
 ---
 Name: User Management
 Dir: user-management
-Distros: horizon
 Topics:
   - Name: Users
     File: users
@@ -173,7 +185,6 @@ Topics:
 ---
 Name: Service Assurance
 Dir: service-assurance
-Distros: horizon
 Topics:
     - Name: Introduction
       File: introduction
@@ -293,7 +304,6 @@ Topics:
 ---
 Name: Performance Management
 Dir: performance-data-collection
-Distros: horizon
 Topics:
     - Name: Collectd Configuration
       File: configuration
@@ -338,7 +348,6 @@ Topics:
 ---
 Name: Events
 Dir: events
-Distros: horizon
 Topics:
   - Name: Anatomy of Events
     File: anatomy-events
@@ -370,7 +379,6 @@ Topics:
 ---
 Name: Alarms
 Dir: alarms
-Distros: horizon
 Topics:
   - Name: Alarm Notes
     File: alarm-notes
@@ -381,7 +389,6 @@ Topics:
 ---
 Name: Notifications
 Dir: notifications
-Distros: horizon
 Topics:
   - Name: Introduction
     File: introduction
@@ -399,7 +406,6 @@ Topics:
 ---
 Name: Provisioning
 Dir: provisioning
-Distros: horizon
 Topics:
   - Name: Introduction
     File: introduction
@@ -435,7 +441,6 @@ Topics:
 ---
 Name: Business Service Monitoring
 Dir: business-service-monitoring
-Distros: horizon
 Topics:
   - Name: Introduction
     File: introduction
@@ -464,7 +469,6 @@ Topics:
 ---
 Name: Topology Map
 Dir: topology-map
-Distros: horizon
 Topics:
   - Name: Topology
     File: topology
@@ -477,7 +481,6 @@ Topics:
 ---
 Name: Enhanced Linkd
 Dir: enlinkd
-Distros: horizon
 Topics:
   - Name: Introduction
     File: introduction
@@ -504,7 +507,6 @@ Topics:
 ---
 Name: JMX Configuration Generator
 Dir: jmx-config-generator
-Distros: horizon
 Topics:
   - Name: Introduction
     File: introduction
@@ -515,7 +517,6 @@ Topics:
 ---
 Name: Operations Board
 Dir: opsboard
-Distros: horizon
 Topics:
   - Name: Introduction
     File: introduction
@@ -555,7 +556,6 @@ Topics:
 ---
 Name: Plugin Manager
 Dir: plugin-manager
-Distros: horizon
 Topics:
     - Name: Introduction
       File: introduction
@@ -583,14 +583,12 @@ Topics:
 ---
 Name: Special Cases and Workarounds
 Dir: workarounds
-Distros: horizon
 Topics:
     - Name: SNMP
       File: snmp
 ---
 Name: ReST API
 Dir: rest-api
-Distros: horizon
 Topics:
     - Name: Introduction
       File: introduction
@@ -657,7 +655,6 @@ Topics:
 ---
 Name: Reference
 Dir: reference
-Distros: horizon
 Topics:
   - Name: Anonymous Usage Statistics
     File: anonymous-usage-statistics
@@ -679,7 +676,6 @@ Topics:
     File: jasperreport-styleguide
   - Name: Ticketing Integration
     Dir: ticketing-integration
-    Distros: horizon
     Topics:
         - Name: Introduction
           File: introduction
@@ -689,38 +685,3 @@ Topics:
           File: tsrm
         - Name: BMC Remedy
           File: remedy
----
-#
-# Minion related Documentation
-#
-Name: Installation
-Dir: installation-minion
-Distros: minion
-Topics:
-  - Name: RHEL
-    File: rhel
-  - Name: Debian
-    File: debian
-  - Name: Configuring OpenNMS
-    File: configure-opennms
-  - Name: Configuring Minion
-    File: configure-minion
-  - Name: Advanced Configuration
-    File: advanced-configuration
-  - Name: Kafka
-    File: kafka
-  - Name: Troubleshooting
-    File: troubleshooting
----
-Name: Development Environment
-Dir: dev-env-minion
-Distros: minion
-Topics:
-  - Name: Karaf Container
-    File: karaf-container
-  - Name: Packaging
-    File: packaging
-  - Name: Guidelines
-    File: guidelines
-  - Name: Testing
-    File: testing
