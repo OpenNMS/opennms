@@ -32,7 +32,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NetflowPackage {
+public class NetflowPacket {
 
     public static final int VERSION = 5;
     public static final int MIN_COUNT = 1;
@@ -52,7 +52,7 @@ public class NetflowPackage {
     private final int samplingInterval;
     private final List<NetflowRecord> records = new ArrayList<>();
 
-    public NetflowPackage(ByteBuffer data) {
+    public NetflowPacket(ByteBuffer data) {
         // Check that at least the header can be read
         if (data.array().length < HEADER_SIZE) {
             throw new IllegalArgumentException("A netflow packet must contain at least " + HEADER_SIZE + " bytes, but only " + data.remaining() + " have been provided.");
@@ -85,7 +85,7 @@ public class NetflowPackage {
         boolean valid = this.version == VERSION
                 && this.count >= MIN_COUNT && this.count <= MAX_COUNT
                 && getRecords().size() == this.count;
-        //TODO MVR I noticed some packages are longer than they should be. May worth investigating
+        //TODO MVR I noticed some packets are longer than they should be. May worth investigating
         //          && data.array().length == getHeader().getSize() + getHeader().getBodySize() * getHeader().getCount();
         return valid;
     }

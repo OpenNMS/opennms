@@ -29,7 +29,7 @@
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
-import org.opennms.netmgt.telemetry.adapters.netflow.v5.NetflowPackage;
+import org.opennms.netmgt.telemetry.adapters.netflow.v5.NetflowPacket;
 import org.opennms.netmgt.telemetry.config.model.Protocol;
 import org.opennms.netmgt.telemetry.ipc.TelemetryMessageDTO;
 import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
@@ -53,26 +53,26 @@ public class Netflow5Adapter implements Adapter {
         for (TelemetryMessageDTO eachMessage : messageLog.getMessages()) {
             LOG.debug("Parse log message {}", eachMessage);
 
-            // Create NetflowPackage which delegates all calls to the byte array
+            // Create NetflowPacket which delegates all calls to the byte array
             try {
-                final NetflowPackage flowPackage = new NetflowPackage(eachMessage.getBytes());
-                if (flowPackage.getVersion() != NetflowPackage.VERSION) {
-                    LOG.warn("Invalid Version. Expected {}, received {}. Skipping flow package.", NetflowPackage.VERSION, flowPackage.getVersion());
+                final NetflowPacket flowPacket = new NetflowPacket(eachMessage.getBytes());
+                if (flowPacket.getVersion() != NetflowPacket.VERSION) {
+                    LOG.warn("Invalid Version. Expected {}, received {}. Skipping flow packet.", NetflowPacket.VERSION, flowPacket.getVersion());
                     continue;
                 }
-                if (flowPackage.getCount() == 0) {
-                    LOG.warn("Received Package has no content. Skipping flow package.");
+                if (flowPacket.getCount() == 0) {
+                    LOG.warn("Received packet has no content. Skipping flow packet.");
                     continue;
                 }
-                // TODO MVR an invalid package is skipped for now, but we may want to persist it anyways
-                if (!flowPackage.isValid()) {
-                    LOG.warn("Received Package is not valid. Skipping flow package.");
+                // TODO MVR an invalid packet is skipped for now, but we may want to persist it anyways
+                if (!flowPacket.isValid()) {
+                    LOG.warn("Received packet is not valid. Skipping flow packet.");
                     continue;
                 }
-                LOG.debug("FlowPackage received: {}", flowPackage);
+                LOG.debug("Flow packet received: {}", flowPacket);
 
             } catch (Exception e) {
-                LOG.error("Received Package cannot be read.", e);
+                LOG.error("Received packet cannot be read.", e);
             }
         }
     }
