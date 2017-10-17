@@ -1,21 +1,19 @@
+= Telemetry Daemon
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
-The telemetry daemon (_telemetryd_) provides an extensible framework that can be used to handle sensor pushed to _{opennms-product-name}_.
+The _Telemetry Daemon_ (_telemetryd_) provides an extensible framework that can be used to handle sensor pushed to _{product-title}_.
 
 _telemetryd_ allows operators to define a series of protocols, each of which has at least one listener, and at least one adapter.
 A listener is responsible for receiving sensor data from some external source.
-This may include listening for packets from a UDP socket, retrieving messages from an MQTT topic, etc...
-An adapter is responsible for processing the byte streams dispatched by the listeners.
-For example, this may include decoding a specific JSON format, persisting metrics and/or generating events.
+This may include listening for packets from a UDP socket, retrieving messages from an _MQTT_ topic, etc...
+An adapters is responsible for processing the byte streams dispatched by the listeners.
+For example, this may include decoding a specific _JSON_ format, persisting metrics and/or generating events.
 
 The framework does not make any assumption about the data about being received or processed, leaving this up to the listener and adapter implementations.
 
-Listeners may run on either _{opennms-product-name}_ or _Minion_, whereas adapters run exclusively on _{opennms-product-name}_.
-If a listener is running on _Minion_, the received messages will be automatically dispatched to the associated adapter(s) running in _{opennms-product-name}_.
+Listeners may run on either _{product-title}_ or _Minion_, whereas adapters run exclusively on _{product-title}_.
+If a listener is running on _Minion_, the received messages will be automatically dispatched to the associated adapter(s) running in _{product-title}_.
 
-=== Supported protocols
+== Supported protocols
 
 We provide built-in support for a number of protocols.
 Follow the instructions bellow for enabling these.
@@ -59,13 +57,13 @@ admin@minion()> config:update
 
 NOTE: The protocol must also be enabled on _{opennms-product-name}_ for the messages to be processed.
 
-=== Listener Reference
+== Listener Reference
 
-==== UDP Listener
+=== UDP Listener
 
 The UDP listener can be used to open a simple UDP socket and build messages from the received packets.
 
-===== Facts
+==== Facts
 
 [options="autowidth"]
 |===
@@ -73,7 +71,7 @@ The UDP listener can be used to open a simple UDP socket and build messages from
 | Supported on Minion | `Yes`
 |===
 
-===== Parameters
+==== Parameters
 
 .Listener specific parameters for the UdpListener
 [options="header, autowidth"]
@@ -84,22 +82,22 @@ The UDP listener can be used to open a simple UDP socket and build messages from
 | `maxPacketSize`  | Maximum packet size in bytes (anything greater will be truncated) | optional | `8096`
 |===
 
-=== Adapter Reference
+== Adapter Reference
 
-==== JTI Adapter
+=== JTI Adapter
 
 The JTI adapter is used to handle _Junos Telemetry Interface_ payloads.
 Messages are decoded using the published protobuf specifications and forwarded to a JSR-223 compatible script (i.e. Beanshell or Groovy) for further processing.
 Using the script extension you can extract the desired metrics from the JTI messages and persist the results as time series data.
 
-===== Facts
+==== Facts
 
 [options="autowidth"]
 |===
 | Class Name          | `org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter`
 |===
 
-===== Parameters
+==== Parameters
 
 .Adapter specific parameters for the JtiGpbAdapter
 [options="header, autowidth"]
@@ -108,7 +106,7 @@ Using the script extension you can extract the desired metrics from the JTI mess
 | `script`         | Full path to the script used to handle the JTI messages           | required | (none)
 |===
 
-===== Scripting
+==== Scripting
 
 The script will be invoked for every JTI message that is received and succesfully decoded.
 

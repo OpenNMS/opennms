@@ -658,6 +658,8 @@ Dir: reference
 Topics:
   - Name: Anonymous Usage Statistics
     File: anonymous-usage-statistics
+  - Name: Telemetry Daemon
+    File: telemetry-daemon
   - Name: Dashboard
     File: dashboard
   - Name: Grafana Dashboard Box
