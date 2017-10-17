@@ -32,6 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.owasp.encoder.Encode;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  * <p>WebSecurityUtils class.</p>
@@ -46,10 +48,20 @@ public abstract class WebSecurityUtils {
 	private static final Pattern ILLEGAL_IN_FLOAT = Pattern.compile("[^0-9.Ee+-]");
 	
 	private static final Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
-	
-    private static final Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
 
-    private static final Pattern imgOnErrorPattern = Pattern.compile("(img[^>]+)o(nerror=[^>]+>)", Pattern.CASE_INSENSITIVE);
+	private static final PolicyFactory s_sanitizer = Sanitizers
+			// Allows common formatting elements including <b>, <i>, etc.
+			.FORMATTING
+			// Allows common block elements including <p>, <h1>, etc.
+			.and(Sanitizers.BLOCKS)
+			// Allows <img> elements from HTTP, HTTPS, and relative sources.
+			.and(Sanitizers.IMAGES)
+			// Allows HTTP, HTTPS, MAILTO, and relative links.
+			.and(Sanitizers.LINKS)
+			// Allows certain safe CSS properties in style="..." attributes.
+			.and(Sanitizers.STYLES)
+			// Allows common table elements.
+			.and(Sanitizers.TABLES);
 
     /**
      * <p>sanitizeString</p>
@@ -89,11 +101,7 @@ public abstract class WebSecurityUtils {
         String next;
 
         if (allowHTML) {
-            Matcher scriptMatcher = scriptPattern.matcher(raw);
-            next = scriptMatcher.replaceAll("&#x73;cript");
-
-            Matcher imgOnErrorMatcher = imgOnErrorPattern.matcher(next);
-            next = imgOnErrorMatcher.replaceAll("$1&#x6f;$2");
+			next = s_sanitizer.sanitize(raw);
         } else {
             next = Encode.forHtmlContent(raw);
         }
