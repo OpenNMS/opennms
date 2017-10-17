@@ -46,8 +46,7 @@ import java.util.Collection;
 
 public class TelemetrydConfigTest extends XmlTestNoCastor<TelemetrydConfiguration> {
     public TelemetrydConfigTest(TelemetrydConfiguration sampleObject, Object sampleXml) {
-        // XSD will be created in HZN-1162
-        super(sampleObject, sampleXml, null);
+        super(sampleObject, sampleXml, "src/main/resources/xsds/telemetryd-config.xsd");
     }
 
     @Parameterized.Parameters

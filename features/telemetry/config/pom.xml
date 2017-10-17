@@ -24,6 +24,52 @@
           </instructions>
         </configuration>
       </plugin>
+<!--  No need to generate xsds everytime, use pre-compiled one
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>schemagen</id>
+            <goals>
+              <goal>schemagen</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <transformSchemas>
+            <transformSchema>
+              <uri>http://xmlns.opennms.org/xsd/config/telemetryd-config</uri>
+              <toFile>telemetryd-config.xsd</toFile>
+            </transformSchema>
+          </transformSchemas>
+          <outputDirectory>${project.build.directory}/xsds</outputDirectory>
+          <workDirectory>${project.build.directory}/jaxb2-work</workDirectory>
+          <includes>
+            <include>org/opennms/netmgt/telemetry/config/model/*.java</include>
+          </includes>
+          <verbose>true</verbose>
+        </configuration>
+      </plugin> -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/xsds.xml</descriptor>
+          </descriptors>
+          <tarLongFileMode>posix</tarLongFileMode>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+	  </plugin>
     </plugins>
   </build>
   <dependencies>
