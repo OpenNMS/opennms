@@ -7,12 +7,12 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
-  <artifactId>owasp-encoder-dependencies</artifactId>
+  <artifactId>owasp-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies OWASP Java Encoder</name>
+  <name>OpenNMS Dependencies OWASP</name>
   <description>
     This module is used to provide a single artifact that the opennms project
-    can depend on to use the OWASP Java Encoder
+    can depend on to use the OWASP Java Encoder and the OWASP HTML Sanitizer
   </description>
   <dependencies>
     <dependency>
@@ -25,6 +25,11 @@
           <artifactId>junit</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+      <artifactId>owasp-java-html-sanitizer</artifactId>
+      <version>${owaspHtmlSanitizerVersion}</version>
     </dependency>
   </dependencies>
 </project>
