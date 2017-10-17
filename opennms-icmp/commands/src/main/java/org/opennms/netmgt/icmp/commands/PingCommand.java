@@ -57,7 +57,7 @@ public class PingCommand extends OsgiCommandSupport {
     @Option(name = "-s", aliases = "--system-id", description = "System ID")
     String m_systemId;
 
-    @Option (name="-c", aliases = "--count", description="number of requests")
+    @Option (name="-c", aliases = "--count", description="Number of requests")
     int m_count = 1;
 
     @Argument(index = 0, name = "host", description = "Hostname or IP Address of the system to walk", required = true, multiValued = false)

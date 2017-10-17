@@ -47,28 +47,28 @@ public class PingSweepCommand extends OsgiCommandSupport {
 
     private LocationAwarePingClient locationAwarePingClient;
 
-    @Option(name = "-l", aliases = "--location", description = "location")
+    @Option(name = "-l", aliases = "--location", description = "Location")
     String m_location;
 
     @Option(name = "-s", aliases = "--system-id", description = "System ID")
     String m_systemId;
 
-    @Option(name = "-r", aliases = "--retries", description = "number of retries")
+    @Option(name = "-r", aliases = "--retries", description = "Number of retries")
     int m_retries = PingConstants.DEFAULT_RETRIES;
 
-    @Option(name = "-t", aliases = "--timeout", description = "timeout in msec")
+    @Option(name = "-t", aliases = "--timeout", description = "Timeout in milliseconds")
     int m_timeout = PingConstants.DEFAULT_TIMEOUT;
 
-    @Option(name = "-p", aliases = "--packetsize", description = "packet size")
+    @Option(name = "-p", aliases = "--packetsize", description = "Packet size")
     int m_packetsize = PingConstants.DEFAULT_PACKET_SIZE;
 
-    @Option(name = "-s", aliases = "--pps", description = "packer per second")
+    @Option(name = "--pps", description = "packer per second")
     double m_packetsPerSecond = PingConstants.DEFAULT_PACKETS_PER_SECOND;
 
-    @Argument(index = 0, name = "begin", description = "begin address of the IP range to be pinged", required = true, multiValued = false)
+    @Argument(index = 0, name = "begin", description = "First address of the IP range to be pinged", required = true, multiValued = false)
     String m_begin;
 
-    @Argument(index = 1, name = "end", description = "end address of the IP range to be pinged", required = true, multiValued = false)
+    @Argument(index = 1, name = "end", description = "Last address of the IP range to be pinged", required = true, multiValued = false)
     String m_end;
 
     @Override
