@@ -54,21 +54,26 @@ public class Netflow5Adapter implements Adapter {
             LOG.debug("Parse log message {}", eachMessage);
 
             // Create NetflowPackage which delegates all calls to the byte array
-            final NetflowPackage flowPackage = new NetflowPackage(eachMessage.getBytes());
+            try {
+                final NetflowPackage flowPackage = new NetflowPackage(eachMessage.getBytes());
+                if (flowPackage.getVersion() != NetflowPackage.VERSION) {
+                    LOG.warn("Invalid Version. Expected {}, received {}. Skipping flow package.", NetflowPackage.VERSION, flowPackage.getVersion());
+                    continue;
+                }
+                if (flowPackage.getCount() == 0) {
+                    LOG.warn("Received Package has no content. Skipping flow package.");
+                    continue;
+                }
+                // TODO MVR an invalid package is skipped for now, but we may want to persist it anyways
+                if (!flowPackage.isValid()) {
+                    LOG.warn("Received Package is not valid. Skipping flow package.");
+                    continue;
+                }
+                LOG.debug("FlowPackage received: {}", flowPackage);
 
-            if (flowPackage.getVersion() != NetflowPackage.VERSION) {
-                LOG.warn("Invalid Version. Expected {}, received {}. Skipping flow package.", NetflowPackage.VERSION, flowPackage.getVersion());
-                continue;
+            } catch (Exception e) {
+                LOG.error("Received Package cannot be read.", e);
             }
-            if (flowPackage.getHeader().getCount() == 0) {
-                LOG.warn("Received Package has no content. Skipping flow package.");
-                continue;
-            }
-            if (!flowPackage.isValid()) {
-                LOG.warn("Received Package is not valid. Skipping flow package.");
-                continue;
-            }
-            LOG.debug("FlowPackage received: {}", flowPackage);
         }
     }
 }

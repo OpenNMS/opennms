@@ -35,56 +35,109 @@ import java.util.List;
 public class NetflowPackage {
 
     public static final int VERSION = 5;
-
     public static final int MIN_COUNT = 1;
-
     public static final int MAX_COUNT = 30;
 
-    private final ByteBuffer data;
+    private static final int HEADER_SIZE = 24;
+
+    private static final int BODY_SIZE = 48;
+    private final int version;
+    private final int count;
+    private final long sysUptime;
+    private final long unixSecs;
+    private final long unixNSecs;
+    private final long flowSequence;
+    private final short engineType;
+    private final short engineId;
+    private final int samplingInterval;
+    private final List<NetflowRecord> records = new ArrayList<>();
 
     public NetflowPackage(ByteBuffer data) {
-        this.data = data;
-    }
-
-    public NetflowHeader getHeader() {
-        return new NetflowHeader(this.data);
-    }
-
-    public NetflowRecord getRecord(int recordIndex) {
-        if (recordIndex < 0 || recordIndex >= getHeader().getCount()) {
-            throw new IndexOutOfBoundsException("Cannot access record, recordIndex must be >= 0 and < getHeader().getCount()");
+        // Check that at least the header can be read
+        if (data.array().length < HEADER_SIZE) {
+            throw new IllegalArgumentException("A netflow packet must contain at least " + HEADER_SIZE + " bytes, but only " + data.remaining() + " have been provided.");
         }
 
-        final int headerSize = getHeader().getSize();
-        final int bodySize = getHeader().getBodySize();
-        final int offset = recordIndex * bodySize + headerSize;
-        final NetflowRecord record = new NetflowRecord(data, offset);
-        return record;
-    }
+        // Parse header
+        this.version =  Utils.getInt(0, 1, data, 0);
+        this.count = Utils.getInt(2, 3, data, 0);
+        this.sysUptime = Utils.getLong(4, 7, data, 0);
+        this.unixSecs = Utils.getLong(8, 11, data, 0);
+        this.unixNSecs = Utils.getLong(12, 15, data, 0);
+        this.flowSequence = Utils.getLong(16, 19, data, 0);
+        this.engineType =  Utils.getShort(20, 20, data, 0); 
+        this.engineId =  Utils.getShort(21, 21, data, 0);
+        this.samplingInterval = Utils.getInt(22, 23, data, 0);
 
-    public List<NetflowRecord> getRecords() {
-        final List<NetflowRecord> records = new ArrayList<>();
-        final NetflowHeader header = getHeader();
-
-        for (int i=0; i<header.getCount(); i++) {
-            final NetflowRecord record = getRecord(i);
-            records.add(record);
+        // Parse body
+        // determine how many records are there, as this.count could be wrong
+        int theoreticallyRecordCount = (data.array().length - HEADER_SIZE) / BODY_SIZE;
+        int readRecordCount = Math.min(this.count, theoreticallyRecordCount);
+        for (int i = 0; i < readRecordCount; i++) {
+            final int offset = i * BODY_SIZE + HEADER_SIZE;
+            final NetflowRecord record = new NetflowRecord(data, offset);
+            this.records.add(record);
         }
-
-        return records;
-    }
-
-    public int getVersion() {
-        return getHeader().getVersion();
     }
 
     public boolean isValid() {
         // ensure fields can be set
-        boolean valid = getVersion() == VERSION
-                && getHeader().getCount() >= MIN_COUNT && getHeader().getCount() <= MAX_COUNT
-                && getRecords().size() == getHeader().getCount();
-            //TODO MVR I noticed some packages are longer than they should be. May worth investigating
-//                && data.array().length == getHeader().getSize() + getHeader().getBodySize() * getHeader().getCount();
+        boolean valid = this.version == VERSION
+                && this.count >= MIN_COUNT && this.count <= MAX_COUNT
+                && getRecords().size() == this.count;
+        //TODO MVR I noticed some packages are longer than they should be. May worth investigating
+        //          && data.array().length == getHeader().getSize() + getHeader().getBodySize() * getHeader().getCount();
         return valid;
+    }
+
+    public NetflowRecord getRecord(int recordIndex) {
+        if (recordIndex < 0 || recordIndex >= this.count) {
+            throw new IndexOutOfBoundsException("Cannot access record, recordIndex must be >= 0 and < getHeader().getCount()");
+        }
+        return this.records.get(recordIndex);
+    }
+
+    public List<NetflowRecord> getRecords() {
+       return this.records;
+    }
+
+    public int getSize() {
+        return HEADER_SIZE;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public long getSysUptime() {
+        return sysUptime;
+    }
+
+    public long getUnixSecs() {
+        return unixSecs;
+    }
+
+    public long getUnixNSecs() {
+        return unixNSecs;
+    }
+
+    public long getFlowSequence() {
+        return flowSequence;
+    }
+
+    public int getEngineType() {
+        return engineType;
+    }
+
+    public int getEngineId() {
+        return engineId;
+    }
+
+    public int getSamplingInterval() {
+        return samplingInterval;
     }
 }

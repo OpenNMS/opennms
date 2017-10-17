@@ -54,14 +54,14 @@ public class NetflowPackageTest {
 
             // Verify Header
             assertThat(flowPackage.getVersion(), is((NetflowPackage.VERSION)));
-            assertThat(flowPackage.getHeader().getCount(), is(2));
-            assertThat(flowPackage.getHeader().getSysUptime(), is(3381L)); // Hex: 0x00000D35
-            assertThat(flowPackage.getHeader().getUnixSecs(), is(1430591888L)); // Hex: 0x55451990
-            assertThat(flowPackage.getHeader().getUnixNsecs(), is(280328000L)); // Hex: 0x10B57740
-            assertThat(flowPackage.getHeader().getFlowSequence(), is(0L));
-            assertThat(flowPackage.getHeader().getEngineId(), is(0));
-            assertThat(flowPackage.getHeader().getEngineType(), is(0));
-            assertThat(flowPackage.getHeader().getSamplingInterval(), is(0));
+            assertThat(flowPackage.getCount(), is(2));
+            assertThat(flowPackage.getSysUptime(), is(3381L)); // Hex: 0x00000D35
+            assertThat(flowPackage.getUnixSecs(), is(1430591888L)); // Hex: 0x55451990
+            assertThat(flowPackage.getUnixNSecs(), is(280328000L)); // Hex: 0x10B57740
+            assertThat(flowPackage.getFlowSequence(), is(0L));
+            assertThat(flowPackage.getEngineId(), is(0));
+            assertThat(flowPackage.getEngineType(), is(0));
+            assertThat(flowPackage.getSamplingInterval(), is(0));
 
             // Verify Flow Record 1
             assertThat(flowPackage.getRecord(0).getSrcAddr(), is("10.0.2.2"));
@@ -77,7 +77,7 @@ public class NetflowPackageTest {
             assertThat(flowPackage.getRecord(0).getFirst(), is(1024L * 1024L * 1024L * 4L - 1)); // Hex: 0xFFFFFFFF
             assertThat(flowPackage.getRecord(0).getLast(), is(2577L)); // Hex: 0x00000A11
             assertThat(flowPackage.getRecord(0).getProt(), is(6));
-            assertThat(flowPackage.getRecord(0).getTOS(), is(0));
+            assertThat(flowPackage.getRecord(0).getToS(), is(0));
             assertThat(flowPackage.getRecord(0).getSrcAs(), is(0));
             assertThat(flowPackage.getRecord(0).getDstAs(), is(0));
             assertThat(flowPackage.getRecord(0).getSrcMask(), is(0));
@@ -97,7 +97,7 @@ public class NetflowPackageTest {
             assertThat(flowPackage.getRecord(1).getFirst(), is(1024L * 1024L * 1024L * 4L - 1)); // Hex: 0xFFFFFFFF
             assertThat(flowPackage.getRecord(1).getLast(), is(2577L)); // Hex: 0x00000A11
             assertThat(flowPackage.getRecord(1).getProt(), is(6));
-            assertThat(flowPackage.getRecord(1).getTOS(), is(0));
+            assertThat(flowPackage.getRecord(1).getToS(), is(0));
             assertThat(flowPackage.getRecord(1).getSrcAs(), is(0));
             assertThat(flowPackage.getRecord(1).getDstAs(), is(0));
             assertThat(flowPackage.getRecord(1).getSrcMask(), is(0));
@@ -126,15 +126,15 @@ public class NetflowPackageTest {
 
             // Verify Header
             assertThat(flowPackage.getVersion(), is((NetflowPackage.VERSION)));
-            assertThat(flowPackage.getHeader().getCount(), is(30));
+            assertThat(flowPackage.getCount(), is(30));
             assertThat(flowPackage.getRecords(), hasSize(30));
-            assertThat(flowPackage.getHeader().getSysUptime(), is(27361640L)); // Hex: 0x01A18168
-            assertThat(flowPackage.getHeader().getUnixSecs(), is(1469109117L)); // Hex: 0x5790D37D
-            assertThat(flowPackage.getHeader().getUnixNsecs(), is(514932000L)); // Hex: 0x1EB13D20
-            assertThat(flowPackage.getHeader().getFlowSequence(), is(8140050L));
-            assertThat(flowPackage.getHeader().getEngineId(), is(0));
-            assertThat(flowPackage.getHeader().getEngineType(), is(0));
-            assertThat(flowPackage.getHeader().getSamplingInterval(), is(0));
+            assertThat(flowPackage.getSysUptime(), is(27361640L)); // Hex: 0x01A18168
+            assertThat(flowPackage.getUnixSecs(), is(1469109117L)); // Hex: 0x5790D37D
+            assertThat(flowPackage.getUnixNSecs(), is(514932000L)); // Hex: 0x1EB13D20
+            assertThat(flowPackage.getFlowSequence(), is(8140050L));
+            assertThat(flowPackage.getEngineId(), is(0));
+            assertThat(flowPackage.getEngineType(), is(0));
+            assertThat(flowPackage.getSamplingInterval(), is(0));
 
             // Verify Last Flow Record
             assertThat(flowPackage.getRecord(29).getSrcAddr(), is("10.0.8.1"));
@@ -142,7 +142,7 @@ public class NetflowPackageTest {
             assertThat(flowPackage.getRecord(29).getNextHop(), is("192.168.0.1"));
             assertThat(flowPackage.getRecord(29).getSrcPort(), is(80));
             assertThat(flowPackage.getRecord(29).getDstPort(), is(51826));
-            assertThat(flowPackage.getRecord(29).getTOS(), is(40));
+            assertThat(flowPackage.getRecord(29).getToS(), is(40));
             assertThat(flowPackage.getRecord(29).getInput(), is(13));
             assertThat(flowPackage.getRecord(29).getOutput(), is(46));
             assertThat(flowPackage.getRecord(29).getDPkts(), is(13L));
@@ -165,15 +165,15 @@ public class NetflowPackageTest {
 
             // Verify Flow Header
             assertThat(flowPackage.getVersion(), is((NetflowPackage.VERSION)));
-            assertThat(flowPackage.getHeader().getCount(), is(29));
+            assertThat(flowPackage.getCount(), is(29));
             assertThat(flowPackage.getRecords(), hasSize(29));
-            assertThat(flowPackage.getHeader().getSysUptime(), is(190649064L)); // Hex: 0x0B5D12E8
-            assertThat(flowPackage.getHeader().getUnixSecs(), is(1469109172L)); // Hex: 0x5790D3B4
-            assertThat(flowPackage.getHeader().getUnixNsecs(), is(00000000L)); // Hex: 0x00000000
-            assertThat(flowPackage.getHeader().getFlowSequence(), is(528678L));
-            assertThat(flowPackage.getHeader().getEngineId(), is(0));
-            assertThat(flowPackage.getHeader().getEngineType(), is(0));
-            assertThat(flowPackage.getHeader().getSamplingInterval(), is(1000));
+            assertThat(flowPackage.getSysUptime(), is(190649064L)); // Hex: 0x0B5D12E8
+            assertThat(flowPackage.getUnixSecs(), is(1469109172L)); // Hex: 0x5790D3B4
+            assertThat(flowPackage.getUnixNSecs(), is(00000000L)); // Hex: 0x00000000
+            assertThat(flowPackage.getFlowSequence(), is(528678L));
+            assertThat(flowPackage.getEngineId(), is(0));
+            assertThat(flowPackage.getEngineType(), is(0));
+            assertThat(flowPackage.getSamplingInterval(), is(1000));
 
             // Verify Last Flow Record
             assertThat(flowPackage.getRecord(28).getSrcAddr(), is("66.249.92.75"));
@@ -183,7 +183,7 @@ public class NetflowPackageTest {
             assertThat(flowPackage.getRecord(28).getDstPort(), is(80));
             assertThat(flowPackage.getRecord(28).getSrcAs(), is(15169));
             assertThat(flowPackage.getRecord(28).getDstAs(), is(64496));
-            assertThat(flowPackage.getRecord(28).getTOS(), is(0));
+            assertThat(flowPackage.getRecord(28).getToS(), is(0));
             assertThat(flowPackage.getRecord(28).getInput(), is(542));
             assertThat(flowPackage.getRecord(28).getOutput(), is(536));
             assertThat(flowPackage.getRecord(28).getDPkts(), is(2L));
@@ -220,15 +220,15 @@ public class NetflowPackageTest {
         netflowPackage.isValid();
 
         // Verify Header
-        assertThat(netflowPackage.getHeader().getVersion(), is(65536 - 1)); // 2^16-1
-        assertThat(netflowPackage.getHeader().getCount(), is(65536 - 1)); // 2^16-1
-        assertThat(netflowPackage.getHeader().getSysUptime(), is(1024L * 1024L * 1024L * 4l - 1)); // 2^32-1
-        assertThat(netflowPackage.getHeader().getUnixSecs(), is(1024L * 1024L * 1024L * 4 - 1)); // 2^32-1
-        assertThat(netflowPackage.getHeader().getUnixNsecs(), is(1024L * 1024L * 1024L * 4 - 1)); // 2^32-1
-        assertThat(netflowPackage.getHeader().getFlowSequence(), is(1024L * 1024L * 1024L * 4 - 1)); // 2^32-1
-        assertThat(netflowPackage.getHeader().getEngineType(), is(255)); // 2^8-1
-        assertThat(netflowPackage.getHeader().getEngineId(), is(255)); // 2^8-1
-        assertThat(netflowPackage.getHeader().getSamplingInterval(), is(65536 - 1)); // 2^16-1
+        assertThat(netflowPackage.getVersion(), is(65536 - 1)); // 2^16-1
+        assertThat(netflowPackage.getCount(), is(65536 - 1)); // 2^16-1
+        assertThat(netflowPackage.getSysUptime(), is(1024L * 1024L * 1024L * 4l - 1)); // 2^32-1
+        assertThat(netflowPackage.getUnixSecs(), is(1024L * 1024L * 1024L * 4 - 1)); // 2^32-1
+        assertThat(netflowPackage.getUnixNSecs(), is(1024L * 1024L * 1024L * 4 - 1)); // 2^32-1
+        assertThat(netflowPackage.getFlowSequence(), is(1024L * 1024L * 1024L * 4 - 1)); // 2^32-1
+        assertThat(netflowPackage.getEngineType(), is(255)); // 2^8-1
+        assertThat(netflowPackage.getEngineId(), is(255)); // 2^8-1
+        assertThat(netflowPackage.getSamplingInterval(), is(65536 - 1)); // 2^16-1
 
         // Verify Body
         assertThat(netflowPackage.getRecord(0).getSrcAddr(), is("255.255.255.255")); // quadruple: (2^8-1, 2^8-1, 2^8-1, 2^8-1)
@@ -244,7 +244,7 @@ public class NetflowPackageTest {
         assertThat(netflowPackage.getRecord(0).getDstPort(), is(65536 - 1)); // 2^16-1
         assertThat(netflowPackage.getRecord(0).getTcpFlags(), is(255)); // 2^8-1
         assertThat(netflowPackage.getRecord(0).getProt(), is(255)); // 2^8-1
-        assertThat(netflowPackage.getRecord(0).getTOS(), is(255)); // 2^8-1
+        assertThat(netflowPackage.getRecord(0).getToS(), is(255)); // 2^8-1
         assertThat(netflowPackage.getRecord(0).getSrcAs(), is(65536 - 1)); // 2^16-1
         assertThat(netflowPackage.getRecord(0).getDstAs(), is(65536 - 1)); // 2^16-1
         assertThat(netflowPackage.getRecord(0).getSrcMask(), is(255)); // 2^8-1
