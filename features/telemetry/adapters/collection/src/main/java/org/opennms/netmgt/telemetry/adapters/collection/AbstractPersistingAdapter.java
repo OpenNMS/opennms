@@ -38,8 +38,7 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.config.model.Package;
 import org.opennms.netmgt.telemetry.config.model.Protocol;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageDTO;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
+import org.opennms.netmgt.telemetry.ipc.TelemetryProtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +73,11 @@ public abstract class AbstractPersistingAdapter implements Adapter {
      * @return a {@link CollectionSetWithAgent} or an empty value if nothing should be persisted
      * @throws Exception if an error occured while generating the collection set
      */
-    public abstract Optional<CollectionSetWithAgent> handleMessage(TelemetryMessageDTO message, TelemetryMessageLogDTO messageLog) throws Exception;
+    public abstract Optional<CollectionSetWithAgent> handleMessage(TelemetryProtos.TelemetryMessage message, TelemetryProtos.TelemetryMessageLog messageLog) throws Exception;
 
     @Override
-    public void handleMessageLog(TelemetryMessageLogDTO messageLog) {
-        for (TelemetryMessageDTO message : messageLog.getMessages()) {
+    public void handleMessageLog(TelemetryProtos.TelemetryMessageLog messageLog) {
+        for (TelemetryProtos.TelemetryMessage message : messageLog.getMessageList()) {
             final Optional<CollectionSetWithAgent> result;
             try {
                 result = handleMessage(message, messageLog);
