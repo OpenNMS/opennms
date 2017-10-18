@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.opennms.netmgt.config.WebRole" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -56,14 +57,14 @@
     <p class="lead">${error}</p>
     <form role="form" class="form-horizontal" action="<c:url value='${reqUrl}'/>" method="post" name="saveEntryForm">
       <input type="hidden" name="operation" value="saveEntry"/>
-      <input type="hidden" name="role" value="${role.name}"/>
+      <input type="hidden" name="role" value="<%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %>"/>
       <input type="hidden" name="schedIndex" value="${schedIndex}"/>
       <input type="hidden" name="timeIndex" value="${timeIndex}" /> 
 
       <div class="form-group">
         <label class="col-sm-2">Role</label>
         <div class="col-sm-4">
-          <p class="form-control-static">${role.name}</p>
+          <p class="form-control-static"><%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %></p>
         </div>
       </div>
 

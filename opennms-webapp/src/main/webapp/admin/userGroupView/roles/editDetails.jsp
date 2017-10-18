@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.opennms.netmgt.config.WebRole" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -70,12 +71,12 @@
   <div class="panel-body">
     <form role="form" class="form-horizontal" action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
       <input type="hidden" name="operation" value="saveDetails"/>
-      <input type="hidden" name="role" value="${role.name}"/>
+      <input type="hidden" name="role" value="<%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %>"/>
 
       <div class="form-group">
         <label for="input_roleName" class="col-sm-2 control-label">Name</label>
         <div class="col-sm-10">
-          <input class="form-control" name="roleName" id="input_roleName" type="text" value="${role.name}"/>
+          <input class="form-control" name="roleName" id="input_roleName" type="text" value="<%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %>"/>
         </div>
       </div>
 
@@ -129,7 +130,7 @@
       <div class="form-group">
         <label for="input_roleDescr" class="col-sm-2 control-label">Description</label>
         <div class="col-sm-10">
-          <input class="form-control" name="roleDescr" id="input_roleDescr" type="text" value="${role.description}"/>
+          <input class="form-control" name="roleDescr" id="input_roleDescr" type="text" value="<%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getDescription()) %>"/>
         </div>
       </div>
 

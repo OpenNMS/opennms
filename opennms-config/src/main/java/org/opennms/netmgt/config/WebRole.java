@@ -45,8 +45,8 @@ import org.opennms.netmgt.config.groups.Time;
  */
 public abstract class WebRole {
     
-    private String m_name;
-    private String m_description;
+    private String m_name = "";
+    private String m_description = "";
     private WebUser m_defaultUser;
     private WebGroup m_membershipGroup;
     private final List<WebSchedEntry> m_newEntries = new ArrayList<WebSchedEntry>();
