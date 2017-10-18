@@ -44,6 +44,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.Message;
@@ -75,7 +77,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     private class KafkaConsumerRunner implements Runnable {
         private final SinkModule<?, Message> module;
         private final AtomicBoolean closed = new AtomicBoolean(false);
-        private final KafkaConsumer<String, String> consumer;
+        private final KafkaConsumer<String, byte[]> consumer;
         private final String topic;
 
         public KafkaConsumerRunner(SinkModule<?, Message> module) {
@@ -93,8 +95,8 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             try {
                 consumer.subscribe(Arrays.asList(topic));
                 while (!closed.get()) {
-                    ConsumerRecords<String, String> records = consumer.poll(100);
-                    for (ConsumerRecord<String, String> record : records) {
+                    ConsumerRecords<String, byte[]> records = consumer.poll(100);
+                    for (ConsumerRecord<String, byte[]> record : records) {
                         try {
                             dispatch(module, module.unmarshal(record.value()));
                         } catch (RuntimeException e) {
@@ -155,7 +157,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         kafkaConfig.put("group.id", SystemInfoUtils.getInstanceId());
         kafkaConfig.put("enable.auto.commit", "true");
         kafkaConfig.put("key.deserializer", StringDeserializer.class.getCanonicalName());
-        kafkaConfig.put("value.deserializer", StringDeserializer.class.getCanonicalName());
+        kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.put("auto.commit.interval.ms", "1000");
 
         // Find all of the  system properties that start with 'org.opennms.core.ipc.sink.kafka.'

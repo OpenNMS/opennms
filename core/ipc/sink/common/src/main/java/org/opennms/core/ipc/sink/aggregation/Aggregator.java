@@ -74,7 +74,7 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
      */
     private static final int NUM_STRIPE_LOCKS = Integer.getInteger(NUM_STRIPE_LOCKS_SYS_PROP, DEFAULT_NUM_STRIPE_LOCKS);
 
-    private final AggregationPolicy<S,T> aggregationPolicy;
+    private final AggregationPolicy<S,T,Object> aggregationPolicy;
 
     private final AggregatingMessageProducer<S,T> messageProducer;
 
@@ -88,8 +88,8 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
 
     private final Striped<Lock> lockStripes = Striped.lock(NUM_STRIPE_LOCKS);
 
-    public Aggregator(String id, AggregationPolicy<S,T> policy, AggregatingMessageProducer<S,T> messageProducer) {
-        aggregationPolicy = Objects.requireNonNull(policy);
+    public Aggregator(String id, AggregationPolicy<S,T,?> policy, AggregatingMessageProducer<S,T> messageProducer) {
+        aggregationPolicy = (AggregationPolicy<S,T,Object>)Objects.requireNonNull(policy);
         this.messageProducer = Objects.requireNonNull(messageProducer);
         completionSize = aggregationPolicy.getCompletionSize();
         completionIntervalMs = aggregationPolicy.getCompletionIntervalMs();
@@ -198,7 +198,7 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
     }
 
     protected class Bucket {
-        private T accumulator;
+        private Object accumulator;
         private int count = 0;
         private Long firstTimeMillis;
 
@@ -207,14 +207,14 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
             count++;
             if (count >= completionSize) {
                 // We're ready!
-                return accumulator;
+                return aggregationPolicy.build(accumulator);
             } else if (completionIntervalMs > 0) {
                 final long now = System.currentTimeMillis();
                 if (firstTimeMillis == null) {
                     firstTimeMillis = now;
                 } else if (now - firstTimeMillis >= completionIntervalMs) {
                     // We're ready!
-                    return accumulator;
+                    return aggregationPolicy.build(accumulator);
                 }
             }
             // We're NOT ready yet...
@@ -222,7 +222,7 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
         }
 
         public T getValue() {
-            return accumulator;
+            return aggregationPolicy.build(accumulator);
         }
 
         public Long getFirstTimeMillis() {

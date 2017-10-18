@@ -28,16 +28,11 @@
 
 package org.opennms.core.ipc.sink.kafka;
 
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
+import com.codahale.metrics.JmxReporter;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.Message;
@@ -50,7 +45,12 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.JmxReporter;
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<String> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRemoteMessageDispatcherFactory.class);
@@ -61,7 +61,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     private JmxReporter reporter;
 
-    private KafkaProducer<String,String> producer;
+    private KafkaProducer<String,byte[]> producer;
 
     @Override
     public <S extends Message, T extends Message> String getModuleMetadata(final SinkModule<S, T> module) {
@@ -73,7 +73,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, String topic, T message) {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.trace("dispatch({}): sending message {}", topic, message);
-            final ProducerRecord<String,String> record = new ProducerRecord<>(topic, module.marshal(message));
+            final ProducerRecord<String,byte[]> record = new ProducerRecord<>(topic, module.marshal(message));
             try {
                 // From KafkaProducer's JavaDoc: The producer is thread safe and should generally be shared among all threads for best performance.
                 final Future<RecordMetadata> future = producer.send(record);
@@ -94,7 +94,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             // Defaults
             kafkaConfig.clear();
             kafkaConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
-            kafkaConfig.put("value.serializer", StringSerializer.class.getCanonicalName());
+            kafkaConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
 
             // Retrieve all of the properties from org.opennms.core.ipc.sink.kafka.cfg
             final Dictionary<String, Object> properties = configAdmin.getConfiguration(KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties();
@@ -109,7 +109,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             LOG.info("KafkaRemoteMessageDispatcherFactory: initializing the Kafka producer with: {}", kafkaConfig);
             final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
             try {
-                // Class-loader hack for accessing the org.apache.kafka.common.serialization.StringSerializer
+                // Class-loader hack for accessing the org.apache.kafka.common.serialization.ByteArraySerializer
                 Thread.currentThread().setContextClassLoader(null);
                 producer = new KafkaProducer<>(kafkaConfig);
             } finally {
