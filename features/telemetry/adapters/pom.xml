@@ -14,5 +14,6 @@
     <module>api</module>
     <module>collection</module>
     <module>jti</module>
+    <module>netflow</module>
   </modules>
 </project>

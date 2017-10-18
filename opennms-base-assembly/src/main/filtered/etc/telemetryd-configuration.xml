@@ -19,4 +19,12 @@
       </rrd>
     </package>
   </protocol>
+  <protocol name="Netflow-5" description="Listener for Netflow 5 UDP packets" enabled="false">
+    <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
+         <parameter key="port" value="8877"/>
+     </listener>
+
+     <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter">
+     </adapter>
+  </protocol>
 </telemetryd-config>
