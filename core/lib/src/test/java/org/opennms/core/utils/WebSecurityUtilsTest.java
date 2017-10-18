@@ -29,7 +29,6 @@
 package org.opennms.core.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -53,7 +52,7 @@ public class WebSecurityUtilsTest {
 		imgXss = WebSecurityUtils.sanitizeString(imgXss);
 		html = WebSecurityUtils.sanitizeString(html);
 		assertEquals("Script is sanitized", "&lt;script&gt;foo&lt;/script&gt;", script);
-		assertEquals("IMG XSS is sanitized", "&lt;img src=/ onerror=\"alert('XSS');\"&gt;&lt;/img&gt;", imgXss);
+		assertEquals("IMG XSS is sanitized", "&lt;img src=/ onerror=&#34;alert(&#39;XSS&#39;);&#34;&gt;&lt;/img&gt;", imgXss);
 		assertEquals("Html is sanitized", "&lt;table&gt;", html);
 	}
 
