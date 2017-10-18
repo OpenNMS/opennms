@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xmlns.opennms.org/xsd/config/telemetryd-config" elementFormDefault="qualified" targetNamespace="http://xmlns.opennms.org/xsd/config/telemetryd-config" version="1.0">
+
+  <xs:element name="adapter" type="tns:adapter"/>
+
+  <xs:element name="filter" type="tns:filter"/>
+
+  <xs:element name="listener" type="tns:listener"/>
+
+  <xs:element name="package" type="tns:package"/>
+
+  <xs:element name="parameter" type="tns:parameter"/>
+
+  <xs:element name="protocol" type="tns:protocol"/>
+
+  <xs:element name="rrd" type="tns:rrd"/>
+
+  <xs:element name="telemetryd-config" type="tns:telemetrydConfiguration"/>
+
+  <xs:complexType name="package">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="tns:filter"/>
+      <xs:element minOccurs="0" ref="tns:rrd"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:simpleType name="filter">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="rrd">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="rra" type="xs:string"/>
+    </xs:sequence>
+    <xs:attribute name="step" type="xs:int"/>
+    <xs:attribute name="base-directory" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="protocol">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:listener"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:adapter"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:package"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="description" type="xs:string"/>
+    <xs:attribute name="enabled" type="xs:boolean"/>
+    <xs:attribute name="num-threads" type="xs:int"/>
+    <xs:attribute name="batch-size" type="xs:int"/>
+    <xs:attribute name="batch-interval-ms" type="xs:int"/>
+    <xs:attribute name="queue-size" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="listener">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:parameter"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="class-name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="parameter">
+    <xs:sequence/>
+    <xs:attribute name="key" type="xs:string"/>
+    <xs:attribute name="value" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="adapter">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:parameter"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="class-name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="telemetrydConfiguration">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:protocol"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
