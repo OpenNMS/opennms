@@ -30,26 +30,26 @@ package org.opennms.netmgt.provision.detector.command;
 
 import java.util.Map;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 
 @Command(scope = "provision", name = "list-detectors", description = "Lists all of the available detectors.")
-public class ListDetectors extends OsgiCommandSupport {
+@Service
+public class ListDetectors implements Action {
 
-    private ServiceDetectorRegistry serviceDetectorRegistry;
+    @Reference
+    ServiceDetectorRegistry serviceDetectorRegistry;
 
     @Override
-    protected Object doExecute() {
+    public Object execute() throws Exception {
         serviceDetectorRegistry.getTypes().entrySet().stream()
             .sorted(Map.Entry.<String, String>comparingByKey()) 
             .forEachOrdered(e -> {
                 System.out.printf("%s: %s\n", e.getKey(), e.getValue());
             });
         return null;
-    }
-
-    public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
-        this.serviceDetectorRegistry = serviceDetectorRegistry;
     }
 }

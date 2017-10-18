@@ -19,6 +19,17 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Karaf-Commands>*</Karaf-Commands>
+          </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
@@ -47,7 +58,13 @@
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
-      <artifactId>org.apache.karaf.shell.console</artifactId>
+      <artifactId>org.apache.karaf.shell.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.aries.blueprint</groupId>
+      <artifactId>org.apache.aries.blueprint.core</artifactId>
+      <version>1.4.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

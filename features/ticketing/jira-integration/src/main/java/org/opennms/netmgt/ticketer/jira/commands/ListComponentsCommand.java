@@ -28,15 +28,28 @@
 
 package org.opennms.netmgt.ticketer.jira.commands;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.google.common.base.Strings;
 
+/**
+ * <p>This command implements the Apache Karaf 3 and Apache Karaf 4 shell APIs.
+ * Once the Karaf 4 commands work, the deprecated Karaf 3 annotations should 
+ * be removed:</p>
+ * <ul>
+ * <li>{@link org.apache.karaf.shell.commands.Command}</li>
+ * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
+ * </ul>
+ */
 @Command(scope = "jira", name = "list-components", description="Uses the JIRA ReST API to list all components")
-public class ListComponentsCommand extends AbstractJiraCommand {
+@org.apache.karaf.shell.commands.Command(scope = "jira", name = "list-components", description="Uses the JIRA ReST API to list all components")
+@Service
+public class ListComponentsCommand extends AbstractJiraCommand implements Action {
 
     @Option(name="-k", aliases="--project-key", description="A project key to limit the components to. If defined it overwrites the one defined in the jira ticketer plugin configuration", required = true)
     String projectKey;

@@ -35,8 +35,10 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.netmgt.ticketer.jira.Config;
@@ -50,7 +52,9 @@ import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 
 @Command(scope = "jira", name = "verify", description="Verifies the current configuration")
-public class VerifyCommand extends OsgiCommandSupport {
+@org.apache.karaf.shell.commands.Command(scope = "jira", name = "verify", description="Verifies the current configuration")
+@Service
+public class VerifyCommand extends OsgiCommandSupport implements Action {
 
     private Config config = JiraTicketerPlugin.getConfig();
 
@@ -58,14 +62,14 @@ public class VerifyCommand extends OsgiCommandSupport {
     String[] field;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         JiraRestClient connection = null;
         // Validate all settings
         try {
             System.out.println("Verifiing Jira Ticketer Plugin...");
             validateConfiguration();
             connection = verifyConnection();
-            validateProjectKey(connection);
+            validateProjectKey(connection, config.getProjectKey());
             validateIssueType(connection);
             verifyCustomFields(connection);
             return null;
@@ -74,6 +78,12 @@ public class VerifyCommand extends OsgiCommandSupport {
                 connection.close();
             }
         }
+    }
+
+    @Override
+    @Deprecated
+    protected final Object doExecute() throws Exception {
+        return execute();
     }
 
     private void verifyCustomFields(JiraRestClient client) {
@@ -173,9 +183,7 @@ public class VerifyCommand extends OsgiCommandSupport {
         }
     }
 
-    private void validateProjectKey(JiraRestClient client) {
-        final String projectKey = config.getProjectKey();
-        System.out.println();
+    private static void validateProjectKey(JiraRestClient client, String projectKey) {
         System.out.println("Validating project with key '" + projectKey + "'...");
         try {
             if (client.getProjectClient().getProject(projectKey).get() == null) {

@@ -35,18 +35,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.api.Operation;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import com.google.common.collect.Lists;
 
 @Command(scope = "topo", name = "listoperations", description="Lists the available OpenNMS topology operations.")
-public class OperationListShellCommand extends OsgiCommandSupport {
+@Service
+public class OperationListShellCommand implements Action {
+
+    @Reference
+    BundleContext bundleContext;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
 
     	final List<Operation> operations = Lists.newArrayList();
     	final Map<Operation,Map<String,Object>> properties = new HashMap<>();
@@ -88,7 +95,7 @@ public class OperationListShellCommand extends OsgiCommandSupport {
         return null;
     }
 
-	private String makeLine(final String s) {
+	private static String makeLine(final String s) {
 		return new String(new char[s.length()]).replace("\0", "-");
 	}
 }

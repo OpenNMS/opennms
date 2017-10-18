@@ -30,8 +30,10 @@ package org.opennms.netmgt.ticketer.jira.commands;
 
 import java.util.Comparator;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.ticketer.jira.JiraClientUtils;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
@@ -39,8 +41,19 @@ import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
+/**
+ * <p>This command implements the Apache Karaf 3 and Apache Karaf 4 shell APIs.
+ * Once the Karaf 4 commands work, the deprecated Karaf 3 annotations should 
+ * be removed:</p>
+ * <ul>
+ * <li>{@link org.apache.karaf.shell.commands.Command}</li>
+ * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
+ * </ul>
+ */
 @Command(scope = "jira", name = "list-issue-types", description="Uses the JIRA ReST API to list all issue types")
-public class ListIssueTypesCommand extends AbstractJiraCommand {
+@org.apache.karaf.shell.commands.Command(scope = "jira", name = "list-issue-types", description="Uses the JIRA ReST API to list all issue types")
+@Service
+public class ListIssueTypesCommand extends AbstractJiraCommand implements Action {
 
     @Option(name="-k", aliases="--project-key", description="The project to limit the issue types for. If defined it overwrites the default defined in the jira ticketing plugin configuration.")
     String projectKey;
