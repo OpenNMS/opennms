@@ -1332,7 +1332,8 @@
     <powermockVersion>1.6.4</powermockVersion>
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
-    <owaspEncoderVersion>1.2</owaspEncoderVersion>
+    <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
+    <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <quartzVersion>2.2.3</quartzVersion>
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
@@ -2840,7 +2841,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>owasp-encoder-dependencies</artifactId>
+        <artifactId>owasp-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
