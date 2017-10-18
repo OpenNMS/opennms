@@ -34,7 +34,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>owasp-encoder-dependencies</artifactId>
+      <artifactId>owasp-dependencies</artifactId>
       <scope>compile</scope>
       <type>pom</type>
     </dependency>
