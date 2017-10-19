@@ -208,12 +208,26 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 					m_criteriaBuilder.gt(name, value);
 					break;
 				case LESS_OR_EQUALS:
-					// TODO: Check for null?
-					m_criteriaBuilder.le(name, value);
+					if (
+						value == null || 
+						NULL_VALUE.equals(value) ||
+						NULL_DATE_VALUE.equals(value)
+					) {
+						m_criteriaBuilder.isNull(name);
+					} else {
+						m_criteriaBuilder.le(name, value);
+					}
 					break;
 				case GREATER_OR_EQUALS:
-					// TODO: Check for null?
-					m_criteriaBuilder.ge(name, value);
+					if (
+						value == null || 
+						NULL_VALUE.equals(value) ||
+						NULL_DATE_VALUE.equals(value)
+					) {
+						m_criteriaBuilder.isNull(name);
+					} else {
+						m_criteriaBuilder.ge(name, value);
+					}
 					break;
 				case OR:
 				case AND:

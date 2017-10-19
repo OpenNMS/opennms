@@ -141,9 +141,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // node with strange values to test double-decoding of the FIQL engine
         node3 = createNode(builder, SERVER3_NAME, "192.168.1.3", new OnmsCategory[] {});
 
-        createAlarm(node1, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR, 0);
-        createAlarm(node1, "uei.opennms.org/test/somethingIsStillHappening", OnmsSeverity.WARNING, 1);
-        createAlarm(node1, "uei.opennms.org/test/somethingIsOkNow", OnmsSeverity.NORMAL, 2);
+        createAlarm(node1, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR, 1);
+        createAlarm(node1, "uei.opennms.org/test/somethingIsStillHappening", OnmsSeverity.WARNING, 2);
+        createAlarm(node1, "uei.opennms.org/test/somethingIsOkNow", OnmsSeverity.NORMAL, 3);
 
         createAlarm(node2, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR, 10);
         createAlarm(node2, "uei.opennms.org/test/somethingIsStillHappening", OnmsSeverity.WARNING, 11);
@@ -375,11 +375,17 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testCXFDoubleDecoding() throws Exception {
+        // These queries are using invalid encodings of the {@link CriteriaBuilderSearchVisitor#NULL_DATE_VALUE} token
         sendRequest(GET, "/alarms", parseParamData("_s=alarm.lastEventTime==1970-01-01T00:00:00.000+0000"), 500); // + turns to space
         sendRequest(GET, "/alarms", parseParamData("_s=alarm.lastEventTime==1970-01-01T00:00:00.000%2B0000"), 500); // %2B turns to space in the servlet handler
+
+        // These queries are using the {@link CriteriaBuilderSearchVisitor#NULL_DATE_VALUE} token
         executeQueryAndVerify("_s=alarm.lastEventTime==1970-01-01T00:00:00.000%252B0000", 0);
-        executeQueryAndVerify("_s=alarm.lastEventTime=ge=1970-01-01T00:00:00.000%252B0000", 8);
-        executeQueryAndVerify("_s=alarm.lastEventTime=lt=1970-01-01T00:00:00.003%252B0000", 3);
+        executeQueryAndVerify("_s=alarm.lastEventTime=ge=1970-01-01T00:00:00.000%252B0000", 0);
+        executeQueryAndVerify("_s=alarm.lastEventTime=le=1970-01-01T00:00:00.000%252B0000", 0);
+
+        executeQueryAndVerify("_s=alarm.lastEventTime=ge=1970-01-01T00:00:00.001%252B0000", 8);
+        executeQueryAndVerify("_s=alarm.lastEventTime=lt=1970-01-01T00:00:00.004%252B0000", 3);
         executeQueryAndVerify("_s=node.label==*%C3%AA*", 1); // "ê" url-encoded
         executeQueryAndVerify("_s=node.label==*ê*", 1);
         executeQueryAndVerify("_s=node.label==*%20*", 0); // this will turn to space in the servlet handler

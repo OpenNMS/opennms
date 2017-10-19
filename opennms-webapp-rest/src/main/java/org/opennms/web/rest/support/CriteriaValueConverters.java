@@ -45,7 +45,12 @@ public abstract class CriteriaValueConverters {
     public static final Function<String,Date> DATE_CONVERTER = new Function<String,Date>() {
         @Override
         public Date apply(String t) {
-            return CriteriaBehaviors.parseDate(t);
+            Date retval = CriteriaBehaviors.parseDate(t);
+            if (CriteriaBuilderSearchVisitor.NULL_DATE_VALUE.equals(retval)) {
+                return null;
+            } else {
+                return retval;
+            }
         }
 
         /**
