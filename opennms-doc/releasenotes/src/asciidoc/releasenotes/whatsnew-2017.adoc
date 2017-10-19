@@ -174,7 +174,32 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
-[releasenotes-changelog-2017.1.0]
+[releasenotes-changelog-Meridian-2017.1.1]
+==== Release Meridian-2017.1.1
+
+Release 2017.1.1 is the second release of OpenNMS Meridian 2017.  It contains a number of security and bug fixes and a few small enhancements.
+
+The codename for 2017.1.1 is _Meridian of Monte Mario_.
+
+===== Bug
+
+* An empty category is not shown when in focus (Issue http://issues.opennms.org/browse/NMS-9423[NMS-9423])
+* Multiple XSS vulnerabilities in OpenNMS webapp (Issue http://issues.opennms.org/browse/NMS-9457[NMS-9457])
+* The button to add a graph to a KSC report doesn't work (Issue http://issues.opennms.org/browse/NMS-9498[NMS-9498])
+* RadixTreeSyslogParser confuses timezone and hostname fields (Issue http://issues.opennms.org/browse/NMS-9522[NMS-9522])
+* Stale IP Address Cache (Issue http://issues.opennms.org/browse/NMS-9613[NMS-9613])
+* opennms-webapp-remoting JARs are not signed (Issue http://issues.opennms.org/browse/NMS-9638[NMS-9638])
+* trapd may silently discard invalid traps (Issue http://issues.opennms.org/browse/NMS-9660[NMS-9660])
+* Trap event parenting lacks bias toward SNMP primary interfaces (Issue http://issues.opennms.org/browse/NMS-9666[NMS-9666])
+* IOActive: Stored Cross-site Scripting in SNMP Trap Message (Issue http://issues.opennms.org/browse/NMS-9668[NMS-9668])
+* IOActive: Reflected Cross-site Scripting in heatmap/outages heatmap Parameter (Issue http://issues.opennms.org/browse/NMS-9671[NMS-9671])
+
+===== Enhancement
+
+* Display AlarmId on Event page (Issue http://issues.opennms.org/browse/NMS-8445[NMS-8445])
+* Check/add support for PostgreSQL 10 (Issue http://issues.opennms.org/browse/NMS-9679[NMS-9679])
+
+[releasenotes-changelog-Meridian-2017.1.0]
 ==== Release Meridian-2017.1.0
 
 Release 2017.1.0 is the first release of OpenNMS Meridian 2017.  It is based on OpenNMS Horizon 19, plus a number of other bug fixes and changes that went into Horizon 20.
