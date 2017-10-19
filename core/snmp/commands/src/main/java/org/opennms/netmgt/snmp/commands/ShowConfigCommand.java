@@ -30,18 +30,22 @@ package org.opennms.netmgt.snmp.commands;
 
 import java.net.InetAddress;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 @Command(scope = "snmp", name = "show-config", description = "Display the effective SNMP agent configuration.")
-public class ShowConfigCommand extends OsgiCommandSupport {
+@Service
+public class ShowConfigCommand implements Action {
 
-    private SnmpAgentConfigFactory snmpAgentConfigFactory;
+    @Reference
+    public SnmpAgentConfigFactory snmpAgentConfigFactory;
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location = null;
@@ -50,7 +54,7 @@ public class ShowConfigCommand extends OsgiCommandSupport {
     String m_host;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         final InetAddress agentAdress = InetAddress.getByName(m_host);
         final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(agentAdress, m_location);
 
@@ -82,9 +86,5 @@ public class ShowConfigCommand extends OsgiCommandSupport {
         }
         System.out.println();
         return null;
-    }
-
-    public void setSnmpAgentConfigFactory(SnmpAgentConfigFactory snmpAgentConfigFactory) {
-        this.snmpAgentConfigFactory = snmpAgentConfigFactory;
     }
 }
