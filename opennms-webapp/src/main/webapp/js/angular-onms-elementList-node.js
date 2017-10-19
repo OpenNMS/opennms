@@ -28,7 +28,7 @@
 				if (input === '0') {
 					return "null";
 				} else {
-					// Return the date in our preferred format
+					// Return the date in our preferred format in the browser time zone
 					return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
 				}
 			}
