@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v2;
 
+import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -76,18 +78,65 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_databasePopulator.populateDatabase();
     }
 
-    // TODO Needs some work
+    /**
+     * The open outage and closed outage from {@link DatabasePopulator}
+     * have different {@code ifLostService} times.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testOutages() throws Exception {
         String url = "/outages";
 
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=id"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=outage.ifLostService=gt=2017-04-01T00:00:00.000-0400"), 204));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=outage.ifLostService=le=2017-04-01T00:00:00.000-0400"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=outage.ifRegainedService==1970-01-01T00:00:00.000-0000"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=outage.ifRegainedService!=1970-01-01T00:00:00.000-0000"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=outage.suppressTime==1970-01-01T00:00:00.000-0000"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=outage.suppressTime!=1970-01-01T00:00:00.000-0000"), 204));
+        JSONObject object = new JSONObject(sendRequest(GET, url, parseParamData("orderBy=id"), 200));
+        Assert.assertEquals(2, object.getInt("totalCount"));
+
+        // Check timestamp comparisons
+        sendRequest(GET, url, parseParamData("_s=outage.ifLostService=gt=2017-04-01T00:00:00.000-0400"), 204);
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=outage.ifLostService=le=2017-04-01T00:00:00.000-0400"), 200));
+        Assert.assertEquals(2, object.getInt("totalCount"));
+
+
+        // Check for open outages (ifRegainedService is null) with UTC timestamp
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=outage.ifRegainedService==1970-01-01T00:00:00.000-0000"), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
+        Assert.assertEquals(1436881545000L, ((JSONObject)object.getJSONArray("outage").get(0)).getLong("ifLostService"));
+
+        // Check for closed outages (ifRegainedService is not null) with UTC timestamp
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=outage.ifRegainedService!=1970-01-01T00:00:00.000-0000"), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
+        Assert.assertEquals(1436881548292L, ((JSONObject)object.getJSONArray("outage").get(0)).getLong("ifLostService"));
+
+
+        // Check for open outages (ifRegainedService is null) with negative UTC offset timestamp
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=outage.ifRegainedService==1969-12-31T19:00:00.000-0500"), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
+        Assert.assertEquals(1436881545000L, ((JSONObject)object.getJSONArray("outage").get(0)).getLong("ifLostService"));
+
+        // Check for closed outages (ifRegainedService is not null) with negative UTC offset timestamp
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=outage.ifRegainedService!=1969-12-31T19:00:00.000-0500"), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
+        Assert.assertEquals(1436881548292L, ((JSONObject)object.getJSONArray("outage").get(0)).getLong("ifLostService"));
+
+
+        // Check for open outages (ifRegainedService is null) with positive UTC offset timestamp
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=outage.ifRegainedService==1970-01-01T04:00:00.000%252B0400"), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
+        Assert.assertEquals(1436881545000L, ((JSONObject)object.getJSONArray("outage").get(0)).getLong("ifLostService"));
+
+        // Check for closed outages (ifRegainedService is not null) with positve UTC offset timestamp
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=outage.ifRegainedService!=1970-01-01T04:00:00.000%252B0400"), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
+        Assert.assertEquals(1436881548292L, ((JSONObject)object.getJSONArray("outage").get(0)).getLong("ifLostService"));
+
+
+        // Check for outages with null suppressTime
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=outage.suppressTime==1970-01-01T00:00:00.000-0000"), 200));
+        Assert.assertEquals(2, object.getInt("totalCount"));
+
+        // Check for lack of outages with non-null suppressTime
+        sendRequest(GET, url, parseParamData("_s=outage.suppressTime!=1970-01-01T00:00:00.000-0000"), 204);
+
     }
 
 }

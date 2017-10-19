@@ -360,7 +360,7 @@ public class DatabasePopulator {
         getOutageDao().save(resolved);
         getOutageDao().flush();
         
-        final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
+        final OnmsOutage unresolved = new OnmsOutage(new Date(1436881545000L), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
         
