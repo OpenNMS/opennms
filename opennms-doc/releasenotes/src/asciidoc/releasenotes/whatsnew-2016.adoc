@@ -141,6 +141,20 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.8]
+==== Release Meridian-2016.1.8
+
+Release 2016.1.8 is an update to 2016.1.7 that provides a few security fixes.
+
+The codename for 2016.1.8 is _Hammer retroazimuthal_.
+
+===== Bug
+
+* Multiple XSS vulnerabilities in OpenNMS webapp (Issue http://issues.opennms.org/browse/NMS-9457[NMS-9457])
+* opennms-webapp-remoting JARs are not signed (Issue http://issues.opennms.org/browse/NMS-9638[NMS-9638])
+* IOActive: Stored Cross-site Scripting in SNMP Trap Message (Issue http://issues.opennms.org/browse/NMS-9668[NMS-9668])
+* IOActive: Reflected Cross-site Scripting in heatmap/outages heatmap Parameter (Issue http://issues.opennms.org/browse/NMS-9671[NMS-9671])
+
 [releasenotes-changelog-Meridian-2016.1.7]
 ==== Release Meridian-2016.1.7
 
