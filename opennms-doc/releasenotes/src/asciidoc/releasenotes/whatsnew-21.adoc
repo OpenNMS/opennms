@@ -3,9 +3,9 @@
 
 === System Requirements
 
-* *Java 8*: OpenNMS Horizon 20 requires Java 8 as the runtime environment.
-  To run Horizon 20, we recommend the most recent version of Oracle JDK 8 for your platform.
-* *PostgreSQL 9.2 or higher*: Horizon 20 requires PostgreSQL 9.2 or higher.
+* *Java 8*: OpenNMS Horizon 21 requires Java 8 as the runtime environment.
+  To run Horizon 21, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9.2 or higher*: Horizon 21 requires PostgreSQL 9.2 or higher.
 
 === Important Upgrade Notes
 
@@ -43,5 +43,3 @@ There are a few side-effects of the event parameter changes.
 * Karaf has been upgraded to `4.1.2`
 
 === Other Improvements
-
-
