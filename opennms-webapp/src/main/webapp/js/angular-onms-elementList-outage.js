@@ -28,7 +28,7 @@
 				if (input === '0') {
 					return "null";
 				} else {
-					// Return the date in our preferred format
+					// Return the date in our preferred format in the browser time zone
 					return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
 				}
 			}
@@ -60,7 +60,7 @@
 		$scope.currentClause = {
 			property: 'ifRegainedService',
 			operator: 'EQ',
-			value: $filter('date')(0, ISO_8601_DATE_FORMAT) // null
+			value: $filter('date')(0, ISO_8601_DATE_FORMAT, "+0000") // null
 		};
 
 		/**
@@ -69,7 +69,7 @@
 		$scope.resolvedClause = {
 			property: 'ifRegainedService',
 			operator: 'NE',
-			value: $filter('date')(0, ISO_8601_DATE_FORMAT) // null
+			value: $filter('date')(0, ISO_8601_DATE_FORMAT, "+0000") // null
 		};
 
 		/**
@@ -124,7 +124,9 @@
 
 		// Set the default sort and set it on $scope.$parent.query
 		$scope.$parent.defaults.orderBy = 'id';
+		$scope.$parent.defaults.order = 'desc';
 		$scope.$parent.query.orderBy = 'id';
+		$scope.$parent.query.order = 'desc';
 		$scope.clauseValues = [];
 
 		// Reload all resources via REST

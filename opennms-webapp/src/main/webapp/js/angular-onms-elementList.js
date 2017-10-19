@@ -63,42 +63,42 @@ function fromFiql(fiql) {
 			clauses.push({
 				property: segments[0],
 				operator: 'EQ',
-				value: segments[1]
+				value: decodeURIComponent(segments[1])
 			});
 		} else if (statements[i].indexOf('!=') > 0) {
 			segments = statements[i].split('!=');
 			clauses.push({
 				property: segments[0],
 				operator: 'NE',
-				value: segments[1]
+				value: decodeURIComponent(segments[1])
 			});
 		} else if (statements[i].indexOf('=lt=') > 0) {
 			segments = statements[i].split('=lt=');
 			clauses.push({
 				property: segments[0],
 				operator: 'LT',
-				value: segments[1]
+				value: decodeURIComponent(segments[1])
 			});
 		} else if (statements[i].indexOf('=le=') > 0) {
 			segments = statements[i].split('=le=');
 			clauses.push({
 				property: segments[0],
 				operator: 'LE',
-				value: segments[1]
+				value: decodeURIComponent(segments[1])
 			});
 		} else if (statements[i].indexOf('=gt=') > 0) {
 			segments = statements[i].split('=gt=');
 			clauses.push({
 				property: segments[0],
 				operator: 'GT',
-				value: segments[1]
+				value: decodeURIComponent(segments[1])
 			});
 		} else if (statements[i].indexOf('=ge=') > 0) {
 			segments = statements[i].split('=ge=');
 			clauses.push({
 				property: segments[0],
 				operator: 'GE',
-				value: segments[1]
+				value: decodeURIComponent(segments[1])
 			});
 		}
 	}
@@ -123,7 +123,7 @@ function fromFiql(fiql) {
  * @returns String with reserved characters URL-encoded
  */
 function escapeSearchValue(value) {
-	if (typeof value === 'String') {
+	if (typeof value === 'string') {
 		return value
 			.replace('!', '%21')
 			.replace('$', '%24')
@@ -199,7 +199,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 	.filter('operator', function() {
 		return function(input, value) {
 			// See if the string contains a wildcard
-			var fuzzy = (typeof value === 'String' && value.indexOf('*') > -1);
+			var fuzzy = (typeof value === 'string' && value.indexOf('*') > -1);
 
 			switch (input) {
 			case 'EQ':
@@ -480,7 +480,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 				// it includes the millisecond portion of the date.
 				//clause.value = new Date(clause.value).toISOString();
 
-				clause.value = $filter('date')(new Date(clause.value), ISO_8601_DATE_FORMAT);
+				clause.value = $filter('date')(new Date(clause.value), ISO_8601_DATE_FORMAT, "+0000");
 			}
 
 			// Make sure the clause isn't already in the list of search clauses
@@ -517,7 +517,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 
 		// Convert an epoch timestamp into String format before adding the search clause
 		$scope.addEpochTimestampSearchClause = function(clause) {
-			clause.value = $filter('date')(clause.value, ISO_8601_DATE_FORMAT);
+			clause.value = $filter('date')(clause.value, ISO_8601_DATE_FORMAT, "+0000");
 			$scope.addSearchClause(clause);
 		}
 
@@ -548,7 +548,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 				// it includes the millisecond portion of the date.
 				//clause.value = new Date(clause.value).toISOString();
 
-				newClause.value = $filter('date')(new Date(newClause.value), ISO_8601_DATE_FORMAT);
+				newClause.value = $filter('date')(new Date(newClause.value), ISO_8601_DATE_FORMAT, "+0000");
 			}
 
 			// TODO: Add validation?
