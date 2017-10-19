@@ -1,6 +1,17 @@
 [releasenotes-2015]
 === OpenNMS Meridian 2015
 
+[releasenotes-changelog-Meridian-2015.1.8]
+==== Release Meridian-2015.1.8
+
+Release 2015.1.8 is the ninth release of OpenNMS Meridian 2015.  It contains a cross-site-scripting security fix.
+The codename for 2015.1.8 is _CHOST_.
+
+===== Bug
+
+* Multiple XSS vulnerabilities in OpenNMS webapp (Issue http://issues.opennms.org/browse/NMS-9457[NMS-9457])
+* opennms-webapp-remoting JARs are not signed (Issue http://issues.opennms.org/browse/NMS-9638[NMS-9638])
+
 [releasenotes-changelog-Meridian-2015.1.7]
 ==== Release Meridian-2015.1.7
 
