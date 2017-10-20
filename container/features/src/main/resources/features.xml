@@ -559,12 +559,12 @@
     </feature>
 
     <feature name='opennms-aws-sqs' description="OpenNMS :: Features :: AWS SQS" version="${project.version}">
-      <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/1.11.209$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="1.11.209"</bundle>
-      <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-sqs/1.11.209$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="1.11.209"</bundle>
-      <bundle dependency="true">wrap:mvn:com.amazonaws/amazon-sqs-java-messaging-lib/1.0.4$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="1.0.4"</bundle>
-      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.6.6</bundle>
-      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.6.6</bundle>
-      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
+      <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/${awsSdkVersion}"</bundle>
+      <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-sqs/${awsSdkVersion}"</bundle>
+      <bundle dependency="true">wrap:mvn:com.amazonaws/amazon-sqs-java-messaging-lib/${awsSqsJmsVersion}"</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-sink-api" description="OpenNMS :: Core :: IPC :: Sink :: API" version="${project.version}">

@@ -1,0 +1,64 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Using AWS SQS
+
+By default, _{opennms-product-name}_ uses the embedded _ActiveMQ_ broker to communicate with _Minions_.
+This broker is used for both issuing remote procedure calls (RPCs, ie. ping this host) and for transporting unsolicited messages such as SNMP traps and syslog messages.
+
+_AWS SQS_ can be used as an alternative to _ActiveMQ_ for transporting the unsolicited messages.
+
+WARNING: _AWS SQS_ cannot currently be used for handling RPC messages.
+This means that _ActiveMQ_ is still required even when _AWS SQS_ support is enabled.
+
+_AWS SQS_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
+
+The _AWS SQS_ server must be compatible with _AWS SQS_ client version `0.10.1.1_1`.
+
+==== Consumer Configuration
+
+Enable and configure the _AWS SQS_ consumer on _{opennms-product-name}_ by using the following commands. The `initialSleepTime` property will ensure that messages are not consumed from _AWS SQS_ until the _{opennms-product-name}_ system has fully initialized.
+
+[source, sh]
+----
+echo 'org.opennms.core.ipc.sink.initialSleepTime=60000' > "$OPENNMS_HOME/etc/opennms.properties.d/sink-initial-sleep-time.properties"
+echo 'org.opennms.core.ipc.sink.strategy=aws
+org.opennms.core.ipc.sink.aws.aws_region=us-east-1' > "$OPENNMS_HOME/etc/opennms.properties.d/aws.properties"
+----
+
+If _{opennms-product-name}_ is not running inside an AWS VPC, the AWS Credentials are required. The credentials can be obtained from the local credentials file created through the AWS CLI tools (i.e. `~/.aws/credentials`),
+or they can be specified inside the `aws.properties` file; for example:
+
+[source, sh]
+----
+echo 'org.opennms.core.ipc.sink.strategy=aws
+org.opennms.core.ipc.sink.aws.aws_region=us-east-1
+org.opennms.core.ipc.sink.aws.aws_access_key_id=XXXXXXXXXXX
+org.opennms.core.ipc.sink.aws.aws_secret_access_key=XXXXXXXXXXX' > "$OPENNMS_HOME/etc/opennms.properties.d/aws.properties"
+----
+
+Restart _{opennms-product-name}_ to apply the changes.
+
+==== Producer Configuration
+
+Enable the _AWS SQS_ producer on _Minion_ using:
+
+[source, sh]
+----
+echo '!opennms-core-ipc-sink-camel
+opennms-core-ipc-sink-aws' > "$MINION_HOME/etc/featuresBoot.d/aws.boot"
+----
+
+NOTE: The snippet above prevents the `opennms-core-ipc-sink-camel` feature from starting when _Minion_ is started, and loads the `opennms-core-ipc-sink-aws` feature instead.
+
+Next, configure the _AWS SQS_ producer on _Minion_ using:
+
+[source, sh]
+----
+echo 'aws_region=us-east-1
+aws_access_key_id=XXXXXXXXXXX
+aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.kafka.cfg"
+----
+
+Restart _Minion_ to apply the changes.
