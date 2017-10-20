@@ -31,14 +31,9 @@ package org.opennms.core.ipc.sink.aws.sqs;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
@@ -50,7 +45,8 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazon.sqs.javamessaging.SQSConnection;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.codahale.metrics.JmxReporter;
 
 /**
@@ -72,14 +68,8 @@ public class AwsRemoteMessageDispatcherFactory extends AbstractMessageDispatcher
     /** The reporter. */
     private JmxReporter reporter;
 
-    /** The SQS session. */
-    private Session session;
-
-    /** The SQS Connection. */
-    private SQSConnection connection;
-
-    /** The producers. */
-    private Map<String,MessageProducer> producers = new HashMap<>();
+    /** The SQS Object. */
+    private AmazonSQS sqs;
 
     /* (non-Javadoc)
      * @see org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory#getModuleMetadata(org.opennms.core.ipc.sink.api.SinkModule)
@@ -97,12 +87,11 @@ public class AwsRemoteMessageDispatcherFactory extends AbstractMessageDispatcher
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.trace("dispatch({}): sending message {}", topic, message);
 
-            try {
-                TextMessage msg = session.createTextMessage(module.marshal((T)message));
-                getProducer(getModuleMetadata(module)).send(msg);
-            } catch (JMSException e) {
-                LOG.error("Error occured while sending message to topic {}.", topic, e);
-            }
+            final String queueUrl = sqs.getQueueUrl(getModuleMetadata(module)).getQueueUrl();
+            SendMessageRequest send_msg_request = new SendMessageRequest()
+                    .withQueueUrl(queueUrl)
+                    .withMessageBody(module.marshal((T)message));
+            sqs.sendMessage(send_msg_request);
         }
     }
 
@@ -132,27 +121,13 @@ public class AwsRemoteMessageDispatcherFactory extends AbstractMessageDispatcher
             final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(null);
-                connection = AwsUtils.createConnection(awsConfig);
-                session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                sqs = AwsUtils.createSQSObject(awsConfig);
             } catch (JMSException e) {
                 LOG.error("Can't create AWS SQS Producer", e);
             } finally {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
         }
-    }
-
-    private MessageProducer getProducer(String queueName) {
-        if (!producers.containsKey(queueName)) {
-            try {
-                AwsUtils.ensureQueueExists(connection, queueName);
-                MessageProducer producer = session.createProducer(session.createQueue(queueName));
-                producers.put(queueName, producer);
-            } catch (JMSException e) {
-                LOG.error("Can't create producer", e);
-            }
-        }
-        return producers.get(queueName);
     }
 
     /**
@@ -174,17 +149,6 @@ public class AwsRemoteMessageDispatcherFactory extends AbstractMessageDispatcher
         if (reporter != null) {
             reporter.close();
             reporter = null;
-        }
-
-        if (!producers.isEmpty()) {
-            producers.values().forEach(p -> {
-                try {
-                    p.close();
-                } catch (JMSException e) {
-                    LOG.error("Can't close producer.", e);
-                }
-            });
-            producers.clear();
         }
     }
 

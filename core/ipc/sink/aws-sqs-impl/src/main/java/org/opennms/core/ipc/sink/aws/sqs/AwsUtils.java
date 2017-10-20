@@ -35,16 +35,15 @@ import javax.jms.JMSException;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
 
-import com.amazon.sqs.javamessaging.AmazonSQSMessagingClientWrapper;
-import com.amazon.sqs.javamessaging.ProviderConfiguration;
-import com.amazon.sqs.javamessaging.SQSConnection;
-import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.amazonaws.services.sqs.model.CreateQueueRequest;
 
 /**
  * The Class AwsUtils.
@@ -63,13 +62,13 @@ public class AwsUtils {
     public static final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
 
     /**
-     * Creates the SQS connection.
+     * Creates the SQS object.
      *
      * @param awsConfig the AWS configuration
-     * @return the SQS connection
+     * @return the amazon SQS
      * @throws JMSException the JMS exception
      */
-    public static SQSConnection createConnection(Properties awsConfig) throws JMSException {
+    public static AmazonSQS createSQSObject(Properties awsConfig) throws JMSException {
         AWSCredentialsProvider credentialProvider = new ProfileCredentialsProvider();
         if (awsConfig.containsKey(AWS_ACCESS_KEY_ID) && awsConfig.containsKey(AWS_SECRET_ACCESS_KEY)) {
             BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsConfig.getProperty(AWS_ACCESS_KEY_ID), awsConfig.getProperty(AWS_SECRET_ACCESS_KEY));
@@ -78,21 +77,26 @@ public class AwsUtils {
         AmazonSQSClientBuilder clientBuilder = AmazonSQSClientBuilder.standard()
                 .withRegion(awsConfig.getProperty(AWS_REGION, Regions.US_EAST_1.getName()))
                 .withCredentials(credentialProvider);
-        SQSConnectionFactory connectionFactory = new SQSConnectionFactory(new ProviderConfiguration(), clientBuilder);
-        return connectionFactory.createConnection();
+        return clientBuilder.build();
     }
 
     /**
      * Ensure queue exists.
      *
-     * @param connection the connection
+     * @param sqs the SQS Object
      * @param queueName the queue name
      * @throws JMSException the JMS exception
      */
-    public static void ensureQueueExists(SQSConnection connection, String queueName) throws JMSException {
-        AmazonSQSMessagingClientWrapper client = connection.getWrappedAmazonSQSClient();
-        if (!client.queueExists(queueName)) {
-            client.createQueue(queueName);
+    public static void ensureQueueExists(AmazonSQS sqs, String queueName) throws JMSException {
+        try {
+            CreateQueueRequest create_request = new CreateQueueRequest(queueName)
+                    .addAttributesEntry("DelaySeconds", "60")
+                    .addAttributesEntry("MessageRetentionPeriod", "86400");
+            sqs.createQueue(create_request);
+        } catch (AmazonSQSException e) {
+            if (!e.getErrorCode().equals("QueueAlreadyExists")) {
+                throw e;
+            }
         }
     }
 

@@ -40,9 +40,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
@@ -53,7 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.amazon.sqs.javamessaging.SQSConnection;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -91,25 +89,19 @@ public class AwsMessageConsumerManager extends AbstractMessageConsumerManager im
         /** The closed. */
         private final AtomicBoolean closed = new AtomicBoolean(false);
 
-        /** The consumer. */
-        private final MessageConsumer consumer;
-
-        /** The connection. */
-        private final SQSConnection connection;
+        /** The SQS Object. */
+        private final AmazonSQS sqs;
 
         /**
          * Instantiates a new AWS consumer runner.
          *
          * @param module the module
-         * @throws JMSException the JMS exception
+         * @throws JMSException 
          */
         public AwsConsumerRunner(SinkModule<?, Message> module) throws JMSException {
             this.module = module;
-            final String queueName = AwsUtils.getQueueName(module);
-            connection = AwsUtils.createConnection(awsConfig);
-            AwsUtils.ensureQueueExists(connection, queueName);
-            final Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            consumer = session.createConsumer(session.createQueue(queueName));
+            sqs = AwsUtils.createSQSObject(awsConfig);
+            AwsUtils.ensureQueueExists(sqs, AwsUtils.getQueueName(module));
         }
 
         /* (non-Javadoc)
@@ -118,30 +110,20 @@ public class AwsMessageConsumerManager extends AbstractMessageConsumerManager im
         @Override
         public void run() {
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
-            try {
-                connection.start();
-                while (!closed.get()) {
-                    javax.jms.Message message = consumer.receive(30000);
-                    LOG.debug("Got message {}", message.getJMSMessageID());
-                    if (message instanceof TextMessage) {
-                        TextMessage txtMessage = (TextMessage) message;
-                        try {
-                            dispatch(module, module.unmarshal(txtMessage.getText()));
-                        } catch (RuntimeException e) {
-                            LOG.warn("Unexpected exception while dispatching message", e);
-                        }
-                    } else {
-                        LOG.warn("Received an unsupported message {}", message.getJMSMessageID());
+            while (!closed.get()) {
+                final String queueUrl = sqs.getQueueUrl(AwsUtils.getQueueName(module)).getQueueUrl();
+                final ReceiveMessageRequest recv_msg_request = new ReceiveMessageRequest()
+                        .withQueueUrl(queueUrl)
+                        .withWaitTimeSeconds(10);
+                final List<com.amazonaws.services.sqs.model.Message> messages = sqs.receiveMessage(recv_msg_request).getMessages();
+                messages.forEach(m -> {
+                    LOG.debug("Got message {}", m.getMessageId());
+                    try {
+                        dispatch(module, module.unmarshal(m.getBody()));
+                    } catch (RuntimeException e) {
+                        LOG.warn("Unexpected exception while dispatching message", e);
                     }
-                }
-            } catch (JMSException ex) {
-                LOG.error("Can't receive message", ex);
-            } finally {
-                try {
-                    consumer.close();
-                } catch (JMSException e) {
-                    LOG.warn("Can't close consumer", e);
-                }
+                });
             }
         }
 
