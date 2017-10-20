@@ -120,6 +120,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
                     LOG.debug("Got message {}", m.getMessageId());
                     try {
                         dispatch(module, module.unmarshal(m.getBody()));
+                        sqs.deleteMessage(queueUrl, m.getReceiptHandle());                        
                     } catch (RuntimeException e) {
                         LOG.warn("Unexpected exception while dispatching message", e);
                     }
