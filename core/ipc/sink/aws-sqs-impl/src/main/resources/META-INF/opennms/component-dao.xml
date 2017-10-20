@@ -8,6 +8,6 @@
        ">
 
     <!-- Conditionally load the AWS SQS Sink -->
-    <bean class="org.opennms.core.ipc.sink.aws.sqs.AwsConditionalSinkContext"/>
+    <bean class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSConditionalSinkContext"/>
 
 </beans>

@@ -13,8 +13,8 @@
 
   <context:annotation-config />
 
-  <bean id="awsMessageConsumerManager" class="org.opennms.core.ipc.sink.aws.sqs.AwsMessageConsumerManager" />
+  <bean id="awsMessageConsumerManager" class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSMessageConsumerManager" />
 
-  <bean id="awsLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.aws.sqs.AwsLocalMessageDispatcherFactory" />
+  <bean id="awsLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSLocalMessageDispatcherFactory" />
 
 </beans>

@@ -59,10 +59,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AwsMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
+public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(AwsMessageConsumerManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AmazonSQSMessageConsumerManager.class);
 
     /** The consumer runners by module. */
     private final Map<SinkModule<?, Message>, List<AwsConsumerRunner>> consumerRunnersByModule = new ConcurrentHashMap<>();
@@ -100,8 +100,8 @@ public class AwsMessageConsumerManager extends AbstractMessageConsumerManager im
          */
         public AwsConsumerRunner(SinkModule<?, Message> module) throws JMSException {
             this.module = module;
-            sqs = AwsUtils.createSQSObject(awsConfig);
-            AwsUtils.ensureQueueExists(sqs, AwsUtils.getQueueName(module));
+            sqs = AmazonSQSUtils.createSQSObject(awsConfig);
+            AmazonSQSUtils.ensureQueueExists(sqs, AmazonSQSUtils.getQueueName(module));
         }
 
         /* (non-Javadoc)
@@ -111,7 +111,7 @@ public class AwsMessageConsumerManager extends AbstractMessageConsumerManager im
         public void run() {
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
             while (!closed.get()) {
-                final String queueUrl = sqs.getQueueUrl(AwsUtils.getQueueName(module)).getQueueUrl();
+                final String queueUrl = sqs.getQueueUrl(AmazonSQSUtils.getQueueName(module)).getQueueUrl();
                 final ReceiveMessageRequest recv_msg_request = new ReceiveMessageRequest()
                         .withQueueUrl(queueUrl)
                         .withWaitTimeSeconds(10);
@@ -185,9 +185,9 @@ public class AwsMessageConsumerManager extends AbstractMessageConsumerManager im
             }
             final String key = (String)keyAsObject;
 
-            if (key.length() > AwsSinkConstants.AWS_CONFIG_SYS_PROP_PREFIX.length()
-                    && key.startsWith(AwsSinkConstants.AWS_CONFIG_SYS_PROP_PREFIX)) {
-                final String awsConfigKey = key.substring(AwsSinkConstants.AWS_CONFIG_SYS_PROP_PREFIX.length());
+            if (key.length() > AmazonSQSSinkConstants.AWS_CONFIG_SYS_PROP_PREFIX.length()
+                    && key.startsWith(AmazonSQSSinkConstants.AWS_CONFIG_SYS_PROP_PREFIX)) {
+                final String awsConfigKey = key.substring(AmazonSQSSinkConstants.AWS_CONFIG_SYS_PROP_PREFIX.length());
                 awsConfig.put(awsConfigKey, entry.getValue());
             }
         }

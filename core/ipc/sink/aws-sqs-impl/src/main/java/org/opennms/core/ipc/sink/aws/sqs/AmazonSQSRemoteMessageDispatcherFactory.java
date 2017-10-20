@@ -54,10 +54,10 @@ import com.codahale.metrics.JmxReporter;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AwsRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<String> {
+public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<String> {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(AwsRemoteMessageDispatcherFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AmazonSQSRemoteMessageDispatcherFactory.class);
 
     /** The AWS configuration. */
     private final Properties awsConfig = new Properties();
@@ -76,7 +76,7 @@ public class AwsRemoteMessageDispatcherFactory extends AbstractMessageDispatcher
      */
     @Override
     public <S extends Message, T extends Message> String getModuleMetadata(final SinkModule<S, T> module) {
-        return AwsUtils.getQueueName(module);
+        return AmazonSQSUtils.getQueueName(module);
     }
 
     /* (non-Javadoc)
@@ -108,7 +108,7 @@ public class AwsRemoteMessageDispatcherFactory extends AbstractMessageDispatcher
             awsConfig.clear();
 
             // Retrieve all of the properties from org.opennms.core.ipc.sink.aws.cfg
-            final Dictionary<String, Object> properties = configAdmin.getConfiguration(AwsSinkConstants.AWS_CONFIG_PID).getProperties();
+            final Dictionary<String, Object> properties = configAdmin.getConfiguration(AmazonSQSSinkConstants.AWS_CONFIG_PID).getProperties();
             if (properties != null) {
                 final Enumeration<String> keys = properties.keys();
                 while (keys.hasMoreElements()) {
@@ -121,7 +121,7 @@ public class AwsRemoteMessageDispatcherFactory extends AbstractMessageDispatcher
             final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(null);
-                sqs = AwsUtils.createSQSObject(awsConfig);
+                sqs = AmazonSQSUtils.createSQSObject(awsConfig);
             } catch (JMSException e) {
                 LOG.error("Can't create AWS SQS Producer", e);
             } finally {
@@ -136,7 +136,7 @@ public class AwsRemoteMessageDispatcherFactory extends AbstractMessageDispatcher
     private void registerJmxReporter() {
         if (reporter == null) {
             reporter = JmxReporter.forRegistry(getMetrics())
-                    .inDomain(AwsLocalMessageDispatcherFactory.class.getPackage().getName())
+                    .inDomain(AmazonSQSLocalMessageDispatcherFactory.class.getPackage().getName())
                     .build();
             reporter.start();
         }

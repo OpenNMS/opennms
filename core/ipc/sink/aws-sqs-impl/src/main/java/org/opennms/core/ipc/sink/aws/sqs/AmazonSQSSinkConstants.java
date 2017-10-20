@@ -33,7 +33,7 @@ package org.opennms.core.ipc.sink.aws.sqs;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public interface AwsSinkConstants {
+public interface AmazonSQSSinkConstants {
 
     /** The Constant AWS_CONFIG_PID. */
     static final String AWS_CONFIG_PID = "org.opennms.core.ipc.sink.aws";

@@ -38,7 +38,7 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AwsDispatcherBlueprintIT extends CamelBlueprintTest {
+public class AmazonSQSDispatcherBlueprintIT extends CamelBlueprintTest {
 
     /* (non-Javadoc)
      * @see org.apache.camel.test.blueprint.CamelBlueprintTestSupport#getBlueprintDescriptor()
@@ -53,7 +53,7 @@ public class AwsDispatcherBlueprintIT extends CamelBlueprintTest {
      */
     @Override
     protected String setConfigAdminInitialConfiguration(final Properties props) {
-        return AwsSinkConstants.AWS_CONFIG_PID;
+        return AmazonSQSSinkConstants.AWS_CONFIG_PID;
     }
 
     /**

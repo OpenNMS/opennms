@@ -41,11 +41,11 @@ import com.codahale.metrics.JmxReporter;
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AwsLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean {
+public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean {
 
     /** The message consumer manager. */
     @Autowired
-    private AwsMessageConsumerManager messageConsumerManager;
+    private AmazonSQSMessageConsumerManager messageConsumerManager;
 
     /* (non-Javadoc)
      * @see org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory#dispatch(org.opennms.core.ipc.sink.api.SinkModule, java.lang.Object, org.opennms.core.ipc.sink.api.Message)
@@ -60,7 +60,7 @@ public class AwsLocalMessageDispatcherFactory extends AbstractMessageDispatcherF
     @Override
     public void afterPropertiesSet() throws Exception {
         final JmxReporter reporter = JmxReporter.forRegistry(getMetrics())
-                .inDomain(AwsLocalMessageDispatcherFactory.class.getPackage().getName())
+                .inDomain(AmazonSQSLocalMessageDispatcherFactory.class.getPackage().getName())
                 .build();
         reporter.start();
     }

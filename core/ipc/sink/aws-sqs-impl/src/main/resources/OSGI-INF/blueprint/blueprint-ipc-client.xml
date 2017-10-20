@@ -15,7 +15,7 @@
 
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 
-	<bean id="awsRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.aws.sqs.AwsRemoteMessageDispatcherFactory"
+	<bean id="awsRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSRemoteMessageDispatcherFactory"
 	  init-method="init" destroy-method="destroy">
 	  <property name="configAdmin" ref="configAdmin"/>
 	</bean>

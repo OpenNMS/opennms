@@ -78,10 +78,10 @@ public class HeartbeatSinkIT {
 
     /** The consumer manager. */
     @Autowired
-    private AwsMessageConsumerManager consumerManager;
+    private AmazonSQSMessageConsumerManager consumerManager;
 
     /** The remote message dispatcher factory. */
-    private AwsRemoteMessageDispatcherFactory remoteMessageDispatcherFactory = new AwsRemoteMessageDispatcherFactory();
+    private AmazonSQSRemoteMessageDispatcherFactory remoteMessageDispatcherFactory = new AmazonSQSRemoteMessageDispatcherFactory();
 
     /**
      * Sets the up.
@@ -92,7 +92,7 @@ public class HeartbeatSinkIT {
     public void setUp() throws Exception {
         Hashtable<String, Object> awsConfig = new Hashtable<String, Object>();
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(AwsSinkConstants.AWS_CONFIG_PID).getProperties()).thenReturn(awsConfig);
+        when(configAdmin.getConfiguration(AmazonSQSSinkConstants.AWS_CONFIG_PID).getProperties()).thenReturn(awsConfig);
         remoteMessageDispatcherFactory.setConfigAdmin(configAdmin);
         remoteMessageDispatcherFactory.init();
         consumerManager.afterPropertiesSet();

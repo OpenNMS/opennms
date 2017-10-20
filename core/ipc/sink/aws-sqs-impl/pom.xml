@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.sink</groupId>
   <artifactId>org.opennms.core.ipc.sink.aws-sqs-impl</artifactId>
-  <name>OpenNMS :: Core :: IPC :: Sink :: AWS SQS Impl.</name>
+  <name>OpenNMS :: Core :: IPC :: Sink :: Amazon SQS Impl.</name>
   <packaging>bundle</packaging>
   <properties>
     <skipITs>true</skipITs>

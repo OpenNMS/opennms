@@ -50,7 +50,7 @@ import com.amazonaws.services.sqs.model.CreateQueueRequest;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AwsUtils {
+public class AmazonSQSUtils {
 
     /** The Constant AWS_REGION. */
     public static final String AWS_REGION = "aws_region";
@@ -107,7 +107,7 @@ public class AwsUtils {
      * @return the queue name
      */
     public static String getQueueName(SinkModule<?, ?> module) {
-        return new JmsQueueNameFactory(AwsSinkConstants.AWS_QUEUE_PREFIX, module.getId()).getName().replaceAll("\\.", "-");
+        return new JmsQueueNameFactory(AmazonSQSSinkConstants.AWS_QUEUE_PREFIX, module.getId()).getName().replaceAll("\\.", "-");
     }
 
 }

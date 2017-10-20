@@ -49,12 +49,12 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @Configuration
-@Conditional(AwsConditionalSinkContext.Condition.class)
+@Conditional(AmazonSQSConditionalSinkContext.Condition.class)
 @ImportResource("/META-INF/opennms/applicationContext-ipc-sink-server-aws.xml")
-public class AwsConditionalSinkContext {
+public class AmazonSQSConditionalSinkContext {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(AwsConditionalSinkContext.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AmazonSQSConditionalSinkContext.class);
 
     /**
      * The Class Condition.
