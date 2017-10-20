@@ -32,8 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.jms.JMSException;
-
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
 
@@ -46,6 +44,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
+import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;
 
 /**
  * The Class AwsUtils.
@@ -79,9 +78,9 @@ public class AmazonSQSUtils {
      *
      * @param awsConfig the AWS configuration
      * @return the amazon SQS
-     * @throws JMSException the JMS exception
+     * @throws AmazonSQSException the Amazon SQS exception
      */
-    public static AmazonSQS createSQSObject(Properties awsConfig) throws JMSException {
+    public static AmazonSQS createSQSObject(Properties awsConfig) throws AmazonSQSException {
         AWSCredentialsProvider credentialProvider = new ProfileCredentialsProvider();
         if (awsConfig.containsKey(AWS_ACCESS_KEY_ID) && awsConfig.containsKey(AWS_SECRET_ACCESS_KEY)) {
             BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsConfig.getProperty(AWS_ACCESS_KEY_ID), awsConfig.getProperty(AWS_SECRET_ACCESS_KEY));
@@ -99,18 +98,20 @@ public class AmazonSQSUtils {
      * @param awsConfig the AWS configuration
      * @param sqs the SQS Object
      * @param queueName the queue name
-     * @throws JMSException the JMS exception
+     * @throws AmazonSQSException the Amazon SQS exception
      */
-    public static void ensureQueueExists(Properties awsConfig, AmazonSQS sqs, String queueName) throws JMSException {
-        final CreateQueueRequest request = new CreateQueueRequest(queueName);
+    public static void ensureQueueExists(Properties awsConfig, AmazonSQS sqs, String queueName) throws AmazonSQSException {
+        final Map<String,String> attributes = new HashMap<>();
         QUEUE_ATTRIBUTES.forEach((k,v) -> {
-            final String value = awsConfig.getProperty(k, v);
-            if (value != null) request.addAttributesEntry(k, value);
+            final String val = awsConfig.getProperty(k,v);
+            if (val != null) attributes.put(k, val);
         });
         try {
-            sqs.createQueue(request);
+            sqs.createQueue(new CreateQueueRequest(queueName).withAttributes(attributes));
         } catch (AmazonSQSException e) {
-            if (!e.getErrorCode().equals("QueueAlreadyExists")) {
+            if (e.getErrorCode().equals("QueueAlreadyExists")) {
+                sqs.setQueueAttributes(new SetQueueAttributesRequest(sqs.getQueueUrl(queueName).getQueueUrl(), attributes));
+            } else {
                 throw e;
             }
         }

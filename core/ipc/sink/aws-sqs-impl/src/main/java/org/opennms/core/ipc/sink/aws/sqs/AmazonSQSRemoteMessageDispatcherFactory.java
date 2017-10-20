@@ -33,8 +33,6 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import javax.jms.JMSException;
-
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -46,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
 import com.codahale.metrics.JmxReporter;
 
@@ -123,7 +122,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             try {
                 Thread.currentThread().setContextClassLoader(null);
                 sqs = AmazonSQSUtils.createSQSObject(awsConfig);
-            } catch (JMSException e) {
+            } catch (AmazonSQSException e) {
                 LOG.error("Can't create AWS SQS Producer", e);
             } finally {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
@@ -175,7 +174,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             try {
                 AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, queueName);
                 return sqs.getQueueUrl(queueName).getQueueUrl();
-            } catch (JMSException ex) {
+            } catch (AmazonSQSException ex) {
                 LOG.error("Cannot create queue with name " + queueName, ex);
             }
         }

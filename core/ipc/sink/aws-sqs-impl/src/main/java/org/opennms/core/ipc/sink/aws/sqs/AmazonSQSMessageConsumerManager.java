@@ -39,8 +39,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.jms.JMSException;
-
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -51,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -95,9 +94,9 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
          * Instantiates a new AWS consumer runner.
          *
          * @param module the module
-         * @throws JMSException 
+         * @throws AmazonSQSException the Amazon SQS exception
          */
-        public AwsConsumerRunner(SinkModule<?, Message> module) throws JMSException {
+        public AwsConsumerRunner(SinkModule<?, Message> module) throws AmazonSQSException {
             this.module = module;
             sqs = AmazonSQSUtils.createSQSObject(awsConfig);
             AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, AmazonSQSUtils.getQueueName(module));
