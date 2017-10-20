@@ -58,7 +58,19 @@ Next, configure the _AWS SQS_ producer on _Minion_ using:
 ----
 echo 'aws_region=us-east-1
 aws_access_key_id=XXXXXXXXXXX
-aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.kafka.cfg"
+aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.aws.cfg"
 ----
 
 Restart _Minion_ to apply the changes.
+
+==== SQS Configuration Settings
+
+From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[AWS Documentation], the following parameters can be added to either Minion or _{opennms-product-name}_.
+
+* `DelaySeconds` (defaults to 0 seconds)
+* `MaximumMessageSize` (defaults to 262144 bytes)
+* `MessageRetentionPeriod` (defaults to 1209600 seconds)
+* `ReceiveMessageWaitTimeSeconds` (defaults to 10 seconds)
+* `VisibilityTimeout` (defaults to 30 seconds)
+* `Policy`
+* `RedrivePolicy`

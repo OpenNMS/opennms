@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
 import com.codahale.metrics.JmxReporter;
 
 /**
@@ -86,12 +86,13 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, String topic, T message) {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.trace("dispatch({}): sending message {}", topic, message);
-
-            final String queueUrl = sqs.getQueueUrl(getModuleMetadata(module)).getQueueUrl();
-            SendMessageRequest send_msg_request = new SendMessageRequest()
-                    .withQueueUrl(queueUrl)
-                    .withMessageBody(module.marshal((T)message));
-            sqs.sendMessage(send_msg_request);
+            final String queueName = getModuleMetadata(module);
+            final String queueUrl = getQueueUrl(queueName);
+            if (queueUrl == null) {
+                LOG.warn("Cannot obtain URL for queue {}. The message cannot be sent.", queueName);
+            } else {
+                sqs.sendMessage(queueUrl, module.marshal((T)message));
+            }
         }
     }
 
@@ -159,5 +160,25 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
      */
     public void setConfigAdmin(ConfigurationAdmin configAdmin) {
         this.configAdmin = configAdmin;
+    }
+
+    /**
+     * Gets the queue URL.
+     *
+     * @param queueName the queue name
+     * @return the queue URL
+     */
+    private String getQueueUrl(final String queueName) {
+        try {
+            return sqs.getQueueUrl(queueName).getQueueUrl();
+        } catch (QueueDoesNotExistException e) {
+            try {
+                AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, queueName);
+                return sqs.getQueueUrl(queueName).getQueueUrl();
+            } catch (JMSException ex) {
+                LOG.error("Cannot create queue with name " + queueName, ex);
+            }
+        }
+        return null;
     }
 }

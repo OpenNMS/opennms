@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.jms.JMSException;
@@ -61,6 +63,17 @@ public class AmazonSQSUtils {
     /** The Constant AWS_SECRET_ACCESS_KEY. */
     public static final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
 
+    public static final Map<String, String> QUEUE_ATTRIBUTES = new HashMap<>(); 
+    static {
+        QUEUE_ATTRIBUTES.put("DelaySeconds", "0");
+        QUEUE_ATTRIBUTES.put("MaximumMessageSize", "262144");
+        QUEUE_ATTRIBUTES.put("MessageRetentionPeriod", "1209600");
+        QUEUE_ATTRIBUTES.put("ReceiveMessageWaitTimeSeconds", "10");
+        QUEUE_ATTRIBUTES.put("VisibilityTimeout", "30");
+        QUEUE_ATTRIBUTES.put("Policy", null);
+        QUEUE_ATTRIBUTES.put("RedrivePolicy", null);
+    }
+
     /**
      * Creates the SQS object.
      *
@@ -74,25 +87,28 @@ public class AmazonSQSUtils {
             BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsConfig.getProperty(AWS_ACCESS_KEY_ID), awsConfig.getProperty(AWS_SECRET_ACCESS_KEY));
             credentialProvider = new AWSStaticCredentialsProvider(awsCreds);
         }
-        AmazonSQSClientBuilder clientBuilder = AmazonSQSClientBuilder.standard()
+        return AmazonSQSClientBuilder.standard()
                 .withRegion(awsConfig.getProperty(AWS_REGION, Regions.US_EAST_1.getName()))
-                .withCredentials(credentialProvider);
-        return clientBuilder.build();
+                .withCredentials(credentialProvider)
+                .build();
     }
 
     /**
      * Ensure queue exists.
      *
+     * @param awsConfig the AWS configuration
      * @param sqs the SQS Object
      * @param queueName the queue name
      * @throws JMSException the JMS exception
      */
-    public static void ensureQueueExists(AmazonSQS sqs, String queueName) throws JMSException {
+    public static void ensureQueueExists(Properties awsConfig, AmazonSQS sqs, String queueName) throws JMSException {
+        final CreateQueueRequest request = new CreateQueueRequest(queueName);
+        QUEUE_ATTRIBUTES.forEach((k,v) -> {
+            final String value = awsConfig.getProperty(k, v);
+            if (value != null) request.addAttributesEntry(k, value);
+        });
         try {
-            CreateQueueRequest create_request = new CreateQueueRequest(queueName)
-                    .addAttributesEntry("DelaySeconds", "60")
-                    .addAttributesEntry("MessageRetentionPeriod", "86400");
-            sqs.createQueue(create_request);
+            sqs.createQueue(request);
         } catch (AmazonSQSException e) {
             if (!e.getErrorCode().equals("QueueAlreadyExists")) {
                 throw e;

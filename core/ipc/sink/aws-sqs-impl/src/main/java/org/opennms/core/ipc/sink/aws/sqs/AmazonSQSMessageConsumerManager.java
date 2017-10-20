@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -101,7 +100,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
         public AwsConsumerRunner(SinkModule<?, Message> module) throws JMSException {
             this.module = module;
             sqs = AmazonSQSUtils.createSQSObject(awsConfig);
-            AmazonSQSUtils.ensureQueueExists(sqs, AmazonSQSUtils.getQueueName(module));
+            AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, AmazonSQSUtils.getQueueName(module));
         }
 
         /* (non-Javadoc)
@@ -112,15 +111,12 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
             while (!closed.get()) {
                 final String queueUrl = sqs.getQueueUrl(AmazonSQSUtils.getQueueName(module)).getQueueUrl();
-                final ReceiveMessageRequest recv_msg_request = new ReceiveMessageRequest()
-                        .withQueueUrl(queueUrl)
-                        .withWaitTimeSeconds(10);
-                final List<com.amazonaws.services.sqs.model.Message> messages = sqs.receiveMessage(recv_msg_request).getMessages();
-                messages.forEach(m -> {
+                sqs.receiveMessage(queueUrl).getMessages().forEach(m -> {
                     LOG.debug("Got message {}", m.getMessageId());
                     try {
-                        dispatch(module, module.unmarshal(m.getBody()));
-                        sqs.deleteMessage(queueUrl, m.getReceiptHandle());                        
+                        final Message msg = module.unmarshal(m.getBody());
+                        dispatch(module, msg);
+                        sqs.deleteMessage(queueUrl, m.getReceiptHandle());
                     } catch (RuntimeException e) {
                         LOG.warn("Unexpected exception while dispatching message", e);
                     }
