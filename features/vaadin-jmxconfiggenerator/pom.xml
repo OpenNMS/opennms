@@ -24,7 +24,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-                        <Include-Resource>{maven-resources}</Include-Resource>
+                        <Vaadin-Package-Version>1</Vaadin-Package-Version>
                     </instructions>
                 </configuration>
             </plugin>

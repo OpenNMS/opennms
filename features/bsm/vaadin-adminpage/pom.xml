@@ -24,6 +24,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
+                        <Vaadin-Package-Version>1</Vaadin-Package-Version>
                     </instructions>
                 </configuration>
             </plugin>

@@ -46,7 +46,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>
+                        <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                        <Vaadin-Widgetsets>org.opennms.features.vaadin.dashboard.DashboardWidgetSet</Vaadin-Widgetsets>
+                        <Include-Resource>{maven-resources},target/gwt/</Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>
