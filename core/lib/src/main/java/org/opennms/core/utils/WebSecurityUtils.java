@@ -28,7 +28,6 @@
 
 package org.opennms.core.utils;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.owasp.encoder.Encode;
@@ -103,7 +102,7 @@ public abstract class WebSecurityUtils {
         if (allowHTML) {
 			next = s_sanitizer.sanitize(raw);
         } else {
-            next = Encode.forHtmlContent(raw);
+            next = Encode.forHtml(raw);
         }
         return next;
     }
