@@ -15,9 +15,12 @@
 
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 
+    <bean id="awsSqsManager" class="org.opennms.core.ipc.sink.aws.sqs.DefaultAmazonSQSManager" />
+
 	<bean id="awsRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSRemoteMessageDispatcherFactory"
 	  init-method="init" destroy-method="destroy">
 	  <property name="configAdmin" ref="configAdmin"/>
+	  <property name="awsSqsManager" ref="awsSqsManager"/>
 	</bean>
 
     <service ref="awsRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>

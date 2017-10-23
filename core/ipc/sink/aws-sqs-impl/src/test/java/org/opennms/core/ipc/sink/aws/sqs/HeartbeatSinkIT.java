@@ -39,7 +39,6 @@ import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -61,13 +60,12 @@ import org.springframework.test.context.ContextConfiguration;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@Ignore
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-aws.xml"
+        "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-aws-mock.xml"
 })
 @JUnitConfigurationEnvironment
 public class HeartbeatSinkIT {
@@ -80,6 +78,10 @@ public class HeartbeatSinkIT {
     @Autowired
     private AmazonSQSMessageConsumerManager consumerManager;
 
+    /** The SQS manager. */
+    @Autowired
+    private AmazonSQSManager sqsManager;
+
     /** The remote message dispatcher factory. */
     private AmazonSQSRemoteMessageDispatcherFactory remoteMessageDispatcherFactory = new AmazonSQSRemoteMessageDispatcherFactory();
 
@@ -90,10 +92,11 @@ public class HeartbeatSinkIT {
      */
     @Before
     public void setUp() throws Exception {
-        Hashtable<String, Object> awsConfig = new Hashtable<String, Object>();
+        Hashtable<String, Object> awsData = new Hashtable<String, Object>();
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(AmazonSQSSinkConstants.AWS_CONFIG_PID).getProperties()).thenReturn(awsConfig);
+        when(configAdmin.getConfiguration(AmazonSQSSinkConstants.AWS_CONFIG_PID).getProperties()).thenReturn(awsData);
         remoteMessageDispatcherFactory.setConfigAdmin(configAdmin);
+        remoteMessageDispatcherFactory.setAwsSqsManager(sqsManager);
         remoteMessageDispatcherFactory.init();
         consumerManager.afterPropertiesSet();
     }

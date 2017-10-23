@@ -70,6 +70,9 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     /** The SQS Object. */
     private AmazonSQS sqs;
 
+    /** The AWS SQS manager. */
+    private AmazonSQSManager awsSqsManager;
+
     /** The queue URL. This is cached to avoid an API call on each attempt to send a message. */
     private String queueUrl;
 
@@ -78,7 +81,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
      */
     @Override
     public <S extends Message, T extends Message> String getModuleMetadata(final SinkModule<S, T> module) {
-        return AmazonSQSUtils.getQueueName(awsConfig, module);
+        return awsSqsManager.getQueueName(awsConfig, module);
     }
 
     /* (non-Javadoc)
@@ -88,7 +91,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, String topic, T message) {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.trace("dispatch({}): sending message {}", topic, message);
-            final String queueName = AmazonSQSUtils.getQueueName(awsConfig, module);
+            final String queueName = awsSqsManager.getQueueName(awsConfig, module);
             final String queueUrl = getQueueUrl(queueName);
             if (queueUrl == null) {
                 LOG.warn("Cannot obtain URL for queue {}. The message cannot be sent.", queueName);
@@ -126,7 +129,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
 
             LOG.info("AwsRemoteMessageDispatcherFactory: initializing the AmazonSQS Object with: {}", awsConfig);
             try {
-                sqs = AmazonSQSUtils.createSQSObject(awsConfig);
+                sqs = awsSqsManager.createSQSObject(awsConfig);
             } catch (AmazonSQSException e) {
                 LOG.error("Can't create an AmazonSQS Object", e);
             }
@@ -166,6 +169,15 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     }
 
     /**
+     * Sets the AWS SQS manager.
+     *
+     * @param awsSqsManager the new AWS SQS manager
+     */
+    public void setAwsSqsManager(AmazonSQSManager awsSqsManager) {
+        this.awsSqsManager = awsSqsManager;
+    }
+
+    /**
      * Gets the queue URL.
      *
      * @param queueName the queue name
@@ -177,7 +189,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             queueUrl = sqs.getQueueUrl(queueName).getQueueUrl();
         } catch (QueueDoesNotExistException e) {
             try {
-                queueUrl = AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, queueName);
+                queueUrl = awsSqsManager.ensureQueueExists(awsConfig, sqs, queueName);
             } catch (AmazonSQSException ex) {
                 LOG.error("Cannot create queue with name " + queueName, ex);
             }

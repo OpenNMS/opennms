@@ -40,7 +40,6 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
@@ -65,13 +64,12 @@ import com.codahale.metrics.Timer;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@Ignore
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-aws.xml"
+        "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-aws-mock.xml"
 })
 @JUnitConfigurationEnvironment
 public class HeartbeatSinkPerfIT {
@@ -79,6 +77,10 @@ public class HeartbeatSinkPerfIT {
     /** The consumer manager. */
     @Autowired
     private AmazonSQSMessageConsumerManager consumerManager;
+
+    /** The SQS manager. */
+    @Autowired
+    private AmazonSQSManager sqsManager;
 
     /** The message dispatcher factory. */
     private AmazonSQSRemoteMessageDispatcherFactory messageDispatcherFactory = new AmazonSQSRemoteMessageDispatcherFactory();
@@ -99,7 +101,6 @@ public class HeartbeatSinkPerfIT {
     private final Timer sendTimer = metrics.timer("send");
 
     /** The Constant NUM_CONSUMER_THREADS. */
-    // Tuneables
     private static final int NUM_CONSUMER_THREADS = 2;
 
     /** The Constant NUM_GENERATORS. */
@@ -117,9 +118,9 @@ public class HeartbeatSinkPerfIT {
     public void setUp() throws Exception {
         Hashtable<String, Object> awsConfig = new Hashtable<String, Object>();
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(AmazonSQSSinkConstants.AWS_CONFIG_PID).getProperties())
-        .thenReturn(awsConfig);
+        when(configAdmin.getConfiguration(AmazonSQSSinkConstants.AWS_CONFIG_PID).getProperties()).thenReturn(awsConfig);
         messageDispatcherFactory.setConfigAdmin(configAdmin);
+        messageDispatcherFactory.setAwsSqsManager(sqsManager);
         messageDispatcherFactory.init();
         consumerManager.afterPropertiesSet();
     }

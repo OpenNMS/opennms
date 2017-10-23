@@ -46,25 +46,12 @@ import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;
 
 /**
- * The Class AwsUtils.
+ * The Class DefaultAmazonSQSManager.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AmazonSQSUtils {
+public class DefaultAmazonSQSManager implements AmazonSQSManager {
 
-    /** The Constant AWS_REGION. */
-    public static final String AWS_REGION = "aws_region";
-
-    /** The Constant AWS_ACCESS_KEY_ID. */
-    public static final String AWS_ACCESS_KEY_ID = "aws_access_key_id";
-
-    /** The Constant AWS_SECRET_ACCESS_KEY. */
-    public static final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
-
-    /** The Constant AWS_QUEUE_NAME_PREFIX. */
-    public static final String AWS_QUEUE_NAME_PREFIX = "aws_queue_name_prefix";
-
-    public static final Map<String, String> QUEUE_ATTRIBUTES = new HashMap<>(); 
     static {
         QUEUE_ATTRIBUTES.put("DelaySeconds", "0");
         QUEUE_ATTRIBUTES.put("MaximumMessageSize", "262144");
@@ -75,15 +62,10 @@ public class AmazonSQSUtils {
         QUEUE_ATTRIBUTES.put("RedrivePolicy", null);
     }
 
-    /**
-     * Creates the SQS object.
-     *
-     * @param awsConfig the AWS configuration
-     * @return the amazon SQS
-     * 
-     * @throws AmazonSQSException the Amazon SQS exception
+    /* (non-Javadoc)
+     * @see org.opennms.core.ipc.sink.aws.sqs.AmazonSQSManager#createSQSObject(java.util.Properties)
      */
-    public static AmazonSQS createSQSObject(Properties awsConfig) throws AmazonSQSException {
+    public AmazonSQS createSQSObject(Properties awsConfig) throws AmazonSQSException {
         AWSCredentialsProvider credentialProvider = new ProfileCredentialsProvider();
         if (awsConfig.containsKey(AWS_ACCESS_KEY_ID) && awsConfig.containsKey(AWS_SECRET_ACCESS_KEY)) {
             BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsConfig.getProperty(AWS_ACCESS_KEY_ID), awsConfig.getProperty(AWS_SECRET_ACCESS_KEY));
@@ -95,17 +77,10 @@ public class AmazonSQSUtils {
                 .build();
     }
 
-    /**
-     * Ensure queue exists.
-     *
-     * @param awsConfig the AWS configuration
-     * @param sqs the SQS Object
-     * @param queueName the queue name
-     * @return the Queue URL
-     * 
-     * @throws AmazonSQSException the Amazon SQS exception
+    /* (non-Javadoc)
+     * @see org.opennms.core.ipc.sink.aws.sqs.AmazonSQSManager#ensureQueueExists(java.util.Properties, com.amazonaws.services.sqs.AmazonSQS, java.lang.String)
      */
-    public static String ensureQueueExists(Properties awsConfig, AmazonSQS sqs, String queueName) throws AmazonSQSException {
+    public String ensureQueueExists(Properties awsConfig, AmazonSQS sqs, String queueName) throws AmazonSQSException {
         final Map<String,String> attributes = new HashMap<>();
         QUEUE_ATTRIBUTES.forEach((k,v) -> {
             final String val = awsConfig.getProperty(k,v);
@@ -124,16 +99,12 @@ public class AmazonSQSUtils {
         }
     }
 
-    /**
-     * Gets the queue name.
-     *
-     * @param awsConfig the AWS configuration
-     * @param module the module
-     * @return the queue name
+    /* (non-Javadoc)
+     * @see org.opennms.core.ipc.sink.aws.sqs.AmazonSQSManager#getQueueName(java.util.Properties, org.opennms.core.ipc.sink.api.SinkModule)
      */
-    public static String getQueueName(Properties awsConfig, SinkModule<?, ?> module) {
-        final String prefix = AmazonSQSSinkConstants.AWS_QUEUE_PREFIX + (awsConfig.containsKey(AWS_QUEUE_NAME_PREFIX)  ? '-' + awsConfig.getProperty(AmazonSQSSinkConstants.AWS_QUEUE_PREFIX) : "");
-        return prefix + '-' + module.getId();
+    public String getQueueName(Properties awsConfig, SinkModule<?, ?> module) {
+        final String prefix =  awsConfig.containsKey(AWS_QUEUE_NAME_PREFIX)  ? awsConfig.getProperty(AmazonSQSSinkConstants.AWS_QUEUE_PREFIX) + '-' : "";
+        return prefix + AmazonSQSSinkConstants.AWS_QUEUE_PREFIX + '-' + module.getId();
     }
 
 }

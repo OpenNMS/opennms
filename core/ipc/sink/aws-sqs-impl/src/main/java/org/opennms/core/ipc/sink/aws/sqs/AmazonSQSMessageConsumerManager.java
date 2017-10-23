@@ -76,6 +76,9 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
     /** The AWS configuration. */
     private final Properties awsConfig = new Properties();
 
+    /** The AWS SQS manager. */
+    private AmazonSQSManager awsSqsManager;
+
     /**
      * The Class AwsConsumerRunner.
      */
@@ -101,8 +104,8 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
          */
         public AwsConsumerRunner(SinkModule<?, Message> module) throws AmazonSQSException {
             this.module = module;
-            sqs = AmazonSQSUtils.createSQSObject(awsConfig);
-            queueUrl = AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, AmazonSQSUtils.getQueueName(awsConfig, module));
+            sqs = awsSqsManager.createSQSObject(awsConfig);
+            queueUrl = awsSqsManager.ensureQueueExists(awsConfig, sqs, awsSqsManager.getQueueName(awsConfig, module));
         }
 
         /* (non-Javadoc)
@@ -136,6 +139,15 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
             closed.set(true);
             sqs.shutdown();
         }
+    }
+
+    /**
+     * Sets the AWS SQS manager.
+     *
+     * @param awsSqsManager the new AWS SQS manager
+     */
+    public void setAwsSqsManager(AmazonSQSManager awsSqsManager) {
+        this.awsSqsManager = awsSqsManager;
     }
 
     /* (non-Javadoc)
