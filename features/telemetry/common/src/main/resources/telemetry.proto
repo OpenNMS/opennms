@@ -7,9 +7,9 @@ message TelemetryMessage {
 }
 
 message TelemetryMessageLog {
-    optional string source_address = 1;
-    optional uint32 source_port = 2;
-    optional string system_id = 3;
-    optional string location = 4;
+    required string location = 1;
+    required string system_id = 2;
+    optional string source_address = 3;
+    optional uint32 source_port = 4;
     repeated TelemetryMessage message = 5;
 }

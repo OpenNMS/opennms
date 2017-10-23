@@ -33,83 +33,85 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-/**
- * RRD parameters
- */
-@XmlRootElement(name="rrd")
+@XmlRootElement(name="package")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Rrd {
-
-    private static final String DEFAULT_BASE_DIRECTORY = Paths.get(System.getProperty("opennms.home"),"share","rrd","snmp").toString();
+public class Package implements org.opennms.netmgt.telemetry.config.api.Package {
+    /**
+     * Name or identifier for this package.
+     */
+    @XmlAttribute(name="name")
+    private String name;
 
     /**
-     * Step size for the RRD, in seconds.
+     * A rule which addresses belonging to this package must pass. This
+     * package is applied only to addresses that pass this filter.
      */
-    @XmlAttribute(name="step")
-    private Integer step;
+    @XmlElement(name="filter")
+    private Filter filter;
 
     /**
-     * Round Robin Archive definitions
+     * RRD parameters for metrics belonging to this package.
      */
-    @XmlElement(name="rra")
-    private List<String> rras = new ArrayList<>();
+    @XmlElement(name="rrd")
+    private Rrd rrd;
 
-    @XmlAttribute(name="base-directory")
-    private String baseDir;
-
-    public Integer getStep() {
-        return step;
+    public String getName() {
+        return name;
     }
 
-    public void setStep(Integer step) {
-        this.step = step;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public List<String> getRras() {
-        return rras;
+    public Filter getFilter() {
+        return filter;
     }
 
-    public void setRras(List<String> rras) {
-        this.rras = rras;
+    public void setFilter(Filter filter) {
+        this.filter = filter;
     }
 
-    public String getBaseDir() {
-        if (baseDir == null) {
-            return DEFAULT_BASE_DIRECTORY;
+    @Override
+    public String getFilterRule() {
+        if (getFilter() == null) {
+            return null;
         }
-        return baseDir;
+        return getFilter().getContent();
     }
 
-    public void setBaseDir(String baseDir) {
-        this.baseDir = baseDir;
+    @Override
+    public Rrd getRrd() {
+        return rrd;
+    }
+
+    public void setRrd(Rrd rrd) {
+        this.rrd = rrd;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Rrd rrd = (Rrd) o;
-        return Objects.equals(step, rrd.step) &&
-                Objects.equals(rras, rrd.rras) &&
-                Objects.equals(baseDir, rrd.baseDir);
+        Package aPackage = (Package) o;
+        return Objects.equals(name, aPackage.name) &&
+                Objects.equals(filter, aPackage.filter) &&
+                Objects.equals(rrd, aPackage.rrd);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(step, rras, baseDir);
+        return Objects.hash(name, filter, rrd);
     }
 
     @Override
     public String toString() {
-        return "Rrd{" +
-                "step=" + step +
-                ", rras=" + rras +
-                ", baseDir=" + baseDir +
+        return "Package{" +
+                "name='" + name + '\'' +
+                ", filter=" + filter +
+                ", rrd=" + rrd +
                 '}';
     }
+
 }

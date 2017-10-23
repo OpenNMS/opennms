@@ -141,8 +141,8 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry</groupId>
-      <artifactId>org.opennms.features.telemetry.config</artifactId>
+      <groupId>org.opennms.features.telemetry.config</groupId>
+      <artifactId>org.opennms.features.telemetry.config.jaxb</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>

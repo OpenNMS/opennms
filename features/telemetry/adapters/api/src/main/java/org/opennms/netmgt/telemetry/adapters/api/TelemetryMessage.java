@@ -28,34 +28,10 @@
 
 package org.opennms.netmgt.telemetry.adapters.api;
 
-import org.opennms.netmgt.telemetry.config.api.Protocol;
+public interface TelemetryMessage {
 
-/**
- * Responsible for handling telemetry messages received by the listeners
- * within a protocol definition.
- *
- * The adapter should decode the message and handle the contents appropriately.
- *
- * @author jwhite
- */
-public interface Adapter {
+    long getTimestamp();
 
-    /**
-     * A single instance of an adapter will only be responsible
-     * for one protocol. The protocol will be set using this method before
-     * any calls to {@link #handleMessageLog} are made.
-     *
-     * @param protocol the protocol in which the adapter is defined
-     */
-    void setProtocol(Protocol protocol);
-
-    /**
-     * Handle the messages.
-     *
-     * IMPORTANT: Implementations of this method MUST be thread-safe.
-     *
-     * @param messageLog group of messages to be handled
-     */
-    void handleMessageLog(TelemetryMessageLog messageLog);
+    byte[] getByteArray();
 
 }

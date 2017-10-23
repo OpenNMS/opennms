@@ -26,36 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.api;
+package org.opennms.netmgt.telemetry.config.api;
 
-import org.opennms.netmgt.telemetry.config.api.Protocol;
+import java.util.List;
 
 /**
- * Responsible for handling telemetry messages received by the listeners
- * within a protocol definition.
- *
- * The adapter should decode the message and handle the contents appropriately.
- *
- * @author jwhite
+ * RRD related settings for a given telemetry protocol package.
  */
-public interface Adapter {
+public interface Rrd {
 
-    /**
-     * A single instance of an adapter will only be responsible
-     * for one protocol. The protocol will be set using this method before
-     * any calls to {@link #handleMessageLog} are made.
-     *
-     * @param protocol the protocol in which the adapter is defined
-     */
-    void setProtocol(Protocol protocol);
+    Integer getStep();
 
-    /**
-     * Handle the messages.
-     *
-     * IMPORTANT: Implementations of this method MUST be thread-safe.
-     *
-     * @param messageLog group of messages to be handled
-     */
-    void handleMessageLog(TelemetryMessageLog messageLog);
+    List<String> getRras();
+
+    String getBaseDir();
 
 }
