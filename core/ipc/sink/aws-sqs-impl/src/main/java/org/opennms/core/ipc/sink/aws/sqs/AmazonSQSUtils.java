@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -62,6 +61,9 @@ public class AmazonSQSUtils {
     /** The Constant AWS_SECRET_ACCESS_KEY. */
     public static final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
 
+    /** The Constant AWS_QUEUE_NAME_PREFIX. */
+    public static final String AWS_QUEUE_NAME_PREFIX = "aws_queue_name_prefix";
+
     public static final Map<String, String> QUEUE_ATTRIBUTES = new HashMap<>(); 
     static {
         QUEUE_ATTRIBUTES.put("DelaySeconds", "0");
@@ -78,6 +80,7 @@ public class AmazonSQSUtils {
      *
      * @param awsConfig the AWS configuration
      * @return the amazon SQS
+     * 
      * @throws AmazonSQSException the Amazon SQS exception
      */
     public static AmazonSQS createSQSObject(Properties awsConfig) throws AmazonSQSException {
@@ -98,19 +101,23 @@ public class AmazonSQSUtils {
      * @param awsConfig the AWS configuration
      * @param sqs the SQS Object
      * @param queueName the queue name
+     * @return the Queue URL
+     * 
      * @throws AmazonSQSException the Amazon SQS exception
      */
-    public static void ensureQueueExists(Properties awsConfig, AmazonSQS sqs, String queueName) throws AmazonSQSException {
+    public static String ensureQueueExists(Properties awsConfig, AmazonSQS sqs, String queueName) throws AmazonSQSException {
         final Map<String,String> attributes = new HashMap<>();
         QUEUE_ATTRIBUTES.forEach((k,v) -> {
             final String val = awsConfig.getProperty(k,v);
             if (val != null) attributes.put(k, val);
         });
         try {
-            sqs.createQueue(new CreateQueueRequest(queueName).withAttributes(attributes));
+            return sqs.createQueue(new CreateQueueRequest(queueName).withAttributes(attributes)).getQueueUrl();
         } catch (AmazonSQSException e) {
             if (e.getErrorCode().equals("QueueAlreadyExists")) {
-                sqs.setQueueAttributes(new SetQueueAttributesRequest(sqs.getQueueUrl(queueName).getQueueUrl(), attributes));
+                final String queueUrl = sqs.getQueueUrl(queueName).getQueueUrl();
+                sqs.setQueueAttributes(new SetQueueAttributesRequest(queueUrl, attributes));
+                return queueUrl;
             } else {
                 throw e;
             }
@@ -120,11 +127,13 @@ public class AmazonSQSUtils {
     /**
      * Gets the queue name.
      *
+     * @param awsConfig the AWS configuration
      * @param module the module
      * @return the queue name
      */
-    public static String getQueueName(SinkModule<?, ?> module) {
-        return new JmsQueueNameFactory(AmazonSQSSinkConstants.AWS_QUEUE_PREFIX, module.getId()).getName().replaceAll("\\.", "-");
+    public static String getQueueName(Properties awsConfig, SinkModule<?, ?> module) {
+        final String prefix = AmazonSQSSinkConstants.AWS_QUEUE_PREFIX + (awsConfig.containsKey(AWS_QUEUE_NAME_PREFIX)  ? '-' + awsConfig.getProperty(AmazonSQSSinkConstants.AWS_QUEUE_PREFIX) : "");
+        return prefix + '-' + module.getId();
     }
 
 }

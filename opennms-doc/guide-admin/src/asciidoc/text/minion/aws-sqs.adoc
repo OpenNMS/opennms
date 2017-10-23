@@ -82,3 +82,12 @@ From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReferen
 * `VisibilityTimeout` (defaults to 30 seconds)
 * `Policy`
 * `RedrivePolicy`
+
+==== Managing Multiple Environments
+
+Because SQS is a shared resource per AWS Region, on those cases when multiple environments will be deployed on the same region, for example, Production, Staging and Development,
+an additional property called `aws_queue_name_prefix` was added to enforce a prefix to the queue names.
+
+For example, if we set this property to be "PROD", the resulting name of the queues are going something like `OpenNMS-PROD-Sink-Heartbeat`, instead of `OpenNMS-Sink-Heartbeat`.
+
+WARNING: This property must be properly configured at  _{opennms-product-name}_  and Minion side.

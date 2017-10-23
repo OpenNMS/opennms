@@ -90,6 +90,9 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
         /** The SQS Object. */
         private final AmazonSQS sqs;
 
+        /** The queue URL. This is cached to avoid an API call on each attempt to send a message. */
+        private final String queueUrl;
+
         /**
          * Instantiates a new AWS consumer runner.
          *
@@ -99,7 +102,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
         public AwsConsumerRunner(SinkModule<?, Message> module) throws AmazonSQSException {
             this.module = module;
             sqs = AmazonSQSUtils.createSQSObject(awsConfig);
-            AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, AmazonSQSUtils.getQueueName(module));
+            queueUrl = AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, AmazonSQSUtils.getQueueName(awsConfig, module));
         }
 
         /* (non-Javadoc)
@@ -108,8 +111,6 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
         @Override
         public void run() {
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
-            // Getting the URL requires an API Call, for this reason, this should be done only once.
-            final String queueUrl = sqs.getQueueUrl(AmazonSQSUtils.getQueueName(module)).getQueueUrl();
             while (!closed.get()) {
                 // The SQS Queue is configured to use "Long Polling" through "ReceiveMessageWaitTimeSeconds".
                 // That means, calling receiveMessage will block the thread execution for that amount of time if there are no messages on the queue.
@@ -133,6 +134,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
          */
         public void shutdown() {
             closed.set(true);
+            sqs.shutdown();
         }
     }
 

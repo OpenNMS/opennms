@@ -78,7 +78,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
      */
     @Override
     public <S extends Message, T extends Message> String getModuleMetadata(final SinkModule<S, T> module) {
-        return AmazonSQSUtils.getQueueName(module);
+        return AmazonSQSUtils.getQueueName(awsConfig, module);
     }
 
     /* (non-Javadoc)
@@ -88,7 +88,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, String topic, T message) {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.trace("dispatch({}): sending message {}", topic, message);
-            final String queueName = getModuleMetadata(module);
+            final String queueName = AmazonSQSUtils.getQueueName(awsConfig, module);
             final String queueUrl = getQueueUrl(queueName);
             if (queueUrl == null) {
                 LOG.warn("Cannot obtain URL for queue {}. The message cannot be sent.", queueName);
@@ -153,6 +153,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             reporter.close();
             reporter = null;
         }
+        sqs.shutdown();
     }
 
     /**
@@ -176,8 +177,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             queueUrl = sqs.getQueueUrl(queueName).getQueueUrl();
         } catch (QueueDoesNotExistException e) {
             try {
-                AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, queueName);
-                queueUrl= sqs.getQueueUrl(queueName).getQueueUrl();
+                queueUrl = AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, queueName);
             } catch (AmazonSQSException ex) {
                 LOG.error("Cannot create queue with name " + queueName, ex);
             }
