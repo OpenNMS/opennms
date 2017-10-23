@@ -34,6 +34,7 @@ import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -50,11 +51,11 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
     @Autowired
     private DistPollerDao distPollerDao;
 
-    private final ProtocolDefinition protocol;
+    private final Protocol protocol;
 
     private final String moduleId;
 
-    public TelemetrySinkModule(ProtocolDefinition protocol) {
+    public TelemetrySinkModule(Protocol protocol) {
         this.protocol = Objects.requireNonNull(protocol);
         this.moduleId = MODULE_ID_PREFIX + protocol.getName();
     }
@@ -117,7 +118,7 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
                         .setBytes(ByteString.copyFrom(message.getBuffer()))
                         .build();
                 // Append
-                accumulator.addMessage(messageDto).build();
+                accumulator.addMessage(messageDto);
                 return accumulator;
             }
 

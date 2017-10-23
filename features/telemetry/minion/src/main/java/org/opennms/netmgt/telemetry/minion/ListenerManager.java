@@ -35,14 +35,11 @@ import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.utils.ListenerFactory;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
