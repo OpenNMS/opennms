@@ -135,7 +135,7 @@ public class AggregateTracker extends CollectionTracker {
             return getRepeaterStartIndex() <= canonicalIndex && canonicalIndex < getRepeaterStartIndex()+getRepeaters();
         }
         
-        public int getChildIndex(int canonicalIndex) {
+        public int getChildIndex(int canonicalIndex) throws SnmpException {
             if (isNonRepeater(canonicalIndex)) {
                 return canonicalIndex - getNonRepeaterStartIndex();
             }
@@ -144,7 +144,7 @@ public class AggregateTracker extends CollectionTracker {
                 return canonicalIndex - getRepeaterStartIndex() + getNonRepeaters();
             }
             
-            throw new IllegalArgumentException("index out of range for tracker "+this);
+            throw new SnmpException("index out of range for tracker "+this);
         }
     }
 
@@ -166,19 +166,19 @@ public class AggregateTracker extends CollectionTracker {
         }
     
         @Override
-        public void processResponse(SnmpObjId snmpObjId, SnmpValue val) {
+        public void processResponse(SnmpObjId snmpObjId, SnmpValue val) throws SnmpException {
             ChildTrackerPduBuilder childBuilder = getChildBuilder(m_currResponseIndex++);
             childBuilder.getResponseProcessor().processResponse(snmpObjId, val);
         }
     
-        public boolean processChildError(int errorStatus, int errorIndex) {
+        public boolean processChildError(int errorStatus, int errorIndex) throws SnmpException {
             int canonicalIndex = getCanonicalIndex(errorIndex-1);
             ChildTrackerPduBuilder childBuilder = getChildBuilder(canonicalIndex);
             int childIndex = childBuilder.getChildIndex(canonicalIndex);
             return childBuilder.getResponseProcessor().processErrors(errorStatus, childIndex+1);
         }
     
-        private ChildTrackerPduBuilder getChildBuilder(int zeroBasedIndex) {
+        private ChildTrackerPduBuilder getChildBuilder(int zeroBasedIndex) throws SnmpException {
             int canonicalIndex = getCanonicalIndex(zeroBasedIndex);
             for (ChildTrackerPduBuilder childBuilder : m_childPduBuilders) {
                 if (childBuilder.isNonRepeater(canonicalIndex) || childBuilder.isRepeater(canonicalIndex)) {
@@ -186,7 +186,7 @@ public class AggregateTracker extends CollectionTracker {
                 }
             }
     
-            throw new IllegalStateException("Unable to find childBuilder for index "+zeroBasedIndex);
+            throw new SnmpException("Unable to find childBuilder for index "+zeroBasedIndex);
         }
     
         private int getCanonicalIndex(int zeroBasedIndex) {
@@ -202,8 +202,8 @@ public class AggregateTracker extends CollectionTracker {
         }
     
         @Override
-        public boolean processErrors(int errorStatus, int errorIndex) {
-            //LOG.trace("processErrors: errorStatus={}, errorIndex={}", errorStatus, errorIndex);;
+        public boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
+            //LOG.trace("processErrors: errorStatus={}, errorIndex={}", errorStatus, errorIndex);
 
             final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
 
@@ -211,7 +211,7 @@ public class AggregateTracker extends CollectionTracker {
             if (status == ErrorStatus.TOO_BIG) {
                 int maxVarsPerPdu = m_pduBuilder.getMaxVarsPerPdu();
                 if (maxVarsPerPdu <= 1) {
-                    throw new IllegalArgumentException("Unable to handle tooBigError when maxVarsPerPdu = "+maxVarsPerPdu);
+                    throw new SnmpException("Unable to handle tooBigError when maxVarsPerPdu = "+maxVarsPerPdu);
                 }
                 m_pduBuilder.setMaxVarsPerPdu(maxVarsPerPdu/2);
                 m_tracker.reportTooBigErr("Reducing maxVarsPerPDU for this request.");
@@ -291,7 +291,7 @@ public class AggregateTracker extends CollectionTracker {
     }
     
     @Override
-    public ResponseProcessor buildNextPdu(final PduBuilder parentBuilder) {
+    public ResponseProcessor buildNextPdu(final PduBuilder parentBuilder) throws SnmpException {
         
         // first process the child trackers that aren't finished up to maxVars 
         int count = 0;

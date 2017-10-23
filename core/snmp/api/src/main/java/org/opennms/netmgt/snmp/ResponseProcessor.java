@@ -30,8 +30,8 @@ package org.opennms.netmgt.snmp;
 
 public interface ResponseProcessor {
 
-    void processResponse(SnmpObjId snmpObjId, SnmpValue val);
+    void processResponse(SnmpObjId snmpObjId, SnmpValue val) throws SnmpException;
 
-    boolean processErrors(int errorStatus, int errorIndex);
+    boolean processErrors(int errorStatus, int errorIndex) throws SnmpException;
 
 }

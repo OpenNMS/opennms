@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -24,23 +24,26 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
 
 package org.opennms.netmgt.snmp;
 
-public class ErrorStatusException extends SnmpException {
+public class SnmpException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public ErrorStatusException(final ErrorStatus status) {
-        super("SNMP error-status: " + status.toString() + "(" + status.ordinal() + ")");
+    public SnmpException() {
+        super();
     }
 
-    public ErrorStatusException(final ErrorStatus status, final Throwable t) {
-        super("SNMP error-status: " + status.toString() + "(" + status.ordinal() + ")", t);
+    public SnmpException(final String message) {
+        super(message);
     }
 
-    public ErrorStatusException(final ErrorStatus status, final String message) {
-        super("SNMP error-status: " + status.toString() + "(" + status.ordinal() + "): " + message);
+    public SnmpException(final Throwable cause) {
+        super(cause);
     }
 
+    public SnmpException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

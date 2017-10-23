@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,7 @@ import java.util.concurrent.ThreadFactory;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
+import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -283,7 +284,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         send(agentConfig, pdu, expectResponse, future);
         try {
             return future.get();
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (final Exception e) {
             LOG.error(e.getMessage(), e);
             return new SnmpValue[] { null };
         }
@@ -294,30 +295,30 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
         try {
             session = agentConfig.createSnmpSession();
-        } catch (IOException e) {
+        } catch (final Exception e) {
             LOG.error("send: Could not create SNMP session for agent {}", agentConfig, e);
-            future.completeExceptionally(new Exception("Could not create SNMP session for agent"));
+            future.completeExceptionally(new SnmpException("Could not create SNMP session for agent", e));
             return;
         }
 
         if (expectResponse) {
             try {
                 session.listen();
-            } catch (IOException e) {
+            } catch (final Exception e) {
                 closeQuietly(session);
                 LOG.error("send: error setting up listener for SNMP responses", e);
-                future.completeExceptionally(new Exception("error setting up listener for SNMP responses"));
+                future.completeExceptionally(new SnmpException("error setting up listener for SNMP responses", e));
                 return;
             }
 
             try {
                 session.send(pdu, agentConfig.getTarget(), null, new ResponseListener() {
                     @Override
-                    public void onResponse(ResponseEvent responseEvent) {
+                    public void onResponse(final ResponseEvent responseEvent) {
                         try {
                             future.complete(processResponse(agentConfig, responseEvent));
-                        } catch (Exception e) {
-                            future.completeExceptionally(e);
+                        } catch (final Exception e) {
+                            future.completeExceptionally(new SnmpException(e));
                         } finally {
                             // Close the tracker using a separate thread
                             // This allows the SnmpWalker to clean up properly instead
@@ -344,7 +345,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 future.complete(null);
             } catch (final Exception e) {
                 LOG.error("send: error during SNMP operation", e);
-                future.completeExceptionally(e);
+                future.completeExceptionally(new SnmpException(e));
             } finally {
                 closeQuietly(session);
             }
@@ -361,7 +362,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         } else {
             // TODO should this throw an exception?  This situation is fairly bogus and probably signifies a coding error.
             if (oids.length != values.length) {
-                Exception e = new Exception("This is a bogus exception so we can get a stack backtrace");
+                Exception e = new SnmpException("PDU values do not match OIDs");
                 LOG.error("PDU to prepare has object values but not the same number as there are OIDs.  There are {} OIDs and {} object values.", oids.length, values.length, e);
                 return null;
             }
@@ -373,7 +374,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         // TODO should this throw an exception?  This situation is fairly bogus.
         if (pdu.getVariableBindings().size() != oids.length) {
-            Exception e = new Exception("This is a bogus exception so we can get a stack backtrace");
+            Exception e = new SnmpException("PDU bindings do not match OIDs");
             LOG.error("Prepared PDU does not have as many variable bindings as there are OIDs.  There are {} OIDs and {} variable bindings.", oids.length,pdu.getVariableBindings(), e);
             return null;
         }
@@ -570,14 +571,24 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
     @Override
     public void unregisterForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException {
-        RegistrationInfo info = s_registrations.remove(listener);
-        closeQuietly(info.getSession());
+        try {
+            final RegistrationInfo info = s_registrations.remove(listener);
+            info.getSession().close();
+        } catch (final IOException e) {
+            LOG.error("session error unregistering for traps", e);
+            throw e;
+        }
     }
 
     @Override
     public void unregisterForTraps(final TrapNotificationListener listener, final int snmpTrapPort) throws IOException {
-        RegistrationInfo info = s_registrations.remove(listener);
-        closeQuietly(info.getSession());
+        try {
+            final RegistrationInfo info = s_registrations.remove(listener);
+            info.getSession().close();
+        } catch (final IOException e) {
+            LOG.error("session error unregistering for traps", e);
+            throw e;
+        }
     }
 
     @Override
@@ -624,10 +635,11 @@ public class Snmp4JStrategy implements SnmpStrategy {
 			String securityName, String authPassPhrase, String authProtocol,
 			String privPassPhrase, String privProtocol, PDU pdu) throws UnknownHostException, Exception {
 			
-		if (! (pdu instanceof ScopedPDU)) 
-				throw new Exception();
+		if (! (pdu instanceof ScopedPDU)) {
+		    throw new SnmpException("PDU is not a ScopedPDU (this should not happen)");
+		}
 
-			SnmpAgentConfig config = new SnmpAgentConfig();
+		SnmpAgentConfig config = new SnmpAgentConfig();
 	        config.setAddress(InetAddress.getByName(address));
 	        config.setPort(port);
 	        config.setVersion(SnmpAgentConfig.VERSION3);

@@ -76,7 +76,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
         final JSONObject protocolConfig = new JSONObject(new JSONTokener(protocolConfigString)).optJSONObject("snmp");
         if (protocolConfig == null) {
-            throw new IllegalArgumentException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp object" + protocolConfigString);
+            throw new IllegalStateException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp object" + protocolConfigString);
         }
 
         Map<String, String> attributes = new HashMap<>();
