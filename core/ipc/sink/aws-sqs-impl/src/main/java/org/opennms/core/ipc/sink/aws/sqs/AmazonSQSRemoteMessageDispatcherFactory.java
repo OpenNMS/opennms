@@ -90,7 +90,11 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             if (queueUrl == null) {
                 LOG.warn("Cannot obtain URL for queue {}. The message cannot be sent.", queueName);
             } else {
-                sqs.sendMessage(queueUrl, module.marshal((T)message));
+                try {
+                    sqs.sendMessage(queueUrl, module.marshal((T)message));
+                } catch (RuntimeException e) {
+                    LOG.warn("Unexpected exception while sending a message", e);
+                }
             }
         }
     }
@@ -117,15 +121,11 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
                 }
             }
 
-            LOG.info("AwsRemoteMessageDispatcherFactory: initializing the AWS SQS producer with: {}", awsConfig);
-            final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+            LOG.info("AwsRemoteMessageDispatcherFactory: initializing the AmazonSQS Object with: {}", awsConfig);
             try {
-                Thread.currentThread().setContextClassLoader(null);
                 sqs = AmazonSQSUtils.createSQSObject(awsConfig);
             } catch (AmazonSQSException e) {
-                LOG.error("Can't create AWS SQS Producer", e);
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
+                LOG.error("Can't create an AmazonSQS Object", e);
             }
         }
     }

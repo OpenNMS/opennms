@@ -110,11 +110,15 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
             while (!closed.get()) {
                 final String queueUrl = sqs.getQueueUrl(AmazonSQSUtils.getQueueName(module)).getQueueUrl();
+                // The SQS Queue is configured to use "Long Polling" through "ReceiveMessageWaitTimeSeconds".
+                // That means, calling receiveMessage will block the thread execution for that amount of time if there are no messages on the queue.
+                // This is recommended to reduce the traffic against AWS, which can be translated into undesired costs.
                 sqs.receiveMessage(queueUrl).getMessages().forEach(m -> {
                     LOG.debug("Got message {}", m.getMessageId());
                     try {
                         final Message msg = module.unmarshal(m.getBody());
                         dispatch(module, msg);
+                        // This is mandatory to avoid re-process a message on a subsequent receive request.
                         sqs.deleteMessage(queueUrl, m.getReceiptHandle());
                     } catch (RuntimeException e) {
                         LOG.warn("Unexpected exception while dispatching message", e);
