@@ -12,7 +12,7 @@
     <description>This is an OSGi bundle created with the OpenNMS Operation archetype</description>
 
     <properties>
-      <opennms.dependency.version>2015.1.8</opennms.dependency.version>
+      <opennms.dependency.version>2015.1.9-SNAPSHOT</opennms.dependency.version>
     </properties>
 
     <dependencies>
