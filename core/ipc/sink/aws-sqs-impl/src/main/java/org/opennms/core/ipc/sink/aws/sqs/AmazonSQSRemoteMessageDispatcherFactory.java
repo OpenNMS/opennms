@@ -70,6 +70,9 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     /** The SQS Object. */
     private AmazonSQS sqs;
 
+    /** The queue URL. This is cached to avoid an API call on each attempt to send a message. */
+    private String queueUrl;
+
     /* (non-Javadoc)
      * @see org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory#getModuleMetadata(org.opennms.core.ipc.sink.api.SinkModule)
      */
@@ -168,16 +171,17 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
      * @return the queue URL
      */
     private String getQueueUrl(final String queueName) {
+        if (queueUrl != null) return queueUrl;
         try {
-            return sqs.getQueueUrl(queueName).getQueueUrl();
+            queueUrl = sqs.getQueueUrl(queueName).getQueueUrl();
         } catch (QueueDoesNotExistException e) {
             try {
                 AmazonSQSUtils.ensureQueueExists(awsConfig, sqs, queueName);
-                return sqs.getQueueUrl(queueName).getQueueUrl();
+                queueUrl= sqs.getQueueUrl(queueName).getQueueUrl();
             } catch (AmazonSQSException ex) {
                 LOG.error("Cannot create queue with name " + queueName, ex);
             }
         }
-        return null;
+        return queueUrl;
     }
 }

@@ -108,8 +108,9 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
         @Override
         public void run() {
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
+            // Getting the URL requires an API Call, for this reason, this should be done only once.
+            final String queueUrl = sqs.getQueueUrl(AmazonSQSUtils.getQueueName(module)).getQueueUrl();
             while (!closed.get()) {
-                final String queueUrl = sqs.getQueueUrl(AmazonSQSUtils.getQueueName(module)).getQueueUrl();
                 // The SQS Queue is configured to use "Long Polling" through "ReceiveMessageWaitTimeSeconds".
                 // That means, calling receiveMessage will block the thread execution for that amount of time if there are no messages on the queue.
                 // This is recommended to reduce the traffic against AWS, which can be translated into undesired costs.
