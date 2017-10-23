@@ -14,7 +14,13 @@ This means that _ActiveMQ_ is still required even when _AWS SQS_ support is enab
 
 _AWS SQS_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
 
-The _AWS SQS_ server must be compatible with _AWS SQS_ client version `0.10.1.1_1`.
+WARNING:  When using Amazon SQS, it is very important to consider the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/limits-queues.html[Limitations].
+
+In terms of the Sink pattern, pay attention to the following:
+
+* There can be a maximum of 120,000 inflight messages per queue. If you reach this limit, Amazon SQS returns the OverLimit error message.
+* A message can include only XML, JSON, and unformatted text. The following Unicode characters are allowed: `#x9` | `#xA` | `#xD` | `#x20` to `#xD7FF` | `#xE000` to `#xFFFD` | `#x10000` to `#x10FFFF`. Any characters not included in this list are rejected.
+* The minimum message size is 1 byte (1 character). The maximum is 262,144 bytes (256 KB).
 
 ==== Consumer Configuration
 
@@ -63,6 +69,8 @@ aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.sink
 
 Restart _Minion_ to apply the changes.
 
+WARNING: AWS Credentials are mandatory at Minion's side as it won't be running inside a VPC.
+
 ==== SQS Configuration Settings
 
 From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[AWS Documentation], the following parameters can be added to either Minion or _{opennms-product-name}_.
@@ -70,7 +78,7 @@ From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReferen
 * `DelaySeconds` (defaults to 0 seconds)
 * `MaximumMessageSize` (defaults to 262144 bytes)
 * `MessageRetentionPeriod` (defaults to 1209600 seconds)
-* `ReceiveMessageWaitTimeSeconds` (defaults to 10 seconds)
+* `ReceiveMessageWaitTimeSeconds` (defaults to 10 seconds for OpenNMS)
 * `VisibilityTimeout` (defaults to 30 seconds)
 * `Policy`
 * `RedrivePolicy`
