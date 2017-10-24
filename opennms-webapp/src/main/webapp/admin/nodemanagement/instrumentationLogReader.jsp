@@ -39,6 +39,8 @@
 <%@page import="org.slf4j.*"%>
 <%@page import="org.opennms.web.element.NetworkElementFactory"%>
 <%@ page import="org.opennms.util.ilr.ServiceCollector" %>
+<%@ page import="org.opennms.web.api.Util" %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -102,7 +104,7 @@ pageContext.setAttribute("collector",c);
 pageContext.setAttribute("OpennmsHome",opennmsHome);
 pageContext.setAttribute("sortColumn", sortColumn);
 pageContext.setAttribute("sortOrder", sortOrder);
-pageContext.setAttribute("searchString",searchString);
+pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searchString));
 %>
 
 <c:set var="nan" value="<%=java.lang.Double.NaN%>"/>
@@ -158,7 +160,7 @@ pageContext.setAttribute("searchString",searchString);
       </div>
       <div class="panel-body">
         <form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
-          <input type="text" class="form-control" name="searchString" size="15" value="${searchString}"/>
+          <input type="text" class="form-control" name="searchString" size="15" value="<%=searchString==null?"":WebSecurityUtils.sanitizeString(searchString)%>"/>
           <button type="submit" class="btn btn-default">Submit</button>
         </form>
         <form id="ILRreset" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
