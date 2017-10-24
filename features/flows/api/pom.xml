@@ -26,18 +26,4 @@
       </plugin>
     </plugins>
   </build>
-  <dependencies>
-    <!-- TODO MVR fix the following problem -->
-    <!-- The flows.api module is living in the lib folder.
-    By defining version 2.3.1 we re-use the already existing version of
-    the selenium-monitor. The gson version 2.3.1 mismatches the required
-    jest-osgi-complete gson version (which is 2.6.2). This is not a problem, for now.
-    -->
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.3.1</version> <!-- See comment above about the used version here -->
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
 </project>

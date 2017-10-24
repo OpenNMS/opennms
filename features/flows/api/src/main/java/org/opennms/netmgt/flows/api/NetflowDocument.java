@@ -28,89 +28,61 @@
 
 package org.opennms.netmgt.flows.api;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The document to be persisted.
  */
 public class NetflowDocument extends FlowDocument {
 
-    @SerializedName("version")
     private int version;
 
-    @SerializedName("flow_sequence_number")
     private long flowSequenceNumber; //flow_sequence
 
-    @SerializedName("engine_type")
     private int engineType;
 
-    @SerializedName("engine_id")
     private int engineId;
 
-    @SerializedName("sampling_interval")
     private int samplingInterval;
 
-    @SerializedName("flow_records")
     private int flowRecords; // count
 
-    @SerializedName("system_uptime")
     private long sysUptime; // sysUptime
 
-    @SerializedName("timestamp")
     private long timestamp; // unix_secs * 1000 + unix_nsecs / 1000 / 1000;
 
-    @SerializedName("ipv4_source_address")
     private String ipv4SourceAddress;
 
-    @SerializedName("ipv4_dest_address")
     private String ipv4DestAddress;
 
-    @SerializedName("ipv4_next_hop_address")
     private String ipv4NextHopAddress;
 
-    @SerializedName("input_snmp_interface_index")
     private int inputSnmpInterfaceIndex;
 
-    @SerializedName("output_snmp_interface_index")
     private int outputSnmpInterfaceIndex;
 
-    @SerializedName("in_packets")
     private long inPackets;
 
-    @SerializedName("in_bytes")
     private long inBytes;
 
-    @SerializedName("first")
     private long first;
 
-    @SerializedName("last")
     private long last;
 
-    @SerializedName("source_port")
     private int sourcePort;
 
-    @SerializedName("dest_port")
     private int destPort;
 
-    @SerializedName("tcp_flags")
     private int tcpFlags;
 
-    @SerializedName("ip_protocol")
     private int ipProtocol;
 
-    @SerializedName("tos")
     private int tos;
 
-    @SerializedName("source_autonomous_system")
     private int sourceAs;
 
-    @SerializedName("dest_autonomous_system")
     private int destAs;
 
-    @SerializedName("source_mask")
     private int sourceMask;
 
-    @SerializedName("dest_mask")
     private int destMask;
 
     public void setVersion(int version) {

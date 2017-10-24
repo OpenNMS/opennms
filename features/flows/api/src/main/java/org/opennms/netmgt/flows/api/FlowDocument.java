@@ -28,17 +28,12 @@
 
 package org.opennms.netmgt.flows.api;
 
-import com.google.gson.annotations.SerializedName;
-
 public abstract class FlowDocument {
 
-    @SerializedName("location")
     private String location;
 
-    @SerializedName("exporter_address")
     private String exporterAddress;
 
-    @SerializedName("flow_type")
     private String flowType;
 
     public String getLocation() {

@@ -68,9 +68,10 @@ public class ClientFactory {
         }
 
         // TODO MVR Fix the following hack:
-        // This is a hack, due to our osgi-jetty-bridge, because the annotation at the NetflowDocument
+        // This is a hack, due to our osgi-jetty-bridge: The annotation at the NetflowDocument
         // living in the api module (on the jetty side) are not accessible directly (only as proxy) by the Gson lirary
-        // living in the osgi container (osgi-jest-complete module) and therefore @SerializedName annotations won't work.
+        // living in the osgi container (osgi-jest-complete module) and therefore @SerializedName annotations don't work.
+        // So we instantiate a custom gson with a custom field name policy.
         final Gson gson = new GsonBuilder()
                 .setDateFormat(AbstractJestClient.ELASTIC_SEARCH_DATE_FORMAT)
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
