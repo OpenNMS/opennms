@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
-import java.lang.management.ManagementFactory;
-
 import javax.naming.ServiceUnavailableException;
 
 import org.opennms.core.soa.lookup.ServiceLookup;
@@ -39,12 +37,8 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 
 class FlowRepositoryProvider {
 
-    private static final String GRACE_PERIOD_MS_SYS_PROP = "org.opennms.netmgt.telemetry.adapters.netflow.flowRepositoryLookupGracePeriodMs";
-    private static final int GRACE_PERIOD_MS = Integer.getInteger(GRACE_PERIOD_MS_SYS_PROP, 3*60*1000);
-    private static final int LOOKUP_DELAY_MS = 5*1000;
-
     private ServiceLookup serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
-            .blocking(GRACE_PERIOD_MS, LOOKUP_DELAY_MS, () -> ManagementFactory.getRuntimeMXBean().getUptime())
+            .blocking()
             .build();
 
     public FlowRepository getFlowRepository() throws ServiceUnavailableException {

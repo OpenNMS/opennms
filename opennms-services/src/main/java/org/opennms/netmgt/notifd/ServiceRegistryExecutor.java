@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.notifd;
 
-import java.lang.management.ManagementFactory;
 import java.util.List;
 
 import org.opennms.core.soa.lookup.ServiceLookup;
@@ -42,12 +41,8 @@ import org.slf4j.LoggerFactory;
 public class ServiceRegistryExecutor implements ExecutorStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceRegistryExecutor.class);
 
-    private static final String GRACE_PERIOD_MS_SYS_PROP = "org.opennms.netmgt.notifd.notificationStrategyGracePeriodMs";
-    private static final int GRACE_PERIOD_MS = Integer.getInteger(GRACE_PERIOD_MS_SYS_PROP, 3*60*1000);
-    private static final int LOOKUP_DELAY_MS = 5*1000;
-
     private static final ServiceLookup SERVICE_LOOKUP = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
-            .blocking(GRACE_PERIOD_MS, LOOKUP_DELAY_MS, () -> ManagementFactory.getRuntimeMXBean().getUptime())
+            .blocking()
             .build();
 
     @Override

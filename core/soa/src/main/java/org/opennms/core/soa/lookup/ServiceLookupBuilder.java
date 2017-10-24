@@ -28,12 +28,17 @@
 
 package org.opennms.core.soa.lookup;
 
+import java.lang.management.ManagementFactory;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.opennms.core.soa.ServiceRegistry;
 
 public class ServiceLookupBuilder {
+
+    public static final long GRACE_PERIOD_MS = Long.getLong("org.opennms.core.soa.lookup.gracePeriodMs", 3 * 60 * 1000);
+
+    public static final long LOOKUP_DELAY_MS = Long.getLong("org.opennms.core.soa.lookup.lookupDelayMs", 5 * 1000);
 
     private final ServiceRegistry registry;
     private long gracePeriodInMs;
@@ -42,6 +47,10 @@ public class ServiceLookupBuilder {
 
     public ServiceLookupBuilder(ServiceRegistry registry) {
         this.registry = Objects.requireNonNull(registry);
+    }
+
+    public ServiceLookupBuilder blocking() {
+        return blocking(GRACE_PERIOD_MS, LOOKUP_DELAY_MS, () -> ManagementFactory.getRuntimeMXBean().getUptime());
     }
 
     public ServiceLookupBuilder blocking(long gracePeriodInMs, long sleepTimeInMs, Supplier<Long> upTimeSupplier) {
