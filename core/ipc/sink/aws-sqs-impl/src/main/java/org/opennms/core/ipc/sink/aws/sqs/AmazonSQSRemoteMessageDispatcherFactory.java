@@ -29,6 +29,8 @@
 package org.opennms.core.ipc.sink.aws.sqs;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -46,6 +48,8 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
+import com.amazonaws.services.sqs.model.SendMessageResult;
+import com.amazonaws.SdkClientException;
 import com.codahale.metrics.JmxReporter;
 
 /**
@@ -94,12 +98,29 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             final String queueName = awsSqsManager.getQueueName(awsConfig, module);
             final String queueUrl = getQueueUrl(queueName);
             if (queueUrl == null) {
-                LOG.warn("Cannot obtain URL for queue {}. The message cannot be sent.", queueName);
+                LOG.error("Cannot obtain URL for queue {}. The message cannot be sent.", queueName);
             } else {
-                try {
-                    sqs.sendMessage(queueUrl, module.marshal((T)message));
-                } catch (RuntimeException e) {
-                    LOG.warn("Unexpected exception while sending a message", e);
+                while (true) {
+                    try {
+                        final SendMessageResult result = sqs.sendMessage(queueUrl, module.marshal((T)message));
+                        LOG.debug("Message with ID {} has been successfully sent", result.getMessageId());
+                        break;
+                    } catch (SdkClientException ex) {
+                        // Thanks to field tests, when a Minion cannot access AWS it throws a SdkClientException,
+                        // with either UnknownHostException (DNS issues), or SocketException (server unreachable).
+                        if (ex.getCause() instanceof UnknownHostException || ex.getCause() instanceof SocketException) {
+                            LOG.warn("Cannot reach AWS, or it is unavailable, trying again in 5 seconds...");
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e) {}
+                        } else {
+                            LOG.error("Unexpected AWS SDK exception while sending a message", ex);
+                            break;
+                        }
+                    } catch (RuntimeException e) {
+                        LOG.error("Unexpected exception while sending a message", e);
+                        break;
+                    }
                 }
             }
         }
