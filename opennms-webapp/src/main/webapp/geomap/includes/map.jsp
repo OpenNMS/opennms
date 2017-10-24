@@ -77,7 +77,7 @@
 
   <!-- Template to build the popup for each group cluster -->
   <div id="multi-popup" class="node-marker-multiple" style="display:none">
-    <h4># of nodes: {NUMBER_NODES} ({NUMBER_UNACKED} Unacknowledges Alarms)</h4>
+    <h4># of nodes: {NUMBER_NODES} ({NUMBER_UNACKED} Unacknowledged Alarms)</h4>
     <p>
       <a href="<%= baseHref %>topology?provider=Enhanced+Linkd&focus-vertices={NODE_IDS}" target="_blank">View in Topology Map</a>
     </p>
