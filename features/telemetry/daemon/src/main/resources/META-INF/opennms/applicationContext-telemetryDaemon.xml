@@ -25,4 +25,9 @@
 
   <bean id="daemon" class="org.opennms.netmgt.telemetry.daemon.Telemetryd" />
 
+  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="daemon" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
 </beans>
