@@ -1274,7 +1274,7 @@
     <asciidoctorjPdfVersion>1.5.0-alpha.11</asciidoctorjPdfVersion>
     <activemqVersion>5.14.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
-    <awsSdkVersion>1.11.216</awsSdkVersion>
+    <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <camelVersion>2.19.1</camelVersion>

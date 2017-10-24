@@ -58,6 +58,8 @@ import com.amazonaws.services.sqs.model.GetQueueUrlRequest;
 import com.amazonaws.services.sqs.model.GetQueueUrlResult;
 import com.amazonaws.services.sqs.model.ListDeadLetterSourceQueuesRequest;
 import com.amazonaws.services.sqs.model.ListDeadLetterSourceQueuesResult;
+import com.amazonaws.services.sqs.model.ListQueueTagsRequest;
+import com.amazonaws.services.sqs.model.ListQueueTagsResult;
 import com.amazonaws.services.sqs.model.ListQueuesRequest;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
 import com.amazonaws.services.sqs.model.Message;
@@ -74,6 +76,10 @@ import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;
 import com.amazonaws.services.sqs.model.SetQueueAttributesResult;
+import com.amazonaws.services.sqs.model.TagQueueRequest;
+import com.amazonaws.services.sqs.model.TagQueueResult;
+import com.amazonaws.services.sqs.model.UntagQueueRequest;
+import com.amazonaws.services.sqs.model.UntagQueueResult;
 
 /**
  * The Class MockAmazonSQS.
@@ -447,6 +453,42 @@ public class MockAmazonSQS implements AmazonSQS {
     @Override
     public ResponseMetadata getCachedResponseMetadata(
             AmazonWebServiceRequest request) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ListQueueTagsResult listQueueTags(ListQueueTagsRequest arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ListQueueTagsResult listQueueTags(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TagQueueResult tagQueue(TagQueueRequest arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TagQueueResult tagQueue(String arg0, Map<String, String> arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UntagQueueResult untagQueue(UntagQueueRequest arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UntagQueueResult untagQueue(String arg0, List<String> arg1) {
         // TODO Auto-generated method stub
         return null;
     }
