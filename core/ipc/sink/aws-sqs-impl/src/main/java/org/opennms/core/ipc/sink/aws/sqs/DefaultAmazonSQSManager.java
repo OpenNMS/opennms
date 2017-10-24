@@ -66,10 +66,12 @@ public class DefaultAmazonSQSManager implements AmazonSQSManager {
      * @see org.opennms.core.ipc.sink.aws.sqs.AmazonSQSManager#createSQSObject(java.util.Properties)
      */
     public AmazonSQS createSQSObject(Properties awsConfig) throws AmazonSQSException {
-        AWSCredentialsProvider credentialProvider = new ProfileCredentialsProvider();
+        AWSCredentialsProvider credentialProvider;
         if (awsConfig.containsKey(AWS_ACCESS_KEY_ID) && awsConfig.containsKey(AWS_SECRET_ACCESS_KEY)) {
             BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsConfig.getProperty(AWS_ACCESS_KEY_ID), awsConfig.getProperty(AWS_SECRET_ACCESS_KEY));
             credentialProvider = new AWSStaticCredentialsProvider(awsCreds);
+        } else {
+            credentialProvider = new ProfileCredentialsProvider();
         }
         return AmazonSQSClientBuilder.standard()
                 .withRegion(awsConfig.getProperty(AWS_REGION, Regions.US_EAST_1.getName()))
