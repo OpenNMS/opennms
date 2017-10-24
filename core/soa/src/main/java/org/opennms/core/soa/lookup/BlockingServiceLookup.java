@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Used to ensure that during startup a service can be fetched even it is not yet available.
+ * Used to ensure that during startup a service can be fetched even if it is not yet available.
  *
  */
 public class BlockingServiceLookup implements ServiceLookup {
@@ -61,6 +61,7 @@ public class BlockingServiceLookup implements ServiceLookup {
     @Override
     public <T> T lookup(Class<T> serviceClass, String filter) {
         Objects.requireNonNull(serviceClass);
+
         // Lookup
         T service = delegate.lookup(serviceClass, filter);
         if (service != null) {
@@ -74,7 +75,7 @@ public class BlockingServiceLookup implements ServiceLookup {
             try {
                 Thread.sleep(this.lookupDelayMs);
             } catch (InterruptedException e) {
-                LOG.error("Interrupted while waiting for serivce of tpye " + serviceClass + " to become available in the service registry. Aborting.");
+                LOG.error("Interrupted while waiting for service of type " + serviceClass + " to become available in the service registry. Aborting.");
                 return null;
             }
             service = delegate.lookup(serviceClass, filter);

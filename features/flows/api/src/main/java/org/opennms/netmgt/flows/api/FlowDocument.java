@@ -28,10 +28,40 @@
 
 package org.opennms.netmgt.flows.api;
 
-public interface FlowDocument {
-    String getLocation();
+import com.google.gson.annotations.SerializedName;
 
-    String getExporterAddress();
+public abstract class FlowDocument {
 
-    String getFlowType();
+    @SerializedName("location")
+    private String location;
+
+    @SerializedName("exporter_address")
+    private String exporterAddress;
+
+    @SerializedName("flow_type")
+    private String flowType;
+
+    public String getLocation() {
+        return this.location;
+    }
+
+    public String getExporterAddress() {
+        return this.exporterAddress;
+    }
+
+    public String getFlowType() {
+        return flowType;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setExporterAddress(String exporterAddress) {
+        this.exporterAddress = exporterAddress;
+    }
+
+    public void setFlowType(String flowType) {
+        this.flowType = flowType;
+    }
 }

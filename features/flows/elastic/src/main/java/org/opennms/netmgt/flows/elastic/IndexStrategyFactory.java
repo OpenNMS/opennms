@@ -32,6 +32,10 @@ import org.opennms.netmgt.flows.api.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Factory to create an {@link IndexStrategy} from a string.
+ * Should help using {@link IndexStrategy} objects while creating objects from blueprint.xml files.
+ */
 public class IndexStrategyFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(IndexStrategyFactory.class);

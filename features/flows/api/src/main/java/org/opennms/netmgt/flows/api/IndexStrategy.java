@@ -33,6 +33,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
+/**
+ * Defines a strategy on how to define the index when persisting.
+ */
 public enum IndexStrategy {
     YEARLY(new SimpleDateFormat("yyyy")),
     MONTHLY(new SimpleDateFormat("yyyy-MM")),

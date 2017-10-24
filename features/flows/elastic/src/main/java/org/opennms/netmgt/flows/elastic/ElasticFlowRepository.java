@@ -59,6 +59,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private static final String FLOW_TEMPLATE_NAME = "netflow";
 
+    private static final String TEMPLATE_RESOURCE = "/netflow-template.json";
+
     private final JestClient client;
 
     private final IndexStrategy indexStrategy;
@@ -71,10 +73,15 @@ public class ElasticFlowRepository implements FlowRepository {
     // Is invoked by the blueprint container and should take care of all initialization work, which may be
     // required in order to persist flows later on
     public void init() throws IOException {
-        final InputStream inputStream = getClass().getResourceAsStream("/netflow-template.json");
+        // Read template
+        final InputStream inputStream = getClass().getResourceAsStream(TEMPLATE_RESOURCE);
+        if (inputStream == null) {
+            throw new NullPointerException("Template from '" + TEMPLATE_RESOURCE +  "' is null");
+        }
         final byte[] bytes = new byte[inputStream.available()];
         ByteStreams.readFully(inputStream, bytes);
 
+        // Post it to elastic
         final PutTemplate putTemplate = new PutTemplate.Builder(FLOW_TEMPLATE_NAME, new String(bytes)).build();
         final JestResult result = client.execute(putTemplate);
         if (!result.isSucceeded()) {

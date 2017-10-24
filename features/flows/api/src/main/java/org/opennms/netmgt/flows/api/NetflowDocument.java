@@ -30,7 +30,10 @@ package org.opennms.netmgt.flows.api;
 
 import com.google.gson.annotations.SerializedName;
 
-public class NetflowDocument extends AbstractFlowDocument {
+/**
+ * The document to be persisted.
+ */
+public class NetflowDocument extends FlowDocument {
 
     @SerializedName("version")
     private int version;
