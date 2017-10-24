@@ -70,7 +70,7 @@ public class FlowStackIT {
 
     private static Logger LOG = LoggerFactory.getLogger(FlowStackIT.class);
 
-    private static int NETFLOW_LISTENER_UDP_PORT = 60000;
+    private static int NETFLOW_LISTENER_UDP_PORT = 50000;
 
     private static final String TEMPLATE_NAME = "netflow";
 
