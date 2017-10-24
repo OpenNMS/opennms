@@ -457,36 +457,54 @@ public class MockAmazonSQS implements AmazonSQS {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see com.amazonaws.services.sqs.AmazonSQS#listQueueTags(com.amazonaws.services.sqs.model.ListQueueTagsRequest)
+     */
     @Override
     public ListQueueTagsResult listQueueTags(ListQueueTagsRequest arg0) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see com.amazonaws.services.sqs.AmazonSQS#listQueueTags(java.lang.String)
+     */
     @Override
     public ListQueueTagsResult listQueueTags(String arg0) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see com.amazonaws.services.sqs.AmazonSQS#tagQueue(com.amazonaws.services.sqs.model.TagQueueRequest)
+     */
     @Override
     public TagQueueResult tagQueue(TagQueueRequest arg0) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see com.amazonaws.services.sqs.AmazonSQS#tagQueue(java.lang.String, java.util.Map)
+     */
     @Override
     public TagQueueResult tagQueue(String arg0, Map<String, String> arg1) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see com.amazonaws.services.sqs.AmazonSQS#untagQueue(com.amazonaws.services.sqs.model.UntagQueueRequest)
+     */
     @Override
     public UntagQueueResult untagQueue(UntagQueueRequest arg0) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see com.amazonaws.services.sqs.AmazonSQS#untagQueue(java.lang.String, java.util.List)
+     */
     @Override
     public UntagQueueResult untagQueue(String arg0, List<String> arg1) {
         // TODO Auto-generated method stub

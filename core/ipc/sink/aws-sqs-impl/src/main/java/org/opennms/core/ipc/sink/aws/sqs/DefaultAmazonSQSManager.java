@@ -103,7 +103,7 @@ public class DefaultAmazonSQSManager implements AmazonSQSManager {
      * @see org.opennms.core.ipc.sink.aws.sqs.AmazonSQSManager#getQueueName(java.util.Properties, org.opennms.core.ipc.sink.api.SinkModule)
      */
     public String getQueueName(Properties awsConfig, SinkModule<?, ?> module) {
-        final String prefix =  awsConfig.containsKey(AWS_QUEUE_NAME_PREFIX)  ? awsConfig.getProperty(AmazonSQSSinkConstants.AWS_QUEUE_PREFIX) + '-' : "";
+        final String prefix = awsConfig.containsKey(AWS_QUEUE_NAME_PREFIX) ? awsConfig.getProperty(AWS_QUEUE_NAME_PREFIX) + '-' : "";
         return prefix + AmazonSQSSinkConstants.AWS_QUEUE_PREFIX + '-' + module.getId();
     }
 

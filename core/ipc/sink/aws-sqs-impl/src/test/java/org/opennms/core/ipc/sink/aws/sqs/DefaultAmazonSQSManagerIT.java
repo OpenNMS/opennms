@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,20 +28,34 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Properties;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.core.ipc.sink.api.SinkModule;
+
 /**
- * The Interface AwsSinkConstants.
+ * The Class DefaultAmazonSQSManagerIT.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public interface AmazonSQSSinkConstants {
+public class DefaultAmazonSQSManagerIT {
 
-    /** The Constant AWS_CONFIG_PID. */
-    static final String AWS_CONFIG_PID = "org.opennms.core.ipc.sink.aws";
-
-    /** The Constant AWS_CONFIG_SYS_PROP_PREFIX. */
-    static final String AWS_CONFIG_SYS_PROP_PREFIX = AWS_CONFIG_PID + ".";
-
-    /** The Constant AWS_QUEUE_PREFIX. */
-    static final String AWS_QUEUE_PREFIX = "OpenNMS-Sink";
+    /**
+     * Test queue name.
+     */
+    @Test
+    public void testQueueName() {
+        DefaultAmazonSQSManager mgr = new DefaultAmazonSQSManager();
+        Properties awsConfig = new Properties();
+        SinkModule<?, ?> module = mock(SinkModule.class);
+        when(module.getId()).thenReturn("Heartbeat");
+        Assert.assertEquals("OpenNMS-Sink-Heartbeat", mgr.getQueueName(awsConfig, module));
+        awsConfig.put(AmazonSQSManager.AWS_QUEUE_NAME_PREFIX, "PROD");
+        Assert.assertEquals("PROD-OpenNMS-Sink-Heartbeat", mgr.getQueueName(awsConfig, module));
+    }
 
 }
