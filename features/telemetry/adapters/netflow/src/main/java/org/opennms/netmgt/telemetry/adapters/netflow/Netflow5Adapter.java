@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.adapters.netflow;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.flows.api.FlowType;
 import org.opennms.netmgt.flows.api.NetflowDocument;
@@ -41,13 +43,28 @@ import org.opennms.netmgt.telemetry.ipc.TelemetryMessageDTO;
 import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 
 public class Netflow5Adapter implements Adapter {
 
-
     private static final Logger LOG = LoggerFactory.getLogger(Netflow5Adapter.class);
 
+    @Autowired
+    @Qualifier("flowAdapterMetricRegistry")
+    private MetricRegistry metricRegistry;
+
     private FlowRepositoryProvider provider = new FlowRepositoryProvider();
+
+    private Meter meter;
+
+    @PostConstruct
+    public void init() {
+        meter = metricRegistry.meter("persistence");
+    }
 
     @Override
     public void setProtocol(Protocol protocol) {
@@ -93,6 +110,7 @@ public class Netflow5Adapter implements Adapter {
         final List<NetflowDocument> flowDocuments = convert(netflowPacket, messageLog);
         try {
             provider.getFlowRepository().save(flowDocuments);
+            meter.mark(flowDocuments.size());
         } catch (Throwable e) {
             // TODO MVR deal with this accordingly
             LOG.error("Error", e);
