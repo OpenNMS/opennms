@@ -32,6 +32,7 @@ import static com.jayway.awaitility.Awaitility.await;
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,14 +40,24 @@ import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Converter;
+import org.opennms.netmgt.telemetry.adapters.netflow.v5.NetflowPacket;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.test.system.api.NewTestEnvironment;
@@ -57,6 +68,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.io.ByteStreams;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -69,6 +83,17 @@ import io.searchbox.indices.template.GetTemplate;
 public class FlowStackIT {
 
     private static Logger LOG = LoggerFactory.getLogger(FlowStackIT.class);
+
+    // TODO MVR also duplicated code
+    private static final String ELASTIC_SEARCH_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+
+    // TODO MVR duplicated from ClientFactory, should be merged or removed
+    private static final Gson gson =  new GsonBuilder()
+            .setDateFormat(ELASTIC_SEARCH_DATE_FORMAT)
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
+
+    private static final String REST_URL = "rest/flows";
 
     private static int NETFLOW_LISTENER_UDP_PORT = 50000;
 
@@ -111,6 +136,7 @@ public class FlowStackIT {
     public void verifyFlowStack() throws Exception {
         // Determine endpoints
         final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_5, 9200, "tcp");
+        final InetSocketAddress opennmsWebAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8980);
         final InetSocketAddress opennmsSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101);
         final InetSocketAddress opennmsNetflowAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, NETFLOW_LISTENER_UDP_PORT, "udp");
         final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
@@ -118,7 +144,7 @@ public class FlowStackIT {
         // Configure OpenNMS
         setupOnmsContainer(opennmsSshAddress);
 
-        // Build the Client
+        // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl)
                 .multiThreaded(true)
@@ -136,7 +162,7 @@ public class FlowStackIT {
                 }
                 return false;
             });
-            // Verify that the flows have been created
+            // Verify directly at elastic that the flows have been created
             verify(client, jestClient -> {
                 SearchResult response = jestClient.execute(new Search.Builder("").addIndex("flow-*").build());
                 if (response.isSucceeded() && response.getTotal() == 2) {
@@ -151,20 +177,57 @@ public class FlowStackIT {
                 client.shutdownClient();
             }
         }
+
+        // Verify via OpenNMS ReST API
+        final String flowRestUrl = "http://" + opennmsWebAddress.getAddress().toString() + ":" + opennmsWebAddress.getPort() + "/opennms/" + REST_URL;
+        final NetflowPacket netflowPacket = new NetflowPacket(ByteBuffer.wrap(getNetflowPacketContent()));
+        final List<NetflowDocument> documents = new Netflow5Converter().convert(netflowPacket);
+        documents.stream().forEach(d -> {
+            d.setLocation("Default");
+            d.setExporterAddress("127.0.0.1");
+        });
+        try (HttpClientWrapper restClient = createClientWrapper()) {
+            // Persist flow
+            HttpPost httpPost = new HttpPost(flowRestUrl);
+            httpPost.addHeader("content-type", "application/json");
+            httpPost.setEntity(new StringEntity(gson.toJson(documents)));
+            CloseableHttpResponse response = restClient.execute(httpPost);
+            assertEquals(204, response.getStatusLine().getStatusCode());
+
+            // Query flows
+            HttpGet httpGet = new HttpGet(flowRestUrl);
+            httpPost.addHeader("accept", "application/json");
+            response = restClient.execute(httpGet);
+            assertEquals(200, response.getStatusLine().getStatusCode());
+            response.getEntity().writeTo(System.out);
+
+            // Proxy query
+            httpPost = new HttpPost(flowRestUrl + "/proxy");
+            httpPost.addHeader("content-type", "application/json");
+            httpPost.setEntity(new StringEntity("{}"));
+            response = restClient.execute(httpPost);
+            assertEquals(200, response.getStatusLine().getStatusCode());
+            response.getEntity().writeTo(System.out);
+        }
+
+    }
+
+    private byte[] getNetflowPacketContent() throws IOException {
+        try (InputStream is = getClass().getResourceAsStream("/flows/netflow5.dat")) {
+            final byte[] bytes = new byte[is.available()];
+            ByteStreams.readFully(is, bytes);
+            return bytes;
+        }
     }
 
     // Sends a netflow Packet to the given destination address
     private void sendNetflowPacket(InetSocketAddress destinationAddress) throws IOException {
-        try (InputStream is = getClass().getResourceAsStream("/flows/netflow5.dat")) {
-            final byte[] bytes = new byte[is.available()];
-            ByteStreams.readFully(is, bytes);
-
-            // now send to netflow 5 adapter
-            try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
-                final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length,
-                        destinationAddress.getAddress(), destinationAddress.getPort());
-                serverSocket.send(sendPacket);
-            }
+        byte[] bytes = getNetflowPacketContent();
+        // now send to netflow 5 adapter
+        try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
+            final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length,
+                    destinationAddress.getAddress(), destinationAddress.getPort());
+            serverSocket.send(sendPacket);
         }
     }
 
@@ -214,4 +277,11 @@ public class FlowStackIT {
             return false;
         });
     }
+
+    private static HttpClientWrapper createClientWrapper() {
+        HttpClientWrapper wrapper = HttpClientWrapper.create();
+        wrapper.addBasicCredentials(OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME, OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD);
+        return wrapper;
+    }
+
 }

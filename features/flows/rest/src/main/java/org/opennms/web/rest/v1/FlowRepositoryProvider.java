@@ -1,0 +1,58 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.web.rest.v1;
+
+import java.lang.management.ManagementFactory;
+
+import javax.naming.ServiceUnavailableException;
+
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
+import org.opennms.netmgt.flows.api.FlowRepository;
+
+// TODO MVR this is duplicated from features/telemetry/adpaters/netflows. Probably should be moved somewhere, where it can be re-used
+class FlowRepositoryProvider {
+
+    private static final String GRACE_PERIOD_MS_SYS_PROP = "org.opennms.netmgt.telemetry.adapters.netflow.flowRepositoryLookupGracePeriodMs";
+    private static final int GRACE_PERIOD_MS = Integer.getInteger(GRACE_PERIOD_MS_SYS_PROP, 3*60*1000);
+    private static final int LOOKUP_DELAY_MS = 5*1000;
+
+    private ServiceLookup serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
+            .blocking(GRACE_PERIOD_MS, LOOKUP_DELAY_MS, () -> ManagementFactory.getRuntimeMXBean().getUptime())
+            .build();
+
+    public FlowRepository getFlowRepository() throws ServiceUnavailableException {
+        final FlowRepository lookup = serviceLookup.lookup(FlowRepository.class);
+        if (lookup == null) {
+            throw new ServiceUnavailableException("A service of type " + FlowRepository.class.getName() + " is not available.");
+        }
+        return lookup;
+    }
+}

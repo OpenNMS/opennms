@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.flows.api;
 
-import java.util.List;
+public class FlowException extends Exception {
+    public FlowException(String message) {
+        super(message);
+    }
 
-public interface FlowRepository {
-
-    void save(List<NetflowDocument> document) throws FlowException;
-
-    List<NetflowDocument> findAll(String query) throws FlowException;
-
-    String rawQuery(String query) throws FlowException;
+    public FlowException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

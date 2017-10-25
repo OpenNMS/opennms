@@ -30,20 +30,22 @@ package org.opennms.netmgt.flows.elastic;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.IndexStrategy;
 import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.flows.api.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.io.ByteStreams;
 
+import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Bulk;
@@ -91,7 +93,7 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public void save(List<NetflowDocument> flowDocuments) throws IOException {
+    public void save(List<NetflowDocument> flowDocuments) throws FlowException {
         if (flowDocuments != null && !flowDocuments.isEmpty()) {
             final String index = indexStrategy.getIndex(new Date());
             final String type = "flow";
@@ -105,7 +107,7 @@ public class ElasticFlowRepository implements FlowRepository {
                     bulkBuilder.addAction(indexBuilder.build());
                 }
                 final Bulk bulk = bulkBuilder.build();
-                final BulkResult result = client.execute(bulk);
+                final BulkResult result = executeRequest(bulk);
                 if (!result.isSucceeded()) {
                     LOG.error("Error while writing flows: {}", result.getErrorMessage());
                 }
@@ -116,17 +118,36 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public List<NetflowDocument> findAll() throws IOException {
-        final SearchResult result = client.execute(new Search.Builder("")
-                .addType("flow")
-                .build());
-        if (!result.isSucceeded()) {
-            // TODO MVR do something here
-            LOG.error("Error reading flows {}", result.getErrorMessage());
-            return Collections.emptyList();
-        }
+    public String rawQuery(String query) throws FlowException {
+        final SearchResult result = search(query);
+        return result.getJsonString();
+    }
+
+    @Override
+    public List<NetflowDocument> findAll(String query) throws FlowException {
+        final SearchResult result = search(query);
         final List<SearchResult.Hit<NetflowDocument, Void>> hits = result.getHits(NetflowDocument.class);
         final List<NetflowDocument> data = hits.stream().map(hit -> hit.source).collect(Collectors.toList());
         return data;
+    }
+
+    private <T extends JestResult> T executeRequest(Action<T> clientRequest) throws FlowException {
+        try {
+            final T result = client.execute(clientRequest);
+            return result;
+        } catch (IOException e) {
+            throw new FlowException("Error executing query", e);
+        }
+    }
+
+    private SearchResult search(String query) throws FlowException {
+        final SearchResult result = executeRequest(new Search.Builder(query)
+                .addType("flow")
+                .build());
+        if (!result.isSucceeded()) {
+            LOG.error("Error reading flows {}", result.getErrorMessage());
+            throw new QueryException("Could not read flows from repository. " + result.getErrorMessage());
+        }
+        return result;
     }
 }

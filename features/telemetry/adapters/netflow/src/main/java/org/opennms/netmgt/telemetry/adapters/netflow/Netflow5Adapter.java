@@ -74,7 +74,9 @@ public class Netflow5Adapter implements Adapter {
     @Autowired
     private TransactionOperations transactionOperations;
 
-    private FlowRepositoryProvider provider = new FlowRepositoryProvider();
+    private final Netflow5Converter converter = new Netflow5Converter();
+
+    private final FlowRepositoryProvider provider = new FlowRepositoryProvider();
 
     // measures the flows/seconds throughput
     private Meter meter;
@@ -143,50 +145,7 @@ public class Netflow5Adapter implements Adapter {
      * @return The flows of the packet
      */
     private List<NetflowDocument> convert(NetflowPacket netflowPacket) {
-        if (netflowPacket == null) {
-            LOG.debug("Nothing to convert.");
-            return new ArrayList<>();
-        }
-        return netflowPacket.getRecords().stream()
-                .map(record -> {
-                    final NetflowDocument document = new NetflowDocument();
-
-                    // META
-                    document.setFlowType(FlowType.NETFLOW_5);
-                    document.setTimestamp(netflowPacket.getUnixSecs() * 1000L + netflowPacket.getUnixNSecs() / 1000L / 1000L);
-
-                    // Header
-                    document.setVersion(netflowPacket.getVersion());
-                    document.setFlowRecords(netflowPacket.getCount());
-                    document.setSysUptime(netflowPacket.getSysUptime());
-                    document.setFlowSequenceNumber(netflowPacket.getFlowSequence());
-                    document.setEngineType(netflowPacket.getEngineType());
-                    document.setEngineId(netflowPacket.getEngineId());
-                    document.setSamplingInterval(netflowPacket.getSamplingInterval());
-
-                    // Body
-                    document.setIpv4SourceAddress(record.getSrcAddr());
-                    document.setSourcePort(record.getSrcPort());
-                    document.setIpv4DestAddress(record.getDstAddr());
-                    document.setDestPort(record.getDstPort());
-                    document.setIpv4NextHopAddress(record.getNextHop());
-                    document.setInputSnmpInterfaceIndex(record.getInput());
-                    document.setOutputSnmpInterfaceIndex(record.getOutput());
-                    document.setInBytes(record.getDOctets());
-                    document.setInPackets(record.getDPkts());
-                    document.setFirst(record.getFirst());
-                    document.setLast(record.getLast());
-                    document.setTcpFlags(record.getTcpFlags());
-                    document.setIpProtocol(record.getProt());
-                    document.setTos(record.getToS());
-                    document.setSourceAutonomousSystemNumber(record.getSrcAs());
-                    document.setDestAutonomousSystemNumber(record.getDstAs());
-                    document.setSourceMask(record.getSrcMask());
-                    document.setDestMask(record.getDstMask());
-
-                    return document;
-                })
-                .collect(Collectors.toList());
+        return converter.convert(netflowPacket);
     }
 
     private void enrich(final List<NetflowDocument> documents, final TelemetryMessageLogDTO messageLog) {
