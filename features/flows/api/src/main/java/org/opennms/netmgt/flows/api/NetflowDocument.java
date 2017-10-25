@@ -85,6 +85,10 @@ public class NetflowDocument extends FlowDocument {
 
     private int destMask;
 
+    private NodeInfo exporterNodeInfo;
+    private NodeInfo sourceNodeInfo;
+    private NodeInfo destNodeInfo;
+
     public void setVersion(int version) {
         this.version = version;
     }
@@ -299,5 +303,29 @@ public class NetflowDocument extends FlowDocument {
 
     public void setDestAs(int destAs) {
         this.destAs = destAs;
+    }
+
+    public void setExporterNodeInfo(NodeInfo exporterNodeInfo) {
+        this.exporterNodeInfo = exporterNodeInfo;
+    }
+
+    public NodeInfo getExporterNodeInfo() {
+        return exporterNodeInfo;
+    }
+
+    public void setSourceNodeInfo(NodeInfo sourceNodeInfo) {
+        this.sourceNodeInfo = sourceNodeInfo;
+    }
+
+    public NodeInfo getSourceNodeInfo() {
+        return sourceNodeInfo;
+    }
+
+    public void setDestNodeInfo(NodeInfo destNodeInfo) {
+        this.destNodeInfo = destNodeInfo;
+    }
+
+    public NodeInfo getDestNodeInfo() {
+        return destNodeInfo;
     }
 }
