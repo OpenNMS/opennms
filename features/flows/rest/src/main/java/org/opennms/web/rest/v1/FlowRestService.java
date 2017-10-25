@@ -28,11 +28,8 @@
 
 package org.opennms.web.rest.v1;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.ServiceUnavailableException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -42,17 +39,17 @@ import javax.ws.rs.core.Response;
 
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.FlowRepositoryProvider;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 
 @Component
 @Scope("prototype")
@@ -63,20 +60,23 @@ public class FlowRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowRestService.class);
 
-    // TODO MVR duplicated from ClientFactory, should be merged or removed
+    // TODO MVR This is duplicated  from ClientFactory, should be merged or removed at some point
     private static final Gson gson =  new GsonBuilder()
             .setDateFormat(ELASTIC_SEARCH_DATE_FORMAT)
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
+    @Autowired
+    private FlowRepositoryProvider flowRepositoryProvider;
+
     @POST
     @Path("/proxy")
-    public Response proxySearch(String query) throws ServiceUnavailableException {
+    public Response proxySearch(String query) throws Exception {
         try {
             final String result = getFlowRepository().rawQuery(query);
             return Response.status(200)
                     .type(MediaType.APPLICATION_JSON_TYPE)
-                    .entity(gson.toJson(result))
+                    .entity(result)
                     .build();
         } catch (FlowException e) {
             LOG.error("Error while proxy search flows: {}", e.getMessage(), e);
@@ -88,13 +88,13 @@ public class FlowRestService {
     }
 
     @GET
-    public Response getFlows() throws ServiceUnavailableException {
+    public Response getFlows() throws Exception {
         return getFlows("");
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getFlows(String query) throws ServiceUnavailableException {
+    public Response getFlows(String query) throws Exception {
         try {
             final List<NetflowDocument> documents = getFlowRepository().findAll(query);
             final String json = gson.toJson(documents);
@@ -108,33 +108,8 @@ public class FlowRestService {
         }
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response saveFlows(String input) throws ServiceUnavailableException {
-        try {
-            JsonElement jsonElement = gson.toJsonTree(input);
-            if (jsonElement.isJsonArray()) {
-                Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
-                }.getType();
-                List<NetflowDocument> netflowDocuments = gson.fromJson(jsonElement, listType);
-                getFlowRepository().save(netflowDocuments);
-            } else {
-                List<NetflowDocument> documents = new ArrayList<>();
-                documents.add(gson.fromJson(jsonElement, NetflowDocument.class));
-                getFlowRepository().save(documents);
-            }
-            return Response.accepted().build();
-        } catch (FlowException e) {
-            LOG.error("Error while persisting flow(s)", e);
-            return Response.status(500)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity("Error while persisting flow(s): " + e.getMessage())
-                    .build();
-        }
-    }
-
-    private FlowRepository getFlowRepository() throws ServiceUnavailableException {
-        return new FlowRepositoryProvider().getFlowRepository();
+    private FlowRepository getFlowRepository() throws Exception {
+        return flowRepositoryProvider.getFlowRepository();
     }
 
 }

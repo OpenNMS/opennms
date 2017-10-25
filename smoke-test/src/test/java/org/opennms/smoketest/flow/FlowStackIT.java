@@ -36,11 +36,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +52,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -68,10 +72,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.io.ByteStreams;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
+import io.searchbox.client.AbstractJestClient;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.JestResult;
@@ -84,12 +92,9 @@ public class FlowStackIT {
 
     private static Logger LOG = LoggerFactory.getLogger(FlowStackIT.class);
 
-    // TODO MVR also duplicated code
-    private static final String ELASTIC_SEARCH_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
-
     // TODO MVR duplicated from ClientFactory, should be merged or removed
     private static final Gson gson =  new GsonBuilder()
-            .setDateFormat(ELASTIC_SEARCH_DATE_FORMAT)
+            .setDateFormat(AbstractJestClient.ELASTIC_SEARCH_DATE_FORMAT)
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
@@ -179,7 +184,7 @@ public class FlowStackIT {
         }
 
         // Verify via OpenNMS ReST API
-        final String flowRestUrl = "http://" + opennmsWebAddress.getAddress().toString() + ":" + opennmsWebAddress.getPort() + "/opennms/" + REST_URL;
+        final String flowRestUrl = "http://" + opennmsWebAddress.getHostString().toString() + ":" + opennmsWebAddress.getPort() + "/opennms/" + REST_URL;
         final NetflowPacket netflowPacket = new NetflowPacket(ByteBuffer.wrap(getNetflowPacketContent()));
         final List<NetflowDocument> documents = new Netflow5Converter().convert(netflowPacket);
         documents.stream().forEach(d -> {
@@ -187,29 +192,34 @@ public class FlowStackIT {
             d.setExporterAddress("127.0.0.1");
         });
         try (HttpClientWrapper restClient = createClientWrapper()) {
-            // Persist flow
-            HttpPost httpPost = new HttpPost(flowRestUrl);
-            httpPost.addHeader("content-type", "application/json");
-            httpPost.setEntity(new StringEntity(gson.toJson(documents)));
-            CloseableHttpResponse response = restClient.execute(httpPost);
-            assertEquals(204, response.getStatusLine().getStatusCode());
-
             // Query flows
-            HttpGet httpGet = new HttpGet(flowRestUrl);
-            httpPost.addHeader("accept", "application/json");
-            response = restClient.execute(httpGet);
+            final HttpGet httpGet = new HttpGet(flowRestUrl);
+            httpGet.addHeader("accept", "application/json");
+            CloseableHttpResponse response = restClient.execute(httpGet);
             assertEquals(200, response.getStatusLine().getStatusCode());
-            response.getEntity().writeTo(System.out);
+
+            // Read response
+            final Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
+            }.getType();
+            List<NetflowDocument> netflowDocuments = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), listType);
+            Assert.assertEquals(2, netflowDocuments.size());
 
             // Proxy query
-            httpPost = new HttpPost(flowRestUrl + "/proxy");
+            final HttpPost httpPost = new HttpPost(flowRestUrl + "/proxy");
             httpPost.addHeader("content-type", "application/json");
             httpPost.setEntity(new StringEntity("{}"));
             response = restClient.execute(httpPost);
             assertEquals(200, response.getStatusLine().getStatusCode());
-            response.getEntity().writeTo(System.out);
-        }
 
+            // Verify response
+            final byte[] bytes = new byte[(int) response.getEntity().getContentLength()];
+            ByteStreams.readFully(response.getEntity().getContent(), bytes);
+            final String json = new String(bytes);
+            final JsonElement jsonElement = gson.toJsonTree(json);
+            // verify hits.hits exists
+            final JsonArray jsonArray = jsonElement.getAsJsonObject().get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+            Assert.assertEquals(2, jsonArray.size());
+        }
     }
 
     private byte[] getNetflowPacketContent() throws IOException {

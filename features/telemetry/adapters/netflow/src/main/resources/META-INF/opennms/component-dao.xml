@@ -9,6 +9,7 @@
 >
 
     <context:annotation-config/>
+    <context:component-scan base-package="org.opennms.netmgt.telemetry.adapters.netflow"/>
 
     <!-- Metrics -->
     <bean id="flowAdapterMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>

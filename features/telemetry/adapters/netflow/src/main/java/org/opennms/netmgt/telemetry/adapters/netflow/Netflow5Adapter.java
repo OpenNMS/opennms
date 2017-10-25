@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,7 +38,7 @@ import javax.annotation.PostConstruct;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.flows.api.FlowType;
+import org.opennms.netmgt.flows.api.FlowRepositoryProvider;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.model.OnmsNode;
@@ -74,9 +73,10 @@ public class Netflow5Adapter implements Adapter {
     @Autowired
     private TransactionOperations transactionOperations;
 
-    private final Netflow5Converter converter = new Netflow5Converter();
+    @Autowired
+    private FlowRepositoryProvider provider;
 
-    private final FlowRepositoryProvider provider = new FlowRepositoryProvider();
+    private final Netflow5Converter converter = new Netflow5Converter();
 
     // measures the flows/seconds throughput
     private Meter meter;

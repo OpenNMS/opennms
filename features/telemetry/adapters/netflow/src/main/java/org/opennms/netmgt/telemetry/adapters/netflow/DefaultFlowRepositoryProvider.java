@@ -26,9 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v1;
-
-import java.lang.management.ManagementFactory;
+package org.opennms.netmgt.telemetry.adapters.netflow;
 
 import javax.naming.ServiceUnavailableException;
 
@@ -36,18 +34,17 @@ import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.FlowRepositoryProvider;
+import org.springframework.stereotype.Component;
 
-// TODO MVR this is duplicated from features/telemetry/adpaters/netflows. Probably should be moved somewhere, where it can be re-used
-class FlowRepositoryProvider {
-
-    private static final String GRACE_PERIOD_MS_SYS_PROP = "org.opennms.netmgt.telemetry.adapters.netflow.flowRepositoryLookupGracePeriodMs";
-    private static final int GRACE_PERIOD_MS = Integer.getInteger(GRACE_PERIOD_MS_SYS_PROP, 3*60*1000);
-    private static final int LOOKUP_DELAY_MS = 5*1000;
+@Component
+public class DefaultFlowRepositoryProvider implements FlowRepositoryProvider {
 
     private ServiceLookup serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
-            .blocking(GRACE_PERIOD_MS, LOOKUP_DELAY_MS, () -> ManagementFactory.getRuntimeMXBean().getUptime())
+            .blocking()
             .build();
 
+    @Override
     public FlowRepository getFlowRepository() throws ServiceUnavailableException {
         final FlowRepository lookup = serviceLookup.lookup(FlowRepository.class);
         if (lookup == null) {
