@@ -69,7 +69,7 @@ public final class Set<R extends Record> implements Iterable<R> {
         this.header = header;
 
         final List<R> records = new LinkedList<>();
-        while (buffer.remaining() > parser.getMinimumRecordLength()) {
+        while (buffer.remaining() >= parser.getMinimumRecordLength()) {
             records.add(parser.parse(buffer));
         }
         this.records = Collections.unmodifiableList(records);

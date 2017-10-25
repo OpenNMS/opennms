@@ -46,7 +46,7 @@ public final class OptionsTemplateRecordHeader {
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
 
-    public static final int SIZE = 16;
+    public static final int SIZE = 6;
 
     public final int templateId; // uint16
     public final int fieldCount; // uint16

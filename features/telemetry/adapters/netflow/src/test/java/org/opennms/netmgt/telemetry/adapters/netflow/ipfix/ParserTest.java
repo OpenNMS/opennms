@@ -28,15 +28,20 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.Throwables;
 
@@ -44,31 +49,41 @@ public class ParserTest {
 
     @Test
     public void canReadValidIPFIX() throws IOException, URISyntaxException {
-        execute("/flows/ipfix.dat", c -> {
+        execute("/flows/ipfix.dat", buffer -> {
             try {
-//                final Packet packet1 = Packet.parse(c);
-//
-//                assertThat(packet1.isValid(), is(true));
-//
-//                assertThat(packet1.header.versionNumber, is(0x000a));
-//                assertThat(packet1.header.observationDomainId, is(0L));
-//                assertThat(packet1.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
-//
-//                final Packet packet2 = Packet.parse(c);
-//
-//                assertThat(packet2.isValid(), is(true));
-//
-//                assertThat(packet2.header.versionNumber, is(0x000a));
-//                assertThat(packet2.header.observationDomainId, is(0L));
-//                assertThat(packet2.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
-//
-//                final Packet packet3 = Packet.parse(c);
-//
-//                assertThat(packet3.isValid(), is(true));
-//
-//                assertThat(packet3.header.versionNumber, is(0x000a));
-//                assertThat(packet3.header.observationDomainId, is(0L));
-//                assertThat(packet3.header.exportTime, is(1431516028L)); // "2015-05-13T11:20:26.000Z"
+                final Session session = new Session();
+
+                final Header h1 = new Header(BufferUtils.slice(buffer, Header.SIZE));
+                final Packet p1 = new Packet(session, h1, BufferUtils.slice(buffer, h1.length - Header.SIZE));
+                System.out.println(p1);
+
+                assertThat(p1.isValid(), is(true));
+
+                assertThat(p1.header.versionNumber, is(0x000a));
+                assertThat(p1.header.observationDomainId, is(0L));
+                assertThat(p1.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
+
+                final Header h2 = new Header(BufferUtils.slice(buffer, Header.SIZE));
+                final Packet p2 = new Packet(session, h2, BufferUtils.slice(buffer, h2.length - Header.SIZE));
+                System.out.println(p2);
+
+                assertThat(p2.isValid(), is(true));
+
+                assertThat(p2.header.versionNumber, is(0x000a));
+                assertThat(p2.header.observationDomainId, is(0L));
+                assertThat(p2.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
+
+                final Header h3 = new Header(BufferUtils.slice(buffer, Header.SIZE));
+                final Packet p3 = new Packet(session, h3, BufferUtils.slice(buffer, h3.length - Header.SIZE));
+                System.out.println(p3);
+
+                assertThat(p3.isValid(), is(true));
+
+                assertThat(p3.header.versionNumber, is(0x000a));
+                assertThat(p3.header.observationDomainId, is(0L));
+                assertThat(p3.header.exportTime, is(1431516028L)); // "2015-05-13T11:20:26.000Z"
+
+                assertThat(buffer.hasRemaining(), is(false));
 
             } catch (final Exception e) {
                 throw Throwables.propagate(e);
@@ -77,7 +92,7 @@ public class ParserTest {
     }
 
 
-    public void execute(final String resource, final Consumer<FileChannel> consumer) {
+    public void execute(final String resource, final Consumer<ByteBuffer> consumer) {
         Objects.requireNonNull(resource);
         Objects.requireNonNull(consumer);
 
@@ -86,7 +101,11 @@ public class ParserTest {
 
         try {
             try (final FileChannel channel = FileChannel.open(Paths.get(resourceURL.toURI()))) {
-                consumer.accept(channel);
+                final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
+                channel.read(buffer);
+                buffer.flip();
+
+                consumer.accept(buffer);
             }
 
         } catch (final URISyntaxException | IOException e) {

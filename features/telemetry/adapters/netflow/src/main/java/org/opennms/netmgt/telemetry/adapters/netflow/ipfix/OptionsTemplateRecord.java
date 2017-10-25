@@ -84,7 +84,7 @@ public final class OptionsTemplateRecord implements Record {
         return new Set.RecordParser<OptionsTemplateRecord>() {
             @Override
             public OptionsTemplateRecord parse(final ByteBuffer buffer) {
-                final ByteBuffer headerBuffer = slice(buffer, TemplateRecordHeader.SIZE);
+                final ByteBuffer headerBuffer = slice(buffer, OptionsTemplateRecordHeader.SIZE);
                 final OptionsTemplateRecordHeader header = new OptionsTemplateRecordHeader(headerBuffer);
 
                 return new OptionsTemplateRecord(header, buffer);

@@ -118,7 +118,7 @@ public final class Packet {
                     final Optional<Template> template = session.findTemplate(this.header.observationDomainId, setHeader.setId);
                     if (!template.isPresent()) {
                         // TODO: Log me
-                        System.err.println("Unknown template id: " + setHeader.setId);
+                        System.err.println("Unknown template ID: " + setHeader.setId);
                         continue;
                     }
 
