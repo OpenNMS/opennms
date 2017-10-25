@@ -1,0 +1,58 @@
+= Telemetry Daemon
+
+The _Telemetry Daemon_ (_telemetryd_) provides an extensible framework that can be used to handle sensor pushed to _{product-title}_.
+
+_telemetryd_ allows operators to define a series of protocols, each of which has at least one listener, and at least one adapter.
+A listener is responsible for receiving sensor data from some external source.
+This may include listening for packets from a UDP socket, retrieving messages from an _MQTT_ topic, etc...
+An adapters is responsible for processing the byte streams dispatched by the listeners.
+For example, this may include decoding a specific _JSON_ format, persisting metrics and/or generating events.
+
+The framework does not make any assumption about the data about being received or processed, leaving this up to the listener and adapter implementations.
+
+Listeners may run on either _{product-title}_ or _Minion_, whereas adapters run exclusively on _{product-title}_.
+If a listener is running on _Minion_, the received messages will be automatically dispatched to the associated adapter(s) running in _{product-title}_.
+
+== Supported protocols
+
+We provide built-in support for a number of protocols.
+Follow the instructions bellow for enabling these.
+
+=== Junos Telemetry Interface (JTI)
+
+To enable support for Junos Telemetry Interface (JTI), edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` and change the following line:
+
+```
+<protocol name="JTI" description="Junos Telemetry Interface (JTI)" enabled="false">
+```
+
+to:
+
+```
+<protocol name="JTI" description="Junos Telemetry Interface (JTI)">
+```
+
+Apply the changes without restarting by sending a `reloadDaemonConfig` event:
+
+```
+${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+```
+
+By default, this will open a UDP socket bound to `0.0.0.0:50000` to which JTI messages can be forwarded.
+
+=== Minion
+
+To enable the listener on Minion:
+
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-50000
+admin@minion()> config:property-set name JTI
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
+admin@minion()> config:property-set listener.port 50000
+admin@minion()> config:update
+----
+
+NOTE: The protocol must also be enabled on _{opennms-product-name}_ for the messages to be processed.
