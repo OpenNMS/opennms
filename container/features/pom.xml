@@ -136,6 +136,12 @@
             <!-- IFTTT Integration -->
             <repository>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}/xml/features</repository>
 
+            <!-- Jest Feature -->
+            <repository>mvn:org.opennms.features/opennms-jest/${project.version}/xml/features</repository>
+
+            <!-- Flow Integration -->
+            <repository>mvn:org.opennms.features/flows/${project.version}/xml/features</repository>
+
           </repositories>
 
           <!--
@@ -332,6 +338,7 @@
             <feature>vaadin-adminpage</feature>
 
             <!-- features defined as internal opennms plugins -->
+            <feature>opennms-jest</feature>
             <feature>vaadin-opennms-pluginmanager</feature>
             <feature>alarm-change-notifier</feature>
             <feature>opennms-es-rest</feature>
@@ -339,6 +346,9 @@
 
             <!-- IFTTT Integration -->
             <feature>ifttt-integration</feature>
+
+            <!-- Flows -->
+            <feature>flows</feature>
           </features>
         </configuration>
       </plugin>
@@ -729,6 +739,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>opennms-jest</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.plugins</groupId>
       <artifactId>opennms-es-rest</artifactId>
       <version>${project.version}</version>
@@ -759,6 +776,13 @@
     <dependency>
       <groupId>org.opennms.features.telemetry</groupId>
       <artifactId>org.opennms.features.telemetry.minion</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>flows</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

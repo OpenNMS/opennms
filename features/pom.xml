@@ -26,6 +26,9 @@
     <!-- Events -->
     <module>events</module>
 
+    <!-- Flows -->
+    <module>flows</module>
+
     <!-- Graphml -->
     <module>graphml</module>
 
@@ -145,5 +148,7 @@
 
     <!-- IfTtt integration -->
     <module>ifttt</module>
+
+    <module>jest</module>
   </modules>
 </project>

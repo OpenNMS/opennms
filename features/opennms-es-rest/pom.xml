@@ -23,8 +23,6 @@
     <productFeatureRepository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</productFeatureRepository>
     <productName>opennms-es-rest</productName>
     <productId>${productName}/${project.version}</productId>
-
-    <jestVersion>2.0.3</jestVersion>
     <json-simpleVersion>1.1.1</json-simpleVersion>
   </properties>
 

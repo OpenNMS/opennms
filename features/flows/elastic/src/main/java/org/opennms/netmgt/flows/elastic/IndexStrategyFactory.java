@@ -26,38 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.notifd;
+package org.opennms.netmgt.flows.elastic;
 
-import java.util.List;
-
-import org.opennms.core.soa.lookup.ServiceLookup;
-import org.opennms.core.soa.lookup.ServiceLookupBuilder;
-import org.opennms.core.soa.support.DefaultServiceRegistry;
-import org.opennms.netmgt.model.notifd.Argument;
-import org.opennms.netmgt.model.notifd.NotificationStrategy;
+import org.opennms.netmgt.flows.api.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ServiceRegistryExecutor implements ExecutorStrategy {
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceRegistryExecutor.class);
+/**
+ * Factory to create an {@link IndexStrategy} from a string.
+ * Should help using {@link IndexStrategy} objects while creating objects from blueprint.xml files.
+ */
+public class IndexStrategyFactory {
 
-    private static final ServiceLookup SERVICE_LOOKUP = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
-            .blocking()
-            .build();
+    private static final Logger LOG = LoggerFactory.getLogger(IndexStrategyFactory.class);
 
-    @Override
-    public int execute(String filter, List<Argument> arguments) {
-        LOG.debug("Searching for notification strategy matching filter: {}", filter);
-        final NotificationStrategy ns = getNotificationStrategy(filter);
-        if (ns == null) {
-            LOG.error("No notification strategy found matching filter: {}", filter);
-            return 1;
+    private static final IndexStrategy DEFAULT_INDEX = IndexStrategy.MONTHLY;
+
+    public static IndexStrategy createIndexStrategy(String input) {
+        for (IndexStrategy strategy : IndexStrategy.values()) {
+            if (strategy.name().equals(input)) {
+                LOG.debug("Using strategy {}", strategy);
+                return strategy;
+            }
         }
-        LOG.debug("Found notification strategy: {}", ns);
-        return ns.send(arguments);
-    }
-
-    private NotificationStrategy getNotificationStrategy(String filter) {
-        return SERVICE_LOOKUP.lookup(NotificationStrategy.class, filter);
+        LOG.debug("No strategy found for key {}, falling back to {}", input, DEFAULT_INDEX);
+        return DEFAULT_INDEX;
     }
 }

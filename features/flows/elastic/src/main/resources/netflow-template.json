@@ -1,0 +1,104 @@
+{
+  "template": "flow*",
+  "settings": {
+  },
+  "version": 1,
+  "mapping": {
+    "nested_fields": {
+      "limit": "150"
+    }
+  },
+  "mappings": {
+    "flow": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "location": {
+          "type": "keyword"
+        },
+        "exporter_address": {
+          "type": "ip"
+        },
+        "flow_type": {
+          "type": "keyword"
+        },
+        "version": {
+          "type": "integer"
+        },
+        "flow_sequence_number": {
+          "type": "long"
+        },
+        "engine_type": {
+          "type": "integer"
+        },
+        "engine_id": {
+          "type": "integer"
+        },
+        "sampling_interval": {
+          "type": "integer"
+        },
+        "flow_records": {
+          "type": "integer"
+        },
+        "system_uptime": {
+          "type": "date"
+        },
+        "timestamp": {
+          "type": "date"
+        },
+        "ipv4_source_address": {
+          "type": "ip"
+        },
+        "ipv4_dest_address": {
+          "type": "ip"
+        },
+        "ipv4_next_hop_address": {
+          "type": "ip"
+        },
+        "input_snmp_interface_index": {
+          "type": "integer"
+        },
+        "output_snmp_interface_index": {
+          "type": "integer"
+        },
+        "in_packets": {
+          "type": "long"
+        },
+        "in_bytes": {
+          "type": "long"
+        },
+        "first": {
+          "type": "long"
+        },
+        "last": {
+          "type": "long"
+        },
+        "source_port": {
+          "type": "integer"
+        },
+        "dest_port": {
+          "type": "integer"
+        },
+        "tcp_flags": {
+          "type": "integer"
+        },
+        "ip_protocol": {
+          "type": "integer"
+        },
+        "source_as": {
+          "type": "integer"
+        },
+        "dest_as": {
+          "type": "integer"
+        },
+        "source_mask": {
+          "type": "integer"
+        },
+        "dest_mask": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

@@ -26,38 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.notifd;
+package org.opennms.netmgt.telemetry.adapters.netflow;
 
-import java.util.List;
+import javax.naming.ServiceUnavailableException;
 
 import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
-import org.opennms.netmgt.model.notifd.Argument;
-import org.opennms.netmgt.model.notifd.NotificationStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.flows.api.FlowRepository;
 
-public class ServiceRegistryExecutor implements ExecutorStrategy {
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceRegistryExecutor.class);
+class FlowRepositoryProvider {
 
-    private static final ServiceLookup SERVICE_LOOKUP = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
+    private ServiceLookup serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
             .blocking()
             .build();
 
-    @Override
-    public int execute(String filter, List<Argument> arguments) {
-        LOG.debug("Searching for notification strategy matching filter: {}", filter);
-        final NotificationStrategy ns = getNotificationStrategy(filter);
-        if (ns == null) {
-            LOG.error("No notification strategy found matching filter: {}", filter);
-            return 1;
+    public FlowRepository getFlowRepository() throws ServiceUnavailableException {
+        final FlowRepository lookup = serviceLookup.lookup(FlowRepository.class);
+        if (lookup == null) {
+            throw new ServiceUnavailableException("A service of type " + FlowRepository.class.getName() + " is not available.");
         }
-        LOG.debug("Found notification strategy: {}", ns);
-        return ns.send(arguments);
-    }
-
-    private NotificationStrategy getNotificationStrategy(String filter) {
-        return SERVICE_LOOKUP.lookup(NotificationStrategy.class, filter);
+        return lookup;
     }
 }
