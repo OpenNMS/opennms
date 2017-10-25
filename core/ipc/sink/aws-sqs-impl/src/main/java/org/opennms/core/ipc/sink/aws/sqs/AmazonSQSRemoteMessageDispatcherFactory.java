@@ -33,6 +33,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.ipc.sink.api.Message;
@@ -49,7 +51,6 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
 import com.amazonaws.services.sqs.model.SendMessageResult;
-import com.amazonaws.SdkClientException;
 import com.codahale.metrics.JmxReporter;
 
 /**
@@ -71,14 +72,14 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     /** The reporter. */
     private JmxReporter reporter;
 
-    /** The SQS Object. */
+    /** The AWS SQS Object. */
     private AmazonSQS sqs;
 
     /** The AWS SQS manager. */
     private AmazonSQSManager awsSqsManager;
 
     /** The queue URL. This is cached to avoid an API call on each attempt to send a message. */
-    private String queueUrl;
+    private Map<String,String> queueUrls = new HashMap<>();
 
     /* (non-Javadoc)
      * @see org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory#getModuleMetadata(org.opennms.core.ipc.sink.api.SinkModule)
@@ -103,13 +104,13 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
                 while (true) {
                     try {
                         final SendMessageResult result = sqs.sendMessage(queueUrl, module.marshal((T)message));
-                        LOG.debug("Message with ID {} has been successfully sent", result.getMessageId());
+                        LOG.debug("SQS Message with ID {} has been successfully sent to {}", result.getMessageId(), queueUrl);
                         break;
-                    } catch (SdkClientException ex) {
+                    } catch (RuntimeException ex) {
                         // Thanks to field tests, when a Minion cannot access AWS it throws a SdkClientException,
                         // with either UnknownHostException (DNS issues), or SocketException (server unreachable).
-                        if (ex.getCause() instanceof UnknownHostException || ex.getCause() instanceof SocketException) {
-                            LOG.warn("Cannot reach AWS, or it is unavailable, trying again in 5 seconds...");
+                        if (isCause(UnknownHostException.class, ex) || isCause(SocketException.class, ex)) {
+                            LOG.warn("Cannot reach AWS at {} while trying to send a message, trying again in 5 seconds...", queueUrl);
                             try {
                                 Thread.sleep(5000);
                             } catch (InterruptedException e) {}
@@ -117,9 +118,6 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
                             LOG.error("Unexpected AWS SDK exception while sending a message", ex);
                             break;
                         }
-                    } catch (RuntimeException e) {
-                        LOG.error("Unexpected exception while sending a message", e);
-                        break;
                     }
                 }
             }
@@ -148,6 +146,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
                 }
             }
 
+            // TODO we might need to obfuscate the credentials for security reasons.
             LOG.info("AwsRemoteMessageDispatcherFactory: initializing the AmazonSQS Object with: {}", awsConfig);
             try {
                 sqs = awsSqsManager.createSQSObject(awsConfig);
@@ -205,16 +204,28 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
      * @return the queue URL
      */
     private String getQueueUrl(final String queueName) {
-        if (queueUrl != null) return queueUrl;
+        if (queueUrls.containsKey(queueName)) return queueUrls.get(queueName);
         try {
-            queueUrl = sqs.getQueueUrl(queueName).getQueueUrl();
+            queueUrls.put(queueName, sqs.getQueueUrl(queueName).getQueueUrl());
         } catch (QueueDoesNotExistException e) {
             try {
-                queueUrl = awsSqsManager.ensureQueueExists(awsConfig, sqs, queueName);
+                queueUrls.put(queueName, awsSqsManager.ensureQueueExists(awsConfig, sqs, queueName));
             } catch (AmazonSQSException ex) {
                 LOG.error("Cannot create queue with name " + queueName, ex);
             }
         }
-        return queueUrl;
+        return queueUrls.get(queueName);
     }
+
+    /**
+     * Checks if is cause.
+     *
+     * @param expected the expected
+     * @param exc the exception
+     * @return true, if is cause
+     */
+    private boolean isCause(Class<? extends Throwable> expected, Throwable exc) {
+        return expected.isInstance(exc) || (exc != null && isCause(expected, exc.getCause()));
+    }
+
 }

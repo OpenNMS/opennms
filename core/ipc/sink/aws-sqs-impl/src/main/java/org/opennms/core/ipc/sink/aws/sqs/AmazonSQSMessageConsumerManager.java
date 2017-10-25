@@ -90,7 +90,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
         /** The closed. */
         private final AtomicBoolean closed = new AtomicBoolean(false);
 
-        /** The SQS Object. */
+        /** The AWS SQS Object. */
         private final AmazonSQS sqs;
 
         /** The queue URL. This is cached to avoid an API call on each attempt to send a message. */
@@ -118,17 +118,29 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
                 // The SQS Queue is configured to use "Long Polling" through "ReceiveMessageWaitTimeSeconds".
                 // That means, calling receiveMessage will block the thread execution for that amount of time if there are no messages on the queue.
                 // This is recommended to reduce the traffic against AWS, which can be translated into undesired costs.
-                sqs.receiveMessage(queueUrl).getMessages().forEach(m -> {
-                    LOG.debug("Got message {}", m.getMessageId());
-                    try {
-                        final Message msg = module.unmarshal(m.getBody());
-                        dispatch(module, msg);
-                        // This is mandatory to avoid re-process a message on a subsequent receive request.
-                        sqs.deleteMessage(queueUrl, m.getReceiptHandle());
-                    } catch (RuntimeException e) {
-                        LOG.warn("Unexpected exception while dispatching message", e);
+                List<com.amazonaws.services.sqs.model.Message> messages = null;
+                try {
+                    messages = sqs.receiveMessage(queueUrl).getMessages();
+                } catch (RuntimeException e) {
+                    LOG.error("Unexpected exception while receiving messages from " + queueUrl, e);
+                }
+                if (messages != null) {
+                    for (com.amazonaws.services.sqs.model.Message m : messages) {
+                        try {
+                            LOG.debug("Received SQS message with ID {} from {}", m.getMessageId(), queueUrl);
+                            final Message msg = module.unmarshal(m.getBody());
+                            dispatch(module, msg);
+                            LOG.debug("Message with ID {} successfully dispatched.", m.getMessageId(), queueUrl);
+                        } catch (RuntimeException e) {
+                            final String msg = String.format("Unexpected exception while dispatching message with ID %s from %s", m.getMessageId(), queueUrl);
+                            LOG.warn(msg, e);
+                        } finally {
+                            // This is mandatory to avoid re-process a message on a subsequent receive request.
+                            LOG.debug("Deleting SQS message receipt handle {} from {}", m.getReceiptHandle(), queueUrl);
+                            sqs.deleteMessage(queueUrl, m.getReceiptHandle());
+                        }
                     }
-                });
+                }
             }
         }
 
@@ -206,6 +218,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
                 awsConfig.put(awsConfigKey, entry.getValue());
             }
         }
+        // TODO we might need to obfuscate the credentials for security reasons.
         LOG.info("AwsMessageConsumerManager: consuming from AWS SQS using: {}", awsConfig);
     }
 }
