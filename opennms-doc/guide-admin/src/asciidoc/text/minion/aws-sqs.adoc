@@ -14,12 +14,13 @@ This means that _ActiveMQ_ is still required even when _AWS SQS_ support is enab
 
 _AWS SQS_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
 
-WARNING:  When using Amazon SQS, it is very important to consider the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/limits-queues.html[Limitations].
+WARNING:  When using Amazon SQS, it is very important to consider the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-limits.html[Limitations].
 
 In terms of the Sink pattern, pay attention to the following:
 
 * A message can include only XML, JSON, and unformatted text. The following Unicode characters are allowed: `#x9` | `#xA` | `#xD` | `#x20` to `#xD7FF` | `#xE000` to `#xFFFD` | `#x10000` to `#x10FFFF`. Any characters not included in this list are rejected.
 * The minimum message size is 1 byte (1 character). The maximum is 262,144 bytes (256 KB).
+* Without batching, FIFO queues can support up to 300 messages per second (300 send, receive, or delete operations per second).
 
 ==== Consumer Configuration
 
