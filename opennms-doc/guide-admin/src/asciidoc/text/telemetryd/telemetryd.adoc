@@ -7,7 +7,7 @@ The telemetry daemon (_telemetryd_) provides an extensible framework that can be
 _telemetryd_ allows operators to define a series of protocols, each of which has at least one listener, and at least one adapter.
 A listener is responsible for receiving sensor data from some external source.
 This may include listening for packets from a UDP socket, retrieving messages from an MQTT topic, etc...
-An adapters is responsible for processing the byte streams dispatched by the listeners.
+An adapter is responsible for processing the byte streams dispatched by the listeners.
 For example, this may include decoding a specific JSON format, persisting metrics and/or generating events.
 
 The framework does not make any assumption about the data about being received or processed, leaving this up to the listener and adapter implementations.

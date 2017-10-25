@@ -272,7 +272,7 @@ or removal of a topology. However the label field must be unique across all inst
 It is possible to have several topologies installed which have been generated using different configurations.
 You simply need to ensure that the providerId and label field used for each installation command is different.
 
-=== additional notes
+=== Additional notes
 
 Please note you MUST first uninstall an _{opennms-product-name}_ graphml topology before installing a new one. 
 You will also have to log out and log back into the UI in order to see the new topology file. 
