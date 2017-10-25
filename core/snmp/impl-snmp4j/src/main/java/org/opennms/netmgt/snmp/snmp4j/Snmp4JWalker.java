@@ -223,9 +223,11 @@ public class Snmp4JWalker extends SnmpWalker {
         try {
             if (m_session == null) {
                 m_session = m_agentConfig.createSnmpSession();
+                Snmp4JStrategy.trackSession(m_session);
                 m_session.listen();
             }
         } catch (final IOException e) {
+            close();
             throw new SnmpException(e);
         }
 
@@ -250,6 +252,8 @@ public class Snmp4JWalker extends SnmpWalker {
                 m_session.close();
             } catch (IOException e) {
                 LOG.error("{}: Unexpected Error occured closing SNMP session for: {}", getName(), m_agentConfig, e);
+            } finally {
+                Snmp4JStrategy.reapSession(m_session);
             }
             m_session = null;
         }
