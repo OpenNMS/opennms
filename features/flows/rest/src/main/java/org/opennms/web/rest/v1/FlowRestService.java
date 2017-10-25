@@ -28,11 +28,14 @@
 
 package org.opennms.web.rest.v1;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -47,9 +50,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 @Component
 @Scope("prototype")
@@ -104,6 +109,31 @@ public class FlowRestService {
             return Response.status(500)
                     .type(MediaType.TEXT_PLAIN)
                     .entity("Error while fetching flows from repository: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response saveFlows(String input) throws Exception {
+        try {
+            JsonElement jsonElement = gson.toJsonTree(input);
+            if (jsonElement.isJsonArray()) {
+                final Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
+                }.getType();
+                List<NetflowDocument> netflowDocuments = gson.fromJson(jsonElement, listType);
+                getFlowRepository().save(netflowDocuments);
+            } else {
+                List<NetflowDocument> documents = new ArrayList<>();
+                documents.add(gson.fromJson(jsonElement, NetflowDocument.class));
+                getFlowRepository().save(documents);
+            }
+            return Response.accepted().build();
+        } catch (FlowException e) {
+            LOG.error("Error while persisting flow(s)", e);
+            return Response.status(500)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("Error while persisting flow(s): " + e.getMessage())
                     .build();
         }
     }

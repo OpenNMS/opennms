@@ -51,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -192,17 +193,24 @@ public class FlowStackIT {
             d.setExporterAddress("127.0.0.1");
         });
         try (HttpClientWrapper restClient = createClientWrapper()) {
+            // Persist flow
+            HttpPut httpPut = new HttpPut(flowRestUrl);
+            httpPut.addHeader("content-type", "application/json");
+            httpPut.setEntity(new StringEntity(gson.toJson(documents)));
+            CloseableHttpResponse response = restClient.execute(httpPut);
+            assertEquals(204, response.getStatusLine().getStatusCode());
+
             // Query flows
             final HttpGet httpGet = new HttpGet(flowRestUrl);
             httpGet.addHeader("accept", "application/json");
-            CloseableHttpResponse response = restClient.execute(httpGet);
+            response = restClient.execute(httpGet);
             assertEquals(200, response.getStatusLine().getStatusCode());
 
             // Read response
             final Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
             }.getType();
             List<NetflowDocument> netflowDocuments = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), listType);
-            Assert.assertEquals(2, netflowDocuments.size());
+            Assert.assertEquals(4, netflowDocuments.size());
 
             // Proxy query
             final HttpPost httpPost = new HttpPost(flowRestUrl + "/proxy");
@@ -218,7 +226,7 @@ public class FlowStackIT {
             final JsonElement jsonElement = gson.toJsonTree(json);
             // verify hits.hits exists
             final JsonArray jsonArray = jsonElement.getAsJsonObject().get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-            Assert.assertEquals(2, jsonArray.size());
+            Assert.assertEquals(4, jsonArray.size());
         }
     }
 
