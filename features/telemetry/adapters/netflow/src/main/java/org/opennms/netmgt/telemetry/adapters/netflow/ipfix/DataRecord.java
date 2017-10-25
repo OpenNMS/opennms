@@ -81,7 +81,7 @@ public final class DataRecord implements Record {
                 }
             }
 
-            final Value value = field.informationElement.parse(slice(buffer, size));
+            final Value value = field.parse(slice(buffer, size));
             values.add(value);
         }
 

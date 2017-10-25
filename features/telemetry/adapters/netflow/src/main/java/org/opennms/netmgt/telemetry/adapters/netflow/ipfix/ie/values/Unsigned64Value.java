@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class Unsigned64Value extends Value {
     public final byte[] data;
 
-    public Unsigned64Value(final byte[] data) {
-        super(Unsigned64Value::parse);
+    public Unsigned64Value(final String name,
+                           final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static Unsigned64Value parse(final ByteBuffer buffer) {
-        return new Unsigned64Value(bytes(buffer, buffer.remaining()));
+    public static Unsigned64Value parse(final String name,
+                                        final ByteBuffer buffer) {
+        return new Unsigned64Value(name, bytes(buffer, buffer.remaining()));
     }
 }

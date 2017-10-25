@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class Float64Value extends Value {
     public final byte[] data;
 
-    public Float64Value(final byte[] data) {
-        super(Float64Value::parse);
+    public Float64Value(final String name,
+                        final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static Float64Value parse(final ByteBuffer buffer) {
-        return new Float64Value(bytes(buffer, buffer.remaining()));
+    public static Float64Value parse(final String name,
+                                     final ByteBuffer buffer) {
+        return new Float64Value(name, bytes(buffer, buffer.remaining()));
     }
 }

@@ -63,6 +63,6 @@ public class InformationElement {
     }
 
     public Value parse(final ByteBuffer buffer) {
-        return this.parser.parse(buffer);
+        return this.parser.parse(this.name, buffer);
     }
 }

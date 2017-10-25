@@ -47,6 +47,7 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Lists;
 
 public final class Packet {
 
@@ -86,21 +87,11 @@ public final class Packet {
                     final Set<TemplateRecord> templateSet = new Set<>(setHeader, TemplateRecord.parser(), payloadBuffer);
 
                     for (final TemplateRecord record : templateSet) {
-                        final Template.Builder builder = Template.builder()
+                        session.addTemplate(Template.builder()
                                 .withObservationDomainId(this.header.observationDomainId)
-                                .withTemplateId(record.header.templateId);
-
-                        for (final FieldSpecifier field : record.fields) {
-                            final Optional<InformationElement> informationElement = InformationElementDatabase.instance.lookup(field.informationElementId);
-                            if (!informationElement.isPresent()) {
-                                // TODO: Log me
-                                throw null;
-                            }
-
-                            builder.withField(field.fieldLength, informationElement.get(), field.enterpriseNumber);
-                        }
-
-                        session.addTemplate(builder.build());
+                                .withTemplateId(record.header.templateId)
+                                .withFields(Lists.transform(record.fields, Packet::buildField))
+                                .build());
                     }
 
                     set = templateSet;
@@ -111,22 +102,12 @@ public final class Packet {
                     final Set<OptionsTemplateRecord> optionsTemplateSet = new Set<>(setHeader, OptionsTemplateRecord.parser(), payloadBuffer);
 
                     for (final OptionsTemplateRecord record : optionsTemplateSet) {
-                        final Template.Builder builder = Template.builder()
+                        session.addTemplate(Template.builder()
                                 .withObservationDomainId(this.header.observationDomainId)
                                 .withTemplateId(record.header.templateId)
-                                .withScopedCount(record.header.scopeFieldCount);
-
-                        for (final FieldSpecifier field : record.fields) {
-                            final Optional<InformationElement> informationElement = InformationElementDatabase.instance.lookup(field.informationElementId);
-                            if (!informationElement.isPresent()) {
-                                // TODO: Log me
-                                throw null;
-                            }
-
-                            builder.withField(field.fieldLength, informationElement.get(), field.enterpriseNumber);
-                        }
-
-                        session.addTemplate(builder.build());
+                                .withScopedCount(record.header.scopeFieldCount)
+                                .withFields(Lists.transform(record.fields, Packet::buildField))
+                                .build());
                     }
 
                     set = optionsTemplateSet;
@@ -184,6 +165,21 @@ public final class Packet {
                 .add("header", header)
                 .add("sets", sets)
                 .toString();
+    }
+
+    private static Template.Field buildField(FieldSpecifier field) {
+        if (field.enterpriseNumber.isPresent()) {
+            return new Template.EnterpriseField(field.fieldLength, field.informationElementId, field.enterpriseNumber.get());
+
+        } else {
+            final Optional<InformationElement> informationElement = InformationElementDatabase.instance.lookup(field.informationElementId);
+            if (!informationElement.isPresent()) {
+                // TODO: Log me
+                throw null;
+            }
+
+            return new Template.StandardField(field.fieldLength, informationElement.get());
+        }
     }
 
     public static void main(final String... args) throws Exception {

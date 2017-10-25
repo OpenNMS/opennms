@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class StringValue extends Value {
     public final byte[] data;
 
-    public StringValue(final byte[] data) {
-        super(StringValue::parse);
+    public StringValue(final String name,
+                       final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static StringValue parse(final ByteBuffer buffer) {
-        return new StringValue(bytes(buffer, buffer.remaining()));
+    public static StringValue parse(final String name,
+                                    final ByteBuffer buffer) {
+        return new StringValue(name, bytes(buffer, buffer.remaining()));
     }
 }

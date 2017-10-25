@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class BooleanValue extends Value {
     public final byte[] data;
 
-    public BooleanValue(final byte[] data) {
-        super(BooleanValue::parse);
+    public BooleanValue(final String name,
+                        final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static BooleanValue parse(final ByteBuffer buffer) {
-        return new BooleanValue(bytes(buffer, buffer.remaining()));
+    public static BooleanValue parse(final String name,
+                                     final ByteBuffer buffer) {
+        return new BooleanValue(name, bytes(buffer, buffer.remaining()));
     }
 }

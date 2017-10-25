@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class IPv4AddressValue extends Value {
     public final byte[] data;
 
-    public IPv4AddressValue(final byte[] data) {
-        super(IPv4AddressValue::parse);
+    public IPv4AddressValue(final String name,
+                            final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static IPv4AddressValue parse(final ByteBuffer buffer) {
-        return new IPv4AddressValue(bytes(buffer, buffer.remaining()));
+    public static IPv4AddressValue parse(final String name,
+                                         final ByteBuffer buffer) {
+        return new IPv4AddressValue(name, bytes(buffer, buffer.remaining()));
     }
 }

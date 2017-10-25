@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class SubTemplateListValue extends Value {
     public final byte[] data;
 
-    public SubTemplateListValue(final byte[] data) {
-        super(SubTemplateListValue::parse);
+    public SubTemplateListValue(final String name,
+                                final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static SubTemplateListValue parse(final ByteBuffer buffer) {
-        return new SubTemplateListValue(bytes(buffer, buffer.remaining()));
+    public static SubTemplateListValue parse(final String name,
+                                             final ByteBuffer buffer) {
+        return new SubTemplateListValue(name, bytes(buffer, buffer.remaining()));
     }
 }

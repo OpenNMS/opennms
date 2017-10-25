@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class BasicListValue extends Value {
     public final byte[] data;
 
-    public BasicListValue(final byte[] data) {
-        super(BasicListValue::parse);
+    public BasicListValue(final String name,
+                          final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static BasicListValue parse(final ByteBuffer buffer) {
-        return new BasicListValue(bytes(buffer, buffer.remaining()));
+    public static BasicListValue parse(final String name,
+                                       final ByteBuffer buffer) {
+        return new BasicListValue(name, bytes(buffer, buffer.remaining()));
     }
 }

@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class Unsigned32Value extends Value {
     public final byte[] data;
 
-    public Unsigned32Value(final byte[] data) {
-        super(Unsigned32Value::parse);
+    public Unsigned32Value(final String name,
+                           final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static Unsigned32Value parse(final ByteBuffer buffer) {
-        return new Unsigned32Value(bytes(buffer, buffer.remaining()));
+    public static Unsigned32Value parse(final String name,
+                                        final ByteBuffer buffer) {
+        return new Unsigned32Value(name, bytes(buffer, buffer.remaining()));
     }
 }

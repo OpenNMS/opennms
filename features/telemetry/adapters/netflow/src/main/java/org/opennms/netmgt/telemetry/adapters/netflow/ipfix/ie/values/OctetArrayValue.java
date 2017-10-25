@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class OctetArrayValue extends Value {
     public final byte[] data;
 
-    public OctetArrayValue(final byte[] data) {
-        super(OctetArrayValue::parse);
+    public OctetArrayValue(final String name,
+                           final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static OctetArrayValue parse(final ByteBuffer buffer) {
-        return new OctetArrayValue(bytes(buffer, buffer.remaining()));
+    public static OctetArrayValue parse(final String name,
+                                        final ByteBuffer buffer) {
+        return new OctetArrayValue(name, bytes(buffer, buffer.remaining()));
     }
 }

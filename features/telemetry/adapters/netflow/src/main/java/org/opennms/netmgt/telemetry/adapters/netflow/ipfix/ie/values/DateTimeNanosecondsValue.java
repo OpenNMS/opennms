@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class DateTimeNanosecondsValue extends Value {
     public final byte[] data;
 
-    public DateTimeNanosecondsValue(final byte[] data) {
-        super(DateTimeNanosecondsValue::parse);
+    public DateTimeNanosecondsValue(final String name,
+                                    final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static DateTimeNanosecondsValue parse(final ByteBuffer buffer) {
-        return new DateTimeNanosecondsValue(bytes(buffer, buffer.remaining()));
+    public static DateTimeNanosecondsValue parse(final String name,
+                                                 final ByteBuffer buffer) {
+        return new DateTimeNanosecondsValue(name, bytes(buffer, buffer.remaining()));
     }
 }

@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class IPv6AddressValue extends Value {
     public final byte[] data;
 
-    public IPv6AddressValue(final byte[] data) {
-        super(IPv6AddressValue::parse);
+    public IPv6AddressValue(final String name,
+                            final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static IPv6AddressValue parse(final ByteBuffer buffer) {
-        return new IPv6AddressValue(bytes(buffer, buffer.remaining()));
+    public static IPv6AddressValue parse(final String name,
+                                         final ByteBuffer buffer) {
+        return new IPv6AddressValue(name, bytes(buffer, buffer.remaining()));
     }
 }

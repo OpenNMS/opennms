@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session;
 
+import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
+
+import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElement;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
@@ -68,17 +71,65 @@ public final class Template implements Iterable<Template.Field> {
         }
     }
 
-    public final static class Field {
+    public static abstract class Field {
         public final int size;
-        public final InformationElement informationElement;
-        public final Optional<Long> enterpriseNumber;
 
-        public Field(final int size,
-                     final InformationElement informationElement,
-                     final Optional<Long> enterpriseNumber) {
+        public Field(final int size) {
             this.size = size;
+        }
+
+        public abstract Value parse(ByteBuffer slice);
+    }
+
+    public static final class StandardField extends Field {
+
+        private final InformationElement informationElement;
+
+        public StandardField(final int size,
+                             final InformationElement informationElement) {
+            super(size);
             this.informationElement = informationElement;
+        }
+
+        @Override
+        public Value parse(final ByteBuffer buffer) {
+            return this.informationElement.parse(buffer);
+        }
+    }
+
+    public static final class EnterpriseField extends Field {
+
+        public static final class EnterpriseValue extends Value {
+            public final int informationElementId;
+            public final long enterpriseNumber;
+
+            public final byte[] data;
+
+            public EnterpriseValue(final int informationElementId,
+                                    final long enterpriseNumber,
+                                    final byte[] data) {
+                super("enterprise");
+                this.informationElementId = informationElementId;
+                this.enterpriseNumber = enterpriseNumber;
+
+                this.data = data;
+            }
+        }
+
+        private final int informationElementId;
+        private final long enterpriseNumber;
+
+        public EnterpriseField(final int size,
+                               final int informationElementId,
+                               final long enterpriseNumber) {
+            super(size);
+            this.informationElementId = informationElementId;
             this.enterpriseNumber = enterpriseNumber;
+        }
+
+        @Override
+        public Value parse(final ByteBuffer buffer) {
+            return new EnterpriseValue(this.informationElementId, this.enterpriseNumber, bytes(buffer, buffer.remaining()));
         }
     }
 
@@ -127,20 +178,13 @@ public final class Template implements Iterable<Template.Field> {
             return this;
         }
 
-        public Builder withField(final int size,
-                                 final InformationElement informationElement,
-                                 final Optional<Long> enterpriseNumber) {
-            this.fields.add(new Field(size, informationElement, enterpriseNumber));
-            return this;
-        }
-
-        public Builder withField(final Field field) {
-            this.fields.add(field);
-            return this;
-        }
+//        public Builder withField(final Field field) {
+//            this.fields.add(field);
+//            return this;
+//        }
 
         public Builder withFields(final List<Field> fields) {
-            this.fields.addAll(fields);
+            this.fields = fields;
             return this;
         }
 

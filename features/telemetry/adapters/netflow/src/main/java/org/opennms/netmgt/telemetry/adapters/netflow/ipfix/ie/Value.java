@@ -34,12 +34,17 @@ public abstract class Value {
 
     @FunctionalInterface
     public interface Parser {
-        Value parse(final ByteBuffer buffer);
+        Value parse(final String name,
+                    final ByteBuffer buffer);
     }
 
-    public final Parser parser;
+    private final String name;
 
-    protected Value(final Parser parser) {
-        this.parser = parser;
+    protected Value(final String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class MacAddressValue extends Value {
     public final byte[] data;
 
-    public MacAddressValue(final byte[] data) {
-        super(MacAddressValue::parse);
+    public MacAddressValue(final String name,
+                           final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static MacAddressValue parse(final ByteBuffer buffer) {
-        return new MacAddressValue(bytes(buffer, buffer.remaining()));
+    public static MacAddressValue parse(final String name,
+                                        final ByteBuffer buffer) {
+        return new MacAddressValue(name, bytes(buffer, buffer.remaining()));
     }
 }

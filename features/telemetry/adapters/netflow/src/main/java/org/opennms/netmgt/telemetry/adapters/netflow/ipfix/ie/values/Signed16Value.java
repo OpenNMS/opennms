@@ -37,12 +37,14 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 public class Signed16Value extends Value {
     public final byte[] data;
 
-    public Signed16Value(final byte[] data) {
-        super(Signed16Value::parse);
+    public Signed16Value(final String name,
+                         final byte[] data) {
+        super(name);
         this.data = data;
     }
 
-    public static Signed16Value parse(final ByteBuffer buffer) {
-        return new Signed16Value(bytes(buffer, buffer.remaining()));
+    public static Signed16Value parse(final String name,
+                                      final ByteBuffer buffer) {
+        return new Signed16Value(name, bytes(buffer, buffer.remaining()));
     }
 }
