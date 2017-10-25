@@ -505,6 +505,19 @@ Topics:
       - Name: IS-IS Link Discovery
         File: is-is-discovery
 ---
+Name: Telemetry Daemon
+Dir: telemetryd
+Topics:
+  - Name: Introduction
+    File: introduction
+  - Name: Listener Reference
+    File: listener-reference
+  - Name: Adapters
+    Dir: Adapters
+    Topics:
+      - Name: JTI Adapter
+        File: jti-adapter
+---
 Name: JMX Configuration Generator
 Dir: jmx-config-generator
 Topics:
