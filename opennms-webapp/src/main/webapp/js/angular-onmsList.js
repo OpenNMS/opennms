@@ -128,7 +128,7 @@ function fromFiql(fiql) {
  * @returns String with reserved characters URL-encoded
  */
 function escapeSearchValue(value) {
-	if (typeof value === 'String') {
+	if (typeof value === 'string') {
 		return value
 			.replace('!', '%21')
 			.replace('$', '%24')
@@ -204,7 +204,7 @@ function normalizeOffset(offset, maxOffset, limit) {
 	.filter('operator', function() {
 		return function(input, value) {
 			// See if the string contains a wildcard
-			var fuzzy = (typeof value === 'String' && value.indexOf('*') > -1);
+			var fuzzy = (typeof value === 'string' && value.indexOf('*') > -1);
 
 			switch (input) {
 			case 'EQ':
