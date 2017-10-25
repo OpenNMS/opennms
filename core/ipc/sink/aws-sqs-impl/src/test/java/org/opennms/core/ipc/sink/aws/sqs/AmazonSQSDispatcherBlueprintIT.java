@@ -30,7 +30,6 @@ package org.opennms.core.ipc.sink.aws.sqs;
 
 import java.util.Properties;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 
@@ -39,8 +38,6 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-// FIXME We should provide a override the blueprint to mock AmazonSQSManager.
-@Ignore
 public class AmazonSQSDispatcherBlueprintIT extends CamelBlueprintTest {
 
     /* (non-Javadoc)

@@ -29,8 +29,6 @@
 package org.opennms.core.ipc.sink.aws.sqs;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -44,13 +42,13 @@ import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.osgi.service.cm.ConfigurationAdmin;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
-import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.codahale.metrics.JmxReporter;
 
 /**
@@ -101,24 +99,11 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             if (queueUrl == null) {
                 LOG.error("Cannot obtain URL for queue {}. The message cannot be sent.", queueName);
             } else {
-                while (true) {
-                    try {
-                        final SendMessageResult result = sqs.sendMessage(queueUrl, module.marshal((T)message));
-                        LOG.debug("SQS Message with ID {} has been successfully sent to {}", result.getMessageId(), queueUrl);
-                        break;
-                    } catch (RuntimeException ex) {
-                        // Thanks to field tests, when a Minion cannot access AWS it throws a SdkClientException,
-                        // with either UnknownHostException (DNS issues), or SocketException (server unreachable).
-                        if (isCause(UnknownHostException.class, ex) || isCause(SocketException.class, ex)) {
-                            LOG.warn("Cannot reach AWS at {} while trying to send a message, trying again in 5 seconds...", queueUrl);
-                            try {
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {}
-                        } else {
-                            LOG.error("Unexpected AWS SDK exception while sending a message", ex);
-                            break;
-                        }
-                    }
+                try {
+                    final String messageId = awsSqsManager.sendMessage(awsConfig, sqs, queueUrl, module.marshal((T)message));
+                    LOG.debug("SQS Message with ID {} has been successfully sent to {}", messageId, queueUrl);
+                } catch (RuntimeException ex) {
+                    LOG.error("Unexpected AWS SDK exception while sending a message", ex);
                 }
             }
         }
@@ -215,17 +200,6 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             }
         }
         return queueUrls.get(queueName);
-    }
-
-    /**
-     * Checks if is cause.
-     *
-     * @param expected the expected
-     * @param exc the exception
-     * @return true, if is cause
-     */
-    private boolean isCause(Class<? extends Throwable> expected, Throwable exc) {
-        return expected.isInstance(exc) || (exc != null && isCause(expected, exc.getCause()));
     }
 
 }

@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.core.ipc.sink.aws.sqs.heartbeat;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -35,6 +36,7 @@ import org.opennms.core.ipc.sink.aws.sqs.AmazonSQSSinkConstants;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.amazonaws.services.sqs.model.Message;
 
 /**
  * The Class MockAmazonSQSManager.
@@ -71,6 +73,22 @@ public class MockAmazonSQSManager implements AmazonSQSManager {
     @Override
     public String getQueueName(Properties awsConfig, SinkModule<?, ?> module) {
         return AmazonSQSSinkConstants.AWS_QUEUE_PREFIX + '-' + module.getId();
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.core.ipc.sink.aws.sqs.AmazonSQSManager#sendMessage(java.util.Properties, com.amazonaws.services.sqs.AmazonSQS, java.lang.String, java.lang.String)
+     */
+    @Override
+    public String sendMessage(Properties awsConfig, AmazonSQS sqs, String queueUrl, String body) throws RuntimeException {
+        return sqs.sendMessage(queueUrl, body).getMessageId();
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.core.ipc.sink.aws.sqs.AmazonSQSManager#receiveMessages(java.util.Properties, com.amazonaws.services.sqs.AmazonSQS, java.lang.String)
+     */
+    @Override
+    public List<Message> receiveMessages(Properties awsConfig, AmazonSQS sqs, String queueUrl) throws RuntimeException {
+        return sqs.receiveMessage(queueUrl).getMessages();
     }
 
     /**

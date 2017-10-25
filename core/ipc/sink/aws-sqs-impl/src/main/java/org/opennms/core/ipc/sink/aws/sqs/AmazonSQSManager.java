@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.sink.aws.sqs;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -36,6 +37,7 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.amazonaws.services.sqs.model.Message;
 
 /**
  * The Interface AmazonSQSManager.
@@ -55,6 +57,9 @@ public interface AmazonSQSManager {
 
     /** The Constant AWS_QUEUE_NAME_PREFIX. */
     public static final String AWS_QUEUE_NAME_PREFIX = "aws_queue_name_prefix";
+
+    /** The Constant AWS_USE_FIFO_QUEUE. */
+    public static final String AWS_USE_FIFO_QUEUE = "aws_use_fifo_queue";
 
     /** The Constant QUEUE_ATTRIBUTES. */
     public static final Map<String, String> QUEUE_ATTRIBUTES = new HashMap<>(); 
@@ -90,5 +95,29 @@ public interface AmazonSQSManager {
      * @return the queue name
      */
     String getQueueName(Properties awsConfig, SinkModule<?, ?> module);
+
+    /**
+     * Send message.
+     * <p>This is a blocking operation. If AWS is unreachable, the method will keep retrying indefinitely until the message is delivered.</p>
+     *
+     * @param awsConfig the AWS configuration
+     * @param sqs the SQS Object
+     * @param queueUrl the queue URL
+     * @param body the message body
+     * @return the message ID
+     * @throws RuntimeException the runtime exception
+     */
+    String sendMessage(Properties awsConfig, AmazonSQS sqs, String queueUrl, String body) throws RuntimeException;
+
+    /**
+     * Receives messages.
+     *
+     * @param awsConfig the AWS configuration
+     * @param sqs the SQS Object
+     * @param queueUrl the queue URL
+     * @return the list of messages
+     * @throws RuntimeException the runtime exception
+     */
+    List<Message> receiveMessages(Properties awsConfig, AmazonSQS sqs, String queueUrl) throws RuntimeException;
 
 }
