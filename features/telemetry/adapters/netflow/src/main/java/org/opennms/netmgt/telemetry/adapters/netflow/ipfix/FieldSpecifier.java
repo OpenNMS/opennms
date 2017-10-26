@@ -53,7 +53,7 @@ public final class FieldSpecifier {
 
     public final Optional<Long> enterpriseNumber;
 
-    public FieldSpecifier(final ByteBuffer buffer) {
+    public FieldSpecifier(final ByteBuffer buffer) throws InvalidPacketException {
         final int elementId = uint16(buffer);
 
         this.informationElementId = elementId & 0x7FFF;
@@ -64,14 +64,10 @@ public final class FieldSpecifier {
         } else {
             this.enterpriseNumber = Optional.empty();
         }
-    }
 
-    public boolean isValid() {
         if (this.fieldLength < 1) {
-            return false;
+            throw new InvalidPacketException("Zero-sized field");
         }
-
-        return true;
     }
 
     @Override

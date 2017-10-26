@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 
@@ -44,8 +45,8 @@ public final class TemplateRecord implements Record {
     public final List<FieldSpecifier> fields;
 
     TemplateRecord(final TemplateRecordHeader header,
-                   final ByteBuffer buffer) {
-        this.header = header;
+                   final ByteBuffer buffer) throws InvalidPacketException {
+        this.header = Objects.requireNonNull(header);
 
         final List<FieldSpecifier> fields = new LinkedList<>();
         for (int i = 0; i < this.header.fieldCount; i++) {
@@ -54,22 +55,6 @@ public final class TemplateRecord implements Record {
         }
 
         this.fields = Collections.unmodifiableList(fields);
-    }
-
-
-    @Override
-    public boolean isValid() {
-        if (!this.header.isValid()) {
-            return false;
-        }
-
-        for (final FieldSpecifier field : this.fields) {
-            if (!field.isValid()) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override
@@ -83,7 +68,7 @@ public final class TemplateRecord implements Record {
     public static Set.RecordParser<TemplateRecord> parser() {
         return new Set.RecordParser<TemplateRecord>() {
             @Override
-            public TemplateRecord parse(final ByteBuffer buffer) {
+            public TemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
                 final ByteBuffer headerBuffer = slice(buffer, TemplateRecordHeader.SIZE);
                 final TemplateRecordHeader header = new TemplateRecordHeader(headerBuffer);
 

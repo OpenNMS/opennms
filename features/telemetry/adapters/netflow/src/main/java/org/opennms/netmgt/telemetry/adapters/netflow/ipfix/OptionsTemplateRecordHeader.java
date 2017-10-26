@@ -52,28 +52,23 @@ public final class OptionsTemplateRecordHeader {
     public final int fieldCount; // uint16
     public final int scopeFieldCount; // uint16
 
-    OptionsTemplateRecordHeader(final ByteBuffer buffer) {
-        // TODO: Size check
+    OptionsTemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.templateId = uint16(buffer);
         this.fieldCount = uint16(buffer);
         this.scopeFieldCount = uint16(buffer);
-    }
 
-    public boolean isValid() {
         // Since Template IDs are used as Set IDs in the Sets they describe
         if (this.templateId <= 255) {
-            return false;
+            throw new InvalidPacketException("Invalid template ID: %d", this.templateId);
         }
 
         if (this.fieldCount <= 0) {
-            return false;
+            throw new InvalidPacketException("Empty template");
         }
 
-        if (this.scopeFieldCount <= 0) {
-            return false;
+        if (this.scopeFieldCount > this.fieldCount) {
+            throw new InvalidPacketException("More scope fields than fields available: %d > %d", this.scopeFieldCount, this.fieldCount);
         }
-
-        return true;
     }
 
     @Override

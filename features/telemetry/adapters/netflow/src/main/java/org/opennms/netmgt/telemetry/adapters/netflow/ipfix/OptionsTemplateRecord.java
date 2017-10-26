@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 
@@ -44,8 +45,8 @@ public final class OptionsTemplateRecord implements Record {
     public final List<FieldSpecifier> fields;
 
     OptionsTemplateRecord(final OptionsTemplateRecordHeader header,
-                          final ByteBuffer buffer) {
-        this.header = header;
+                          final ByteBuffer buffer) throws InvalidPacketException {
+        this.header = Objects.requireNonNull(header);
 
         final List<FieldSpecifier> fields = new LinkedList<>();
         for (int i = 0; i < this.header.fieldCount; i++) {
@@ -55,21 +56,6 @@ public final class OptionsTemplateRecord implements Record {
         }
 
         this.fields = Collections.unmodifiableList(fields);
-    }
-
-
-    public boolean isValid() {
-        if (!this.header.isValid()) {
-            return false;
-        }
-
-        for (final FieldSpecifier field : this.fields) {
-            if (!field.isValid()) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override
@@ -83,7 +69,7 @@ public final class OptionsTemplateRecord implements Record {
     public static Set.RecordParser<OptionsTemplateRecord> parser() {
         return new Set.RecordParser<OptionsTemplateRecord>() {
             @Override
-            public OptionsTemplateRecord parse(final ByteBuffer buffer) {
+            public OptionsTemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
                 final ByteBuffer headerBuffer = slice(buffer, OptionsTemplateRecordHeader.SIZE);
                 final OptionsTemplateRecordHeader header = new OptionsTemplateRecordHeader(headerBuffer);
 

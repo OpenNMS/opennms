@@ -49,23 +49,19 @@ public final class TemplateRecordHeader {
     public final int templateId; // uint16
     public final int fieldCount; // uint16
 
-    TemplateRecordHeader(final ByteBuffer buffer) {
+    TemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
         // TODO: Size check
         this.templateId = uint16(buffer);
         this.fieldCount = uint16(buffer);
-    }
 
-    public boolean isValid() {
         // Since Template IDs are used as Set IDs in the Sets they describe
         if (this.templateId <= 255) {
-            return false;
+            throw new InvalidPacketException("Invalid template ID: %d", this.templateId);
         }
 
         if (this.fieldCount <= 0) {
-            return false;
+            throw new InvalidPacketException("Empty template");
         }
-
-        return true;
     }
 
     @Override

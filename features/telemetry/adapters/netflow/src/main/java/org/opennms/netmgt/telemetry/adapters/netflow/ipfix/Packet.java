@@ -34,6 +34,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -48,7 +49,6 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.Lists;
 
 public final class Packet {
 
@@ -81,7 +81,6 @@ public final class Packet {
 
             final ByteBuffer payloadBuffer = slice(buffer, setHeader.length - SetHeader.SIZE);
             final Set<?> set;
-
             switch (setHeader.getType()) {
                 case TEMPLATE_SET: {
                     final Set<TemplateRecord> templateSet = new Set<>(setHeader, TemplateRecord.parser(), payloadBuffer);
@@ -90,7 +89,7 @@ public final class Packet {
                         session.addTemplate(Template.builder()
                                 .withObservationDomainId(this.header.observationDomainId)
                                 .withTemplateId(record.header.templateId)
-                                .withFields(Lists.transform(record.fields, Packet::buildField))
+                                .withFields(buildFields(record.fields))
                                 .build());
                     }
 
@@ -106,7 +105,7 @@ public final class Packet {
                                 .withObservationDomainId(this.header.observationDomainId)
                                 .withTemplateId(record.header.templateId)
                                 .withScopedCount(record.header.scopeFieldCount)
-                                .withFields(Lists.transform(record.fields, Packet::buildField))
+                                .withFields(buildFields(record.fields))
                                 .build());
                     }
 
@@ -146,24 +145,32 @@ public final class Packet {
                 .toString();
     }
 
-    private static Template.Field buildField(FieldSpecifier field) {
-        if (field.enterpriseNumber.isPresent()) {
-            return new Template.EnterpriseField(field.fieldLength, field.informationElementId, field.enterpriseNumber.get());
+    private static List<Template.Field> buildFields(List<FieldSpecifier> fields) throws InvalidPacketException {
+        // TODO: Ugly
 
-        } else {
-            final Optional<InformationElement> informationElement = InformationElementDatabase.instance.lookup(field.informationElementId);
-            if (!informationElement.isPresent()) {
-                // TODO: Log me
-                throw null;
+        final List<Template.Field> results = new ArrayList<>(fields.size());
+        for (final FieldSpecifier field : fields) {
+            final Template.Field result;
+            if (field.enterpriseNumber.isPresent()) {
+                result = new Template.EnterpriseField(field.fieldLength, field.informationElementId, field.enterpriseNumber.get());
+
+            } else {
+                final Optional<InformationElement> informationElement = InformationElementDatabase.instance.lookup(field.informationElementId);
+                if (!informationElement.isPresent()) {
+                    throw new InvalidPacketException("Undefined information element ID: %d", field.informationElementId);
+                }
+
+                if (field.fieldLength > informationElement.get().getMaximumFieldLength()) {
+                    throw new InvalidPacketException("Template field is to large: %d > %d", field.fieldLength, informationElement.get().getMaximumFieldLength());
+                }
+
+                result = new Template.StandardField(field.fieldLength, informationElement.get());
             }
 
-            if (field.fieldLength > informationElement.get().getMaximumFieldLength()) {
-                // TODO: Log me
-                throw null;
-            }
-
-            return new Template.StandardField(field.fieldLength, informationElement.get());
+            results.add(result);
         }
+
+        return results;
     }
 
     public static void main(final String... args) throws Exception {

@@ -33,13 +33,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 
 public final class Set<R extends Record> implements Iterable<R> {
 
     public interface RecordParser<R extends Record> {
-        R parse(final ByteBuffer buffer);
+        R parse(final ByteBuffer buffer) throws InvalidPacketException;
 
         int getMinimumRecordLength();
     }
@@ -65,32 +66,18 @@ public final class Set<R extends Record> implements Iterable<R> {
 
     Set(final SetHeader header,
         final RecordParser<R> parser,
-        final ByteBuffer buffer) {
-        this.header = header;
+        final ByteBuffer buffer) throws InvalidPacketException {
+        this.header = Objects.requireNonNull(header);
 
         final List<R> records = new LinkedList<>();
         while (buffer.remaining() >= parser.getMinimumRecordLength()) {
             records.add(parser.parse(buffer));
         }
         this.records = Collections.unmodifiableList(records);
-    }
 
-    public int size() {
-        return this.header.length;
-    }
-
-    public boolean isValid() {
-        if (!this.header.isValid()) {
-            return false;
+        if (this.records.size() == 0) {
+            throw new InvalidPacketException("Empty set");
         }
-
-        for (final Record record : this.records) {
-            if (!record.isValid()) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override

@@ -29,6 +29,4 @@
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
 public interface Record {
-
-    boolean isValid();
 }

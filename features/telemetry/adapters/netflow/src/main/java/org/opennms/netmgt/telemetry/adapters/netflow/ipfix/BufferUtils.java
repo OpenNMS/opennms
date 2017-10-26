@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import com.google.common.primitives.UnsignedLong;
@@ -36,16 +37,11 @@ public class BufferUtils {
 
     private BufferUtils() {}
 
-//    public static ByteBuffer read(final DatagramChannel c, final int size) throws IOException {
-//        final ByteBuffer buffer = ByteBuffer.allocate(size);
-//        c.receive(buffer);
-//
-//        buffer.flip();
-//
-//        return buffer;
-//    }
-
     public static ByteBuffer slice(final ByteBuffer buffer, final int size) {
+        if (buffer.position() + size > buffer.limit()) {
+            new BufferUnderflowException();
+        }
+
         final ByteBuffer result = buffer.slice();
         buffer.position(buffer.position() + size);
 

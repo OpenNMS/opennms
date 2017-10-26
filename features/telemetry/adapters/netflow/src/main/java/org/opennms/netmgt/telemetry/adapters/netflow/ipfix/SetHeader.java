@@ -55,11 +55,15 @@ public final class SetHeader {
     public final int setId; // uint16
     public final int length; // uint16
 
-    SetHeader(final ByteBuffer buffer) {
-        // TODO: Size check
-
+    SetHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.setId = uint16(buffer);
         this.length = uint16(buffer);
+
+        // The Set ID values of 0 and 1 are not used, for historical reasons [RFC3954], values from 4 to 255 are
+        // reserved for future use.
+        if (this.setId < 256 && this.setId != 2 && this.setId != 3) {
+            throw new InvalidPacketException("Invalid set ID: %d", this.setId);
+        }
     }
 
     public Type getType() {
@@ -67,26 +71,8 @@ public final class SetHeader {
         if (this.setId == 3) return Type.OPTIONS_TEMPLATE_SET;
         if (this.setId >= 256) return Type.DATA_SET;
 
-        // TODO: Throw exception?
+        // Unreachable
         throw null;
-    }
-
-    public boolean isValid() {
-        // The Set ID values of 0 and 1 are not used, for historical reasons [RFC3954].
-        if (this.setId == 0 || this.setId == 1) {
-            return false;
-        }
-
-        // Values from 4 to 255 are reserved for future use.
-        if (this.setId >= 4 && this.setId <= 255) {
-            return false;
-        }
-
-        if (this.length <= 0) {
-            return false;
-        }
-
-        return true;
     }
 
     @Override

@@ -89,12 +89,6 @@ public final class DataRecord implements Record {
     }
 
     @Override
-    public boolean isValid() {
-        // TODO: Depending on template?
-        return true;
-    }
-
-    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("values", values)
@@ -111,7 +105,7 @@ public final class DataRecord implements Record {
             @Override
             public int getMinimumRecordLength() {
                 // For variable length fields we assume at least the length value (1 byte) to be present
-                return Stream.concat(template.scopedFields.stream(), template.unscopedFields.stream())
+                return Stream.concat(template.scopeFields.stream(), template.valueFields.stream())
                         .mapToInt(f -> f.size != VARIABLE_SIZED ? f.size : 1).sum();
             }
         };

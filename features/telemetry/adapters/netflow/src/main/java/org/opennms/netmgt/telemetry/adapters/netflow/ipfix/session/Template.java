@@ -137,24 +137,24 @@ public final class Template implements Iterable<Template.Field> {
 
     public final Instant insertionTime = Instant.now();
 
-    public final List<Field> scopedFields;
-    public final List<Field> unscopedFields;
+    public final List<Field> scopeFields;
+    public final List<Field> valueFields;
 
     private Template(final Key key,
-                     final List<Field> scopedFields,
-                     final List<Field> unscopedFields) {
+                     final List<Field> scopeFields,
+                     final List<Field> valueFields) {
         this.key = key;
-        this.scopedFields = scopedFields;
-        this.unscopedFields = unscopedFields;
+        this.scopeFields = scopeFields;
+        this.valueFields = valueFields;
     }
 
     public int count() {
-        return this.scopedFields.size() + this.unscopedFields.size();
+        return this.scopeFields.size() + this.valueFields.size();
     }
 
     @Override
     public Iterator<Field> iterator() {
-        return Iterators.concat(this.scopedFields.iterator(), this.unscopedFields.iterator());
+        return Iterators.concat(this.scopeFields.iterator(), this.valueFields.iterator());
     }
 
     public static class Builder {
@@ -177,11 +177,6 @@ public final class Template implements Iterable<Template.Field> {
             this.templateId = templateId;
             return this;
         }
-
-//        public Builder withField(final Field field) {
-//            this.fields.add(field);
-//            return this;
-//        }
 
         public Builder withFields(final List<Field> fields) {
             this.fields = fields;
