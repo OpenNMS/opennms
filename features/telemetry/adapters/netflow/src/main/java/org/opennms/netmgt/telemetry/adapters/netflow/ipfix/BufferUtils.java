@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
+import com.google.common.base.Preconditions;
 import com.google.common.primitives.UnsignedLong;
 
 public class BufferUtils {
@@ -46,6 +47,36 @@ public class BufferUtils {
         buffer.position(buffer.position() + size);
 
         result.limit(size);
+
+        return result;
+    }
+
+    public static UnsignedLong uint(final ByteBuffer buffer, final int octets) {
+        Preconditions.checkArgument(octets > 0 && octets < 9);
+
+        long result = 0;
+
+        for (int i = 0; i < octets; i++) {
+            result = (result << 8) | (buffer.get() & 0xFF);
+        }
+
+        return UnsignedLong.fromLongBits(result);
+    }
+
+    public static Long sint(final ByteBuffer buffer, final int octets) {
+        Preconditions.checkArgument(octets > 0 && octets < 9);
+
+        long result = buffer.get() & 0xFF;
+        boolean s = (result & 0x80) != 0;
+        if (s) {
+            result = 0xFFFFFFFFFFFFFF80L | (result & 0x7F);
+        } else {
+            result &= 0x7F;
+        }
+
+        for (int i = 1; i < octets; i++) {
+            result = (result << 8) | (buffer.get() & 0xFF);
+        }
 
         return result;
     }

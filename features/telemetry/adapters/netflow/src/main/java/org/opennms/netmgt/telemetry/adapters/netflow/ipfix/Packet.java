@@ -160,7 +160,7 @@ public final class Packet {
                     throw new InvalidPacketException("Undefined information element ID: %d", field.informationElementId);
                 }
 
-                if (field.fieldLength > informationElement.get().getMaximumFieldLength()) {
+                if (field.fieldLength > informationElement.get().getMaximumFieldLength() || field.fieldLength < informationElement.get().getMinimumFieldLength()) {
                     throw new InvalidPacketException("Template field is to large: %d > %d", field.fieldLength, informationElement.get().getMaximumFieldLength());
                 }
 

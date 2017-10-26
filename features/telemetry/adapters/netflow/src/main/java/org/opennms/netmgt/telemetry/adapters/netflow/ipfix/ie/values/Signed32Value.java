@@ -32,19 +32,34 @@ import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.by
 
 import java.nio.ByteBuffer;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 public class Signed32Value extends Value {
-    public final byte[] data;
+    public final long value;
 
     public Signed32Value(final String name,
-                         final byte[] data) {
+                         final long value) {
         super(name);
-        this.data = data;
+        this.value = value;
     }
 
-    public static Signed32Value parse(final String name,
-                                      final ByteBuffer buffer) {
-        return new Signed32Value(name, bytes(buffer, buffer.remaining()));
+    public static Value.Parser parser(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value parse(final ByteBuffer buffer) {
+                return new Signed32Value(name, BufferUtils.sint(buffer, buffer.remaining()));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 4;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1;
+            }
+        };
     }
 }

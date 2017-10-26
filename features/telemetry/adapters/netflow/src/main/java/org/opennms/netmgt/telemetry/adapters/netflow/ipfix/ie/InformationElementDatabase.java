@@ -35,7 +35,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.BooleanValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeMicrosecondsValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeMillisecondsValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeNanosecondsValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Float32Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Float64Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.OctetArrayValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed16Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed32Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed64Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed8Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned16Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned32Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned64Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned8Value;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
@@ -51,23 +65,23 @@ public class InformationElementDatabase {
 
     private static final Map<String, ValueParserFactory> TYPE_LOOKUP = ImmutableMap.<String, ValueParserFactory>builder()
             .put("octetArray", OctetArrayValue::parser)
-//            .put("unsigned8", Unsigned8Value::parse)
-//            .put("unsigned16", Unsigned16Value::parse)
-//            .put("unsigned32", Unsigned32Value::parse)
-//            .put("unsigned64", Unsigned64Value::parse)
-//            .put("signed8", Signed8Value::parse)
-//            .put("signed16", Signed16Value::parse)
-//            .put("signed32", Signed32Value::parse)
-//            .put("signed64", Signed64Value::parse)
-//            .put("float32", Float32Value::parse)
-//            .put("float64", Float64Value::parse)
-//            .put("boolean", BooleanValue::parse)
+            .put("unsigned8", Unsigned8Value::parser)
+            .put("unsigned16", Unsigned16Value::parser)
+            .put("unsigned32", Unsigned32Value::parser)
+            .put("unsigned64", Unsigned64Value::parser)
+            .put("signed8", Signed8Value::parser)
+            .put("signed16", Signed16Value::parser)
+            .put("signed32", Signed32Value::parser)
+            .put("signed64", Signed64Value::parser)
+            .put("float32", Float32Value::parser)
+            .put("float64", Float64Value::parser)
+            .put("boolean", BooleanValue::parser)
 //            .put("macAddress", MacAddressValue::parse)
 //            .put("string", StringValue::parse)
 //            .put("dateTimeSeconds", DateTimeSecondsValue::parse)
-//            .put("dateTimeMilliseconds", DateTimeMillisecondsValue::parse)
-//            .put("dateTimeMicroseconds", DateTimeMicrosecondsValue::parse)
-//            .put("dateTimeNanoseconds", DateTimeNanosecondsValue::parse)
+            .put("dateTimeMilliseconds", DateTimeMillisecondsValue::parser)
+            .put("dateTimeMicroseconds", DateTimeMicrosecondsValue::parser)
+            .put("dateTimeNanoseconds", DateTimeNanosecondsValue::parser)
 //            .put("ipv4Address", IPv4AddressValue::parse)
 //            .put("ipv6Address", IPv6AddressValue::parse)
 //            .put("basicList", BasicListValue::parse)

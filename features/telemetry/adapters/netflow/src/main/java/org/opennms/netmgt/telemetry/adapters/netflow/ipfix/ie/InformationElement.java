@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IllegalValueException;
+
 public class InformationElement {
 
     private final int id;
@@ -62,11 +64,15 @@ public class InformationElement {
         return this.semantics;
     }
 
-    public Value parse(final ByteBuffer buffer) {
+    public Value parse(final ByteBuffer buffer) throws IllegalValueException {
         return this.parser.parse(buffer);
     }
 
     public int getMaximumFieldLength() {
         return this.parser.getMaximumFieldLength();
+    }
+
+    public int getMinimumFieldLength() {
+        return this.parser.getMinimumFieldLength();
     }
 }

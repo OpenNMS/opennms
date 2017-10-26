@@ -26,42 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
-
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+import org.junit.Assert;
+import org.junit.Test;
 
-import com.google.common.primitives.UnsignedLong;
+public class BufferUtilsTest {
 
-public class Unsigned8Value extends Value {
-    public final UnsignedLong value;
-
-    public Unsigned8Value(final String name,
-                          final UnsignedLong value) {
-        super(name);
-        this.value = value;
-    }
-
-    public static Value.Parser parser(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value parse(final ByteBuffer buffer) {
-                return new Unsigned8Value(name, BufferUtils.uint(buffer, 1));
-            }
-
-            @Override
-            public int getMaximumFieldLength() {
-                return 1;
-            }
-
-            @Override
-            public int getMinimumFieldLength() {
-                return 1;
-            }
-        };
+    @Test
+    public void sintTest() throws Exception {
+        Assert.assertEquals(Long.valueOf(0), BufferUtils.sint(ByteBuffer.wrap(new byte[]{0, 0, 0}), 3));
+        Assert.assertEquals(Long.valueOf(-1), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 255}), 3));
+        Assert.assertEquals(Long.valueOf(-2), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 254}), 3));
+        Assert.assertEquals(Long.valueOf(1), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 1}), 3));
+        Assert.assertEquals(Long.valueOf(2), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 2}), 3));
     }
 }

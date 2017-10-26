@@ -32,19 +32,36 @@ import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.by
 
 import java.nio.ByteBuffer;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.primitives.UnsignedLong;
+
 public class DateTimeSecondsValue extends Value {
-    public final byte[] data;
+    public final long seconds;
 
     public DateTimeSecondsValue(final String name,
-                                final byte[] data) {
+                                final long seconds) {
         super(name);
-        this.data = data;
+        this.seconds = seconds;
     }
 
-    public static DateTimeSecondsValue parse(final String name,
-                                             final ByteBuffer buffer) {
-        return new DateTimeSecondsValue(name, bytes(buffer, buffer.remaining()));
+    public static Value.Parser parser(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value parse(final ByteBuffer buffer) {
+                return new DateTimeSecondsValue(name, BufferUtils.uint32(buffer));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 4;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 4;
+            }
+        };
     }
 }

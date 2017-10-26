@@ -32,19 +32,42 @@ import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.by
 
 import java.nio.ByteBuffer;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.Preconditions;
+
 public class BooleanValue extends Value {
-    public final byte[] data;
+    public final boolean value;
 
     public BooleanValue(final String name,
-                        final byte[] data) {
+                        final boolean value) {
         super(name);
-        this.data = data;
+
+        this.value = value;
     }
 
-    public static BooleanValue parse(final String name,
-                                     final ByteBuffer buffer) {
-        return new BooleanValue(name, bytes(buffer, buffer.remaining()));
+    public static Value.Parser parser(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value parse(final ByteBuffer buffer) throws IllegalValueException {
+                final int value = BufferUtils.uint8(buffer);
+
+                if (value < 1 || value > 2) {
+                    throw new IllegalValueException("Illegal value '"+value+"' for boolean type (only 1/true and 2/false allowed)");
+                }
+                return new BooleanValue(name,value == 1);
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 1;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1;
+            }
+        };
     }
 }

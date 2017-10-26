@@ -32,19 +32,34 @@ import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.by
 
 import java.nio.ByteBuffer;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 public class Float64Value extends Value {
-    public final byte[] data;
+    public final double value;
 
     public Float64Value(final String name,
-                        final byte[] data) {
+                        final double value) {
         super(name);
-        this.data = data;
+        this.value = value;
     }
 
-    public static Float64Value parse(final String name,
-                                     final ByteBuffer buffer) {
-        return new Float64Value(name, bytes(buffer, buffer.remaining()));
+    public static Value.Parser parser(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value parse(final ByteBuffer buffer) {
+                return new Float64Value(name, Double.longBitsToDouble(BufferUtils.uint(buffer, buffer.remaining()).longValue()));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 8;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1;
+            }
+        };
     }
 }

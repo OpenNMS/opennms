@@ -28,43 +28,23 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
-
-import java.nio.ByteBuffer;
-
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
-
-public class DateTimeMicrosecondsValue extends Value {
-    public final long seconds;
-    public final long fraction;
-
-    public DateTimeMicrosecondsValue(final String name,
-                                     final long seconds,
-                                     final long fraction) {
-        super(name);
-        this.seconds = seconds;
-        this.fraction = fraction;
+public class IllegalValueException extends Exception {
+    public IllegalValueException() {
     }
 
-    public static Value.Parser parser(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value parse(final ByteBuffer buffer) {
-                final long seconds = BufferUtils.uint32(buffer);
-                final long fraction = BufferUtils.uint32(buffer) & (0xFFFFFFFF << 11);
-                return new DateTimeMicrosecondsValue(name, seconds, fraction);
-            }
+    public IllegalValueException(String message) {
+        super(message);
+    }
 
-            @Override
-            public int getMaximumFieldLength() {
-                return 8;
-            }
+    public IllegalValueException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-            @Override
-            public int getMinimumFieldLength() {
-                return 8;
-            }
-        };
+    public IllegalValueException(Throwable cause) {
+        super(cause);
+    }
+
+    public IllegalValueException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }
