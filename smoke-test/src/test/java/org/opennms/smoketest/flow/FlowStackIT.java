@@ -53,7 +53,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
-import org.junit.Assert;
+import org.apache.http.util.EntityUtils;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -78,7 +78,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import io.searchbox.client.AbstractJestClient;
 import io.searchbox.client.JestClient;
@@ -198,7 +198,10 @@ public class FlowStackIT {
             httpPut.addHeader("content-type", "application/json");
             httpPut.setEntity(new StringEntity(gson.toJson(documents)));
             CloseableHttpResponse response = restClient.execute(httpPut);
-            assertEquals(204, response.getStatusLine().getStatusCode());
+            assertEquals(202, response.getStatusLine().getStatusCode());
+
+            // Wait 5 seconds, because it takes a while before elastic returns the data
+            Thread.sleep(5000);
 
             // Query flows
             final HttpGet httpGet = new HttpGet(flowRestUrl);
@@ -210,23 +213,22 @@ public class FlowStackIT {
             final Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
             }.getType();
             List<NetflowDocument> netflowDocuments = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), listType);
-            Assert.assertEquals(4, netflowDocuments.size());
+            assertEquals(4, netflowDocuments.size());
 
             // Proxy query
             final HttpPost httpPost = new HttpPost(flowRestUrl + "/proxy");
             httpPost.addHeader("content-type", "application/json");
+            httpPost.addHeader("accept", "application/json");
             httpPost.setEntity(new StringEntity("{}"));
             response = restClient.execute(httpPost);
             assertEquals(200, response.getStatusLine().getStatusCode());
 
-            // Verify response
-            final byte[] bytes = new byte[(int) response.getEntity().getContentLength()];
-            ByteStreams.readFully(response.getEntity().getContent(), bytes);
-            final String json = new String(bytes);
-            final JsonElement jsonElement = gson.toJsonTree(json);
-            // verify hits.hits exists
-            final JsonArray jsonArray = jsonElement.getAsJsonObject().get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-            Assert.assertEquals(4, jsonArray.size());
+            // Verify response by checking that hits.hits exists
+            final String json = EntityUtils.toString(response.getEntity());
+            EntityUtils.consume(response.getEntity());
+            final JsonObject jsonRoot = gson.fromJson(json, JsonObject.class);
+            final JsonArray jsonArray = jsonRoot.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+            assertEquals(4, jsonArray.size());
         }
     }
 

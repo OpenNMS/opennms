@@ -129,7 +129,6 @@ public class RestClientFactory {
 				.multiThreaded(true)
 				.defaultCredentials(esusername, espassword)
 				.build();
-
 		factory = new JestClientFactory();
 
 		factory.setHttpClientConfig(config);

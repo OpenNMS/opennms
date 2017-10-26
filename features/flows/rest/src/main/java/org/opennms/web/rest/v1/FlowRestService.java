@@ -117,7 +117,7 @@ public class FlowRestService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response saveFlows(String input) throws Exception {
         try {
-            JsonElement jsonElement = gson.toJsonTree(input);
+            final JsonElement jsonElement = gson.fromJson(input, JsonElement.class);
             if (jsonElement.isJsonArray()) {
                 final Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
                 }.getType();
