@@ -4,7 +4,7 @@
 
 === Using AWS SQS
 
-By default, _{opennms-product-name}_ uses the embedded _ActiveMQ_ broker to communicate with _Minions_.
+By default, _{opennms-product-name}_ uses an _ActiveMQ_ broker to communicate with _Minions_.
 This broker is used for both issuing remote procedure calls (RPCs, ie. ping this host) and for transporting unsolicited messages such as SNMP traps and syslog messages.
 
 _AWS SQS_ can be used as an alternative to _ActiveMQ_ for transporting the unsolicited messages.
@@ -33,8 +33,17 @@ echo 'org.opennms.core.ipc.sink.strategy=aws
 org.opennms.core.ipc.sink.aws.aws_region=us-east-1' > "$OPENNMS_HOME/etc/opennms.properties.d/aws.properties"
 ----
 
-If _{opennms-product-name}_ is not running inside an AWS VPC, the AWS Credentials are required. The credentials can be obtained from the local credentials file created through the AWS CLI tools (i.e. `~/.aws/credentials`),
-or they can be specified inside the `aws.properties` file; for example:
+AWS Credentials are required in order to access SQS.
+
+There are several ways to provide credentials. Without additional configuration changes, the default credential provider chain will be used. That means, the provider looks for credentials in this order:
+
+* Environment Variables (i.e. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`)
+* Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`)
+* Default credential profiles file (i.e. `~/.aws/credentials`)
+* Amazon ECS container credentials (i.e. `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`)
+* Instance profile credentials (i.e. through the metadata service)
+
+Optionally, the credentials can be specified inside the `aws.properties` file, for example:
 
 [source, sh]
 ----
@@ -74,6 +83,8 @@ aws_access_key_id=XXXXXXXXXXX
 aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.aws.cfg"
 ----
 
+The AWS credentials are required. If they are not specified on the configuration file, the default credentials provider chain (explained above) will be used instead.
+
 In order to use FIFO queues instead of Standard queues, it is required to add the following parameter:
 
 [source, sh]
@@ -111,3 +122,21 @@ an additional property called `aws_queue_name_prefix` was added to enforce a pre
 For example, if we set this property to be "PROD", the resulting name of the queues are going something like `OpenNMS-PROD-Sink-Heartbeat`, instead of `OpenNMS-Sink-Heartbeat`.
 
 WARNING: This property must be properly configured at  _{opennms-product-name}_  and Minion side.
+
+==== AWS Credentials
+
+The credentials (a.k.a. the Access Key ID and the Secret Access Key) are required in both sides, OpenNMS and Minion.
+
+In order to create credentials just for accessing SQS resources, follow this procedure:
+
+* From the AWS Console, choose the appropriate region.
+* Open the IAM Dashboard and click on "Add user".
+* Choose a name for the user, for example `opennms-minion`.
+* Check only `Programmatic access` for the Access type.
+* On the permissions, click on `Attach existing policies directly`.
+* On the search bar, write SQS, and then check on `AmazonSQSFullAccess`.
+* Click on Create User
+
+image:../images/minion/aws-minion-user.png[]
+
+Finally, either click on Download .csv or click on "Show" to grab a copy of the Access key ID, and the Secret access key.
