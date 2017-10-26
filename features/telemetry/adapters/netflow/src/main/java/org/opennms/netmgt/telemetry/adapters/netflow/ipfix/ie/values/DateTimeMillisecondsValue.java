@@ -46,6 +46,13 @@ public class DateTimeMillisecondsValue extends Value {
         this.seconds = seconds;
     }
 
+    @Override
+    public String toString() {
+        return "DateTimeMillisecondsValue{" +
+                "seconds=" + seconds +
+                '}';
+    }
+
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override

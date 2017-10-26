@@ -31,20 +31,43 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 public class MacAddressValue extends Value {
-    public final byte[] data;
+    public final byte[] macAddressOctets;
 
     public MacAddressValue(final String name,
-                           final byte[] data) {
+                           final byte[] macAddressOctets) {
         super(name);
-        this.data = data;
+        this.macAddressOctets = macAddressOctets;
     }
 
-    public static MacAddressValue parse(final String name,
-                                        final ByteBuffer buffer) {
-        return new MacAddressValue(name, bytes(buffer, buffer.remaining()));
+    @Override
+    public String toString() {
+        return "MacAddressValue{" +
+                "macAddressOctets=" + Arrays.toString(macAddressOctets) +
+                '}';
+    }
+
+    public static Value.Parser parser(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value parse(final ByteBuffer buffer) {
+                return new MacAddressValue(name, BufferUtils.bytes(buffer, 6));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 6;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 6;
+            }
+        };
     }
 }

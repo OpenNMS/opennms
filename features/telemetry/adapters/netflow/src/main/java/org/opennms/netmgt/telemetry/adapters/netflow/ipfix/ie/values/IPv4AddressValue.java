@@ -30,21 +30,51 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 public class IPv4AddressValue extends Value {
-    public final byte[] data;
+    public final Inet4Address inet4Address;
 
     public IPv4AddressValue(final String name,
-                            final byte[] data) {
+                            final Inet4Address inet4Address) {
         super(name);
-        this.data = data;
+        this.inet4Address = inet4Address;
     }
 
-    public static IPv4AddressValue parse(final String name,
-                                         final ByteBuffer buffer) {
-        return new IPv4AddressValue(name, bytes(buffer, buffer.remaining()));
+    @Override
+    public String toString() {
+        return "IPv4AddressValue{" +
+                "inet4Address=" + inet4Address +
+                '}';
+    }
+
+    public static Value.Parser parser(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value parse(final ByteBuffer buffer) throws IllegalValueException {
+                try {
+                    return new IPv4AddressValue(name, (Inet4Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 4)));
+                } catch (UnknownHostException e) {
+                    throw new IllegalValueException("Error parsing IPv4 value: ", e);
+                }
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 4;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 4;
+            }
+        };
     }
 }

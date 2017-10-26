@@ -30,21 +30,50 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 public class IPv6AddressValue extends Value {
-    public final byte[] data;
+    public final Inet6Address inet6Address;
 
     public IPv6AddressValue(final String name,
-                            final byte[] data) {
+                            final Inet6Address inet6Address) {
         super(name);
-        this.data = data;
+        this.inet6Address = inet6Address;
     }
 
-    public static IPv6AddressValue parse(final String name,
-                                         final ByteBuffer buffer) {
-        return new IPv6AddressValue(name, bytes(buffer, buffer.remaining()));
+    @Override
+    public String toString() {
+        return "IPv6AddressValue{" +
+                "inet6Address=" + inet6Address +
+                '}';
+    }
+
+    public static Value.Parser parser(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value parse(final ByteBuffer buffer) throws IllegalValueException {
+                try {
+                    return new IPv6AddressValue(name, (Inet6Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 16)));
+                } catch (UnknownHostException e) {
+                    throw new IllegalValueException("Error parsing IPv6 value: ", e);
+                }
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 16;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 16;
+            }
+        };
     }
 }

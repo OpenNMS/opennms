@@ -47,6 +47,14 @@ public class DateTimeMicrosecondsValue extends Value {
         this.fraction = fraction;
     }
 
+    @Override
+    public String toString() {
+        return "DateTimeMicrosecondsValue{" +
+                "seconds=" + seconds +
+                ", fraction=" + fraction +
+                '}';
+    }
+
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override

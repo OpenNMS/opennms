@@ -30,21 +30,48 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 public class StringValue extends Value {
-    public final byte[] data;
+    public final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
+    public final String value;
 
     public StringValue(final String name,
-                       final byte[] data) {
+                       final String value) {
         super(name);
-        this.data = data;
+        this.value = value;
     }
 
-    public static StringValue parse(final String name,
-                                    final ByteBuffer buffer) {
-        return new StringValue(name, bytes(buffer, buffer.remaining()));
+    @Override
+    public String toString() {
+        return "StringValue{" +
+                "value='" + value + '\'' +
+                '}';
+    }
+
+    public static Value.Parser parser(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value parse(final ByteBuffer buffer) throws IllegalValueException {
+                return new StringValue(name, new String(BufferUtils.bytes(buffer, buffer.remaining()), UTF8_CHARSET));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 0;
+            }
+        };
     }
 }

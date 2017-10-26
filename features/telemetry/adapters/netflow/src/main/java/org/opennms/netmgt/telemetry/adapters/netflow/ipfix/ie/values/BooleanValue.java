@@ -47,6 +47,13 @@ public class BooleanValue extends Value {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "BooleanValue{" +
+                "value=" + value +
+                '}';
+    }
+
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override

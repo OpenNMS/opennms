@@ -46,6 +46,13 @@ public class Unsigned16Value extends Value {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "Unsigned16Value{" +
+                "value=" + value +
+                '}';
+    }
+
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
