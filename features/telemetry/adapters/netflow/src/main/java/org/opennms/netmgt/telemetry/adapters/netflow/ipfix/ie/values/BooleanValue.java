@@ -58,7 +58,7 @@ public class BooleanValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final int value = BufferUtils.uint8(buffer);
 
                 if (value < 1 || value > 2) {

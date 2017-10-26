@@ -34,17 +34,21 @@ import java.util.Optional;
 
 public class Session {
 
+    @FunctionalInterface
+    public interface TemplateResolver {
+        Optional<Template> lookup(final int templateId);
+    }
+
     private Map<Template.Key, Template> templates = new HashMap<>();
 
     public Session() {
     }
 
-    public Optional<Template> findTemplate(final long observationDomainId,
-                                           final int templateId) {
-        return Optional.ofNullable(this.templates.get(new Template.Key(observationDomainId, templateId)));
-    }
-
     public void addTemplate(final Template template) {
         this.templates.put(template.key, template);
+    }
+
+    public TemplateResolver templateResolver(final long observationDomainId) {
+        return templateId -> Optional.ofNullable(this.templates.get(new Template.Key(observationDomainId, templateId)));
     }
 }

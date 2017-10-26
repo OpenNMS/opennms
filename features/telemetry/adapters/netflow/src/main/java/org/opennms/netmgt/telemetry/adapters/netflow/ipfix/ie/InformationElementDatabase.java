@@ -52,6 +52,7 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed32Val
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed64Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed8Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.StringValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.SubTemplateListValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned16Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned32Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned64Value;
@@ -91,7 +92,7 @@ public class InformationElementDatabase {
             .put("ipv4Address", IPv4AddressValue::parser)
             .put("ipv6Address", IPv6AddressValue::parser)
             .put("basicList", BasicListValue::parser)
-            .put("subTemplateList", OctetArrayValue::parser)
+            .put("subTemplateList", SubTemplateListValue::parser)
             .put("subTemplateMultiList", OctetArrayValue::parser)
             .build();
 

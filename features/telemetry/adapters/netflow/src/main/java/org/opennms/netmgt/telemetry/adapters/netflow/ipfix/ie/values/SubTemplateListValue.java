@@ -32,11 +32,16 @@ import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.ui
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.DataRecord;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
+
+import com.google.common.collect.Lists;
 
 public class SubTemplateListValue extends ListValue {
     /*
@@ -64,11 +69,19 @@ public class SubTemplateListValue extends ListValue {
         return new Value.Parser() {
 
             @Override
-            public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(uint8(buffer));
                 final int templateId = uint16(buffer);
 
-                return null;
+                final Template template = templateResolver.lookup(templateId).orElseThrow(() -> new InvalidPacketException("Unknown Template ID: %d", templateId));
+
+                final List<List<Value>> values = new LinkedList<>();
+                while (buffer.hasRemaining()) {
+                    final DataRecord record = new DataRecord(templateResolver, template, buffer);
+                    values.add(Lists.transform(record.fields, f -> f.value));
+                }
+
+                return new SubTemplateListValue(name, semantic, values);
             }
 
             @Override

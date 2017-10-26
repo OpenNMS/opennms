@@ -57,7 +57,7 @@ public class DateTimeMillisecondsValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session session, final ByteBuffer buffer) {
+            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 return new DateTimeMillisecondsValue(name, BufferUtils.uint64(buffer));
             }
 

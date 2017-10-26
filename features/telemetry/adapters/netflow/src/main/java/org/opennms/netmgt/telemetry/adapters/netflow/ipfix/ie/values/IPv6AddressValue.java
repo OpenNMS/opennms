@@ -60,7 +60,7 @@ public class IPv6AddressValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 try {
                     return new IPv6AddressValue(name, (Inet6Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 16)));
                 } catch (UnknownHostException e) {

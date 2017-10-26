@@ -70,7 +70,7 @@ public class BasicListValue extends ListValue {
         return new Value.Parser() {
 
             @Override
-            public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(uint8(buffer));
                 final FieldSpecifier specifier = new FieldSpecifier(buffer);
 
@@ -78,7 +78,7 @@ public class BasicListValue extends ListValue {
 
                 final List<Value> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
-                    values.add(new FieldValue(session, templateField, buffer).value);
+                    values.add(new FieldValue(templateResolver, templateField, buffer).value);
                 }
 
                 return new BasicListValue(name, semantic, values);

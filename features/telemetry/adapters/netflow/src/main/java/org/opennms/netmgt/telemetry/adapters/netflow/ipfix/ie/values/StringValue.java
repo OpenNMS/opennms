@@ -58,7 +58,7 @@ public class StringValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session session, final ByteBuffer buffer) {
+            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 return new StringValue(name, new String(BufferUtils.bytes(buffer, buffer.remaining()), UTF8_CHARSET));
             }
 

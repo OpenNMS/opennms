@@ -113,7 +113,7 @@ public final class Packet {
                 }
 
                 case DATA_SET: {
-                    final Set<DataRecord> dataSet = new Set<>(setHeader, DataRecord.parser(session, header.observationDomainId, setHeader.setId), payloadBuffer);
+                    final Set<DataRecord> dataSet = new Set<>(setHeader, DataRecord.parser(session.templateResolver(header.observationDomainId), setHeader.setId), payloadBuffer);
 
                     // TODO: Pass to handler
 

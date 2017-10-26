@@ -53,35 +53,35 @@ public final class DataRecord implements Record {
      +--------------------------------------------------+
     */
 
-    public final List<FieldValue> values;
+    public final List<FieldValue> fields;
 
-    public DataRecord(final Session session,
+    public DataRecord(final Session.TemplateResolver templateResolver,
                       final Template template,
                       final ByteBuffer buffer) throws InvalidPacketException {
 
         final List<FieldValue> values = new ArrayList<>(template.count());
         for (final Template.Field templateField : template) {
-            values.add(new FieldValue(session, templateField, buffer));
+            values.add(new FieldValue(templateResolver, templateField, buffer));
         }
 
-        this.values = Collections.unmodifiableList(values);
+        this.fields = Collections.unmodifiableList(values);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("fields", values)
+                .add("fields", fields)
                 .toString();
     }
 
-    public static Set.RecordParser<DataRecord> parser(final Session session, long observationDomainId, final int templateId) throws InvalidPacketException {
-        final Template template = session.findTemplate(observationDomainId, templateId)
-                .orElseThrow(() -> new InvalidPacketException("Unknown Template ID: %d/%d", observationDomainId, templateId));
+    public static Set.RecordParser<DataRecord> parser(final Session.TemplateResolver templateResolver, final int templateId) throws InvalidPacketException {
+        final Template template = templateResolver.lookup(templateId)
+                .orElseThrow(() -> new InvalidPacketException("Unknown Template ID: %d", templateId));
 
         return new Set.RecordParser<DataRecord>() {
             @Override
             public DataRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
-                return new DataRecord(session, template, buffer);
+                return new DataRecord(templateResolver, template, buffer);
             }
 
             @Override

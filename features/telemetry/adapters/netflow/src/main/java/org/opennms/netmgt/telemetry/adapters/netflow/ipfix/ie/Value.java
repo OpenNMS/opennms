@@ -36,7 +36,7 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 public abstract class Value {
 
     public interface Parser {
-        Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException;
+        Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
 
         int getMaximumFieldLength();
 

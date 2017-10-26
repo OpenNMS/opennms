@@ -79,7 +79,7 @@ public final class Template implements Iterable<Template.Field> {
             this.length = length;
         }
 
-        public abstract Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException;
+        public abstract Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
     }
 
     public static final class StandardField extends Field {
@@ -93,8 +93,8 @@ public final class Template implements Iterable<Template.Field> {
         }
 
         @Override
-        public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
-            return this.informationElement.parse(session, buffer);
+        public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            return this.informationElement.parse(templateResolver, buffer);
         }
     }
 
@@ -129,7 +129,7 @@ public final class Template implements Iterable<Template.Field> {
         }
 
         @Override
-        public Value parse(final Session session, final ByteBuffer buffer) {
+        public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
             return new EnterpriseValue(this.informationElementId, this.enterpriseNumber, bytes(buffer, buffer.remaining()));
         }
     }

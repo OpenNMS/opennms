@@ -57,7 +57,7 @@ public class OctetArrayValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session session, ByteBuffer buffer) {
+            public Value parse(final Session.TemplateResolver templateResolver, ByteBuffer buffer) {
                 return new OctetArrayValue(name, bytes(buffer, buffer.remaining()));
             }
 

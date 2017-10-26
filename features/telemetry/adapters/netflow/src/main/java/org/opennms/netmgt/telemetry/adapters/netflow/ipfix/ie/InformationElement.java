@@ -65,8 +65,8 @@ public class InformationElement {
         return this.semantics;
     }
 
-    public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
-        return this.parser.parse(session, buffer);
+    public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+        return this.parser.parse(templateResolver, buffer);
     }
 
     public int getMaximumFieldLength() {

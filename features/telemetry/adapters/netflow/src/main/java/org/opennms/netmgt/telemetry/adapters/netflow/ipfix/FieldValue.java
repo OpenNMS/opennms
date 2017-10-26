@@ -63,7 +63,7 @@ public class FieldValue {
 
     public final Value value;
 
-    public FieldValue(final Session session, final Template.Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
+    public FieldValue(final Session.TemplateResolver templateResolver, final Template.Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
         int length = templateField.length;
         if (length == VARIABLE_SIZED) {
             length = uint8(buffer);
@@ -72,6 +72,6 @@ public class FieldValue {
             }
         }
 
-        value = templateField.parse(session, slice(buffer, length));
+        value = templateField.parse(templateResolver, slice(buffer, length));
     }
 }

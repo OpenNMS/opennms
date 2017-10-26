@@ -59,7 +59,7 @@ public class IPv4AddressValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 try {
                     return new IPv4AddressValue(name, (Inet4Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 4)));
                 } catch (final UnknownHostException e) {
