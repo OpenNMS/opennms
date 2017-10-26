@@ -50,7 +50,6 @@ public final class TemplateRecordHeader {
     public final int fieldCount; // uint16
 
     TemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
-        // TODO: Size check
         this.templateId = uint16(buffer);
         this.fieldCount = uint16(buffer);
 

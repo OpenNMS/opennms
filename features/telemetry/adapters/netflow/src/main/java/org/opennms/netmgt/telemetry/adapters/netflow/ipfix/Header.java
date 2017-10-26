@@ -62,8 +62,6 @@ public final class Header {
     public final long observationDomainId; // uint32
 
     Header(final ByteBuffer buffer) throws InvalidPacketException {
-        // TODO: Size check
-
         this.versionNumber = uint16(buffer);
         this.length = uint16(buffer);
         this.exportTime = uint32(buffer);
@@ -72,6 +70,10 @@ public final class Header {
 
         if (this.versionNumber != VERSION) {
             throw new InvalidPacketException("Invalid version number: %04X", this.versionNumber);
+        }
+
+        if (this.length <= 0) {
+            throw new InvalidPacketException("Empty packet");
         }
     }
 
