@@ -2331,18 +2331,20 @@ public class InstallerDb {
         m_out.print("- checking if time of database \"" + getDatabaseName() + "\" is matching system time... ");
 
         try (Statement st = getConnection().createStatement()) {
+            final long beforeQueryTime = System.currentTimeMillis();
             try (ResultSet rs = st.executeQuery("SELECT NOW()")) {
                 if (rs.next()) {
                     final Timestamp currentDatabaseTime = rs.getTimestamp(1);
                     final long currentSystemTime = System.currentTimeMillis();
                     final long diff = currentDatabaseTime.getTime() - currentSystemTime;
-                    if (Math.abs(diff) > 1000) {
+                    final long queryExecuteDelta = Math.abs(currentSystemTime - beforeQueryTime);
+                    if (Math.abs(diff) > 1000 + queryExecuteDelta) {
                         m_out.println("NOT OK");
                         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
                         final String databaseDateString = simpleDateFormat.format(new Date(currentDatabaseTime.getTime()));
-                        final String systemtimeDateString = simpleDateFormat.format(new Date(currentSystemTime));
+                        final String systemTimeDateString = simpleDateFormat.format(new Date(currentSystemTime));
                         throw new Exception("Database time and system time differ."
-                                + "System time: " + systemtimeDateString + ", database time: " + databaseDateString
+                                + "System time: " + systemTimeDateString + ", database time: " + databaseDateString
                                 + ", diff: " + Math.abs(diff) + "ms. The maximum allowed difference is 1000ms."
                                 + " Please update either the database time or system time");
                     }
