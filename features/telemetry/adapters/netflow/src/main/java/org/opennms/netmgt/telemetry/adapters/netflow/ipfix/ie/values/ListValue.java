@@ -43,13 +43,20 @@ public abstract class ListValue extends Value {
 
         public static Semantic find(final int i) throws InvalidPacketException {
             switch (i) {
-                case 0xFF: return UNDEFINED;
-                case 0x00: return NONE_OF;
-                case 0x01: return EXACTLY_ONE_OF;
-                case 0x02: return ONE_OR_MORE_OF;
-                case 0x03: return ALL_OF;
-                case 0x04: return ORDERED;
-                default: throw new InvalidPacketException("Illegal semantic value: 0x%02x", i);
+                case 0xFF:
+                    return UNDEFINED;
+                case 0x00:
+                    return NONE_OF;
+                case 0x01:
+                    return EXACTLY_ONE_OF;
+                case 0x02:
+                    return ONE_OR_MORE_OF;
+                case 0x03:
+                    return ALL_OF;
+                case 0x04:
+                    return ORDERED;
+                default:
+                    throw new InvalidPacketException("Illegal semantic value: 0x%02x", i);
             }
         }
     }

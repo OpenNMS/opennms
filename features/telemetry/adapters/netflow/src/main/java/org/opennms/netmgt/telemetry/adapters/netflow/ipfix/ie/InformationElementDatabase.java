@@ -95,7 +95,7 @@ public class InformationElementDatabase {
             .put("subTemplateMultiList", OctetArrayValue::parser)
             .build();
 
-    private static final Map<String, Semantics> SEMANTICS_LOOKUP = ImmutableMap.<String,Semantics>builder()
+    private static final Map<String, Semantics> SEMANTICS_LOOKUP = ImmutableMap.<String, Semantics>builder()
             .put("default", Semantics.DEFAULT)
             .put("quantity", Semantics.QUANTITY)
             .put("totalCounter", Semantics.TOTAL_COUNTER)

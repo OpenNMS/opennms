@@ -51,7 +51,7 @@ public final class Template implements Iterable<Template.Field> {
         public final int templateId;
 
         Key(final long observationDomainId,
-                    final int templateId) {
+            final int templateId) {
             this.observationDomainId = observationDomainId;
             this.templateId = templateId;
         }
@@ -107,8 +107,8 @@ public final class Template implements Iterable<Template.Field> {
             public final byte[] data;
 
             public EnterpriseValue(final int informationElementId,
-                                    final long enterpriseNumber,
-                                    final byte[] data) {
+                                   final long enterpriseNumber,
+                                   final byte[] data) {
                 super("enterprise");
                 this.informationElementId = informationElementId;
                 this.enterpriseNumber = enterpriseNumber;

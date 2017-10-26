@@ -64,7 +64,7 @@ public class BooleanValue extends Value {
                 if (value < 1 || value > 2) {
                     throw new InvalidPacketException("Illegal value '%d' for boolean type (only 1/true and 2/false allowed)", value);
                 }
-                return new BooleanValue(name,value == 1);
+                return new BooleanValue(name, value == 1);
             }
 
             @Override

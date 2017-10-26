@@ -36,8 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
-
 import com.google.common.base.MoreObjects;
 
 public final class TemplateRecord implements Record {

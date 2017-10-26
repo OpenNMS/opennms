@@ -36,7 +36,8 @@ import com.google.common.primitives.UnsignedLong;
 
 public class BufferUtils {
 
-    private BufferUtils() {}
+    private BufferUtils() {
+    }
 
     public static ByteBuffer slice(final ByteBuffer buffer, final int size) {
         if (buffer.position() + size > buffer.limit()) {
@@ -87,14 +88,14 @@ public class BufferUtils {
 
     public static int uint16(final ByteBuffer buffer) {
         return ((buffer.get() & 0xFF) << 8)
-             | ((buffer.get() & 0xFF) << 0);
+                | ((buffer.get() & 0xFF) << 0);
     }
 
     public static long uint32(final ByteBuffer buffer) {
         return ((buffer.get() & 0xFF) << 24)
-             | ((buffer.get() & 0xFF) << 16)
-             | ((buffer.get() & 0xFF) << 8)
-             | ((buffer.get() & 0xFF) << 0);
+                | ((buffer.get() & 0xFF) << 16)
+                | ((buffer.get() & 0xFF) << 8)
+                | ((buffer.get() & 0xFF) << 0);
     }
 
     public static UnsignedLong uint64(final ByteBuffer buffer) {

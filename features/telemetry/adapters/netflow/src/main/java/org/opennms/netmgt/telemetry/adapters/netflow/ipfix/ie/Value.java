@@ -39,6 +39,7 @@ public abstract class Value {
         Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException;
 
         int getMaximumFieldLength();
+
         int getMinimumFieldLength();
     }
 
