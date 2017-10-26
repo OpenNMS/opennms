@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 public class InformationElement {
 
@@ -64,8 +65,8 @@ public class InformationElement {
         return this.semantics;
     }
 
-    public Value parse(final ByteBuffer buffer) throws InvalidPacketException {
-        return this.parser.parse(buffer);
+    public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+        return this.parser.parse(session, buffer);
     }
 
     public int getMaximumFieldLength() {

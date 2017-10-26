@@ -35,12 +35,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
+
 import com.google.common.base.MoreObjects;
 
 public final class Set<R extends Record> implements Iterable<R> {
 
     public interface RecordParser<R extends Record> {
-        R parse(final ByteBuffer buffer) throws InvalidPacketException;
+        R parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException;
 
         int getMinimumRecordLength();
     }
@@ -64,14 +66,15 @@ public final class Set<R extends Record> implements Iterable<R> {
     public final SetHeader header;
     public final List<R> records;
 
-    Set(final SetHeader header,
-        final RecordParser<R> parser,
-        final ByteBuffer buffer) throws InvalidPacketException {
+    public Set(final Session session,
+               final SetHeader header,
+               final RecordParser<R> parser,
+               final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<R> records = new LinkedList<>();
         while (buffer.remaining() >= parser.getMinimumRecordLength()) {
-            records.add(parser.parse(buffer));
+            records.add(parser.parse(session, buffer));
         }
         this.records = Collections.unmodifiableList(records);
 

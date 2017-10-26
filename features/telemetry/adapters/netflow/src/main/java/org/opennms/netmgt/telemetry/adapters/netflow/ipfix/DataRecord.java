@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
 import com.google.common.base.MoreObjects;
@@ -54,12 +55,13 @@ public final class DataRecord implements Record {
 
     public final List<FieldValue> values;
 
-    DataRecord(final Template template,
-               final ByteBuffer buffer) throws InvalidPacketException {
+    public DataRecord(final Session session,
+                      final Template template,
+                      final ByteBuffer buffer) throws InvalidPacketException {
 
         final List<FieldValue> values = new ArrayList<>(template.count());
         for (final Template.Field templateField : template) {
-            values.add(new FieldValue(templateField, buffer));
+            values.add(new FieldValue(session, templateField, buffer));
         }
 
         this.values = Collections.unmodifiableList(values);
@@ -75,8 +77,8 @@ public final class DataRecord implements Record {
     public static Set.RecordParser<DataRecord> parser(final Template template) {
         return new Set.RecordParser<DataRecord>() {
             @Override
-            public DataRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
-                return new DataRecord(template, buffer);
+            public DataRecord parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+                return new DataRecord(session, template, buffer);
             }
 
             @Override

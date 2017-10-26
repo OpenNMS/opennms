@@ -28,22 +28,58 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
+import java.util.List;
+
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 public class SubTemplateListValue extends ListValue {
-    public final byte[] data;
+    /*
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |   Semantic    |         Template ID           |     ...       |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                subTemplateList Content    ...                 |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    */
+
+    public final List<List<Value>> values;
 
     public SubTemplateListValue(final String name,
                                 final Semantic semantic,
-                                final byte[] data) {
+                                final List<List<Value>> values) {
         super(name, semantic);
-        this.data = data;
+        this.values = values;
     }
 
-    public static SubTemplateListValue parse(final String name,
-                                             final ByteBuffer buffer) {
-        return new SubTemplateListValue(name, null, bytes(buffer, buffer.remaining()));
+    public static Parser parser(final String name) {
+        return new Value.Parser() {
+
+            @Override
+            public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+                final Semantic semantic = Semantic.find(uint8(buffer));
+                final int templateId = uint16(buffer);
+
+                return null;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 3;
+            }
+        };
     }
 }

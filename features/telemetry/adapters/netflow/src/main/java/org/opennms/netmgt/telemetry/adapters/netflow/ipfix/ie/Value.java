@@ -31,11 +31,12 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie;
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 public abstract class Value {
 
     public interface Parser {
-        Value parse(final ByteBuffer buffer) throws InvalidPacketException;
+        Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException;
 
         int getMaximumFieldLength();
         int getMinimumFieldLength();

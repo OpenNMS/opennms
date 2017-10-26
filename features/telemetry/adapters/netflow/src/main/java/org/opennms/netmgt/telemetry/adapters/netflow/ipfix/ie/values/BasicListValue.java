@@ -39,9 +39,24 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.FieldValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.Packet;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
 public class BasicListValue extends ListValue {
+    /*
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |   Semantic    |0|          Field ID           |   Element...  |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     | ...Length     |           basicList Content ...               |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    */
+
     public final List<Value> values;
 
     public BasicListValue(final String name,
@@ -51,18 +66,33 @@ public class BasicListValue extends ListValue {
         this.values = values;
     }
 
-    public static BasicListValue parse(final String name,
-                                       final ByteBuffer buffer) throws InvalidPacketException {
-        final Semantic semantic = Semantic.find(uint8(buffer));
-        final FieldSpecifier specifier = new FieldSpecifier(buffer);
+    public static Parser parser(final String name) {
+        return new Value.Parser() {
 
-        final Template.Field templateField = Packet.buildField(specifier);
+            @Override
+            public Value parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+                final Semantic semantic = Semantic.find(uint8(buffer));
+                final FieldSpecifier specifier = new FieldSpecifier(buffer);
 
-        final List<Value> values = new LinkedList<>();
-        while (buffer.hasRemaining()) {
-            values.add(new FieldValue(templateField, buffer).value);
-        }
+                final Template.Field templateField = Packet.buildField(specifier);
 
-        return new BasicListValue(name, semantic, values);
+                final List<Value> values = new LinkedList<>();
+                while (buffer.hasRemaining()) {
+                    values.add(new FieldValue(session, templateField, buffer).value);
+                }
+
+                return new BasicListValue(name, semantic, values);
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1 + FieldSpecifier.SIZE;
+            }
+        };
     }
 }

@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
-
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
@@ -61,7 +60,7 @@ public class DateTimeMicrosecondsValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final ByteBuffer buffer) {
+            public Value parse(final Session session, final ByteBuffer buffer) {
                 final long seconds = BufferUtils.uint32(buffer);
                 final long fraction = BufferUtils.uint32(buffer) & (0xFFFFFFFF << 11);
                 return new DateTimeMicrosecondsValue(name, seconds, fraction);

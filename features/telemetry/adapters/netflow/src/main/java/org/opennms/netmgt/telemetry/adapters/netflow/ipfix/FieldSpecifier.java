@@ -47,6 +47,7 @@ public final class FieldSpecifier {
      |                      Enterprise Number                        |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
+    public static final int SIZE = 4;
 
     public final int informationElementId; // uint16 { enterprise_bit:1, element_id: 15 }
     public final int fieldLength; // uint16

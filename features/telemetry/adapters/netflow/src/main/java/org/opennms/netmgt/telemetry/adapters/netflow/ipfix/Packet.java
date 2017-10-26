@@ -83,7 +83,7 @@ public final class Packet {
             final Set<?> set;
             switch (setHeader.getType()) {
                 case TEMPLATE_SET: {
-                    final Set<TemplateRecord> templateSet = new Set<>(setHeader, TemplateRecord.parser(), payloadBuffer);
+                    final Set<TemplateRecord> templateSet = new Set<>(session, setHeader, TemplateRecord.parser(), payloadBuffer);
 
                     for (final TemplateRecord record : templateSet) {
                         session.addTemplate(Template.builder()
@@ -98,7 +98,7 @@ public final class Packet {
                 }
 
                 case OPTIONS_TEMPLATE_SET: {
-                    final Set<OptionsTemplateRecord> optionsTemplateSet = new Set<>(setHeader, OptionsTemplateRecord.parser(), payloadBuffer);
+                    final Set<OptionsTemplateRecord> optionsTemplateSet = new Set<>(session, setHeader, OptionsTemplateRecord.parser(), payloadBuffer);
 
                     for (final OptionsTemplateRecord record : optionsTemplateSet) {
                         session.addTemplate(Template.builder()
@@ -119,7 +119,7 @@ public final class Packet {
                         throw new InvalidPacketException("Unknown Template ID: %d", setHeader.setId);
                     }
 
-                    final Set<DataRecord> dataSet = new Set<>(setHeader, DataRecord.parser(template.get()), payloadBuffer);
+                    final Set<DataRecord> dataSet = new Set<>(session, setHeader, DataRecord.parser(template.get()), payloadBuffer);
 
                     // TODO: Pass to handler
 

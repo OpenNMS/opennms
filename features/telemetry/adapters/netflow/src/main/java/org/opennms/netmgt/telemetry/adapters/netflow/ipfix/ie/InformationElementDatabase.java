@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.BasicListValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeMicrosecondsValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeMillisecondsValue;
@@ -89,7 +90,7 @@ public class InformationElementDatabase {
             .put("dateTimeNanoseconds", DateTimeNanosecondsValue::parser)
             .put("ipv4Address", IPv4AddressValue::parser)
             .put("ipv6Address", IPv6AddressValue::parser)
-            .put("basicList", OctetArrayValue::parser)
+            .put("basicList", BasicListValue::parser)
             .put("subTemplateList", OctetArrayValue::parser)
             .put("subTemplateMultiList", OctetArrayValue::parser)
             .build();

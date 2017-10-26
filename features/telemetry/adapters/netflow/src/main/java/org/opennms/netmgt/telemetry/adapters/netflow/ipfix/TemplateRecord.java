@@ -36,6 +36,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
+
 import com.google.common.base.MoreObjects;
 
 public final class TemplateRecord implements Record {
@@ -68,7 +70,7 @@ public final class TemplateRecord implements Record {
     public static Set.RecordParser<TemplateRecord> parser() {
         return new Set.RecordParser<TemplateRecord>() {
             @Override
-            public TemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
+            public TemplateRecord parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
                 final ByteBuffer headerBuffer = slice(buffer, TemplateRecordHeader.SIZE);
                 final TemplateRecordHeader header = new TemplateRecordHeader(headerBuffer);
 
