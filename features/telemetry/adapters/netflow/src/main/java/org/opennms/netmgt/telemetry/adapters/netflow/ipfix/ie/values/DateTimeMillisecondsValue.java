@@ -38,19 +38,19 @@ import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 public class DateTimeMillisecondsValue extends Value {
-    public final UnsignedLong seconds;
+    public final UnsignedLong milliseconds;
 
     public DateTimeMillisecondsValue(final String name,
-                                     final UnsignedLong seconds) {
+                                     final UnsignedLong milliseconds) {
         super(name);
-        this.seconds = seconds;
+        this.milliseconds = milliseconds;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("seconds", seconds)
+                .add("milliseconds", milliseconds)
                 .toString();
     }
 
