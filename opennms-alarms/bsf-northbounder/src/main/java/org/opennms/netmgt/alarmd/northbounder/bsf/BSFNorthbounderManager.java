@@ -36,10 +36,7 @@ import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.events.api.EventProxyException;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -164,28 +161,15 @@ public class BSFNorthbounderManager implements InitializingBean, Northbounder, D
      * Reloads the configuration.
      */
     @Override
-    public void reloadConfig() {
+    public void reloadConfig() throws NorthbounderException {
         // FIXME As this can be expensive, I would say do it on a per-engine basis
-        EventBuilder ebldr = null;
         LOG.info("Reloading BSF northbound configuration.");
         try {
             m_configDao.reload();
             m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
             registerNorthnounders();
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
         } catch (Exception e) {
-            LOG.error("Can't reload the BSF northbound configuration", e);
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
-            ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
-        } finally {
-            if (ebldr != null)
-                try {
-                    m_eventProxy.send(ebldr.getEvent());
-                } catch (EventProxyException e) {
-                    LOG.error("Can't send reload status event", e);
-                }
+            throw new NorthbounderException("Can't reload the BSF trap northbound configuration", e);
         }
     }
 
