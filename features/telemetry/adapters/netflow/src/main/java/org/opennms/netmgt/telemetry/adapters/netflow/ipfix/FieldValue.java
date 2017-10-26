@@ -28,63 +28,49 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
+import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
 
-import com.google.common.base.MoreObjects;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
-public final class Header {
+public class FieldValue {
 
     /*
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |       Version Number          |            Length             |
+     | Length (< 255)|          Information Field                  |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |                           Export Time                         |
+     |                      ... continuing as needed                 |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |                       Sequence Number                         |
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |                    Observation Domain ID                      |
+     |      255      |      Length (0 to 65535)      |       IE      |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                      ... continuing as needed                 |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
 
-    public static final int SIZE = 16;
+    public static final int VARIABLE_SIZED = 0xFFFF;
+    public static final int VARIABLE_SIZED_EXTENDED = 0xFF;
 
-    public static final int VERSION = 0x000a;
+    public final Value value;
 
-    public final int versionNumber; // uint16 - must be 0x000a
-    public final int length; // uint16
-    public final long exportTime; // uint32
-    public final long sequenceNumber; // uint32
-    public final long observationDomainId; // uint32
-
-    Header(final ByteBuffer buffer) throws InvalidPacketException {
-        this.versionNumber = uint16(buffer);
-        this.length = uint16(buffer);
-        this.exportTime = uint32(buffer);
-        this.sequenceNumber = uint32(buffer);
-        this.observationDomainId = uint32(buffer);
-
-        if (this.versionNumber != VERSION) {
-            throw new InvalidPacketException("Invalid version number: 0x%04X", this.versionNumber);
+    public FieldValue(Template.Field templateField, ByteBuffer buffer) throws InvalidPacketException {
+        int length = templateField.length;
+        if (length == VARIABLE_SIZED) {
+            length = uint8(buffer);
+            if (length == VARIABLE_SIZED_EXTENDED) {
+                length = uint16(buffer);
+            }
         }
 
-        if (this.length <= 0) {
-            throw new InvalidPacketException("Empty packet");
-        }
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("versionNumber", versionNumber)
-                .add("length", length)
-                .add("exportTime", exportTime)
-                .add("sequenceNumber", sequenceNumber)
-                .add("observationDomainId", observationDomainId)
-                .toString();
+        value = templateField.parse(slice(buffer, length));
     }
 }

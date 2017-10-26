@@ -36,9 +36,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElement;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IllegalValueException;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
@@ -73,27 +73,27 @@ public final class Template implements Iterable<Template.Field> {
     }
 
     public static abstract class Field {
-        public final int size;
+        public final int length;
 
-        public Field(final int size) {
-            this.size = size;
+        public Field(final int length) {
+            this.length = length;
         }
 
-        public abstract Value parse(ByteBuffer slice) throws IllegalValueException;
+        public abstract Value parse(final ByteBuffer buffer) throws InvalidPacketException;
     }
 
     public static final class StandardField extends Field {
 
         private final InformationElement informationElement;
 
-        public StandardField(final int size,
+        public StandardField(final int length,
                              final InformationElement informationElement) {
-            super(size);
+            super(length);
             this.informationElement = informationElement;
         }
 
         @Override
-        public Value parse(final ByteBuffer buffer) throws IllegalValueException {
+        public Value parse(final ByteBuffer buffer) throws InvalidPacketException {
             return this.informationElement.parse(buffer);
         }
     }
@@ -120,10 +120,10 @@ public final class Template implements Iterable<Template.Field> {
         private final int informationElementId;
         private final long enterpriseNumber;
 
-        public EnterpriseField(final int size,
+        public EnterpriseField(final int length,
                                final int informationElementId,
                                final long enterpriseNumber) {
-            super(size);
+            super(length);
             this.informationElementId = informationElementId;
             this.enterpriseNumber = enterpriseNumber;
         }

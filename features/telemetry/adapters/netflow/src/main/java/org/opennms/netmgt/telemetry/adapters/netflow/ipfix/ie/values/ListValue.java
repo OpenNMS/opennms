@@ -28,12 +28,37 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
-public class IllegalValueException extends Exception {
-    public IllegalValueException(final String message) {
-        super(message);
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+
+public abstract class ListValue extends Value {
+
+    public enum Semantic {
+        UNDEFINED,
+        NONE_OF,
+        EXACTLY_ONE_OF,
+        ONE_OR_MORE_OF,
+        ALL_OF,
+        ORDERED;
+
+        public static Semantic find(final int i) throws InvalidPacketException {
+            switch (i) {
+                case 0xFF: return UNDEFINED;
+                case 0x00: return NONE_OF;
+                case 0x01: return EXACTLY_ONE_OF;
+                case 0x02: return ONE_OR_MORE_OF;
+                case 0x03: return ALL_OF;
+                case 0x04: return ORDERED;
+                default: throw new InvalidPacketException("Illegal semantic value: 0x%02x", i);
+            }
+        }
     }
 
-    public IllegalValueException(final String message, final Throwable cause) {
-        super(message, cause);
+    private final Semantic semantic;
+
+    public ListValue(final String name,
+                     final Semantic semantic) {
+        super(name);
+        this.semantic = semantic;
     }
 }

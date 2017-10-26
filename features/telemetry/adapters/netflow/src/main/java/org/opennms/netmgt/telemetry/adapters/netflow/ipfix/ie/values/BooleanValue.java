@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
-
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 
 public class BooleanValue extends Value {
     public final boolean value;
@@ -59,11 +57,11 @@ public class BooleanValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final ByteBuffer buffer) throws IllegalValueException {
+            public Value parse(final ByteBuffer buffer) throws InvalidPacketException {
                 final int value = BufferUtils.uint8(buffer);
 
                 if (value < 1 || value > 2) {
-                    throw new IllegalValueException("Illegal value '"+value+"' for boolean type (only 1/true and 2/false allowed)");
+                    throw new InvalidPacketException("Illegal value '%d' for boolean type (only 1/true and 2/false allowed)", value);
                 }
                 return new BooleanValue(name,value == 1);
             }

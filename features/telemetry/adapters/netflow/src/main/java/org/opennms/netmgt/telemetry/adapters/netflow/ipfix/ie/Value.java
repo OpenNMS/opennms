@@ -30,12 +30,12 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IllegalValueException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
 
 public abstract class Value {
 
     public interface Parser {
-        Value parse(final ByteBuffer buffer) throws IllegalValueException;
+        Value parse(final ByteBuffer buffer) throws InvalidPacketException;
 
         int getMaximumFieldLength();
         int getMinimumFieldLength();

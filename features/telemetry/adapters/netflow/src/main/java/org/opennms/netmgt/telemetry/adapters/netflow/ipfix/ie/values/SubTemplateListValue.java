@@ -32,19 +32,18 @@ import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.by
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
-
-public class SubTemplateListValue extends Value {
+public class SubTemplateListValue extends ListValue {
     public final byte[] data;
 
     public SubTemplateListValue(final String name,
+                                final Semantic semantic,
                                 final byte[] data) {
-        super(name);
+        super(name, semantic);
         this.data = data;
     }
 
     public static SubTemplateListValue parse(final String name,
                                              final ByteBuffer buffer) {
-        return new SubTemplateListValue(name, bytes(buffer, buffer.remaining()));
+        return new SubTemplateListValue(name, null, bytes(buffer, buffer.remaining()));
     }
 }

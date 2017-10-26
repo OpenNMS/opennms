@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
-
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -62,7 +57,7 @@ public class StringValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final ByteBuffer buffer) throws IllegalValueException {
+            public Value parse(final ByteBuffer buffer) {
                 return new StringValue(name, new String(BufferUtils.bytes(buffer, buffer.remaining()), UTF8_CHARSET));
             }
 

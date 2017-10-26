@@ -28,23 +28,41 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.FieldSpecifier;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.FieldValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.Packet;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
-public class BasicListValue extends Value {
-    public final byte[] data;
+public class BasicListValue extends ListValue {
+    public final List<Value> values;
 
     public BasicListValue(final String name,
-                          final byte[] data) {
-        super(name);
-        this.data = data;
+                          final Semantic semantic,
+                          final List<Value> values) {
+        super(name, semantic);
+        this.values = values;
     }
 
     public static BasicListValue parse(final String name,
-                                       final ByteBuffer buffer) {
-        return new BasicListValue(name, bytes(buffer, buffer.remaining()));
+                                       final ByteBuffer buffer) throws InvalidPacketException {
+        final Semantic semantic = Semantic.find(uint8(buffer));
+        final FieldSpecifier specifier = new FieldSpecifier(buffer);
+
+        final Template.Field templateField = Packet.buildField(specifier);
+
+        final List<Value> values = new LinkedList<>();
+        while (buffer.hasRemaining()) {
+            values.add(new FieldValue(templateField, buffer).value);
+        }
+
+        return new BasicListValue(name, semantic, values);
     }
 }

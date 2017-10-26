@@ -145,32 +145,32 @@ public final class Packet {
                 .toString();
     }
 
-    private static List<Template.Field> buildFields(List<FieldSpecifier> fields) throws InvalidPacketException {
+    public static List<Template.Field> buildFields(List<FieldSpecifier> specifiers) throws InvalidPacketException {
         // TODO: Ugly
 
-        final List<Template.Field> results = new ArrayList<>(fields.size());
-        for (final FieldSpecifier field : fields) {
-            final Template.Field result;
-            if (field.enterpriseNumber.isPresent()) {
-                result = new Template.EnterpriseField(field.fieldLength, field.informationElementId, field.enterpriseNumber.get());
-
-            } else {
-                final Optional<InformationElement> informationElement = InformationElementDatabase.instance.lookup(field.informationElementId);
-                if (!informationElement.isPresent()) {
-                    throw new InvalidPacketException("Undefined information element ID: %d", field.informationElementId);
-                }
-
-                if (field.fieldLength > informationElement.get().getMaximumFieldLength() || field.fieldLength < informationElement.get().getMinimumFieldLength()) {
-                    throw new InvalidPacketException("Template field is to large: %d > %d", field.fieldLength, informationElement.get().getMaximumFieldLength());
-                }
-
-                result = new Template.StandardField(field.fieldLength, informationElement.get());
-            }
-
-            results.add(result);
+        final List<Template.Field> results = new ArrayList<>(specifiers.size());
+        for (final FieldSpecifier specifier : specifiers) {
+            results.add(buildField(specifier));
         }
 
         return results;
+    }
+
+    public static Template.Field buildField(FieldSpecifier specifier) throws InvalidPacketException {
+        if (specifier.enterpriseNumber.isPresent()) {
+            return new Template.EnterpriseField(specifier.fieldLength, specifier.informationElementId, specifier.enterpriseNumber.get());
+
+        } else {
+            final InformationElement informationElement = InformationElementDatabase.instance
+                    .lookup(specifier.informationElementId)
+                    .orElseThrow(() -> new InvalidPacketException("Undefined information element ID: %d", specifier.informationElementId));
+
+            if (specifier.fieldLength > informationElement.getMaximumFieldLength() || specifier.fieldLength < informationElement.getMinimumFieldLength()) {
+                throw new InvalidPacketException("Template field is to large: %d > %d", specifier.fieldLength, informationElement.getMaximumFieldLength());
+            }
+
+            return new Template.StandardField(specifier.fieldLength, informationElement);
+        }
     }
 
     public static void main(final String... args) throws Exception {

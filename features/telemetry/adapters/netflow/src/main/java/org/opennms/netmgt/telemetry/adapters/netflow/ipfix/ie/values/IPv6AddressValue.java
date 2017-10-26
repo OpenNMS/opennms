@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
-
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 import com.google.common.base.MoreObjects;
@@ -60,11 +59,11 @@ public class IPv6AddressValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final ByteBuffer buffer) throws IllegalValueException {
+            public Value parse(final ByteBuffer buffer) throws InvalidPacketException {
                 try {
                     return new IPv6AddressValue(name, (Inet6Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 16)));
                 } catch (UnknownHostException e) {
-                    throw new IllegalValueException("Error parsing IPv6 value: ", e);
+                    throw new InvalidPacketException("Error parsing IPv6 value", e);
                 }
             }
 

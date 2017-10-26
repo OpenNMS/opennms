@@ -28,66 +28,38 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint8;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IllegalValueException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 import com.google.common.base.MoreObjects;
 
 public final class DataRecord implements Record {
 
     /*
-      0                   1                   2                   3
-      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     | Length (< 255)|          Information Field                  |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |                      ... continuing as needed                 |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-      0                   1                   2                   3
-      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |      255      |      Length (0 to 65535)      |       IE      |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |                      ... continuing as needed                 |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     +--------------------------------------------------+
+     | Field Value                                      |
+     +--------------------------------------------------+
+     | Field Value                                      |
+     +--------------------------------------------------+
+      ...
+     +--------------------------------------------------+
+     | Field Value                                      |
+     +--------------------------------------------------+
     */
 
-    public static final int VARIABLE_SIZED = 0xFFFF;
-    public static final int VARIABLE_SIZED_EXTENDED = 0xFF;
-
-    public final List<Value> values;
+    public final List<FieldValue> values;
 
     DataRecord(final Template template,
                final ByteBuffer buffer) throws InvalidPacketException {
 
-        final List<Value> values = new ArrayList<>(template.count());
-        for (final Template.Field field : template) {
-            int size = field.size;
-            if (size == VARIABLE_SIZED) {
-                size = uint8(buffer);
-                if (size == VARIABLE_SIZED_EXTENDED) {
-                    size = uint16(buffer);
-                }
-            }
-
-            final ByteBuffer valueBuffer = slice(buffer, size);
-            try {
-                values.add(field.parse(valueBuffer));
-            } catch (final IllegalValueException e) {
-                throw new InvalidPacketException("Invalid value", e);
-            }
+        final List<FieldValue> values = new ArrayList<>(template.count());
+        for (final Template.Field templateField : template) {
+            values.add(new FieldValue(templateField, buffer));
         }
 
         this.values = Collections.unmodifiableList(values);
@@ -96,7 +68,7 @@ public final class DataRecord implements Record {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("values", values)
+                .add("fields", values)
                 .toString();
     }
 
@@ -111,7 +83,7 @@ public final class DataRecord implements Record {
             public int getMinimumRecordLength() {
                 // For variable length fields we assume at least the length value (1 byte) to be present
                 return Stream.concat(template.scopeFields.stream(), template.valueFields.stream())
-                        .mapToInt(f -> f.size != VARIABLE_SIZED ? f.size : 1).sum();
+                        .mapToInt(f -> f.length != FieldValue.VARIABLE_SIZED ? f.length : 1).sum();
             }
         };
     }
