@@ -28,16 +28,19 @@
 
 package org.opennms.netmgt.telemetry.ipc;
 
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
-import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
+import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Objects;
 
-public class TelemetrySinkModule extends AbstractXmlSinkModule<TelemetryMessage, TelemetryMessageLogDTO> {
+public class TelemetrySinkModule implements SinkModule<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private static final String MODULE_ID_PREFIX = "Telemetry.";
 
     private static final int DEFAULT_NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
@@ -48,12 +51,11 @@ public class TelemetrySinkModule extends AbstractXmlSinkModule<TelemetryMessage,
     @Autowired
     private DistPollerDao distPollerDao;
 
-    private final ProtocolDefinition protocol;
+    private final Protocol protocol;
 
     private final String moduleId;
 
-    public TelemetrySinkModule(ProtocolDefinition protocol) {
-        super(TelemetryMessageLogDTO.class);
+    public TelemetrySinkModule(Protocol protocol) {
         this.protocol = Objects.requireNonNull(protocol);
         this.moduleId = MODULE_ID_PREFIX + protocol.getName();
     }
@@ -69,10 +71,24 @@ public class TelemetrySinkModule extends AbstractXmlSinkModule<TelemetryMessage,
     }
 
     @Override
-    public AggregationPolicy<TelemetryMessage, TelemetryMessageLogDTO> getAggregationPolicy() {
+    public byte[] marshal(TelemetryProtos.TelemetryMessageLog message) {
+        return message.toByteArray();
+    }
+
+    @Override
+    public TelemetryProtos.TelemetryMessageLog unmarshal(byte[] bytes) {
+        try {
+            return TelemetryProtos.TelemetryMessageLog.parseFrom(bytes);
+        } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public AggregationPolicy<TelemetryMessage, TelemetryProtos.TelemetryMessageLog, TelemetryProtos.TelemetryMessageLog.Builder> getAggregationPolicy() {
         final String systemId = distPollerDao.whoami().getId();
         final String systemLocation = distPollerDao.whoami().getLocation();
-        return new AggregationPolicy<TelemetryMessage, TelemetryMessageLogDTO>() {
+        return new AggregationPolicy<TelemetryMessage, TelemetryProtos.TelemetryMessageLog, TelemetryProtos.TelemetryMessageLog.Builder>() {
             @Override
             public int getCompletionSize() {
                 return protocol.getBatchSize().orElse(DEFAULT_BATCH_SIZE);
@@ -89,13 +105,26 @@ public class TelemetrySinkModule extends AbstractXmlSinkModule<TelemetryMessage,
             }
 
             @Override
-            public TelemetryMessageLogDTO aggregate(TelemetryMessageLogDTO oldLog, TelemetryMessage message) {
-                if (oldLog == null) {
-                    oldLog = new TelemetryMessageLogDTO(systemLocation, systemId, message.getSource());
+            public TelemetryProtos.TelemetryMessageLog.Builder aggregate(TelemetryProtos.TelemetryMessageLog.Builder accumulator, TelemetryMessage message) {
+                if (accumulator == null) {
+                    accumulator = TelemetryProtos.TelemetryMessageLog.newBuilder()
+                            .setLocation(systemLocation)
+                            .setSystemId(systemId)
+                            .setSourceAddress(message.getSource().getHostString())
+                            .setSourcePort(message.getSource().getPort());
                 }
-                final TelemetryMessageDTO messageDTO = new TelemetryMessageDTO(message.getBuffer());
-                oldLog.getMessages().add(messageDTO);
-                return oldLog;
+                final TelemetryProtos.TelemetryMessage messageDto = TelemetryProtos.TelemetryMessage.newBuilder()
+                        .setTimestamp(message.getReceivedAt().getTime())
+                        .setBytes(ByteString.copyFrom(message.getBuffer()))
+                        .build();
+                // Append
+                accumulator.addMessage(messageDto);
+                return accumulator;
+            }
+
+            @Override
+            public TelemetryProtos.TelemetryMessageLog build(TelemetryProtos.TelemetryMessageLog.Builder accumulator) {
+                return accumulator.build();
             }
         };
     }

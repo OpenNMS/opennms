@@ -36,10 +36,10 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
-import org.opennms.netmgt.telemetry.config.model.Package;
-import org.opennms.netmgt.telemetry.config.model.Protocol;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageDTO;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
+import org.opennms.netmgt.telemetry.config.api.Package;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +74,11 @@ public abstract class AbstractPersistingAdapter implements Adapter {
      * @return a {@link CollectionSetWithAgent} or an empty value if nothing should be persisted
      * @throws Exception if an error occured while generating the collection set
      */
-    public abstract Optional<CollectionSetWithAgent> handleMessage(TelemetryMessageDTO message, TelemetryMessageLogDTO messageLog) throws Exception;
+    public abstract Optional<CollectionSetWithAgent> handleMessage(TelemetryMessage message, TelemetryMessageLog messageLog) throws Exception;
 
     @Override
-    public void handleMessageLog(TelemetryMessageLogDTO messageLog) {
-        for (TelemetryMessageDTO message : messageLog.getMessages()) {
+    public void handleMessageLog(TelemetryMessageLog messageLog) {
+        for (TelemetryMessage message : messageLog.getMessageList()) {
             final Optional<CollectionSetWithAgent> result;
             try {
                 result = handleMessage(message, messageLog);
@@ -121,11 +121,11 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     private Package getPackageFor(Protocol protocol, CollectionAgent agent) {
         for (Package pkg : protocol.getPackages()) {
-            if (pkg.getFilter() == null || pkg.getFilter().getContent() == null) {
+            final String filterRule = pkg.getFilterRule();
+            if (filterRule == null) {
                 // No filter specified, always match
                 return pkg;
             }
-            final String filterRule = pkg.getFilter().getContent();
             // TODO: This is really inefficient, since it actually retrieves *all*
             // IP addresses that match the filter, and then checks of the given address
             // is in the set. See HZN-1161.

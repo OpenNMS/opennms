@@ -37,7 +37,7 @@ import java.util.Objects;
 
 @XmlRootElement(name="package")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Package {
+public class Package implements org.opennms.netmgt.telemetry.config.api.Package {
     /**
      * Name or identifier for this package.
      */
@@ -73,6 +73,15 @@ public class Package {
         this.filter = filter;
     }
 
+    @Override
+    public String getFilterRule() {
+        if (getFilter() == null) {
+            return null;
+        }
+        return getFilter().getContent();
+    }
+
+    @Override
     public Rrd getRrd() {
         return rrd;
     }
@@ -104,4 +113,5 @@ public class Package {
                 ", rrd=" + rrd +
                 '}';
     }
+
 }

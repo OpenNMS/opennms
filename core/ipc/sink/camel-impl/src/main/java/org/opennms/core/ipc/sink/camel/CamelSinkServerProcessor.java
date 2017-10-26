@@ -47,8 +47,8 @@ public class CamelSinkServerProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) {
-        final String messageAsString = exchange.getIn().getBody(String.class);
-        final Message message = module.unmarshal(messageAsString);
+        final byte[] messageBytes = exchange.getIn().getBody(byte[].class);
+        final Message message = module.unmarshal(messageBytes);
         consumerManager.dispatch(module, message);
     }
 }

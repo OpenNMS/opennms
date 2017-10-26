@@ -26,73 +26,90 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.ipc;
-
-import org.opennms.core.xml.ByteBufferXmlAdapter;
+package org.opennms.netmgt.telemetry.config.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.nio.ByteBuffer;
-import java.util.Date;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-@XmlRootElement(name = "telemetry-message")
+/**
+ * RRD parameters
+ */
+@XmlRootElement(name="rrd")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TelemetryMessageDTO {
+public class Rrd implements org.opennms.netmgt.telemetry.config.api.Rrd {
 
-    @XmlAttribute(name = "timestamp")
-    private Date timestamp;
+    private static final String DEFAULT_BASE_DIRECTORY = Paths.get(System.getProperty("opennms.home"),"share","rrd","snmp").toString();
 
-    @XmlValue
-    @XmlJavaTypeAdapter(ByteBufferXmlAdapter.class)
-    private ByteBuffer bytes;
+    /**
+     * Step size for the RRD, in seconds.
+     */
+    @XmlAttribute(name="step")
+    private Integer step;
 
-    public TelemetryMessageDTO() { }
+    /**
+     * Round Robin Archive definitions
+     */
+    @XmlElement(name="rra")
+    private List<String> rras = new ArrayList<>();
 
-    public TelemetryMessageDTO(ByteBuffer bytes) {
-        this.timestamp = new Date();
-        this.bytes = bytes;
+    @XmlAttribute(name="base-directory")
+    private String baseDir;
+
+    public Integer getStep() {
+        return step;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public void setStep(Integer step) {
+        this.step = step;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public List<String> getRras() {
+        return rras;
     }
 
-    public ByteBuffer getBytes() {
-        return bytes;
+    public void setRras(List<String> rras) {
+        this.rras = rras;
     }
 
-    public void setBytes(ByteBuffer bytes) {
-        this.bytes = bytes;
+    public String getBaseDir() {
+        if (baseDir == null) {
+            return DEFAULT_BASE_DIRECTORY;
+        }
+        return baseDir;
+    }
+
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TelemetryMessageDTO that = (TelemetryMessageDTO) o;
-        return Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(bytes, that.bytes);
+        Rrd rrd = (Rrd) o;
+        return Objects.equals(step, rrd.step) &&
+                Objects.equals(rras, rrd.rras) &&
+                Objects.equals(baseDir, rrd.baseDir);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, bytes);
+        return Objects.hash(step, rras, baseDir);
     }
 
     @Override
     public String toString() {
-        return "TelemetryMessageDTO{" +
-                "timestamp=" + timestamp +
-                ", bytes=" + bytes +
+        return "Rrd{" +
+                "step=" + step +
+                ", rras=" + rras +
+                ", baseDir=" + baseDir +
                 '}';
     }
 }

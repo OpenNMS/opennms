@@ -55,14 +55,14 @@ public interface SinkModule<S extends Message, T extends Message> {
     int getNumConsumerThreads();
 
     /**
-     * Marshals the message to a string.
+     * Marshals the message to a byte array.
      */
-    String marshal(T message);
+    byte[] marshal(T message);
 
     /**
-     * Unmarshals the message from a string.
+     * Unmarshals the message from a byte array.
      */
-    T unmarshal(String message);
+    T unmarshal(byte[]  message);
 
     /**
      * Defines how messages should be combined, and when they
@@ -73,7 +73,7 @@ public interface SinkModule<S extends Message, T extends Message> {
      * @return the {@link AggregationPolicy} used to combine messages, or {@code null}
      * if the messages should not be combined.
      */
-    AggregationPolicy<S,T> getAggregationPolicy();
+    AggregationPolicy<S,T,?> getAggregationPolicy();
 
     /**
      * Defines how messages should be asynchronously dispatched.

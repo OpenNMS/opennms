@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.config.model;
 
-import org.opennms.netmgt.telemetry.ipc.ProtocolDefinition;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -42,7 +40,7 @@ import java.util.Optional;
 
 @XmlRootElement(name = "protocol")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Protocol implements ProtocolDefinition {
+public class Protocol implements org.opennms.netmgt.telemetry.config.api.Protocol {
     @XmlAttribute(name="name")
     private String name;
     @XmlAttribute(name="description")
@@ -141,6 +139,7 @@ public class Protocol implements ProtocolDefinition {
         this.adapters = adapters;
     }
 
+    @Override
     public List<Package> getPackages() {
         return packages;
     }

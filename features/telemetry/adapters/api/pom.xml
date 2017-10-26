@@ -28,8 +28,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features.telemetry</groupId>
-      <artifactId>org.opennms.features.telemetry.config</artifactId>
+      <groupId>org.opennms.features.telemetry.config</groupId>
+      <artifactId>org.opennms.features.telemetry.config.api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
