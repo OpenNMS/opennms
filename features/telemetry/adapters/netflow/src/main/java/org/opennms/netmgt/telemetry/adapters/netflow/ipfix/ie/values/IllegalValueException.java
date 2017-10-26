@@ -29,10 +29,11 @@
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
 public class IllegalValueException extends Exception {
-    public IllegalValueException() {
+    public IllegalValueException(final String message) {
+        super(message);
     }
 
-    public IllegalValueException(String message) {
-        super(message);
+    public IllegalValueException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

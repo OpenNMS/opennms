@@ -86,7 +86,7 @@ public final class DataRecord implements Record {
             try {
                 values.add(field.parse(valueBuffer));
             } catch (final IllegalValueException e) {
-                throw new InvalidPacketException("Invalid value: %s", e.getMessage());
+                throw new InvalidPacketException("Invalid value", e);
             }
         }
 
