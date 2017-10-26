@@ -61,7 +61,7 @@ public final class Header {
     public final long sequenceNumber; // uint32
     public final long observationDomainId; // uint32
 
-    Header(final ByteBuffer buffer) {
+    Header(final ByteBuffer buffer) throws InvalidPacketException {
         // TODO: Size check
 
         this.versionNumber = uint16(buffer);
@@ -69,30 +69,10 @@ public final class Header {
         this.exportTime = uint32(buffer);
         this.sequenceNumber = uint32(buffer);
         this.observationDomainId = uint32(buffer);
-    }
 
-    public boolean isValid() {
         if (this.versionNumber != VERSION) {
-            return false;
+            throw new InvalidPacketException("Invalid version number: %04X", this.versionNumber);
         }
-
-        if (this.length <= 0) {
-            return false;
-        }
-
-        if (this.exportTime <= 0) {
-            return false;
-        }
-
-        if (this.sequenceNumber < 0) {
-            return false;
-        }
-
-        if (this.observationDomainId < 0) {
-            return false;
-        }
-
-        return true;
     }
 
     @Override

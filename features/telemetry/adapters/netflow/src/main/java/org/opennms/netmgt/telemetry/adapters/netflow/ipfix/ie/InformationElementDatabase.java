@@ -35,29 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.BasicListValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.BooleanValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeMicrosecondsValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeMillisecondsValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeNanosecondsValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeSecondsValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Float32Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Float64Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IPv4AddressValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IPv6AddressValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.MacAddressValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.OctetArrayValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed16Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed32Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed64Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed8Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.StringValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.SubTemplateListValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.SubTemplateMultiListValue;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned16Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned32Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned64Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned8Value;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
@@ -66,30 +44,35 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class InformationElementDatabase {
 
-    private static final Map<String, Value.Parser> TYPE_LOOKUP = ImmutableMap.<String, Value.Parser>builder()
-            .put("octetArray", OctetArrayValue::parse)
-            .put("unsigned8", Unsigned8Value::parse)
-            .put("unsigned16", Unsigned16Value::parse)
-            .put("unsigned32", Unsigned32Value::parse)
-            .put("unsigned64", Unsigned64Value::parse)
-            .put("signed8", Signed8Value::parse)
-            .put("signed16", Signed16Value::parse)
-            .put("signed32", Signed32Value::parse)
-            .put("signed64", Signed64Value::parse)
-            .put("float32", Float32Value::parse)
-            .put("float64", Float64Value::parse)
-            .put("boolean", BooleanValue::parse)
-            .put("macAddress", MacAddressValue::parse)
-            .put("string", StringValue::parse)
-            .put("dateTimeSeconds", DateTimeSecondsValue::parse)
-            .put("dateTimeMilliseconds", DateTimeMillisecondsValue::parse)
-            .put("dateTimeMicroseconds", DateTimeMicrosecondsValue::parse)
-            .put("dateTimeNanoseconds", DateTimeNanosecondsValue::parse)
-            .put("ipv4Address", IPv4AddressValue::parse)
-            .put("ipv6Address", IPv6AddressValue::parse)
-            .put("basicList", BasicListValue::parse)
-            .put("subTemplateList", SubTemplateListValue::parse)
-            .put("subTemplateMultiList", SubTemplateMultiListValue::parse)
+    @FunctionalInterface
+    private interface ValueParserFactory {
+        Value.Parser parser(final String name);
+    }
+
+    private static final Map<String, ValueParserFactory> TYPE_LOOKUP = ImmutableMap.<String, ValueParserFactory>builder()
+            .put("octetArray", OctetArrayValue::parser)
+//            .put("unsigned8", Unsigned8Value::parse)
+//            .put("unsigned16", Unsigned16Value::parse)
+//            .put("unsigned32", Unsigned32Value::parse)
+//            .put("unsigned64", Unsigned64Value::parse)
+//            .put("signed8", Signed8Value::parse)
+//            .put("signed16", Signed16Value::parse)
+//            .put("signed32", Signed32Value::parse)
+//            .put("signed64", Signed64Value::parse)
+//            .put("float32", Float32Value::parse)
+//            .put("float64", Float64Value::parse)
+//            .put("boolean", BooleanValue::parse)
+//            .put("macAddress", MacAddressValue::parse)
+//            .put("string", StringValue::parse)
+//            .put("dateTimeSeconds", DateTimeSecondsValue::parse)
+//            .put("dateTimeMilliseconds", DateTimeMillisecondsValue::parse)
+//            .put("dateTimeMicroseconds", DateTimeMicrosecondsValue::parse)
+//            .put("dateTimeNanoseconds", DateTimeNanosecondsValue::parse)
+//            .put("ipv4Address", IPv4AddressValue::parse)
+//            .put("ipv6Address", IPv6AddressValue::parse)
+//            .put("basicList", BasicListValue::parse)
+//            .put("subTemplateList", SubTemplateListValue::parse)
+//            .put("subTemplateMultiList", SubTemplateMultiListValue::parse)
             .build();
 
     private static final Map<String, Semantics> SEMANTICS_LOOKUP = ImmutableMap.<String,Semantics>builder()
@@ -141,7 +124,7 @@ public class InformationElementDatabase {
                 }
 
                 final String name = line[indexOfName];
-                final Value.Parser type = TYPE_LOOKUP.get(line[indexOfType]);
+                final Value.Parser type = TYPE_LOOKUP.get(line[indexOfType]).parser(name);
                 final Optional<Semantics> semantics = Optional.ofNullable(SEMANTICS_LOOKUP.get(line[indexOfSemantics]));
 
                 if (type == null) {

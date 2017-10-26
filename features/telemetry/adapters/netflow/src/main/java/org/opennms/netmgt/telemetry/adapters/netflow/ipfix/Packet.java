@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElement;
@@ -70,9 +71,8 @@ public final class Packet {
 
     Packet(final Session session,
            final Header header,
-           final ByteBuffer buffer) {
-        InformationElementDatabase.instance.lookup(0);
-        this.header = header;
+           final ByteBuffer buffer) throws InvalidPacketException {
+        this.header = Objects.requireNonNull(header);
 
         final List<Set> sets = new LinkedList<>();
         while (buffer.hasRemaining()) {
@@ -117,9 +117,7 @@ public final class Packet {
                 case DATA_SET: {
                     final Optional<Template> template = session.findTemplate(this.header.observationDomainId, setHeader.setId);
                     if (!template.isPresent()) {
-                        // TODO: Log me
-                        System.err.println("Unknown template ID: " + setHeader.setId);
-                        continue;
+                        throw new InvalidPacketException("Unknown Template ID: %d", setHeader.setId);
                     }
 
                     final Set<DataRecord> dataSet = new Set<>(setHeader, DataRecord.parser(template.get()), payloadBuffer);
@@ -131,32 +129,13 @@ public final class Packet {
                 }
 
                 default: {
-                    // TODO: Log me
-                    continue;
+                    throw new InvalidPacketException("Invalid Set ID: %d", setHeader.setId);
                 }
             }
 
             sets.add(set);
         }
         this.sets = Collections.unmodifiableList(sets);
-    }
-
-    public int size() {
-        return this.header.length;
-    }
-
-    public boolean isValid() {
-        if (!this.header.isValid()) {
-            return false;
-        }
-
-        for (final Set set : this.sets) {
-            if (!set.isValid()) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override
@@ -174,6 +153,11 @@ public final class Packet {
         } else {
             final Optional<InformationElement> informationElement = InformationElementDatabase.instance.lookup(field.informationElementId);
             if (!informationElement.isPresent()) {
+                // TODO: Log me
+                throw null;
+            }
+
+            if (field.fieldLength > informationElement.get().getMaximumFieldLength()) {
                 // TODO: Log me
                 throw null;
             }

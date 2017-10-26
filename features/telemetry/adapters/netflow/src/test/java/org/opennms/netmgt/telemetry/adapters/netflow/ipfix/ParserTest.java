@@ -57,8 +57,6 @@ public class ParserTest {
                 final Packet p1 = new Packet(session, h1, BufferUtils.slice(buffer, h1.length - Header.SIZE));
                 System.out.println(p1);
 
-                assertThat(p1.isValid(), is(true));
-
                 assertThat(p1.header.versionNumber, is(0x000a));
                 assertThat(p1.header.observationDomainId, is(0L));
                 assertThat(p1.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
@@ -67,8 +65,6 @@ public class ParserTest {
                 final Packet p2 = new Packet(session, h2, BufferUtils.slice(buffer, h2.length - Header.SIZE));
                 System.out.println(p2);
 
-                assertThat(p2.isValid(), is(true));
-
                 assertThat(p2.header.versionNumber, is(0x000a));
                 assertThat(p2.header.observationDomainId, is(0L));
                 assertThat(p2.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
@@ -76,8 +72,6 @@ public class ParserTest {
                 final Header h3 = new Header(BufferUtils.slice(buffer, Header.SIZE));
                 final Packet p3 = new Packet(session, h3, BufferUtils.slice(buffer, h3.length - Header.SIZE));
                 System.out.println(p3);
-
-                assertThat(p3.isValid(), is(true));
 
                 assertThat(p3.header.versionNumber, is(0x000a));
                 assertThat(p3.header.observationDomainId, is(0L));

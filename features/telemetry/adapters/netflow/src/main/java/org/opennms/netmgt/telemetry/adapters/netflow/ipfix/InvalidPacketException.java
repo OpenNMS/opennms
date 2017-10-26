@@ -26,47 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
-import java.nio.ByteBuffer;
-import java.util.Optional;
+public class InvalidPacketException extends Exception {
 
-public class InformationElement {
-
-    private final int id;
-
-    private final String name;
-
-    private final Value.Parser parser;
-    private final Optional<Semantics> semantics;
-
-    InformationElement(final int id,
-                       final String name,
-                       final Value.Parser parser,
-                       final Optional<Semantics> semantics) {
-        this.id = id;
-        this.name = name;
-        this.parser = parser;
-        this.semantics = semantics;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public Optional<Semantics> getSemantics() {
-        return this.semantics;
-    }
-
-    public Value parse(final ByteBuffer buffer) {
-        return this.parser.parse(buffer);
-    }
-
-    public int getMaximumFieldLength() {
-        return this.parser.getMaximumFieldLength();
+    public InvalidPacketException(final String fmt, final Object... args) {
+        super(String.format(fmt, args));
     }
 }

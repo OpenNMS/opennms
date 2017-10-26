@@ -32,10 +32,10 @@ import java.nio.ByteBuffer;
 
 public abstract class Value {
 
-    @FunctionalInterface
     public interface Parser {
-        Value parse(final String name,
-                    final ByteBuffer buffer);
+        Value parse(final ByteBuffer buffer);
+
+        int getMaximumFieldLength();
     }
 
     private final String name;

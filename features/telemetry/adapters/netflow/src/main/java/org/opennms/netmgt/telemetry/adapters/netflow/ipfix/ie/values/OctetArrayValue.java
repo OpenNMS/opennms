@@ -43,8 +43,17 @@ public class OctetArrayValue extends Value {
         this.data = data;
     }
 
-    public static OctetArrayValue parse(final String name,
-                                        final ByteBuffer buffer) {
-        return new OctetArrayValue(name, bytes(buffer, buffer.remaining()));
+    public static Value.Parser parser(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value parse(ByteBuffer buffer) {
+                return new OctetArrayValue(name, bytes(buffer, buffer.remaining()));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
+            }
+        };
     }
 }
