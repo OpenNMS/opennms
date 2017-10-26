@@ -74,10 +74,13 @@ public final class DataRecord implements Record {
                 .toString();
     }
 
-    public static Set.RecordParser<DataRecord> parser(final Template template) {
+    public static Set.RecordParser<DataRecord> parser(final Session session, long observationDomainId, final int templateId) throws InvalidPacketException {
+        final Template template = session.findTemplate(observationDomainId, templateId)
+                .orElseThrow(() -> new InvalidPacketException("Unknown Template ID: %d/%d", observationDomainId, templateId));
+
         return new Set.RecordParser<DataRecord>() {
             @Override
-            public DataRecord parse(final Session session, final ByteBuffer buffer) throws InvalidPacketException {
+            public DataRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
                 return new DataRecord(session, template, buffer);
             }
 

@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElement;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElementDatabase;
@@ -83,7 +82,7 @@ public final class Packet {
             final Set<?> set;
             switch (setHeader.getType()) {
                 case TEMPLATE_SET: {
-                    final Set<TemplateRecord> templateSet = new Set<>(session, setHeader, TemplateRecord.parser(), payloadBuffer);
+                    final Set<TemplateRecord> templateSet = new Set<>(setHeader, TemplateRecord.parser(), payloadBuffer);
 
                     for (final TemplateRecord record : templateSet) {
                         session.addTemplate(Template.builder()
@@ -98,7 +97,7 @@ public final class Packet {
                 }
 
                 case OPTIONS_TEMPLATE_SET: {
-                    final Set<OptionsTemplateRecord> optionsTemplateSet = new Set<>(session, setHeader, OptionsTemplateRecord.parser(), payloadBuffer);
+                    final Set<OptionsTemplateRecord> optionsTemplateSet = new Set<>(setHeader, OptionsTemplateRecord.parser(), payloadBuffer);
 
                     for (final OptionsTemplateRecord record : optionsTemplateSet) {
                         session.addTemplate(Template.builder()
@@ -114,12 +113,7 @@ public final class Packet {
                 }
 
                 case DATA_SET: {
-                    final Optional<Template> template = session.findTemplate(this.header.observationDomainId, setHeader.setId);
-                    if (!template.isPresent()) {
-                        throw new InvalidPacketException("Unknown Template ID: %d", setHeader.setId);
-                    }
-
-                    final Set<DataRecord> dataSet = new Set<>(session, setHeader, DataRecord.parser(template.get()), payloadBuffer);
+                    final Set<DataRecord> dataSet = new Set<>(setHeader, DataRecord.parser(session, header.observationDomainId, setHeader.setId), payloadBuffer);
 
                     // TODO: Pass to handler
 
