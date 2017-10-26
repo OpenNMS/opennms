@@ -25,7 +25,7 @@ This will likely cause additional `.rpmnew` or `.dpkg-*` files on upgrade.
 * Event parameters:
 There are a few side-effects of the event parameter changes.
   ** When you view or retrieve an alarm it will always have the parameters of the newest event associated with it.
-  ** Vacuumd can no longer send events with event parameters.
+  ** Vacuumd no longer honors the `add-all-parms` attribute on an `action-event`.
 
 === New Features
 
