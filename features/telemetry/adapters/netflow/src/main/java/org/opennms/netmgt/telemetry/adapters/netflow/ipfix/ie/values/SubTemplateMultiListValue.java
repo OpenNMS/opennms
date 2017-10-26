@@ -28,22 +28,66 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.DataRecord;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.Set;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.SetHeader;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
+
+import com.google.common.collect.Lists;
 
 public class SubTemplateMultiListValue extends ListValue {
-    public final byte[] data;
+
+    public final List<List<List<Value>>> values;
 
     public SubTemplateMultiListValue(final String name,
                                      final Semantic semantic,
-                                     final byte[] data) {
+                                     final List<List<List<Value>>> values) {
         super(name, semantic);
-        this.data = data;
+        this.values = values;
     }
 
-    public static SubTemplateMultiListValue parse(final String name,
-                                                  final ByteBuffer buffer) {
-        return new SubTemplateMultiListValue(name, null, bytes(buffer, buffer.remaining()));
+
+    public static Parser parser(final String name) {
+        return new Value.Parser() {
+
+            @Override
+            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+                final Semantic semantic = Semantic.find(uint8(buffer));
+
+                final List<List<List<Value>>> values = new LinkedList<>();
+                while (buffer.hasRemaining()) {
+                    final SetHeader header = new SetHeader(buffer);
+                    if (header.setId <= 255) {
+                        throw new InvalidPacketException("Invalid template ID: %d", header.setId);
+                    }
+
+                    final ByteBuffer payloadBuffer = slice(buffer, header.length - SetHeader.SIZE);
+                    final Set<DataRecord> dataSet = new Set<>(header, DataRecord.parser(templateResolver, header.setId), payloadBuffer);
+
+                    values.add(Lists.transform(dataSet.records, r -> Lists.transform(r.fields, f->f.value)));
+                }
+
+                return new SubTemplateMultiListValue(name, semantic, values);
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 0;
+            }
+        };
     }
 }

@@ -49,7 +49,7 @@ public final class TemplateRecordHeader {
     public final int templateId; // uint16
     public final int fieldCount; // uint16
 
-    TemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public TemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.templateId = uint16(buffer);
         this.fieldCount = uint16(buffer);
 

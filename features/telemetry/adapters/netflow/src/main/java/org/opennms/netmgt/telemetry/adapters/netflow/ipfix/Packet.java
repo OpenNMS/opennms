@@ -68,15 +68,14 @@ public final class Packet {
     public final Header header;
     public final List<Set> sets;
 
-    Packet(final Session session,
-           final Header header,
-           final ByteBuffer buffer) throws InvalidPacketException {
+    public Packet(final Session session,
+                  final Header header,
+                  final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<Set> sets = new LinkedList<>();
         while (buffer.hasRemaining()) {
-            final ByteBuffer headerBuffer = slice(buffer, SetHeader.SIZE);
-            final SetHeader setHeader = new SetHeader(headerBuffer);
+            final SetHeader setHeader = new SetHeader(buffer);
 
             final ByteBuffer payloadBuffer = slice(buffer, setHeader.length - SetHeader.SIZE);
             final Set<?> set;

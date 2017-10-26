@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.slice;
-
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -44,7 +42,7 @@ public final class OptionsTemplateRecord implements Record {
 
     public final List<FieldSpecifier> fields;
 
-    OptionsTemplateRecord(final OptionsTemplateRecordHeader header,
+    public OptionsTemplateRecord(final OptionsTemplateRecordHeader header,
                           final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
@@ -70,8 +68,7 @@ public final class OptionsTemplateRecord implements Record {
         return new Set.RecordParser<OptionsTemplateRecord>() {
             @Override
             public OptionsTemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
-                final ByteBuffer headerBuffer = slice(buffer, OptionsTemplateRecordHeader.SIZE);
-                final OptionsTemplateRecordHeader header = new OptionsTemplateRecordHeader(headerBuffer);
+                final OptionsTemplateRecordHeader header = new OptionsTemplateRecordHeader(buffer);
 
                 return new OptionsTemplateRecord(header, buffer);
             }

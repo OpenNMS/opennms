@@ -55,7 +55,7 @@ public final class SetHeader {
     public final int setId; // uint16
     public final int length; // uint16
 
-    SetHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public SetHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.setId = uint16(buffer);
         this.length = uint16(buffer);
 

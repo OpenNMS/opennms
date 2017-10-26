@@ -61,7 +61,7 @@ public final class Header {
     public final long sequenceNumber; // uint32
     public final long observationDomainId; // uint32
 
-    Header(final ByteBuffer buffer) throws InvalidPacketException {
+    public Header(final ByteBuffer buffer) throws InvalidPacketException {
         this.versionNumber = uint16(buffer);
         this.length = uint16(buffer);
         this.exportTime = uint32(buffer);

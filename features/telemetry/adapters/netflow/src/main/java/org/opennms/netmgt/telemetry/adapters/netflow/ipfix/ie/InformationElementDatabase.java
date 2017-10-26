@@ -53,6 +53,7 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed64Val
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed8Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.StringValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.SubTemplateListValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.SubTemplateMultiListValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned16Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned32Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned64Value;
@@ -93,7 +94,7 @@ public class InformationElementDatabase {
             .put("ipv6Address", IPv6AddressValue::parser)
             .put("basicList", BasicListValue::parser)
             .put("subTemplateList", SubTemplateListValue::parser)
-            .put("subTemplateMultiList", OctetArrayValue::parser)
+            .put("subTemplateMultiList", SubTemplateMultiListValue::parser)
             .build();
 
     private static final Map<String, Semantics> SEMANTICS_LOOKUP = ImmutableMap.<String, Semantics>builder()

@@ -52,7 +52,7 @@ public final class OptionsTemplateRecordHeader {
     public final int fieldCount; // uint16
     public final int scopeFieldCount; // uint16
 
-    OptionsTemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public OptionsTemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.templateId = uint16(buffer);
         this.fieldCount = uint16(buffer);
         this.scopeFieldCount = uint16(buffer);
