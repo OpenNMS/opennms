@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IllegalValueException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
@@ -69,7 +70,7 @@ public final class DataRecord implements Record {
     public final List<Value> values;
 
     DataRecord(final Template template,
-               final ByteBuffer buffer) {
+               final ByteBuffer buffer) throws InvalidPacketException {
 
         final List<Value> values = new ArrayList<>(template.count());
         for (final Template.Field field : template) {
@@ -81,8 +82,12 @@ public final class DataRecord implements Record {
                 }
             }
 
-            final Value value = field.parse(slice(buffer, size));
-            values.add(value);
+            final ByteBuffer valueBuffer = slice(buffer, size);
+            try {
+                values.add(field.parse(valueBuffer));
+            } catch (final IllegalValueException e) {
+                throw new InvalidPacketException("Invalid value: %s", e.getMessage());
+            }
         }
 
         this.values = Collections.unmodifiableList(values);
@@ -98,7 +103,7 @@ public final class DataRecord implements Record {
     public static Set.RecordParser<DataRecord> parser(final Template template) {
         return new Set.RecordParser<DataRecord>() {
             @Override
-            public DataRecord parse(final ByteBuffer buffer) {
+            public DataRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
                 return new DataRecord(template, buffer);
             }
 

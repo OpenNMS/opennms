@@ -54,6 +54,11 @@ public class OctetArrayValue extends Value {
             public int getMaximumFieldLength() {
                 return 0xFFFF;
             }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 0;
+            }
         };
     }
 }

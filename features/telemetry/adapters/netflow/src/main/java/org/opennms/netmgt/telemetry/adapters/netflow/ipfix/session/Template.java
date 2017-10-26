@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElement;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IllegalValueException;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
@@ -78,7 +79,7 @@ public final class Template implements Iterable<Template.Field> {
             this.size = size;
         }
 
-        public abstract Value parse(ByteBuffer slice);
+        public abstract Value parse(ByteBuffer slice) throws IllegalValueException;
     }
 
     public static final class StandardField extends Field {
@@ -92,7 +93,7 @@ public final class Template implements Iterable<Template.Field> {
         }
 
         @Override
-        public Value parse(final ByteBuffer buffer) {
+        public Value parse(final ByteBuffer buffer) throws IllegalValueException {
             return this.informationElement.parse(buffer);
         }
     }
