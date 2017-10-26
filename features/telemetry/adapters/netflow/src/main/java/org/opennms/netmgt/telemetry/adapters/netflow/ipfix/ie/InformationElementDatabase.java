@@ -89,9 +89,9 @@ public class InformationElementDatabase {
             .put("dateTimeNanoseconds", DateTimeNanosecondsValue::parser)
             .put("ipv4Address", IPv4AddressValue::parser)
             .put("ipv6Address", IPv6AddressValue::parser)
-//            .put("basicList", BasicListValue::parse)
-//            .put("subTemplateList", SubTemplateListValue::parse)
-//            .put("subTemplateMultiList", SubTemplateMultiListValue::parse)
+            .put("basicList", OctetArrayValue::parser)
+            .put("subTemplateList", OctetArrayValue::parser)
+            .put("subTemplateMultiList", OctetArrayValue::parser)
             .build();
 
     private static final Map<String, Semantics> SEMANTICS_LOOKUP = ImmutableMap.<String,Semantics>builder()
@@ -143,13 +143,16 @@ public class InformationElementDatabase {
                 }
 
                 final String name = line[indexOfName];
-                final Value.Parser type = TYPE_LOOKUP.get(line[indexOfType]).parser(name);
-                final Optional<Semantics> semantics = Optional.ofNullable(SEMANTICS_LOOKUP.get(line[indexOfSemantics]));
+                final ValueParserFactory valueParserFactory = TYPE_LOOKUP.get(line[indexOfType]);
 
-                if (type == null) {
+                if (valueParserFactory == null) {
                     // TODO: Log me
                     continue;
                 }
+
+                final Value.Parser type = valueParserFactory.parser(name);
+                final Optional<Semantics> semantics = Optional.ofNullable(SEMANTICS_LOOKUP.get(line[indexOfSemantics]));
+
 
                 elements.put(id, new InformationElement(id, name, type, semantics));
             }

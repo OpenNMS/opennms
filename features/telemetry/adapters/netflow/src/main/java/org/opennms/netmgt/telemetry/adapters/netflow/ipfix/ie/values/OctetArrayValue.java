@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
@@ -41,6 +42,13 @@ public class OctetArrayValue extends Value {
                            final byte[] data) {
         super(name);
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "OctetArrayValue{" +
+                "data=" + Arrays.toString(data) +
+                '}';
     }
 
     public static Value.Parser parser(final String name) {
