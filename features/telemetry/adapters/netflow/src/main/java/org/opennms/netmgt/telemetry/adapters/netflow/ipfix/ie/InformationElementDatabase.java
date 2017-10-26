@@ -39,13 +39,18 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.BooleanValu
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeMicrosecondsValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeMillisecondsValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeNanosecondsValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.DateTimeSecondsValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Float32Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Float64Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IPv4AddressValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.IPv6AddressValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.MacAddressValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.OctetArrayValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed16Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed32Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed64Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed8Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.StringValue;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned16Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned32Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned64Value;
@@ -76,14 +81,14 @@ public class InformationElementDatabase {
             .put("float32", Float32Value::parser)
             .put("float64", Float64Value::parser)
             .put("boolean", BooleanValue::parser)
-//            .put("macAddress", MacAddressValue::parse)
-//            .put("string", StringValue::parse)
-//            .put("dateTimeSeconds", DateTimeSecondsValue::parse)
+            .put("macAddress", MacAddressValue::parser)
+            .put("string", StringValue::parser)
+            .put("dateTimeSeconds", DateTimeSecondsValue::parser)
             .put("dateTimeMilliseconds", DateTimeMillisecondsValue::parser)
             .put("dateTimeMicroseconds", DateTimeMicrosecondsValue::parser)
             .put("dateTimeNanoseconds", DateTimeNanosecondsValue::parser)
-//            .put("ipv4Address", IPv4AddressValue::parse)
-//            .put("ipv6Address", IPv6AddressValue::parse)
+            .put("ipv4Address", IPv4AddressValue::parser)
+            .put("ipv6Address", IPv6AddressValue::parser)
 //            .put("basicList", BasicListValue::parse)
 //            .put("subTemplateList", SubTemplateListValue::parse)
 //            .put("subTemplateMultiList", SubTemplateMultiListValue::parse)
