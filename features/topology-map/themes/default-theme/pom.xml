@@ -17,20 +17,6 @@
         <bundle.symbolicname>org.opennms.features.topology.themes.default-theme</bundle.symbolicname>
     </properties>
     <description>This is an OSGi bundle created with the OpenNMS Operation archetype</description>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
-            <artifactId>opennms-topology-api</artifactId>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features</groupId>
-            <artifactId>vaadin</artifactId>
-            <type>pom</type>
-        </dependency>
-    </dependencies>
-
     <build>
         <resources>
             <resource>
