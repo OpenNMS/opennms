@@ -39,6 +39,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.MoreObjects;
+
 public class IPv4AddressValue extends Value {
     public final Inet4Address inet4Address;
 
@@ -50,9 +52,10 @@ public class IPv4AddressValue extends Value {
 
     @Override
     public String toString() {
-        return "IPv4AddressValue{" +
-                "inet4Address=" + inet4Address +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("name", getName())
+                .add("inet4Address", inet4Address)
+                .toString();
     }
 
     public static Value.Parser parser(final String name) {

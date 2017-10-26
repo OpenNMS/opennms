@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 public class DateTimeSecondsValue extends Value {
@@ -48,9 +49,10 @@ public class DateTimeSecondsValue extends Value {
 
     @Override
     public String toString() {
-        return "DateTimeSecondsValue{" +
-                "seconds=" + seconds +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("name", getName())
+                .add("seconds", seconds)
+                .toString();
     }
 
     public static Value.Parser parser(final String name) {

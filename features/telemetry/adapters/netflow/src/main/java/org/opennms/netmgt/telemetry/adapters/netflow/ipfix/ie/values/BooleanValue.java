@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 public class BooleanValue extends Value {
@@ -49,9 +50,10 @@ public class BooleanValue extends Value {
 
     @Override
     public String toString() {
-        return "BooleanValue{" +
-                "value=" + value +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("name", getName())
+                .add("value", value)
+                .toString();
     }
 
     public static Value.Parser parser(final String name) {
@@ -73,7 +75,7 @@ public class BooleanValue extends Value {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }

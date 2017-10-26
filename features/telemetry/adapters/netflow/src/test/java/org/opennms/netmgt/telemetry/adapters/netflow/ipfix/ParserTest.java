@@ -85,7 +85,6 @@ public class ParserTest {
         });
     }
 
-
     public void execute(final String resource, final Consumer<ByteBuffer> consumer) {
         Objects.requireNonNull(resource);
         Objects.requireNonNull(consumer);

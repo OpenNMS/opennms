@@ -35,6 +35,8 @@ import java.util.Arrays;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.MoreObjects;
+
 public class OctetArrayValue extends Value {
     public final byte[] data;
 
@@ -46,9 +48,10 @@ public class OctetArrayValue extends Value {
 
     @Override
     public String toString() {
-        return "OctetArrayValue{" +
-                "data=" + Arrays.toString(data) +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("name", getName())
+                .add("data", data)
+                .toString();
     }
 
     public static Value.Parser parser(final String name) {

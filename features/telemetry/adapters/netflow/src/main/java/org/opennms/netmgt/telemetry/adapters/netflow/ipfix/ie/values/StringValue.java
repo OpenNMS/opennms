@@ -39,6 +39,8 @@ import java.nio.charset.Charset;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.MoreObjects;
+
 public class StringValue extends Value {
     public final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
     public final String value;
@@ -51,9 +53,10 @@ public class StringValue extends Value {
 
     @Override
     public String toString() {
-        return "StringValue{" +
-                "value='" + value + '\'' +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("name", getName())
+                .add("value", value)
+                .toString();
     }
 
     public static Value.Parser parser(final String name) {

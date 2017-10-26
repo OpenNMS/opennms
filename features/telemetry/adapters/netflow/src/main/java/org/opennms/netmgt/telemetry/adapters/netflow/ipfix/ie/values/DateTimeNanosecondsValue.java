@@ -35,6 +35,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.MoreObjects;
+
 public class DateTimeNanosecondsValue extends Value {
     public final long seconds;
     public final long fraction;
@@ -49,10 +51,11 @@ public class DateTimeNanosecondsValue extends Value {
 
     @Override
     public String toString() {
-        return "DateTimeNanosecondsValue{" +
-                "seconds=" + seconds +
-                ", fraction=" + fraction +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("name", getName())
+                .add("seconds", seconds)
+                .add("fraction", fraction)
+                .toString();
     }
 
     public static Value.Parser parser(final String name) {

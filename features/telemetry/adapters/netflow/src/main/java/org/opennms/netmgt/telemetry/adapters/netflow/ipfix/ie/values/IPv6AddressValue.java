@@ -38,6 +38,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.MoreObjects;
+
 public class IPv6AddressValue extends Value {
     public final Inet6Address inet6Address;
 
@@ -49,9 +51,10 @@ public class IPv6AddressValue extends Value {
 
     @Override
     public String toString() {
-        return "IPv6AddressValue{" +
-                "inet6Address=" + inet6Address +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("name", getName())
+                .add("inet6Address", inet6Address)
+                .toString();
     }
 
     public static Value.Parser parser(final String name) {

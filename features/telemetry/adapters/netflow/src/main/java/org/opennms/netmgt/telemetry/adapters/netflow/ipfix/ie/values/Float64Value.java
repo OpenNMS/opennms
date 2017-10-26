@@ -35,6 +35,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.MoreObjects;
+
 public class Float64Value extends Value {
     public final double value;
 
@@ -46,9 +48,10 @@ public class Float64Value extends Value {
 
     @Override
     public String toString() {
-        return "Float64Value{" +
-                "value=" + value +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("name", getName())
+                .add("value", value)
+                .toString();
     }
 
     public static Value.Parser parser(final String name) {

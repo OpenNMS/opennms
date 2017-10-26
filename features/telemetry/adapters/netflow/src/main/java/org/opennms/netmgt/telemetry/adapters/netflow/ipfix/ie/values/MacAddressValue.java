@@ -36,6 +36,8 @@ import java.util.Arrays;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
+import com.google.common.base.MoreObjects;
+
 public class MacAddressValue extends Value {
     public final byte[] macAddressOctets;
 
@@ -47,9 +49,10 @@ public class MacAddressValue extends Value {
 
     @Override
     public String toString() {
-        return "MacAddressValue{" +
-                "macAddressOctets=" + Arrays.toString(macAddressOctets) +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("name", getName())
+                .add("macAddressOctets", macAddressOctets)
+                .toString();
     }
 
     public static Value.Parser parser(final String name) {
