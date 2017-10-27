@@ -157,7 +157,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             try {
                 mib = parser.parse();
             } catch (Exception e) {
-                LOG.error("Can't compile {}", mibFile, e);
+                LOG.error("Can't compile " + mibFile, e);
                 errorHandler.addError(e.getMessage());
                 return false;
             }
@@ -220,7 +220,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating events objects from the MIB " + module.getId();
-            LOG.error("Event parsing error: {}", errors, e);
+            LOG.error("Event parsing error: " + errors, e);
             errorHandler.addError(errors);
             return null;
         }
@@ -265,7 +265,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating data collection objects from the MIB " + module.getId();
-            LOG.error("Data Collection parsing error: {}", errors, e);
+            LOG.error("Data Collection parsing error: " + errors, e);
             errorHandler.addError(errors);
             return null;
         }
@@ -317,7 +317,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating graph templates from the MIB " + module.getId();
-            LOG.error("Graph templates parsing error: {}", errors, e);
+            LOG.error("Graph templates parsing error: " + errors, e);
             errorHandler.addError(errors);
             return null;
         }
@@ -603,9 +603,11 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
     protected String getTrapEventDescr(Notification trap) {
         String description = trap.getDescription();
+        if (description == null) {
+            LOG.warn("The trap {} doesn't have a description field", trap.getOidStr());
+        }
         // FIXME There a lot of detail here (like removing the last \n) that can go away when we don't need to match mib2opennms exactly
-        final String descrStartingNewlines = description.replaceAll("^", "\n<p>");
-        final String descrEndingNewlines = descrStartingNewlines.replaceAll("$", "</p>\n");
+        final String descrEndingNewlines = description == null ? "No Description." : description.replaceAll("^", "\n<p>").replaceAll("$", "</p>\n");
         final StringBuffer dbuf = new StringBuffer(descrEndingNewlines);
         if (dbuf.charAt(dbuf.length() - 1) == '\n') {
             dbuf.deleteCharAt(dbuf.length() - 1); // delete the \n at the end
