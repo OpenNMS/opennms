@@ -38,10 +38,10 @@ AWS Credentials are required in order to access SQS.
 There are several ways to provide credentials. Without additional configuration changes, the default credential provider chain will be used. That means, the provider looks for credentials in this order:
 
 * Environment Variables (i.e. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`)
-* Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`)
+* Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`. These keys can be added to `$OPENNMS_HOME/etc/opennms.conf`)
 * Default credential profiles file (i.e. `~/.aws/credentials`)
 * Amazon ECS container credentials (i.e. `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`)
-* Instance profile credentials (i.e. through the metadata service)
+* Instance profile credentials (i.e. through the metadata service when running on EC2)
 
 Optionally, the credentials can be specified inside the `aws.properties` file, for example:
 
@@ -53,7 +53,11 @@ org.opennms.core.ipc.sink.aws.aws_access_key_id=XXXXXXXXXXX
 org.opennms.core.ipc.sink.aws.aws_secret_access_key=XXXXXXXXXXX' > "$OPENNMS_HOME/etc/opennms.properties.d/aws.properties"
 ----
 
-In order to use FIFO queues instead of Standard queues, it is required to add the following parameter:
+When running OpenNMS inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file. The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run:
+
+image:../images/minion/aws-iam-role.png[]
+
+In order to use FIFO queues instead of Standard queues, it is required to add the following parameters:
 
 [source, sh]
 ----
