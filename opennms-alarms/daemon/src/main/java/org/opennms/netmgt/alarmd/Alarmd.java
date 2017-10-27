@@ -33,11 +33,14 @@ import java.util.Map;
 
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
+import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -67,10 +70,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     private List<Northbounder> m_northboundInterfaces;
 
     private AlarmPersister m_persister;
-    
-    
-    
-    
+
     //Get all events
     /**
      * <p>onEvent</p>
@@ -98,35 +98,45 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     }
 
     private void handleReloadEvent(Event e) {
-    	LOG.info("Received reload configuration event: {}", e);
+        LOG.info("Received reload configuration event: {}", e);
 
-    	//Currently, Alarmd has no configuration... I'm sure this will change soon.
+        //Currently, Alarmd has no configuration... I'm sure this will change soon.
 
+        List<Parm> parmCollection = e.getParmCollection();
+        for (Parm parm : parmCollection) {
 
-    	List<Parm> parmCollection = e.getParmCollection();
-    	for (Parm parm : parmCollection) {
+            String parmName = parm.getParmName();
+            if ("daemonName".equals(parmName)) {
+                if (parm.getValue() == null || parm.getValue().getContent() == null) {
+                    LOG.warn("The daemonName parameter has no value, ignoring.");
+                    return;
+                }
 
-    		String parmName = parm.getParmName();
-    		if("daemonName".equals(parmName)) {
-    			if (parm.getValue() == null || parm.getValue().getContent() == null) {
-    				LOG.warn("The daemonName parameter has no value, ignoring.");
-    				return;
-    			}
-
-    			List<Northbounder> nbis = getNorthboundInterfaces();
-    			for (Northbounder nbi : nbis) {
-    				if (parm.getValue().getContent().contains(nbi.getName())) {
-    					LOG.debug("Handling reload event for NBI: {}", nbi.getName());
-    					LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
-    					nbi.reloadConfig();
-    					return;
-    				}
-    			}
-    		}
-    	}
+                List<Northbounder> nbis = getNorthboundInterfaces();
+                for (Northbounder nbi : nbis) {
+                    if (parm.getValue().getContent().contains(nbi.getName())) {
+                        LOG.debug("Handling reload event for NBI: {}", nbi.getName());
+                        LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
+                        EventBuilder ebldr = null;
+                        try {
+                            nbi.reloadConfig();
+                            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+                            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+                        } catch (NorthbounderException ex) {
+                            LOG.error("Can't reload the northbound configuration for " + nbi.getName(), ex);
+                            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+                            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+                            ebldr.addParam(EventConstants.PARM_REASON, ex.getMessage());
+                        } finally {
+                            if (ebldr != null)
+                                m_eventForwarder.sendNow(ebldr.getEvent());
+                        }
+                        return;
+                    }
+                }
+            }
+        }
     }
-
-
 
 	/**
      * <p>setPersister</p>
