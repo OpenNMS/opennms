@@ -47,6 +47,11 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed16Val
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed32Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed64Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Signed8Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.StringValue;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned16Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned32Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned64Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned8Value;
 
 public class ValueTest {
 
@@ -241,6 +246,82 @@ public class ValueTest {
 
         final Signed8Value v3 = (Signed8Value) Signed8Value.parser("name3").parse(null, ByteBuffer.wrap(new byte[]{-42}));
         Assert.assertEquals(-42, v3.value);
+        Assert.assertEquals("name3", v3.getName());
+    }
+
+    @Test
+    public void testUnsigned64Value() throws Exception {
+        final Unsigned64Value v1 = (Unsigned64Value) Unsigned64Value.parser("name1").parse(null, (ByteBuffer) ByteBuffer.allocate(8).putLong(0).flip());
+        Assert.assertEquals(0L, v1.value.longValue());
+        Assert.assertEquals("name1", v1.getName());
+
+        final Unsigned64Value v2 = (Unsigned64Value) Unsigned64Value.parser("name2").parse(null, (ByteBuffer) ByteBuffer.allocate(8).putLong(42).flip());
+        Assert.assertEquals(42L, v2.value.longValue());
+        Assert.assertEquals("name2", v2.getName());
+
+        Assert.assertEquals(1L, ((Unsigned64Value) Unsigned64Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 0, 0, 0, 0, 0, 0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned64Value) Unsigned64Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 0, 0, 0, 0, 0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned64Value) Unsigned64Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 0, 0, 0, 0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned64Value) Unsigned64Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 0, 0, 0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned64Value) Unsigned64Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 0, 0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned64Value) Unsigned64Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned64Value) Unsigned64Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned64Value) Unsigned64Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{1}))).value.longValue(), 0);
+    }
+
+    @Test
+    public void testUnsigned32Value() throws Exception {
+        final Unsigned32Value v1 = (Unsigned32Value) Unsigned32Value.parser("name1").parse(null, (ByteBuffer) ByteBuffer.allocate(4).putInt(0).flip());
+        Assert.assertEquals(0L, v1.value.longValue());
+        Assert.assertEquals("name1", v1.getName());
+
+        final Unsigned32Value v2 = (Unsigned32Value) Unsigned32Value.parser("name2").parse(null, (ByteBuffer) ByteBuffer.allocate(4).putInt(42).flip());
+        Assert.assertEquals(42L, v2.value.longValue());
+        Assert.assertEquals("name2", v2.getName());
+
+        Assert.assertEquals(1L, ((Unsigned32Value) Unsigned32Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 0, 0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned32Value) Unsigned32Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned32Value) Unsigned32Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned32Value) Unsigned32Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{1}))).value.longValue(), 0);
+    }
+
+    @Test
+    public void testUnsigned16Value() throws Exception {
+        final Unsigned16Value v1 = (Unsigned16Value) Unsigned16Value.parser("name1").parse(null, (ByteBuffer) ByteBuffer.allocate(2).putShort((short) 0).flip());
+        Assert.assertEquals(0L, v1.value.longValue());
+        Assert.assertEquals("name1", v1.getName());
+
+        final Unsigned16Value v2 = (Unsigned16Value) Unsigned16Value.parser("name2").parse(null, (ByteBuffer) ByteBuffer.allocate(2).putShort((short) 42).flip());
+        Assert.assertEquals(42L, v2.value.longValue());
+        Assert.assertEquals("name2", v2.getName());
+
+        Assert.assertEquals(1L, ((Unsigned16Value) Unsigned16Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{0, 1}))).value.longValue(), 0);
+        Assert.assertEquals(1L, ((Unsigned16Value) Unsigned16Value.parser("name").parse(null, ByteBuffer.wrap(new byte[]{1}))).value.longValue(), 0);
+    }
+
+    @Test
+    public void testUnsigned8Value() throws Exception {
+        final Unsigned8Value v1 = (Unsigned8Value) Unsigned8Value.parser("name1").parse(null, ByteBuffer.wrap(new byte[]{0}));
+        Assert.assertEquals(0L, v1.value.longValue());
+        Assert.assertEquals("name1", v1.getName());
+
+        final Unsigned8Value v2 = (Unsigned8Value) Unsigned8Value.parser("name2").parse(null, ByteBuffer.wrap(new byte[]{42}));
+        Assert.assertEquals(42L, v2.value.longValue());
+        Assert.assertEquals("name2", v2.getName());
+    }
+
+    @Test
+    public void testStringValue() throws Exception {
+        final StringValue v1 = (StringValue) StringValue.parser("name1").parse(null, ByteBuffer.wrap("Hello World".getBytes("UTF-8")));
+        Assert.assertEquals("Hello World", v1.value);
+        Assert.assertEquals("name1", v1.getName());
+
+        final StringValue v2 = (StringValue) StringValue.parser("name2").parse(null, ByteBuffer.wrap("Foo".getBytes("UTF-8")));
+        Assert.assertEquals("Foo", v2.value);
+        Assert.assertEquals("name2", v2.getName());
+
+        final StringValue v3 = (StringValue) StringValue.parser("name3").parse(null, ByteBuffer.wrap(new byte[]{}));
+        Assert.assertEquals("", v3.value);
         Assert.assertEquals("name3", v3.getName());
     }
 }
