@@ -137,4 +137,12 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         return null;
     }
 
+	public void setFilterDao(FilterDao filterDao) {
+		this.filterDao = filterDao;
+	}
+
+	public void setPersisterFactory(PersisterFactory persisterFactory) {
+		this.persisterFactory = persisterFactory;
+	}
+
 }

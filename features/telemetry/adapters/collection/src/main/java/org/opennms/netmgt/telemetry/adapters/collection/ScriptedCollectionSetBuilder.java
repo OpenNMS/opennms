@@ -29,9 +29,12 @@
 package org.opennms.netmgt.telemetry.adapters.collection;
 
 import com.google.common.io.Files;
+
+import org.opennms.features.telemetry.adpaters.collection.script.OSGiScriptEngineManager;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.osgi.framework.BundleContext;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -44,9 +47,9 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Uses an external script, executed via JSR-223, to
- * generate a {@link CollectionSet} from some given object
- * using the {@link CollectionSetBuilder}.
+ * Uses an external script, executed via JSR-223, to generate a
+ * {@link CollectionSet} from some given object using the
+ * {@link CollectionSetBuilder}.
  *
  * @author jwhite
  */
@@ -56,13 +59,19 @@ public class ScriptedCollectionSetBuilder {
 
     private CompiledScript compiledScript;
 
-    public ScriptedCollectionSetBuilder(File script) throws IOException, ScriptException {
+    public ScriptedCollectionSetBuilder(File script, BundleContext bundleContext) throws IOException, ScriptException {
         if (!script.canRead()) {
             throw new IllegalStateException("Cannot read script at '" + script + "'.");
         }
 
         final String ext = Files.getFileExtension(script.getAbsolutePath());
-        final ScriptEngineManager manager = new ScriptEngineManager();
+
+        ScriptEngineManager manager;
+        if (bundleContext != null) {
+            manager = new OSGiScriptEngineManager(bundleContext);
+        } else {
+            manager = new ScriptEngineManager();
+        }
         final ScriptEngine engine = manager.getEngineByExtension(ext);
         if (engine == null) {
             throw new IllegalStateException("No engine found for extension: " + ext);
@@ -80,11 +89,13 @@ public class ScriptedCollectionSetBuilder {
     /**
      * Builds a collection set from the given message.
      *
-     * WARNING: This method is not necessarily thread safe. This depends
-     * on the script, and the script engine that is being used.
+     * WARNING: This method is not necessarily thread safe. This depends on the
+     * script, and the script engine that is being used.
      *
-     * @param agent the agent associated with the collection set
-     * @param message the messaged passed to script containing the metrics
+     * @param agent
+     *            the agent associated with the collection set
+     * @param message
+     *            the messaged passed to script containing the metrics
      * @return a collection set
      * @throws ScriptException
      */

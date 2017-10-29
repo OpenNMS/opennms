@@ -325,6 +325,7 @@
             <feature>tsrm-troubleticketer</feature>
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
+            <feature>opennms-telemetry-jti</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
