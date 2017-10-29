@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.telemetry</groupId>
   <artifactId>org.opennms.features.telemetry.config</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS :: Features :: Telemetry :: API</name>
+  <name>OpenNMS :: Features :: Telemetry :: Config</name>
   <modules>
     <module>api</module>
     <module>jaxb</module>
