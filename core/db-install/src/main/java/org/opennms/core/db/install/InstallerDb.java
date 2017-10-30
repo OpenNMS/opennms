@@ -43,11 +43,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -2317,6 +2319,35 @@ public class InstallerDb {
             m_out.print("- recovering database disk space (VACUUM FULL)... ");
             st.execute("VACUUM FULL");
             m_out.println("OK");
+        }
+    }
+
+    // Ensures that the database time and the system time running the installer match
+    // If the difference is greater than 1s, it fails
+    public void checkTime() throws Exception {
+        m_out.print("- checking if time of database \"" + getDatabaseName() + "\" is matching system time... ");
+
+        try (Statement st = getConnection().createStatement()) {
+            final long beforeQueryTime = System.currentTimeMillis();
+            try (ResultSet rs = st.executeQuery("SELECT NOW()")) {
+                if (rs.next()) {
+                    final Timestamp currentDatabaseTime = rs.getTimestamp(1);
+                    final long currentSystemTime = System.currentTimeMillis();
+                    final long diff = currentDatabaseTime.getTime() - currentSystemTime;
+                    final long queryExecuteDelta = Math.abs(currentSystemTime - beforeQueryTime);
+                    if (Math.abs(diff) > 1000 + queryExecuteDelta) {
+                        m_out.println("NOT OK");
+                        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+                        final String databaseDateString = simpleDateFormat.format(new Date(currentDatabaseTime.getTime()));
+                        final String systemTimeDateString = simpleDateFormat.format(new Date(currentSystemTime));
+                        throw new Exception("Database time and system time differ."
+                                + "System time: " + systemTimeDateString + ", database time: " + databaseDateString
+                                + ", diff: " + Math.abs(diff) + "ms. The maximum allowed difference is 1000ms."
+                                + " Please update either the database time or system time");
+                    }
+                    m_out.println("OK");
+                }
+            }
         }
     }
 }
