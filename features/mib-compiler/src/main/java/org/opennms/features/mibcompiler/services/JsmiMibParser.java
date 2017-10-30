@@ -157,7 +157,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             try {
                 mib = parser.parse();
             } catch (Exception e) {
-                LOG.error("Can't compile " + mibFile, e);
+                LOG.error("Can't compile {}", mibFile, e);
                 errorHandler.addError(e.getMessage());
                 return false;
             }
@@ -220,7 +220,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating events objects from the MIB " + module.getId();
-            LOG.error("Event parsing error: " + errors, e);
+            LOG.error("Event parsing error: {}", errors, e);
             errorHandler.addError(errors);
             return null;
         }
@@ -265,7 +265,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating data collection objects from the MIB " + module.getId();
-            LOG.error("Data Collection parsing error: " + errors, e);
+            LOG.error("Data Collection parsing error: {}", errors, e);
             errorHandler.addError(errors);
             return null;
         }
@@ -317,7 +317,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating graph templates from the MIB " + module.getId();
-            LOG.error("Graph templates parsing error: " + errors, e);
+            LOG.error("Graph templates parsing error: {}", errors, e);
             errorHandler.addError(errors);
             return null;
         }
