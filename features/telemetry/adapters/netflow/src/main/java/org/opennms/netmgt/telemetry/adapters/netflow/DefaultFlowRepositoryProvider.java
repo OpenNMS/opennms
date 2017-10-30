@@ -26,15 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.telemetry.adapters.netflow;
 
-import java.util.List;
+import javax.naming.ServiceUnavailableException;
 
-public interface FlowRepository {
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
+import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.FlowRepositoryProvider;
+import org.springframework.stereotype.Component;
 
-    void save(List<NetflowDocument> document) throws FlowException;
+@Component
+public class DefaultFlowRepositoryProvider implements FlowRepositoryProvider {
 
-    List<NetflowDocument> findAll(String query) throws FlowException;
+    private ServiceLookup serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
+            .blocking()
+            .build();
 
-    String rawQuery(String query) throws FlowException;
+    @Override
+    public FlowRepository getFlowRepository() throws ServiceUnavailableException {
+        final FlowRepository lookup = serviceLookup.lookup(FlowRepository.class);
+        if (lookup == null) {
+            throw new ServiceUnavailableException("A service of type " + FlowRepository.class.getName() + " is not available.");
+        }
+        return lookup;
+    }
 }

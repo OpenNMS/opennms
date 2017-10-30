@@ -57,6 +57,7 @@
         <ref bean="searchContextProvider"/>
         <ref bean="noSuchElementProvider" />
         <ref bean="errorResponseProvider" />
+        <ref bean="serviceUnavailableResponseProvider" />
       </jaxrs:providers>
       <jaxrs:outInterceptors>
         <ref bean="gzipOutInterceptor" />

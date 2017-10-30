@@ -675,6 +675,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.rest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.rest</artifactId>
       <version>${project.version}</version>

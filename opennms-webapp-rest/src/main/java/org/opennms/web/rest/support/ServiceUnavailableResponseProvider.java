@@ -26,15 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.web.rest.support;
 
-import java.util.List;
+import javax.naming.ServiceUnavailableException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-public interface FlowRepository {
-
-    void save(List<NetflowDocument> document) throws FlowException;
-
-    List<NetflowDocument> findAll(String query) throws FlowException;
-
-    String rawQuery(String query) throws FlowException;
+/**
+ * Maps an Exception of type {@link ServiceUnavailableException} to a Response HTTP Status of 503 (service not available).
+ */
+@Provider
+public class ServiceUnavailableResponseProvider implements ExceptionMapper<ServiceUnavailableException> {
+    @Override
+    public Response toResponse(ServiceUnavailableException exception) {
+        // if there is an optional exception message, we add it to the response
+        if (exception.getMessage() != null) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(exception.getMessage()).build();
+        }
+        return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+                .type(MediaType.TEXT_PLAIN)
+                .entity("The service you are requesting is not available. Please try again later")
+                .build();
+    }
 }
