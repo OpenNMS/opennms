@@ -57,6 +57,8 @@ public class DefaultAmazonSQSManagerIT {
         Assert.assertEquals("OpenNMS-Sink-Heartbeat", mgr.getQueueName(awsConfig, module));
         awsConfig.put(AmazonSQSManager.AWS_QUEUE_NAME_PREFIX, "PROD");
         Assert.assertEquals("PROD-OpenNMS-Sink-Heartbeat", mgr.getQueueName(awsConfig, module));
+        awsConfig.put(DefaultAmazonSQSManager.SqsQueueAttribute.FifoQueue.toString(), "true");
+        Assert.assertEquals("PROD-OpenNMS-Sink-Heartbeat.fifo", mgr.getQueueName(awsConfig, module));
     }
 
     /**
