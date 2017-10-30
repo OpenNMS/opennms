@@ -36,7 +36,7 @@ package org.opennms.core.ipc.sink.aws.sqs;
 public interface AmazonSQSSinkConstants {
 
     /** The Constant AWS_CONFIG_PID. */
-    static final String AWS_CONFIG_PID = "org.opennms.core.ipc.sink.aws";
+    static final String AWS_CONFIG_PID = "org.opennms.core.ipc.sink.sqs";
 
     /** The Constant AWS_CONFIG_SYS_PROP_PREFIX. */
     static final String AWS_CONFIG_SYS_PROP_PREFIX = AWS_CONFIG_PID + ".";

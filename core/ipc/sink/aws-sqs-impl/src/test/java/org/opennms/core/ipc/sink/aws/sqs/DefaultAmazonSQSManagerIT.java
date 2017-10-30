@@ -31,6 +31,7 @@ package org.opennms.core.ipc.sink.aws.sqs;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Assert;
@@ -58,4 +59,33 @@ public class DefaultAmazonSQSManagerIT {
         Assert.assertEquals("PROD-OpenNMS-Sink-Heartbeat", mgr.getQueueName(awsConfig, module));
     }
 
+    /**
+     * Test queue attributes.
+     */
+    @Test
+    public void testQueueAttributes() {
+        DefaultAmazonSQSManager mgr = new DefaultAmazonSQSManager();
+        Properties awsConfig = new Properties();
+        awsConfig.put(AmazonSQSManager.AWS_REGION, "us-east-2");
+
+        final int validDefaultAttributes = DefaultAmazonSQSManager.QUEUE_ATTRIBUTES_DEFAULTS.size() - 1; // FifoQueue=false should not be passed.
+        Map<String,String> properties = mgr.buildProperties(awsConfig);
+        Assert.assertEquals(validDefaultAttributes,  properties.size());
+
+        awsConfig.put(DefaultAmazonSQSManager.SqsQueueAttribute.FifoQueue.toString(), "true");
+        Assert.assertTrue(mgr.isFifoEnabled(awsConfig));
+        Assert.assertFalse(mgr.isFifoContentDedupEnabled(awsConfig));
+        properties = mgr.buildProperties(awsConfig);
+        Assert.assertEquals(validDefaultAttributes + 2,  properties.size()); // FifoQueue was added as well as ContentBasedDeduplication
+        final String dedup = DefaultAmazonSQSManager.SqsQueueAttribute.ContentBasedDeduplication.toString();
+        Assert.assertEquals(DefaultAmazonSQSManager.CONTENT_BASED_DEDUP_DEFAULT,  properties.get(dedup));
+
+        awsConfig.put(dedup, "true");
+        Assert.assertTrue(mgr.isFifoContentDedupEnabled(awsConfig));
+
+        awsConfig.put("Policy", "a-policy-here");
+        properties = mgr.buildProperties(awsConfig);
+        Assert.assertEquals(8,  properties.size());
+        Assert.assertEquals("a-policy-here", properties.get("Policy"));
+    }
 }

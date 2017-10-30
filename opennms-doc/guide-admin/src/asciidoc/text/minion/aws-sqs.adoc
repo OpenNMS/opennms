@@ -29,8 +29,8 @@ Enable and configure the _AWS SQS_ consumer on _{opennms-product-name}_ by using
 [source, sh]
 ----
 echo 'org.opennms.core.ipc.sink.initialSleepTime=60000' > "$OPENNMS_HOME/etc/opennms.properties.d/sink-initial-sleep-time.properties"
-echo 'org.opennms.core.ipc.sink.strategy=aws
-org.opennms.core.ipc.sink.aws.aws_region=us-east-1' > "$OPENNMS_HOME/etc/opennms.properties.d/aws.properties"
+echo 'org.opennms.core.ipc.sink.strategy=sqs
+org.opennms.core.ipc.sink.sqs.aws_region=us-east-1' > "$OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties"
 ----
 
 AWS Credentials are required in order to access SQS.
@@ -43,14 +43,14 @@ There are several ways to provide credentials. Without additional configuration 
 * Amazon ECS container credentials (i.e. `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`)
 * Instance profile credentials (i.e. through the metadata service when running on EC2)
 
-Optionally, the credentials can be specified inside the `aws.properties` file, for example:
+Optionally, the credentials can be specified inside the `aws-sqs.properties` file, for example:
 
 [source, sh]
 ----
-echo 'org.opennms.core.ipc.sink.strategy=aws
-org.opennms.core.ipc.sink.aws.aws_region=us-east-1
-org.opennms.core.ipc.sink.aws.aws_access_key_id=XXXXXXXXXXX
-org.opennms.core.ipc.sink.aws.aws_secret_access_key=XXXXXXXXXXX' > "$OPENNMS_HOME/etc/opennms.properties.d/aws.properties"
+echo 'org.opennms.core.ipc.sink.strategy=sqs
+org.opennms.core.ipc.sink.sqs.aws_region=us-east-1
+org.opennms.core.ipc.sink.sqs.aws_access_key_id=XXXXXXXXXXX
+org.opennms.core.ipc.sink.sqs.aws_secret_access_key=XXXXXXXXXXX' > "$OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties"
 ----
 
 When running OpenNMS inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file. The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run:
@@ -61,7 +61,7 @@ In order to use FIFO queues instead of Standard queues, it is required to add th
 
 [source, sh]
 ----
-org.opennms.core.ipc.sink.aws.aws_use_fifo_queue=true
+org.opennms.core.ipc.sink.sqs.aws_use_fifo_queue=true
 ----
 
 Restart _{opennms-product-name}_ to apply the changes.
@@ -73,10 +73,10 @@ Enable the _AWS SQS_ producer on _Minion_ using:
 [source, sh]
 ----
 echo '!opennms-core-ipc-sink-camel
-opennms-core-ipc-sink-aws' > "$MINION_HOME/etc/featuresBoot.d/aws.boot"
+opennms-core-ipc-sink-aws-sqs' > "$MINION_HOME/etc/featuresBoot.d/aws-sqs.boot"
 ----
 
-NOTE: The snippet above prevents the `opennms-core-ipc-sink-camel` feature from starting when _Minion_ is started, and loads the `opennms-core-ipc-sink-aws` feature instead.
+NOTE: The snippet above prevents the `opennms-core-ipc-sink-camel` feature from starting when _Minion_ is started, and loads the `opennms-core-ipc-sink-aws-sqs` feature instead.
 
 Next, configure the _AWS SQS_ producer on _Minion_ using:
 
@@ -84,7 +84,7 @@ Next, configure the _AWS SQS_ producer on _Minion_ using:
 ----
 echo 'aws_region=us-east-1
 aws_access_key_id=XXXXXXXXXXX
-aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.aws.cfg"
+aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.sqs.cfg"
 ----
 
 The AWS credentials are required. If they are not specified on the configuration file, the default credentials provider chain (explained above) will be used instead.
@@ -113,6 +113,8 @@ From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReferen
 * `VisibilityTimeout` (defaults to 30 seconds)
 * `Policy`
 * `RedrivePolicy`
+* `KmsMasterKeyId`
+* `KmsDataKeyReusePeriodSeconds`
 
 For FIFO Queues:
 

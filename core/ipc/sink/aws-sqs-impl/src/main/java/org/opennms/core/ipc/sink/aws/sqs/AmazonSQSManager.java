@@ -28,9 +28,7 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -57,12 +55,6 @@ public interface AmazonSQSManager {
 
     /** The Constant AWS_QUEUE_NAME_PREFIX. */
     public static final String AWS_QUEUE_NAME_PREFIX = "aws_queue_name_prefix";
-
-    /** The Constant AWS_USE_FIFO_QUEUE. */
-    public static final String AWS_USE_FIFO_QUEUE = "aws_use_fifo_queue";
-
-    /** The Constant QUEUE_ATTRIBUTES. */
-    public static final Map<String, String> QUEUE_ATTRIBUTES = new HashMap<>(); 
 
     /**
      * Creates the SQS object.

@@ -11,7 +11,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <cm:property-placeholder id="awsProperties" persistent-id="org.opennms.core.ipc.sink.aws" update-strategy="reload" />
+    <cm:property-placeholder id="awsProperties" persistent-id="org.opennms.core.ipc.sink.sqs" update-strategy="reload" />
 
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 

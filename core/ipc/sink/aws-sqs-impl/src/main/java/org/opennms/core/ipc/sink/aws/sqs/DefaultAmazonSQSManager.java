@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
+import java.io.Serializable;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * The Class DefaultAmazonSQSManager.
@@ -61,18 +63,57 @@ public class DefaultAmazonSQSManager implements AmazonSQSManager {
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAmazonSQSManager.class);
 
-    /** The Constant FIFO_CONTENT_DEDUP. */
-    private static final String FIFO_CONTENT_DEDUP = "ContentBasedDeduplication";
+    /**
+     * An Enumeration for the SQS Queue Attributes.
+     */
+    static enum SqsQueueAttribute implements Serializable {
 
-    static {
-        QUEUE_ATTRIBUTES.put("DelaySeconds", "0");
-        QUEUE_ATTRIBUTES.put("MaximumMessageSize", "262144");
-        QUEUE_ATTRIBUTES.put("MessageRetentionPeriod", "1209600");
-        QUEUE_ATTRIBUTES.put("ReceiveMessageWaitTimeSeconds", "10");
-        QUEUE_ATTRIBUTES.put("VisibilityTimeout", "30");
-        QUEUE_ATTRIBUTES.put("Policy", null);
-        QUEUE_ATTRIBUTES.put("RedrivePolicy", null);
+        /** The Delay seconds. */
+        DelaySeconds,
+
+        /** The Maximum message size. */
+        MaximumMessageSize,
+
+        /** The Message retention period. */
+        MessageRetentionPeriod,
+
+        /** The Receive message wait time seconds. */
+        ReceiveMessageWaitTimeSeconds,
+
+        /** The Visibility timeout. */
+        VisibilityTimeout,
+
+        /** The FIFO queue. */
+        FifoQueue,
+
+        /** The Content based deduplication. */
+        ContentBasedDeduplication,
+
+        /** The Policy. */
+        Policy,
+
+        /** The Redrive policy. */
+        RedrivePolicy,
+
+        /** The KMS master key id. */
+        KmsMasterKeyId,
+
+        /** The KMS data key reuse period seconds. */
+        KmsDataKeyReusePeriodSeconds
     }
+
+    /** The Constant CONTENT_BASED_DEDUP_DEFAULT. */
+    static final String CONTENT_BASED_DEDUP_DEFAULT = "false";
+
+    /** The Constant QUEUE_ATTRIBUTES_DEFAULTS. */
+    static final ImmutableMap<String, String> QUEUE_ATTRIBUTES_DEFAULTS = new ImmutableMap.Builder<String, String>()
+            .put(SqsQueueAttribute.DelaySeconds.toString(), "0")
+            .put(SqsQueueAttribute.MaximumMessageSize.toString(), "262144")
+            .put(SqsQueueAttribute.MessageRetentionPeriod.toString(), "1209600")
+            .put(SqsQueueAttribute.ReceiveMessageWaitTimeSeconds.toString(), "10")
+            .put(SqsQueueAttribute.VisibilityTimeout.toString(), "30")
+            .put(SqsQueueAttribute.FifoQueue.toString(), "false")
+            .build();
 
     /* (non-Javadoc)
      * @see org.opennms.core.ipc.sink.aws.sqs.AmazonSQSManager#createSQSObject(java.util.Properties)
@@ -90,15 +131,7 @@ public class DefaultAmazonSQSManager implements AmazonSQSManager {
      * @see org.opennms.core.ipc.sink.aws.sqs.AmazonSQSManager#ensureQueueExists(java.util.Properties, com.amazonaws.services.sqs.AmazonSQS, java.lang.String)
      */
     public String ensureQueueExists(Properties awsConfig, AmazonSQS sqs, String queueName) throws AmazonSQSException {
-        final Map<String,String> attributes = new HashMap<>();
-        QUEUE_ATTRIBUTES.forEach((k,v) -> {
-            final String val = awsConfig.getProperty(k,v);
-            if (val != null) attributes.put(k, val);
-        });
-        if (isFifoEnabled(awsConfig)) {
-            attributes.put("FifoQueue", "true");
-            attributes.put(FIFO_CONTENT_DEDUP, awsConfig.getProperty(FIFO_CONTENT_DEDUP, "false"));
-        }
+        final Map<String, String> attributes = buildProperties(awsConfig);
         try {
             return sqs.createQueue(new CreateQueueRequest(queueName).withAttributes(attributes)).getQueueUrl();
         } catch (AmazonSQSException e) {
@@ -163,13 +196,39 @@ public class DefaultAmazonSQSManager implements AmazonSQSManager {
     }
 
     /**
+     * Builds the properties map for the queue.
+     *
+     * @param awsConfig the AWS configuration
+     * @return the queue properties map
+     */
+    protected Map<String, String> buildProperties(Properties awsConfig) {
+        final Map<String,String> attributes = new HashMap<>();
+        for (SqsQueueAttribute attr : SqsQueueAttribute.values()) {
+            final String val = awsConfig.getProperty(attr.toString(),QUEUE_ATTRIBUTES_DEFAULTS.get(attr.toString()));
+            if (val != null) {
+                attributes.put(attr.toString(), val);
+            }
+        }
+        if (isFifoEnabled(awsConfig)) {
+            final String key = SqsQueueAttribute.ContentBasedDeduplication.toString();
+            attributes.put(key, awsConfig.getProperty(key, CONTENT_BASED_DEDUP_DEFAULT));
+        } else {
+            attributes.remove(SqsQueueAttribute.FifoQueue.toString());
+        }
+        LOG.debug("SQS configuration settings {}", awsConfig);
+        LOG.debug("SQS queues properties {}", attributes);
+        return attributes;
+    }
+
+    /**
      * Checks if is FIFO enabled.
      *
      * @param awsConfig the AWS configuration
      * @return true, if is FIFO enabled
      */
-    private boolean isFifoEnabled(Properties awsConfig) {
-        return Boolean.parseBoolean(awsConfig.getProperty(AWS_USE_FIFO_QUEUE, "false"));
+    protected boolean isFifoEnabled(Properties awsConfig) {
+        final String key = SqsQueueAttribute.FifoQueue.toString();
+        return Boolean.parseBoolean(awsConfig.getProperty(key, QUEUE_ATTRIBUTES_DEFAULTS.get(key)));
     }
 
     /**
@@ -178,8 +237,9 @@ public class DefaultAmazonSQSManager implements AmazonSQSManager {
      * @param awsConfig the AWS configuration
      * @return true, if is content deduplication enabled
      */
-    private boolean isFifoContentDedupEnabled(Properties awsConfig) {
-        return Boolean.parseBoolean(awsConfig.getProperty(FIFO_CONTENT_DEDUP, "false"));
+    protected boolean isFifoContentDedupEnabled(Properties awsConfig) {
+        final String key = SqsQueueAttribute.ContentBasedDeduplication.toString();
+        return Boolean.parseBoolean(awsConfig.getProperty(key, CONTENT_BASED_DEDUP_DEFAULT));
     }
 
     /**
@@ -189,7 +249,7 @@ public class DefaultAmazonSQSManager implements AmazonSQSManager {
      * @param exc the exception
      * @return true, if is cause
      */
-    private boolean isCause(Class<? extends Throwable> expected, Throwable exc) {
+    protected boolean isCause(Class<? extends Throwable> expected, Throwable exc) {
         return expected.isInstance(exc) || (exc != null && isCause(expected, exc.getCause()));
     }
 

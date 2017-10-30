@@ -36,12 +36,12 @@ public class SinkStrategy {
 
     private static final String KAFKA_SINK_STRATEGY_NAME = "kafka";
 
-    private static final String AWS_SINK_STRATEGY_NAME = "aws";
+    private static final String SQS_SINK_STRATEGY_NAME = "sqs";
 
     public static enum Strategy {
         CAMEL(CAMEL_SINK_STRATEGY_NAME, "JMS implementation using Camel"),
         KAFKA(KAFKA_SINK_STRATEGY_NAME, "Kafka implementation using the Kafka consumer/producer APIs"),
-        AWS(AWS_SINK_STRATEGY_NAME, "AWS SQS implementation using the AWS JMS consumer/producer APIs");
+        SQS(SQS_SINK_STRATEGY_NAME, "AWS SQS implementation using the AWS SDK");
 
         private final String m_name;
         private final String m_descr;

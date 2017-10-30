@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
-import static org.opennms.core.ipc.sink.common.SinkStrategy.Strategy.AWS;
+import static org.opennms.core.ipc.sink.common.SinkStrategy.Strategy.SQS;
 
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.common.SinkStrategy;
@@ -74,7 +74,7 @@ public class AmazonSQSConditionalSinkContext {
          */
         @Override
         public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-            final boolean enabled = AWS.equals(SinkStrategy.getSinkStrategy());
+            final boolean enabled = SQS.equals(SinkStrategy.getSinkStrategy());
             try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
                 LOG.debug("Enable AWS SQS Sink: {}", enabled);
             }
