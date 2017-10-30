@@ -309,10 +309,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 future.completeExceptionally(new Exception("error setting up listener for SNMP responses"));
                 return;
             }
-        }
 
-        try {
-            if (expectResponse) {
+            try {
                 session.send(pdu, agentConfig.getTarget(), null, new ResponseListener() {
                     @Override
                     public void onResponse(ResponseEvent responseEvent) {
@@ -333,20 +331,21 @@ public class Snmp4JStrategy implements SnmpStrategy {
                         }
                     }
                 });
-            } else {
+            } catch (final Exception e) {
+                // The ResponseListener will not be called since an exception occurred in the send,
+                // so we make sure to close the session here
+                closeQuietly(session);
+                LOG.error("send: error during SNMP operation", e);
+                future.completeExceptionally(e);
+            }
+        } else { // we're not expecting a response
+            try {
                 session.send(pdu, agentConfig.getTarget());
                 future.complete(null);
-            }
-        } catch (final IOException e) {
-            LOG.error("send: error during SNMP operation", e);
-            future.completeExceptionally(e);
-        } catch (final RuntimeException e) {
-            LOG.error("send: unexpected error during SNMP operation", e);
-            future.completeExceptionally(e);
-        } finally {
-            // Always close the session if we're not expecting a response
-            // If we are expecting a response, the ResponseListener will handle the close
-            if (!expectResponse) {
+            } catch (final Exception e) {
+                LOG.error("send: error during SNMP operation", e);
+                future.completeExceptionally(e);
+            } finally {
                 closeQuietly(session);
             }
         }
