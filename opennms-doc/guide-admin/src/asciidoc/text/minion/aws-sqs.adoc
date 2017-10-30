@@ -61,7 +61,7 @@ In order to use FIFO queues instead of Standard queues, it is required to add th
 
 [source, sh]
 ----
-org.opennms.core.ipc.sink.sqs.aws_use_fifo_queue=true
+org.opennms.core.ipc.sink.sqs.FifoQueue=true
 ----
 
 Restart _{opennms-product-name}_ to apply the changes.
@@ -93,7 +93,7 @@ In order to use FIFO queues instead of Standard queues, it is required to add th
 
 [source, sh]
 ----
-aws_use_fifo_queue=true
+FifoQueue=true
 ----
 
 Restart _Minion_ to apply the changes.
@@ -119,6 +119,8 @@ From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReferen
 For FIFO Queues:
 
 * `ContentBasedDeduplication` (defaults to false)
+
+WARNING: When FIFO queues are not required, there is no need to add `FifoQueue=false` to the configuration files, as this is the default behavior.
 
 ==== Managing Multiple Environments
 
