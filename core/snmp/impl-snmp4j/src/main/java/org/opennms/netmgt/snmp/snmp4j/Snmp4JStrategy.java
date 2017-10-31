@@ -316,7 +316,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
                     public void onResponse(ResponseEvent responseEvent) {
                         try {
                             future.complete(processResponse(agentConfig, responseEvent));
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             future.completeExceptionally(e);
                         } finally {
                             // Close the tracker using a separate thread
