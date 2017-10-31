@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -531,9 +531,14 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      * @param res a {@link org.opennms.netmgt.snmp.SnmpResult} object.
      */
     public void notifyIfNotFound(CollectionAttributeType attrType, SnmpResult res) {
-        // Don't bother sending a rescan event in this case since localhost is not going to be there anyway
-        //triggerRescan();
-        LOG.info("Unable to locate resource for agent {} with instance id {} while collecting attribute {}", getCollectionAgent(), res.getInstance(), attrType);
+        // If we're collecting from ifTable or ifXTable, be less noisy and explain
+        // the likeliest reason for the absence of the target instance
+        String baseOID = res.getBase().toString();
+        if (baseOID.startsWith(".1.3.6.1.2.1.2.2.1") || baseOID.startsWith(".1.3.6.1.2.1.31.1.1.1")) {
+            LOG.debug("Unable to locate interface with ifIndex {} for agent {} while collecting attribute {}. Perhaps a DO_NOT_PERSIST policy excluded this interface?", getCollectionAgent(), res.getInstance(), attrType);
+        } else {
+            LOG.info("Unable to locate resource for agent {} with instance id {} while collecting attribute {}", getCollectionAgent(), res.getInstance(), attrType);
+        }
     }
 
     /* Not used anymore - done in CollectableService
