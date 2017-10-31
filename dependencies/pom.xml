@@ -14,6 +14,7 @@
     <module>activemq-web</module>
     <module>asterisk</module>
     <module>atomikos</module>
+    <module>aws</module>
     <module>camel</module>
     <module>camel-test</module>
     <module>cxf</module>

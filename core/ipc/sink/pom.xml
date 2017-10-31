@@ -15,6 +15,7 @@
     <module>common</module>
     <module>camel-impl</module>
     <module>kafka-impl</module>
+    <module>aws-sqs-impl</module>
     <module>mock-impl</module>
     <module>xml</module>
   </modules>
