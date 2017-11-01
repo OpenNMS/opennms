@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.sink.aws.sqs;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -100,7 +101,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
                 LOG.error("Cannot obtain URL for queue {}. The message cannot be sent.", queueName);
             } else {
                 try {
-                    final String messageId = awsSqsManager.sendMessage(awsConfig, sqs, queueUrl, module.marshal((T)message));
+                    final String messageId = awsSqsManager.sendMessage(awsConfig, sqs, queueUrl, new String(module.marshal((T)message), StandardCharsets.UTF_8));
                     LOG.debug("SQS Message with ID {} has been successfully sent to {}", messageId, queueUrl);
                 } catch (RuntimeException ex) {
                     LOG.error("Unexpected AWS SDK exception while sending a message", ex);

@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +129,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
                     for (com.amazonaws.services.sqs.model.Message m : messages) {
                         try {
                             LOG.debug("Received SQS message with ID {} from {}", m.getMessageId(), queueUrl);
-                            final Message msg = module.unmarshal(m.getBody());
+                            final Message msg = module.unmarshal(m.getBody().getBytes(StandardCharsets.UTF_8));
                             dispatch(module, msg);
                             LOG.debug("Message with ID {} successfully dispatched.", m.getMessageId(), queueUrl);
                         } catch (RuntimeException e) {
