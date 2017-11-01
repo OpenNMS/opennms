@@ -87,7 +87,7 @@ public class BasicListValue extends ListValue<Value<?>> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1 + FieldSpecifier.SIZE;
+                return 1 + 4;
             }
         };
     }

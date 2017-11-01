@@ -30,22 +30,14 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.slice;
 
-import java.io.PrintStream;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Semantics;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.StandardField;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
 import com.google.common.base.MoreObjects;
@@ -143,127 +135,5 @@ public final class Packet implements Iterable<Set<?>> {
                 .add("header", header)
                 .add("sets", sets)
                 .toString();
-    }
-
-    public static void dump(final Packet packet, final PrintStream out) {
-        out.printf("Packet: version=0x%04X, length=%d, time=%d, seq=%d, domain=%d\n",
-                packet.header.versionNumber,
-                packet.header.length,
-                packet.header.exportTime,
-                packet.header.sequenceNumber,
-                packet.header.observationDomainId);
-
-        for (final Set<?> set : packet) {
-            switch (set.header.getType()) {
-                case TEMPLATE_SET: {
-                    out.printf("\tTemplate Set: length=%d\n",
-                            set.header.length);
-
-                    for (final TemplateRecord record : (Set<TemplateRecord>) set) {
-                        out.printf("\t\tTemplate Record: id=%d, count=%d\n",
-                                record.header.templateId,
-                                record.header.fieldCount);
-
-                        for (final FieldSpecifier field : record.fields) {
-                            if (!field.enterpriseNumber.isPresent()) {
-                                out.printf("\t\t\tField: id=%d, length=%d\n",
-                                        field.informationElementId,
-                                        field.fieldLength);
-
-                                final StandardField specifier = (StandardField) field.specifier;
-                                out.printf("\t\t\t\tInformation Element: id=%d, name=%s, length=[%d,%d], semantics=%s\n",
-                                        specifier.getInformationElement().getId(),
-                                        specifier.getInformationElement().getName(),
-                                        specifier.getInformationElement().getMinimumFieldLength(),
-                                        specifier.getInformationElement().getMaximumFieldLength(),
-                                        specifier.getInformationElement().getSemantics().map(Semantics::toString).orElse("(none)"));
-
-                            } else {
-                                out.printf("\t\t\tField: id=%d, length=%d, enterprieId=%d\n",
-                                        field.informationElementId,
-                                        field.fieldLength,
-                                        field.enterpriseNumber.get());
-                            }
-                        }
-                    }
-                    break;
-                }
-
-                case OPTIONS_TEMPLATE_SET: {
-                    out.printf("\tOption Template Set: length=%d\n",
-                            set.header.length);
-
-                    for (final OptionsTemplateRecord record : (Set<OptionsTemplateRecord>) set) {
-                        out.printf("\t\tOption Template Record: id=%d, count=%d, scope=%d\n",
-                                record.header.templateId,
-                                record.header.fieldCount,
-                                record.header.scopeFieldCount);
-
-                        for (final FieldSpecifier field : record.fields) {
-                            if (!field.enterpriseNumber.isPresent()) {
-                                out.printf("\t\t\tField: id=%d, length=%d\n",
-                                        field.informationElementId,
-                                        field.fieldLength);
-
-                                final StandardField specifier = (StandardField) field.specifier;
-                                out.printf("\t\t\t\tInformation Element: id=%d, name=%s, length=[%d,%d], semantics=%s\n",
-                                        specifier.getInformationElement().getId(),
-                                        specifier.getInformationElement().getName(),
-                                        specifier.getInformationElement().getMinimumFieldLength(),
-                                        specifier.getInformationElement().getMaximumFieldLength(),
-                                        specifier.getInformationElement().getSemantics().map(Semantics::toString).orElse("(none)"));
-
-                            } else {
-                                out.printf("\t\t\tField: id=%d, length=%d, enterprieId=%d\n",
-                                        field.informationElementId,
-                                        field.fieldLength,
-                                        field.enterpriseNumber.get());
-                            }
-                        }
-                    }
-                    break;
-                }
-
-                case DATA_SET: {
-                    out.printf("\tData Set: length=%d\n",
-                            set.header.length);
-
-                    for (final DataRecord record : (Set<DataRecord>) set) {
-                        out.printf("\t\tData Record:\n");
-
-                        for (final FieldValue field : record.fields) {
-                            out.printf("\t\t\tField: name=%s, value=%s\n",
-                                    field.value.getName(),
-                                    field.value.getValue());
-                        }
-                    }
-
-                    break;
-                }
-            }
-        }
-    }
-
-    public static void main(final String... args) throws Exception {
-        final DatagramChannel channel = DatagramChannel.open();
-        channel.socket().bind(new InetSocketAddress(4739));
-
-        final Map<SocketAddress, Session> sessions = new HashMap<>();
-
-        while (true) {
-            final ByteBuffer buffer = ByteBuffer.allocate(0xFFFF);
-            final SocketAddress address = channel.receive(buffer);
-            buffer.flip();
-
-            final Session session = sessions.computeIfAbsent(address, k -> new Session());
-
-            final ByteBuffer headerBuffer = slice(buffer, Header.SIZE);
-            final Header header = new Header(headerBuffer);
-
-            final ByteBuffer payloadBuffer = slice(buffer, header.length - Header.SIZE);
-            final Packet packet = new Packet(session, header, payloadBuffer);
-
-            System.out.println(packet);
-        }
     }
 }
