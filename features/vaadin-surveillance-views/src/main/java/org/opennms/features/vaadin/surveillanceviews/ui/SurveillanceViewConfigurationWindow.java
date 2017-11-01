@@ -105,7 +105,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         titleField.addValidator(new AbstractStringValidator("Please use an unique name for the surveillance view") {
             @Override
             protected boolean isValidValue(String string) {
-                if ("".equals(string.trim())) {
+                if (string == null || string.trim().isEmpty()) {
                     return false;
                 }
                 if (SurveillanceViewProvider.getInstance().containsView(string) && !view.getName().equals(string)) {
@@ -127,6 +127,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         refreshSecondsField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
             protected boolean isValidValue(String s) {
+                if (s == null || s.trim().isEmpty()) return false;
                 int number;
                 try {
                     number = Integer.parseInt(s);
