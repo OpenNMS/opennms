@@ -29,36 +29,37 @@
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
 import java.nio.ByteBuffer;
+import java.time.Instant;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.primitives.UnsignedLong;
 
-public class DateTimeMillisecondsValue extends Value {
-    public final UnsignedLong milliseconds;
+public class DateTimeMillisecondsValue extends Value<Instant> {
+
+    private final Instant value;
 
     public DateTimeMillisecondsValue(final String name,
-                                     final UnsignedLong milliseconds) {
+                                     final Instant value) {
         super(name);
-        this.milliseconds = milliseconds;
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("milliseconds", milliseconds)
+                .add("value", value)
                 .toString();
     }
 
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new DateTimeMillisecondsValue(name, BufferUtils.uint64(buffer));
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                return new DateTimeMillisecondsValue(name, Instant.ofEpochMilli(BufferUtils.uint64(buffer).longValue()));
             }
 
             @Override
@@ -71,5 +72,10 @@ public class DateTimeMillisecondsValue extends Value {
                 return 8;
             }
         };
+    }
+
+    @Override
+    public Instant getValue() {
+        return this.value;
     }
 }

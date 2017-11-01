@@ -37,9 +37,10 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class StringValue extends Value {
+public class StringValue extends Value<String> {
     public final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
-    public final String value;
+
+    private final String value;
 
     public StringValue(final String name,
                        final String value) {
@@ -58,7 +59,7 @@ public class StringValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 return new StringValue(name, new String(BufferUtils.bytes(buffer, buffer.remaining()), UTF8_CHARSET));
             }
 
@@ -72,5 +73,10 @@ public class StringValue extends Value {
                 return 0;
             }
         };
+    }
+
+    @Override
+    public String getValue() {
+        return this.value;
     }
 }

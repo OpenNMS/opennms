@@ -35,8 +35,8 @@ import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.ui
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Field;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
 public class FieldValue {
 
@@ -63,7 +63,7 @@ public class FieldValue {
 
     public final Value value;
 
-    public FieldValue(final Session.TemplateResolver templateResolver, final Template.Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
+    public FieldValue(final Session.TemplateResolver templateResolver, final Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
         int length = templateField.length;
         if (length == VARIABLE_SIZED) {
             length = uint8(buffer);

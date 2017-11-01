@@ -36,8 +36,8 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class Float64Value extends Value {
-    public final double value;
+public class Float64Value extends Value<Double> {
+    private final double value;
 
     public Float64Value(final String name,
                         final double value) {
@@ -56,7 +56,7 @@ public class Float64Value extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 return new Float64Value(name, Double.longBitsToDouble(BufferUtils.uint(buffer, buffer.remaining()).longValue()));
             }
 
@@ -70,5 +70,10 @@ public class Float64Value extends Value {
                 return 1;
             }
         };
+    }
+
+    @Override
+    public Double getValue() {
+        return this.value;
     }
 }

@@ -39,27 +39,27 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class IPv4AddressValue extends Value {
-    public final Inet4Address inet4Address;
+public class IPv4AddressValue extends Value<Inet4Address> {
+    public final Inet4Address value;
 
     public IPv4AddressValue(final String name,
-                            final Inet4Address inet4Address) {
+                            final Inet4Address value) {
         super(name);
-        this.inet4Address = inet4Address;
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("inet4Address", inet4Address)
+                .add("inet4Address", value)
                 .toString();
     }
 
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 try {
                     return new IPv4AddressValue(name, (Inet4Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 4)));
                 } catch (final UnknownHostException e) {
@@ -77,5 +77,10 @@ public class IPv4AddressValue extends Value {
                 return 4;
             }
         };
+    }
+
+    @Override
+    public Inet4Address getValue() {
+        return this.value;
     }
 }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
 import java.nio.ByteBuffer;
+import java.time.Instant;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
@@ -36,34 +37,39 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class DateTimeMicrosecondsValue extends Value {
-    public final long seconds;
-    public final long fraction;
+public class DateTimeMicrosecondsValue extends Value<Instant> {
+
+    /**
+     * Number of seconds between 1900-01-01 and 1970-01-01 according to RFC 868.
+     */
+    public static final long SECONDS_TO_EPOCH = 2208988800L;
+
+    private final Instant value;
 
     public DateTimeMicrosecondsValue(final String name,
-                                     final long seconds,
-                                     final long fraction) {
+                                     final Instant value) {
         super(name);
-        this.seconds = seconds;
-        this.fraction = fraction;
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("seconds", seconds)
-                .add("fraction", fraction)
+                .add("value", value)
                 .toString();
     }
 
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 final long seconds = BufferUtils.uint32(buffer);
                 final long fraction = BufferUtils.uint32(buffer) & (0xFFFFFFFF << 11);
-                return new DateTimeMicrosecondsValue(name, seconds, fraction);
+
+                final Instant value = Instant.ofEpochSecond(seconds - SECONDS_TO_EPOCH, fraction * 1_000_000_000L / (1L<<32));
+
+                return new DateTimeMicrosecondsValue(name, value);
             }
 
             @Override
@@ -76,5 +82,10 @@ public class DateTimeMicrosecondsValue extends Value {
                 return 8;
             }
         };
+    }
+
+    @Override
+    public Instant getValue() {
+        return this.value;
     }
 }

@@ -43,7 +43,7 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
 import com.google.common.collect.Lists;
 
-public class SubTemplateListValue extends ListValue {
+public class SubTemplateListValue extends ListValue<List<Value<?>>> {
     /*
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -56,11 +56,11 @@ public class SubTemplateListValue extends ListValue {
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
 
-    public final List<List<Value>> values;
+    private final List<List<Value<?>>> values;
 
     public SubTemplateListValue(final String name,
                                 final Semantic semantic,
-                                final List<List<Value>> values) {
+                                final List<List<Value<?>>> values) {
         super(name, semantic);
         this.values = values;
     }
@@ -69,13 +69,13 @@ public class SubTemplateListValue extends ListValue {
         return new Value.Parser() {
 
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(uint8(buffer));
                 final int templateId = uint16(buffer);
 
                 final Template template = templateResolver.lookup(templateId).orElseThrow(() -> new InvalidPacketException("Unknown Template ID: %d", templateId));
 
-                final List<List<Value>> values = new LinkedList<>();
+                final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
                     final DataRecord record = new DataRecord(templateResolver, template, buffer);
                     values.add(Lists.transform(record.fields, f -> f.value));
@@ -94,5 +94,10 @@ public class SubTemplateListValue extends ListValue {
                 return 3;
             }
         };
+    }
+
+    @Override
+    public List<List<Value<?>>> getValue() {
+        return this.values;
     }
 }

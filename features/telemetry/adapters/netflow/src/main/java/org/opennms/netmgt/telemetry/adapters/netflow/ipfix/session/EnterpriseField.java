@@ -26,55 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.bytes;
 
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
-import com.google.common.base.MoreObjects;
+public final class EnterpriseField extends Field {
 
-public class OctetArrayValue extends Value<byte[]> {
-    public final byte[] value;
+    public static final class EnterpriseValue extends Value<byte[]> {
+        public final int informationElementId;
+        public final long enterpriseNumber;
 
-    public OctetArrayValue(final String name,
-                           final byte[] value) {
-        super(name);
-        this.value = value;
+        public final byte[] data;
+
+        public EnterpriseValue(final int informationElementId,
+                               final long enterpriseNumber,
+                               final byte[] data) {
+            super("enterprise");
+            this.informationElementId = informationElementId;
+            this.enterpriseNumber = enterpriseNumber;
+
+            this.data = data;
+        }
+
+        @Override
+        public byte[] getValue() {
+            return this.data;
+        }
+    }
+
+    private final int informationElementId;
+    private final long enterpriseNumber;
+
+    public EnterpriseField(final int length,
+                           final int informationElementId,
+                           final long enterpriseNumber) {
+        super(length);
+        this.informationElementId = informationElementId;
+        this.enterpriseNumber = enterpriseNumber;
     }
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("name", getName())
-                .add("data", value)
-                .toString();
-    }
-
-    public static Value.Parser parser(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value<?> parse(final Session.TemplateResolver templateResolver, ByteBuffer buffer) {
-                return new OctetArrayValue(name, bytes(buffer, buffer.remaining()));
-            }
-
-            @Override
-            public int getMaximumFieldLength() {
-                return 0xFFFF;
-            }
-
-            @Override
-            public int getMinimumFieldLength() {
-                return 0;
-            }
-        };
-    }
-
-    @Override
-    public byte[] getValue() {
-        return this.value;
+    public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+        return new EnterpriseValue(this.informationElementId, this.enterpriseNumber, bytes(buffer, buffer.remaining()));
     }
 }

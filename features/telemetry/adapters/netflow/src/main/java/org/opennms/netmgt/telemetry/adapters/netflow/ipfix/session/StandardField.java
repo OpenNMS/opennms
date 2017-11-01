@@ -26,54 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElement;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
-import com.google.common.base.MoreObjects;
+public final class StandardField extends Field {
 
-public class Signed8Value extends Value<Long> {
-    private final long value;
+    private final InformationElement informationElement;
 
-    public Signed8Value(final String name,
-                        final long value) {
-        super(name);
-        this.value = value;
+    public StandardField(final int length,
+                         final InformationElement informationElement) {
+        super(length);
+        this.informationElement = informationElement;
     }
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("name", getName())
-                .add("value", value)
-                .toString();
+    public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+        return this.informationElement.parse(templateResolver, buffer);
     }
 
-    public static Value.Parser parser(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new Signed8Value(name, BufferUtils.sint(buffer, 1));
-            }
-
-            @Override
-            public int getMaximumFieldLength() {
-                return 1;
-            }
-
-            @Override
-            public int getMinimumFieldLength() {
-                return 1;
-            }
-        };
-    }
-
-    @Override
-    public Long getValue() {
-        return this.value;
+    public InformationElement getInformationElement() {
+        return this.informationElement;
     }
 }

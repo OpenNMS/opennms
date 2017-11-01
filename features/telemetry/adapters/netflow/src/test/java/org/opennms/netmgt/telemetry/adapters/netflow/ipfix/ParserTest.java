@@ -55,7 +55,7 @@ public class ParserTest {
 
                 final Header h1 = new Header(BufferUtils.slice(buffer, Header.SIZE));
                 final Packet p1 = new Packet(session, h1, BufferUtils.slice(buffer, h1.length - Header.SIZE));
-                System.out.println(p1);
+                Packet.dump(p1, System.out);
 
                 assertThat(p1.header.versionNumber, is(0x000a));
                 assertThat(p1.header.observationDomainId, is(0L));
@@ -63,7 +63,7 @@ public class ParserTest {
 
                 final Header h2 = new Header(BufferUtils.slice(buffer, Header.SIZE));
                 final Packet p2 = new Packet(session, h2, BufferUtils.slice(buffer, h2.length - Header.SIZE));
-                System.out.println(p2);
+                Packet.dump(p2, System.out);
 
                 assertThat(p2.header.versionNumber, is(0x000a));
                 assertThat(p2.header.observationDomainId, is(0L));
@@ -71,7 +71,7 @@ public class ParserTest {
 
                 final Header h3 = new Header(BufferUtils.slice(buffer, Header.SIZE));
                 final Packet p3 = new Packet(session, h3, BufferUtils.slice(buffer, h3.length - Header.SIZE));
-                System.out.println(p3);
+                Packet.dump(p3, System.out);
 
                 assertThat(p3.header.versionNumber, is(0x000a));
                 assertThat(p3.header.observationDomainId, is(0L));

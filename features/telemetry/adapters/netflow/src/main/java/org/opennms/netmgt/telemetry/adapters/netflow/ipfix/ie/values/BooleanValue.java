@@ -37,8 +37,8 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class BooleanValue extends Value {
-    public final boolean value;
+public class BooleanValue extends Value<Boolean> {
+    private final boolean value;
 
     public BooleanValue(final String name,
                         final boolean value) {
@@ -58,7 +58,7 @@ public class BooleanValue extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final int value = BufferUtils.uint8(buffer);
 
                 if (value < 1 || value > 2) {
@@ -77,5 +77,10 @@ public class BooleanValue extends Value {
                 return 0;
             }
         };
+    }
+
+    @Override
+    public Boolean getValue() {
+        return this.value;
     }
 }

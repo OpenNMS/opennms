@@ -71,8 +71,7 @@ public final class SetHeader {
         if (this.setId == 3) return Type.OPTIONS_TEMPLATE_SET;
         if (this.setId >= 256) return Type.DATA_SET;
 
-        // Unreachable
-        throw null;
+        return null;
     }
 
     @Override

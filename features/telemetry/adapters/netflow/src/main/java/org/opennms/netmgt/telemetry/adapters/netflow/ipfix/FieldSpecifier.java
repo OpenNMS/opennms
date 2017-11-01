@@ -34,6 +34,12 @@ import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.ui
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElement;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElementDatabase;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.EnterpriseField;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Field;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.StandardField;
+
 import com.google.common.base.MoreObjects;
 
 public final class FieldSpecifier {
@@ -54,16 +60,35 @@ public final class FieldSpecifier {
 
     public final Optional<Long> enterpriseNumber;
 
+    public final Field specifier;
+
     public FieldSpecifier(final ByteBuffer buffer) throws InvalidPacketException {
         final int elementId = uint16(buffer);
 
         this.informationElementId = elementId & 0x7FFF;
         this.fieldLength = uint16(buffer);
 
-        if ((elementId & 0x8000) != 0) {
-            this.enterpriseNumber = Optional.of(uint32(buffer));
-        } else {
+        if ((elementId & 0x8000) == 0) {
             this.enterpriseNumber = Optional.empty();
+
+            final InformationElement informationElement = InformationElementDatabase.instance
+                    .lookup(this.informationElementId)
+                    .orElseThrow(() -> new InvalidPacketException("Undefined information element ID: %d", this.informationElementId));
+
+            if (this.fieldLength > informationElement.getMaximumFieldLength() || this.fieldLength < informationElement.getMinimumFieldLength()) {
+                throw new InvalidPacketException("Template field has illegal size: %d (min=%d, max=%d)",
+                        this.fieldLength,
+                        informationElement.getMinimumFieldLength(),
+                        informationElement.getMaximumFieldLength());
+            }
+
+            this.specifier = new StandardField(this.fieldLength, informationElement);
+
+        } else {
+            long enterpriseNumber = uint32(buffer);
+            this.enterpriseNumber = Optional.of(enterpriseNumber);
+
+            this.specifier = new EnterpriseField(this.fieldLength, this.informationElementId, enterpriseNumber);
         }
 
         if (this.fieldLength < 1) {

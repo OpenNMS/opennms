@@ -36,27 +36,27 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class MacAddressValue extends Value {
-    public final byte[] macAddressOctets;
+public class MacAddressValue extends Value<byte[]> {
+    public final byte[] value;
 
     public MacAddressValue(final String name,
-                           final byte[] macAddressOctets) {
+                           final byte[] value) {
         super(name);
-        this.macAddressOctets = macAddressOctets;
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("macAddressOctets", macAddressOctets)
+                .add("macAddressOctets", value)
                 .toString();
     }
 
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 return new MacAddressValue(name, BufferUtils.bytes(buffer, 6));
             }
 
@@ -70,5 +70,10 @@ public class MacAddressValue extends Value {
                 return 6;
             }
         };
+    }
+
+    @Override
+    public byte[] getValue() {
+        return this.value;
     }
 }

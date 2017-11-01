@@ -40,27 +40,27 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class IPv6AddressValue extends Value {
-    public final Inet6Address inet6Address;
+public class IPv6AddressValue extends Value<Inet6Address> {
+    public final Inet6Address value;
 
     public IPv6AddressValue(final String name,
-                            final Inet6Address inet6Address) {
+                            final Inet6Address value) {
         super(name);
-        this.inet6Address = inet6Address;
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("inet6Address", inet6Address)
+                .add("inet6Address", value)
                 .toString();
     }
 
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 try {
                     return new IPv6AddressValue(name, (Inet6Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 16)));
                 } catch (UnknownHostException e) {
@@ -78,5 +78,10 @@ public class IPv6AddressValue extends Value {
                 return 16;
             }
         };
+    }
+
+    @Override
+    public Inet6Address getValue() {
+        return this.value;
     }
 }

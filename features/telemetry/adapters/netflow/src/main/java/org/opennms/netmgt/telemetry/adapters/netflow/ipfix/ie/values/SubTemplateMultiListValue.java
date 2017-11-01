@@ -44,13 +44,13 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.collect.Lists;
 
-public class SubTemplateMultiListValue extends ListValue {
+public class SubTemplateMultiListValue extends ListValue<List<List<Value<?>>>> {
 
-    public final List<List<List<Value>>> values;
+    private final List<List<List<Value<?>>>> values;
 
     public SubTemplateMultiListValue(final String name,
                                      final Semantic semantic,
-                                     final List<List<List<Value>>> values) {
+                                     final List<List<List<Value<?>>>> values) {
         super(name, semantic);
         this.values = values;
     }
@@ -60,10 +60,10 @@ public class SubTemplateMultiListValue extends ListValue {
         return new Value.Parser() {
 
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(uint8(buffer));
 
-                final List<List<List<Value>>> values = new LinkedList<>();
+                final List<List<List<Value<?>>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
                     final SetHeader header = new SetHeader(buffer);
                     if (header.setId <= 255) {
@@ -89,5 +89,10 @@ public class SubTemplateMultiListValue extends ListValue {
                 return 0;
             }
         };
+    }
+
+    @Override
+    public List<List<List<Value<?>>>> getValue() {
+        return this.values;
     }
 }

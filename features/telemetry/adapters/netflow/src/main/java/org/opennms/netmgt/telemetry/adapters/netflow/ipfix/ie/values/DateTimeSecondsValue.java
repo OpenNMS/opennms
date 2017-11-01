@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
 import java.nio.ByteBuffer;
+import java.time.Instant;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
@@ -36,28 +37,28 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class DateTimeSecondsValue extends Value {
-    public final long seconds;
+public class DateTimeSecondsValue extends Value<Instant> {
+    private final Instant value;
 
     public DateTimeSecondsValue(final String name,
-                                final long seconds) {
+                                final Instant value) {
         super(name);
-        this.seconds = seconds;
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("seconds", seconds)
+                .add("value", value)
                 .toString();
     }
 
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new DateTimeSecondsValue(name, BufferUtils.uint32(buffer));
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                return new DateTimeSecondsValue(name, Instant.ofEpochSecond(BufferUtils.uint32(buffer)));
             }
 
             @Override
@@ -70,5 +71,10 @@ public class DateTimeSecondsValue extends Value {
                 return 4;
             }
         };
+    }
+
+    @Override
+    public Instant getValue() {
+        return this.value;
     }
 }

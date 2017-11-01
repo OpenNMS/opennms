@@ -33,14 +33,41 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.io.BaseEncoding;
+import com.google.common.primitives.UnsignedLong;
+
 public class BufferUtilsTest {
 
     @Test
-    public void sintTest() throws Exception {
+    public void testSignedInteger() throws Exception {
         Assert.assertEquals(Long.valueOf(0), BufferUtils.sint(ByteBuffer.wrap(new byte[]{0, 0, 0}), 3));
         Assert.assertEquals(Long.valueOf(-1), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 255}), 3));
         Assert.assertEquals(Long.valueOf(-2), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 254}), 3));
         Assert.assertEquals(Long.valueOf(1), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 1}), 3));
         Assert.assertEquals(Long.valueOf(2), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 2}), 3));
+    }
+
+    @Test
+    public void testUnsignedInteger32() throws Exception {
+        Assert.assertEquals(UnsignedLong.valueOf(0L), BufferUtils.uint32(from("00000000")));
+        Assert.assertEquals(UnsignedLong.valueOf(1L), BufferUtils.uint32(from("00000001")));
+        Assert.assertEquals(UnsignedLong.valueOf(1024L), BufferUtils.uint32(from("00000400")));
+        Assert.assertEquals(UnsignedLong.valueOf(65536L - 1), BufferUtils.uint32(from("0000FFFF")));
+        Assert.assertEquals(UnsignedLong.valueOf(65536L * 65536L - 1L), BufferUtils.uint32(from("FFFFFFFF")));
+    }
+
+    @Test
+    public void testUnsignedInteger64() throws Exception {
+        Assert.assertEquals(UnsignedLong.valueOf(0L), BufferUtils.uint64(from("0000000000000000")));
+        Assert.assertEquals(UnsignedLong.valueOf(1L), BufferUtils.uint64(from("0000000000000001")));
+        Assert.assertEquals(UnsignedLong.valueOf(1024L), BufferUtils.uint64(from("0000000000000400")));
+        Assert.assertEquals(UnsignedLong.valueOf(65536L -1L), BufferUtils.uint64(from("000000000000FFFF")));
+        Assert.assertEquals(UnsignedLong.valueOf(65536L * 65536L - 1L), BufferUtils.uint64(from("00000000FFFFFFFF")));
+        Assert.assertEquals(UnsignedLong.MAX_VALUE, BufferUtils.uint64(from("FFFFFFFFFFFFFFFF")));
+    }
+
+
+    private static ByteBuffer from(final String hex) {
+        return ByteBuffer.wrap(BaseEncoding.base16().decode(hex));
     }
 }

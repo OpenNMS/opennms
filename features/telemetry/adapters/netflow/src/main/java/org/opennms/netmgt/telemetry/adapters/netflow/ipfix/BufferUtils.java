@@ -58,7 +58,7 @@ public class BufferUtils {
         long result = 0;
 
         for (int i = 0; i < octets; i++) {
-            result = (result << 8) | (buffer.get() & 0xFF);
+            result = (result << 8L) | (buffer.get() & 0xFFL);
         }
 
         return UnsignedLong.fromLongBits(result);
@@ -67,16 +67,16 @@ public class BufferUtils {
     public static Long sint(final ByteBuffer buffer, final int octets) {
         Preconditions.checkArgument(octets > 0 && octets < 9);
 
-        long result = buffer.get() & 0xFF;
-        boolean s = (result & 0x80) != 0;
+        long result = buffer.get() & 0xFFL;
+        boolean s = (result & 0x80L) != 0;
         if (s) {
-            result = 0xFFFFFFFFFFFFFF80L | (result & 0x7F);
+            result = 0xFFFFFFFFFFFFFF80L | (result & 0x7FL);
         } else {
-            result &= 0x7F;
+            result &= 0x7FL;
         }
 
         for (int i = 1; i < octets; i++) {
-            result = (result << 8) | (buffer.get() & 0xFF);
+            result = (result << 8L) | (buffer.get() & 0xFFL);
         }
 
         return result;
@@ -92,21 +92,21 @@ public class BufferUtils {
     }
 
     public static long uint32(final ByteBuffer buffer) {
-        return ((buffer.get() & 0xFF) << 24)
-                | ((buffer.get() & 0xFF) << 16)
-                | ((buffer.get() & 0xFF) << 8)
-                | ((buffer.get() & 0xFF) << 0);
+        return ((buffer.get() & 0xFFL) << 24)
+                | ((buffer.get() & 0xFFL) << 16)
+                | ((buffer.get() & 0xFFL) << 8)
+                | ((buffer.get() & 0xFFL) << 0);
     }
 
     public static UnsignedLong uint64(final ByteBuffer buffer) {
-        return UnsignedLong.fromLongBits(((buffer.get() & 0xFF) << 56)
-                | ((buffer.get() & 0xFF) << 48)
-                | ((buffer.get() & 0xFF) << 40)
-                | ((buffer.get() & 0xFF) << 32)
-                | ((buffer.get() & 0xFF) << 24)
-                | ((buffer.get() & 0xFF) << 16)
-                | ((buffer.get() & 0xFF) << 8)
-                | ((buffer.get() & 0xFF) << 0));
+        return UnsignedLong.fromLongBits(((buffer.get() & 0xFFL) << 56)
+                | ((buffer.get() & 0xFFL) << 48)
+                | ((buffer.get() & 0xFFL) << 40)
+                | ((buffer.get() & 0xFFL) << 32)
+                | ((buffer.get() & 0xFFL) << 24)
+                | ((buffer.get() & 0xFFL) << 16)
+                | ((buffer.get() & 0xFFL) << 8)
+                | ((buffer.get() & 0xFFL) << 0));
     }
 
     public static byte[] bytes(final ByteBuffer buffer, final int size) {

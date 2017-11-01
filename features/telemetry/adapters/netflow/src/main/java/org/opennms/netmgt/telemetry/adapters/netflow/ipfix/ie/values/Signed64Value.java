@@ -36,8 +36,8 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class Signed64Value extends Value {
-    public final long value;
+public class Signed64Value extends Value<Long> {
+    private final long value;
 
     public Signed64Value(final String name,
                          final long value) {
@@ -56,7 +56,7 @@ public class Signed64Value extends Value {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 return new Signed64Value(name, BufferUtils.sint(buffer, buffer.remaining()));
             }
 
@@ -70,5 +70,10 @@ public class Signed64Value extends Value {
                 return 1;
             }
         };
+    }
+
+    @Override
+    public Long getValue() {
+        return this.value;
     }
 }

@@ -30,26 +30,28 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.slice;
 
+import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElement;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.InformationElementDatabase;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Semantics;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.StandardField;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Lists;
 
-public final class Packet {
+public final class Packet implements Iterable<Set<?>> {
 
     /*
      +----------------------------------------------------+
@@ -66,14 +68,14 @@ public final class Packet {
     */
 
     public final Header header;
-    public final List<Set> sets;
+    public final List<Set<?>> sets;
 
     public Packet(final Session session,
                   final Header header,
                   final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
-        final List<Set> sets = new LinkedList<>();
+        final List<Set<?>> sets = new LinkedList<>();
         while (buffer.hasRemaining()) {
             final SetHeader setHeader = new SetHeader(buffer);
 
@@ -87,7 +89,7 @@ public final class Packet {
                         session.addTemplate(Template.builder()
                                 .withObservationDomainId(this.header.observationDomainId)
                                 .withTemplateId(record.header.templateId)
-                                .withFields(buildFields(record.fields))
+                                .withFields(Lists.transform(record.fields, f -> f.specifier))
                                 .build());
                     }
 
@@ -103,7 +105,7 @@ public final class Packet {
                                 .withObservationDomainId(this.header.observationDomainId)
                                 .withTemplateId(record.header.templateId)
                                 .withScopedCount(record.header.scopeFieldCount)
-                                .withFields(buildFields(record.fields))
+                                .withFields(Lists.transform(record.fields, f -> f.specifier))
                                 .build());
                     }
 
@@ -131,6 +133,11 @@ public final class Packet {
     }
 
     @Override
+    public Iterator<Set<?>> iterator() {
+        return this.sets.iterator();
+    }
+
+    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", header)
@@ -138,31 +145,102 @@ public final class Packet {
                 .toString();
     }
 
-    public static List<Template.Field> buildFields(List<FieldSpecifier> specifiers) throws InvalidPacketException {
-        // TODO: Ugly
+    public static void dump(final Packet packet, final PrintStream out) {
+        out.printf("Packet: version=0x%04X, length=%d, time=%d, seq=%d, domain=%d\n",
+                packet.header.versionNumber,
+                packet.header.length,
+                packet.header.exportTime,
+                packet.header.sequenceNumber,
+                packet.header.observationDomainId);
 
-        final List<Template.Field> results = new ArrayList<>(specifiers.size());
-        for (final FieldSpecifier specifier : specifiers) {
-            results.add(buildField(specifier));
-        }
+        for (final Set<?> set : packet) {
+            switch (set.header.getType()) {
+                case TEMPLATE_SET: {
+                    out.printf("\tTemplate Set: length=%d\n",
+                            set.header.length);
 
-        return results;
-    }
+                    for (final TemplateRecord record : (Set<TemplateRecord>) set) {
+                        out.printf("\t\tTemplate Record: id=%d, count=%d\n",
+                                record.header.templateId,
+                                record.header.fieldCount);
 
-    public static Template.Field buildField(FieldSpecifier specifier) throws InvalidPacketException {
-        if (specifier.enterpriseNumber.isPresent()) {
-            return new Template.EnterpriseField(specifier.fieldLength, specifier.informationElementId, specifier.enterpriseNumber.get());
+                        for (final FieldSpecifier field : record.fields) {
+                            if (!field.enterpriseNumber.isPresent()) {
+                                out.printf("\t\t\tField: id=%d, length=%d\n",
+                                        field.informationElementId,
+                                        field.fieldLength);
 
-        } else {
-            final InformationElement informationElement = InformationElementDatabase.instance
-                    .lookup(specifier.informationElementId)
-                    .orElseThrow(() -> new InvalidPacketException("Undefined information element ID: %d", specifier.informationElementId));
+                                final StandardField specifier = (StandardField) field.specifier;
+                                out.printf("\t\t\t\tInformation Element: id=%d, name=%s, length=[%d,%d], semantics=%s\n",
+                                        specifier.getInformationElement().getId(),
+                                        specifier.getInformationElement().getName(),
+                                        specifier.getInformationElement().getMinimumFieldLength(),
+                                        specifier.getInformationElement().getMaximumFieldLength(),
+                                        specifier.getInformationElement().getSemantics().map(Semantics::toString).orElse("(none)"));
 
-            if (specifier.fieldLength > informationElement.getMaximumFieldLength() || specifier.fieldLength < informationElement.getMinimumFieldLength()) {
-                throw new InvalidPacketException("Template field is to large: %d > %d", specifier.fieldLength, informationElement.getMaximumFieldLength());
+                            } else {
+                                out.printf("\t\t\tField: id=%d, length=%d, enterprieId=%d\n",
+                                        field.informationElementId,
+                                        field.fieldLength,
+                                        field.enterpriseNumber.get());
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case OPTIONS_TEMPLATE_SET: {
+                    out.printf("\tOption Template Set: length=%d\n",
+                            set.header.length);
+
+                    for (final OptionsTemplateRecord record : (Set<OptionsTemplateRecord>) set) {
+                        out.printf("\t\tOption Template Record: id=%d, count=%d, scope=%d\n",
+                                record.header.templateId,
+                                record.header.fieldCount,
+                                record.header.scopeFieldCount);
+
+                        for (final FieldSpecifier field : record.fields) {
+                            if (!field.enterpriseNumber.isPresent()) {
+                                out.printf("\t\t\tField: id=%d, length=%d\n",
+                                        field.informationElementId,
+                                        field.fieldLength);
+
+                                final StandardField specifier = (StandardField) field.specifier;
+                                out.printf("\t\t\t\tInformation Element: id=%d, name=%s, length=[%d,%d], semantics=%s\n",
+                                        specifier.getInformationElement().getId(),
+                                        specifier.getInformationElement().getName(),
+                                        specifier.getInformationElement().getMinimumFieldLength(),
+                                        specifier.getInformationElement().getMaximumFieldLength(),
+                                        specifier.getInformationElement().getSemantics().map(Semantics::toString).orElse("(none)"));
+
+                            } else {
+                                out.printf("\t\t\tField: id=%d, length=%d, enterprieId=%d\n",
+                                        field.informationElementId,
+                                        field.fieldLength,
+                                        field.enterpriseNumber.get());
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case DATA_SET: {
+                    out.printf("\tData Set: length=%d\n",
+                            set.header.length);
+
+                    for (final DataRecord record : (Set<DataRecord>) set) {
+                        out.printf("\t\tData Record:\n");
+
+                        for (final FieldValue field : record.fields) {
+                            out.printf("\t\t\tField: name=%s, value=%s\n",
+                                    field.value.getName(),
+                                    field.value.getValue());
+                        }
+                    }
+
+                    break;
+                }
             }
-
-            return new Template.StandardField(specifier.fieldLength, informationElement);
         }
     }
 

@@ -26,32 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session;
 
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
-public abstract class Value<T> {
+public abstract class Field {
+    public final int length;
 
-    public interface Parser {
-        Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
-
-        int getMaximumFieldLength();
-
-        int getMinimumFieldLength();
+    public Field(final int length) {
+        this.length = length;
     }
 
-    private final String name;
-
-    protected Value(final String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public abstract T getValue();
+    public abstract Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
 }
