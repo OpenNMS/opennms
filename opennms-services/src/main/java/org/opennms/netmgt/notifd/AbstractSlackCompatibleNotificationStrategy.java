@@ -124,7 +124,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	        contents = EntityUtils.toString(response.getEntity());
 	        LOG.debug("send: Contents is: {}", contents);
 	    } catch (IOException e) {
-	        LOG.error("send: I/O problem with webhook post/response: {}", e);
+	        LOG.error("send: I/O problem with webhook post/response", e);
 	        throw new RuntimeException("Problem with webhook post: "+e.getMessage());
 	    } finally {
 	        IOUtils.closeQuietly(clientWrapper);
