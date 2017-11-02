@@ -26,22 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.aws.sqs;
+package org.opennms.core.ipc.common.aws.sqs;
 
 /**
- * The Interface AwsSinkConstants.
+ * The Interface AmazonSQSConstants.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public interface AmazonSQSSinkConstants {
+public interface AmazonSQSConstants {
 
-    /** The Constant AWS_CONFIG_PID. */
-    static final String AWS_CONFIG_PID = "org.opennms.core.ipc.sink.sqs";
+    final String AWS_CONFIG_PID = "org.opennms.core.ipc.aws.sqs";
 
-    /** The Constant AWS_CONFIG_SYS_PROP_PREFIX. */
-    static final String AWS_CONFIG_SYS_PROP_PREFIX = AWS_CONFIG_PID + ".";
+    final String AWS_CONFIG_SYS_PROP_PREFIX = AWS_CONFIG_PID + ".";
 
-    /** The Constant AWS_QUEUE_PREFIX. */
-    static final String AWS_QUEUE_PREFIX = "OpenNMS-Sink";
+    final String SINK_QUEUE_PROP_PREFIX = "sink.";
+
+    final String RPC_QUEUE_PROP_PREFIX = "rpc.";
+
+    final String AWS_REGION = "aws_region";
+
+    final String AWS_ACCESS_KEY_ID = "aws_access_key_id";
+
+    final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
+
+    final String AWS_QUEUE_NAME_PREFIX = "aws_queue_name_prefix";
+
+    final String AWS_USE_HTTP = "aws_use_http";
 
 }

@@ -28,19 +28,15 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Hashtable;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.Message;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.opennms.core.ipc.common.aws.sqs.AmazonSQSConstants;
+import org.opennms.core.ipc.common.aws.sqs.AmazonSQSManager;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -52,6 +48,24 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * The Class HeartbeatSinkIT.
@@ -83,7 +97,7 @@ public class HeartbeatSinkIT {
     private AmazonSQSManager sqsManager;
 
     /** The remote message dispatcher factory. */
-    private AmazonSQSRemoteMessageDispatcherFactory remoteMessageDispatcherFactory = new AmazonSQSRemoteMessageDispatcherFactory();
+    private AmazonSQSRemoteMessageDispatcherFactory remoteMessageDispatcherFactory;
 
     /**
      * Sets the up.
@@ -92,13 +106,37 @@ public class HeartbeatSinkIT {
      */
     @Before
     public void setUp() throws Exception {
-        Hashtable<String, Object> awsData = new Hashtable<String, Object>();
-        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(AmazonSQSSinkConstants.AWS_CONFIG_PID).getProperties()).thenReturn(awsData);
-        remoteMessageDispatcherFactory.setConfigAdmin(configAdmin);
+        remoteMessageDispatcherFactory = new AmazonSQSRemoteMessageDispatcherFactory();
         remoteMessageDispatcherFactory.setAwsSqsManager(sqsManager);
         remoteMessageDispatcherFactory.init();
-        consumerManager.afterPropertiesSet();
+
+        LinkedBlockingQueue<String> bodies = new LinkedBlockingQueue<>();
+        AmazonSQS sqsClient = mock(AmazonSQS.class, RETURNS_DEEP_STUBS);
+        when(sqsClient.receiveMessage(anyString()).getMessages()).thenAnswer(new Answer<List<Message>>() {
+            @Override
+            public List<Message> answer(InvocationOnMock invocation) {
+                List<String> messageBodies = new LinkedList<>();
+                bodies.drainTo(messageBodies);
+                return messageBodies.stream()
+                        .map(b -> {
+                            Message msg = new Message();
+                            msg.setBody(b);
+                            return msg;
+                        })
+                        .collect(Collectors.toList());
+            }
+        });
+
+        when(sqsManager.getSQSClient()).thenReturn(sqsClient);
+        when(sqsManager.getSinkQueueUrlAndCreateIfNecessary(anyString())).thenReturn("some-url");
+        when(sqsManager.sendMessage(anyString(), anyString())).thenAnswer(new Answer<String>() {
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                String body = invocation.getArgumentAt(1, String.class);
+                bodies.add(body);
+                return null;
+            }
+        });
     }
 
     /**
