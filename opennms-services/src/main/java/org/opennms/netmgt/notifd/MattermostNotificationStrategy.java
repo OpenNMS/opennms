@@ -65,7 +65,7 @@ public class MattermostNotificationStrategy extends AbstractSlackCompatibleNotif
 				errorJson = (JSONObject)parsedError;
 			}
 		} catch (ParseException e) {
-			LOG.warn("Got some non-JSON error.");
+			LOG.warn("Got some non-JSON error.", e);
 			bldr.append(" Contents:").append(contents);
 			return bldr.toString();
 		}
