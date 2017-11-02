@@ -31,17 +31,24 @@ package org.opennms.features.topology.shell;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.apache.karaf.shell.console.commands.NamespaceHandler;
+import org.apache.aries.blueprint.NamespaceHandler;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 @Command(scope = "onms", name = "listnamespaces", description="Lists the available blueprint namespaces and their providers.")
-public class BlueprintNamespaceShellCommand extends OsgiCommandSupport {
+@Service
+public class BlueprintNamespaceShellCommand implements Action {
+
+    @Reference
+    BundleContext bundleContext;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
 
         final Collection<ServiceReference<NamespaceHandler>> services = this.bundleContext.getServiceReferences(NamespaceHandler.class, null);
     	for (final ServiceReference<NamespaceHandler> sr : services) {

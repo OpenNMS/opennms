@@ -10,17 +10,15 @@
   <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
   <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" availability="mandatory" />
 
-  <service id="assetGraphDefinitionRepository" ref="assetGraphDefinitionRepo" interface="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository" />
-
-  <bean id="assetGraphDefinitionRepo" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepositoryImpl">
-  </bean>
+  <bean id="assetGraphDefinitionRepository" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepositoryImpl"/>
+  <service id="assetGraphDefinitionRepo" ref="assetGraphDefinitionRepository" interface="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository" />
 
   <bean id="assetGraphMLProvider" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" init-method="init" destroy-method="destroy">
     <argument ref="graphmlRepository" />
     <argument ref="eventIpcManager" />
     <argument ref="nodeProvider" />
     <argument ref="transactionOperations" />
-    <argument ref="assetGraphDefinitionRepo" />
+    <argument ref="assetGraphDefinitionRepository" />
   </bean>
 
   <bean id="nodeProvider" class="org.opennms.features.topology.plugins.topo.asset.layers.PersistenceNodeProvider">
@@ -28,37 +26,34 @@
   </bean>
 
   <!-- command line commands -->
-  <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+  <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
 
     <!-- Asset Topology Service Commands -->
-    <command name="asset-topology/create">
+    <command>
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.CreateAssetTopologyCommand">
-        <argument ref="assetGraphMLProvider" />
+        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
       </action>
     </command>
-    <command name="asset-topology/remove">
+    <command>
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.RemoveAssetTopologyCommand">
-        <argument ref="assetGraphMLProvider" />
+        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
       </action>
     </command>
-    <command name="asset-topology/regenerate">
+    <command>
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.RegenerateAssetTopologyCommand">
-        <argument ref="assetGraphMLProvider" />
+        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
       </action>
     </command>
-    <command name="asset-topology/regenerateAll">
+    <command>
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.RegenerateAllAssetTopologiesCommand">
-        <argument ref="assetGraphMLProvider" />
+        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
       </action>
     </command>
-    <command name="asset-topology/list">
+    <command>
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.ListAssetTopologiesCommand">
-        <argument ref="assetGraphDefinitionRepo" />
+        <property name="assetGraphDefinitionRepository" ref="assetGraphDefinitionRepository" />
       </action>
     </command>
   </command-bundle>
 
 </blueprint>
-
-
-

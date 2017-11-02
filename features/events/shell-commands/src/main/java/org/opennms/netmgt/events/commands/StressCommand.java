@@ -45,9 +45,11 @@ import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -70,11 +72,13 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 @Command(scope = "events", name = "stress", description="Stress the event bus with generated events.",detailedDescription=
         "Generate newSuspect events with increasing IP addresses:\n"
         + "\tevents:stress -u uei.opennms.org/internal/discovery/newSuspect -e 10 -s 1 -j \"i=i+1\" -j \"eb.setInterface(iputils:int2ip(167837696 + i))\"")
-public class StressCommand extends OsgiCommandSupport {
+@Service
+public class StressCommand implements Action {
 
     private static final String EVENT_SOURCE = "stress";
 
-    private EventForwarder eventForwarder;
+    @Reference
+    public EventForwarder eventForwarder;
 
     @Option(name="-e", aliases="--eps", description="events per seconds to generate per thread, defaults to 300", required=false, multiValued=false)
     int eventsPerSecondPerThread = 300;
@@ -102,6 +106,7 @@ public class StressCommand extends OsgiCommandSupport {
 
     @Option(name="-i", aliases="--interface", description="The ip interface to associate with the generated event")
     String eventIpInterface = null;
+
     @Option(name="-x", aliases="--sync", description="Use synchronous instead of asynchronous calls", required=false, multiValued = false)
     boolean isSynchronous = false;
 
@@ -173,7 +178,7 @@ public class StressCommand extends OsgiCommandSupport {
     }
 
     @Override
-    protected Object doExecute() {
+    public Object execute() {
         // Apply sane lower bounds to all of the configurable options
         eventsPerSecondPerThread = Math.max(1, eventsPerSecondPerThread);
         numberOfThreads = Math.max(1, numberOfThreads);
@@ -244,10 +249,6 @@ public class StressCommand extends OsgiCommandSupport {
         // And display one last report...
         reporter.report();
         return null;
-    }
-
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
     }
 
     /**

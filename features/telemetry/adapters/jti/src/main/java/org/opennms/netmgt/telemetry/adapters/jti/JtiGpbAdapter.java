@@ -38,6 +38,8 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.adapters.collection.AbstractPersistingAdapter;
 import org.opennms.netmgt.telemetry.adapters.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.adapters.collection.ScriptedCollectionSetBuilder;
@@ -48,8 +50,6 @@ import org.opennms.netmgt.telemetry.adapters.jti.proto.LspMon;
 import org.opennms.netmgt.telemetry.adapters.jti.proto.LspStatsOuterClass;
 import org.opennms.netmgt.telemetry.adapters.jti.proto.Port;
 import org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageDTO;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,10 +111,9 @@ public class JtiGpbAdapter extends AbstractPersistingAdapter {
                 }
             };
 
-
     @Override
-    public Optional<CollectionSetWithAgent> handleMessage(TelemetryMessageDTO message, TelemetryMessageLogDTO messageLog) throws Exception {
-        final TelemetryTop.TelemetryStream jtiMsg = TelemetryTop.TelemetryStream.parseFrom(message.getBytes().array(), s_registry);
+    public Optional<CollectionSetWithAgent> handleMessage(TelemetryMessage message, TelemetryMessageLog messageLog) throws Exception {
+        final TelemetryTop.TelemetryStream jtiMsg = TelemetryTop.TelemetryStream.parseFrom(message.getByteArray(), s_registry);
 
         CollectionAgent agent = null;
         try {

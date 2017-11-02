@@ -6,7 +6,7 @@
 		<relativePath>../topology-map/poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>21.0.0-SNAPSHOT</version>
+		<version>22.0.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.opennms.features</groupId>
 	<artifactId>vaadin-node-maps</artifactId>
@@ -36,9 +36,6 @@
 		<plugins>
 
 			<plugin>
-				<!--
-				 | the following instructions build a simple set of public/private classes into an OSGi bundle
-				-->
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
@@ -47,6 +44,9 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
 						<Private-Package>${bundle.namespace}.internal.*</Private-Package>
+						<Vaadin-Package-Version>1</Vaadin-Package-Version>
+						<Vaadin-Widgetsets>org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset</Vaadin-Widgetsets>
+						<Include-Resource>{maven-resources},target/gwt/</Include-Resource>
 					</instructions>
 				</configuration>
 			</plugin>

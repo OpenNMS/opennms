@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>org.opennms.features.minion.shell</artifactId>
-        <version>21.0.0-SNAPSHOT</version>
+        <version>22.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.features.minion.shell</groupId>
@@ -35,7 +35,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.karaf.shell</groupId>
-            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <artifactId>org.apache.karaf.shell.core</artifactId>
             <version>${karafVersion}</version>
         </dependency>
         <dependency>

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>21.0.0-SNAPSHOT</version>
+  <version>22.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1202,7 +1202,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>21.0.0.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>22.0.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1274,6 +1274,7 @@
     <asciidoctorjPdfVersion>1.5.0-alpha.11</asciidoctorjPdfVersion>
     <activemqVersion>5.14.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
+    <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <camelVersion>2.19.1</camelVersion>
@@ -2208,6 +2209,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>atomikos-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>aws-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -3762,7 +3769,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.karaf.shell</groupId>
-        <artifactId>org.apache.karaf.shell.console</artifactId>
+        <artifactId>org.apache.karaf.shell.core</artifactId>
         <version>${karafVersion}</version>
       </dependency>
       <dependency>

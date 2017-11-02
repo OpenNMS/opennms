@@ -34,7 +34,7 @@ import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.config.model.Protocol;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
+import org.opennms.netmgt.telemetry.ipc.TelemetryProtos;
 import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryMessageLogDTO> {
+public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
 
     private static final ServiceParameters EMPTY_SERVICE_PARAMETERS = new ServiceParameters(Collections.emptyMap());
@@ -83,7 +83,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     }
 
     @Override
-    public void handleMessage(TelemetryMessageLogDTO messageLog) {
+    public void handleMessage(TelemetryProtos.TelemetryMessageLog messageLog) {
         try(Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
             LOG.trace("Received message log: {}", messageLog);
             // Handle the message with all of the adapters
@@ -132,7 +132,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     }
 
     @Override
-    public SinkModule<TelemetryMessage, TelemetryMessageLogDTO> getModule() {
+    public SinkModule<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> getModule() {
         return sinkModule;
     }
 
