@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -340,6 +340,14 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         }
         assertNotNull("we should have an exception", ex);
         assertTrue("validator should expect only elements", ex.getMessage().contains("content type is element-only"));
+    }
+
+    @Test
+    public void testBadNodeRequest() throws Exception {
+        createRequisition();
+
+        final String req = "<node label=\"bad-node\" foreignSource=\"test\" building=\"Office\" type=\"A\" foreignId=\"bad-node\" />\n";
+        sendPost("/requisitions/test/nodes", req, 400, null);
     }
 
     @Test

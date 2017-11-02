@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -493,6 +494,33 @@ public class RequisitionNode {
      */
     public void setParentNodeLabel(String value) {
         m_parentNodeLabel = value != null && "".equals(value.trim()) ? null : value;
+    }
+
+    public void validate() throws ValidationException {
+        if (m_nodeLabel == null) {
+            throw new ValidationException("Requisition node 'node-label' is a required attribute!");
+        }
+        if (m_foreignId == null) {
+            throw new ValidationException("Requisition node 'foreign-id' is a required attribute!");
+        }
+        if (m_foreignId.contains("/")) {
+            throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. ('/' is forbidden.)");
+        }
+        if (m_interfaces != null) {
+            for (final RequisitionInterface iface : m_interfaces) {
+                iface.validate();
+            }
+        }
+        if (m_categories != null) {
+            for (final RequisitionCategory cat : m_categories) {
+                cat.validate();
+            }
+        }
+        if (m_assets != null) {
+            for (final RequisitionAsset asset : m_assets) {
+                asset.validate();
+            }
+        }
     }
 
     @Override
