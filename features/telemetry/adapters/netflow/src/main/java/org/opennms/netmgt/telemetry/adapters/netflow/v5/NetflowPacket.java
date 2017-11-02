@@ -52,6 +52,10 @@ public class NetflowPacket {
     private final int samplingInterval;
     private final List<NetflowRecord> records = new ArrayList<>();
 
+    public NetflowPacket(byte[] bytes) {
+        this(ByteBuffer.wrap(bytes));
+    }
+
     public NetflowPacket(ByteBuffer data) {
         // Check that at least the header can be read
         if (data.array().length < HEADER_SIZE) {

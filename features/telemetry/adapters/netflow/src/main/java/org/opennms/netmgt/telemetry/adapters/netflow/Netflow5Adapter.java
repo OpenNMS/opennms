@@ -28,13 +28,8 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
-import java.net.InetAddress;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -43,18 +38,21 @@ import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.adapters.netflow.v5.NetflowPacket;
-import org.opennms.netmgt.telemetry.config.model.Protocol;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageDTO;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
+import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Netflow5Adapter implements Adapter {
 
@@ -92,10 +90,10 @@ public class Netflow5Adapter implements Adapter {
     }
 
     @Override
-    public void handleMessageLog(TelemetryMessageLogDTO messageLog) {
-        LOG.debug("Received {} telemetry messages", messageLog.getMessages().size());
+    public void handleMessageLog(TelemetryMessageLog messageLog) {
+        LOG.debug("Received {} telemetry messages", messageLog.getMessageList().size());
 
-        for (TelemetryMessageDTO eachMessage : messageLog.getMessages()) {
+        for (TelemetryMessage eachMessage : messageLog.getMessageList()) {
             LOG.debug("Parse log message {}", eachMessage);
 
             try {
@@ -112,9 +110,9 @@ public class Netflow5Adapter implements Adapter {
         }
     }
     
-    private NetflowPacket parse(TelemetryMessageDTO messageDTO) {
+    private NetflowPacket parse(TelemetryMessage message) {
         // Create NetflowPacket which delegates all calls to the byte array
-        final NetflowPacket flowPacket = new NetflowPacket(messageDTO.getBytes());
+        final NetflowPacket flowPacket = new NetflowPacket(message.getByteArray());
 
         // Version must match for now. Otherwise we drop the packet
         if (flowPacket.getVersion() != NetflowPacket.VERSION) {
@@ -148,7 +146,7 @@ public class Netflow5Adapter implements Adapter {
         return converter.convert(netflowPacket);
     }
 
-    private void enrich(final List<NetflowDocument> documents, final TelemetryMessageLogDTO messageLog) {
+    private void enrich(final List<NetflowDocument> documents, final TelemetryMessageLog messageLog) {
         if (documents.isEmpty()) {
             LOG.debug("Nothing to enrich.");
             return;
@@ -158,7 +156,7 @@ public class Netflow5Adapter implements Adapter {
         transactionOperations.execute(callback -> {
             documents.stream().forEach(document -> {
                 // Metadata from message
-                document.setExporterAddress(InetAddressUtils.toIpAddrString(messageLog.getSourceAddress()));
+                document.setExporterAddress(messageLog.getSourceAddress());
                 document.setLocation(location);
 
                 // Node data
