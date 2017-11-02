@@ -28,10 +28,16 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
-import java.util.Properties;
-
+import org.apache.camel.util.KeyValueHolder;
 import org.junit.Test;
+import org.opennms.core.ipc.common.aws.sqs.AmazonSQSConfig;
+import org.opennms.core.ipc.common.aws.sqs.MapBasedSQSConfig;
+import org.opennms.core.ipc.common.aws.sqs.AmazonSQSConstants;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+
+import java.util.Dictionary;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * The Class AwsDispatcherBlueprintIT.
@@ -39,6 +45,14 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class AmazonSQSDispatcherBlueprintIT extends CamelBlueprintTest {
+
+    @SuppressWarnings( "rawtypes" )
+    @Override
+    protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
+        services.put(AmazonSQSConfig.class.getName(),
+                new KeyValueHolder<Object, Dictionary>(new MapBasedSQSConfig(),
+                        new Properties()));
+    }
 
     /* (non-Javadoc)
      * @see org.apache.camel.test.blueprint.CamelBlueprintTestSupport#getBlueprintDescriptor()
@@ -53,7 +67,7 @@ public class AmazonSQSDispatcherBlueprintIT extends CamelBlueprintTest {
      */
     @Override
     protected String setConfigAdminInitialConfiguration(final Properties props) {
-        return AmazonSQSSinkConstants.AWS_CONFIG_PID;
+        return AmazonSQSConstants.AWS_CONFIG_PID;
     }
 
     /**

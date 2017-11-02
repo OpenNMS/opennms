@@ -9,19 +9,19 @@
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+		http://camel.apache.org/schema/blueprint
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.19.1.xsd
 ">
 
-	<reference id="awsSqsConfig" interface="org.opennms.core.ipc.common.aws.sqs.AmazonSQSConfig" />
+    <cm:property-placeholder id="sqsProperties"
+        persistent-id="org.opennms.core.ipc.aws.sqs" update-strategy="reload" />
 
-	<bean id="awsSqsManager" class="org.opennms.core.ipc.common.aws.sqs.DefaultAmazonSQSManager">
-		<argument ref="awsSqsConfig"/>
-	</bean>
+    <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 
-	<bean id="awsRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSRemoteMessageDispatcherFactory"
-	  init-method="init" destroy-method="destroy">
-	  <property name="awsSqsManager" ref="awsSqsManager"/>
-	</bean>
+    <bean id="sqsConfig" class="org.opennms.core.ipc.common.aws.sqs.ManagedSQSConfig">
+        <argument ref="configAdmin"/>
+    </bean>
 
-    <service ref="awsRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
+    <service ref="sqsConfig" interface="org.opennms.core.ipc.common.aws.sqs.AmazonSQSConfig" />
 
 </blueprint>

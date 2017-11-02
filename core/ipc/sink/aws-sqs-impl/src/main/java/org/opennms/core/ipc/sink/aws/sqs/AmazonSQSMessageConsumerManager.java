@@ -28,17 +28,10 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.opennms.core.ipc.common.aws.sqs.AmazonSQSManager;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -46,18 +39,22 @@ import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.AmazonSQSException;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The Class AwsMessageConsumerManager.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
+public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerManager {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(AmazonSQSMessageConsumerManager.class);
@@ -67,14 +64,11 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
 
     /** The thread factory. */
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("aws-consumer-%d")
+            .setNameFormat("sqs-consumer-%d")
             .build();
 
     /** The executor. */
     private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
-
-    /** The AWS configuration. */
-    private final Properties awsConfig = new Properties();
 
     /** The AWS SQS manager. */
     private AmazonSQSManager awsSqsManager;
@@ -94,7 +88,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
         private final AmazonSQS sqs;
 
         /** The queue URL. This is cached to avoid an API call on each attempt to send a message. */
-        private final String queueUrl;
+        private String queueUrl;
 
         /**
          * Instantiates a new AWS consumer runner.
@@ -104,8 +98,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
          */
         public AwsConsumerRunner(SinkModule<?, Message> module) throws AmazonSQSException {
             this.module = module;
-            sqs = awsSqsManager.createSQSObject(awsConfig);
-            queueUrl = awsSqsManager.ensureQueueExists(awsConfig, sqs, awsSqsManager.getQueueName(awsConfig, module));
+            sqs = awsSqsManager.getSQSClient();
         }
 
         /* (non-Javadoc)
@@ -114,6 +107,14 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
         @Override
         public void run() {
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
+            try {
+                LOG.debug("Retrieving queue URL for module with id: {}", module.getId());
+                queueUrl = awsSqsManager.getSinkQueueUrlAndCreateIfNecessary(module.getId());
+                LOG.debug("Using queue URL: {}", queueUrl);
+            } catch (InterruptedException e) {
+                LOG.error("Interrupted while retrieving queue URL. Aborting consumer.", e);
+            }
+
             while (!closed.get()) {
                 // The SQS Queue is configured to use "Long Polling" through "ReceiveMessageWaitTimeSeconds".
                 // That means, calling receiveMessage will block the thread execution for that amount of time if there are no messages on the queue.
@@ -195,30 +196,5 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
             }
             consumerRunnersByModule.remove(module);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // Set the defaults
-        awsConfig.clear();
-
-        for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
-            final Object keyAsObject = entry.getKey();
-            if (keyAsObject == null ||  !(keyAsObject instanceof String)) {
-                continue;
-            }
-            final String key = (String)keyAsObject;
-
-            if (key.length() > AmazonSQSSinkConstants.AWS_CONFIG_SYS_PROP_PREFIX.length()
-                    && key.startsWith(AmazonSQSSinkConstants.AWS_CONFIG_SYS_PROP_PREFIX)) {
-                final String awsConfigKey = key.substring(AmazonSQSSinkConstants.AWS_CONFIG_SYS_PROP_PREFIX.length());
-                awsConfig.put(awsConfigKey, entry.getValue());
-            }
-        }
-        // TODO we might need to obfuscate the credentials for security reasons.
-        LOG.info("AwsMessageConsumerManager: consuming from AWS SQS using: {}", awsConfig);
     }
 }
