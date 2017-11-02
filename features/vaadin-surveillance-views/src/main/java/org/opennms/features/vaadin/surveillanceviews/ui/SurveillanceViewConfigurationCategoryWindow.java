@@ -113,7 +113,7 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         labelField.addValidator(new AbstractStringValidator("Please use an unique name for this column/row definition") {
             @Override
             protected boolean isValidValue(String s) {
-                if ("".equals(s.trim())) {
+                if (s == null || s.trim().isEmpty()) {
                     return false;
                 }
 
