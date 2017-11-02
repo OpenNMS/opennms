@@ -39,6 +39,11 @@ import com.google.common.collect.Iterators;
 
 public final class Template implements Iterable<Field> {
 
+    public enum Type {
+        TEMPLATE,
+        OPTIONS_TEMPLATE,
+    }
+
     final static class Key {
         public final long observationDomainId;
         public final int templateId;
@@ -67,15 +72,19 @@ public final class Template implements Iterable<Field> {
 
     final Key key;
 
+    public final Type type;
+
     public final Instant insertionTime = Instant.now();
 
     public final List<Field> scopeFields;
     public final List<Field> valueFields;
 
     private Template(final Key key,
+                     final Type type,
                      final List<Field> scopeFields,
                      final List<Field> valueFields) {
         this.key = key;
+        this.type = type;
         this.scopeFields = scopeFields;
         this.valueFields = valueFields;
     }
@@ -90,6 +99,8 @@ public final class Template implements Iterable<Field> {
     }
 
     public static class Builder {
+        private Type type;
+
         private Long observationDomainId;
         private Integer templateId;
 
@@ -98,6 +109,11 @@ public final class Template implements Iterable<Field> {
         private int scopedCount = 0;
 
         private Builder() {
+        }
+
+        public Builder withType(final Type type) {
+            this.type = type;
+            return this;
         }
 
         public Builder withObservationDomainId(final long observationDomainId) {
@@ -121,12 +137,13 @@ public final class Template implements Iterable<Field> {
         }
 
         public Template build() {
+            Preconditions.checkNotNull(this.type);
             Preconditions.checkNotNull(this.observationDomainId);
             Preconditions.checkNotNull(this.templateId);
             Preconditions.checkNotNull(this.fields);
             Preconditions.checkPositionIndex(this.scopedCount, this.fields.size());
 
-            return new Template(new Key(this.observationDomainId, this.templateId), this.fields.subList(0, this.scopedCount), this.fields.subList(this.scopedCount, this.fields.size()));
+            return new Template(new Key(this.observationDomainId, this.templateId), this.type, this.fields.subList(0, this.scopedCount), this.fields.subList(this.scopedCount, this.fields.size()));
         }
     }
 

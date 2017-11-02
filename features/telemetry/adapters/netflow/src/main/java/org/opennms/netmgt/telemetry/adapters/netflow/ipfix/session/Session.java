@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Session {
 
@@ -46,6 +48,20 @@ public class Session {
 
     public void addTemplate(final Template template) {
         this.templates.put(template.key, template);
+    }
+
+    public void removeTemplate(final long observationDomainId, final int templateId) {
+        this.templates.remove(new Template.Key(observationDomainId, templateId));
+    }
+
+    public void removeAllTemplates(final long observationDomainId, final Template.Type type) {
+        final Set<Template.Key> keys = this.templates.entrySet().stream()
+                .filter(e -> e.getKey().observationDomainId == observationDomainId)
+                .filter(e -> e.getValue().type == type)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        keys.forEach(k -> this.templates.remove(k));
     }
 
     public TemplateResolver templateResolver(final long observationDomainId) {

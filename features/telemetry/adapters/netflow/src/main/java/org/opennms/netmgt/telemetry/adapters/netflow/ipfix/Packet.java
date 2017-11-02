@@ -78,11 +78,25 @@ public final class Packet implements Iterable<Set<?>> {
                     final Set<TemplateRecord> templateSet = new Set<>(setHeader, TemplateRecord.parser(), payloadBuffer);
 
                     for (final TemplateRecord record : templateSet) {
-                        session.addTemplate(Template.builder()
-                                .withObservationDomainId(this.header.observationDomainId)
-                                .withTemplateId(record.header.templateId)
-                                .withFields(Lists.transform(record.fields, f -> f.specifier))
-                                .build());
+                        if (record.header.fieldCount == 0) {
+                            // Empty template means revocation
+                            if (record.header.templateId == SetHeader.TEMPLATE_SET_ID) {
+                                // Remove all templates
+                                session.removeAllTemplates(this.header.observationDomainId, Template.Type.TEMPLATE);
+
+                            } else if (record.header.fieldCount == 0) {
+                                // Empty template means revocation
+                                session.removeTemplate(this.header.observationDomainId, record.header.templateId);
+                            }
+
+                        } else {
+                            session.addTemplate(Template.builder()
+                                    .withType(Template.Type.TEMPLATE)
+                                    .withObservationDomainId(this.header.observationDomainId)
+                                    .withTemplateId(record.header.templateId)
+                                    .withFields(Lists.transform(record.fields, f -> f.specifier))
+                                    .build());
+                        }
                     }
 
                     set = templateSet;
@@ -93,12 +107,26 @@ public final class Packet implements Iterable<Set<?>> {
                     final Set<OptionsTemplateRecord> optionsTemplateSet = new Set<>(setHeader, OptionsTemplateRecord.parser(), payloadBuffer);
 
                     for (final OptionsTemplateRecord record : optionsTemplateSet) {
-                        session.addTemplate(Template.builder()
-                                .withObservationDomainId(this.header.observationDomainId)
-                                .withTemplateId(record.header.templateId)
-                                .withScopedCount(record.header.scopeFieldCount)
-                                .withFields(Lists.transform(record.fields, f -> f.specifier))
-                                .build());
+                        if (record.header.fieldCount == 0) {
+                            // Empty template means revocation
+                            if (record.header.templateId == SetHeader.OPTIONS_TEMPLATE_SET_ID) {
+                                // Remove all templates
+                                session.removeAllTemplates(this.header.observationDomainId, Template.Type.OPTIONS_TEMPLATE);
+
+                            } else if (record.header.fieldCount == 0) {
+                                // Empty template means revocation
+                                session.removeTemplate(this.header.observationDomainId, record.header.templateId);
+                            }
+
+                        } else {
+                            session.addTemplate(Template.builder()
+                                    .withType(Template.Type.OPTIONS_TEMPLATE)
+                                    .withObservationDomainId(this.header.observationDomainId)
+                                    .withTemplateId(record.header.templateId)
+                                    .withScopedCount(record.header.scopeFieldCount)
+                                    .withFields(Lists.transform(record.fields, f -> f.specifier))
+                                    .build());
+                        }
                     }
 
                     set = optionsTemplateSet;

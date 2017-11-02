@@ -44,6 +44,9 @@ public final class SetHeader {
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
 
+    public static final int TEMPLATE_SET_ID = 2;
+    public static final int OPTIONS_TEMPLATE_SET_ID = 3;
+
     public enum Type {
         TEMPLATE_SET,
         OPTIONS_TEMPLATE_SET,
@@ -67,8 +70,8 @@ public final class SetHeader {
     }
 
     public Type getType() {
-        if (this.setId == 2) return Type.TEMPLATE_SET;
-        if (this.setId == 3) return Type.OPTIONS_TEMPLATE_SET;
+        if (this.setId == TEMPLATE_SET_ID) return Type.TEMPLATE_SET;
+        if (this.setId == OPTIONS_TEMPLATE_SET_ID) return Type.OPTIONS_TEMPLATE_SET;
         if (this.setId >= 256) return Type.DATA_SET;
 
         return null;
