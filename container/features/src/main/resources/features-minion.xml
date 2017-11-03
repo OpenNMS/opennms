@@ -35,14 +35,8 @@
       <bundle>mvn:org.opennms.features.minion.heartbeat/org.opennms.features.minion.heartbeat.producer/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-rpc-server" description="OpenNMS :: Minion :: RPC Server" version="${project.version}">
-      <feature version="${guavaVersion}">guava</feature>
-      <feature>minion-core-api</feature>
-      <feature>opennms-core-ipc-rpc</feature>
-    </feature>
-
     <feature name="minion-snmp-proxy" description="OpenNMS :: Minion :: SNMP Proxy" version="${project.version}">
-      <feature>minion-rpc-server</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
       <feature>opennms-config-api</feature>
       <feature>opennms-model</feature>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
@@ -50,7 +44,7 @@
     </feature>
 
     <feature name="minion-icmp-proxy" description="OpenNMS :: Minion :: ICMP Proxy" version="${project.version}">
-        <feature>minion-rpc-server</feature>
+        <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-model</feature>
 
         <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
@@ -62,7 +56,7 @@
       <feature>opennms-dao-api</feature>
       <feature>opennms-icmp-best</feature>
       <feature>opennms-provisioning-detectors</feature>
-      <feature>minion-rpc-server</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detectorclient-rpc/${project.version}</bundle>
     </feature>
@@ -71,7 +65,7 @@
       <feature>opennms-core-web</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-provisioning</feature>
-      <feature>minion-rpc-server</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
       <bundle>mvn:org.opennms/opennms-requisition-service/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-requisition-dns/${project.version}</bundle>
     </feature>
@@ -97,7 +91,7 @@
     </feature>
 
     <feature name="minion-poller" description="Minion :: Poller" version="${project.version}">
-      <feature>minion-rpc-server</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
       <feature>opennms-config-jaxb</feature>
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
@@ -117,7 +111,7 @@
       <feature>wmi-integration</feature>
       <feature>wsman-integration</feature>
 
-      <feature>minion-rpc-server</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
 
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
