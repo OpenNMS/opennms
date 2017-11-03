@@ -118,7 +118,7 @@ public abstract class ResourceTypeUtils {
     public static String[] getFsAndFidFromNodeSource(String nodeSource) {
         final String[] ident = nodeSource.split(":", 2);
         if (!(ident.length == 2)) {
-            LOG.warn("'%s' is not in the format foreignSource:foreignId.", nodeSource);
+            LOG.warn("'{}' is not in the format foreignSource:foreignId.", nodeSource);
             throw new IllegalArgumentException("Node definition '" + nodeSource + "' is invalid, it should be in the format: 'foreignSource:foreignId'.");
         }
         return ident;
