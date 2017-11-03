@@ -28,29 +28,21 @@
 
 package org.opennms.core.ipc.sink.aws.sqs;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.codahale.metrics.JmxReporter;
+import org.opennms.core.ipc.common.aws.sqs.AmazonSQSManager;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
-import org.osgi.service.cm.ConfigurationAdmin;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.AmazonSQSException;
-import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
-import com.codahale.metrics.JmxReporter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A factory for creating AwsRemoteMessageDispatcher objects.
@@ -62,12 +54,6 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(AmazonSQSRemoteMessageDispatcherFactory.class);
 
-    /** The AWS configuration. */
-    private final Properties awsConfig = new Properties();
-
-    /** The configuration administration object. */
-    private ConfigurationAdmin configAdmin;
-
     /** The reporter. */
     private JmxReporter reporter;
 
@@ -77,17 +63,6 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     /** The AWS SQS manager. */
     private AmazonSQSManager awsSqsManager;
 
-    /** The queue URL. This is cached to avoid an API call on each attempt to send a message. */
-    private Map<String,String> queueUrls = new HashMap<>();
-
-    /* (non-Javadoc)
-     * @see org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory#getModuleMetadata(org.opennms.core.ipc.sink.api.SinkModule)
-     */
-    @Override
-    public <S extends Message, T extends Message> String getModuleMetadata(final SinkModule<S, T> module) {
-        return awsSqsManager.getQueueName(awsConfig, module);
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory#dispatch(org.opennms.core.ipc.sink.api.SinkModule, java.lang.Object, org.opennms.core.ipc.sink.api.Message)
      */
@@ -95,17 +70,14 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, String topic, T message) {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.trace("dispatch({}): sending message {}", topic, message);
-            final String queueName = awsSqsManager.getQueueName(awsConfig, module);
-            final String queueUrl = getQueueUrl(queueName);
-            if (queueUrl == null) {
-                LOG.error("Cannot obtain URL for queue {}. The message cannot be sent.", queueName);
-            } else {
-                try {
-                    final String messageId = awsSqsManager.sendMessage(awsConfig, sqs, queueUrl, new String(module.marshal((T)message), StandardCharsets.UTF_8));
-                    LOG.debug("SQS Message with ID {} has been successfully sent to {}", messageId, queueUrl);
-                } catch (RuntimeException ex) {
-                    LOG.error("Unexpected AWS SDK exception while sending a message", ex);
-                }
+            try {
+                final String queueUrl = awsSqsManager.getSinkQueueUrlAndCreateIfNecessary(module.getId());
+                final String messageId = awsSqsManager.sendMessage(queueUrl, new String(module.marshal((T)message), StandardCharsets.UTF_8));
+                LOG.debug("SQS Message with ID {} has been successfully sent to {}", messageId, queueUrl);
+            } catch (InterruptedException ex) {
+                LOG.warn("Interrupted while trying to send message. Aborting.", ex);
+            } catch (RuntimeException ex) {
+                LOG.error("Unexpected AWS SDK exception while sending a message. Aborting.", ex);
             }
         }
     }
@@ -119,23 +91,8 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             registerJmxReporter();
 
-            // Defaults
-            awsConfig.clear();
-
-            // Retrieve all of the properties from org.opennms.core.ipc.sink.aws.cfg
-            final Dictionary<String, Object> properties = configAdmin.getConfiguration(AmazonSQSSinkConstants.AWS_CONFIG_PID).getProperties();
-            if (properties != null) {
-                final Enumeration<String> keys = properties.keys();
-                while (keys.hasMoreElements()) {
-                    final String key = keys.nextElement();
-                    awsConfig.put(key, properties.get(key));
-                }
-            }
-
-            // TODO we might need to obfuscate the credentials for security reasons.
-            LOG.info("AwsRemoteMessageDispatcherFactory: initializing the AmazonSQS Object with: {}", awsConfig);
             try {
-                sqs = awsSqsManager.createSQSObject(awsConfig);
+                sqs = awsSqsManager.getSQSClient();
             } catch (AmazonSQSException e) {
                 LOG.error("Can't create an AmazonSQS Object", e);
             }
@@ -166,41 +123,12 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     }
 
     /**
-     * Sets the configuration administration.
-     *
-     * @param configAdmin the new configuration administration
-     */
-    public void setConfigAdmin(ConfigurationAdmin configAdmin) {
-        this.configAdmin = configAdmin;
-    }
-
-    /**
      * Sets the AWS SQS manager.
      *
      * @param awsSqsManager the new AWS SQS manager
      */
     public void setAwsSqsManager(AmazonSQSManager awsSqsManager) {
         this.awsSqsManager = awsSqsManager;
-    }
-
-    /**
-     * Gets the queue URL.
-     *
-     * @param queueName the queue name
-     * @return the queue URL
-     */
-    private String getQueueUrl(final String queueName) {
-        if (queueUrls.containsKey(queueName)) return queueUrls.get(queueName);
-        try {
-            queueUrls.put(queueName, sqs.getQueueUrl(queueName).getQueueUrl());
-        } catch (QueueDoesNotExistException e) {
-            try {
-                queueUrls.put(queueName, awsSqsManager.ensureQueueExists(awsConfig, sqs, queueName));
-            } catch (AmazonSQSException ex) {
-                LOG.error("Cannot create queue with name " + queueName, ex);
-            }
-        }
-        return queueUrls.get(queueName);
     }
 
 }

@@ -13,7 +13,11 @@
 
   <context:annotation-config />
 
-  <bean id="awsSqsManager" class="org.opennms.core.ipc.sink.aws.sqs.DefaultAmazonSQSManager" />
+  <bean id="awqSqsConfig" class="org.opennms.core.ipc.common.aws.sqs.MapBasedSQSConfig" />
+
+  <bean id="awsSqsManager" class="org.opennms.core.ipc.common.aws.sqs.DefaultAmazonSQSManager">
+    <constructor-arg ref="awqSqsConfig"/>
+  </bean>
 
   <bean id="awsMessageConsumerManager" class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSMessageConsumerManager">
   	<property name="awsSqsManager" ref="awsSqsManager"/>

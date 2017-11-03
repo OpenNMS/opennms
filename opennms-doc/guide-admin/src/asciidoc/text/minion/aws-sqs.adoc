@@ -30,7 +30,7 @@ Enable and configure the _AWS SQS_ consumer on _{opennms-product-name}_ by using
 ----
 echo 'org.opennms.core.ipc.sink.initialSleepTime=60000' > "$OPENNMS_HOME/etc/opennms.properties.d/sink-initial-sleep-time.properties"
 echo 'org.opennms.core.ipc.sink.strategy=sqs
-org.opennms.core.ipc.sink.sqs.aws_region=us-east-1' > "$OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties"
+org.opennms.core.ipc.aws.sqs.aws_region=us-east-1' > "$OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties"
 ----
 
 AWS Credentials are required in order to access SQS.
@@ -48,9 +48,9 @@ Optionally, the credentials can be specified inside the `aws-sqs.properties` fil
 [source, sh]
 ----
 echo 'org.opennms.core.ipc.sink.strategy=sqs
-org.opennms.core.ipc.sink.sqs.aws_region=us-east-1
-org.opennms.core.ipc.sink.sqs.aws_access_key_id=XXXXXXXXXXX
-org.opennms.core.ipc.sink.sqs.aws_secret_access_key=XXXXXXXXXXX' > "$OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties"
+org.opennms.core.ipc.aws.sqs.aws_region=us-east-1
+org.opennms.core.ipc.aws.sqs.aws_access_key_id=XXXXXXXXXXX
+org.opennms.core.ipc.aws.sqs.aws_secret_access_key=XXXXXXXXXXX' > "$OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties"
 ----
 
 When running OpenNMS inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file. The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run:
@@ -61,7 +61,7 @@ In order to use FIFO queues instead of Standard queues, it is required to add th
 
 [source, sh]
 ----
-org.opennms.core.ipc.sink.sqs.FifoQueue=true
+org.opennms.core.ipc.aws.sqs.sink.FifoQueue=true
 ----
 
 Restart _{opennms-product-name}_ to apply the changes.
@@ -84,7 +84,7 @@ Next, configure the _AWS SQS_ producer on _Minion_ using:
 ----
 echo 'aws_region=us-east-1
 aws_access_key_id=XXXXXXXXXXX
-aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.sqs.cfg"
+aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.aws.sqs.cfg"
 ----
 
 The AWS credentials are required. If they are not specified on the configuration file, the default credentials provider chain (explained above) will be used instead.
@@ -93,7 +93,7 @@ In order to use FIFO queues instead of Standard queues, it is required to add th
 
 [source, sh]
 ----
-FifoQueue=true
+sink.FifoQueue=true
 ----
 
 Restart _Minion_ to apply the changes.
