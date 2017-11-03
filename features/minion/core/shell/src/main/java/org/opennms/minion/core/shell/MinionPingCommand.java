@@ -27,28 +27,29 @@
  *******************************************************************************/
 package org.opennms.minion.core.shell;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Session;
-
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.minion.core.api.RestClient;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Session;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Command(scope = "minion", name = "ping", description="Tests connectivity with the controller.")
 @Service
 public class MinionPingCommand implements Action {
 
     @Reference
-    public ConnectionFactory brokerConnectionFactory;
+    private BundleContext bundleContext;
 
     @Reference
     public RestClient restClient;
@@ -62,13 +63,19 @@ public class MinionPingCommand implements Action {
         restClient.ping();
         System.out.println("OK");
 
-        System.out.println("Connecting to Broker...");
-        testJmsConnectivity(jmsTimeoutMillis);
-        System.out.println("OK");
+        final ServiceReference<ConnectionFactory> connectionFactoryRef = bundleContext.getServiceReference(ConnectionFactory.class);
+        if (connectionFactoryRef != null) {
+            final ConnectionFactory connectionFactory = bundleContext.getService(connectionFactoryRef);
+            if (connectionFactory != null) {
+                System.out.println("Connecting to Broker...");
+                testJmsConnectivity(connectionFactory, jmsTimeoutMillis);
+                System.out.println("OK");
+            }
+        }
         return null;
     }
 
-    private void testJmsConnectivity(long maxDurationMillis) throws InterruptedException, ExecutionException, TimeoutException {
+    private void testJmsConnectivity(ConnectionFactory connectionFactory, long maxDurationMillis) throws InterruptedException, ExecutionException, TimeoutException {
         final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
         // Establishing the session in separate thread, allowing
         // us to control how long we wait for.
@@ -78,7 +85,7 @@ public class MinionPingCommand implements Action {
                 try {
                     Connection jmsConnection = null;
                     try {
-                        jmsConnection = brokerConnectionFactory.createConnection();
+                        jmsConnection = connectionFactory.createConnection();
                         // NMS-9445: Attempt to use the connection by creating a session
                         // and immediately closing it.
                         jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE).close();
