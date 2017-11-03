@@ -1706,6 +1706,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core.ipc.rpc</groupId>
+        <artifactId>org.opennms.core.ipc.rpc.camel</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.ipc.rpc</groupId>
         <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
         <version>${project.version}</version>
       </dependency>
