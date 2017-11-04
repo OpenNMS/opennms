@@ -26,34 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.dto;
+package org.opennms.core.xml;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.opennms.core.xml.NumberAdapter;
-import org.opennms.netmgt.collection.support.builder.NumericAttribute;
+public class NumberAdapter extends XmlAdapter<String, Number> {
 
-@XmlRootElement(name = "numeric-attribute")
-@XmlAccessorType(XmlAccessType.NONE)
-public class NumericAttributeDTO extends AttributeDTO {
-
-    @XmlAttribute(name="value")
-    @XmlJavaTypeAdapter(NumberAdapter.class)
-    private Number value;
-
-    public NumericAttributeDTO() { }
-
-    public NumericAttributeDTO(NumericAttribute attribute) {
-        super(attribute);
-        this.value = attribute.getNumericValue();
+    @Override
+    public Number unmarshal(final String v) throws Exception {
+        if (v == null) {
+            return null;
+        }
+        return Double.valueOf(v);
     }
 
-    public NumericAttribute toAttribute() {
-        return new NumericAttribute(getGroup(), getName(), value, getType(), getIdentifier());
+    @Override
+    public String marshal(final Number v) throws Exception {
+        if (v == null) {
+            return null;
+        }
+        final Double d = v.doubleValue();
+        if (!d.isNaN() && !d.isInfinite() && d == Math.rint(d)) {
+            return String.valueOf(v.intValue());
+        }
+        return v.toString();
     }
-
 }
