@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -337,6 +337,14 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final MockHttpServletResponse response = sendPost("/requisitions", req, 500, null);
         final String responseText = response.getContentAsString();
         assertThat(responseText, CoreMatchers.containsString("Failed to marshal/unmarshal XML file while unmarshalling an object (Requisition)"));
+    }
+
+    @Test
+    public void testBadNodeRequest() throws Exception {
+        createRequisition();
+
+        final String req = "<node label=\"bad-node\" foreignSource=\"test\" building=\"Office\" type=\"A\" foreignId=\"bad-node\" />\n";
+        sendPost("/requisitions/test/nodes", req, 400, null);
     }
 
     @Test
