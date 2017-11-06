@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.adapters.collection;
 
 import com.google.common.io.Files;
 
-import org.opennms.features.telemetry.adpaters.collection.script.OSGiScriptEngineManager;
+import org.opennms.features.osgi.script.OSGiScriptEngineManager;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;

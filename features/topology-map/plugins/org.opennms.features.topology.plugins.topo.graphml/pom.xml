@@ -103,6 +103,11 @@
       <artifactId>org.osgi.core</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.osgi-jsr223</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>
