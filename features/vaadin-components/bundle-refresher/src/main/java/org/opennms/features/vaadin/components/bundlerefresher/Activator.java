@@ -28,7 +28,9 @@
 
 package org.opennms.features.vaadin.components.bundlerefresher;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,9 +44,16 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        final Set<Bundle> bundlesToRefresh = Arrays.stream(context.getBundles()).filter(b -> b.getSymbolicName().contains("theme")).collect(Collectors.toSet());
-        if (!bundlesToRefresh.isEmpty()) {
-            Bundle systemBundle = context.getBundle(0);
+        // Determine if any vaadin theme fragments are unresoled
+        final Set<Bundle> unresolvedVaadinThemeFragments = getUnresolvedVaadinThemeFragments(context);
+        if (!unresolvedVaadinThemeFragments.isEmpty()) {
+            // Get vaadin theme host bundle to initialize refresh
+            final Bundle vaadinThemeHostBundle = getVaadinThemeHostbundle(context);
+            final List<Bundle> bundlesToRefresh = new ArrayList<>();
+            bundlesToRefresh.add(vaadinThemeHostBundle);
+
+            // Refresh
+            final Bundle systemBundle = context.getBundle(0);
             FrameworkWiring frameworkWiring = systemBundle.adapt(FrameworkWiring.class);
             frameworkWiring.refreshBundles(bundlesToRefresh);
         }
@@ -55,4 +64,19 @@ public class Activator implements BundleActivator {
 
     }
 
+    private static Bundle getVaadinThemeHostbundle(BundleContext context) {
+        return Arrays.stream(context.getBundles())
+                .filter(b -> "com.vaadin.themes".equalsIgnoreCase(b.getSymbolicName()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private static Set<Bundle> getUnresolvedVaadinThemeFragments(BundleContext context) {
+        return Arrays.stream(context.getBundles())
+                .filter(bundle -> {
+                    String fragmentHost = bundle.getHeaders().get("Fragment-Host");
+                    return fragmentHost != null && fragmentHost.contains("com.vaadin.themes") && bundle.getState() == Bundle.INSTALLED;
+                })
+                .collect(Collectors.toSet());
+    }
 }
