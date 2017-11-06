@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package org.opennms.features.topology.plugins.topo.graphml.internal.scripting;
+package org.opennms.features.osgi.script;
 
 import java.io.Reader;
 
