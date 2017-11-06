@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.telemetry.adapters.api;
 
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.telemetry.config.model.Protocol;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
 
 /**
  * Responsible for handling telemetry messages received by the listeners
@@ -40,7 +38,7 @@ import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
  *
  * @author jwhite
  */
-public interface Adapter {
+public interface Adapter{
 
     /**
      * A single instance of an adapter will only be responsible
@@ -58,6 +56,6 @@ public interface Adapter {
      *
      * @param messageLog group of messages to be handled
      */
-    void handleMessageLog(TelemetryMessageLogDTO messageLog);
+    void handleMessageLog(TelemetryMessageLog messageLog);
 
 }

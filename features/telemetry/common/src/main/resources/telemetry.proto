@@ -1,0 +1,15 @@
+option java_package = "org.opennms.netmgt.telemetry.ipc";
+option java_outer_classname = "TelemetryProtos";
+
+message TelemetryMessage {
+    required uint64 timestamp = 1;
+    required bytes bytes = 2;
+}
+
+message TelemetryMessageLog {
+    required string location = 1;
+    required string system_id = 2;
+    optional string source_address = 3;
+    optional uint32 source_port = 4;
+    repeated TelemetryMessage message = 5;
+}

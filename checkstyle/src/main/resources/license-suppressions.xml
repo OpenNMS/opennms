@@ -13,6 +13,7 @@
     <suppress files="org/opennms/features/topology/plugins/topo/graphml/internal/scripting/.*" checks=".*"/>
     <suppress files="org/opennms/poller/remote/Mac.*" checks=".*"/>
     <suppress files="org/opennms/container/web/.*" checks=".*"/>
+    <suppress files="org/opennms/features/osgi/script/.*" checks=".*"/>
     <!-- BSD style -->
     <suppress files="org/opennms/netmgt/syslogd/SyslogClient.java" checks=".*"/>
     <suppress files="org/opennms/plugins/com/impossibl/postgres/jdbc/.*" checks=".*"/>

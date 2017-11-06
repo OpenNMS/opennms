@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -325,6 +325,7 @@
             <feature>tsrm-troubleticketer</feature>
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
+            <feature>opennms-telemetry-jti</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>

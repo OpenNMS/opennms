@@ -51,7 +51,7 @@ public class HeartbeatModule extends AbstractXmlSinkModule<MinionIdentityDTO, Mi
     }
 
     @Override
-    public AggregationPolicy<MinionIdentityDTO, MinionIdentityDTO> getAggregationPolicy() {
+    public AggregationPolicy<MinionIdentityDTO, MinionIdentityDTO, MinionIdentityDTO> getAggregationPolicy() {
         // No aggregation
         return null;
     }

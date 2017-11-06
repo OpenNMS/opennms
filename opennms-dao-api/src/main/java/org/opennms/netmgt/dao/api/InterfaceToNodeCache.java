@@ -49,12 +49,6 @@ public interface InterfaceToNodeCache {
 	 */
 	void clear();
 
-	default Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr) {
-		final Iterator<Integer> it = this.getNodeId(location, ipAddr).iterator();
-		if (it.hasNext()) {
-			return Optional.of(it.next());
-		} else {
-			return Optional.empty();
-		}
-	}
+	Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr);
+
 }

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.telemetry</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry</groupId>
@@ -34,8 +34,27 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.adapters</groupId>
+      <artifactId>org.opennms.features.telemetry.adapters.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.adapters</groupId>
+      <artifactId>org.opennms.features.telemetry.adapters.registry</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.config</groupId>
+      <artifactId>org.opennms.features.telemetry.config.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.sink</groupId>
-      <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
+      <artifactId>org.opennms.core.ipc.sink.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
     </dependency>
     <dependency>
       <!-- Required for the DistPollerDao -->

@@ -37,7 +37,7 @@ import org.opennms.core.ipc.sink.api.Message;
  *
  * @author jwhite
  */
-public class IdentityAggregationPolicy<T extends Message> implements AggregationPolicy<T, T> {
+public class IdentityAggregationPolicy<T extends Message> implements AggregationPolicy<T, T, T> {
 
     @Override
     public Object key(T message) {
@@ -45,8 +45,13 @@ public class IdentityAggregationPolicy<T extends Message> implements Aggregation
     }
 
     @Override
-    public T aggregate(T oldBucket, T newMessage) {
+    public T aggregate(T accumulator, T newMessage) {
         return newMessage;
+    }
+
+    @Override
+    public T build(T accumulator) {
+        return accumulator;
     }
 
     @Override
