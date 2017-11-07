@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.config.api.Protocol;
  *
  * @author jwhite
  */
-public interface Adapter{
+public interface Adapter {
 
     /**
      * A single instance of an adapter will only be responsible

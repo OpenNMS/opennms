@@ -31,7 +31,6 @@ package org.opennms.netmgt.telemetry.daemon;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
-import org.opennms.features.telemetry.adapters.factory.api.AdapterFactory;
 import org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.config.model.Protocol;
@@ -48,18 +47,13 @@ import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
 
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class TelemetryMessageConsumer
-        implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
+public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
-
-    private static final int LOOKUP_DELAY_MS = 5 * 1000;
-    private static final int GRACE_PERIOD_MS = 3 * 60 * 1000;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -107,28 +101,9 @@ public class TelemetryMessageConsumer
 
     private Adapter buildAdapter(org.opennms.netmgt.telemetry.config.model.Adapter adapterDef) throws Exception {
 
-        AdapterFactory adapterFactory = null;
-        while (ManagementFactory.getRuntimeMXBean().getUptime() < GRACE_PERIOD_MS) {
-            try {
-                Thread.sleep(LOOKUP_DELAY_MS);
-            } catch (InterruptedException e) {
-                LOG.error(
-                        "Interrupted while waiting for adapter factory to become available in the service registry. Aborting.");
-                return null;
-            }
-            adapterFactory = adapterRegistry.getAdapterFactoryByClassName(adapterDef.getClassName());
-            if (adapterFactory != null) {
-                break;
-            }
-        }
+        Adapter adapter = adapterRegistry.getAdapter(adapterDef.getClassName(), protocolDef, adapterDef.getParameterMap());
 
-        final Adapter adapter;
-
-        if (adapterFactory != null) {
-
-            adapter = adapterFactory.createAdapter(protocolDef, adapterDef.getParameterMap());
-
-        } else {
+        if (adapter == null) {
             final Object adapterInstance;
             try {
                 final Class<?> clazz = Class.forName(adapterDef.getClassName());
