@@ -10,7 +10,7 @@
 ">
 
 	<bean id="jtiFactory" class="org.opennms.netmgt.telemetry.adapters.jti.JtiAdapterFactory">
-	    <argument ref="blueprintBundleContext" />
+		<argument ref="blueprintBundleContext" />
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
 		<property name="nodeDao" ref="nodeDao" />
@@ -18,7 +18,7 @@
 		<property name="filterDao" ref="filterDao" />
 		<property name="persisterFactory" ref="persisterFactory" />
 	</bean>
-	
+
 	<service id="jtiFactoryService" ref="jtiFactory" interface="org.opennms.features.telemetry.adapters.factory.api.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
@@ -26,11 +26,11 @@
 		</service-properties>
 	</service>
 
-	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
-	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache"/>
-	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao"/>
-	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao"/>
-	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations"/>
-    <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
+	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
+	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
+	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
+	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
 	
 </blueprint>

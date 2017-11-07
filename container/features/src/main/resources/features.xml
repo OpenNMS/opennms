@@ -1081,7 +1081,6 @@
       <feature>opennms-collection-api</feature>
       <feature version="${guavaVersion}">guava</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.registry/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.collection/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.jti/${project.version}</bundle>
     </feature>

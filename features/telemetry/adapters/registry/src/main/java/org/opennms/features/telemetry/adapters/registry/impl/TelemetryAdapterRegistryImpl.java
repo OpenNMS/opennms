@@ -28,11 +28,14 @@
 
 package org.opennms.features.telemetry.adapters.registry.impl;
 
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.telemetry.adapters.factory.api.AdapterFactory;
 import org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry;
+import org.opennms.netmgt.telemetry.adapters.api.Adapter;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +43,12 @@ public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(TelemetryAdapterRegistry.class);
 
+    private static final int LOOKUP_DELAY_MS = 5 * 1000;
+    private static final int GRACE_PERIOD_MS = 3 * 60 * 1000;
+
     private final Map<String, AdapterFactory> m_adapterFactoryByClassName = new HashMap<>();
 
     private static final String TYPE = "type";
-
-    @Override
-    public AdapterFactory getAdapterFactoryByClassName(String className) {
-
-        return m_adapterFactoryByClassName.get(className);
-    }
 
     @SuppressWarnings("rawtypes")
     public synchronized void onBind(AdapterFactory adapterFactory, Map properties) {
@@ -86,6 +86,27 @@ public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry {
             return (String) type;
         }
         return null;
+    }
+
+    @Override
+    public Adapter getAdapter(String className, Protocol protocol, Map<String, String> properties) {
+        AdapterFactory adapterFactory = m_adapterFactoryByClassName.get(className);
+        while ((adapterFactory == null) && ManagementFactory.getRuntimeMXBean().getUptime() < GRACE_PERIOD_MS) {
+            try {
+                Thread.sleep(LOOKUP_DELAY_MS);
+            } catch (InterruptedException e) {
+                LOG.error(
+                        "Interrupted while waiting for adapter factory to become available in the service registry. Aborting.");
+                return null;
+            }
+            adapterFactory = m_adapterFactoryByClassName.get(className);
+        }
+        Adapter adapter = null;
+        if (adapterFactory != null) {
+            adapter = adapterFactory.createAdapter(protocol, properties);
+        }
+
+        return adapter;
     }
 
 }
