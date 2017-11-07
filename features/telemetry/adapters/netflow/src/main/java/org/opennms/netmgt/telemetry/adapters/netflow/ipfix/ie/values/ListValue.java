@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values;
 
 import java.util.List;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 
 public abstract class ListValue<T> extends Value<List<T>> {

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.slice;
 
@@ -82,18 +82,18 @@ public final class Packet implements Iterable<Set<?>> {
                             // Empty template means revocation
                             if (record.header.templateId == SetHeader.TEMPLATE_SET_ID) {
                                 // Remove all templates
-                                session.removeAllTemplates(this.header.observationDomainId, Template.Type.TEMPLATE);
+                                session.removeAll(this.header.observationDomainId, Template.Type.TEMPLATE);
 
                             } else if (record.header.fieldCount == 0) {
                                 // Empty template means revocation
-                                session.removeTemplate(this.header.observationDomainId, record.header.templateId);
+                                session.remove(this.header.observationDomainId, record.header.templateId);
                             }
 
                         } else {
-                            session.addTemplate(Template.builder()
+                            session.add(this.header.observationDomainId,
+                                    record.header.templateId,
+                                    Template.builder()
                                     .withType(Template.Type.TEMPLATE)
-                                    .withObservationDomainId(this.header.observationDomainId)
-                                    .withTemplateId(record.header.templateId)
                                     .withFields(Lists.transform(record.fields, f -> f.specifier))
                                     .build());
                         }
@@ -111,18 +111,18 @@ public final class Packet implements Iterable<Set<?>> {
                             // Empty template means revocation
                             if (record.header.templateId == SetHeader.OPTIONS_TEMPLATE_SET_ID) {
                                 // Remove all templates
-                                session.removeAllTemplates(this.header.observationDomainId, Template.Type.OPTIONS_TEMPLATE);
+                                session.removeAll(this.header.observationDomainId, Template.Type.OPTIONS_TEMPLATE);
 
                             } else if (record.header.fieldCount == 0) {
                                 // Empty template means revocation
-                                session.removeTemplate(this.header.observationDomainId, record.header.templateId);
+                                session.remove(this.header.observationDomainId, record.header.templateId);
                             }
 
                         } else {
-                            session.addTemplate(Template.builder()
+                            session.add(this.header.observationDomainId,
+                                    record.header.templateId,
+                                    Template.builder()
                                     .withType(Template.Type.OPTIONS_TEMPLATE)
-                                    .withObservationDomainId(this.header.observationDomainId)
-                                    .withTemplateId(record.header.templateId)
                                     .withScopedCount(record.header.scopeFieldCount)
                                     .withFields(Lists.transform(record.fields, f -> f.specifier))
                                     .build());
@@ -134,11 +134,7 @@ public final class Packet implements Iterable<Set<?>> {
                 }
 
                 case DATA_SET: {
-                    final Set<DataRecord> dataSet = new Set<>(setHeader, DataRecord.parser(session.templateResolver(header.observationDomainId), setHeader.setId), payloadBuffer);
-
-                    // TODO: Pass to handler
-
-                    set = dataSet;
+                    set = new Set<>(setHeader, DataRecord.parser(session.getResolver(header.observationDomainId), setHeader.setId), payloadBuffer);
                     break;
                 }
 

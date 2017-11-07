@@ -55,6 +55,7 @@ import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned16V
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned32Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned64Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.values.Unsigned8Value;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto.InvalidPacketException;
 
 public class ValueTest {
 

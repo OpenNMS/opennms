@@ -35,8 +35,8 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.DataRecord;
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto.DataRecord;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Template;

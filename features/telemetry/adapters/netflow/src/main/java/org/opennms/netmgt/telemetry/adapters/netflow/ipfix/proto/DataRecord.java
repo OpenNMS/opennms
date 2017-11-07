@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

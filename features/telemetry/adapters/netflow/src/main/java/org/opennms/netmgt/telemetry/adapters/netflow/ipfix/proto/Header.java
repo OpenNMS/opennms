@@ -26,62 +26,65 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint32;
 
 import java.nio.ByteBuffer;
 
 import com.google.common.base.MoreObjects;
 
-public final class SetHeader {
+public final class Header {
 
     /*
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |          Set ID               |          Length               |
+     |       Version Number          |            Length             |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                           Export Time                         |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                       Sequence Number                         |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                    Observation Domain ID                      |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
 
-    public static final int TEMPLATE_SET_ID = 2;
-    public static final int OPTIONS_TEMPLATE_SET_ID = 3;
+    public static final int SIZE = 16;
 
-    public enum Type {
-        TEMPLATE_SET,
-        OPTIONS_TEMPLATE_SET,
-        DATA_SET
-    }
+    public static final int VERSION = 0x000a;
 
-    public static final int SIZE = 4;
-
-    public final int setId; // uint16
+    public final int versionNumber; // uint16 - must be 0x000a
     public final int length; // uint16
+    public final long exportTime; // uint32
+    public final long sequenceNumber; // uint32
+    public final long observationDomainId; // uint32
 
-    public SetHeader(final ByteBuffer buffer) throws InvalidPacketException {
-        this.setId = uint16(buffer);
+    public Header(final ByteBuffer buffer) throws InvalidPacketException {
+        this.versionNumber = uint16(buffer);
         this.length = uint16(buffer);
+        this.exportTime = uint32(buffer);
+        this.sequenceNumber = uint32(buffer);
+        this.observationDomainId = uint32(buffer);
 
-        // The Set ID values of 0 and 1 are not used, for historical reasons [RFC3954], values from 4 to 255 are
-        // reserved for future use.
-        if (this.setId < 256 && this.setId != 2 && this.setId != 3) {
-            throw new InvalidPacketException("Invalid set ID: %d", this.setId);
+        if (this.versionNumber != VERSION) {
+            throw new InvalidPacketException("Invalid version number: 0x%04X", this.versionNumber);
         }
-    }
 
-    public Type getType() {
-        if (this.setId == TEMPLATE_SET_ID) return Type.TEMPLATE_SET;
-        if (this.setId == OPTIONS_TEMPLATE_SET_ID) return Type.OPTIONS_TEMPLATE_SET;
-        if (this.setId >= 256) return Type.DATA_SET;
-
-        return null;
+        if (this.length <= 0) {
+            throw new InvalidPacketException("Empty packet");
+        }
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("setId", setId)
+                .add("versionNumber", versionNumber)
                 .add("length", length)
+                .add("exportTime", exportTime)
+                .add("sequenceNumber", sequenceNumber)
+                .add("observationDomainId", observationDomainId)
                 .toString();
     }
 }

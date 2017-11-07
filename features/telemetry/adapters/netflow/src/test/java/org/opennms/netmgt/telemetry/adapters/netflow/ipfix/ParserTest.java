@@ -41,7 +41,10 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto.Header;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.TcpSession;
 
 import com.google.common.base.Throwables;
 
@@ -51,7 +54,7 @@ public class ParserTest {
     public void canReadValidIPFIX() throws IOException, URISyntaxException {
         execute("/flows/ipfix.dat", buffer -> {
             try {
-                final Session session = new Session();
+                final Session session = new TcpSession();
 
                 final Header h1 = new Header(BufferUtils.slice(buffer, Header.SIZE));
                 final Packet p1 = new Packet(session, h1, BufferUtils.slice(buffer, h1.length - Header.SIZE));

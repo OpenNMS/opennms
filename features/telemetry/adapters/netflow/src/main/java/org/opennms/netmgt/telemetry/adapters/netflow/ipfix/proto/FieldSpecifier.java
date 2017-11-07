@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint32;

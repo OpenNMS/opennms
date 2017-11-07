@@ -31,7 +31,7 @@ package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.ie;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.InvalidPacketException;
+import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session.Session;
 
 public class InformationElement {

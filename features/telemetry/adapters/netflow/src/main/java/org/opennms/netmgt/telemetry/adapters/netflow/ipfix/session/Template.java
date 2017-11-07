@@ -28,12 +28,10 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.session;
 
-import java.time.Instant;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 
@@ -44,46 +42,14 @@ public final class Template implements Iterable<Field> {
         OPTIONS_TEMPLATE,
     }
 
-    final static class Key {
-        public final long observationDomainId;
-        public final int templateId;
-
-        Key(final long observationDomainId,
-            final int templateId) {
-            this.observationDomainId = observationDomainId;
-            this.templateId = templateId;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o.getClass() != Key.class) return false;
-
-            final Key that = (Key) o;
-            return this.observationDomainId == that.observationDomainId &&
-                    this.templateId == that.templateId;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(this.observationDomainId, this.templateId);
-        }
-    }
-
-    final Key key;
-
     public final Type type;
-
-    public final Instant insertionTime = Instant.now();
 
     public final List<Field> scopeFields;
     public final List<Field> valueFields;
 
-    private Template(final Key key,
-                     final Type type,
+    private Template(final Type type,
                      final List<Field> scopeFields,
                      final List<Field> valueFields) {
-        this.key = key;
         this.type = type;
         this.scopeFields = scopeFields;
         this.valueFields = valueFields;
@@ -101,9 +67,6 @@ public final class Template implements Iterable<Field> {
     public static class Builder {
         private Type type;
 
-        private Long observationDomainId;
-        private Integer templateId;
-
         private List<Field> fields = new LinkedList<>();
 
         private int scopedCount = 0;
@@ -113,16 +76,6 @@ public final class Template implements Iterable<Field> {
 
         public Builder withType(final Type type) {
             this.type = type;
-            return this;
-        }
-
-        public Builder withObservationDomainId(final long observationDomainId) {
-            this.observationDomainId = observationDomainId;
-            return this;
-        }
-
-        public Builder withTemplateId(final int templateId) {
-            this.templateId = templateId;
             return this;
         }
 
@@ -138,12 +91,14 @@ public final class Template implements Iterable<Field> {
 
         public Template build() {
             Preconditions.checkNotNull(this.type);
-            Preconditions.checkNotNull(this.observationDomainId);
-            Preconditions.checkNotNull(this.templateId);
             Preconditions.checkNotNull(this.fields);
             Preconditions.checkPositionIndex(this.scopedCount, this.fields.size());
 
-            return new Template(new Key(this.observationDomainId, this.templateId), this.type, this.fields.subList(0, this.scopedCount), this.fields.subList(this.scopedCount, this.fields.size()));
+            return new Template(
+                    this.type,
+                    this.fields.subList(0, this.scopedCount),
+                    this.fields.subList(this.scopedCount, this.fields.size())
+            );
         }
     }
 

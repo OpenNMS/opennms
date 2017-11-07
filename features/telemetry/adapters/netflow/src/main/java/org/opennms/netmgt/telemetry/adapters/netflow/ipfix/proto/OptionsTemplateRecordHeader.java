@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix.proto;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.ipfix.BufferUtils.uint16;
 
@@ -34,24 +34,28 @@ import java.nio.ByteBuffer;
 
 import com.google.common.base.MoreObjects;
 
-public final class TemplateRecordHeader {
+public final class OptionsTemplateRecordHeader {
 
     /*
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |      Template ID (> 255)      |         Field Count           |
+     |         Template ID (> 255)   |         Field Count           |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Scope Field Count        |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
 
-    public static final int SIZE = 4;
+    public static final int SIZE = 6;
 
     public final int templateId; // uint16
     public final int fieldCount; // uint16
+    public final int scopeFieldCount; // uint16
 
-    public TemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public OptionsTemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.templateId = uint16(buffer);
         this.fieldCount = uint16(buffer);
+        this.scopeFieldCount = uint16(buffer);
 
         // Since Template IDs are used as Set IDs in the Sets they describe
         if (this.templateId <= 255) {
@@ -61,6 +65,10 @@ public final class TemplateRecordHeader {
         if (this.fieldCount <= 0) {
             throw new InvalidPacketException("Empty template");
         }
+
+        if (this.scopeFieldCount > this.fieldCount) {
+            throw new InvalidPacketException("More scope fields than fields available: %d > %d", this.scopeFieldCount, this.fieldCount);
+        }
     }
 
     @Override
@@ -68,6 +76,7 @@ public final class TemplateRecordHeader {
         return MoreObjects.toStringHelper(this)
                 .add("templateId", templateId)
                 .add("fieldCount", fieldCount)
+                .add("scopeFieldCount", scopeFieldCount)
                 .toString();
     }
 }
