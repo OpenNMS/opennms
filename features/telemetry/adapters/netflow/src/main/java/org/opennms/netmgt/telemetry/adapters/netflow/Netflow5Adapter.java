@@ -28,8 +28,16 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -48,13 +56,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.support.TransactionOperations;
 
-import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public class Netflow5Adapter implements Adapter {
+
+    // Key class, which is used to cache NodeInfo objects
+    private static class NodeInfoKey {
+
+        public final String location;
+
+        public final String ipAddress;
+
+        public NodeInfoKey(String location, String ipAddress) {
+            this.location = location;
+            this.ipAddress = ipAddress;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final NodeInfoKey that = (NodeInfoKey) o;
+            boolean equals = Objects.equals(location, that.location)
+                    && Objects.equals(ipAddress, that.ipAddress);
+            return equals;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(location, ipAddress);
+        }
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(Netflow5Adapter.class);
 
@@ -79,9 +115,23 @@ public class Netflow5Adapter implements Adapter {
     // measures the flows/seconds throughput
     private Meter meter;
 
+    // Caches NodeInfo data
+    private LoadingCache<NodeInfoKey, Optional<NodeInfo>> nodeInfoCache;
+
     @PostConstruct
     public void init() {
         meter = metricRegistry.meter("persistence");
+
+        // TODO MVR make this configurable, when it is actually an osgi-module
+        nodeInfoCache = CacheBuilder.newBuilder()
+                .maximumSize(1000)
+                .expireAfterAccess(300, TimeUnit.SECONDS) // 5 Minutes
+                .build(new CacheLoader<NodeInfoKey, Optional<NodeInfo>>() {
+                    @Override
+                    public Optional<NodeInfo> load(NodeInfoKey key) throws Exception {
+                        return getNodeInfo(key.location, key.ipAddress);
+                    }
+                });
     }
 
     @Override
@@ -147,26 +197,39 @@ public class Netflow5Adapter implements Adapter {
     }
 
     private void enrich(final List<NetflowDocument> documents, final TelemetryMessageLog messageLog) {
+        enrich(documents, messageLog.getLocation(), messageLog.getSourceAddress());
+    }
+
+    protected void enrich(final List<NetflowDocument> documents, final String location, final String sourceAddress) {
         if (documents.isEmpty()) {
             LOG.debug("Nothing to enrich.");
             return;
         }
 
-        final String location = messageLog.getLocation();
         transactionOperations.execute(callback -> {
             documents.stream().forEach(document -> {
                 // Metadata from message
-                document.setExporterAddress(messageLog.getSourceAddress());
+                document.setExporterAddress(sourceAddress);
                 document.setLocation(location);
 
                 // Node data
-                getNodeInfo(location, messageLog.getSourceAddress()).ifPresent(node -> document.setExporterNodeInfo(node));
-                getNodeInfo(location, document.getIpv4DestAddress()).ifPresent(node -> document.setDestNodeInfo(node));
-                getNodeInfo(location, document.getIpv4SourceAddress()).ifPresent(node -> document.setSourceNodeInfo(node));
-
+                getNodeInfoFromCache(location, sourceAddress).ifPresent(node -> document.setExporterNodeInfo(node));
+                getNodeInfoFromCache(location, document.getIpv4DestAddress()).ifPresent(node -> document.setDestNodeInfo(node));
+                getNodeInfoFromCache(location, document.getIpv4SourceAddress()).ifPresent(node -> document.setSourceNodeInfo(node));
             });
             return null;
         });
+    }
+
+    private Optional<NodeInfo> getNodeInfoFromCache(String location, String ipAddress) {
+        final NodeInfoKey key = new NodeInfoKey(location, ipAddress);
+        try {
+            final Optional<NodeInfo> value = nodeInfoCache.get(key);
+            return value;
+        } catch (ExecutionException e) {
+            LOG.error("Error while retrieving NodeInfo from NodeInfoCache: {}.", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 
     private Optional<NodeInfo> getNodeInfo(String location, String ipAddress) {
