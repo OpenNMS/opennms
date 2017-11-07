@@ -69,7 +69,7 @@ public final class EnterpriseField extends Field {
     }
 
     @Override
-    public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
         return new EnterpriseValue(this.informationElementId, this.enterpriseNumber, BufferUtils.bytes(buffer, buffer.remaining()));
     }
 }

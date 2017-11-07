@@ -32,7 +32,7 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.ipfix.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
@@ -56,7 +56,7 @@ public class Float64Value extends Value<Double> {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 return new Float64Value(name, Double.longBitsToDouble(BufferUtils.uint(buffer, buffer.remaining()).longValue()));
             }
 

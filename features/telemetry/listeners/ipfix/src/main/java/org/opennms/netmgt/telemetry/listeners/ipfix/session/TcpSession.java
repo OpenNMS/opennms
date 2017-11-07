@@ -34,7 +34,7 @@ import java.util.Optional;
 
 import com.google.common.base.Objects;
 
-public class TcpSession implements Session {
+public class TcpSession implements TemplateManager {
 
     private final static class Key {
         public final long observationDomainId;

@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.ipfix.session;
 
 import java.util.Optional;
 
-public interface Session {
+public interface TemplateManager {
 
     @FunctionalInterface
     interface TemplateResolver {

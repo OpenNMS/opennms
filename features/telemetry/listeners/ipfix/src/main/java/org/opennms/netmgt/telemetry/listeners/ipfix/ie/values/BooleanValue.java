@@ -33,7 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
@@ -58,7 +58,7 @@ public class BooleanValue extends Value<Boolean> {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final int value = BufferUtils.uint8(buffer);
 
                 if (value < 1 || value > 2) {

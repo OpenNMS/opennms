@@ -28,10 +28,14 @@
 
 package org.opennms.netmgt.telemetry.listeners.ipfix;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.UdpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,26 +47,34 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.util.concurrent.ScheduledFuture;
 
 public class UdpListener implements Listener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
+
+    public final static long HOUSEKEEPING_INTERVAL = 60000;
 
     private String name;
 
     private String bindHost = "::";
     private int bindPort = 4739;
 
+    private Duration templateTimeout = Duration.ofMinutes(30);
+
     private AsyncDispatcher<TelemetryMessage> dispatcher;
 
     private EventLoopGroup bossGroup;
     private ChannelFuture socketFuture;
 
-    private Session session;
+    private UdpSession session;
+    private ScheduledFuture<?> housekeepingFuture;
 
     public void start() throws InterruptedException {
-        this.session = null;
+        this.session = new UdpSession(this.templateTimeout);
 
         this.bossGroup = new NioEventLoopGroup();
+
+        this.housekeepingFuture = this.bossGroup.scheduleAtFixedRate(this.session::doHousekeeping, HOUSEKEEPING_INTERVAL, HOUSEKEEPING_INTERVAL, TimeUnit.MILLISECONDS);
 
         this.socketFuture = new Bootstrap()
                 .group(this.bossGroup)
@@ -71,8 +83,10 @@ public class UdpListener implements Listener {
                 .handler(new ChannelInitializer<DatagramChannel>() {
                     @Override
                     protected void initChannel(final DatagramChannel ch) throws Exception {
+                        final TemplateManager templateManager = UdpListener.this.session.getTemplateManager(ch.remoteAddress(), ch.localAddress());
+
                         ch.pipeline()
-                                .addLast(new PacketDecoder(UdpListener.this.session))
+                                .addLast(new PacketDecoder(templateManager))
                                 .addLast(new PacketHandler(UdpListener.this.dispatcher));
                     }
                 })
@@ -86,6 +100,8 @@ public class UdpListener implements Listener {
 
         LOG.info("Closing boss group...");
         bossGroup.shutdownGracefully().sync();
+
+        this.housekeepingFuture.cancel(false);
     }
 
     @Override
@@ -114,32 +130,16 @@ public class UdpListener implements Listener {
         this.bindPort = bindPort;
     }
 
-//    public int getMaxPacketSize() {
-//        return maxPacketSize;
-//    }
-//
-//    public void setMaxPacketSize(int maxPacketSize) {
-//        this.maxPacketSize = maxPacketSize;
-//    }
+    public Duration getTemplateTimeout() {
+        return this.templateTimeout;
+    }
+
+    public void setTemplateTimeout(final Duration templateTimeout) {
+        this.templateTimeout = templateTimeout;
+    }
 
     @Override
     public void setDispatcher(final AsyncDispatcher<TelemetryMessage> dispatcher) {
         this.dispatcher = dispatcher;
     }
-
-//    protected static ByteBuffer wrapContentsWithNioByteBuffer(DatagramPacket packet) {
-//        final ByteBuf content = packet.content();
-//        final int length = content.readableBytes();
-//        final byte[] array;
-//        final int offset;
-//        if (content.hasArray()) {
-//            array = content.array();
-//            offset = content.arrayOffset() + content.readerIndex();
-//        } else {
-//            array = new byte[length];
-//            content.getBytes(content.readerIndex(), array, 0, length);
-//            offset = 0;
-//        }
-//        return ByteBuffer.wrap(array, offset, length);
-//    }
 }

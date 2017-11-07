@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.ipfix.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
@@ -59,7 +59,7 @@ public class IPv4AddressValue extends Value<Inet4Address> {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 try {
                     return new IPv4AddressValue(name, (Inet4Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 4)));
                 } catch (final UnknownHostException e) {

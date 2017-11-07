@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 import org.opennms.netmgt.telemetry.listeners.ipfix.session.Template;
 
 import com.google.common.base.MoreObjects;
@@ -61,7 +61,7 @@ public final class Packet implements Iterable<Set<?>> {
     public final Header header;
     public final List<Set<?>> sets;
 
-    public Packet(final Session session,
+    public Packet(final TemplateManager templateManager,
                   final Header header,
                   final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
@@ -81,15 +81,15 @@ public final class Packet implements Iterable<Set<?>> {
                             // Empty template means revocation
                             if (record.header.templateId == SetHeader.TEMPLATE_SET_ID) {
                                 // Remove all templates
-                                session.removeAll(this.header.observationDomainId, Template.Type.TEMPLATE);
+                                templateManager.removeAll(this.header.observationDomainId, Template.Type.TEMPLATE);
 
                             } else if (record.header.fieldCount == 0) {
                                 // Empty template means revocation
-                                session.remove(this.header.observationDomainId, record.header.templateId);
+                                templateManager.remove(this.header.observationDomainId, record.header.templateId);
                             }
 
                         } else {
-                            session.add(this.header.observationDomainId,
+                            templateManager.add(this.header.observationDomainId,
                                     record.header.templateId,
                                     Template.builder()
                                     .withType(Template.Type.TEMPLATE)
@@ -110,15 +110,15 @@ public final class Packet implements Iterable<Set<?>> {
                             // Empty template means revocation
                             if (record.header.templateId == SetHeader.OPTIONS_TEMPLATE_SET_ID) {
                                 // Remove all templates
-                                session.removeAll(this.header.observationDomainId, Template.Type.OPTIONS_TEMPLATE);
+                                templateManager.removeAll(this.header.observationDomainId, Template.Type.OPTIONS_TEMPLATE);
 
                             } else if (record.header.fieldCount == 0) {
                                 // Empty template means revocation
-                                session.remove(this.header.observationDomainId, record.header.templateId);
+                                templateManager.remove(this.header.observationDomainId, record.header.templateId);
                             }
 
                         } else {
-                            session.add(this.header.observationDomainId,
+                            templateManager.add(this.header.observationDomainId,
                                     record.header.templateId,
                                     Template.builder()
                                     .withType(Template.Type.OPTIONS_TEMPLATE)
@@ -133,7 +133,7 @@ public final class Packet implements Iterable<Set<?>> {
                 }
 
                 case DATA_SET: {
-                    set = new Set<>(setHeader, DataRecord.parser(session.getResolver(header.observationDomainId), setHeader.setId), payloadBuffer);
+                    set = new Set<>(setHeader, DataRecord.parser(templateManager.getResolver(header.observationDomainId), setHeader.setId), payloadBuffer);
                     break;
                 }
 

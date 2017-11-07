@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.listeners.ipfix.session.Field;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 import org.opennms.netmgt.telemetry.listeners.ipfix.session.Template;
 
 import com.google.common.base.MoreObjects;
@@ -56,7 +56,7 @@ public final class DataRecord implements Record {
 
     public final List<FieldValue> fields;
 
-    public DataRecord(final Session.TemplateResolver templateResolver,
+    public DataRecord(final TemplateManager.TemplateResolver templateResolver,
                       final Template template,
                       final ByteBuffer buffer) throws InvalidPacketException {
 
@@ -75,7 +75,7 @@ public final class DataRecord implements Record {
                 .toString();
     }
 
-    public static Set.RecordParser<DataRecord> parser(final Session.TemplateResolver templateResolver, final int templateId) throws InvalidPacketException {
+    public static Set.RecordParser<DataRecord> parser(final TemplateManager.TemplateResolver templateResolver, final int templateId) throws InvalidPacketException {
         final Template template = templateResolver.lookup(templateId)
                 .orElseThrow(() -> new InvalidPacketException("Unknown Template ID: %d", templateId));
 

@@ -45,7 +45,7 @@ public final class StandardField extends Field {
     }
 
     @Override
-    public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
         return this.informationElement.parse(templateResolver, buffer);
     }
 

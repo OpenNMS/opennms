@@ -34,7 +34,7 @@ import java.util.List;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.Packet;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -42,10 +42,10 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 
 public class PacketDecoder extends ByteToMessageDecoder {
 
-    private final Session session;
+    private final TemplateManager templateManager;
 
-    public PacketDecoder(final Session session) {
-        this.session = session;
+    public PacketDecoder(final TemplateManager templateManager) {
+        this.templateManager = templateManager;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class PacketDecoder extends ByteToMessageDecoder {
         }
 
         final ByteBuffer payloadBuffer = in.slice(Header.SIZE, header.length - Header.SIZE).nioBuffer();
-        final Packet packet = new Packet(this.session, header, payloadBuffer);
+        final Packet packet = new Packet(this.templateManager, header, payloadBuffer);
 
         in.skipBytes(header.length);
 

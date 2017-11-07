@@ -32,7 +32,7 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 
 public class InformationElement {
 
@@ -65,7 +65,7 @@ public class InformationElement {
         return this.semantics;
     }
 
-    public Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
         return this.parser.parse(templateResolver, buffer);
     }
 

@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.ipfix.proto.DataRecord;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.Set;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.SetHeader;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 
 import com.google.common.collect.Lists;
 
@@ -58,7 +58,7 @@ public class SubTemplateMultiListValue extends ListValue<List<List<Value<?>>>> {
         return new Value.Parser() {
 
             @Override
-            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(BufferUtils.uint8(buffer));
 
                 final List<List<List<Value<?>>>> values = new LinkedList<>();

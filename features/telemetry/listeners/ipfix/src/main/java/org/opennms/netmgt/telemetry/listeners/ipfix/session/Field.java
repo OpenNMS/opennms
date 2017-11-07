@@ -40,5 +40,5 @@ public abstract class Field {
         this.length = length;
     }
 
-    public abstract Value parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
+    public abstract Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
 }

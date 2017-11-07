@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.ipfix.proto.FieldSpecifier;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.FieldValue;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.ipfix.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 
 public class BasicListValue extends ListValue<Value<?>> {
     /*
@@ -68,7 +68,7 @@ public class BasicListValue extends ListValue<Value<?>> {
         return new Value.Parser() {
 
             @Override
-            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(uint8(buffer));
                 final FieldSpecifier field = new FieldSpecifier(buffer);
 

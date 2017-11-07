@@ -38,7 +38,7 @@ import java.util.List;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.DataRecord;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.ipfix.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 import org.opennms.netmgt.telemetry.listeners.ipfix.session.Template;
 
 import com.google.common.collect.Lists;
@@ -69,7 +69,7 @@ public class SubTemplateListValue extends ListValue<List<Value<?>>> {
         return new Value.Parser() {
 
             @Override
-            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(uint8(buffer));
                 final int templateId = uint16(buffer);
 

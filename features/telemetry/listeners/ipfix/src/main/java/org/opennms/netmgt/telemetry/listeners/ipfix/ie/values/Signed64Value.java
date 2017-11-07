@@ -32,7 +32,7 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.ipfix.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
@@ -56,7 +56,7 @@ public class Signed64Value extends Value<Long> {
     public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) {
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 return new Signed64Value(name, BufferUtils.sint(buffer, buffer.remaining()));
             }
 

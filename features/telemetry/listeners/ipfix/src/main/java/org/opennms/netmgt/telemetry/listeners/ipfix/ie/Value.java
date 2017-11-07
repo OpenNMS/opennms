@@ -31,12 +31,12 @@ package org.opennms.netmgt.telemetry.listeners.ipfix.ie;
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.Session;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 
 public abstract class Value<T> {
 
     public interface Parser {
-        Value<?> parse(final Session.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
+        Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
 
         int getMaximumFieldLength();
 
