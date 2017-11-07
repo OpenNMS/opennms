@@ -12,6 +12,7 @@
     <camelVersion>2.19.1</camelVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.6.6</jackson2Version>
+    <jestVersion>2.0.3</jestVersion>
     <karafVersion>4.1.2</karafVersion>
     <nodeVersion>v6.10.2</nodeVersion>
     <npmVersion>3.10.10</npmVersion>
@@ -352,7 +353,7 @@
     <dependency>
       <groupId>io.searchbox</groupId>
       <artifactId>jest-complete-osgi</artifactId>
-      <version>2.0.3</version>
+      <version>${jestVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
