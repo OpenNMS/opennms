@@ -31,11 +31,14 @@ package org.opennms.netmgt.telemetry.listeners.ipfix;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.Packet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
+    private static final Logger LOG = LoggerFactory.getLogger(PacketHandler.class);
 
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
 
@@ -45,6 +48,8 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
 
     @Override
     protected void channelRead0(final ChannelHandlerContext channelHandlerContext, final Packet packet) throws Exception {
+        LOG.info("Got packet: {}", packet);
+
 
         //                                // Build the message to dispatch via the Sink API
 //                                final Telemetrymessage msg = new TelemetryMessage(packet.sender(), buffer);
