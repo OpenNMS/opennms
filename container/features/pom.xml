@@ -235,6 +235,7 @@
             <feature>opennms-activemq-event-forwarder</feature>
             <feature>opennms-activemq-event-receiver</feature>
             -->
+            <feature>opennms-bundle-refresher</feature>
             <feature>opennms-collection-api</feature>
             <feature>opennms-collection-commands</feature>
             <feature>opennms-collection-persistence-rrd</feature>
