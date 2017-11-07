@@ -43,11 +43,10 @@
       <version>${guavaVersion}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- The Gson-Version must match the gson version used in jest-complete-osgi -->
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.6.2</version>
+      <groupId>org.opennms.features.jest</groupId>
+      <artifactId>org.opennms.features.jest.client</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

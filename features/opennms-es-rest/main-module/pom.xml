@@ -242,52 +242,24 @@
       <version>${json-simpleVersion}</version>
       <scope>provided</scope>
     </dependency>
-
-    <dependency>
-      <groupId>io.searchbox</groupId>
-      <artifactId>jest</artifactId>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpcore-nio</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpclient</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpasyncclient</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore-osgi</artifactId>
-      <!-- <version>4.4.4</version> --><!-- jest version -->
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient-osgi</artifactId>
-      <!-- <version>4.5.2</version> --><!-- jest version --> <!-- 4.3.6 best match -->
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- best match derived from httpasyncclient 4.0.2 compiled against httpclient 4.3.5 httpcore 4.3.2 -->
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpasyncclient-osgi</artifactId>
-      <!-- <version>4.1.1</version> --><!-- jest version -->
-      <scope>provided</scope>
-    </dependency>
+   <dependency>
+     <groupId>org.opennms.features.jest</groupId>
+     <artifactId>org.opennms.features.jest.client</artifactId>
+     <version>${project.version}</version>
+     <scope>provided</scope>
+   </dependency>
+   <dependency>
+     <groupId>io.searchbox</groupId>
+     <artifactId>jest-complete-osgi</artifactId>
+     <version>${jestVersion}</version>
+     <scope>provided</scope>
+   </dependency>
+   <dependency>
+     <groupId>com.google.code.gson</groupId>
+     <artifactId>gson</artifactId>
+     <version>2.6.2</version> <!-- TODO MVR define globally somewhere -->
+     <scope>provided</scope>
+   </dependency>
 
   </dependencies>
 
