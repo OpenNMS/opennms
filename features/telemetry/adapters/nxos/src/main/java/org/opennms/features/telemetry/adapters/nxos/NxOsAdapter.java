@@ -26,14 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telmetry.adapters.nxos;
+package org.opennms.features.telemetry.adapters.nxos;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
 
-import org.opennms.features.telmetry.adapters.nxos.proto.TelemetryBis;
+import org.opennms.features.telemetry.adapters.nxos.proto.TelemetryBis;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -41,24 +41,25 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.adapters.collection.AbstractPersistingAdapter;
 import org.opennms.netmgt.telemetry.adapters.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.adapters.collection.ScriptedCollectionSetBuilder;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageDTO;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.collect.Iterables;
 import com.google.protobuf.ExtensionRegistry;
 
-public class NxGpbAdapter extends AbstractPersistingAdapter {
+public class NxOsAdapter extends AbstractPersistingAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NxGpbAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NxOsAdapter.class);
 
     private static final ExtensionRegistry s_registry = ExtensionRegistry.newInstance();
 
@@ -76,7 +77,9 @@ public class NxGpbAdapter extends AbstractPersistingAdapter {
     private NodeDao nodeDao;
 
     @Autowired
-    private TransactionTemplate transactionTemplate;
+    private TransactionOperations transactionTemplate;
+    
+    private BundleContext bundleContext;
 
     private String script;
 
@@ -84,7 +87,7 @@ public class NxGpbAdapter extends AbstractPersistingAdapter {
         @Override
         protected ScriptedCollectionSetBuilder initialValue() {
             try {
-                return new ScriptedCollectionSetBuilder(new File(script));
+                return new ScriptedCollectionSetBuilder(new File(script), bundleContext);
             } catch (Exception e) {
                 LOG.error("Failed to create builder for script '{}'.", script, e);
                 return null;
@@ -101,9 +104,9 @@ public class NxGpbAdapter extends AbstractPersistingAdapter {
     }
     
     @Override
-    public Optional<CollectionSetWithAgent> handleMessage(TelemetryMessageDTO message, TelemetryMessageLogDTO messageLog) throws Exception {
+    public Optional<CollectionSetWithAgent> handleMessage(TelemetryMessage message, TelemetryMessageLog messageLog) throws Exception {
     
-        final TelemetryBis.Telemetry msg = TelemetryBis.Telemetry.parseFrom(message.getBytes().array(), s_registry);
+        final TelemetryBis.Telemetry msg = TelemetryBis.Telemetry.parseFrom(message.getByteArray(), s_registry);
 
         CollectionAgent agent = null;
         try {
@@ -145,6 +148,26 @@ public class NxGpbAdapter extends AbstractPersistingAdapter {
         }
         final CollectionSet collectionSet = builder.build(agent, msg);
         return Optional.of(new CollectionSetWithAgent(agent, collectionSet));
+    }
+
+    public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
+        this.collectionAgentFactory = collectionAgentFactory;
+    }
+
+    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
+        this.interfaceToNodeCache = interfaceToNodeCache;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
+    }
+
+    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
 }

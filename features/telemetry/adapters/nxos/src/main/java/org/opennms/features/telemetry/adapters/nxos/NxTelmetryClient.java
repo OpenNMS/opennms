@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telmetry.adapters.nxos;
+package org.opennms.features.telemetry.adapters.nxos;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -35,7 +35,7 @@ import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.telmetry.adapters.nxos.proto.TelemetryBis;
+import org.opennms.features.telemetry.adapters.nxos.proto.TelemetryBis;
 
 public class NxTelmetryClient {
 

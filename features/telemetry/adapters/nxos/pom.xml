@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.telemetry</groupId>
     <artifactId>org.opennms.features.telemetry.adapters</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry.adapters</groupId>
@@ -36,6 +36,16 @@
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
       <version>3.4.0</version><!--$NO-MVN-MAN-VER$-->
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.adapters</groupId>
+      <artifactId>org.opennms.features.telemetry.adapters.factory</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
