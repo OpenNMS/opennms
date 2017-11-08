@@ -80,10 +80,4 @@ public class PacketDecoder extends ByteToMessageDecoder {
 
         return packet;
     }
-
-    @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-        LOG.warn("Invalid packet: {}", cause);
-        ctx.close();
-    }
 }

@@ -120,4 +120,8 @@ public class UdpSession {
             }
         };
     }
+
+    public void drop(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
+        this.templates.entrySet().removeIf(e -> Objects.equal(e.getKey().remoteAddress, remoteAddress) && Objects.equal(e.getKey().localAddress, localAddress));
+    }
 }

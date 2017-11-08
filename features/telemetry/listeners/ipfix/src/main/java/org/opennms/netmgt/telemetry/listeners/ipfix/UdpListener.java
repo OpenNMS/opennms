@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -87,7 +89,14 @@ public class UdpListener implements Listener {
 
                         ch.pipeline()
                                 .addLast(new PacketDecoder(templateManager))
-                                .addLast(new PacketHandler(UdpListener.this.dispatcher));
+                                .addLast(new PacketHandler(UdpListener.this.dispatcher))
+                                .addLast(new ChannelInboundHandlerAdapter() {
+                                    @Override
+                                    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+                                        LOG.warn("Invalid packet: {}", cause);
+                                        UdpListener.this.session.drop(ch.remoteAddress(), ch.localAddress());
+                                    }
+                                });
                     }
                 })
                 .bind(this.bindHost, this.bindPort)
@@ -98,10 +107,10 @@ public class UdpListener implements Listener {
         LOG.info("Closing channel...");
         socketFuture.channel().close().sync();
 
+        this.housekeepingFuture.cancel(false);
+
         LOG.info("Closing boss group...");
         bossGroup.shutdownGracefully().sync();
-
-        this.housekeepingFuture.cancel(false);
     }
 
     @Override

@@ -31,13 +31,15 @@ package org.opennms.netmgt.telemetry.listeners.ipfix;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 import org.opennms.netmgt.telemetry.listeners.ipfix.session.TcpSession;
+import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -77,7 +79,14 @@ public class TcpListener implements Listener {
 
                         ch.pipeline()
                                 .addLast(new PacketDecoder(templateManager))
-                                .addLast(new PacketHandler(TcpListener.this.dispatcher));
+                                .addLast(new PacketHandler(TcpListener.this.dispatcher))
+                                .addLast(new ChannelInboundHandlerAdapter() {
+                                    @Override
+                                    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+                                        LOG.warn("Invalid packet: {}", cause);
+                                        ctx.close();
+                                    }
+                                });
                     }
                 })
                 .bind(this.bindHost, this.bindPort)
