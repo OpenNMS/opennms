@@ -140,8 +140,8 @@ public class RestClientFactory {
 			final URL targetUrl = new URL(targetHosts.get(0));
 
 			if (targetHosts.size() > 1) {
-				LOG.warn("Username/Password have been defined, but multiple target hosts were found. Each host will use the same credentials.");
-				LOG.warn("Username/Password have been defined, but multiple target hosts were found. Preemptive auth is only enabled for host {}",  targetHosts.get(0));
+				LOG.warn("Credentials have been defined, but multiple target hosts were found. " +
+						"Each host will use the same credentials. Preemptive auth is only enabled for host {}", targetHosts.get(0));
 			}
 
 			configBuilder.defaultCredentials(esusername, espassword);
