@@ -35,12 +35,15 @@ import org.opennms.netmgt.telemetry.listeners.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.listeners.ipfix.session.TemplateManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 public class PacketDecoder extends ByteToMessageDecoder {
+    private static final Logger LOG = LoggerFactory.getLogger(PacketDecoder.class);
 
     private final TemplateManager templateManager;
 
@@ -57,22 +60,30 @@ public class PacketDecoder extends ByteToMessageDecoder {
     }
 
     private Object decode(final ChannelHandlerContext ctx, final ByteBuf in) throws InvalidPacketException {
+        in.markReaderIndex();
+
         if (in.readableBytes() < Header.SIZE) {
+            in.resetReaderIndex();
             return null;
         }
 
-        final ByteBuffer headerBuffer = in.slice(0, Header.SIZE).nioBuffer();
+        final ByteBuffer headerBuffer = in.readSlice(Header.SIZE).nioBuffer();
         final Header header = new Header(headerBuffer);
 
-        if (in.readableBytes() < header.length) {
+        if (in.readableBytes() < header.length - Header.SIZE) {
+            in.resetReaderIndex();
             return null;
         }
 
-        final ByteBuffer payloadBuffer = in.slice(Header.SIZE, header.length - Header.SIZE).nioBuffer();
+        final ByteBuffer payloadBuffer = in.readSlice(header.length - Header.SIZE).nioBuffer();
         final Packet packet = new Packet(this.templateManager, header, payloadBuffer);
 
-        in.skipBytes(header.length);
-
         return packet;
+    }
+
+    @Override
+    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+        LOG.warn("Invalid packet: {}", cause);
+        ctx.close();
     }
 }

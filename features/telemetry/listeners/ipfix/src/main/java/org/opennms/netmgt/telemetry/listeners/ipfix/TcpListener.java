@@ -86,7 +86,7 @@ public class TcpListener implements Listener {
 
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
-        socketFuture.channel().closeFuture().sync();
+        socketFuture.channel().close().sync();
 
         LOG.info("Closing boss group...");
         bossGroup.shutdownGracefully().sync();
