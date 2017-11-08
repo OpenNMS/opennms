@@ -104,7 +104,11 @@ public class JtiGpbAdapter extends AbstractPersistingAdapter {
         @Override
         protected ScriptedCollectionSetBuilder initialValue() {
             try {
-                return new ScriptedCollectionSetBuilder(new File(script), bundleContext);
+                if (bundleContext != null) {
+                    return new ScriptedCollectionSetBuilder(new File(script), bundleContext);
+                } else {
+                    return new ScriptedCollectionSetBuilder(new File(script));
+                }
             } catch (Exception e) {
                 LOG.error("Failed to create builder for script '{}'.", script, e);
                 return null;
