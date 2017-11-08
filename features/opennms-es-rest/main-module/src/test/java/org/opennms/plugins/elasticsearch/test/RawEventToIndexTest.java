@@ -42,19 +42,16 @@ import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.plugins.elasticsearch.rest.EventToIndex;
 import org.opennms.plugins.elasticsearch.rest.IndexNameFunction;
 import org.opennms.plugins.elasticsearch.rest.NodeCache;
-import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
 
-public class RawEventToIndexTest {
+public class RawEventToIndexTest extends AbstractEventToIndexTest {
 	private static final Logger LOG = LoggerFactory.getLogger(RawEventToIndexTest.class);
 
 	public static final String ALARM_INDEX_NAME = "opennms-alarms";
@@ -78,19 +75,6 @@ public class RawEventToIndexTest {
 
 	public static final String NODE_LOST_SERVICE_EVENT="uei.opennms.org/nodes/nodeLostService";
 
-
-	//raw json="{"alarmid":806,"eventuei":"uei.opennms.org/nodes/nodeLostService","nodeid":36,
-	//"ipaddr":"142.34.5.19","serviceid":2,"reductionkey":"uei.opennms.org/nodes/nodeLostService::36:142.34.5.19:HTTP",
-	//"alarmtype":1,"counter":1,"severity":5,"lasteventid":7003,"firsteventtime":"2016-08-15T18:30:04.252+01:00",
-	//"lasteventtime":"2016-08-15T18:30:04.252+01:00","firstautomationtime":null,"lastautomationtime":null,
-	//"description":"<p>A HTTP outage was identified on interface\n      142.34.5.19.</p> <p>A new Outage record has been\n      created and service level availability calculations will be\n      impacted until this outage is resolved.</p>",
-	//"logmsg":"HTTP outage identified on interface 142.34.5.19 with reason code: Unknown.","operinstruct":null,
-	//"tticketid":null,"tticketstate":null,"mouseovertext":null,
-	//"suppresseduntil":"2016-08-15T18:30:04.252+01:00","suppresseduser":null,"suppressedtime":"2016-08-15T18:30:04.252+01:00",
-	//"alarmackuser":null,"alarmacktime":null,"managedobjectinstance":null,"managedobjecttype":null,"applicationdn":null,
-	//"ossprimarykey":null,"x733alarmtype":null,"x733probablecause":0,"qosalarmstate":null,"clearkey":null,"ifindex":null,
-	//"eventparms":"eventReason=Unknown(string,text)","stickymemo":null,"systemid":"00000000-0000-0000-0000-000000000000"}";
-
 	public static final String TEST_ALARM_JSON_1="{\"alarmid\":807,\"eventuei\":\"uei.opennms.org/nodes/nodeLostService\",\"nodeid\":36,"
 			+ "\"ipaddr\":\"142.34.5.19\",\"serviceid\":2,\"reductionkey\":\"uei.opennms.org/nodes/nodeLostService::36:142.34.5.19:HTTP\","
 			+ "\"alarmtype\":1,\"counter\":1,\"severity\":5,\"lasteventid\":7003,"
@@ -111,26 +95,13 @@ public class RawEventToIndexTest {
 	 * simple test to create a raw event in the raw event index and test that the event is added
 	 */
 	@Test
-	public void jestClientRawEventToESTest(){
+	public void jestClientRawEventToESTest() throws Exception {
 		LOG.debug("***************** start of test jestClientRawEventToESTestt");
-
-		EventToIndex eventToIndex = new EventToIndex();
-		JestClient jestClient=null;
-
-		try {
-
-			// Get Jest client
-			String esusername="";
-			String espassword="";
-			String elasticsearchUrl="http://localhost:9200";
-
-			RestClientFactory restClientFactory = new RestClientFactory(elasticsearchUrl,esusername,espassword);
 
 			IndexNameFunction indexNameFunction = new IndexNameFunction("yyyy.MM");
 
 			NodeCache nodeCache = new MockNodeCache();
 
-			eventToIndex.setRestClientFactory(restClientFactory);
 			eventToIndex.setNodeCache(nodeCache);
 			eventToIndex.setIndexNameFunction(indexNameFunction);
 			eventToIndex.setLogEventDescription(true);
@@ -170,8 +141,6 @@ public class RawEventToIndexTest {
 			} catch (InterruptedException e) { }
 
 			// send query to check that event has been created
-			jestClient = restClientFactory.getJestClient();
-
 			// search for resulting event
 			String eventquery = "{\n" 
 					+"\n       \"query\": {"
@@ -223,14 +192,6 @@ public class RawEventToIndexTest {
 			LOG.debug("search result event eventueistr="+eventUeiStr);
 			assertEquals(NODE_LOST_SERVICE_EVENT, eventUeiStr);
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
-		} finally {
-			// shutdown client
-			if (jestClient !=null )   jestClient.shutdownClient();
-			if (eventToIndex !=null ) eventToIndex.close();
-		}
 		LOG.debug("***************** end of test jestClientRawEventToESTest");
 	}
 

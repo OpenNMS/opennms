@@ -137,7 +137,7 @@
             <repository>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}/xml/features</repository>
 
             <!-- Jest Feature -->
-            <repository>mvn:org.opennms.features/opennms-jest/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features.jest/opennms-jest/${project.version}/xml/features</repository>
 
             <!-- Flow Integration -->
             <repository>mvn:org.opennms.features/flows/${project.version}/xml/features</repository>
@@ -739,7 +739,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
+      <groupId>org.opennms.features.jest</groupId>
       <artifactId>opennms-jest</artifactId>
       <version>${project.version}</version>
       <type>pom</type>

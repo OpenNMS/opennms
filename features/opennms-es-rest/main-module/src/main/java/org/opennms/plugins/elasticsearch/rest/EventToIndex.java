@@ -36,6 +36,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -159,9 +160,7 @@ public class EventToIndex implements AutoCloseable {
 
 	private NodeCache nodeCache=null;
 
-	private JestClient jestClient = null;
-
-	private RestClientFactory restClientFactory = null;
+	private final JestClient jestClient;
 
 	private int threads = DEFAULT_NUMBER_OF_THREADS;
 
@@ -180,6 +179,10 @@ public class EventToIndex implements AutoCloseable {
 		// Throttle incoming tasks by running them on the caller thread
 		new ThreadPoolExecutor.CallerRunsPolicy()
 	);
+
+	public EventToIndex(JestClient jestClient) {
+		this.jestClient = Objects.requireNonNull(jestClient);
+	}
 
 	private IndexNameFunction indexNameFunction = new IndexNameFunction();
 
@@ -230,14 +233,6 @@ public class EventToIndex implements AutoCloseable {
 		this.nodeCache = cache;
 	}
 
-	public RestClientFactory getRestClientFactory() {
-		return restClientFactory;
-	}
-
-	public void setRestClientFactory(RestClientFactory restClientFactory) {
-		this.restClientFactory = restClientFactory;
-	}
-
 	public boolean getArchiveAlarms() {
 		return archiveAlarms;
 	}
@@ -284,34 +279,11 @@ public class EventToIndex implements AutoCloseable {
 	 * @return
 	 */
 	private JestClient getJestClient(){
-		if (jestClient == null) {
-			synchronized(this){
-				if (jestClient == null){
-					if (restClientFactory == null) throw new RuntimeException("JestClientFactory must be set");
-					jestClient = restClientFactory.getJestClient();
-				}
-			}
-		}
 		return jestClient;
-	}
-
-	private void closeJestClient() {
-		if (jestClient != null) {
-			synchronized(this){
-				try{
-					jestClient.shutdownClient();
-				} catch (Throwable e) {
-					LOG.warn("Unexpected exception while shutting down REST client", e);
-				}
-				jestClient = null;
-			}
-		}
 	}
 
 	@Override
 	public void close(){
-		closeJestClient();
-
 		// Shutdown the thread pool
 		executor.shutdown();
 	}
@@ -432,8 +404,6 @@ public class EventToIndex implements AutoCloseable {
 					}
 				} catch (Throwable ex){
 					LOG.error("Unexpected problem sending event to Elasticsearch", ex);
-					// Shutdown the ES client, it will be recreated as needed
-					closeJestClient();
 				}
 			}
 		}
@@ -503,7 +473,7 @@ public class EventToIndex implements AutoCloseable {
 	 * <li>Indexing all other events</li>
 	 * </ul>
 	 * 
-	 * @param event
+	 * @param events
 	 */
 	private List<BulkableAction<DocumentResult>> convertEventsToEsActions(List<Event> events) {
 

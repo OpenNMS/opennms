@@ -67,10 +67,10 @@
       <version>${json-simpleVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
+      <groupId>org.opennms.features.jest</groupId>
       <artifactId>opennms-jest</artifactId>
-      <type>pom</type>
       <version>${project.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
   </dependencies>

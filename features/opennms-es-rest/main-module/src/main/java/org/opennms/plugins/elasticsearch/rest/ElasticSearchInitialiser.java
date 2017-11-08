@@ -28,10 +28,6 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestResult;
-import io.searchbox.indices.template.PutTemplate;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -39,6 +35,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.json.simple.JSONObject;
@@ -46,6 +43,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
+import io.searchbox.indices.template.PutTemplate;
 
 /** 
  * Initialises Elasticsearch by sending a template
@@ -77,9 +78,11 @@ public class ElasticSearchInitialiser {
 
 	private Map<String,StringBuffer> loadedFiles= new HashMap<String, StringBuffer>();
 
-	private RestClientFactory restClientFactory=null;
+	private final JestClient jestClient;
 
-	private JestClient jestClient = null;
+	public ElasticSearchInitialiser(JestClient jestClient) {
+		this.jestClient = Objects.requireNonNull(jestClient);
+	}
 
 	public long getRetryTimer() {
 		return retryTimer;
@@ -96,14 +99,6 @@ public class ElasticSearchInitialiser {
 	public void setTemplateFiles(Map<String, String> templateFiles) {
 		templateFilesMap.clear();
 		templateFilesMap.putAll(templateFiles);
-	}
-
-	public RestClientFactory getRestClientFactory() {
-		return restClientFactory;
-	}
-
-	public void setRestClientFactory(RestClientFactory restClientFactory) {
-		this.restClientFactory = restClientFactory;
 	}
 
 
@@ -160,35 +155,10 @@ public class ElasticSearchInitialiser {
 
 	}
 
-
-	/**
-	 * returns a singleton jest client from factory for use by this class
-	 * @return
-	 */
-	private JestClient getJestClient(){
-		if (jestClient==null) {
-			synchronized(this){
-				if (jestClient==null){
-					if (restClientFactory==null) throw new RuntimeException("JestClientFactory must be set");
-					jestClient= restClientFactory.getJestClient();
-				}
-			}
-		}
-		return jestClient;
-	}
-
 	public void destroy(){
-
 		// signal initialiser thread to stop if still running
 		initialiserIsRunning.set(false);
 		esInitialiserThread.interrupt();
-
-		// shutdown jest client
-		if (jestClient!=null)
-			try{
-				jestClient.shutdownClient();
-			}catch (Exception e){}
-		jestClient=null;
 	}
 
 	/*
@@ -257,9 +227,8 @@ public class ElasticSearchInitialiser {
 		}
 	}
 
-
-
-
-
+	private JestClient getJestClient() {
+		return jestClient;
+	}
 
 }

@@ -79,10 +79,10 @@
     <property name="retries" value="${retries}" />
     <property name="socketTimeout" value="${socketTimeout}" />
   </bean>
-
+  <bean id="restClient" factory-ref="restClientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 
   <bean id="eventToIndex" class="org.opennms.plugins.elasticsearch.rest.EventToIndex" destroy-method="close">
-    <property name="restClientFactory" ref="restClientFactory" />
+    <argument ref="restClient" />
     <property name="nodeCache" ref="nodeDataCache" />
     <property name="indexNameFunction" ref="indexNameFunction" />
     <property name="logEventDescription" value="${logEventDescription}" />
@@ -100,7 +100,7 @@
   </bean>
 
   <bean id="elasticSearchInitialiser" class="org.opennms.plugins.elasticsearch.rest.ElasticSearchInitialiser" init-method="init" destroy-method="destroy">
-    <property name="restClientFactory" ref="restClientFactory" />
+    <argument ref="restClient" />
     <property name="templateFiles">
       <!-- map of template files to load: key = template name (must be lower case) value= json file to load -->
       <map>

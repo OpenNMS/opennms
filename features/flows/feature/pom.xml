@@ -42,7 +42,7 @@
       <version>${guavaVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
+      <groupId>org.opennms.features.jest</groupId>
       <artifactId>opennms-jest</artifactId>
       <version>${project.version}</version>
       <type>pom</type>

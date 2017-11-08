@@ -23,14 +23,14 @@
     </cm:property-placeholder>
 
     <!-- Proxy for the JestClientFactory -->
-    <bean id="clientFactory" class="org.opennms.netmgt.flows.elastic.ClientFactory" destroy-method="destroy">
+    <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
         <argument value="${elasticUrl}"/>
         <argument value="${elasticUser}"/>
         <argument value="${elasticPassword}"/>
     </bean>
 
     <!-- Actually creates the client, but only once -->
-    <bean id="jestClient" factory-ref="clientFactory" factory-method="getClient"/>
+    <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 
     <bean id="indexStrategy" class="org.opennms.netmgt.flows.elastic.IndexStrategyFactory" factory-method="createIndexStrategy">
         <argument value="${elasticIndexStrategy}"/>
