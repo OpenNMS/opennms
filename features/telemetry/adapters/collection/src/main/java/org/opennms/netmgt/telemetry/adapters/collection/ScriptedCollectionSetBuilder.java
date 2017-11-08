@@ -55,23 +55,23 @@ import java.io.IOException;
  */
 public class ScriptedCollectionSetBuilder {
 
-    private String script;
-
     private CompiledScript compiledScript;
 
+    public ScriptedCollectionSetBuilder(File script) throws IOException, ScriptException {
+        this(script, new ScriptEngineManager());
+    }
+
     public ScriptedCollectionSetBuilder(File script, BundleContext bundleContext) throws IOException, ScriptException {
+        this(script, new OSGiScriptEngineManager(bundleContext));
+    }
+
+    public ScriptedCollectionSetBuilder(File script, ScriptEngineManager manager) throws IOException, ScriptException {
         if (!script.canRead()) {
             throw new IllegalStateException("Cannot read script at '" + script + "'.");
         }
 
         final String ext = Files.getFileExtension(script.getAbsolutePath());
 
-        ScriptEngineManager manager;
-        if (bundleContext != null) {
-            manager = new OSGiScriptEngineManager(bundleContext);
-        } else {
-            manager = new ScriptEngineManager();
-        }
         final ScriptEngine engine = manager.getEngineByExtension(ext);
         if (engine == null) {
             throw new IllegalStateException("No engine found for extension: " + ext);

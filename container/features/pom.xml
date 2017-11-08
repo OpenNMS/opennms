@@ -235,6 +235,7 @@
             <feature>opennms-activemq-event-forwarder</feature>
             <feature>opennms-activemq-event-receiver</feature>
             -->
+            <feature>opennms-bundle-refresher</feature>
             <feature>opennms-collection-api</feature>
             <feature>opennms-collection-commands</feature>
             <feature>opennms-collection-persistence-rrd</feature>
@@ -763,6 +764,12 @@
       <artifactId>org.opennms.features.telemetry.minion</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-components</groupId>
+      <artifactId>bundle-refresher</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

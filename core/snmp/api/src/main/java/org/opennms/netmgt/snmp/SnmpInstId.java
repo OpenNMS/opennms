@@ -70,7 +70,7 @@ public class SnmpInstId extends SnmpObjId {
 
     public int toInt() {
         if (this.length() != 1)
-            throw new IllegalArgumentException("Cannot convert "+this+" to an int");
+            throw new IllegalStateException("Cannot convert "+this+" to an int");
         
         return getLastSubId();
     }

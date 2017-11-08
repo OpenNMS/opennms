@@ -29,7 +29,6 @@
 package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -63,7 +62,7 @@ public class SnmpAgentConfigTest {
      * are at least equal.
      */
     @Test
-    public void testProtocolConfiguration() throws UnknownHostException {
+    public void testProtocolConfiguration() throws Exception {
         SnmpAgentConfig config = new SnmpAgentConfig();
         config.setAddress(InetAddress.getByName("127.0.0.1"));
         config.setProxyFor(InetAddress.getByName("127.0.0.1"));
@@ -124,7 +123,7 @@ public class SnmpAgentConfigTest {
     }
 
     @Test
-    public void canConvertToAndFromProtocolConfigString() {
+    public void canConvertToAndFromProtocolConfigString() throws Exception {
         SnmpAgentConfig config = new SnmpAgentConfig();
         String protocolConfigString = "{\"snmp\":{\"address\":null,\"proxyFor\":null,\"port\":\"161\",\"timeout\":\"3000\",\"retries\":\"0\",\"max-vars-per-pdu\":\"10\",\"max-repetitions\":\"2\",\"max-request-size\":\"65535\",\"version\":\"1\",\"security-level\":\"1\",\"security-name\":\"opennmsUser\",\"auth-passphrase\":\"0p3nNMSv3\",\"auth-protocol\":\"MD5\",\"priv-passphrase\":\"0p3nNMSv3\",\"priv-protocol\":\"DES\",\"context-name\":null,\"engine-id\":null,\"context-engine-id\":null,\"enterprise-id\":null,\"read-community\":\"public\",\"write-community\":\"private\"}}";
         Assert.assertEquals(protocolConfigString, config.toProtocolConfigString());

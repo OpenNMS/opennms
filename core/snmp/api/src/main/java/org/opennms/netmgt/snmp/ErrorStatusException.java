@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.snmp;
 
-public class ErrorStatusException extends IllegalStateException {
+public class ErrorStatusException extends SnmpException {
     private static final long serialVersionUID = 1L;
 
     public ErrorStatusException(final ErrorStatus status) {
