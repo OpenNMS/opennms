@@ -44,7 +44,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.telemetry.listeners</groupId>
-      <artifactId>org.opennms.features.telemetry.listeners.ipfix</artifactId>
+      <artifactId>org.opennms.features.telemetry.listeners.flow</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
