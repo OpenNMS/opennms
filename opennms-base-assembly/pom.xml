@@ -729,6 +729,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.aws-sqs-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>

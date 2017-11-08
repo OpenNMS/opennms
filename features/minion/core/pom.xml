@@ -15,6 +15,7 @@
         <module>api</module>
         <module>features</module>
         <module>impl</module>
+        <module>jms</module>
         <module>repository</module>
         <module>shell</module>
     </modules>

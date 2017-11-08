@@ -95,7 +95,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
     }
 
     @Override
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
@@ -185,7 +185,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
         }
 
         @Override
-        public boolean processErrors(int errorStatus, int errorIndex) {
+        public boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
             
             /*
              * errorIndex is varBind index (1 based array of vars)

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.minion.core.impl;
+package org.opennms.minion.jms.impl;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.opennms.features.scv.api.Credentials;

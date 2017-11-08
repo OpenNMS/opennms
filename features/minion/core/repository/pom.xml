@@ -37,6 +37,7 @@
                             <features>
                                 <!-- Minion Core Features -->
                                 <feature>minion-core</feature>
+                                <feature>minion-jms</feature>
                                 <feature>minion-core-shell</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
