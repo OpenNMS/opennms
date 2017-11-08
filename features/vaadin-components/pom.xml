@@ -15,6 +15,7 @@
 
   <packaging>pom</packaging>
   <modules>
+    <module>bundle-refresher</module>
     <module>core</module>
     <module>graph</module>
     <module>extender-service</module>
