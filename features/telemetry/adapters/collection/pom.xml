@@ -57,6 +57,7 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.osgi-jsr223</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
