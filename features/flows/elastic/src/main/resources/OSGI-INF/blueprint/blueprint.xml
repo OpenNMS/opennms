@@ -37,11 +37,16 @@
     </bean>
 
     <!-- The repository -->
-    <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository" init-method="init">
+    <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository">
         <argument ref="jestClient"/>
         <argument ref="indexStrategy"/>
     </bean>
-    <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="elasticFlowRepository">
+    <!-- Proxy it, to ensure initialization on first call of any method -->
+    <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">
+        <argument ref="elasticFlowRepository" />
+        <argument ref="jestClient" />
+    </bean>
+    <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>
