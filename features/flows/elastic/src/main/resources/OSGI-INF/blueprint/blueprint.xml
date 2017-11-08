@@ -23,7 +23,7 @@
     </cm:property-placeholder>
 
     <!-- Proxy for the JestClientFactory -->
-    <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.JestClientFactory">
+    <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
         <argument value="${elasticUrl}"/>
         <argument value="${elasticUser}"/>
         <argument value="${elasticPassword}"/>
