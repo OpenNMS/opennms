@@ -52,6 +52,10 @@ class OnmsJestClient implements JestClient {
 
     private final int m_timeout;
 
+    public OnmsJestClient(JestClient delegate) {
+        this(delegate, 0, 0);
+    }
+
     public OnmsJestClient(JestClient delegate, int timeout, int retries) {
         m_delegate = delegate;
         m_timeout = timeout;
@@ -63,22 +67,32 @@ class OnmsJestClient implements JestClient {
      */
     @Override
     public <T extends JestResult> T execute(Action<T> clientRequest) throws IOException {
+        // if there are no retries or no timeout, there is no need to use the TimeoutTracker
+        if (m_retries == 0 && m_timeout == 0) {
+            return m_delegate.execute(clientRequest);
+        }
+
         // 'strict-timeout' will enforce that the timeout time elapses between subsequent
         // attempts even if the operation returns more quickly than the timeout
-        Map<String,Object> params = new HashMap<>();
+        final Map<String,Object> params = new HashMap<>();
         params.put("strict-timeout", Boolean.TRUE);
 
-        TimeoutTracker timeoutTracker = new TimeoutTracker(params, m_retries, m_timeout);
-
+        final TimeoutTracker timeoutTracker = new TimeoutTracker(params, m_retries, m_timeout);
         for (timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
             timeoutTracker.startAttempt();
             try {
                 return m_delegate.execute(clientRequest);
             } catch (Exception e) {
-                LOG.warn("Exception while trying to execute REST operation (attempt {})", timeoutTracker.getAttempt() + 1, e);
+                if (timeoutTracker.shouldRetry()) {
+                    LOG.warn("Exception while trying to execute REST operation (attempt {}/{}). Retrying.", timeoutTracker.getAttempt() + 1, m_retries + 1, e);
+                } else {
+                    throw e; // we are out of retries, forward exception
+                }
             }
         }
-        return null;
+        // In order to proper handle error cases, we must bail in this case, as m_delegate was never invoked.
+        // In theory this should never happen.
+        throw new IllegalStateException("Execution did not provide a JestResult. This should not have happened.");
     }
 
     @Override
