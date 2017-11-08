@@ -29,15 +29,22 @@
 package org.opennms.plugins.elasticsearch.rest;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.http.HttpHost;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
@@ -51,6 +58,8 @@ import io.searchbox.client.config.HttpClientConfig;
  * {@link JestClient}.
  */
 public class RestClientFactory {
+
+	private static final Logger LOG = LoggerFactory.getLogger(RestClientFactory.class);
 
 	private final JestClientFactory factory;
 	private HttpClientConfig config;
@@ -122,13 +131,23 @@ public class RestClientFactory {
 	 * @param esusername Optional HTTP username
 	 * @param espassword Optional HTTP password
 	 */
-	public RestClientFactory(String elasticSearchURL, String esusername, String espassword ){
+	public RestClientFactory(String elasticSearchURL, String esusername, String espassword ) throws MalformedURLException {
 
 		// If multiple URLs are specified in a comma-separated string, split them up
-		config = new HttpClientConfig.Builder(Arrays.asList(elasticSearchURL.split(",")))
-				.multiThreaded(true)
-				.defaultCredentials(esusername, espassword)
-				.build();
+		final List<String> targetHosts = Arrays.asList(elasticSearchURL.split(","));
+		final HttpClientConfig.Builder configBuilder = new HttpClientConfig.Builder(targetHosts).multiThreaded(true);
+		if (!Strings.isNullOrEmpty(esusername) && !Strings.isNullOrEmpty(espassword)) {
+			final URL targetUrl = new URL(targetHosts.get(0));
+
+			if (targetHosts.size() > 1) {
+				LOG.warn("Credentials have been defined, but multiple target hosts were found. " +
+						"Each host will use the same credentials. Preemptive auth is only enabled for host {}", targetHosts.get(0));
+			}
+
+			configBuilder.defaultCredentials(esusername, espassword);
+			configBuilder.setPreemptiveAuth(new HttpHost(targetUrl.getHost(), targetUrl.getPort(), targetUrl.getProtocol()));
+		}
+		config = configBuilder.build();
 
 		factory = new JestClientFactory();
 
