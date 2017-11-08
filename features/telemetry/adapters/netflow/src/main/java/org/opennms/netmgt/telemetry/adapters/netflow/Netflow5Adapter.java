@@ -125,7 +125,7 @@ public class Netflow5Adapter implements Adapter {
         // TODO MVR make this configurable, when it is actually an osgi-module
         nodeInfoCache = CacheBuilder.newBuilder()
                 .maximumSize(1000)
-                .expireAfterAccess(300, TimeUnit.SECONDS) // 5 Minutes
+                .expireAfterWrite(300, TimeUnit.SECONDS) // 5 Minutes
                 .build(new CacheLoader<NodeInfoKey, Optional<NodeInfo>>() {
                     @Override
                     public Optional<NodeInfo> load(NodeInfoKey key) throws Exception {
