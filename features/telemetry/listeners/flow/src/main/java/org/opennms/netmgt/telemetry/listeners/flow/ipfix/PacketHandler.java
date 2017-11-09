@@ -35,8 +35,6 @@ import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Packet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.protobuf.Timestamp;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -55,9 +53,6 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
 
         final Flows.Flow flow = Flows.Flow.newBuilder()
                 .setSourceId(packet.header.observationDomainId)
-                .setTimestamp(Timestamp.newBuilder()
-                        .setSeconds(packet.header.exportTime)
-                        .build())
                 .build();
 
 //        final TelemetryMessage msg = new TelemetryMessage(ctx, buffer);

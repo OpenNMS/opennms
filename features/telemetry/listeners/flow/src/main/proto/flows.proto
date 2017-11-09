@@ -1,8 +1,6 @@
-syntax = "proto3";
+syntax = "proto2";
 
 option java_package = "org.opennms.netmgt.telemetry.listeners.flow.dto";
-
-import "google/protobuf/timestamp.proto";
 
 message Entry {
     enum Type {
@@ -10,12 +8,13 @@ message Entry {
         DATA = 1;
     }
 
-    string key = 1;
-    Type type = 2;
+    required string key = 1;
+    required Type type = 2;
 
+    // TODO: Use extensions here?
     oneof value {
         bool bool = 100;
-        google.protobuf.Timestamp timestamp = 101;
+        fixed64 timestamp = 101;
         double float = 102;
         bytes ipv4_address = 103;
         bytes ipv6_address = 104;
@@ -28,8 +27,8 @@ message Entry {
 }
 
 message Flow {
-    fixed64 sourceId = 1;
-    google.protobuf.Timestamp timestamp = 2;
+    required fixed64 sourceId = 1;
+//    required fixed64 timestamp = 2;
 
     repeated Entry entries = 99;
 }
