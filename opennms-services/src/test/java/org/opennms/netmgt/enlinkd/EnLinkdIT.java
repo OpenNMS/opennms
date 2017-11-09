@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
@@ -284,7 +285,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test 
-    public void testLoadTopology() {
+    public void testLoadTopology() throws BridgeTopologyException {
         final OnmsMonitoringLocation location = new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         ABCTopology topology = new ABCTopology();
         OnmsNode lnodeA = topology.nodeA;
@@ -492,8 +493,8 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         SharedSegment deSegment = nodeDbd.getTopology().iterator().next();
         assertEquals(2,deSegment.getBridgePortsOnSegment().size());
         assertEquals(1,deSegment.getMacsOnSegment().size());
-        assertEquals(45,deSegment.getPortForBridge(nodeD.getId()).intValue());
-        assertEquals(54,deSegment.getPortForBridge(nodeE.getId()).intValue());
+        assertEquals(45,deSegment.getBridgePort(nodeD.getId()).getBridgePort().intValue());
+        assertEquals(54,deSegment.getBridgePort(nodeE.getId()).getBridgePort().intValue());
         assertTrue(deSegment.containsMac(topology.shar));
 
         System.err.println(nodeDbd.printTopology());
@@ -506,7 +507,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         SharedSegment kSegment = nodeKbd.getTopology().iterator().next();
         assertEquals(1,kSegment.getBridgePortsOnSegment().size());
         assertEquals(2,kSegment.getMacsOnSegment().size());
-        assertEquals(1099,kSegment.getPortForBridge(nodeK.getId()).intValue());
+        assertEquals(1099,kSegment.getBridgePort(nodeK.getId()).getBridgePort().intValue());
         assertTrue(kSegment.containsMac(topology.shar));
         assertTrue(kSegment.containsMac("1234567800aa"));
 
@@ -515,7 +516,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }    
     
     @Test
-    public void testDeleteBridgeC() {
+    public void testDeleteBridgeC() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("nodeA").setForeignSource("linkd").setForeignId("nodeA").setSysObjectId("0.0").setSysName("nodeA").setType(NodeType.ACTIVE);
@@ -615,7 +616,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test
-    public void testDeleteBridgeB() {
+    public void testDeleteBridgeB() throws BridgeTopologyException  {
         ABCTopology topology = new ABCTopology();
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("nodeA").setForeignSource("linkd").setForeignId("nodeA").setSysObjectId("0.0").setSysName("nodeA").setType(NodeType.ACTIVE);
@@ -715,7 +716,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test
-    public void testDeleteBridgeA() {
+    public void testDeleteBridgeA() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("nodeA").setForeignSource("linkd").setForeignId("nodeA").setSysObjectId("0.0").setSysName("nodeA").setType(NodeType.ACTIVE);

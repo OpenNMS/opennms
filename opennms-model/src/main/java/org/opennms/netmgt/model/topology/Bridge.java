@@ -33,10 +33,10 @@ import java.util.List;
 
 import org.opennms.netmgt.model.BridgeElement;
 
-public class Bridge {
+public class Bridge implements BridgeTopology {
     final Integer m_id;
     Integer m_rootPort;
-    boolean m_isRootBridge=false;
+    boolean m_isRootBridge;
     List<BridgeElement> m_elements = new ArrayList<BridgeElement>();
 
     public Bridge(Integer id) {
@@ -50,14 +50,16 @@ public class Bridge {
 
     public void setRootPort(Integer rootPort) {
         m_rootPort = rootPort;
+        m_isRootBridge = false;
     }
 
     public boolean isRootBridge() {
         return m_isRootBridge;
     }
 
-    public void setRootBridge(boolean isRootBridge) {
-        m_isRootBridge = isRootBridge;
+    public void setRootBridge() {
+        m_isRootBridge = true;
+        m_rootPort = null;
     }
 
     public Integer getId() {
@@ -105,16 +107,17 @@ public class Bridge {
     public void clearBridgeElement() {
     	m_elements.clear();
     }
-	public List<BridgeElement> getBridgeElements() {
-		return m_elements;
-	}
+
+    public List<BridgeElement> getBridgeElements() {
+        return m_elements;
+    }
 	
-	public boolean addBridgeElement(BridgeElement element) {
-		if (element.getNode().getId().intValue() == m_id.intValue()) {
-			m_elements.add(element);
-			return true;
-		}
-		return false;
-	}
+    public boolean addBridgeElement(BridgeElement element) {
+        if (element.getNode().getId().intValue() == m_id.intValue()) {
+            m_elements.add(element);
+            return true;
+        }
+        return false;
+    }
 
 }

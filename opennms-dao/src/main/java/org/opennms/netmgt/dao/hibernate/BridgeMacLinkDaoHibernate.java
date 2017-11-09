@@ -81,7 +81,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
         for (BridgeMacLink elem : find("from BridgeMacLink rec where rec.node.id = ? and rec.bridgeMacLinkLastPollTime < ?",
                                        nodeId, now)) {
-            delete(elem);
+            delete(elem); //HibernateOptimisticLockingFailureException NMS-9557
         }
     }
 

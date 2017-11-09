@@ -73,6 +73,7 @@ import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.topology.BridgeMacLinkHash;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -677,15 +678,19 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     public void store(BroadcastDomain domain, Date now) {
         for (SharedSegment segment : domain.getTopology()) {
             //FIXME why I can have a segment without a designated port?
-            if (!segment.hasDesignatedBridgeport())
-                continue;
-            for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
-                link.setBridgeBridgeLinkLastPollTime(new Date());
-                saveBridgeBridgeLink(link);
-            }
-            for (BridgeMacLink link : segment.getBridgeMacLinks()) {
-                link.setBridgeMacLinkLastPollTime(new Date());
-                saveBridgeMacLink(link);
+            try {
+                segment.getDesignatedPort();
+                for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
+                    link.setBridgeBridgeLinkLastPollTime(new Date());
+                    saveBridgeBridgeLink(link);
+                }
+                for (BridgeMacLink link : segment.getBridgeMacLinks()) {
+                    link.setBridgeMacLinkLastPollTime(new Date());
+                    saveBridgeMacLink(link);
+                }
+            } catch (BridgeTopologyException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
         

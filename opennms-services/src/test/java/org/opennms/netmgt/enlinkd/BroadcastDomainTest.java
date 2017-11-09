@@ -29,7 +29,6 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,6 +42,7 @@ import org.opennms.netmgt.config.EnhancedLinkdConfigManager;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.topology.Bridge;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 public class BroadcastDomainTest extends EnLinkdTestHelper {
@@ -178,7 +178,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test 
-    public void testTwoBridgeWithBackbonePorts() {
+    public void testTwoBridgeWithBackbonePorts() throws BridgeTopologyException {
         TwoBridgeWithBackbonePortsTopology topology = new TwoBridgeWithBackbonePortsTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -197,7 +197,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testCleanTopology() {
+    public void testCleanTopology() throws BridgeTopologyException {
         TwoBridgeWithBackbonePortsTopology topology = new TwoBridgeWithBackbonePortsTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -243,7 +243,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
     
     @Test 
-    public void testCleanTopologyRoot() {
+    public void testCleanTopologyRoot() throws BridgeTopologyException {
         TwoBridgeWithBackbonePortsTopology topology = new TwoBridgeWithBackbonePortsTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -289,7 +289,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test 
-    public void testTwoBridgeWithBackbonePortsUsingBridgeAddressInBft() {
+    public void testTwoBridgeWithBackbonePortsUsingBridgeAddressInBft() throws BridgeTopologyException {
         TwoBridgeWithBackbonePortsTopologyWithBridgeinBft topology = new TwoBridgeWithBackbonePortsTopologyWithBridgeinBft();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -308,7 +308,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test 
-    public void testTwoBridgeOneCalculation() {
+    public void testTwoBridgeOneCalculation() throws BridgeTopologyException {
 
         TwoNodeTopology topology = new TwoNodeTopology();
 
@@ -329,7 +329,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     
 
     @Test 
-    public void testTwoBridgeTwoCalculation() {
+    public void testTwoBridgeTwoCalculation() throws BridgeTopologyException {
 
         TwoNodeTopology topology = new TwoNodeTopology();
 
@@ -355,7 +355,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test 
-    public void testTwoBridgeTwoCalculationReverse() {
+    public void testTwoBridgeTwoCalculationReverse() throws BridgeTopologyException {
 
         TwoNodeTopology topology = new TwoNodeTopology();
         
@@ -381,7 +381,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testAB() {
+    public void testAB() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -401,7 +401,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testBA() {
+    public void testBA() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -419,7 +419,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testAC() {
+    public void testAC() throws BridgeTopologyException {
 
         ABCTopology topology = new ABCTopology();
 
@@ -438,7 +438,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testCA() {
+    public void testCA() throws BridgeTopologyException {
 
         ABCTopology topology = new ABCTopology();
 
@@ -458,7 +458,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testBC() {
+    public void testBC() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -476,7 +476,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testCB() {
+    public void testCB() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -494,7 +494,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testABC() {
+    public void testABC() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -515,7 +515,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testAThenBC() {
+    public void testAThenBC() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -538,7 +538,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testACThenB() {
+    public void testACThenB() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -564,7 +564,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testBAThenC() {
+    public void testBAThenC() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -590,7 +590,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testBThenCA() {
+    public void testBThenCA() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -613,7 +613,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testCThenAB() {
+    public void testCThenAB() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -637,7 +637,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testCBThenA() {
+    public void testCBThenA() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -663,7 +663,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testDE() {
+    public void testDE() throws BridgeTopologyException {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -681,7 +681,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testDF() {
+    public void testDF() throws BridgeTopologyException {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -699,7 +699,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testEF() {
+    public void testEF() throws BridgeTopologyException {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -717,7 +717,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testDG() {
+    public void testDG() throws BridgeTopologyException {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -735,7 +735,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testDEF() {
+    public void testDEF() throws BridgeTopologyException {
 
         DEFGHILTopology topology = new DEFGHILTopology();
 
@@ -757,7 +757,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testDFThenE() {
+    public void testDFThenE() throws BridgeTopologyException {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -783,7 +783,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test 
-    public void testDEFG() {
+    public void testDEFG() throws BridgeTopologyException {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -806,7 +806,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test 
-    public void testDEFGHIL() {
+    public void testDEFGHIL() throws BridgeTopologyException {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -836,7 +836,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
 
     @Test 
-    public void testHierarchySetUp() {
+    public void testHierarchySetUp() throws BridgeTopologyException {
         DEFGHILTopology topology = new DEFGHILTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -880,7 +880,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testFiveSwitchTopologyBCADE() {
+    public void testFiveSwitchTopologyBCADE() throws BridgeTopologyException {
 
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
@@ -921,7 +921,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testFiveSwitchTopologyBCAED() {
+    public void testFiveSwitchTopologyBCAED() throws BridgeTopologyException {
 
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
@@ -963,7 +963,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
 
     @Test
-    public void testFiveSwitchTopologyEDCBA() {
+    public void testFiveSwitchTopologyEDCBA() throws BridgeTopologyException {
 
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
@@ -1006,7 +1006,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testFiveSwitchTopologyBEDCA() {
+    public void testFiveSwitchTopologyBEDCA() throws BridgeTopologyException {
 
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
@@ -1048,7 +1048,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testFiveSwitchTopologyEDCAB() {
+    public void testFiveSwitchTopologyEDCAB() throws BridgeTopologyException {
 
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
@@ -1092,7 +1092,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testFiveSwitchTopologyBCADEBD() {
+    public void testFiveSwitchTopologyBCADEBD() throws BridgeTopologyException {
 
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
@@ -1144,7 +1144,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
     
     @Test
-    public void testFiveSwitchTopologyBEDCADBAEC() {
+    public void testFiveSwitchTopologyBEDCADBAEC() throws BridgeTopologyException {
 
         FiveSwitchTopology topology = new FiveSwitchTopology();
 
@@ -1207,7 +1207,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     
     
     @Test
-    public void testFiveSwitchTopologyBEDCABEDAC() {
+    public void testFiveSwitchTopologyBEDCABEDAC() throws BridgeTopologyException {
 
         FiveSwitchTopology topology = new FiveSwitchTopology();
 

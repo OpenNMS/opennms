@@ -35,9 +35,9 @@ import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 
-public class BridgePort {
+public class BridgePort implements BridgeTopology {
 
-    private OnmsNode m_node;
+    private Integer m_node;
     private Integer m_bridgePort;
     private Integer m_bridgePortIfIndex;
     private String  m_bridgePortIfName;
@@ -47,7 +47,9 @@ public class BridgePort {
 
     public static BridgeMacLink getBridgeMacLink(BridgePort bp, String mac) {
         BridgeMacLink maclink = new BridgeMacLink();
-        maclink.setNode(bp.getNode());
+        OnmsNode node = new OnmsNode();
+        node.setId(bp.getNodeId());
+        maclink.setNode(node);
         maclink.setBridgePort(bp.getBridgePort());
         maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
         maclink.setBridgePortIfName(bp.getBridgePortIfName());
@@ -61,7 +63,7 @@ public class BridgePort {
 
     public static BridgePort getBridgeFromBridgeMacLink(BridgeMacLink link) {
         BridgePort bp = new BridgePort();
-        bp.setNode(link.getNode());
+        bp.setNodeId(link.getNode().getId());
         bp.setBridgePort(link.getBridgePort());
         bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
         bp.setBridgePortIfName(link.getBridgePortIfName());
@@ -73,7 +75,7 @@ public class BridgePort {
 
     public static BridgePort getFromBridgeBridgeLink(BridgeBridgeLink link) {
         BridgePort bp = new BridgePort();
-        bp.setNode(link.getNode());
+        bp.setNodeId(link.getNode().getId());
         bp.setBridgePort(link.getBridgePort());
         bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
         bp.setBridgePortIfName(link.getBridgePortIfName());
@@ -85,7 +87,7 @@ public class BridgePort {
 
     public static BridgePort getFromDesignatedBridgeBridgeLink(BridgeBridgeLink link) {
         BridgePort bp = new BridgePort();
-        bp.setNode(link.getDesignatedNode());
+        bp.setNodeId(link.getDesignatedNode().getId());
         bp.setBridgePort(link.getDesignatedPort());
         bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
         bp.setBridgePortIfName(link.getDesignatedPortIfName());
@@ -95,13 +97,15 @@ public class BridgePort {
         return bp;
     }
 
+    
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result
                 + ((m_bridgePort == null) ? 0 : m_bridgePort.hashCode());
-        result = prime * result + ((m_node == null) ? 0 : m_node.getId().hashCode());
+        result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
         return result;
     }
 
@@ -122,15 +126,16 @@ public class BridgePort {
         if (m_node == null) {
             if (other.m_node != null)
                 return false;
-        } else if (!m_node.getId().equals(other.m_node.getId()))
+        } else if (!m_node.equals(other.m_node))
             return false;
         return true;
     }
 
-    public OnmsNode getNode() {
+    public Integer getNodeId() {
         return m_node;
     }
-    public void setNode(OnmsNode node) {
+
+    public void setNodeId(Integer node) {
         m_node = node;
     }
     public Integer getBridgePort() {
@@ -175,7 +180,7 @@ public class BridgePort {
         StringBuffer strbfr = new StringBuffer();
 
         strbfr.append("bridge port:[nodeid:["); 
-        strbfr.append(getNode().getId());
+        strbfr.append(getNodeId());
         strbfr.append("], bridgeport:");
         strbfr.append(getBridgePort());
         strbfr.append("]\n");

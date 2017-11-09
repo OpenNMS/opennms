@@ -45,6 +45,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
@@ -386,7 +387,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         // must be calculated the topology for nodeid...
         synchronized (domain) {
             LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
-            domain.clearTopologyForBridge(nodeid);
+            try {
+                domain.clearTopologyForBridge(nodeid);
+            } catch (BridgeTopologyException e) {
+                LOG.error("deleteNode: node: {}, {}", nodeid, e.printTopology(),e);
+            }
             LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
             LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
             m_queryMgr.store(domain,now);
