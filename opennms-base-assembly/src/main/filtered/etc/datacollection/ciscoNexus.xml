@@ -1,79 +1,79 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Cisco Nexus">
    <resourceType name="ciscoNXSensorOtherUnknown" label="Cisco Nexus Sensor (other / unknown)" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and ((#entSensorType == 1) or (#entSensorType == 2))"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and ((#entSensorType == '1') or (#entSensorType == '2'))"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorVAC" label="Cisco Nexus AC Voltage Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 3)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '3')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorVDC" label="Cisco Nexus DC Voltage Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 4)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '4')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorAmp" label="Cisco Nexus Amperage Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 5)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '5')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorWatt" label="Cisco Nexus Wattage Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 6)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '6')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorHz" label="Cisco Nexus Frequency Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 7)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '7')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorCelsius" label="Cisco Nexus Temperature Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 8)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '8')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorPctRH" label="Cisco Nexus Humidity Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 9)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '9')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorRPM" label="Cisco Nexus Rotational Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 10)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '10')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorCMM" label="Cisco Nexus Flow Rate Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 11)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '11')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorTruth" label="Cisco Nexus Truth Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 12)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '12')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorSpecial" label="Cisco Nexus Special Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 13)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '13')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="ciscoNXSensorDBm" label="Cisco Nexus Transceiver Power Sensor" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 14)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == '14')"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
