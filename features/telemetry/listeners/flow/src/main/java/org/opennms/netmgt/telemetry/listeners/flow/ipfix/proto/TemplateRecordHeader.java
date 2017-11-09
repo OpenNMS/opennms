@@ -54,12 +54,8 @@ public final class TemplateRecordHeader {
         this.fieldCount = uint16(buffer);
 
         // Since Template IDs are used as Set IDs in the Sets they describe
-        if (this.templateId <= 255) {
+        if (this.templateId <= 255 && this.templateId != SetHeader.TEMPLATE_SET_ID) {
             throw new InvalidPacketException("Invalid template ID: %d", this.templateId);
-        }
-
-        if (this.fieldCount <= 0) {
-            throw new InvalidPacketException("Empty template");
         }
     }
 

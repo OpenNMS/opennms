@@ -64,7 +64,7 @@ public final class SetHeader {
 
         // The Set ID values of 0 and 1 are not used, for historical reasons [RFC3954], values from 4 to 255 are
         // reserved for future use.
-        if (this.setId < 256 && this.setId != 2 && this.setId != 3) {
+        if (this.setId < 256 && this.setId != TEMPLATE_SET_ID && this.setId != OPTIONS_TEMPLATE_SET_ID) {
             throw new InvalidPacketException("Invalid set ID: %d", this.setId);
         }
     }
