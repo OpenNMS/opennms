@@ -59,7 +59,7 @@ public class ElasticFlowRepositoryInitializer {
         this.client = Objects.requireNonNull(client);
     }
 
-    public void initialize() {
+    public synchronized void initialize() {
         while(!initialized && !Thread.interrupted()) {
             try {
                 LOG.debug("ElasticFlowRepository is not initialized. Initializing...");
@@ -77,6 +77,10 @@ public class ElasticFlowRepositoryInitializer {
         }
     }
 
+    public synchronized boolean isInitialized() {
+        return initialized;
+    }
+    
     private void waitBeforeRetrying(long cooldown) {
         try {
             Thread.sleep(cooldown);
@@ -95,10 +99,6 @@ public class ElasticFlowRepositoryInitializer {
             // In case the template could not be created, we bail
             throw new IllegalStateException("Template '" + FLOW_TEMPLATE_NAME + "' could not be persisted. Reason: " + result.getErrorMessage());
         }
-    }
-
-    public boolean isInitialized() {
-        return initialized;
     }
 
     private String getTemplate() throws IOException {
