@@ -14,5 +14,7 @@
     <module>api</module>
     <module>collection</module>
     <module>jti</module>
+    <module>registry</module>
+    <module>factory</module>
   </modules>
 </project>

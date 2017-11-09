@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.features.telemetry.adapters.registry.api;
 
-import java.net.InetAddress;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.Map;
 
-public interface InterfaceToNodeCache {
+import org.opennms.netmgt.telemetry.adapters.api.Adapter;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
 
-	void dataSourceSync();
+public interface TelemetryAdapterRegistry {
 
-	Iterable<Integer> getNodeId(String location, InetAddress ipAddr);
-
-	boolean setNodeId(String location, InetAddress ipAddr, int nodeId);
-
-	boolean removeNodeId(String location, InetAddress ipAddr, int nodeId);
-
-	int size();
-
-	/**
-	 * Should only be used for testing.
-	 */
-	void clear();
-
-	Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr);
+    Adapter getAdapter(String className, Protocol protocol, Map<String, String> properties);
 
 }

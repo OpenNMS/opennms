@@ -52,5 +52,10 @@
       <artifactId>groovy-all</artifactId>
       <version>${groovyVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.osgi-jsr223</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

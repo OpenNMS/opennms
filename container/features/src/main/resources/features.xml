@@ -1102,7 +1102,16 @@
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-telemetry-jti" description="OpenNMS :: Telemetry :: JTI" version="${project.version}">
+      <feature>opennms-collection-api</feature>
+      <feature version="${guavaVersion}">guava</feature>
+      <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.collection/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.jti/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-bundle-refresher" description="OpenNMS :: Vaadin-Theme Bundle Refresher">
         <bundle start-level="100">mvn:org.opennms.features.vaadin-components/bundle-refresher/${project.version}</bundle>
     </feature>
+    
 </features>

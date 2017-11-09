@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>org.opennms.features.telemetry</groupId>
-    <artifactId>org.opennms.features.telemetry.adapters</artifactId>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.features</artifactId>
     <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.telemetry.adapters</groupId>
-  <artifactId>org.opennms.features.telemetry.adapters.jti</artifactId>
-  <name>OpenNMS :: Features :: Telemetry :: Adapters :: JTI</name>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>org.opennms.features.osgi-jsr223</artifactId>
+  <name>OpenNMS :: Features :: OSGi JSR223</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -27,20 +27,6 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.collection</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.factory</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>

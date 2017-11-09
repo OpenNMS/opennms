@@ -31,7 +31,7 @@ package org.opennms.netmgt.telemetry.daemon;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.config.model.Protocol;
 import org.opennms.netmgt.telemetry.ipc.TelemetryProtos;
@@ -46,19 +46,20 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
 
-    private static final ServiceParameters EMPTY_SERVICE_PARAMETERS = new ServiceParameters(Collections.emptyMap());
-
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private TelemetryAdapterRegistry adapterRegistry;
 
     private final Protocol protocolDef;
     private final TelemetrySinkModule sinkModule;
@@ -84,7 +85,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
 
     @Override
     public void handleMessage(TelemetryProtos.TelemetryMessageLog messageLog) {
-        try(Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
             LOG.trace("Received message log: {}", messageLog);
             // Handle the message with all of the adapters
             for (Adapter adapter : adapters) {
@@ -99,34 +100,40 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     }
 
     private Adapter buildAdapter(org.opennms.netmgt.telemetry.config.model.Adapter adapterDef) throws Exception {
-        // Instantiate the associated class
-        final Object adapterInstance;
-        try {
-            final Class<?> clazz = Class.forName(adapterDef.getClassName());
-            final Constructor<?> ctor = clazz.getConstructor();
-            adapterInstance = ctor.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(String.format("Failed to instantiate adapter with class name '%s'.",
-                    adapterDef.getClassName(), e));
+
+        Adapter adapter = adapterRegistry.getAdapter(adapterDef.getClassName(), protocolDef, adapterDef.getParameterMap());
+
+        if (adapter == null) {
+            final Object adapterInstance;
+            try {
+                final Class<?> clazz = Class.forName(adapterDef.getClassName());
+                final Constructor<?> ctor = clazz.getConstructor();
+                adapterInstance = ctor.newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(String.format("Failed to instantiate adapter with class name '%s'.",
+                        adapterDef.getClassName(), e));
+            }
+
+            // Cast
+            if (!(adapterInstance instanceof Adapter)) {
+                throw new IllegalArgumentException(String.format("%s must implement %s", adapterDef.getClassName(),
+                        Adapter.class.getCanonicalName()));
+            }
+            adapter = (Adapter) adapterInstance;
+
+            // Apply the parameters
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
+            wrapper.setPropertyValues(adapterDef.getParameterMap());
+
+            // Autowire!
+            final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
+            beanFactory.autowireBean(adapter);
+            beanFactory.initializeBean(adapter, "adapter");
+
+            // Set the protocol reference
+            adapter.setProtocol(protocolDef);
+
         }
-
-        // Cast
-        if (!(adapterInstance instanceof Adapter)) {
-            throw new IllegalArgumentException(String.format("%s must implement %s", adapterDef.getClassName(), Adapter.class.getCanonicalName()));
-        }
-        final Adapter adapter = (Adapter)adapterInstance;
-
-        // Apply the parameters
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
-        wrapper.setPropertyValues(adapterDef.getParameterMap());
-
-        // Autowire!
-        final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
-        beanFactory.autowireBean(adapter);
-        beanFactory.initializeBean(adapter, "adapter");
-
-        // Set the protocol reference
-        adapter.setProtocol(protocolDef);
 
         return adapter;
     }
