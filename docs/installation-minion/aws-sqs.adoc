@@ -1,17 +1,20 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ./images
 
-=== Using AWS SQS
+= Using AWS SQS
 
-By default, _{opennms-product-name}_ uses an _ActiveMQ_ broker to communicate with _Minions_.
+By default, _{product-title}_ uses an _ActiveMQ_ broker to communicate with _Minions_.
 This broker is used for both issuing remote procedure calls (RPCs, ie. ping this host) and for transporting unsolicited messages such as SNMP traps and syslog messages.
 
-_AWS SQS_ can be used as an alternative to _ActiveMQ_ for both remote procedure calls and transporting the unsolicited messages.
+_AWS Simple Queue Service (SQS)_ can be used as an alternative to _ActiveMQ_ for transporting the unsolicited messages.
 
-_AWS SQS_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
+WARNING: _AWS SQS_ cannot currently be used for handling RPC messages.
+This means that _ActiveMQ_ is still required even when _AWS SQS_ support is enabled.
 
-==== _{opennms-product-name}_ Configuration
+_AWS SQS_ must be enabled on both _{product-title}_ and _Minion_ to function.
+
+== {product-title} Configuration
 
 Enable and configure the _AWS SQS_ on _{opennms-product-name}_ by using the following commands.
 The `initialSleepTime` property will ensure that messages are not consumed from _AWS SQS_ until the _{opennms-product-name}_ system has fully initialized.
@@ -44,7 +47,7 @@ org.opennms.core.ipc.aws.sqs.aws_secret_access_key=XXXXXXXXXXX' >> "$OPENNMS_HOM
 When running OpenNMS inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file.
 The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run:
 
-image:../images/minion/aws-iam-role.png[]
+image::aws-iam-role.png[]
 
 If you require consistent ordering of the messages, you should use FIFO queues instead of Standard queues.
 You can enable FIFO queues by adding the following parameter to the `aws-sqs.properties` file referenced above:
@@ -54,9 +57,9 @@ You can enable FIFO queues by adding the following parameter to the `aws-sqs.pro
 org.opennms.core.ipc.aws.sqs.sink.FifoQueue=true
 ----
 
-Restart _{opennms-product-name}_ to apply the changes.
+Restart _{product-title}_ to apply the changes.
 
-==== Minion Configuration
+== Minion Configuration
 
 Enable the _AWS SQS_ on _Minion_ using:
 
@@ -97,7 +100,7 @@ NOTE: AWS credentials are required when the Minion is not running inside a VPC.
 
 IMPORTANT: The settings must match what OpenNMS currently has.
 
-==== SQS Configuration Settings
+== SQS Configuration Settings
 
 From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[Amazon SQS Documentation], the following parameters can be added to either Minion or _{opennms-product-name}_.
 
@@ -117,15 +120,15 @@ For FIFO Queues:
 
 NOTE: When FIFO queues are not required, there is no need to add `FifoQueue=false` to the configuration files, as this is the default behavior.
 
-==== Managing Multiple Environments
+== Managing Multiple Environments
 
 In order to support multiple _{opennms-product-name}_ environments in a single AWS region, the `aws_queue_name_prefix` property can be used to prefix the queue names.
 
 For example, if we set this property to be "PROD", the queue names will resemble `PROD-OpenNMS-Sink-Heartbeat`, instead of `OpenNMS-Sink-Heartbeat`.
 
-WARNING: This property must be properly configured at  _{opennms-product-name}_  and Minion side.
+WARNING: This property must be properly configured at  _{product-title}_  and Minion side.
 
-==== AWS Credentials
+== AWS Credentials
 
 The credentials (a.k.a. the Access Key ID and the Secret Access Key) are required in both sides, OpenNMS and Minion.
 
@@ -139,11 +142,11 @@ In order to create credentials just for accessing SQS resources, follow this pro
 * On the search bar, write SQS, and then check on `AmazonSQSFullAccess`.
 * Click on Create User
 
-image:../images/minion/aws-minion-user.png[]
+image::aws-minion-user.png[]
 
 Finally, either click on Download .csv or click on "Show" to grab a copy of the Access key ID, and the Secret access key.
 
-==== Limitations
+== Limitations
 
 There are a number of limitations when using _AWS SQS_, in particular:
 
@@ -153,10 +156,11 @@ There are a number of limitations when using _AWS SQS_, in particular:
 
 See link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-limits.html[Amazon SQS Limits] for further details.
 
-===== Location names
+=== Location names
 
 Queue names in _AWS SQS_ are limited to 80 characters.
 When issuing remote procedure calls, the target location is used a part of the queue name.
 For this reason, it is important that:
+
 * The length of the location name and queue name prefix (if used) must not exceed 32 characters in aggregate.
 * Both the location name and queue name prefix (if used) may only contain alphanumeric characters, hyphens (-), and underscores (_).
