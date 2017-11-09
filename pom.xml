@@ -1311,6 +1311,7 @@
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
+    <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
