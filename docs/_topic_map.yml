@@ -39,8 +39,8 @@ Dir: horizon-release-notes
 Topics:
   - Name: Preface
     File: preface
-  - Name: Whats New in 20
-    File: whatsnew-20
+  - Name: Whats New
+    File: whatsnew
   - Name: Changelog
     File: changelog
 ---
@@ -118,6 +118,8 @@ Topics:
     File: advanced-configuration
   - Name: Kafka
     File: kafka
+  - Name: AWS Simple Queue Service
+    File: aws-sqs
   - Name: Troubleshooting
     File: troubleshooting
 ---

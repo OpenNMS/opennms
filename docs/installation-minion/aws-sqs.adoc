@@ -1,30 +1,33 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ./images
 
-=== Using AWS SQS
+= Using AWS SQS
 
-By default, _{opennms-product-name}_ uses an _ActiveMQ_ broker to communicate with _Minions_.
+By default, _{product-title}_ uses an _ActiveMQ_ broker to communicate with _Minions_.
 This broker is used for both issuing remote procedure calls (RPCs, ie. ping this host) and for transporting unsolicited messages such as SNMP traps and syslog messages.
 
-_AWS SQS_ can be used as an alternative to _ActiveMQ_ for transporting the unsolicited messages.
+_AWS Simple Queue Service (SQS)_ can be used as an alternative to _ActiveMQ_ for transporting the unsolicited messages.
 
 WARNING: _AWS SQS_ cannot currently be used for handling RPC messages.
 This means that _ActiveMQ_ is still required even when _AWS SQS_ support is enabled.
 
-_AWS SQS_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
+_AWS SQS_ must be enabled on both _{product-title}_ and _Minion_ to function.
 
 WARNING:  When using Amazon SQS, it is very important to consider the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-limits.html[Limitations].
 
 In terms of the Sink pattern, pay attention to the following:
 
-* A message can include only XML, JSON, and unformatted text. The following Unicode characters are allowed: `#x9` | `#xA` | `#xD` | `#x20` to `#xD7FF` | `#xE000` to `#xFFFD` | `#x10000` to `#x10FFFF`. Any characters not included in this list are rejected.
-* The minimum message size is 1 byte (1 character). The maximum is 262,144 bytes (256 KB).
+* A message can include only XML, JSON, and unformatted text.
+  The following Unicode characters are allowed: `#x9` | `#xA` | `#xD` | `#x20` to `#xD7FF` | `#xE000` to `#xFFFD` | `#x10000` to `#x10FFFF`.
+  Any characters not included in this list are rejected.
+* The minimum message size is 1 byte (1 character).
+  The maximum is 262,144 bytes (256 KB).
 * Without batching, FIFO queues can support up to 300 messages per second (300 send, receive, or delete operations per second).
 
-==== Consumer Configuration
+== Consumer Configuration
 
-Enable and configure the _AWS SQS_ consumer on _{opennms-product-name}_ by using the following commands. The `initialSleepTime` property will ensure that messages are not consumed from _AWS SQS_ until the _{opennms-product-name}_ system has fully initialized.
+Enable and configure the _AWS SQS_ consumer on _{product-title}_ by using the following commands. The `initialSleepTime` property will ensure that messages are not consumed from _AWS SQS_ until the _{product-title}_ system has fully initialized.
 
 [source, sh]
 ----
@@ -35,10 +38,13 @@ org.opennms.core.ipc.aws.sqs.aws_region=us-east-1' > "$OPENNMS_HOME/etc/opennms.
 
 AWS Credentials are required in order to access SQS.
 
-There are several ways to provide credentials. Without additional configuration changes, the default credential provider chain will be used. That means, the provider looks for credentials in this order:
+There are several ways to provide credentials.
+Without additional configuration changes, the default credential provider chain will be used.
+That means, the provider looks for credentials in this order:
 
 * Environment Variables (i.e. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`)
-* Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`. These keys can be added to `$OPENNMS_HOME/etc/opennms.conf`)
+* Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`.
+  These keys can be added to `$OPENNMS_HOME/etc/opennms.conf`)
 * Default credential profiles file (i.e. `~/.aws/credentials`)
 * Amazon ECS container credentials (i.e. `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`)
 * Instance profile credentials (i.e. through the metadata service when running on EC2)
@@ -53,9 +59,10 @@ org.opennms.core.ipc.aws.sqs.aws_access_key_id=XXXXXXXXXXX
 org.opennms.core.ipc.aws.sqs.aws_secret_access_key=XXXXXXXXXXX' > "$OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties"
 ----
 
-When running OpenNMS inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file. The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run:
+When running OpenNMS inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file.
+The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run:
 
-image:../images/minion/aws-iam-role.png[]
+image::aws-iam-role.png[]
 
 In order to use FIFO queues instead of Standard queues, it is required to add the following parameters:
 
@@ -64,9 +71,9 @@ In order to use FIFO queues instead of Standard queues, it is required to add th
 org.opennms.core.ipc.aws.sqs.sink.FifoQueue=true
 ----
 
-Restart _{opennms-product-name}_ to apply the changes.
+Restart _{product-title}_ to apply the changes.
 
-==== Producer Configuration
+== Producer Configuration
 
 Enable the _AWS SQS_ producer on _Minion_ using:
 
@@ -87,7 +94,8 @@ aws_access_key_id=XXXXXXXXXXX
 aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.aws.sqs.cfg"
 ----
 
-The AWS credentials are required. If they are not specified on the configuration file, the default credentials provider chain (explained above) will be used instead.
+The AWS credentials are required.
+If they are not specified on the configuration file, the default credentials provider chain (explained above) will be used instead.
 
 In order to use FIFO queues instead of Standard queues, it is required to add the following parameter:
 
@@ -102,9 +110,9 @@ WARNING: AWS Credentials are mandatory at Minion's side as it won't be running i
 
 IMPORTANT: The Settings must match what OpenNMS currently has.
 
-==== SQS Configuration Settings
+== SQS Configuration Settings
 
-From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[AWS Documentation], the following parameters can be added to either Minion or _{opennms-product-name}_.
+From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[AWS Documentation], the following parameters can be added to either Minion or _{product-title}_.
 
 * `DelaySeconds` (defaults to 0 seconds)
 * `MaximumMessageSize` (defaults to 262144 bytes)
@@ -122,16 +130,16 @@ For FIFO Queues:
 
 WARNING: When FIFO queues are not required, there is no need to add `FifoQueue=false` to the configuration files, as this is the default behavior.
 
-==== Managing Multiple Environments
+== Managing Multiple Environments
 
 Because SQS is a shared resource per AWS Region, on those cases when multiple environments will be deployed on the same region, for example, Production, Staging and Development,
 an additional property called `aws_queue_name_prefix` was added to enforce a prefix to the queue names.
 
 For example, if we set this property to be "PROD", the resulting name of the queues are going something like `OpenNMS-PROD-Sink-Heartbeat`, instead of `OpenNMS-Sink-Heartbeat`.
 
-WARNING: This property must be properly configured at  _{opennms-product-name}_  and Minion side.
+WARNING: This property must be properly configured at  _{product-title}_  and Minion side.
 
-==== AWS Credentials
+== AWS Credentials
 
 The credentials (a.k.a. the Access Key ID and the Secret Access Key) are required in both sides, OpenNMS and Minion.
 
@@ -145,6 +153,6 @@ In order to create credentials just for accessing SQS resources, follow this pro
 * On the search bar, write SQS, and then check on `AmazonSQSFullAccess`.
 * Click on Create User
 
-image:../images/minion/aws-minion-user.png[]
+image::aws-minion-user.png[]
 
 Finally, either click on Download .csv or click on "Show" to grab a copy of the Access key ID, and the Secret access key.
