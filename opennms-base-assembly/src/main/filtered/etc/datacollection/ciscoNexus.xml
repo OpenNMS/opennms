@@ -1,7 +1,79 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Cisco Nexus">
-   <resourceType name="ciscoNXEnvMonStatusIndex" label="Cisco Nexus Environmental" resourceLabel="${entPhysicalName} (index ${index})">
+   <resourceType name="ciscoNXSensorOtherUnknown" label="Cisco Nexus Sensor (other / unknown)" resourceLabel="${entPhysicalName} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType != null)"/>
+         <parameter key="match-expression" value="(#entPhysicalName != null) and ((#entSensorType == 1) or (#entSensorType == 2))"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorVAC" label="Cisco Nexus AC Voltage Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 3)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorVDC" label="Cisco Nexus DC Voltage Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 4)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorAmp" label="Cisco Nexus Amperage Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 5)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorWatt" label="Cisco Nexus Wattage Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 6)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorHz" label="Cisco Nexus Frequency Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 7)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorCelsius" label="Cisco Nexus Temperature Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 8)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorPctRH" label="Cisco Nexus Humidity Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 9)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorRPM" label="Cisco Nexus Rotational Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 10)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorCMM" label="Cisco Nexus Flow Rate Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 11)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorTruth" label="Cisco Nexus Truth Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 12)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorSpecial" label="Cisco Nexus Special Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 13)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXSensorDBm" label="Cisco Nexus Transceiver Power Sensor" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType == 14)"/>
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
@@ -11,10 +83,83 @@
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
-   <group name="cisco-nx-environmental" ifType="all">
-      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXEnvMonStatusIndex" alias="entPhysicalName" type="string"/>
-      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXEnvMonStatusIndex" alias="entSensorType" type="string"/>
-      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXEnvMonStatusIndex" alias="entSensorValue" type="gauge"/>
+   <group name="cisco-nx-sensor-other-unknown" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorOtherUnknown" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorOtherUnknown" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorOtherUnknown" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorOtherUnknown" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-vac" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorVAC" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorVAC" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorVAC" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorVAC" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-vdc" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorVDC" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorVDC" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorVDC" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorVDC" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-amp" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorAmp" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorAmp" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorAmp" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorAmp" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-watt" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorWatt" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorWatt" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorWatt" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorWatt" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-hz" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorHz" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorHz" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorHz" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorHz" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-celsius" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorCelsius" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorCelsius" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorCelsius" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorCelsius" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-pcrh" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorPctRH" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorPctRH" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorPctRH" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorPctRH" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-rpm" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorRPM" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorRPM" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorRPM" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorRPM" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-cmm" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorCMM" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorCMM" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorCMM" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorCMM" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-truth" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorTruth" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorTruth" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorTruth" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorTruth" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-special" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorSpecial" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorSpecial" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorSpecial" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorSpecial" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-nx-sensor-dbm" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXSensorDBm" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXSensorDBm" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.2" instance="ciscoNXSensorDBm" alias="entSensorScale" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXSensorDBm" alias="entSensorValue" type="gauge"/>
    </group>
    <group name="cisco-process" ifType="ignore">
       <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8" instance="1" alias="cpmCPUTotal5minRev" type="Gauge32"/>
@@ -86,7 +231,19 @@
       <collect>
          <includeGroup>cisco-nx-process-index</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-other-unknown</includeGroup>
+         <includeGroup>cisco-nx-sensor-vac</includeGroup>
+         <includeGroup>cisco-nx-sensor-vdc</includeGroup>
+         <includeGroup>cisco-nx-sensor-amp</includeGroup>
+         <includeGroup>cisco-nx-sensor-watt</includeGroup>
+         <includeGroup>cisco-nx-sensor-hz</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
+         <includeGroup>cisco-nx-sensor-pcrh</includeGroup>
+         <includeGroup>cisco-nx-sensor-rpm</includeGroup>
+         <includeGroup>cisco-nx-sensor-cmm</includeGroup>
+         <includeGroup>cisco-nx-sensor-truth</includeGroup>
+         <includeGroup>cisco-nx-sensor-special</includeGroup>
+         <includeGroup>cisco-nx-sensor-dbm</includeGroup>
       </collect>
    </systemDef>
    <!-- Nexus7000 9 slot N7K chassis -->
@@ -95,7 +252,19 @@
       <collect>
          <includeGroup>cisco-nx-process-index</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-other-unknown</includeGroup>
+         <includeGroup>cisco-nx-sensor-vac</includeGroup>
+         <includeGroup>cisco-nx-sensor-vdc</includeGroup>
+         <includeGroup>cisco-nx-sensor-amp</includeGroup>
+         <includeGroup>cisco-nx-sensor-watt</includeGroup>
+         <includeGroup>cisco-nx-sensor-hz</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
+         <includeGroup>cisco-nx-sensor-pcrh</includeGroup>
+         <includeGroup>cisco-nx-sensor-rpm</includeGroup>
+         <includeGroup>cisco-nx-sensor-cmm</includeGroup>
+         <includeGroup>cisco-nx-sensor-truth</includeGroup>
+         <includeGroup>cisco-nx-sensor-special</includeGroup>
+         <includeGroup>cisco-nx-sensor-dbm</includeGroup>
       </collect>
    </systemDef>
    <!-- Nexus7000 10 slot N7K chassis -->
@@ -104,7 +273,19 @@
       <collect>
          <includeGroup>cisco-nx-process-index</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-other-unknown</includeGroup>
+         <includeGroup>cisco-nx-sensor-vac</includeGroup>
+         <includeGroup>cisco-nx-sensor-vdc</includeGroup>
+         <includeGroup>cisco-nx-sensor-amp</includeGroup>
+         <includeGroup>cisco-nx-sensor-watt</includeGroup>
+         <includeGroup>cisco-nx-sensor-hz</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
+         <includeGroup>cisco-nx-sensor-pcrh</includeGroup>
+         <includeGroup>cisco-nx-sensor-rpm</includeGroup>
+         <includeGroup>cisco-nx-sensor-cmm</includeGroup>
+         <includeGroup>cisco-nx-sensor-truth</includeGroup>
+         <includeGroup>cisco-nx-sensor-special</includeGroup>
+         <includeGroup>cisco-nx-sensor-dbm</includeGroup>
       </collect>
    </systemDef>
    <!-- Nexus7000 18 slot N7K chassis -->
@@ -113,7 +294,61 @@
       <collect>
          <includeGroup>cisco-nx-process-index</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-other-unknown</includeGroup>
+         <includeGroup>cisco-nx-sensor-vac</includeGroup>
+         <includeGroup>cisco-nx-sensor-vdc</includeGroup>
+         <includeGroup>cisco-nx-sensor-amp</includeGroup>
+         <includeGroup>cisco-nx-sensor-watt</includeGroup>
+         <includeGroup>cisco-nx-sensor-hz</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
+         <includeGroup>cisco-nx-sensor-pcrh</includeGroup>
+         <includeGroup>cisco-nx-sensor-rpm</includeGroup>
+         <includeGroup>cisco-nx-sensor-cmm</includeGroup>
+         <includeGroup>cisco-nx-sensor-truth</includeGroup>
+         <includeGroup>cisco-nx-sensor-special</includeGroup>
+         <includeGroup>cisco-nx-sensor-dbm</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- Nexus 9000 series 1 RU fiexed chassis with 48x10G SFP+, 2x40G QSFP10, 4x40/100G QSFP28 Ethernet -->
+   <systemDef name="Cisco Nexus 9000 (1RU)">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1744</sysoid>
+      <collect>
+         <includeGroup>cisco-nx-process-index</includeGroup>
+         <includeGroup>mib2-X-interfaces</includeGroup>
+         <includeGroup>cisco-nx-sensor-other-unknown</includeGroup>
+         <includeGroup>cisco-nx-sensor-vac</includeGroup>
+         <includeGroup>cisco-nx-sensor-vdc</includeGroup>
+         <includeGroup>cisco-nx-sensor-amp</includeGroup>
+         <includeGroup>cisco-nx-sensor-watt</includeGroup>
+         <includeGroup>cisco-nx-sensor-hz</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
+         <includeGroup>cisco-nx-sensor-pcrh</includeGroup>
+         <includeGroup>cisco-nx-sensor-rpm</includeGroup>
+         <includeGroup>cisco-nx-sensor-cmm</includeGroup>
+         <includeGroup>cisco-nx-sensor-truth</includeGroup>
+         <includeGroup>cisco-nx-sensor-special</includeGroup>
+         <includeGroup>cisco-nx-sensor-dbm</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- Nexus 9000 series 2 RU fiexed chassis with 72x40G QSFP+ Ethernet -->
+   <systemDef name="Cisco Nexus 9000 (2RU)">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1745</sysoid>
+      <collect>
+         <includeGroup>cisco-nx-process-index</includeGroup>
+         <includeGroup>mib2-X-interfaces</includeGroup>
+         <includeGroup>cisco-nx-sensor-other-unknown</includeGroup>
+         <includeGroup>cisco-nx-sensor-vac</includeGroup>
+         <includeGroup>cisco-nx-sensor-vdc</includeGroup>
+         <includeGroup>cisco-nx-sensor-amp</includeGroup>
+         <includeGroup>cisco-nx-sensor-watt</includeGroup>
+         <includeGroup>cisco-nx-sensor-hz</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
+         <includeGroup>cisco-nx-sensor-pcrh</includeGroup>
+         <includeGroup>cisco-nx-sensor-rpm</includeGroup>
+         <includeGroup>cisco-nx-sensor-cmm</includeGroup>
+         <includeGroup>cisco-nx-sensor-truth</includeGroup>
+         <includeGroup>cisco-nx-sensor-special</includeGroup>
+         <includeGroup>cisco-nx-sensor-dbm</includeGroup>
       </collect>
    </systemDef>
 </datacollection-group>
