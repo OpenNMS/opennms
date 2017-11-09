@@ -10,7 +10,6 @@ opennms
 opennms-common
 opennms-contrib
 opennms-db
-opennms-doc
 opennms-jmx-config-generator
 opennms-ncs
 opennms-plugin-collector-juniper-tca

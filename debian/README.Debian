@@ -4,19 +4,8 @@ OpenNMS for Debian
 This file only highlights the differences between the Debian packages and 
 the other distributions. 
 
-For comprehensive off-line documentation install the opennms-doc package, 
-or check out the online documentation at http://www.opennms.org/wiki/Installation:Debian
-
-For troubleshooting installation and configuration issues see the wiki:
-  http://www.opennms.org/wiki/
-
-If you are upgrading, be sure to check out the release notes:
-  http://www.opennms.org/wiki/New_and_Noteworthy
-
-If you have a question that is not answered in the documentation or 
-release notes you can always ask on one of the mailing lists, (search the 
-archive first to see if the question has already been asked and/or 
-answered),  http://sourceforge.net/mail/?group_id=4141
+For help installing, configuring, or upgrading OpenNMS, see:
+  http://docs.opennms.org/opennms/releases/latest/
 
 
 Differences in the Debian packages

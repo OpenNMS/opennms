@@ -1,0 +1,69 @@
+
+= AMQP Alarm Northbounder
+
+The AMQP Integration allows external systems to communicate with the event bus of _{product-title}_ and receive alarms via the _AMQP_ protocol.
+
+NOTE: _AMQP_ is standard messaging protocol supported by a number of brokers including _ActiveMQ_ and _QPID_.
+
+The integration is written using Camel + OSGi and has the following components:
+
+* Event Forwarder
+* Event Receiver
+* Alarm Northbounder
+
+The _Alarm Northbounder_ listens for _all_ northbound alarms.
+Alarms are sent to a Camel processor, which can filter or transform these, before being sent to the AMQP endpoint.
+
+The _Alarm Northbounder_ exposes the following properties via the `org.opennms.features.amqp.alarmnorthbounder` pid:
+
+Custom filtering (i.e. which events to forward) and transformations (i.e. how the events are represented in the messages) can be used in each of the components.
+Generic implementations
+
+The integration is written using _Camel_ and _OSGi_ and exposes interfaces through which events and alarms can be filtered and/or transformed.
+The features are described in detail bellow.
+
+NOTE: Each component can be configured and setup independently, i.e. you can choose to only forward alarms.
+
+[options="header"]
+|===
+| Property        | Default                                                           | Description
+| _connectionUrl_ | `amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672'` | Used by the AMQPConnectionFactory.
+                                                                                        See http://people.apache.org/~grkvlt/qpid-site/qpid-java/qpid-client/apidocs/org/apache/qpid/jms/ConnectionURL.html[ConnectionURL] for a full list of options.
+| _destination_   | `amqp:OpenNMS-Exchange/opennms-routing-key`                       | Target queue or topic.
+                                                                                        See http://camel.apache.org/amqp.html[AMQP] for details.
+| _processorName_ | `default-alarm-northbounder-processor`                            | Name `org.apache.camel.Processor` used to filter and/or format the events.
+|===
+
+The default processor, the `default-alarm-northbounder-processor`, converts the alarms to a string and does not perform any filtering.
+This means that when enabled, all alarms will be forwarded to the AMQP destination with strings as the message body.
+
+== Setup
+
+Start by logging into a Karaf shell.
+
+Update the properties with your deployment specific values:
+
+[source]
+----
+config:edit org.opennms.features.amqp.alarmnorthbounder
+config:property-set connectionUrl amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672\'
+config:property-set destination amqp:OpenNMS-Exchange/opennms-routing-key
+config:property-set processorName default-alarm-northbounder-processor
+config:update
+----
+
+Install the feature:
+
+[source]
+----
+feature:install opennms-amqp-alarm-northbounder
+----
+
+== Debugging
+
+You can get detailed information on the Camel route using:
+
+[source]
+----
+camel:route-info forwardAlarm
+----

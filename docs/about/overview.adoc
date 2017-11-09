@@ -1,0 +1,97 @@
+
+// Allow GitHub image rendering
+:imagesdir: ./images
+
+= What is {product-title}?
+
+_{product-title}_ is a carrier-grade, highly integrated, open source platform designed for building network monitoring solutions.
+There are two distributions of OpenNMS: Meridian and Horizon.
+Using Meridian is advisable for enterprises and businesses looking for stability and long term support.
+Horizon is the place where innovation happens quickly and is ideal for monitoring new technologies and IT ecosystems.
+Both distributions are completely open source.
+
+The software _{product-title}_ addresses the following main functions monitor a huge amount of entities in modern IT networks:
+
+* _Service Assurance_: Detect service outages and measure latency for graphing and thresholding via synthetic polling.
+  Out-of-the-box support for many applications with configurable service monitors.
+  Remotely monitor applications and services from the user's perspective.
+* _Performance Management_: Collect performance metrics from industry standard agents via SNMP, JMX, WMI, NRPE, NSClient++ and XMP simply through configuration.
+  Gather performance data from applications via customizable generic collectors with HTTP, JDBC, XML or JSON.
+* _Provisioning_: Discover your network and applications through manual, detected, or ReST API driven interfaces via the OpenNMS provisioning system.
+  It gives control for device management with the ability to add, change, and remove devices.
+* _Integration_: It allows to integrate with ReST API for provisioning or provides monitoring information for external applications.
+  Otherwise it can be integrated in workflows as notification and ticketing systems.
+
+
+[[gi-minion]]
+== What is a Minion
+
+_Minion_ gives the ability to monitor devices and applications which are in isolated networks and hard to reach from a central _{product-title}_ instance.
+Maintaining a large set of _Firewall_ rules to allow a variety of management protocols is sometimes tedious and hard to set up.
+Communicating with managed devices over unreliable networks and the use of _UDP_ based management protocols can also be difficult to maintain.
+Deploying a _Minion_ can be used to address these issues.
+
+A _Minion_ can be used when a central _{product-title}_ can't reach all devices and _Management Agents_ for monitoring.
+Furthermore it simplifies the network communication by using _TCP_-based _ActiveMQ_ and _ReST_ communication.
+
+The network area where access to managed network devices and applications is allowed can be modeled in a _Location_.
+Monitored _Nodes_ and _IP Services_ are associated to _Locations_ and are defined during _Provisioning_.
+Each _Minion_ is configured with a _Location_ and all _Nodes_ and _IP Services_ in the same _Location_ are monitored through this _Minion_.
+
+NOTE: The _Minion_ is currently not designed to be a replacement for the _Remote Poller_.
+      By using the _Remote Poller_ a service can be tested from several remote sites, whereas a _Minion_ extends network reachability for a central _{product-title}_ instance.
+
+[[gi-install-minion-location]]
+._Nodes_ with _Minions_ in _Locations_
+image::01_minion-location.png[]
+
+The figure <<gi-install-minion-location, _Nodes_ with _Minions_ in _Locations_>> illustrates a _Minion_ deployment in isolated branch offices.
+
+Every _Node_ created in _{product-title}_ is by default created in the _Location_ named _Default_.
+All _Nodes_ and _Services_ in the _Default Location_ are handled by the central _{product-title}_ instance itself.
+For each branch office in an isolated network, a _Location_ is defined.
+The _Minion_ has a configuration property for the _Location_ and will register itself to the {product-title} instance on startup.
+
+The _Provisioning System_ allows to associate _Nodes_ to a _Location_.
+_{product-title}_ will delegate monitoring requests for _Nodes_ in the specified _Locations_ to the registered _Minions_ and uses them as a proxy.
+
+Figure <<gi-install-minion-communication, Minion communication>> gives a more detailed overview about the communication between an _{product-title}_ instance and a _Minion_.
+
+[[gi-install-minion-scenario]]
+.Minion communication
+image::02_minion-communication.png[]
+
+The _Minion_ needs a configuration which requires at minimum the following information:
+
+* An unique identifier (`id`) for this specific _Minion_
+* Monitoring _Location_ name (`location`) this _Minion_ is responsible
+* The communication endpoints (`broker-url` and `http-url`) for the central _{product-title}_ instance
+
+The configuration resides in a property file in `${MINION_HOME}/etc/org.opennms.minion.controller.cfg`.
+When the minimal configuration is set up the _Minion_ can be started and initially connects to the central _{product-title}_ instance and identifies itself with his unique _ID_.
+
+NOTE: The unique _ID_ is generated when the packages get installed `/usr/bin/uuidgen -t` and is used if no _ID_ is set manually.
+On upgrade the _ID_ is not updated.
+
+
+By default the _Minion_ will be automatically provisioned as a _Node_ in the _{product-title}_ instance and get automatically monitored with the _Minion-Heartbeat_ service.
+The _Minion_ sends heart beat messages to ensure it is running and functioning properly in this network area.
+
+The specific management protocol messages, e.g. _SNMP_, _ICMP_, are piped through an _ActiveMQ_ messaging communication channel and are executed by a _Minion_.
+Responses are forwarded to the central _{product-title}_ instance and are processed accordingly.
+
+_Minions_ can be installed on every system that is able to communicate with these two endpoints:
+
+* The _OpenNMS ReST Interface_, by default _TCP_ port 8980
+* The _ActiveMQ_ broker used by _{product-title}_, by default _TCP_ port 61616
+
+The following management protocols are currently supported in a _Minion_ proxy scenario:
+
+* Receive _Syslog_ messages and forward them through _ActiveMQ_ to a central _{product-title}_ instance
+* Receive _SNMP Traps_ and forward them through _ActiveMQ_ to a central _{product-title}_ instance
+* Act as a proxy for _SNMP_ performance data collections
+* Act as a proxy for _Service Monitors_ to test availability and measure response times from applications
+
+IMPORTANT: Packages are only available for _RHEL_-based systems (_RPMS_).
+
+WARNING: To avoid issues, make sure the _Minion_ and the instance of _{product-title}_ have the same version.

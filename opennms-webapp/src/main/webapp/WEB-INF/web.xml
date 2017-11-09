@@ -463,45 +463,6 @@
     <load-on-startup>0</load-on-startup>
   </servlet>
 
-  <servlet>
-    <servlet-name>docsDirectory</servlet-name>
-    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
-    <!--
-      Allow aliases for the /docs directory so that it can be
-      symlinked into the webapp
-    -->
-    <init-param>
-      <param-name>aliases</param-name>
-      <param-value>true</param-value>
-    </init-param>
-    <init-param>
-      <param-name>dirAllowed</param-name>
-      <param-value>false</param-value> <!-- NMS-3475 -->
-    </init-param>
-    <init-param>
-      <param-name>welcomeServlets</param-name>
-      <param-value>false</param-value>
-    </init-param>
-    <init-param>
-      <param-name>redirectWelcome</param-name>
-      <param-value>false</param-value>
-    </init-param>
-    <init-param>
-      <param-name>gzip</param-name>
-      <param-value>true</param-value>
-    </init-param>
-    <init-param>
-      <param-name>useFileMappedBuffer</param-name>
-      <param-value>true</param-value>
-    </init-param>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
-
-   <servlet-mapping>
-     <servlet-name>docsDirectory</servlet-name>
-     <url-pattern>/docs</url-pattern>
-   </servlet-mapping>
-
    <!-- Serves static resource content from .jar files such as spring-js.jar -->
    <servlet>
 	<servlet-name>Resources Servlet</servlet-name>
@@ -1169,4 +1130,3 @@
   </welcome-file-list>
 
 </web-app>
-

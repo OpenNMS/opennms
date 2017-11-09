@@ -1,0 +1,98 @@
+[[release-21-changelog]]
+= Changelog
+
+[[releasenotes-changelog-21.0.0]]
+== Release 21.0.0
+
+Release 21.0.0 is the latest stable release of OpenNMS.
+// For a high-level overview of what's changed in OpenNMS 21, see link:http://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
+
+The codename for 21.0.0 is _link:https://bladerunner.wikia.com/wiki/Rick_Deckard[Deckard]_.
+
+=== Bug
+
+* INFO-severity syslog-derived events end up unmatched (Issue http://issues.opennms.org/browse/NMS-8106[NMS-8106])
+* Intermittent test failures in *FeatureKarafIT tests (Issue http://issues.opennms.org/browse/NMS-8305[NMS-8305])
+* Custom Karaf banner and misleading osgi:shutdown hint (Issue http://issues.opennms.org/browse/NMS-8341[NMS-8341])
+* Karaf extender fails to start up due to Wagon error (Issue http://issues.opennms.org/browse/NMS-8473[NMS-8473])
+* Karaf errors when installation path has white space (Issue http://issues.opennms.org/browse/NMS-8684[NMS-8684])
+* Minion code throws "java.lang.IllegalStateException: Unknown protocol: mvn" (Issue http://issues.opennms.org/browse/NMS-8793[NMS-8793])
+* Resource graph forecast page lacks header (Issue http://issues.opennms.org/browse/NMS-8856[NMS-8856])
+* 'wrap' protocol not loading early enough with Karaf 4.0.8 (Issue http://issues.opennms.org/browse/NMS-9324[NMS-9324])
+* Add status charts to index page to indicate overall status (Issue http://issues.opennms.org/browse/NMS-9328[NMS-9328])
+* No class found exception in OSGi for org.osgi.service.jdbc.DataSourceFactory (Issue http://issues.opennms.org/browse/NMS-9341[NMS-9341])
+* Incorrect sysoid for the systemDef Juniper J-Routers (Issue http://issues.opennms.org/browse/NMS-9372[NMS-9372])
+* The neither test in DNSResolutionMonitorTest fails (Issue http://issues.opennms.org/browse/NMS-9378[NMS-9378])
+* Remove snmpIpAdEntNetmask from the snmpInterface table (Issue http://issues.opennms.org/browse/NMS-9385[NMS-9385])
+* An empty category is not shown when in focus (Issue http://issues.opennms.org/browse/NMS-9423[NMS-9423])
+* The button to add a graph to a KSC report doesn't work (Issue http://issues.opennms.org/browse/NMS-9498[NMS-9498])
+* Rename integration tests that are currently running as unit tests (Issue http://issues.opennms.org/browse/NMS-9514[NMS-9514])
+* RadixTreeSyslogParser confuses timezone and hostname fields (Issue http://issues.opennms.org/browse/NMS-9522[NMS-9522])
+* Oracle JDK 8u112 is expired (Issue http://issues.opennms.org/browse/NMS-9549[NMS-9549])
+* Donut chart status links do not work anymore (Issue http://issues.opennms.org/browse/NMS-9563[NMS-9563])
+* Expose the ticketer config via opennms rest api (Issue http://issues.opennms.org/browse/NMS-9569[NMS-9569])
+* RESTv2 API fails with 500 error due to mangled timestamps (Issue http://issues.opennms.org/browse/NMS-9590[NMS-9590])
+* EventParameterMigratorOffline task fails when eventparms contains empty strings (Issue http://issues.opennms.org/browse/NMS-9602[NMS-9602])
+* Error loading node list page (column "event_id" does not exist) (Issue http://issues.opennms.org/browse/NMS-9605[NMS-9605])
+* Stale IP Address Cache (Issue http://issues.opennms.org/browse/NMS-9613[NMS-9613])
+* opennms-webapp-remoting JARs are not signed (Issue http://issues.opennms.org/browse/NMS-9638[NMS-9638])
+* Misordered collections in datacollection-config.xml (Issue http://issues.opennms.org/browse/NMS-9643[NMS-9643])
+* re-fix BSM alarm types (Issue http://issues.opennms.org/browse/NMS-9653[NMS-9653])
+* trapd may silently discard invalid traps (Issue http://issues.opennms.org/browse/NMS-9660[NMS-9660])
+* Trap event parenting lacks bias toward SNMP primary interfaces (Issue http://issues.opennms.org/browse/NMS-9666[NMS-9666])
+* IOActive: Stored Cross-site Scripting in SNMP Trap Message (Issue http://issues.opennms.org/browse/NMS-9668[NMS-9668])
+* IOActive: Stored Cross-site Scripting during SNMP Host Discovery (Issue http://issues.opennms.org/browse/NMS-9669[NMS-9669])
+* IOActive: Reflected Cross-site Scripting in heatmap/outages heatmap Parameter (Issue http://issues.opennms.org/browse/NMS-9671[NMS-9671])
+
+=== Epic
+
+* Upgrade the embedded Karaf container to 4.1 (Issue http://issues.opennms.org/browse/HZN-1173[HZN-1173])
+
+=== Story
+
+* Create BackingEngineFactory for Karaf JAAS module (Issue http://issues.opennms.org/browse/HZN-1053[HZN-1053])
+* Remove org.apache.activemq.SERIALIZABLE_PACKAGES system properties (Issue http://issues.opennms.org/browse/HZN-1071[HZN-1071])
+* Upgrade ActiveMQ to 5.14 (Issue http://issues.opennms.org/browse/HZN-1086[HZN-1086])
+* Upgrade Camel to version 2.18 (Issue http://issues.opennms.org/browse/HZN-1087[HZN-1087])
+* Upgrade to Karaf 4.1 (Issue http://issues.opennms.org/browse/HZN-1092[HZN-1092])
+* Upgrade Camel to version 2.19 (Issue http://issues.opennms.org/browse/HZN-1094[HZN-1094])
+* Convert Eventd TCP/UDP listeners to camel-netty4 endpoints (Issue http://issues.opennms.org/browse/HZN-1110[HZN-1110])
+* RESTv2 alarm endpoint: Support searching for a single event parameter key-value pair on lastEvent (Issue http://issues.opennms.org/browse/HZN-1146[HZN-1146])
+* Move event parameters into their own table (Issue http://issues.opennms.org/browse/HZN-1147[HZN-1147])
+* OSGi-based notification strategies (Issue http://issues.opennms.org/browse/HZN-1155[HZN-1155])
+* Upgrade to JNA 4.3.0 (Issue http://issues.opennms.org/browse/HZN-1156[HZN-1156])
+* Upgrade to JNA 4.4.0 (Issue http://issues.opennms.org/browse/HZN-1157[HZN-1157])
+* Telemetryd (Issue http://issues.opennms.org/browse/HZN-1160[HZN-1160])
+* Create an XSD for telemetryd-configuration.xml (Issue http://issues.opennms.org/browse/HZN-1162[HZN-1162])
+* Update Karaf shell API for console commands (Issue http://issues.opennms.org/browse/HZN-1167[HZN-1167])
+* Update Karaf shell commands in install guide (Issue http://issues.opennms.org/browse/HZN-1174[HZN-1174])
+* Karaf shell bundle command fails with "Insufficient credentials" error (Issue http://issues.opennms.org/browse/HZN-1175[HZN-1175])
+* JTI adapter for telemetryd (Issue http://issues.opennms.org/browse/HZN-1176[HZN-1176])
+* Give a user the ability to visualise path outages and the status in the topology framework (Issue http://issues.opennms.org/browse/NMS-9365[NMS-9365])
+* Expose ticketing url (when enabled) via the rest endpoint (Issue http://issues.opennms.org/browse/NMS-9587[NMS-9587])
+* Verify "Scan Report" Remote Poller GUI (Issue http://issues.opennms.org/browse/NMS-9604[NMS-9604])
+* Reformat configuration files (Issue http://issues.opennms.org/browse/NMS-9639[NMS-9639])
+
+=== Enhancement
+
+* Some (other) events have Log Messages that are more verbose than Description (Issue http://issues.opennms.org/browse/HZN-1054[HZN-1054])
+* Missing java.xml.bind.* classes when compiling under Java 9 (Issue http://issues.opennms.org/browse/HZN-1082[HZN-1082])
+* Use cxf-xjc-plugin instead of maven-jaxb2-plugin (Issue http://issues.opennms.org/browse/HZN-1095[HZN-1095])
+* IFTTT integration (Issue http://issues.opennms.org/browse/HZN-1112[HZN-1112])
+* etc-pristine configuration format differs from webapp saved configuration (Issue http://issues.opennms.org/browse/NMS-6287[NMS-6287])
+* Display AlarmId on Event page (Issue http://issues.opennms.org/browse/NMS-8445[NMS-8445])
+* Upgrade embedded Apache Karaf to version 4.0 (Issue http://issues.opennms.org/browse/NMS-9085[NMS-9085])
+* Add support for CNAME, TXT, PTR lookups to DnsResolutionMonitor (Issue http://issues.opennms.org/browse/NMS-9249[NMS-9249])
+* Update Minion's Apache Karaf to 4.0.8 (Issue http://issues.opennms.org/browse/NMS-9321[NMS-9321])
+* Upgrade Spring from 4.1 to 4.2 (Issue http://issues.opennms.org/browse/NMS-9351[NMS-9351])
+* osgi-pluginmanager: Add support for OSGi R6 HTTP/Pax Web 6 (Issue http://issues.opennms.org/browse/NMS-9363[NMS-9363])
+* Add new parameter for DNSResolutionMonitor (Issue http://issues.opennms.org/browse/NMS-9373[NMS-9373])
+* DNS test-api should support more than just A or AAAA records. (Issue http://issues.opennms.org/browse/NMS-9383[NMS-9383])
+* Add Resource Types to admin guide documentation (Issue http://issues.opennms.org/browse/NMS-9403[NMS-9403])
+* RadiusAuthMonitorTest is @ignored as it needs an external radius server (Issue http://issues.opennms.org/browse/NMS-9417[NMS-9417])
+* Cleanup job for "provided services" (Issue http://issues.opennms.org/browse/NMS-9468[NMS-9468])
+* Add support for targeting a specific Minion with a RPC (Issue http://issues.opennms.org/browse/NMS-9562[NMS-9562])
+* Allow use of %% to escape a percent sign in the eventconf (Issue http://issues.opennms.org/browse/NMS-9607[NMS-9607])
+* Align WS-Management collection definitions with WMI ones (Issue http://issues.opennms.org/browse/NMS-9649[NMS-9649])
+* Upgrade Apache httpcore and httpclient (Issue http://issues.opennms.org/browse/NMS-9661[NMS-9661])
+* Check/add support for PostgreSQL 10 (Issue http://issues.opennms.org/browse/NMS-9679[NMS-9679])

@@ -1,0 +1,5 @@
+
+Autonomous messages can be retrieved from certain TL1-enabled equipment and transformed into events.
+
+IMPORTANT: The `Tl1d` service daemon, which enables _{product-title}_ to receive TL1 autonomous messages, must be enabled for this functionality to work.
+This service daemon is *disabled* by default.

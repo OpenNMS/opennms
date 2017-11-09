@@ -1,0 +1,8 @@
+
+[[gi-rrdtool-time-series-database]]
+= RRDtool
+
+In most _Open Source_ applications, link:http://oss.oetiker.ch/rrdtool[RRDtool] is often used and is the de-facto open standard for _Time Series Data_.
+The basic installation of _OpenNMS_ comes with _JRobin_ but it is simple to switch the system to use _RRDtool_ to persist _Time Series Data_.
+This section describes how to install _RRDtool_, the _jrrd2_ _OpenNMS Java Interface_ and how to configure _OpenNMS_ to use it.
+_RRDtool_ can be installed from the official package repositories provided by _RHEL_ and _Debian_ based _Linux_ distributions.

@@ -1,0 +1,13 @@
+[[welcome-legal-notice]]
+= Legal Notice
+{product-author}
+{product-version}
+:data-uri:
+:icons:
+
+[.lead]
+Copyright © 2017 The OpenNMS Group, Inc.
+
+OpenNMS is a registered trademark of The OpenNMS Group, Inc.
+
+All other trademarks are the property of their respective owners.

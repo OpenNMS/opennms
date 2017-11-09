@@ -1,0 +1,36 @@
+
+[[gi-rrdtool-configure-opennms]]
+= Configure _{product-title}_
+
+To configure _OpenNMS_ to use _RRDtool_ instead of _JRobin_ configure the following properties in `rrd-configuration.properties`.
+
+.Configuration of RRDtool in OpenNMS on RHEL/CentOS
+[source]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
+opennms.library.jrrd2=/usr/lib64/libjrrd2.so
+----
+
+.Configuration of RRDtool in OpenNMS on Debian/Ubuntu
+[source]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
+opennms.library.jrrd2=/usr/lib/jni/libjrrd2.so
+----
+
+TIP: _OpenNMS_ expects the _RRDtool_ binary in `/usr/bin/rrdtool`.
+
+.References to the RRDtool binary
+[options="header, autowidth"]
+|===
+| Configuration file                | Property
+| `opennms.properties`              | `rrd.binary=/usr/bin/rrdtool`
+| `response-adhoc-graph.properties` | `command.prefix=/usr/bin/rrdtool`
+| `response-graph.properties`       | `command.prefix=/usr/bin/rrdtool` +
+                                      `info.command=/usr/bin/rrdtool`
+| `snmp-adhoc-graph.properties`     | `command.prefix=/usr/bin/rrdtool`
+| `snmp-graph.properties`           | `command.prefix=/usr/bin/rrdtool` +
+                                      `command=/usr/bin/rrdtool info`
+|===
