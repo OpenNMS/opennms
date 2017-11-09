@@ -108,10 +108,10 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
             if (coordinates != null) {
                 return new Coordinates(coordinates.getLongitude(), coordinates.getLatitude());
             } else {
-                LOG.warn("Couldn't resolve address '%s'", addressString);
+                LOG.warn("Couldn't resolve address '{}'", addressString);
             }
         } catch (GeocoderException e) {
-            LOG.warn("Couldn't resolve address '%s'", addressString, e);
+            LOG.warn("Couldn't resolve address '{}'", addressString, e);
         }
         return null;
     }
