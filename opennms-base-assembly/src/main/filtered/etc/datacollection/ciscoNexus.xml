@@ -178,7 +178,7 @@
       <collect>
          <includeGroup>cisco-process</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Cisco Nexus 1010">
@@ -186,7 +186,7 @@
       <collect>
          <includeGroup>cisco-process</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
       </collect>
    </systemDef>
    <!-- Nexus 3000 Series 1 RU fixed chassis (Trident+) with  48 SFP+ and 4 QSFP ports, no power supply, no fan -->
@@ -195,7 +195,7 @@
       <collect>
          <includeGroup>cisco-process</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
       </collect>
    </systemDef>
    <!-- N5000 2RU Chassis, No Power Supply, 5 Fan Modules, 40 Ports (requires SFP+) -->
@@ -204,7 +204,7 @@
       <collect>
          <includeGroup>cisco-process</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
       </collect>
    </systemDef>
    <!-- Nexus 5548 Switch with 2 Power Supplies, 2 Fan Modules, 32 Ethernet/FCoE ports and 1 module -->
@@ -213,7 +213,7 @@
       <collect>
          <includeGroup>cisco-process</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
       </collect>
    </systemDef>
    <!-- Nexus 5598 Switch with 2 Power Supplies, 2 Fan Modules, 32 Ethernet/FCoE ports and 1 module -->
@@ -222,7 +222,7 @@
       <collect>
          <includeGroup>cisco-process</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>cisco-nx-environmental</includeGroup>
+         <includeGroup>cisco-nx-sensor-celsius</includeGroup>
       </collect>
    </systemDef>
    <!-- Nexus7000 4slot zonda n7k chassis N7K-C7004 -->
