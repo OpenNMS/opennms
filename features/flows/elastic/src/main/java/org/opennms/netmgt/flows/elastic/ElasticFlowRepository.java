@@ -29,7 +29,6 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -43,8 +42,6 @@ import org.opennms.netmgt.flows.api.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.ByteStreams;
-
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
@@ -53,15 +50,10 @@ import io.searchbox.core.BulkResult;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
-import io.searchbox.indices.template.PutTemplate;
 
 public class ElasticFlowRepository implements FlowRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticFlowRepository.class);
-
-    private static final String FLOW_TEMPLATE_NAME = "netflow";
-
-    private static final String TEMPLATE_RESOURCE = "/netflow-template.json";
 
     private final JestClient client;
 
@@ -70,26 +62,6 @@ public class ElasticFlowRepository implements FlowRepository {
     public ElasticFlowRepository(JestClient jestClient, IndexStrategy indexStrategy) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
-    }
-
-    // Is invoked by the blueprint container and should take care of all initialization work, which may be
-    // required in order to persist flows later on
-    public void init() throws IOException {
-        // Read template
-        final InputStream inputStream = getClass().getResourceAsStream(TEMPLATE_RESOURCE);
-        if (inputStream == null) {
-            throw new NullPointerException("Template from '" + TEMPLATE_RESOURCE +  "' is null");
-        }
-        final byte[] bytes = new byte[inputStream.available()];
-        ByteStreams.readFully(inputStream, bytes);
-
-        // Post it to elastic
-        final PutTemplate putTemplate = new PutTemplate.Builder(FLOW_TEMPLATE_NAME, new String(bytes)).build();
-        final JestResult result = client.execute(putTemplate);
-        if (!result.isSucceeded()) {
-            // In case the template could not be created, we bail
-            throw new IllegalStateException("Template '" + FLOW_TEMPLATE_NAME + "' could not be persisted. Reason: " + result.getErrorMessage());
-        }
     }
 
     @Override
