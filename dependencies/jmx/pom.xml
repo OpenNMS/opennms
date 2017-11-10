@@ -26,6 +26,12 @@
       <artifactId>org.opennms.core.jmx.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Allow jmxmp jmx protocols -->
+    <dependency>
+      <groupId>org.jvnet.opendmk</groupId>
+      <artifactId>jmxremote_optional</artifactId>
+      <version>${jmxremote.optional.version}</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>

@@ -994,6 +994,10 @@
       <feature>opennms-collection-api</feature>
       <feature>opennms-provisioning-api</feature>
       <feature>opennms-dao-api</feature>
+      <!-- The version of Xalan and BCEL declared here should match the versions
+           declared in the parent pom of the corresponding CXF version -->
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/5.2_4</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/2.7.2_3</bundle>
       <feature version="${cxfVersion}">cxf-jaxws</feature>
       <feature version="${cxfVersion}">cxf-ws-addr</feature>
       <bundle dependency="true">mvn:com.google.guava/guava/${guavaOldVersion}</bundle>
@@ -1105,4 +1109,7 @@
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-bundle-refresher" description="OpenNMS :: Vaadin-Theme Bundle Refresher">
+        <bundle start-level="100">mvn:org.opennms.features.vaadin-components/bundle-refresher/${project.version}</bundle>
+    </feature>
 </features>

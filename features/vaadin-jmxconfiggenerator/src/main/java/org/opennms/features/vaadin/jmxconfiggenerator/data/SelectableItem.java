@@ -156,7 +156,7 @@ public class SelectableItem<T> extends PropertysetItem implements Selectable {
 				}
 			});
 		} catch (IntrospectionException ex) {
-			LOG.warn("Error while introspecting class '%s'. Will continue anyway, result may not be complete.", clazz);
+			LOG.warn("Error while introspecting class '{}'. Will continue anyway, result may not be complete.", clazz);
 		}
 		return mpdMap;
 	}

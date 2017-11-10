@@ -20,4 +20,11 @@
 		</service-properties>
 	</service>
 
+	<bean id="wsmanMonitor" class="org.opennms.netmgt.poller.monitors.WsManMonitor" />
+	<service ref="wsmanMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.WsManMonitor" />
+		</service-properties>
+	</service>
+
 </blueprint>

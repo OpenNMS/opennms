@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -468,8 +468,16 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     	final Map<String,Integer> foreignSourceCounts = new HashMap<String,Integer>();
     	final Set<String> errors = new HashSet<>();
 
+    	if (m_foreignSource == null) {
+    	    throw new ValidationException("Requisition 'foreign-source' must be set!");
+    	}
+    	if (m_foreignSource.contains("/")) {
+            throw new ValidationException("Foreign Source (" + m_foreignSource + ") contains invalid characters. ('/' is forbidden.)");
+    	}
+
     	for (final RequisitionNode node : m_nodes) {
     		final String foreignId = node.getForeignId();
+    		node.validate();
 			Integer count = foreignSourceCounts.get(foreignId);
 			foreignSourceCounts.put(foreignId, count == null? 1 : ++count);
     	}

@@ -142,6 +142,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>jms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.minion.shell</groupId>
             <artifactId>org.opennms.features.minion.shell.collection</artifactId>
             <version>${project.version}</version>
