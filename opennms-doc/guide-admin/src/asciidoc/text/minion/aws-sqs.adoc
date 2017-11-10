@@ -7,13 +7,14 @@
 By default, _{opennms-product-name}_ uses an _ActiveMQ_ broker to communicate with _Minions_.
 This broker is used for both issuing remote procedure calls (RPCs, ie. ping this host) and for transporting unsolicited messages such as SNMP traps and syslog messages.
 
-_AWS SQS_ can be used as an alternative to _ActiveMQ_ for transporting the unsolicited messages.
+_AWS SQS_ can be used as an alternative to _ActiveMQ_ for both remote procedure calls and transporting the unsolicited messages.
 
 _AWS SQS_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
 
 ==== _{opennms-product-name}_ Configuration
 
-Enable and configure the _AWS SQS_ consumer on _{opennms-product-name}_ by using the following commands. The `initialSleepTime` property will ensure that messages are not consumed from _AWS SQS_ until the _{opennms-product-name}_ system has fully initialized.
+Enable and configure the _AWS SQS_ on _{opennms-product-name}_ by using the following commands.
+The `initialSleepTime` property will ensure that messages are not consumed from _AWS SQS_ until the _{opennms-product-name}_ system has fully initialized.
 
 [source, sh]
 ----
@@ -24,8 +25,7 @@ org.opennms.core.ipc.aws.sqs.aws_region=us-east-1' > "$OPENNMS_HOME/etc/opennms.
 ----
 
 AWS Credentials are required in order to access SQS.
-
-There are several ways to provide credentials. Without additional configuration changes, the default credential provider chain will be used. That means, the provider looks for credentials in this order:
+The default credential provider chain looks for credentials in this order:
 
 * Environment Variables (i.e. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`)
 * Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`. These keys can be added to `$OPENNMS_HOME/etc/opennms.conf`)
@@ -33,7 +33,7 @@ There are several ways to provide credentials. Without additional configuration 
 * Amazon ECS container credentials (i.e. `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`)
 * Instance profile credentials (i.e. through the metadata service when running on EC2)
 
-Optionally, the credentials can be specified inside the `aws-sqs.properties` file, for example:
+Alternatively, the credentials can be specified inside the `aws-sqs.properties` file:
 
 [source, sh]
 ----
@@ -41,11 +41,13 @@ echo 'org.opennms.core.ipc.aws.sqs.aws_access_key_id=XXXXXXXXXXX
 org.opennms.core.ipc.aws.sqs.aws_secret_access_key=XXXXXXXXXXX' >> "$OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties"
 ----
 
-When running OpenNMS inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file. The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run:
+When running OpenNMS inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file.
+The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run:
 
 image:../images/minion/aws-iam-role.png[]
 
-In order to use FIFO queues instead of Standard queues, it is required to add the following parameters:
+If you require consistent ordering of the messages, you should use FIFO queues instead of Standard queues.
+You can enable FIFO queues by addding the following parameter to the `aws-sqs.properties` file referenced above:
 
 [source, sh]
 ----
@@ -56,7 +58,7 @@ Restart _{opennms-product-name}_ to apply the changes.
 
 ==== Minion Configuration
 
-Enable the _AWS SQS_ producer on _Minion_ using:
+Enable the _AWS SQS_ on _Minion_ using:
 
 [source, sh]
 ----
@@ -78,9 +80,11 @@ aws_access_key_id=XXXXXXXXXXX
 aws_secret_access_key=XXXXXXXXXXX' > "$MINION_HOME/etc/org.opennms.core.ipc.aws.sqs.cfg"
 ----
 
-The AWS credentials are required. If they are not specified on the configuration file, the default credentials provider chain (explained above) will be used instead.
+The AWS credentials are required.
+If they are not specified on the configuration file, the default credentials provider chain (explained above) will be used instead.
 
-In order to use FIFO queues instead of Standard queues, it is required to add the following parameter:
+If you require consistent ordering to the messages, you should use FIFO queues instead of Standard queues.
+You can enable FIFO queues by addding the following parameter to the `org.opennms.core.ipc.aws.sqs.cfg` file referenced above:
 
 [source, sh]
 ----
@@ -148,3 +152,11 @@ There are a number of limitations when using _AWS SQS_, in particular:
 * Without batching, FIFO queues can support up to 300 messages per second (300 send, receive, or delete operations per second).
 
 See link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-limits.html[Amazon SQS Limits] for further details.
+
+===== Location names
+
+Queue names in _AWS SQS_ are limited to 80 characters.
+When issuing remote procedure calls, the target location is used a part of the queue name.
+For this reason, it is important that:
+* The length of the location name and queue name prefix (if used) must not exceed 32 characters in aggregate.
+* Both the location name and queue name prefix (if used) may only contain alphanumeric characters, hyphens (-), and underscores (_).
