@@ -349,38 +349,28 @@ E:    	for (BridgeElement element: bridgeelements) {
     public void clearTopologyForBridge(Integer bridgeId) throws BridgeTopologyException {
         m_forwarding.remove(bridgeId);
     	Bridge bridge = getBridge(bridgeId);
-    	if (bridge == null)
-    		return;
+    	if (bridge == null) {
+    	    throw new BridgeTopologyException("Bridge must be not null:" + bridgeId, this);
+    	}
         SharedSegment topsegment = getSharedSegment(bridge.getId(), bridge.getRootPort());
         if (bridge.isRootBridge()) {
             for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
                 Integer newRootId = segment.getFirstNoDesignatedBridge();
                 if (newRootId == null)
                     continue;
-                Bridge newRootBridge=null;
-                for (Bridge curBridge: getBridges()) {
-                    if (curBridge.getId().intValue() == newRootId.intValue()) {
-                        newRootBridge=curBridge;
-                        break;
-                    }
-                }
+                Bridge newRootBridge=getBridge(newRootId);
                 if (newRootBridge == null)
                     continue;
                 topsegment = getSharedSegment(newRootId,newRootBridge.getRootPort());
+                //FIXME what happens if top segment is not found
                 hierarchySetUp(newRootBridge);
                 break;
             }
         }
-        //all the topology will be merged with the segment for bridge designated port
+ 
         if (topsegment != null) {
-            topsegment.removeBridge(bridge.getId());
+            topsegment.mergeBridge(bridge.getId());
         }
-
-        for (SharedSegment segment: removeSharedSegmentOnTopologyForBridge(bridge.getId())) {
-            if (topsegment != null)
-                topsegment.mergeBridge(segment,bridge.getId());
-        }        
-
     }
 
     public List<BridgeMacLink> calculateRootBFT() throws BridgeTopologyException {
@@ -526,16 +516,22 @@ E:    	for (BridgeElement element: bridgeelements) {
     
     public static String printTopologyBFT(List<BridgeMacLink> bft) {
     	StringBuffer strbfr = new StringBuffer();
+    	boolean writenewline =false;
     	for (BridgeMacLink link: bft) {
-            strbfr.append("nodeid:[");
+    	    if (writenewline) {
+                strbfr.append("\n");
+    	    } else {
+    	        writenewline = true;
+    	    }
+            strbfr.append("       nodeid:[");
             strbfr.append(link.getNode().getId());
-            strbfr.append("]:");
+            strbfr.append("]:[");
             strbfr.append(link.getMacAddress());
-            strbfr.append(":bridgeport:");
+            strbfr.append("]:bridgeport:[");
             strbfr.append(link.getBridgePort());
-            strbfr.append(":ifindex:"); //OutofMemory  NMS-9557
+            strbfr.append("]:ifindex:["); //OutofMemory  NMS-9557
             strbfr.append(link.getBridgePortIfIndex());
-            strbfr.append("\n");
+            strbfr.append("]");
     	}
         return strbfr.toString();
     }

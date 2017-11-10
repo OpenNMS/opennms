@@ -93,12 +93,14 @@ public class Bridge implements BridgeTopology {
     
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
-        strbfr.append("bridge:[");
+        strbfr.append("bridge: nodeid[");
         strbfr.append(m_id);
-        strbfr.append("], isrootbridge:");
-        strbfr.append(m_isRootBridge);
-        strbfr.append(" designated port:");
-        strbfr.append(m_rootPort);
+        strbfr.append("], designated port: [");
+        if (m_isRootBridge) {
+            strbfr.append("isRootBridge");
+        } else {
+            strbfr.append(m_rootPort);
+        }
         strbfr.append("]\n");
         return strbfr.toString();
 

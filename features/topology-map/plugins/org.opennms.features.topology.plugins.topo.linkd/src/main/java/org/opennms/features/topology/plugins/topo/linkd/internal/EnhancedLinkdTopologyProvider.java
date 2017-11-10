@@ -86,6 +86,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.topology.BridgePort;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 import org.opennms.netmgt.model.topology.IsisTopologyLink;
@@ -755,7 +756,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+sourceRef.getId()+"-connector", targetRef);
 
         LinkdEdge edge = new LinkdEdge(nameSpace, targetRef.getId()+":"+targetport.getBridgePort(), source, target);
-        edge.setTargetNodeid(targetport.getNode().getId());
+        edge.setTargetNodeid(targetport.getNodeId());
         if (targetport.getBridgePortIfIndex() != null)
             edge.setTargetEndPoint(String.valueOf(targetport.getBridgePortIfIndex()));
         addEdges(edge);
@@ -1041,7 +1042,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private void getBridgeLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap,Map<String, List<OnmsIpInterface>> macToIpMap,Map<Integer, List<OnmsIpInterface>> ipmap, Map<Integer, OnmsIpInterface> ipprimarymap){
+    private void getBridgeLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap,Map<String, List<OnmsIpInterface>> macToIpMap,Map<Integer, List<OnmsIpInterface>> ipmap, Map<Integer, OnmsIpInterface> ipprimarymap) throws BridgeTopologyException {
         for (BroadcastDomain domain: m_bridgeTopologyDao.getAllPersisted(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao)) {
             LOG.info("loadtopology: parsing broadcast Domain: '{}', {}", domain);
             for (SharedSegment segment: domain.getTopology()) {
@@ -1070,15 +1071,15 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     }
                     continue;    
                 }
-                String cloudId = segment.getDesignatedBridge()+":"+segment.getDesignatedPort();
+                String cloudId = segment.getDesignatedBridge()+":"+segment.getDesignatedPort().getBridgePort();
                 AbstractVertex cloudVertex = addVertex(cloudId, 0, 0);
                 cloudVertex.setLabel("");
                 cloudVertex.setIconKey("cloud");
-                cloudVertex.setTooltipText("Shared Segment: " + nodemap.get(segment.getDesignatedBridge()).getLabel() + " port: " + segment.getDesignatedPort());
+                cloudVertex.setTooltipText("Shared Segment: " + nodemap.get(segment.getDesignatedBridge()).getLabel() + " port: " + segment.getDesignatedPort().getBridgePort());
                 addVertices(cloudVertex);
                 LOG.info("loadtopology: adding cloud: id: '{}', {}", cloudId, cloudVertex.getTooltipText() );
                 for (BridgePort targetport: segment.getBridgePortsOnSegment()) {
-                    Vertex target = getOrCreateVertex(nodemap.get(targetport.getNode().getId()), ipprimarymap.get(targetport.getNode().getId()));
+                    Vertex target = getOrCreateVertex(nodemap.get(targetport.getNodeId()), ipprimarymap.get(targetport.getNodeId()));
                     LinkdEdge edge = connectVertices(targetport, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
                     edge.setTooltipText(getEdgeTooltipText(targetport,target,nodesnmpmap));
                 }

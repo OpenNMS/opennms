@@ -848,8 +848,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeIId));
         domain.addBridge(new Bridge(topology.nodeLId));
         domain.setBridgeElements(topology.elemlist);
+        
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
-               ndbt.setDomain(domain);
+        ndbt.setDomain(domain);
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeFId),topology.bftF);

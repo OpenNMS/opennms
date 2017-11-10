@@ -192,33 +192,34 @@ public class SharedSegment implements BridgeTopology{
     //       A B C
     //    move all the macs and port on shared
     //  ------> topSegment {tmac...}U{smac....} {(tbridge,tport)}U{(sbridge,sport).....}
-    public boolean mergeBridge(SharedSegment shared, Integer bridgeId) throws BridgeTopologyException {
+    public boolean mergeBridge(Integer bridgeId) throws BridgeTopologyException {
         if (bridgeId == null) {
             return false;
         }
+        
         BridgePort toberemoved = getBridgePort(bridgeId);
         if (toberemoved == null) {
             return false;
         }
-        BridgePort toberemovedonsegment = shared.getBridgePort(bridgeId); 
-        if (toberemovedonsegment == null) {
-            return false;
-        }
-    	Set<BridgePort> portsOnSegment = new HashSet<BridgePort>();
+    	
+        Set<BridgePort> portsOnSegment = new HashSet<BridgePort>();
         for (BridgePort bp: m_portsOnSegment) {
         	if (   bp.getNodeId().intValue() == bridgeId.intValue()) {
         		continue;
         	}
         	portsOnSegment.add(bp);
         }
-        for (BridgePort port: shared.getBridgePortsOnSegment()) {
-            if ( port.getNodeId().intValue() == bridgeId.intValue()) {
-                continue;
-            }
-            portsOnSegment.add(port);
-        }
         m_portsOnSegment = portsOnSegment;
-    	m_macsOnSegment.addAll(shared.getMacsOnSegment());    
+        
+        for (SharedSegment shared: m_domain.removeSharedSegmentOnTopologyForBridge(bridgeId)) {
+            for (BridgePort port: shared.getBridgePortsOnSegment()) {
+                if ( port.getNodeId().intValue() == bridgeId.intValue()) {
+                    continue;
+                }
+                m_portsOnSegment.add(port);
+            }
+            m_macsOnSegment.addAll(shared.getMacsOnSegment());    
+        }
     	return true;
     }
 
@@ -297,23 +298,19 @@ public class SharedSegment implements BridgeTopology{
     
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
-            strbfr.append("segment ->\n:");
-            strbfr.append(", designated bridge:[");
+            strbfr.append("segment -> designated bridge:[");
             strbfr.append(getDesignatedBridge());
             strbfr.append("]\n");
             for (BridgePort blink:  m_portsOnSegment) {
                 if (blink == null) {
-                    strbfr.append("bridge port:[null]");
-                    strbfr.append("\n");
+                    strbfr.append("       -> port:[null]\n");
                 } else {
                     strbfr.append(blink.printTopology());
                 }
             }
-            for (String mac: getMacsOnSegment()) {
-                strbfr.append("segment mac:");
-                strbfr.append(mac);
-                strbfr.append("\n");
-            }
+            strbfr.append("        -> macs:");
+            strbfr.append(getMacsOnSegment());
+            strbfr.append("\n");
             
             return strbfr.toString();    	
     }
