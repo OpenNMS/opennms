@@ -69,9 +69,7 @@ public class SharedSegment implements BridgeTopology{
     public boolean setDesignatedBridge(Integer designatedBridge) throws BridgeTopologyException {
         if (designatedBridge == null) 
             return false;
-        if (m_designatedBridge == null)
-            throw new BridgeTopologyException("DesignatedBridge cannot be null", this);
-        if (m_designatedBridge.intValue() == designatedBridge.intValue())
+        if (m_designatedBridge != null && m_designatedBridge.intValue() == designatedBridge.intValue())
             return true;
         if (getBridgePort(designatedBridge) != null ) {
             m_designatedBridge = designatedBridge;

@@ -214,7 +214,9 @@ E:    	for (BridgeElement element: bridgeelements) {
                 return;
             }
         }
-        hierarchySetUp(getBridge(bridgeId));
+        hierarchySetUp(
+                       getBridge(
+                                 bridgeId));
     }
 
     public boolean containsAtleastOne(Set<Integer> nodeids) {
@@ -478,8 +480,12 @@ E:    	for (BridgeElement element: bridgeelements) {
     		strbfr.append("\n");
     		strbfr.append(printTopologyFromLevel(rootids,0));
     	} else {
-    		for (SharedSegment shared: getTopology())
-			strbfr.append(shared.printTopology());
+    	    for (Bridge bridge: getBridges()) {
+    	        strbfr.append(bridge.printTopology());
+    	    }
+    	    for (SharedSegment shared: getTopology()) {
+    	        strbfr.append(shared.printTopology());
+    	    }
     	}
         strbfr.append("------broadcast domain-----");
     	return strbfr.toString();

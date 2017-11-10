@@ -390,13 +390,12 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
 
         for (BroadcastDomain domain: domains) {
             if (LOG.isDebugEnabled()) {
-                LOG.info("getAllPersisted: loading root Broadcast Domain: {}", domain.getBridgeNodesOnDomain());
+                LOG.info("getAllPersisted: loading root Broadcast Domain: {}", domain.printTopology());
             }
             try {
                 domain.loadTopologyRoot();
             } catch (BridgeTopologyException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("getAllPersisted: error loading topology root", e);
             }
         }
         return domains;
