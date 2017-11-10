@@ -15,7 +15,6 @@
     <url>http://www.opennms.org</url>
 
     <properties>
-        <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
         <velocity.version>1.7</velocity.version>
     </properties>
 
