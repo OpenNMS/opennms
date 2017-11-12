@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,7 +73,7 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.topology.BridgeMacLinkHash;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
@@ -115,7 +116,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     private BridgeTopologyDao m_bridgeTopologyDao;
 
-    volatile Map<Integer, List<BridgeMacLink>> m_nodetoBroadcastDomainMap= new HashMap<Integer, List<BridgeMacLink>>();
+    volatile Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap= new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
 
     @Override
     public List<Node> getSnmpNodeList() {
@@ -608,20 +609,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public void store(int nodeId, List<BridgeMacLink> bft) {
-        Map<BridgeMacLinkHash,BridgeMacLink> effectiveBFT=new HashMap<BridgeMacLinkHash,BridgeMacLink>();        
-        for (BridgeMacLink link : bft) {
-            OnmsNode node = new OnmsNode();
-            node.setId(nodeId);
-            link.setNode(node);
-            effectiveBFT.put(new BridgeMacLinkHash(link), link);
+    public void store(int nodeId, List<BridgeForwardingTableEntry> bft) {
+        Set<BridgeForwardingTableEntry> effectiveBFT=new HashSet<BridgeForwardingTableEntry>(); 
+        for (BridgeForwardingTableEntry link : bft) {
+            link.setNodeId(nodeId);
+            effectiveBFT.add(link);
         }
         synchronized (m_nodetoBroadcastDomainMap) {
-            m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+            m_nodetoBroadcastDomainMap.put(nodeId, effectiveBFT);
         }
     }
 
-    public synchronized Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
+    public synchronized Map<Integer,Set<BridgeForwardingTableEntry>> getUpdateBftMap() {
         return m_nodetoBroadcastDomainMap;
     }
     
@@ -663,14 +662,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
     
     @Override
-    public List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
+    public Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid) {
         synchronized (m_nodetoBroadcastDomainMap) {
             return m_nodetoBroadcastDomainMap.remove(nodeid);
         }
     }
 
     @Override
-    public synchronized List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid) {
+    public synchronized Set<BridgeForwardingTableEntry> getBridgeTopologyUpdateBFT(int nodeid) {
         return m_nodetoBroadcastDomainMap.get(nodeid);
     }
 
@@ -960,12 +959,13 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     public void persistForwarders() {
         for (BroadcastDomain domain: m_bridgeTopologyDao.getAll()) {
             for (Integer nodeId: domain.getBridgeNodesOnDomain()) {
-                List<BridgeMacLink> forwarders = domain.getForwarders(nodeId);
+                Set<BridgeForwardingTableEntry> forwarders = domain.getForwarders(nodeId);
                 if (forwarders == null || forwarders.size() == 0)
                     continue;
-                for (BridgeMacLink forward: forwarders) {
-                    forward.setBridgeMacLinkLastPollTime(new Date());
-                    saveBridgeMacLink(forward);
+                for (BridgeForwardingTableEntry forward: forwarders) {
+                    BridgeMacLink link = BridgeForwardingTableEntry.getBridgeMacLink(forward);
+                    link.setBridgeMacLinkLastPollTime(new Date());
+                    saveBridgeMacLink(link);
                 }
             }
         }

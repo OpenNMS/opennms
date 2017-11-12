@@ -35,7 +35,6 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.OnmsNode;
 
 public class SharedSegment implements BridgeTopology{
     
@@ -117,31 +116,14 @@ public class SharedSegment implements BridgeTopology{
 
     public List<BridgeBridgeLink> getBridgeBridgeLinks() throws BridgeTopologyException {
         BridgePort designatedBridge = getDesignatedPort();
-        OnmsNode designatedNode = new OnmsNode();
-        designatedNode.setId(designatedBridge.getNodeId());
-        List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
+        Set<BridgePort> ports = new HashSet<BridgePort>();
         for (BridgePort port: m_portsOnSegment) {
             if (port.getNodeId().intValue()  == m_designatedBridge.intValue()) {
                 continue;
             }
-            BridgeBridgeLink link = new BridgeBridgeLink();
-            OnmsNode node = new OnmsNode();
-            node.setId(port.getNodeId());
-            link.setNode(node);
-            link.setBridgePort(port.getBridgePort());
-            link.setBridgePortIfIndex(port.getBridgePortIfIndex());
-            link.setBridgePortIfName(port.getBridgePortIfName());
-            link.setVlan(port.getVlan());
-            link.setDesignatedNode(designatedNode);
-            link.setDesignatedPort(designatedBridge.getBridgePort());
-            link.setDesignatedPortIfIndex(designatedBridge.getBridgePortIfIndex());
-            link.setDesignatedPortIfName(designatedBridge.getBridgePortIfName());
-            link.setDesignatedVlan(designatedBridge.getVlan());
-            link.setBridgeBridgeLinkCreateTime(designatedBridge.getCreateTime());
-            link.setBridgeBridgeLinkLastPollTime(designatedBridge.getPollTime());
-            links.add(link);
+            ports.add(port);
         }
-        return links;
+        return BridgePort.getBridgeBridgeLinks(ports, designatedBridge);
     }
 
 
@@ -151,7 +133,7 @@ public class SharedSegment implements BridgeTopology{
     		for (BridgePort bp: m_portsOnSegment) {
     		    if (bp == null)
     	                throw new BridgeTopologyException("BridgePort on segment should not be null", this);
-    		    maclinks.add(BridgePort.getBridgeMacLink(bp, mac));
+    		    maclinks.add(BridgeForwardingTableEntry.getBridgeMacLinkFromBridgePort(bp, mac));
     		}
     	}
         return maclinks;
@@ -173,7 +155,7 @@ public class SharedSegment implements BridgeTopology{
 
     public void add(BridgeMacLink link) {
         m_macsOnSegment.add(link.getMacAddress());
-        m_portsOnSegment.add(BridgePort.getBridgeFromBridgeMacLink(link));
+        m_portsOnSegment.add(BridgePort.getFromBridgeMacLink(link));
     }
 
     public void add(BridgeBridgeLink link) {
@@ -296,20 +278,18 @@ public class SharedSegment implements BridgeTopology{
     
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
-            strbfr.append("segment -> designated bridge:[");
-            strbfr.append(getDesignatedBridge());
-            strbfr.append("]\n");
-            for (BridgePort blink:  m_portsOnSegment) {
-                if (blink == null) {
-                    strbfr.append("       -> port:[null]\n");
-                } else {
-                    strbfr.append(blink.printTopology());
-                }
+        strbfr.append("segment -> designated bridge:[");
+        strbfr.append(getDesignatedBridge());
+        strbfr.append("]\n");
+        for (BridgePort blink:  m_portsOnSegment) {
+            if (blink == null) {
+                strbfr.append("       -> port:[null]\n");
+            } else {
+                strbfr.append(blink.printTopology());
             }
-            strbfr.append("        -> macs:");
-            strbfr.append(getMacsOnSegment());
-            strbfr.append("\n");
-            
-            return strbfr.toString();    	
+        }
+        strbfr.append("        -> macs:");
+        strbfr.append(getMacsOnSegment());        
+        return strbfr.toString();    	
     }
 }

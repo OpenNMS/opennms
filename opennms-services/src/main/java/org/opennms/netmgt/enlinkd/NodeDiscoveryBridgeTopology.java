@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.topology.Bridge;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -106,37 +106,37 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         Integer m_yx;
         Map<BridgePort, Set<String>> m_throughSetX= new HashMap<BridgePort, Set<String>>();
         Map<BridgePort, Set<String>> m_throughSetY= new HashMap<BridgePort, Set<String>>();
-        List<BridgeMacLink> m_forwardersX = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> m_forwardersY = new ArrayList<BridgeMacLink>();
+        Set<BridgeForwardingTableEntry> m_forwardersX = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> m_forwardersY = new HashSet<BridgeForwardingTableEntry>();
         Set<String> m_macsOnSegment=new HashSet<String>();
         BridgePort m_xyPort;
         BridgePort m_yxPort;
 
-        public BridgeTopologyHelper(Bridge xBridge, List<BridgeMacLink> xBFT,Bridge yBridge, List<BridgeMacLink> yBFT) {
+        public BridgeTopologyHelper(Bridge xBridge, Set<BridgeForwardingTableEntry> xBFT,Bridge yBridge, Set<BridgeForwardingTableEntry> yBFT) {
             super();
-            Map<String,BridgeMacLink> xmactoport = new HashMap<String, BridgeMacLink>();
-            Map<String,BridgeMacLink> ymactoport = new HashMap<String, BridgeMacLink>();
+            Map<String,BridgeForwardingTableEntry> xmactoport = new HashMap<String, BridgeForwardingTableEntry>();
+            Map<String,BridgeForwardingTableEntry> ymactoport = new HashMap<String, BridgeForwardingTableEntry>();
             Set<String> xmacs = new HashSet<String>();
             Set<String> ymacs = new HashSet<String>();             		
             if (LOG.isDebugEnabled()) {
                 LOG.debug("simple connection [{} <--> {}]: searching.\n xbft -> \n{}\n ybft -> \n{}",
                     xBridge.getId(),
                     yBridge.getId(),
-                    BroadcastDomain.printTopologyBFT(xBFT),
-                    BroadcastDomain.printTopologyBFT(yBFT));
+                    BridgeForwardingTableEntry.printTopology(xBFT),
+                    BridgeForwardingTableEntry.printTopology(yBFT));
             }
-            for (BridgeMacLink xlink: xBFT) {
-                if (xBridge.getId().intValue() == xlink.getNode().getId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
+            for (BridgeForwardingTableEntry xlink: xBFT) {
+                if (xBridge.getId().intValue() == xlink.getNodeId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     xmactoport.put(xlink.getMacAddress(), xlink);
                 }
-                if (xBridge.getId().intValue() == xlink.getNode().getId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
+                if (xBridge.getId().intValue() == xlink.getNodeId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
                     xmacs.add(xlink.getMacAddress());
             }
-            for (BridgeMacLink ylink: yBFT) {
-                if (yBridge.getId().intValue() == ylink.getNode().getId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
+            for (BridgeForwardingTableEntry ylink: yBFT) {
+                if (yBridge.getId().intValue() == ylink.getNodeId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     ymactoport.put(ylink.getMacAddress(), ylink);
                 }
-                if (yBridge.getId().intValue() == ylink.getNode().getId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
+                if (yBridge.getId().intValue() == ylink.getNodeId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
                     ymacs.add(ylink.getMacAddress());
             }
             if (m_domain.getBridgeMacAddresses(xBridge.getId()) != null)
@@ -196,9 +196,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 return;
             }
             
-            BridgeMacLink xylink = null;
-            BridgeMacLink yxlink = null;
-            for (BridgeMacLink xlink: xBFT) {
+            BridgeForwardingTableEntry xylink = null;
+            BridgeForwardingTableEntry yxlink = null;
+            for (BridgeForwardingTableEntry xlink: xBFT) {
                 if (xlink.getBridgePort() == m_xy && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     if (ymactoport.get(xlink.getMacAddress()) != null 
                     		&& m_yx == ymactoport.get(xlink.getMacAddress()).getBridgePort()) {
@@ -208,7 +208,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                                   m_xy,
                                   yBridge.getId()
                                   , m_yx,
-                                  xlink.getNode().getId(),
+                                  xlink.getNodeId(),
                     		xlink.getBridgePort(),
                     		xlink.getMacAddress());
                     } else if (ymactoport.get(xlink.getMacAddress()) == null){
@@ -218,7 +218,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                                   m_xy,
                                   yBridge.getId()
                                   , m_yx,
-                                  xlink.getNode().getId(),
+                                  xlink.getNodeId(),
                                 xlink.getBridgePort(),
                                 xlink.getMacAddress());
                     }
@@ -230,17 +230,17 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                               m_xy,
                               yBridge.getId()
                               , m_yx,
-                              xlink.getNode().getId(),
+                              xlink.getNodeId(),
                             xlink.getBridgePort(),
                             xlink.getMacAddress());
-                    if (!m_throughSetX.containsKey(BridgePort.getBridgeFromBridgeMacLink(xlink))) {
-                    	m_throughSetX.put(BridgePort.getBridgeFromBridgeMacLink(xlink), new HashSet<String>());
+                    if (!m_throughSetX.containsKey(BridgePort.getFromBridgeForwardingTableEntry(xlink))) {
+                    	m_throughSetX.put(BridgePort.getFromBridgeForwardingTableEntry(xlink), new HashSet<String>());
                     }
-                    m_throughSetX.get(BridgePort.getBridgeFromBridgeMacLink(xlink)).add(xlink.getMacAddress());
+                    m_throughSetX.get(BridgePort.getFromBridgeForwardingTableEntry(xlink)).add(xlink.getMacAddress());
                 }
             }
             
-            for (BridgeMacLink ylink: yBFT) {
+            for (BridgeForwardingTableEntry ylink: yBFT) {
                 if (ylink.getBridgePort() == m_yx && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     if ( xmactoport.get(ylink.getMacAddress()) != null &&
                     		m_xy == xmactoport.get(ylink.getMacAddress()).getBridgePort()) {
@@ -250,7 +250,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                                   m_xy,
                                   yBridge.getId()
                                   , m_yx,
-                                  ylink.getNode().getId(),
+                                  ylink.getNodeId(),
                                 ylink.getBridgePort(),
                                 ylink.getMacAddress());
                     } else if (xmactoport.get(ylink.getMacAddress()) == null){
@@ -260,7 +260,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                                   m_xy,
                                   yBridge.getId()
                                   , m_yx,
-                                  ylink.getNode().getId(),
+                                  ylink.getNodeId(),
                                 ylink.getBridgePort(),
                                 ylink.getMacAddress());
                     }
@@ -272,13 +272,13 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                               m_xy,
                               yBridge.getId()
                               , m_yx,
-                              ylink.getNode().getId(),
+                              ylink.getNodeId(),
                             ylink.getBridgePort(),
                             ylink.getMacAddress());
-                    if (!m_throughSetY.containsKey(BridgePort.getBridgeFromBridgeMacLink(ylink))) {
-                    	m_throughSetY.put(BridgePort.getBridgeFromBridgeMacLink(ylink), new HashSet<String>());
+                    if (!m_throughSetY.containsKey(BridgePort.getFromBridgeForwardingTableEntry(ylink))) {
+                    	m_throughSetY.put(BridgePort.getFromBridgeForwardingTableEntry(ylink), new HashSet<String>());
                     }
-                    m_throughSetY.get(BridgePort.getBridgeFromBridgeMacLink(ylink)).add(ylink.getMacAddress());
+                    m_throughSetY.get(BridgePort.getFromBridgeForwardingTableEntry(ylink)).add(ylink.getMacAddress());
                 }
             }
             LOG.debug("simple connection: [{}, port {}] <--> [{}, port {}], interse set:{}.",
@@ -289,15 +289,15 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             		m_macsOnSegment);
     
             if (yxlink != null ) {
-                m_yxPort = BridgePort.getBridgeFromBridgeMacLink(yxlink);
+                m_yxPort = BridgePort.getFromBridgeForwardingTableEntry(yxlink);
             }
             
             if (xylink != null) {
-                m_xyPort = BridgePort.getBridgeFromBridgeMacLink(xylink);
+                m_xyPort = BridgePort.getFromBridgeForwardingTableEntry(xylink);
             }
         }
 
-        private List<Integer> condition3(Set<String> commonlearnedmacs,Map<String,BridgeMacLink> xbft,Map<String,BridgeMacLink> ybft) {
+        private List<Integer> condition3(Set<String> commonlearnedmacs,Map<String,BridgeForwardingTableEntry> xbft,Map<String,BridgeForwardingTableEntry> ybft) {
         
         //
         // condition 3XY
@@ -409,7 +409,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         // condition 2 yx found                         m_x belongs to FDB(yx,Y)
         // if exists m_1 and m_2, p1 and p2 on Y :      m_1 belongs to FDB(p1,Y) FDB(xy,X)
         //                                              m_2 belongs to FDB(p2,Y) FDB(xy,X)
-        private Integer condition2(Set<String> commonlearnedmacs, Integer yx, Map<String,BridgeMacLink> ybft, Map<String,BridgeMacLink> xbft) {
+        private Integer condition2(Set<String> commonlearnedmacs, Integer yx, Map<String,BridgeForwardingTableEntry> ybft, Map<String,BridgeForwardingTableEntry> xbft) {
             String mac1=null;
             String mac2=null;
             Integer p1=null;
@@ -456,7 +456,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             return null;
         }
         
-        private Integer condition1(Set<String> bridgemacaddressess, Map<String,BridgeMacLink> otherbridgebft) {
+        private Integer condition1(Set<String> bridgemacaddressess, Map<String,BridgeForwardingTableEntry> otherbridgebft) {
             for (String mac: bridgemacaddressess) {
                 if (otherbridgebft.containsKey(mac)) {
                     LOG.debug("condition1: base address {} --> port: {} ",
@@ -499,11 +499,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         	return m_throughSetY;
         }
 
-        public List<BridgeMacLink> getFirstBridgeForwarders() {
+        public Set<BridgeForwardingTableEntry> getFirstBridgeForwarders() {
             return m_forwardersX;
         }
 
-        public List<BridgeMacLink> getSecondBridgeForwarders() {
+        public Set<BridgeForwardingTableEntry> getSecondBridgeForwarders() {
             return m_forwardersY;
         }
 
@@ -516,7 +516,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
     }
 
-    Map<Bridge,List<BridgeMacLink>> m_notYetParsedBFTMap;
+    Map<Bridge,Set<BridgeForwardingTableEntry>> m_notYetParsedBFTMap;
     BroadcastDomain m_domain;
     //List<BridgeStpLink> m_STPLinks = new ArrayList<BridgeStpLink>();
 
@@ -528,21 +528,21 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         m_domain = domain;
     }
 
-    public Map<Bridge, List<BridgeMacLink>> getNotYetParsedBFTMap() {
+    public Map<Bridge, Set<BridgeForwardingTableEntry>> getNotYetParsedBFTMap() {
         return m_notYetParsedBFTMap;
     }
 
-    public void addUpdatedBFT(Bridge bridge, List<BridgeMacLink> notYetParsedBFTMap) {
+    public void addUpdatedBFT(Bridge bridge, Set<BridgeForwardingTableEntry> notYetParsedBFT) {
         if (m_notYetParsedBFTMap==null)
-            m_notYetParsedBFTMap = new HashMap<Bridge, List<BridgeMacLink>>();
-        m_notYetParsedBFTMap.put(bridge, notYetParsedBFTMap);
+            m_notYetParsedBFTMap = new HashMap<Bridge, Set<BridgeForwardingTableEntry>>();
+        m_notYetParsedBFTMap.put(bridge, notYetParsedBFT);
     }
 
     public NodeDiscoveryBridgeTopology(EnhancedLinkd linkd, Node node) {
         super(linkd, node);
     }
 
-    private Set<Integer> getAllNodesWithUpdatedBFTOnDomain(Set<String>incomingSet, Map<Integer,List<BridgeMacLink>> nodeBftMap) {
+    private Set<Integer> getAllNodesWithUpdatedBFTOnDomain(Set<String>incomingSet, Map<Integer,Set<BridgeForwardingTableEntry>> nodeBftMap) {
         Set<Integer> nodeswithupdatedbftonbroadcastdomain= new HashSet<Integer>();
         nodeswithupdatedbftonbroadcastdomain.add(getNodeId());
 
@@ -552,7 +552,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 if (curNodeId.intValue() == getNodeId())
                     continue;
                 Set<String>retainedSet = new HashSet<String>();
-                for (BridgeMacLink link: nodeBftMap.get(curNodeId)) {
+                for (BridgeForwardingTableEntry link: nodeBftMap.get(curNodeId)) {
                     retainedSet.add(link.getMacAddress());
                 }
                 LOG.debug("run: node: [{}], parsing updated bft node: [{}], macs {}", getNodeId(), curNodeId,retainedSet);
@@ -579,7 +579,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             return;
         }
 
-    	List<BridgeMacLink> links =  m_linkd.
+    	Set<BridgeForwardingTableEntry> links =  m_linkd.
         		getQueryManager().
         		getBridgeTopologyUpdateBFT(
         				getNodeId());
@@ -591,7 +591,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 
         Set<String> incomingSet = new HashSet<String>();
         synchronized (links) {
-            for (BridgeMacLink link : links) {
+            for (BridgeForwardingTableEntry link : links) {
                 incomingSet.add(link.getMacAddress());
             }            
         }
@@ -630,7 +630,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
         LOG.info("run: node: [{}], getting broadcast domain. End", getNodeId());
                 
-        Map<Integer,List<BridgeMacLink>> nodeBftMap = m_linkd.getQueryManager().getUpdateBftMap();
+        Map<Integer,Set<BridgeForwardingTableEntry>> nodeBftMap = m_linkd.getQueryManager().getUpdateBftMap();
         Set<Integer> nodeswithupdatedbftonbroadcastdomain = getAllNodesWithUpdatedBFTOnDomain(incomingSet,nodeBftMap);            
 
         LOG.info("run: node: [{}], clean broadcast domains. Start", getNodeId());
@@ -671,12 +671,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         LOG.info("run: node: [{}], clean broadcast domains. End", getNodeId());
 
         synchronized (m_domain) {
-            m_notYetParsedBFTMap = new HashMap<Bridge, List<BridgeMacLink>>();
+            m_notYetParsedBFTMap = new HashMap<Bridge, Set<BridgeForwardingTableEntry>>();
             for (Integer nodeid : nodeswithupdatedbftonbroadcastdomain) {
                 sendStartEvent(nodeid);
                 m_domain.addBridge(new Bridge(nodeid));
                 LOG.debug("run: node: [{}], getting update bft for node [{}] on domain", getNodeId(), nodeid);
-                List<BridgeMacLink> bft = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
+                Set<BridgeForwardingTableEntry> bft = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
                 if (bft == null || bft.isEmpty()) {
                     LOG.debug("run: node: [{}], no update bft for node [{}] on domain", getNodeId(), nodeid);
                     continue;
@@ -796,7 +796,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             return;
         }
         
-        List<BridgeMacLink> rootBft = m_notYetParsedBFTMap.remove(electedRoot);
+        Set<BridgeForwardingTableEntry> rootBft = m_notYetParsedBFTMap.remove(electedRoot);
         
         if (m_domain.hasRootBridge() && m_domain.getRootBridge().getId() == electedRoot.getId() && rootBft == null) {
             LOG.debug("calculate: node: [{}], elected root bridge: [{}], old root bridge. no updated bft",
@@ -842,7 +842,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         Set<Bridge> nodetobeparsed = new HashSet<Bridge>(m_notYetParsedBFTMap.keySet());
         for (Bridge xBridge: nodetobeparsed) {
-            List<BridgeMacLink> xBft = new ArrayList<BridgeMacLink>(m_notYetParsedBFTMap.remove(xBridge));
+            Set<BridgeForwardingTableEntry> xBft = new HashSet<BridgeForwardingTableEntry>(m_notYetParsedBFTMap.remove(xBridge));
             calculate(electedRoot, rootBft, xBridge, xBft);            
         }
         m_domain.cleanForwarders();
@@ -858,13 +858,13 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
     }
      
-    private void addForwarding(BroadcastDomain domain, List<BridgeMacLink> bft) {
-        for (BridgeMacLink maclink: bft) {
+    private void addForwarding(BroadcastDomain domain, Set<BridgeForwardingTableEntry> bft) {
+        for (BridgeForwardingTableEntry maclink: bft) {
             if (domain.getMacsOnDomain().contains(maclink.getMacAddress())) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("calculate: node: [{}]. Skipping forwarding: {}",
                           getNodeId(), 
-                          BroadcastDomain.printTopologyLink(maclink));
+                          maclink.printTopology());
                 }
                 continue;                    
             }
@@ -872,23 +872,23 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("calculate: node: [{}]. Adding forwarding: {}",
                       getNodeId(), 
-                      BroadcastDomain.printTopologyLink(maclink));
+                      maclink.printTopology());
             }
         }
     }
 
-    private void loadFirstLevelSharedSegment(List<BridgeMacLink> electedRootBFT) throws BridgeTopologyException {
+    private void loadFirstLevelSharedSegment(Set<BridgeForwardingTableEntry> electedRootBFT) throws BridgeTopologyException {
         Map<BridgePort, Set<String>> rootleafs = new HashMap<BridgePort, Set<String>>();
         
-        for (BridgeMacLink link : electedRootBFT) {
+        for (BridgeForwardingTableEntry link : electedRootBFT) {
             if (link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                 continue;
             }
-            if (!rootleafs.containsKey(BridgePort.getBridgeFromBridgeMacLink(link))) {
-                rootleafs.put(BridgePort.getBridgeFromBridgeMacLink(link),
+            if (!rootleafs.containsKey(BridgePort.getFromBridgeForwardingTableEntry(link))) {
+                rootleafs.put(BridgePort.getFromBridgeForwardingTableEntry(link),
                               new HashSet<String>());
             }
-            rootleafs.get(BridgePort.getBridgeFromBridgeMacLink(link)).add(link.getMacAddress());
+            rootleafs.get(BridgePort.getFromBridgeForwardingTableEntry(link)).add(link.getMacAddress());
         }
         
         for (BridgePort port : rootleafs.keySet()) {
@@ -905,9 +905,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
    }
     
     private void calculate(Bridge root,  
-            List<BridgeMacLink> rootbft, 
+            Set<BridgeForwardingTableEntry> rootbft, 
             Bridge xBridge, 
-            List<BridgeMacLink> xbft) throws BridgeTopologyException {
+            Set<BridgeForwardingTableEntry> xbft) throws BridgeTopologyException {
         //FIXME        checkStp(root, xBridge);
         BridgeTopologyHelper rx = new BridgeTopologyHelper(root, rootbft, xBridge,xbft);
         Integer rxDesignatedPort = rx.getFirstBridgeConnectionPort();
@@ -960,7 +960,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     private boolean findBridgesTopo(BridgeTopologyHelper rx,
             SharedSegment topSegment, 
             Bridge xBridge, 
-            List<BridgeMacLink> xBFT, 
+            Set<BridgeForwardingTableEntry> xBFT, 
             int level) throws BridgeTopologyException {
         if (topSegment == null) {
             LOG.warn("calculate: node: [{}]: level: {}, bridge: [{}], top segment is null exiting.....",
@@ -987,8 +987,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
         Set<Integer> portsAdded=new HashSet<Integer>();
         Set<String> macsOnSegment=rx.getSimpleConnectionMacs();
-        Map<Integer,List<BridgeMacLink>> bftSets=new HashMap<Integer,List<BridgeMacLink>>();
-        List<BridgeMacLink> forwarders = new ArrayList<BridgeMacLink>();
+        Map<Integer,Set<BridgeForwardingTableEntry>> bftSets=new HashMap<Integer,Set<BridgeForwardingTableEntry>>();
+        Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
         forwarders.addAll(rx.getFirstBridgeForwarders());
         forwarders.addAll(rx.getSecondBridgeForwarders());
 

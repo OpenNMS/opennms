@@ -50,9 +50,9 @@ import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
-import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +107,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         	vlanmap.put(null, null);
         }
         
-        List<BridgeMacLink> bft = new ArrayList<BridgeMacLink>();
+        List<BridgeForwardingTableEntry> bft = new ArrayList<BridgeForwardingTableEntry>();
         Map<Integer, Integer> bridgeifindex = new HashMap<Integer, Integer>();
 
         for (Entry<Integer, SnmpAgentConfig> entry : vlanSnmpAgentConfigMap.entrySet()) {
@@ -296,16 +296,16 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         return bridgetoifindex;
     }
 
-    private List<BridgeMacLink> walkDot1dTpFdp(final String vlan,final Integer vlanId,
+    private List<BridgeForwardingTableEntry> walkDot1dTpFdp(final String vlan,final Integer vlanId,
             final Map<Integer, Integer> bridgeifindex,
-            List<BridgeMacLink> bft, SnmpAgentConfig peer) {
+            List<BridgeForwardingTableEntry> bft, SnmpAgentConfig peer) {
 
         Dot1dTpFdbTableTracker dot1dTpFdbTableTracker = new Dot1dTpFdbTableTracker() {
 
         	
             @Override
             public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
-                BridgeMacLink link = row.getLink();
+                BridgeForwardingTableEntry link = row.getLink();
                 if (link.getBridgeDot1qTpFdbStatus() == null) {
                     LOG.info("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {}. row has null status. ",
                     		getNodeId(),
@@ -401,15 +401,15 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         		bridgeport,bridgeifindex.get(bridgeport));
     }
     
-    private List<BridgeMacLink> walkDot1qTpFdb(SnmpAgentConfig peer,
+    private List<BridgeForwardingTableEntry> walkDot1qTpFdb(SnmpAgentConfig peer,
             final Map<Integer, Integer> bridgeifindex,
-            final List<BridgeMacLink> bft) {
+            final List<BridgeForwardingTableEntry> bft) {
 
         Dot1qTpFdbTableTracker dot1qTpFdbTableTracker = new Dot1qTpFdbTableTracker() {
 
             @Override
             public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
-                BridgeMacLink link = row.getLink();
+                BridgeForwardingTableEntry link = row.getLink();
 
                 if (link.getBridgeDot1qTpFdbStatus() == null) {
                     LOG.info("processDot1qTpFdbRow: node [{}]: mac {}: on port {}. row has null status.",

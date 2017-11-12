@@ -46,6 +46,8 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_SNMP_RESOURCE;
 
 import java.util.List;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
@@ -53,6 +55,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
 
 public class Nms7918EnIT extends EnLinkdBuilderITCase {
@@ -163,10 +166,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
-        List<BridgeMacLink> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(stcasw01.getId());
+        Set<BridgeForwardingTableEntry> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(stcasw01.getId());
         
         assertEquals(34, links.size());
-        for (BridgeMacLink link: links) {
+        for (BridgeForwardingTableEntry link: links) {
             System.err.println(link.printTopology());
         }
 
@@ -216,7 +219,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(34,m_bridgeMacLinkDao.countAll());
         
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            System.err.println(link.printTopology());
+            System.err.println(BridgeForwardingTableEntry.getFromBridgeMacLink(link).printTopology());
         }
         
         
@@ -236,7 +239,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(34,m_bridgeMacLinkDao.countAll());
 
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            System.err.println(link.printTopology());
+            System.err.println(BridgeForwardingTableEntry.getFromBridgeMacLink(link).printTopology());
         }
 
         
@@ -269,10 +272,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
-        List<BridgeMacLink> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(samasw01.getId());
+        Set<BridgeForwardingTableEntry> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(samasw01.getId());
         
         assertEquals(31, links.size());
-        for (BridgeMacLink link: links) {
+        for (BridgeForwardingTableEntry link: links) {
             System.err.println(link.printTopology());
         }
 
@@ -322,7 +325,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(31,m_bridgeMacLinkDao.countAll());
         
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            System.err.println(link.printTopology());
+            System.err.println(BridgeForwardingTableEntry.getFromBridgeMacLink(link).printTopology());
         }
         
         
@@ -342,7 +345,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(31,m_bridgeMacLinkDao.countAll());
 
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            System.err.println(link.printTopology());
+            System.err.println(BridgeForwardingTableEntry.getFromBridgeMacLink(link).printTopology());
         }
 
         
@@ -375,10 +378,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
-        List<BridgeMacLink> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(asw01.getId());
+        Set<BridgeForwardingTableEntry> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(asw01.getId());
         
         assertEquals(40, links.size());;
-        for (BridgeMacLink link: links) {
+        for (BridgeForwardingTableEntry link: links) {
             System.err.println(link.printTopology());
         }
 
@@ -427,7 +430,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(40,m_bridgeMacLinkDao.countAll());
         
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            System.err.println(link.printTopology());
+            System.err.println(BridgeForwardingTableEntry.getFromBridgeMacLink(link).printTopology());
         }
         
         
@@ -449,7 +452,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(40,m_bridgeMacLinkDao.countAll());
 
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            System.err.println(link.printTopology());
+            System.err.println(BridgeForwardingTableEntry.getFromBridgeMacLink(link).printTopology());
         }
 
         

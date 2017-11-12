@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
@@ -45,6 +44,7 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 
 /**
@@ -126,7 +126,7 @@ public interface EnhancedLinkdService {
 
     void store(int nodeId, BridgeStpLink link);
 
-    void store(int nodeId, List<BridgeMacLink> link);
+    void store(int nodeId, List<BridgeForwardingTableEntry> bft);
     
     void store(BroadcastDomain domain, Date now);
     
@@ -136,13 +136,13 @@ public interface EnhancedLinkdService {
 
     Set<BroadcastDomain> getAllBroadcastDomains();
     
-    Map<Integer, List<BridgeMacLink>> getUpdateBftMap();
+    Map<Integer, Set<BridgeForwardingTableEntry>> getUpdateBftMap();
     
     BroadcastDomain getBroadcastDomain(int nodeId);
 
-    List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid);
+    Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid);
 
-    List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid);
+    Set<BridgeForwardingTableEntry> getBridgeTopologyUpdateBFT(int nodeid);
 
     boolean hasUpdatedBft(int nodeid);
         

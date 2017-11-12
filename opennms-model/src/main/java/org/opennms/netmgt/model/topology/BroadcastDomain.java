@@ -37,9 +37,7 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 
 public class BroadcastDomain implements BridgeTopology {
     
@@ -47,34 +45,35 @@ public class BroadcastDomain implements BridgeTopology {
 
     volatile List<SharedSegment> m_topology = new ArrayList<SharedSegment>();    
     
-    volatile Map<Integer,List<BridgeMacLink>> m_forwarding = new HashMap<Integer,List<BridgeMacLink>>();
+    volatile Map<Integer,Set<BridgeForwardingTableEntry>> m_forwarding = new HashMap<Integer,Set<BridgeForwardingTableEntry>>();
 
-    public void addForwarding(BridgeMacLink forward) {
-                Integer bridgeid = forward.getNode().getId();
+    public void addForwarding(BridgeForwardingTableEntry forward) {
+                Integer bridgeid = forward.getNodeId();
                 if (bridgeid == null) {
                     return;
                 }
                 if (!m_forwarding.containsKey(bridgeid)) {
-                    m_forwarding.put(bridgeid, new ArrayList<BridgeMacLink>());
+                    m_forwarding.put(bridgeid, new HashSet<BridgeForwardingTableEntry>());
                 }
                 m_forwarding.get(bridgeid).add(forward);
     }
 
-    public void addForwarders(Integer bridgeid, List<BridgeMacLink> forwarders) {
+    public void addForwarders(Integer bridgeid, Set<BridgeForwardingTableEntry> forwarders) {
             m_forwarding.put(bridgeid, forwarders);
     }
     
-    public List<BridgeMacLink> getForwarders(Integer bridgeId) {
-        if (!m_forwarding.containsKey(bridgeId))
-            m_forwarding.put(bridgeId, new ArrayList<BridgeMacLink>());
-        return m_forwarding.get(bridgeId);
+    public Set<BridgeForwardingTableEntry> getForwarders(Integer bridgeId) {
+        if (m_forwarding.containsKey(bridgeId)) {
+            return m_forwarding.get(bridgeId);
+        }
+        return new HashSet<BridgeForwardingTableEntry>();
     }
     
     public void cleanForwarders() {
-        Map<Integer, List<BridgeMacLink>> forwadingMap=new HashMap<Integer, List<BridgeMacLink>>();
+        Map<Integer, Set<BridgeForwardingTableEntry>> forwadingMap=new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
         for (Integer bridgeId: m_forwarding.keySet()) {
-            List<BridgeMacLink> forwarders = new ArrayList<BridgeMacLink>();
-            for (BridgeMacLink forward: m_forwarding.get(bridgeId)) {
+            Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
+            for (BridgeForwardingTableEntry forward: m_forwarding.get(bridgeId)) {
                 if (getMacsOnDomain().contains(forward.getMacAddress()))
                     continue;
                 forwarders.add(forward);
@@ -375,20 +374,18 @@ E:    	for (BridgeElement element: bridgeelements) {
         }
     }
 
-    public List<BridgeMacLink> calculateRootBFT() throws BridgeTopologyException {
+    public Set<BridgeForwardingTableEntry> calculateRootBFT() throws BridgeTopologyException {
     	Bridge root = getRootBridge();
     	if (root == null)
     		return null;
     	return calculateBFT(root);
     }
     
-    public List<BridgeMacLink> calculateBFT(Bridge bridge) throws BridgeTopologyException {
+    public Set<BridgeForwardingTableEntry> calculateBFT(Bridge bridge) throws BridgeTopologyException {
         Map<Integer,Set<String>> bft = new HashMap<Integer, Set<String>>();
         Map<Integer,BridgePort> portifindexmap = new HashMap<Integer, BridgePort>();
         Integer bridgeId = bridge.getId();
-        List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
-        OnmsNode node=new OnmsNode();
-        node.setId(bridgeId);
+        Set<BridgeForwardingTableEntry> links = new HashSet<BridgeForwardingTableEntry>();
         for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
             BridgePort bridgeport = segment.getBridgePort(bridgeId);
             portifindexmap.put(bridgeport.getBridgePort(), bridgeport);
@@ -410,11 +407,10 @@ E:    	for (BridgeElement element: bridgeelements) {
             
         for (Integer bridgePort: bft.keySet()) {
             for (String mac: bft.get(bridgePort)) {
-                BridgeMacLink link = new BridgeMacLink();
-                link.setNode(node);
+                BridgeForwardingTableEntry link = new BridgeForwardingTableEntry();
+                link.setNodeId(bridgeId);
                 link.setBridgePort(bridgePort);
                 link.setBridgePortIfIndex(portifindexmap.get(bridgePort).getBridgePortIfIndex()); //NPE? NMS-9557
-                link.setBridgePortIfName(portifindexmap.get(bridgePort).getBridgePortIfName()); //NPE? NMS-9557
                 link.setVlan(portifindexmap.get(bridgePort).getVlan());
                 link.setMacAddress(mac);
                 link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
@@ -506,6 +502,7 @@ E:    	for (BridgeElement element: bridgeelements) {
         	for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeid)) {
         		if (segment.getDesignatedBridge().intValue() == bridgeid.intValue()) {
         			strbfr.append(segment.printTopology());
+                                strbfr.append("\n");
         			bridgesDownLevel.addAll(segment.getBridgeIdsOnSegment());
         		}
         	}
@@ -520,41 +517,6 @@ E:    	for (BridgeElement element: bridgeelements) {
     	return strbfr.toString();
     }
     
-    public static String printTopologyBFT(List<BridgeMacLink> bft) {
-    	StringBuffer strbfr = new StringBuffer();
-    	boolean writenewline =false;
-    	for (BridgeMacLink link: bft) {
-    	    if (writenewline) {
-                strbfr.append("\n");
-    	    } else {
-    	        writenewline = true;
-    	    }
-            strbfr.append("       nodeid:[");
-            strbfr.append(link.getNode().getId());
-            strbfr.append("]:[");
-            strbfr.append(link.getMacAddress());
-            strbfr.append("]:bridgeport:[");
-            strbfr.append(link.getBridgePort());
-            strbfr.append("]:ifindex:["); //OutofMemory  NMS-9557
-            strbfr.append(link.getBridgePortIfIndex());
-            strbfr.append("]");
-    	}
-        return strbfr.toString();
-    }
-
-    public static String printTopologyLink(BridgeMacLink link) {
-        StringBuffer strbfr = new StringBuffer();
-            strbfr.append("nodeid:[");
-            strbfr.append(link.getNode().getId());
-            strbfr.append("]:");
-            strbfr.append(link.getMacAddress());
-            strbfr.append(":bridgeport:");
-            strbfr.append(link.getBridgePort());
-            strbfr.append(":ifindex:");
-            strbfr.append(link.getBridgePortIfIndex());
-        return strbfr.toString();
-    }
-
     public Bridge electRootBridge() {
         if (getBridges().size() == 1) 
             return getBridges().iterator().next();
