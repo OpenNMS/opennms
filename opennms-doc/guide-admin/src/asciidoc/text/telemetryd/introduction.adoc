@@ -1,0 +1,40 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+The telemetry daemon (telemetryd) provides an extensible framework that can be used to handle sensor data pushed to _{opennms-product-name}_.
+The extensible framework is used to implement support for a variety of applications which use different protocols to transfer metrics.
+In _telemetryd_ an operator can define a series of protocols, each of which has at least one _Listener_, and at least one _Adapter_.
+
+.Generic component overview of protocol implementations in Telemetryd
+image::telemetryd/telemetryd-overview.png[]
+
+The _Listener_ and _Adapter_ together with it's configuration build a _Protocol_ for an application.
+
+=== What is a Listener
+
+A _Listener_ is responsible for receiving sensor data from some external source.
+For example, this may include listening for packets from an UDP socket, retrieving messages from an _MQTT_ topic, etc...
+It is possible to configure multiple _Listeners_.
+
+=== What is an Adapter
+
+An _Adapter_ is responsible for processing the byte streams dispatched by the _Listeners_.
+For example, this may include decoding a specific _JSON_ format, persisting metrics and/or generating events.
+
+The framework does not make any assumption about the data about being received or processed, leaving this up to the _Listener_ and _Adapter_ implementation.
+
+TIP: In case you have multiple _Adapters_, the execution order is the same as defined in the `telemetryd-configuration.xml`.
+
+=== What are Protocols
+
+A _Protocol_ is composed with at least one _Listener_ and at least one _Adapter_ and their configuration.
+With a _Protocol_ it is possible to process sensor data from _Juniper Telemetry Interface (JTI)_ or _Netflow v5_.
+
+=== Push Sensor Data through Minion
+
+_Listeners_ may run on either _{opennms-product-name}_ or _Minion_, whereas adapters run exclusively on _{opennms-product-name}_.
+If a listener is running on _Minion_, the received messages will be automatically dispatched to the associated adapter(s) running in _{opennms-product-name}_.
+
+.Running Listener on a Minion forwarding packets using the messaging system
+image::telemetryd/telemetryd-minion.png[]
