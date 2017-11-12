@@ -1,0 +1,120 @@
+
+[[telemetryd-netflow5-protocol]]
+==== NetFlow Version 5
+
+link:https://www.cisco.com/c/en/us/td/docs/net_mgmt/netflow_collection_engine/3-6/user/guide/format.html[NetFlow] is a protocol that provides the ability to collect IP network traffic from network devices and administrators can determine and analyze the network communication.
+This protocol allows to process and persist NetFlow v5 packets with _{opennms-product-name}_.
+Data is persisted in link:https://www.elastic.co/products/elasticsearch[ElasticSearch] and can be analyzed with link:https://www.elastic.co/products/kibana[Kibana].
+
+IMPORTANT: The NetFlow v5 requires a running ElasticSearch 5.6+ to persist the NetFlow data.
+
+By default the persistence is not installed by default and can be enabled through the Karaf Console with:
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> feature:install flows
+----
+
+Ensure the _flow_ feature is installed also when Karaf cache is cleaned by adding it to `featuresBoot` in `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
+
+[source, xml]
+----
+featuresBoot = ( \
+    instance, \
+.
+.
+.
+  ifttt-integration, \
+  flows
+----
+
+To enable support for NetFlow v5, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` and add the following protocol configuration:
+
+.Enable NetFlow v5 in telemetryd-configuration.xml
+[source, xml]
+----
+<protocol name="Netflow-5" description="Listener for Netflow 5 UDP packets" enabled="true">
+   <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
+        <parameter key="port" value="8877"/>
+    </listener>
+
+    <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter">
+    </adapter>
+ </protocol>
+----
+
+Apply the changes without restarting by sending a `reloadDaemonConfig` event in the CLI or the WebUI:
+
+.Send a reloadDaemonConfig event through CLI
+[source]
+----
+${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+----
+
+By default, this will open a UDP socket bound to `0.0.0.0:8877` to which _NetFlow v5_ messages can be forwarded.
+
+===== Configure ElasticSearch Persistence
+
+The _NetFlow 5 Adapter_ persists the data to _ElasticSearch_ and access needs to be configured on the _{opennms-product-name}_ system through _Karaf Console_:
+
+.Minimal configuration to access ElasticSearch
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.flows.persistence.elastic
+admin@minion()> config:property-set elasticUrl http://elasticsearch:9200
+admin@minion()> config:update
+----
+
+The following configuration properties can be set:
+
+[options="header, autowidth"]
+|===
+| Property               | Description                                                                                                                         | Required | default
+| _elasticUrl_           | URL to ReST API of ElasticSearch which is by default on port 9200                                                                   | required | -
+| _elasticIndexStrategy_ | Index strategy for data, allowed values _yearly_, _monthly_, _daily_, _hourly_                                                      | optional | `daily`
+| _elasticUser_          | User name in when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured | optional | -
+| _elasticPassword_      | Password in when _X-Pack Security_ is configured                                                                                    | optional | -
+|===
+
+The configuration properties will be stored in `${OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+
+TIP: If a configuration management tool is used, the properties file can be created and is used as startup configuration
+
+.Configuration properties for access to ElasticSearch
+[source]
+----
+elasticUrl=http://elastic:9200
+elasticIndexStrategy=daily
+elasticUser=elastic
+elasticPassword=changeme
+----
+
+===== Configure NetFlow v5 Listener on a Minion
+
+To enable and configure an _UDP Listener_ for NetFlow v5 on Minion, connect to the _Karaf Console_ and set the following properties:
+
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-8877
+admin@minion()> config:property-set name Netflow-5
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
+admin@minion()> config:property-set listener.port 8877
+admin@minion()> config:update
+----
+
+TIP: If a configuration management tool is used, the properties file can be created and is used as startup configuration in `${MINION_HOME}/etc/org.opennms.features.telemetry.listeners-udp-8877.cfg`.
+
+[source]
+----
+name = Netflow-5
+class-name = org.opennms.netmgt.telemetry.listeners.udp.UdpListener
+listener.port = 8877
+----
+
+NOTE: The protocol must also be enabled on _{opennms-product-name}_ for the messages to be processed.
