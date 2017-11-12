@@ -11,15 +11,14 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <cm:property-placeholder id="awsProperties" persistent-id="org.opennms.core.ipc.sink.sqs" update-strategy="reload" />
+	<reference id="awsSqsConfig" interface="org.opennms.core.ipc.common.aws.sqs.AmazonSQSConfig" />
 
-    <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
-
-    <bean id="awsSqsManager" class="org.opennms.core.ipc.sink.aws.sqs.DefaultAmazonSQSManager" />
+	<bean id="awsSqsManager" class="org.opennms.core.ipc.common.aws.sqs.DefaultAmazonSQSManager">
+		<argument ref="awsSqsConfig"/>
+	</bean>
 
 	<bean id="awsRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSRemoteMessageDispatcherFactory"
 	  init-method="init" destroy-method="destroy">
-	  <property name="configAdmin" ref="configAdmin"/>
 	  <property name="awsSqsManager" ref="awsSqsManager"/>
 	</bean>
 

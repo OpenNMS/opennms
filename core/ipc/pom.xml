@@ -11,6 +11,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Core :: IPC</name>
   <modules>
+    <module>common</module>
     <module>rpc</module>
     <module>sink</module>
   </modules>

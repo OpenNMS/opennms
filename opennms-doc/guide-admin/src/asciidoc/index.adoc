@@ -285,6 +285,7 @@ ifndef::opennms-prime[]
 [[ga-minion]]
 == Minion
 include::text/minion/kafka.adoc[]
+include::text/minion/aws-sqs.adoc[]
 endif::opennms-prime[]
 
 [[ga-opennms-plugin-manager]]
@@ -311,6 +312,14 @@ include::text/workarounds/snmp.adoc[]
 include::text/ifttt/ifttt-integration.adoc[]
 
 [[ga-telemetryd]]
-== Telemetryd
-include::text/telemetryd/telemetryd.adoc[]
+== Telemetry Daemon
+include::text/telemetryd/introduction.adoc[]
 
+[[ga-telemetryd-protocols]]
+=== Protocol Reference
+include::text/telemetryd/protocols/junos-telemetry-interface.adoc[]
+include::text/telemetryd/protocols/jti-adapter.adoc[]
+
+[[ga-telemetryd-listener]]
+=== Listener Reference
+include::text/telemetryd/listener/udp-listener.adoc[]

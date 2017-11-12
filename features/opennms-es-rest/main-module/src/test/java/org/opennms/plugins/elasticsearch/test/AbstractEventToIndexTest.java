@@ -28,12 +28,11 @@
 
 package org.opennms.plugins.elasticsearch.test;
 
+import io.searchbox.client.JestClient;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.plugins.elasticsearch.rest.EventToIndex;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
-
-import io.searchbox.client.JestClient;
 
 public abstract class AbstractEventToIndexTest {
 
@@ -41,7 +40,7 @@ public abstract class AbstractEventToIndexTest {
     protected EventToIndex eventToIndex;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         // Get Jest client
         this.jestClient = new RestClientFactory("http://localhost:9200", "", "").createClient();
 

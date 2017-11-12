@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import javax.script.ScriptEngineManager;
 
 import org.opennms.features.graphml.model.InvalidGraphException;
+import org.opennms.features.osgi.script.OSGiScriptEngineManager;
 import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
@@ -49,7 +50,6 @@ import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
-import org.opennms.features.topology.plugins.topo.graphml.internal.scripting.OSGiScriptEngineManager;
 import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLDefaultVertexStatusProvider;
 import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLEdgeStatusProvider;
 import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLPropagateVertexStatusProvider;

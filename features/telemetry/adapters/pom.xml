@@ -13,7 +13,9 @@
   <modules>
     <module>api</module>
     <module>collection</module>
+    <module>factory</module>
     <module>jti</module>
     <module>netflow</module>
+    <module>registry</module>
   </modules>
 </project>

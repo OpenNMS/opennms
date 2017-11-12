@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.net.InetAddress;
+import java.util.Iterator;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -53,4 +56,13 @@ public abstract class AbstractInterfaceToNodeCache implements InterfaceToNodeCac
     public static InterfaceToNodeCache getInstance() {
         return s_instance.get(); 
     }
+
+    public Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr) {
+		final Iterator<Integer> it = this.getNodeId(location, ipAddr).iterator();
+		if (it.hasNext()) {
+			return Optional.of(it.next());
+		} else {
+			return Optional.empty();
+		}
+	}
 }

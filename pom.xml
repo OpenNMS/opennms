@@ -1274,6 +1274,7 @@
     <asciidoctorjPdfVersion>1.5.0-alpha.11</asciidoctorjPdfVersion>
     <activemqVersion>5.14.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
+    <awsSqsMessagingVersion>1.0.4</awsSqsMessagingVersion>
     <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>
@@ -1303,6 +1304,7 @@
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <fopVersion>1.0</fopVersion>
     <freemarkerVersion>2.3.21</freemarkerVersion>
+    <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.4.5</groovyVersion>
     <guavaVersion>18.0</guavaVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
@@ -1325,6 +1327,7 @@
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
+    <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>4.4.0</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>

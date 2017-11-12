@@ -241,6 +241,7 @@
             <feature>opennms-activemq-event-forwarder</feature>
             <feature>opennms-activemq-event-receiver</feature>
             -->
+            <feature>opennms-bundle-refresher</feature>
             <feature>opennms-collection-api</feature>
             <feature>opennms-collection-commands</feature>
             <feature>opennms-collection-persistence-rrd</feature>
@@ -331,6 +332,7 @@
             <feature>tsrm-troubleticketer</feature>
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
+            <feature>opennms-telemetry-jti</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
@@ -785,6 +787,11 @@
       <artifactId>flows</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-components</groupId>
+      <artifactId>bundle-refresher</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

@@ -111,12 +111,6 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	}
 
 	@Test
-	public void testInstallFeatureMinionRpcServer() {
-		installFeature("minion-rpc-server");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-
-	@Test
 	public void testInstallFeatureMinionShellCollection() {
 		installFeature("minion-shell-collection");
 		System.out.println(executeCommand("feature:list -i"));

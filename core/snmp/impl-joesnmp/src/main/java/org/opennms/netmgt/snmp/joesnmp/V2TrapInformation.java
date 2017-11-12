@@ -30,6 +30,7 @@ package org.opennms.netmgt.snmp.joesnmp;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpVarBindDTO;
@@ -140,18 +141,18 @@ public class V2TrapInformation extends TrapInformation {
     }
 
     @Override
-    public void validate() {
+    public void validate() throws SnmpException {
         //
         // verify the type
         //
         if (m_pdu.typeId() != (byte) (SnmpPduPacket.V2TRAP)) {
             // if not V2 trap, do nothing
-            throw new IllegalArgumentException("Received not SNMPv2 Trap from host " + getTrapAddress() + "PDU Type = " + m_pdu.getCommand());
+            throw new SnmpException("Received not SNMPv2 Trap from host " + getTrapAddress() + "PDU Type = " + m_pdu.getCommand());
         }
         LOG.debug("V2 trap numVars or pdu length: {}", getPduLength());
         if (getPduLength() < 2) // check number of varbinds
         {
-            throw new IllegalArgumentException("V2 trap from " + getTrapAddress() + " IGNORED due to not having the required varbinds.  Have " + getPduLength() + ", needed 2");
+            throw new SnmpException("V2 trap from " + getTrapAddress() + " IGNORED due to not having the required varbinds.  Have " + getPduLength() + ", needed 2");
         }
         // The first varbind has the sysUpTime
         // Modify the sysUpTime varbind to add the trailing 0 if it is
@@ -166,7 +167,7 @@ public class V2TrapInformation extends TrapInformation {
             varBindName0 = V2TrapInformation.SNMP_SYSUPTIME_OID;
         }
         if ((!(varBindName0.equals(V2TrapInformation.SNMP_SYSUPTIME_OID))) || (!(varBindName1.equals(V2TrapInformation.SNMP_TRAP_OID)))) {
-            throw new IllegalArgumentException("V2 trap from " + getTrapAddress() + " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
+            throw new SnmpException("V2 trap from " + getTrapAddress() + " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
         }
     }
 

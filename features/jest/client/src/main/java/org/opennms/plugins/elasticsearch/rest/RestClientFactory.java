@@ -28,6 +28,8 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,12 +46,16 @@ import io.searchbox.client.AbstractJestClient;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
+import org.apache.http.HttpHost;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This factory wraps the {@link JestClientFactory} to provide instances of
  * {@link JestClient}.
  */
 public class RestClientFactory {
+	private static final Logger LOG = LoggerFactory.getLogger(RestClientFactory.class);
 
 	private HttpClientConfig.Builder clientConfigBuilder;
 	private int m_timeout = 0;
@@ -64,7 +70,7 @@ public class RestClientFactory {
 	 * @param elasticUser Optional HTTP username
 	 * @param elasticPassword Optional HTTP password
 	 */
-	public RestClientFactory(final String elasticSearchURL, final String elasticUser, final String elasticPassword ){
+	public RestClientFactory(final String elasticSearchURL, final String elasticUser, final String elasticPassword ) throws MalformedURLException {
 		final List<String> urls = parseUrl(elasticSearchURL);
 		final String user = elasticUser != null && !elasticUser.isEmpty() ? elasticUser : null;
 		final String password = elasticPassword != null && !elasticPassword.isEmpty() ? elasticPassword : null;
@@ -93,7 +99,14 @@ public class RestClientFactory {
 
 		// Apply optional credentials
 		if (user != null && password != null) {
+			final URL targetUrl = new URL(urls.get(0));
+			if (urls.size() > 1) {
+				LOG.warn("Credentials have been defined, but multiple target hosts were found. " +
+						"Each host will use the same credentials. Preemptive auth is only enabled for host {}", urls.get(0));
+			}
+
 			clientConfigBuilder.defaultCredentials(user, password);
+			clientConfigBuilder.setPreemptiveAuth(new HttpHost(targetUrl.getHost(), targetUrl.getPort(), targetUrl.getProtocol()));
 		}
 	}
 
