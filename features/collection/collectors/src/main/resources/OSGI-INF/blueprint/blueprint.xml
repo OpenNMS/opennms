@@ -30,10 +30,4 @@
     </service-properties>
   </service>
 
-  <bean id="mx4jCollector" class="org.opennms.netmgt.collectd.MX4JCollector" />
-  <service ref="mx4jCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
-    <service-properties>
-      <entry key="type" value="org.opennms.netmgt.collectd.MX4JCollector" />
-    </service-properties>
-  </service>
 </blueprint>
