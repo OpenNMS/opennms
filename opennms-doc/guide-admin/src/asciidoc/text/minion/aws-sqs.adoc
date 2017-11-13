@@ -47,7 +47,7 @@ The following shows an example of the role that should be associated with the EC
 image:../images/minion/aws-iam-role.png[]
 
 If you require consistent ordering of the messages, you should use FIFO queues instead of Standard queues.
-You can enable FIFO queues by addding the following parameter to the `aws-sqs.properties` file referenced above:
+You can enable FIFO queues by adding the following parameter to the `aws-sqs.properties` file referenced above:
 
 [source, sh]
 ----
@@ -84,7 +84,7 @@ The AWS credentials are required.
 If they are not specified on the configuration file, the default credentials provider chain (explained above) will be used instead.
 
 If you require consistent ordering to the messages, you should use FIFO queues instead of Standard queues.
-You can enable FIFO queues by addding the following parameter to the `org.opennms.core.ipc.aws.sqs.cfg` file referenced above:
+You can enable FIFO queues by adding the following parameter to the `org.opennms.core.ipc.aws.sqs.cfg` file referenced above:
 
 [source, sh]
 ----
@@ -121,7 +121,7 @@ NOTE: When FIFO queues are not required, there is no need to add `FifoQueue=fals
 
 In order to support multiple _{opennms-product-name}_ environments in a single AWS region, the `aws_queue_name_prefix` property can be used to prefix the queue names.
 
-For example, if we set this property to be "PROD", the queue names will resemble `OpenNMS-PROD-Sink-Heartbeat`, instead of `OpenNMS-Sink-Heartbeat`.
+For example, if we set this property to be "PROD", the queue names will resemble `PROD-OpenNMS-Sink-Heartbeat`, instead of `OpenNMS-Sink-Heartbeat`.
 
 WARNING: This property must be properly configured at  _{opennms-product-name}_  and Minion side.
 
