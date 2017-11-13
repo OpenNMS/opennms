@@ -77,7 +77,6 @@ public class DefaultConnectionManager implements JmxConnectionManager {
     public DefaultConnectionManager(int retryCount) {
         retries = retryCount <= 0 ? 3 : retryCount;
         connectorMap.put(JmxConnectors.jsr160, new Jsr160MBeanServerConnector());
-        connectorMap.put(JmxConnectors.jmx_secure, new JMXSecureMBeanServerConnector());
         connectorMap.put(JmxConnectors.platform, new PlatformMBeanServerConnector());
     }
 

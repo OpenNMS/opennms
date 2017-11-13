@@ -20,7 +20,6 @@ org.opennms.netmgt.poller.monitors.ImapsMonitor
 org.opennms.netmgt.poller.monitors.JDBCMonitor
 org.opennms.netmgt.poller.monitors.JDBCQueryMonitor
 org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor
-org.opennms.netmgt.poller.monitors.JMXSecureMonitor
 org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor
 org.opennms.netmgt.poller.monitors.Jsr160Monitor
 org.opennms.netmgt.poller.monitors.LaTableMonitor

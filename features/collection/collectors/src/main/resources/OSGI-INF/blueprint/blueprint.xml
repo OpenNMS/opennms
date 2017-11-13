@@ -16,13 +16,6 @@
     </service-properties>
   </service>
 
-  <bean id="jmxSecureCollector" class="org.opennms.netmgt.collectd.JMXSecureCollector" />
-  <service ref="jmxSecureCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
-    <service-properties>
-      <entry key="type" value="org.opennms.netmgt.collectd.JMXSecureCollector" />
-    </service-properties>
-  </service>
-
   <bean id="jsr160Collector" class="org.opennms.netmgt.collectd.Jsr160Collector" />
   <service ref="jsr160Collector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
     <service-properties>

@@ -73,7 +73,6 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.MailTransportMonitor",
             "org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor",
             "org.opennms.netmgt.poller.monitors.BgpSessionMonitor",
-            "org.opennms.netmgt.poller.monitors.JMXSecureMonitor", 
             "org.opennms.netmgt.poller.monitors.TcpMonitor",
             "org.opennms.netmgt.poller.monitors.MemcachedMonitor",
             "org.opennms.netmgt.poller.monitors.ImapMonitor",

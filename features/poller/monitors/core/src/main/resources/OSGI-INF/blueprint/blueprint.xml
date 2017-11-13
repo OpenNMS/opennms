@@ -183,14 +183,6 @@
 		</service-properties>
 	</service>
 
-	<bean id="jmxSecureMonitor" class="org.opennms.netmgt.poller.monitors.JMXSecureMonitor" />
-	<service ref="jmxSecureMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<service-properties>
-			<entry key="type"
-				value="org.opennms.netmgt.poller.monitors.JMXSecureMonitor" />
-		</service-properties>
-	</service>
-
 	<bean id="jolokiaBeanMonitor" class="org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor" />
 	<service ref="jolokiaBeanMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
