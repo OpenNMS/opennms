@@ -90,7 +90,6 @@ public class DetectorsCommandIT {
             .put("ICMP", "org.opennms.netmgt.provision.detector.icmp.IcmpDetector")
             .put("IMAP", "org.opennms.netmgt.provision.detector.simple.ImapDetector")
             .put("IMAPS", "org.opennms.netmgt.provision.detector.simple.ImapsDetector")
-            .put("JBoss", "org.opennms.netmgt.provision.detector.jmx.JBossDetector")
             .put("JDBC", "org.opennms.netmgt.provision.detector.jdbc.JdbcDetector")
             .put("JSR160", "org.opennms.netmgt.provision.detector.jmx.Jsr160Detector")
             .put("JdbcQueryDetector", "org.opennms.netmgt.provision.detector.jdbc.JdbcQueryDetector")

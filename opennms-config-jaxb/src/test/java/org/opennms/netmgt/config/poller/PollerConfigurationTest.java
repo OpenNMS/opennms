@@ -635,8 +635,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.addMonitor("LDAP", "org.opennms.netmgt.poller.monitors.LdapMonitor");
         config.addMonitor("Memcached", "org.opennms.netmgt.poller.monitors.MemcachedMonitor");
         config.addMonitor("HTTP-MGMT", "org.opennms.netmgt.poller.monitors.HttpMonitor");
-        config.addMonitor("JBoss4", "org.opennms.netmgt.poller.monitors.JBossMonitor");
-        config.addMonitor("JBoss32", "org.opennms.netmgt.poller.monitors.JBossMonitor");
         config.addMonitor("JVM", "org.opennms.netmgt.poller.monitors.Jsr160Monitor");
         config.addMonitor("NTP", "org.opennms.netmgt.poller.monitors.NtpMonitor");
         config.addMonitor("Sybase", "org.opennms.netmgt.poller.monitors.TcpMonitor");

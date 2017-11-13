@@ -32,7 +32,6 @@ package org.opennms.netmgt.jmx.connection;
  */
 public enum JmxConnectors {
     jsr160,
-    jboss,
     mx4j,
     jmx_secure,
     platform

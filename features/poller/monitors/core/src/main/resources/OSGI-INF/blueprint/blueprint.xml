@@ -159,13 +159,6 @@
 		</service-properties>
 	</service>
 
-	<bean id="jbossMonitor" class="org.opennms.netmgt.poller.monitors.JBossMonitor" />
-	<service ref="jbossMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<service-properties>
-			<entry key="type" value="org.opennms.netmgt.poller.monitors.JBossMonitor" />
-		</service-properties>
-	</service>
-
 	<bean id="jdbcMonitor" class="org.opennms.netmgt.poller.monitors.JDBCMonitor" />
 	<service ref="jdbcMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>

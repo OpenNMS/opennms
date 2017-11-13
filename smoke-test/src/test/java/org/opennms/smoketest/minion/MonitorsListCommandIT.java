@@ -90,7 +90,6 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.SmtpMonitor",
             "org.opennms.netmgt.poller.monitors.MX4JMonitor", 
             "org.opennms.netmgt.poller.monitors.TrivialTimeMonitor",
-            "org.opennms.netmgt.poller.monitors.JBossMonitor",
             "org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor",
             "org.opennms.netmgt.poller.monitors.LoopMonitor", 
             "org.opennms.netmgt.poller.monitors.FtpMonitor",

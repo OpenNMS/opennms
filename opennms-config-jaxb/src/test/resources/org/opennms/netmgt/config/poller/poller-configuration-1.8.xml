@@ -273,34 +273,6 @@
       <parameter key="rrd-repository" value="/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response" />
       <parameter key="ds-name" value="radiusauth" />
     </service>
-    <service name="JBoss4" interval="300000" user-defined="false" status="on">
-      <parameter key="version" value="4" />
-      <parameter key="port" value="1099" />
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="3000" />
-      <parameter key="factory" value="RMI" />
-      <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
-          need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
-          <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
-          The default port is 8080
-      -->
-      <parameter key="rrd-repository" value="/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response" />
-      <parameter key="ds-name" value="jboss" />
-    </service>
-    <service name="JBoss32" interval="300000" user-defined="false" status="on">
-      <parameter key="port" value="1099" />
-      <parameter key="version" value="32" />
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="3000" />
-      <parameter key="factory" value="RMI" />
-      <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
-          need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
-          <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
-          The default port is 8080
-      -->
-      <parameter key="rrd-repository" value="/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response" />
-      <parameter key="ds-name" value="jboss" />
-    </service>
     <service name="JVM" interval="300000" user-defined="false" status="on">
       <parameter key="port" value="9003" />
       <parameter key="retry" value="2" />
@@ -378,8 +350,6 @@
   <monitor service="LDAP" class-name="org.opennms.netmgt.poller.monitors.LdapMonitor" />
   <monitor service="Memcached" class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
   <monitor service="HTTP-MGMT" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
-  <monitor service="JBoss4" class-name="org.opennms.netmgt.poller.monitors.JBossMonitor" />
-  <monitor service="JBoss32" class-name="org.opennms.netmgt.poller.monitors.JBossMonitor" />
   <monitor service="JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
   <monitor service="NTP" class-name="org.opennms.netmgt.poller.monitors.NtpMonitor" />
   <monitor service="Sybase" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />

@@ -17,7 +17,6 @@ org.opennms.netmgt.poller.monitors.HttpsMonitor
 org.opennms.netmgt.poller.monitors.IcmpMonitor
 org.opennms.netmgt.poller.monitors.ImapMonitor
 org.opennms.netmgt.poller.monitors.ImapsMonitor
-org.opennms.netmgt.poller.monitors.JBossMonitor
 org.opennms.netmgt.poller.monitors.JDBCMonitor
 org.opennms.netmgt.poller.monitors.JDBCQueryMonitor
 org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor

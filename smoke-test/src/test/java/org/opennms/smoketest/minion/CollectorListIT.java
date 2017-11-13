@@ -67,7 +67,6 @@ public class CollectorListIT {
     private ImmutableSet<String> commonCollectors = ImmutableSet.<String> builder().add(
             "org.opennms.netmgt.collectd.HttpCollector",
             "org.opennms.netmgt.collectd.JdbcCollector",
-            "org.opennms.netmgt.collectd.JBossCollector",
             "org.opennms.netmgt.collectd.Jsr160Collector",
             "org.opennms.netmgt.collectd.JMXSecureCollector",
             "org.opennms.netmgt.collectd.MX4JCollector",
