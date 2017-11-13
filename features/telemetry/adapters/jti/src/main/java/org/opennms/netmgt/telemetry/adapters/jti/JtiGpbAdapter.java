@@ -52,7 +52,6 @@ import org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
@@ -84,16 +83,12 @@ public class JtiGpbAdapter extends AbstractPersistingAdapter {
         TelemetryTop.registerAllExtensions(s_registry);
     }
 
-    @Autowired
     private CollectionAgentFactory collectionAgentFactory;
 
-    @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    @Autowired
     private NodeDao nodeDao;
 
-    @Autowired
     private TransactionOperations transactionTemplate;
 
     private String script;

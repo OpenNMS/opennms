@@ -28,43 +28,51 @@
 
 package org.opennms.netmgt.telemetry.adapters.jti;
 
-import java.util.Map;
-
-import org.opennms.features.telemetry.adapters.factory.api.AdapterFactory;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
+import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
+
+import java.util.Map;
 
 public class JtiAdapterFactory implements AdapterFactory {
 
+    @Autowired
     private CollectionAgentFactory collectionAgentFactory;
 
+    @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
+    @Autowired
     private NodeDao nodeDao;
 
+    @Autowired
     private TransactionOperations transactionTemplate;
 
+    @Autowired
     private FilterDao filterDao;
 
+    @Autowired
     private PersisterFactory persisterFactory;
 
-    private final BundleContext bundleContext;
+    private BundleContext bundleContext;
 
-    public JtiAdapterFactory(BundleContext m_bundleContext) {
-        this.bundleContext = m_bundleContext;
+    @Override
+    public Class<? extends Adapter> getAdapterClass() {
+        return JtiGpbAdapter.class;
     }
 
+    @Override
     public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
-
         final JtiGpbAdapter adapter = new JtiGpbAdapter();
         adapter.setProtocol(protocol);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
@@ -78,6 +86,14 @@ public class JtiAdapterFactory implements AdapterFactory {
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
         wrapper.setPropertyValues(properties);
         return adapter;
+    }
+
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
     public CollectionAgentFactory getCollectionAgentFactory() {

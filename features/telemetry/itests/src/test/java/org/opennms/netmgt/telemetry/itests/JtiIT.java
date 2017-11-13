@@ -88,6 +88,7 @@ import static org.junit.Assert.assertTrue;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-camel.xml",
+        "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
 })
 @JUnitConfigurationEnvironment

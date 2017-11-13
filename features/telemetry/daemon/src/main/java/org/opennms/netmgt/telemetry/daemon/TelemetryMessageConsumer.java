@@ -56,9 +56,6 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
 
     @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
     private TelemetryAdapterRegistry adapterRegistry;
 
     private final Protocol protocolDef;
@@ -75,11 +72,17 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     public void init() throws Exception {
         // Pre-emptively instantiate the adapters
         for (org.opennms.netmgt.telemetry.config.model.Adapter adapterDef : protocolDef.getAdapters()) {
+            final Adapter adapter;
             try {
-                adapters.add(buildAdapter(adapterDef));
+                adapter = adapterRegistry.getAdapter(adapterDef.getClassName(), protocolDef, adapterDef.getParameterMap());
             } catch (Exception e) {
                 throw new Exception("Failed to create adapter from definition: " + adapterDef, e);
             }
+
+            if (adapter == null) {
+                throw new Exception("No adapter found for class: " + adapterDef.getClassName());
+            }
+            adapters.add(adapter);
         }
     }
 
@@ -97,45 +100,6 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
                 }
             }
         }
-    }
-
-    private Adapter buildAdapter(org.opennms.netmgt.telemetry.config.model.Adapter adapterDef) throws Exception {
-
-        Adapter adapter = adapterRegistry.getAdapter(adapterDef.getClassName(), protocolDef, adapterDef.getParameterMap());
-
-        if (adapter == null) {
-            final Object adapterInstance;
-            try {
-                final Class<?> clazz = Class.forName(adapterDef.getClassName());
-                final Constructor<?> ctor = clazz.getConstructor();
-                adapterInstance = ctor.newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(String.format("Failed to instantiate adapter with class name '%s'.",
-                        adapterDef.getClassName(), e));
-            }
-
-            // Cast
-            if (!(adapterInstance instanceof Adapter)) {
-                throw new IllegalArgumentException(String.format("%s must implement %s", adapterDef.getClassName(),
-                        Adapter.class.getCanonicalName()));
-            }
-            adapter = (Adapter) adapterInstance;
-
-            // Apply the parameters
-            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
-            wrapper.setPropertyValues(adapterDef.getParameterMap());
-
-            // Autowire!
-            final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
-            beanFactory.autowireBean(adapter);
-            beanFactory.initializeBean(adapter, "adapter");
-
-            // Set the protocol reference
-            adapter.setProtocol(protocolDef);
-
-        }
-
-        return adapter;
     }
 
     @Override

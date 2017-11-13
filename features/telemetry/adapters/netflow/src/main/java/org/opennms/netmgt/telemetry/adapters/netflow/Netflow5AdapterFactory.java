@@ -26,15 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telemetry.adapters.factory.api;
+package org.opennms.netmgt.telemetry.adapters.netflow;
+
+import org.opennms.netmgt.telemetry.adapters.api.Adapter;
+import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
 import java.util.Map;
 
-import org.opennms.netmgt.telemetry.adapters.api.Adapter;
-import org.opennms.netmgt.telemetry.config.api.Protocol;
+public class Netflow5AdapterFactory implements AdapterFactory {
+    @Override
+    public Class<? extends Adapter> getAdapterClass() {
+        return Netflow5Adapter.class;
+    }
 
-public interface AdapterFactory {
-
-	Adapter createAdapter(Protocol protocol, Map<String, String> properties);
-
+    @Override
+    public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
+        final Netflow5Adapter adapter = new Netflow5Adapter();
+        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
+        wrapper.setPropertyValues(properties);
+        return adapter;
+    }
 }
