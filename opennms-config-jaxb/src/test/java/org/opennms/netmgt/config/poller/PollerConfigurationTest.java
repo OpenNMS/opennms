@@ -550,26 +550,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "radiusauth"
                 ));
 
-        example1.addService(new Service("JBoss4", 300000, "false", "on",
-                                        "version", "4",
-                                        "port", "1099",
-                                        "retry", "2",
-                                        "timeout", "3000",
-                                        "factory", "RMI",
-                                        "rrd-repository", "/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response",
-                                        "ds-name", "jboss"
-                ));
-
-        example1.addService(new Service("JBoss32", 300000, "false", "on",
-                                        "port", "1099",
-                                        "version", "32",
-                                        "retry", "2",
-                                        "timeout", "3000",
-                                        "factory", "RMI",
-                                        "rrd-repository", "/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response",
-                                        "ds-name", "jboss"
-                ));
-
         example1.addService(new Service("JVM", 300000, "false", "on",
                                         "port", "9003",
                                         "retry", "2",

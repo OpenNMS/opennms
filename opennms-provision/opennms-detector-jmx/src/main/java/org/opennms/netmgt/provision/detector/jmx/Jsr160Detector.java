@@ -35,7 +35,8 @@ public class Jsr160Detector extends JMXDetector {
         super(serviceName, port);
     }
 
-    protected Jsr160Detector() {
+    // Is required to instantiate via Jsr160DetectorFactory
+    public Jsr160Detector() {
         this("JSR160", 9003);
     }
 }
