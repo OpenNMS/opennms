@@ -28,12 +28,16 @@
 
 package org.opennms.web.services;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.List;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.FilterFavoriteDao;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 /**
  * Service to handle CRUD operations and such on {@link OnmsFilterFavorite} objects.
@@ -134,7 +138,23 @@ public class FilterFavoriteService {
     }
 
     public OnmsFilterFavorite createFavorite(String userName, String favoriteName, String filterString, OnmsFilterFavorite.Page page) throws FilterFavoriteException {
+        // Input string is URL-Encoded and some html-entities are already escaped.
+        // Revert this process, to allow WebSecurityUtils to work properly.
+        try {
+            favoriteName = StringEscapeUtils.unescapeHtml(URLDecoder.decode(favoriteName, "UTF-8"));
+            filterString = StringEscapeUtils.unescapeHtml(URLDecoder.decode(filterString, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Sanitize input
+        favoriteName = WebSecurityUtils.sanitizeString(favoriteName);
+        filterString = WebSecurityUtils.sanitizeString(filterString);
+
+        // Validate input
         validate(userName, favoriteName, filterString, page);
+
+        // Create filter
         OnmsFilterFavorite filter = new OnmsFilterFavorite();
         filter.setUsername(userName);
         filter.setFilter(filterString);
@@ -161,7 +181,7 @@ public class FilterFavoriteService {
         }
     }
 
-    private boolean deleteFavorite(OnmsFilterFavorite favorite) {
+    protected boolean deleteFavorite(OnmsFilterFavorite favorite) {
         if (favorite != null) {
             favoriteDao.delete(favorite);
             return true;
