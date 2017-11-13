@@ -113,7 +113,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:mike@opennms.org">Mike Jamison</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
-public abstract class JMXCollector extends AbstractRemoteServiceCollector {
+public class JMXCollector extends AbstractRemoteServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(JMXCollector.class);
 
     private static final String JMX_COLLECTION_KEY = "jmxCollection";
@@ -197,7 +197,9 @@ public abstract class JMXCollector extends AbstractRemoteServiceCollector {
     }
 
     // we need this to determine which connection type/manager should be used to connect to the jvm
-    protected abstract JmxConnectors getConnectionName();
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.DEFAULT;
+    }
 
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> map) {

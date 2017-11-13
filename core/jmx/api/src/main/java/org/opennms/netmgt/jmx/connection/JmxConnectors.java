@@ -31,6 +31,7 @@ package org.opennms.netmgt.jmx.connection;
  * All available connectors.
  */
 public enum JmxConnectors {
+    DEFAULT,
     jsr160,
     platform
 }
