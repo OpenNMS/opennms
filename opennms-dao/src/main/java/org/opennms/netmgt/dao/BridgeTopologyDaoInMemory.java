@@ -83,6 +83,8 @@ BRIDGELINK:        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByNodeId
                 }
             }
             SharedSegment segment = new SharedSegment();
+            segment.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+            segment.setPollTime(link.getBridgeBridgeLinkLastPollTime());
             segment.add(link);
             try {
                 segment.setDesignatedBridge(link.getDesignatedNode().getId());
@@ -104,6 +106,8 @@ DBRIDGELINK:        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByDesig
                 }
             }
             SharedSegment segment = new SharedSegment();
+            segment.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+            segment.setPollTime(link.getBridgeBridgeLinkLastPollTime());
             segment.add(link);
             try {
                 segment.setDesignatedBridge(link.getDesignatedNode().getId());
@@ -124,6 +128,8 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
                 }
             }
             SharedSegment segment = new SharedSegment();
+            segment.setCreateTime(link.getBridgeMacLinkCreateTime());
+            segment.setPollTime(link.getBridgeMacLinkLastPollTime());
             segment.add(link);
             try {
                 segment.setDesignatedBridge(link.getNode().getId());

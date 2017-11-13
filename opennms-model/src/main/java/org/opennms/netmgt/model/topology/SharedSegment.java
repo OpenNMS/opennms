@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model.topology;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +43,25 @@ public class SharedSegment implements BridgeTopology{
     Set<String> m_macsOnSegment = new HashSet<String>();
     Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
     BroadcastDomain m_domain;
+    Date m_createTime;
+    Date m_pollTime;
     
+    public Date getCreateTime() {
+        return m_createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        m_createTime = createTime;
+    }
+
+    public Date getPollTime() {
+        return m_pollTime;
+    }
+
+    public void setPollTime(Date pollTime) {
+        m_pollTime = pollTime;
+    }
+
     public SharedSegment(){
         
     }

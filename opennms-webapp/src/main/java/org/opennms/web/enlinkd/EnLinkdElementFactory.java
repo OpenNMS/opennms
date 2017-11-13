@@ -583,8 +583,8 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                                    rembridgePortIfIndex));
             remlinknode.setBridgeRemoteVlan(link.getVlan());
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
-            linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getCreateTime()));
-            linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getPollTime()));
+            linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(segment.getCreateTime()));
+            linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(segment.getPollTime()));
         }
                 
         Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();
@@ -703,8 +703,8 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                                    rembridgePortIfIndex));
             remlinknode.setBridgeRemoteVlan(link.getVlan());
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
-            linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getCreateTime()));
-            linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getPollTime()));
+            linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(segment.getCreateTime()));
+            linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(segment.getPollTime()));
         }
 
         Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();
