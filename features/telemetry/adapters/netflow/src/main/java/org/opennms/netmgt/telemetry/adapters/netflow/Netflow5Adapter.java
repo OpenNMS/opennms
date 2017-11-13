@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
 import java.net.InetAddress;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,6 +39,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Timer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -112,15 +115,47 @@ public class Netflow5Adapter implements Adapter {
 
     private final Netflow5Converter converter = new Netflow5Converter();
 
-    // measures the flows/seconds throughput
-    private Meter meter;
+    /**
+     * Flows/second throughput
+     */
+    private Meter flowsPersistedMeter;
+
+    /**
+     * Time taken to parse a log
+     */
+    private Timer logParsingTimer;
+
+    /**
+     * Time taken to convert and enrich the flows in a log
+     */
+    private Timer logEnrichementTimer;
+
+    /**
+     * Time taken to perist the flows in alog
+     */
+    private Timer logPersistingTimer;
+
+    /**
+     * Number of packets per log.
+     */
+    private Histogram packetsPerLogHistogram;
+
+    /**
+     * Number of flows per packet.
+     */
+    private Histogram flowsPerPacketHistogram;
 
     // Caches NodeInfo data
     private LoadingCache<NodeInfoKey, Optional<NodeInfo>> nodeInfoCache;
 
     @PostConstruct
     public void init() {
-        meter = metricRegistry.meter("persistence");
+        flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
+        logParsingTimer = metricRegistry.timer("logParsing");
+        logEnrichementTimer = metricRegistry.timer("logEnrichment");
+        logPersistingTimer = metricRegistry.timer("logPersisting");
+        packetsPerLogHistogram = metricRegistry.histogram("packetsPerLog");
+        flowsPerPacketHistogram = metricRegistry.histogram("flowsPerPacket");
 
         // TODO MVR make this configurable, when it is actually an osgi-module
         nodeInfoCache = CacheBuilder.newBuilder()
@@ -143,21 +178,45 @@ public class Netflow5Adapter implements Adapter {
     public void handleMessageLog(TelemetryMessageLog messageLog) {
         LOG.debug("Received {} telemetry messages", messageLog.getMessageList().size());
 
-        for (TelemetryMessage eachMessage : messageLog.getMessageList()) {
-            LOG.debug("Parse log message {}", eachMessage);
-
-            try {
+        final List<NetflowPacket> flowPackets = new LinkedList<>();
+        try (Timer.Context ctx = logParsingTimer.time()) {
+            for (TelemetryMessage eachMessage : messageLog.getMessageList()) {
+                LOG.trace("Parsing packet: {}", eachMessage);
                 final NetflowPacket flowPacket = parse(eachMessage);
                 if (flowPacket != null) {
-                    final List<NetflowDocument> flowDocuments = convert(flowPacket);
-                    enrich(flowDocuments, messageLog);
-                    persist(flowDocuments);
+                    flowPackets.add(flowPacket);
                 }
-            } catch (Throwable t) {
-                LOG.error("An error occurred while handling incoming flow packets: {}", t.getMessage(), t);
-                throw new RuntimeException(t);
             }
         }
+        packetsPerLogHistogram.update(flowPackets.size());
+
+        final List<NetflowDocument> flowDocuments;
+        try (Timer.Context ctx = logEnrichementTimer.time()) {
+            LOG.debug("Converting {} packets to flows.", flowPackets.size());
+            flowDocuments = flowPackets.stream()
+                    .map(pkts -> {
+                        final List<NetflowDocument> docs = convert(pkts);
+                        // Track the number of flows per packet
+                        flowsPerPacketHistogram.update(docs.size());
+                        return docs;
+                    })
+                    .flatMap(docs -> docs.stream())
+                    .collect(Collectors.toList());
+            LOG.debug("Enriching {} flows.", flowDocuments.size());
+            enrich(flowDocuments, messageLog);
+        }
+
+        try (Timer.Context ctx = logPersistingTimer.time()) {
+            LOG.debug("Persisting {}.", flowDocuments.size());
+            persist(flowDocuments);
+            flowsPersistedMeter.mark(flowDocuments.size());
+        } catch (Exception e) {
+            LOG.error("An error occurred while handling incoming flow packets: {}", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
+        LOG.debug("Completed processing {} telemetry messages into {} flows.",
+                messageLog.getMessageList().size(), flowDocuments.size());
     }
     
     private NetflowPacket parse(TelemetryMessage message) {
@@ -258,6 +317,5 @@ public class Netflow5Adapter implements Adapter {
         }
 
         provider.getFlowRepository().save(documents);
-        meter.mark(documents.size());
     }
 }
