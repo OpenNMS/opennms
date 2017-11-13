@@ -26,14 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telemetry.adapters.nxos;
+package org.opennms.netmgt.telemetry.adapters.nxos;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
 
-import org.opennms.features.telemetry.adapters.nxos.proto.TelemetryBis;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -46,6 +45,7 @@ import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.adapters.collection.AbstractPersistingAdapter;
 import org.opennms.netmgt.telemetry.adapters.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.adapters.collection.ScriptedCollectionSetBuilder;
+import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +57,9 @@ import org.springframework.transaction.support.TransactionOperations;
 import com.google.common.collect.Iterables;
 import com.google.protobuf.ExtensionRegistry;
 
-public class NxOsAdapter extends AbstractPersistingAdapter {
+public class NxosGpbAdapter extends AbstractPersistingAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NxOsAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NxosGpbAdapter.class);
 
     private static final ExtensionRegistry s_registry = ExtensionRegistry.newInstance();
 
@@ -87,7 +87,11 @@ public class NxOsAdapter extends AbstractPersistingAdapter {
         @Override
         protected ScriptedCollectionSetBuilder initialValue() {
             try {
-                return new ScriptedCollectionSetBuilder(new File(script), bundleContext);
+                if (bundleContext != null) {
+                    return new ScriptedCollectionSetBuilder(new File(script), bundleContext);
+                } else {
+                    return new ScriptedCollectionSetBuilder(new File(script));
+                }
             } catch (Exception e) {
                 LOG.error("Failed to create builder for script '{}'.", script, e);
                 return null;
@@ -110,7 +114,6 @@ public class NxOsAdapter extends AbstractPersistingAdapter {
 
         CollectionAgent agent = null;
         try {
-            // Attempt to resolve the systemId to an InetAddress
             final InetAddress inetAddress = InetAddress.getByName(msg.getNodeIdStr());
             final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), inetAddress);
             if (nodeId.isPresent()) {

@@ -27,7 +27,7 @@
  *******************************************************************************/
 // source: mdt_dialout.proto
 
-package org.opennms.features.telemetry.adapters.nxos.proto;
+package org.opennms.netmgt.telemetry.adapters.nxos.proto;
 
 public final class MdtDialout {
   private MdtDialout() {}

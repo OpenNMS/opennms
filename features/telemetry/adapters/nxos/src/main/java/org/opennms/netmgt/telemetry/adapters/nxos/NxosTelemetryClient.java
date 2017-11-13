@@ -26,8 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telemetry.adapters.nxos;
+package org.opennms.netmgt.telemetry.adapters.nxos;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -35,36 +37,40 @@ import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.telemetry.adapters.nxos.proto.TelemetryBis;
+import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis;
 
-public class NxTelmetryClient {
 
-    private static TelemetryBis.Telemetry buildMessage(String nodeId, String subsriptionId) {
+public class NxosTelemetryClient {
+
+    private static TelemetryBis.Telemetry buildMessage(String ipAddres) throws IOException {
 
         // Set Telemetry fields
-        TelemetryBis.TelemetryField field = TelemetryBis.TelemetryField.newBuilder()
-                                                .setName("ProtoName")
-                                                .setStringValue("ipv4")
-                                                .setTimestamp(1508775858).build();
-        
-        final TelemetryBis.Telemetry telemetrymsg = TelemetryBis.Telemetry.newBuilder()
-                                                        .setNodeIdStr(nodeId)
-                                                        .addDataGpbkv(field)
-                                                        .setSubscriptionIdStr(subsriptionId)
-                                                        .setCollectionId(4)
-                                                        .setCollectionStartTime(1508775858)
-                                                        .setCollectionEndTime(1508775875)
-                                                        .setMsgTimestamp(new Date().getTime())
-                                                        .build();
+        TelemetryBis.TelemetryField field1 = TelemetryBis.TelemetryField.newBuilder()
+                                                .setName("loadavg")
+                                                .setUint32Value(23)
+                                                .setTimestamp(1510584351).build();
         
 
+        final TelemetryBis.Telemetry telemetrymsg = TelemetryBis.Telemetry.newBuilder()
+                                                        .setNodeIdStr("192.168.1.1")
+                                                        .addDataGpbkv(field1)
+                                                        .setSubscriptionIdStr("18374686715878047745")
+                                                        .setCollectionId(4)
+                                                        .setCollectionStartTime(1510584351)
+                                                        .setCollectionEndTime(1510584402)
+                                                        .setMsgTimestamp(new Date().getTime())
+                                                        .build();
+        FileOutputStream fos = new FileOutputStream("/home/chandra/dev/opennms/features/telemetry/itests/src/test/resources/cisco-nxos-data.raw");
+        fos.write(telemetrymsg.toByteArray());
+        fos.close();
+        
         return telemetrymsg;
 
     }
     
     public static void main(String... args) throws IOException {
-        // Not sure what could be nodeId and subscription Id. This is just assumption
-        TelemetryBis.Telemetry jtiMsg = buildMessage("192.168.2.1", "eth0");
+        // Making assumption that NodeId is IpAddress
+        TelemetryBis.Telemetry jtiMsg = buildMessage("192.168.1.1");
         byte[] jtiMsgBytes = jtiMsg.toByteArray();
 
         InetAddress address = InetAddressUtils.getLocalHostAddress();

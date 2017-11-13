@@ -27,7 +27,7 @@
  *******************************************************************************/
 // source: telemetry_bis.proto
 
-package org.opennms.features.telemetry.adapters.nxos.proto;
+package org.opennms.netmgt.telemetry.adapters.nxos.proto;
 
 public final class TelemetryBis {
   private TelemetryBis() {}

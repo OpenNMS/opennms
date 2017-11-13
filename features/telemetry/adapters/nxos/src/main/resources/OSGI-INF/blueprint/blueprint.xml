@@ -9,7 +9,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<bean id="nxosAdapterFactory" class="org.opennms.features.telemetry.adapters.nxos.NxOsAdapterFactory">
+	<bean id="nxosAdapterFactory" class="org.opennms.netmgt.telemetry.adapters.nxos.NxosAdapterFactory">
 		<argument ref="blueprintBundleContext" />
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
@@ -22,7 +22,7 @@
 	<service id="nxosFactoryService" ref="nxosAdapterFactory" interface="org.opennms.features.telemetry.adapters.factory.api.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.features.telemetry.adapters.nxos.NxOsAdapter" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter" />
 		</service-properties>
 	</service>
 
