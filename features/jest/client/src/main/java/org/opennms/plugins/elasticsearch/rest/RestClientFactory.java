@@ -57,6 +57,16 @@ import org.slf4j.LoggerFactory;
 public class RestClientFactory {
 	private static final Logger LOG = LoggerFactory.getLogger(RestClientFactory.class);
 
+	/**
+	 * Use the same formula used to compute the number of threads used in the Sink API.
+	 */
+	private static final int DEFAULT_MAX_TOTAL_CONNECTION_PER_ROUTE = Runtime.getRuntime().availableProcessors() * 2;
+
+	/**
+	 * Scale according to the number of connections per route.
+	 */
+	private static final int DEFAULT_MAX_TOTAL_CONNECTION = DEFAULT_MAX_TOTAL_CONNECTION_PER_ROUTE * 3;
+
 	private HttpClientConfig.Builder clientConfigBuilder;
 	private int m_timeout = 0;
 	private int m_retries = 0;
@@ -64,7 +74,7 @@ public class RestClientFactory {
 
 	/**
 	 * Create a RestClientFactory.
-	 * 
+	 *
 	 * @param elasticSearchURL Elasticsearch URL, either a single URL or
 	 *   multiple URLs that are comma-separated without spaces
 	 * @param elasticUser Optional HTTP username
@@ -93,8 +103,8 @@ public class RestClientFactory {
 		// If multiple URLs are specified in a comma-separated string, split them up
 		clientConfigBuilder = new HttpClientConfig.Builder(urls)
 					.multiThreaded(true)
-					.defaultMaxTotalConnectionPerRoute(2)
-					.maxTotalConnection(20)
+					.defaultMaxTotalConnectionPerRoute(DEFAULT_MAX_TOTAL_CONNECTION_PER_ROUTE)
+					.maxTotalConnection(DEFAULT_MAX_TOTAL_CONNECTION)
 					.gson(gson);
 
 		// Apply optional credentials
@@ -158,12 +168,40 @@ public class RestClientFactory {
 		clientConfigBuilder.multiThreaded(multiThreaded);
 	}
 
-	public void setDefaultMaxTotalConnectionPerRoute(int count) {
-		clientConfigBuilder.defaultMaxTotalConnectionPerRoute(count);
+	/**
+	 * Set the default max connections per route.
+	 * By default, we use the number of available processors * 2.
+	 *
+	 * If a negative value is given, the set is ignored.
+	 * This allows us to use -1 as the default in the Blueprint in order
+	 * to avoid having to caculate the default again there.
+	 *
+	 * @param connections default max connections per route
+	 */
+	public void setDefaultMaxTotalConnectionPerRoute(int connections) {
+		if (connections < 0) {
+			// Ignore
+			return;
+		}
+		clientConfigBuilder.defaultMaxTotalConnectionPerRoute(connections);
 	}
 
-	public void setMaxTotalConnection(int count) {
-		clientConfigBuilder.maxTotalConnection(count);
+	/**
+	 * Set the default max total connections.
+	 * By default, we use the default max connections per route * 3.
+	 *
+	 * If a negative value is given, the set is ignored.
+	 * This allows us to use -1 as the default in the Blueprint in order
+	 * to avoid having to caculate the default again there.
+	 *
+	 * @param connections default max connections per route
+	 */
+	public void setMaxTotalConnection(int connections) {
+		if (connections < 0) {
+			// Ignore
+			return;
+		}
+		clientConfigBuilder.maxTotalConnection(connections);
 	}
 
 	public void setMaxConnectionIdleTime(int timeout, TimeUnit unit) {
