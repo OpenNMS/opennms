@@ -111,6 +111,7 @@ public class FilterFavoriteService {
     public OnmsFilterFavorite getFavorite(Integer favoriteId, String userName) {
         OnmsFilterFavorite favorite = favoriteDao.get(favoriteId);
         if (favorite != null && favorite.getUsername().equalsIgnoreCase(userName)) {
+            sanitizeFavorite(favorite);
             return favorite;
         }
         return null; // not visible for this user
@@ -134,23 +135,12 @@ public class FilterFavoriteService {
      * @return
      */
     public List<OnmsFilterFavorite> getFavorites(String userName, OnmsFilterFavorite.Page page) {
-        return favoriteDao.findBy(userName, page);
+        List<OnmsFilterFavorite> favorites = favoriteDao.findBy(userName, page);
+        favorites.forEach(f -> sanitizeFavorite(f));
+        return favorites;
     }
 
     public OnmsFilterFavorite createFavorite(String userName, String favoriteName, String filterString, OnmsFilterFavorite.Page page) throws FilterFavoriteException {
-        // Input string is URL-Encoded and some html-entities are already escaped.
-        // Revert this process, to allow WebSecurityUtils to work properly.
-        try {
-            favoriteName = StringEscapeUtils.unescapeHtml(URLDecoder.decode(favoriteName, "UTF-8"));
-            filterString = StringEscapeUtils.unescapeHtml(URLDecoder.decode(filterString, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Sanitize input
-        favoriteName = WebSecurityUtils.sanitizeString(favoriteName);
-        filterString = WebSecurityUtils.sanitizeString(filterString);
-
         // Validate input
         validate(userName, favoriteName, filterString, page);
 
@@ -160,6 +150,9 @@ public class FilterFavoriteService {
         filter.setFilter(filterString);
         filter.setName(favoriteName);
         filter.setPage(page);
+
+        sanitizeFavorite(filter);
+
         favoriteDao.save(filter);
         return filter;
     }
@@ -179,6 +172,21 @@ public class FilterFavoriteService {
         if (favoriteDao.existsFilter(userName, favoriteName, page)) {
             throw new FilterFavoriteException("A favorite with this name already exists.");
         }
+    }
+
+    private void sanitizeFavorite(OnmsFilterFavorite favorite) {
+        // Input string is URL-Encoded and some html-entities are already escaped.
+        // Revert this process, to allow WebSecurityUtils to work properly.
+        try {
+            favorite.setName(StringEscapeUtils.unescapeHtml(URLDecoder.decode(favorite.getName(), "UTF-8")));
+            favorite.setFilter(StringEscapeUtils.unescapeHtml(URLDecoder.decode(favorite.getFilter(), "UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Sanitize input
+        favorite.setName(WebSecurityUtils.sanitizeString(favorite.getName()));
+        favorite.setFilter(WebSecurityUtils.sanitizeString(favorite.getFilter()));
     }
 
     protected boolean deleteFavorite(OnmsFilterFavorite favorite) {
