@@ -265,7 +265,7 @@
       <collect>
          <includeGroup>ipunity-as-call-summary-stats</includeGroup>
          <includeGroup>ipunity-as-cluster-call-summary-stats</includeGroup>
-	 <includeGroup>network-services-appl</includeGroup><!-- applIndex and applDescription used for IP Unity SIP tables -->
+         <includeGroup>network-services-appl</includeGroup><!-- applIndex and applDescription used for IP Unity SIP tables -->
          <includeGroup>ipunity-sip-summary-stats</includeGroup>
          <includeGroup>ipunity-mgcp-scalars</includeGroup>
          <includeGroup>ipunity-frame-config</includeGroup>

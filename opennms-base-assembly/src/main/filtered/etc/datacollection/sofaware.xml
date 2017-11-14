@@ -18,10 +18,6 @@
    <systemDef name="SofaWare Embedded Firewalls">
       <sysoidMask>.1.3.6.1.4.1.6983.1.10.</sysoidMask>
       <collect>
-         <includeGroup>ucd-loadavg</includeGroup>
-         <includeGroup>ucd-sysstat</includeGroup>
-         <includeGroup>ucd-sysstat-raw</includeGroup>
-         <includeGroup>ucd-sysstat-raw-more</includeGroup>
          <includeGroup>sofaware-scalars</includeGroup>
       </collect>
    </systemDef>

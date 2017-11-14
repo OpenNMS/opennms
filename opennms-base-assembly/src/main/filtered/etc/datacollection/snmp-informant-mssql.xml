@@ -1,0 +1,25 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="SNMP-Informant-MSSQL">
+   <group name="snmpinformant-sqlserver" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.1" instance="0" alias="ascAuthPerSec" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.2" instance="0" alias="ascCompletionPerSec" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.3" instance="0" alias="ascCurrAgents" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.4" instance="0" alias="ascCurrAuth" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.5" instance="0" alias="ascCurrConn" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.6" instance="0" alias="ascCurrConnInProg" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.7" instance="0" alias="ascCurrHttpConn" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.8" instance="0" alias="ascFailuresPerSec" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.9" instance="0" alias="ascRequestsPerSec" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.10" instance="0" alias="ascSuccessesPerSec" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.11" instance="0" alias="ascTotalAuth" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.12" instance="0" alias="ascTotalCompletions" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.13" instance="0" alias="ascTotalFailures" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.14" instance="0" alias="ascTotalRequests" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.15" instance="0" alias="ascTotalSuccesses" type="Gauge32"/>
+   </group>
+   <systemDef name="Microsoft Windows SNMP Informant MSSQL">
+      <sysoidMask>.1.3.6.1.4.1.311.1.1.3.1.</sysoidMask>
+      <collect>
+         <includeGroup>snmpinformant-sqlserver</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

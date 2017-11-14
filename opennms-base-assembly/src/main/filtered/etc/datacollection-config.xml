@@ -7,7 +7,10 @@
          <rra>RRA:MAX:0.5:288:366</rra>
          <rra>RRA:MIN:0.5:288:366</rra>
       </rrd>
-      <include-collection dataCollectionGroup="MIB2"/>
+      <!-- Include reference configuration without a system definition -->
+      <!-- This OID groups are generic and need to be assigned to a specific device system definition -->
+
+      <!-- Device sepecific default OID groups -->
       <include-collection dataCollectionGroup="3Com"/>
       <include-collection dataCollectionGroup="Acme Packet"/>
       <include-collection dataCollectionGroup="AKCP sensorProbe"/>
@@ -48,8 +51,11 @@
       <include-collection dataCollectionGroup="Kyocera"/>
       <include-collection dataCollectionGroup="Lexmark"/>
       <include-collection dataCollectionGroup="Liebert"/>
-      <include-collection dataCollectionGroup="Makelsan"/>
       <include-collection dataCollectionGroup="MGE"/>
+      <include-collection dataCollectionGroup="MIB2-Host-Resources"/>
+      <include-collection dataCollectionGroup="MIB2-Interfaces"/>
+      <include-collection dataCollectionGroup="MIB2-Powerethernet"/>
+      <include-collection dataCollectionGroup="MIB2-Protocols"/>
       <include-collection dataCollectionGroup="Microsoft"/>
       <include-collection dataCollectionGroup="Mikrotik"/>
       <include-collection dataCollectionGroup="Net-SNMP"/>
@@ -63,12 +69,20 @@
       <include-collection dataCollectionGroup="pfSense"/>
       <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>
       <include-collection dataCollectionGroup="Powerware"/>
-      <include-collection dataCollectionGroup="Printers"/>
+      <include-collection dataCollectionGroup="REF_IETF"/>
+      <include-collection dataCollectionGroup="REF_MIB2-Host-Resources"/>
+      <include-collection dataCollectionGroup="REF_MIB2-Powerethernet"/>
+      <include-collection dataCollectionGroup="REF_MIB2-UPS"/>
+      <include-collection dataCollectionGroup="REF_Printers"/>
+      <include-collection dataCollectionGroup="REF_Routers"/>
       <include-collection dataCollectionGroup="Riverbed"/>
-      <include-collection dataCollectionGroup="Routers"/>
       <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
       <include-collection dataCollectionGroup="ServerTech"/>
-      <include-collection dataCollectionGroup="SNMP-Informant"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-Adv"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-Exchange"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-MSSQL"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-Std"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-Termsvc"/>
       <include-collection dataCollectionGroup="SofaWare"/>
       <include-collection dataCollectionGroup="Sonicwall"/>
       <include-collection dataCollectionGroup="SUN Microsystems"/>

@@ -130,8 +130,6 @@
       <sysoidMask>.1.3.6.1.4.1.2636.1.</sysoidMask>
       <collect>
          <includeGroup>juniper-router</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
       </collect>
    </systemDef>
@@ -141,8 +139,6 @@
          <includeGroup>juniper-erx-router</includeGroup>
          <includeGroup>juniper-erx-systemslot</includeGroup>
          <includeGroup>juniper-erx-temperature</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>mib2-X-interfaces-pkts</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper SRX210he2 Routers">

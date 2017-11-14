@@ -19,16 +19,6 @@
    <systemDef name="Asterisk">
       <sysoid>.1.3.6.1.4.1.22736.1</sysoid>
       <collect>
-         <includeGroup>mib2-host-resources-system</includeGroup>
-         <includeGroup>mib2-host-resources-memory</includeGroup>
-         <includeGroup>net-snmp-disk</includeGroup>
-         <includeGroup>net-snmp-disk-more</includeGroup>
-         <includeGroup>net-snmp-disk-highlow</includeGroup>
-         <includeGroup>ucd-loadavg</includeGroup>
-         <includeGroup>ucd-memory</includeGroup>
-         <includeGroup>ucd-sysstat</includeGroup>
-         <includeGroup>ucd-sysstat-raw</includeGroup>
-         <includeGroup>ucd-sysstat-raw-more</includeGroup>
          <includeGroup>asterisk-scalars</includeGroup>
          <includeGroup>asterisk-chantype</includeGroup>
       </collect>
