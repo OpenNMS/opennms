@@ -60,8 +60,8 @@ import java.util.List
 
 import org.opennms.netmgt.collection.api.AttributeType
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource
-import org.opennms.features.telemetry.adapters.nxos.proto.TelemetryBis
-import org.opennms.features.telemetry.adapters.nxos.proto.TelemetryBis.TelemetryField
+import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis
+import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis.TelemetryField
 
 @Slf4j
 class CollectionSetGenerator {

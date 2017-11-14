@@ -64,11 +64,11 @@ public class NxosTelemetryClient {
     
     public static void main(String... args) throws IOException {
         // Making assumption that NodeId is IpAddress
-        TelemetryBis.Telemetry jtiMsg = buildMessage("192.168.1.1");
-        byte[] jtiMsgBytes = jtiMsg.toByteArray();
+        TelemetryBis.Telemetry nxosMsg = buildMessage("192.168.1.1");
+        byte[] nxosMsgBytes = nxosMsg.toByteArray();
 
         InetAddress address = InetAddressUtils.getLocalHostAddress();
-        DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, address, 50000);
+        DatagramPacket packet = new DatagramPacket(nxosMsgBytes, nxosMsgBytes.length, address, 50001);
         DatagramSocket socket = new DatagramSocket();
         socket.send(packet);
     }
