@@ -60,12 +60,12 @@ public class FilterFavoriteService {
      * @param favoriteId   The id of the favorite.
      * @param username     The username which tries to load the favorite.
      * @param filterString The expected filter criteria.
-     * @return The requestes favorite or null.
+     * @return The requested favorite or null.
      */
     public OnmsFilterFavorite getFavorite(String favoriteId, String username, String filterString) {
         OnmsFilterFavorite favorite = getFavorite(favoriteId, username);
         if (favorite == null) return null;
-        if (favorite.getFilter().equals(filterString)) {
+        if (favorite.getFilter().equals(unescapeAndDecode(filterString))) {
             return favorite;
         }
         return null;
@@ -177,12 +177,8 @@ public class FilterFavoriteService {
     private void sanitizeFavorite(OnmsFilterFavorite favorite) {
         // Input string is URL-Encoded and some html-entities are already escaped.
         // Revert this process, to allow WebSecurityUtils to work properly.
-        try {
-            favorite.setName(StringEscapeUtils.unescapeHtml(URLDecoder.decode(favorite.getName(), "UTF-8")));
-            favorite.setFilter(StringEscapeUtils.unescapeHtml(URLDecoder.decode(favorite.getFilter(), "UTF-8")));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        favorite.setName(unescapeAndDecode(favorite.getName()));
+        favorite.setFilter(unescapeAndDecode(favorite.getFilter()));
 
         // Sanitize input
         favorite.setName(WebSecurityUtils.sanitizeString(favorite.getName()));
@@ -195,5 +191,13 @@ public class FilterFavoriteService {
             return true;
         }
         return false;
+    }
+
+    private static String unescapeAndDecode(String input) {
+        try {
+            return StringEscapeUtils.unescapeHtml(URLDecoder.decode(input, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
