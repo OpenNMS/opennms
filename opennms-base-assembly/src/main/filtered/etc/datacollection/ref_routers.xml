@@ -1,4 +1,4 @@
-<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Routers">
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="REF_Routers">
    <resourceType name="frCircuitIfIndex" label="Frame-Relay (RFC1315)">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.FrameRelayStorageStrategy"/>
