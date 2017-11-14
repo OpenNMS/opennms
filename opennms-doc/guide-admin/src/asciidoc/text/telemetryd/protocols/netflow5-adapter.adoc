@@ -1,0 +1,20 @@
+
+[[telemetryd-netflow5-adapter]]
+===== NetFlow v5 Adapter
+
+The NetFlow v5 adapter is used to handle _NetFlow v5_ payloads.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name | `org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter`
+|===
+
+====== Parameters
+
+.Adapter specific parameters for the Netflow5Adapter
+[options="header, autowidth"]
+|===
+| Parameter | Description | Required | Default value
+|===

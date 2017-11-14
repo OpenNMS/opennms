@@ -319,6 +319,9 @@ include::text/telemetryd/introduction.adoc[]
 === Protocol Reference
 include::text/telemetryd/protocols/junos-telemetry-interface.adoc[]
 include::text/telemetryd/protocols/jti-adapter.adoc[]
+include::text/telemetryd/protocols/netflow5-interface.adoc[]
+include::text/telemetryd/protocols/netflow5-adapter.adoc[]
+include::text/telemetryd/protocols/netflow5-troubleshooting.adoc[]
 
 [[ga-telemetryd-listener]]
 === Listener Reference
