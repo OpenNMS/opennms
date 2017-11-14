@@ -85,7 +85,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -104,7 +104,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -122,7 +122,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -141,7 +141,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -165,7 +165,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -184,7 +184,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -203,7 +203,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -249,7 +249,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -295,7 +295,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeBId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -315,7 +315,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -335,7 +335,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -346,7 +346,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(3, shsegs.size());
         
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+;
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
@@ -361,7 +362,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -372,7 +373,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(3, shsegs.size());
         
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
@@ -387,7 +389,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, 
         		new Node(topology.nodeAId, null, null, null,location));
@@ -407,7 +409,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeBId));
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -426,7 +428,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeCId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -445,8 +447,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
-        
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -464,7 +465,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeBId));
         domain.addBridge(new Bridge(topology.nodeCId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -482,7 +483,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -494,6 +495,78 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
+    public void testElectRootBridge() {
+        ABCTopology topology = new ABCTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        domain.addBridge(new Bridge(topology.nodeCId));
+        setBridgeElements(domain,topology.elemlist);
+
+        Bridge elected = domain.electRootBridge();
+        assertEquals(null, elected);
+
+        //B root
+        domain.getBridge(topology.nodeAId).setDesignated(topology.macB);
+        domain.getBridge(topology.nodeCId).setDesignated(topology.macB);
+        elected = domain.electRootBridge();
+        assertEquals(topology.nodeBId.intValue(), elected.getId().intValue());
+
+        //A Root
+        domain.getBridge(topology.nodeAId).setDesignated(null);
+        domain.getBridge(topology.nodeBId).setDesignated(topology.macA);
+        domain.getBridge(topology.nodeCId).setDesignated(topology.macB);
+        elected = domain.electRootBridge();
+        assertEquals(topology.nodeAId.intValue(), elected.getId().intValue());
+
+        //C Root
+        domain.getBridge(topology.nodeAId).setDesignated(topology.macB);
+        domain.getBridge(topology.nodeBId).setDesignated(topology.macC);
+        domain.getBridge(topology.nodeCId).setDesignated(null);
+        elected = domain.electRootBridge();
+        assertEquals(topology.nodeCId.intValue(), elected.getId().intValue());
+
+        //C root
+        domain.getBridge(topology.nodeAId).setDesignated(null);
+        domain.getBridge(topology.nodeBId).setDesignated(topology.macC);
+        domain.getBridge(topology.nodeCId).setDesignated(null);
+        elected = domain.electRootBridge();
+        assertEquals(topology.nodeCId.intValue(), elected.getId().intValue());
+        
+       //D? root
+        domain.getBridge(topology.nodeAId).setDesignated(null);
+        domain.getBridge(topology.nodeBId).setDesignated("dddddddddddd");
+        domain.getBridge(topology.nodeCId).setDesignated(null);
+        elected = domain.electRootBridge();
+        assertEquals(topology.nodeBId.intValue(), elected.getId().intValue());
+
+        //A root B is bypassed
+        domain.getBridge(topology.nodeAId).setDesignated(null);
+        domain.getBridge(topology.nodeBId).setDesignated(null);
+        domain.getBridge(topology.nodeCId).setDesignated(topology.macA);
+        elected = domain.electRootBridge();
+        assertEquals(topology.nodeAId.intValue(), elected.getId().intValue());
+
+        //loop is bypassed
+        domain.getBridge(topology.nodeAId).setDesignated(topology.macC);
+        domain.getBridge(topology.nodeBId).setDesignated(null);
+        domain.getBridge(topology.nodeCId).setDesignated(topology.macA);
+        elected = domain.electRootBridge();
+        assertEquals(null, elected);
+
+        //null root B is bypassed
+        domain.getBridge(topology.nodeAId).setDesignated(null);
+        domain.getBridge(topology.nodeBId).setDesignated(null);
+        domain.getBridge(topology.nodeCId).setDesignated(null);
+        elected = domain.electRootBridge();
+        assertEquals(null, elected);
+
+
+    }
+    
+    
+    @Test
     public void testABC() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
@@ -501,7 +574,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
         domain.addBridge(new Bridge(topology.nodeCId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -520,7 +593,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -529,7 +602,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         domain.addBridge(new Bridge(topology.nodeBId));
         domain.addBridge(new Bridge(topology.nodeCId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.calculate();
@@ -544,7 +618,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeCId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -555,7 +629,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         topology.checkAC(ndbt.getDomain());
 
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
@@ -570,7 +645,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeBId));
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -581,7 +656,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         topology.checkAB(ndbt.getDomain());
 
         domain.addBridge(new Bridge(topology.nodeCId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.calculate();
 
@@ -595,7 +671,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -604,7 +680,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
@@ -618,7 +695,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeCId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+;
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -627,7 +705,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+;
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
@@ -643,7 +722,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeBId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -653,7 +732,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         topology.checkBC(ndbt.getDomain());
 
         domain.addBridge(new Bridge(topology.nodeAId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
@@ -669,7 +749,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -687,7 +767,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeFId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -705,7 +785,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeEId));
         domain.addBridge(new Bridge(topology.nodeFId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -723,7 +803,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeGId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -743,7 +823,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
         domain.addBridge(new Bridge(topology.nodeFId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -763,7 +843,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeFId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -774,7 +854,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         topology.checkDF(ndbt.getDomain());
         
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
+
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
         ndbt.calculate();
         
@@ -791,7 +872,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeEId));
         domain.addBridge(new Bridge(topology.nodeFId));
         domain.addBridge(new Bridge(topology.nodeGId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -817,7 +898,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeHId));
         domain.addBridge(new Bridge(topology.nodeIId));
         domain.addBridge(new Bridge(topology.nodeLId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -847,7 +928,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeHId));
         domain.addBridge(new Bridge(topology.nodeIId));
         domain.addBridge(new Bridge(topology.nodeLId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
         ndbt.setDomain(domain);
@@ -891,7 +972,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbtB= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeBId, null, null, null,location));
         ndbtB.setDomain(domain);
@@ -932,7 +1013,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbtB= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeBId, null, null, null,location));
         ndbtB.setDomain(domain);
@@ -974,7 +1055,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
 
         NodeDiscoveryBridgeTopology ndbtE= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeEId, null, null, null,location));
         ndbtE.setDomain(domain);
@@ -1017,7 +1098,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbtB= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeBId, null, null, null,location));
         ndbtB.setDomain(domain);
@@ -1059,7 +1140,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbtE= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeEId, null, null, null,location));
         ndbtE.setDomain(domain);
@@ -1103,7 +1184,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbtB= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeBId, null, null, null,location));
         ndbtB.setDomain(domain);
@@ -1155,7 +1236,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbtB= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeBId, null, null, null,location));
         ndbtB.setDomain(domain);
@@ -1218,7 +1299,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeDId));
         domain.addBridge(new Bridge(topology.nodeEId));
-        domain.setBridgeElements(topology.elemlist);
+        setBridgeElements(domain,topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbtB= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeBId, null, null, null,location));
         ndbtB.setDomain(domain);

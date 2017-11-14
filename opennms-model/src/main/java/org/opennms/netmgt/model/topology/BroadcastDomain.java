@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 
 public class BroadcastDomain implements BridgeTopology {
@@ -85,30 +83,6 @@ public class BroadcastDomain implements BridgeTopology {
         m_forwarding = forwadingMap;
     }
     
-    public Set<String> getBridgeMacAddresses(Integer bridgeid) {
-		Set<String> bridgemacaddresses = new HashSet<String>();
-		Bridge bridge = getBridge(bridgeid);
-		if ( bridge != null ) {
-			for (BridgeElement element: bridge.getBridgeElements()) {
-				if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress()))
-	                bridgemacaddresses.add(element.getBaseBridgeAddress());			}
-		}
-		return bridgemacaddresses;
-	}
-
-    public void setBridgeElements(List<BridgeElement> bridgeelements) {
-    	for (Bridge bridge: m_bridges)
-    		bridge.clearBridgeElement();
-    	
-E:    	for (BridgeElement element: bridgeelements) {
-			for (Bridge bridge: m_bridges) {
-				if (bridge.addBridgeElement(element)) {
-					continue E;
-				}
-			}
-		}
-    }
-
     public void clearTopology() {
         m_forwarding.clear();
         m_topology.clear();
@@ -478,6 +452,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     	} else {
     	    for (Bridge bridge: getBridges()) {
     	        strbfr.append(bridge.printTopology());
+                strbfr.append("\n");
     	    }
     	    for (SharedSegment shared: getTopology()) {
     	        strbfr.append(shared.printTopology());
@@ -499,6 +474,7 @@ E:    	for (BridgeElement element: bridgeelements) {
         strbfr.append("\n");
         for (Integer bridgeid : bridgeIds) {
         	strbfr.append(getBridge(bridgeid).printTopology());
+                strbfr.append("\n");
         	for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeid)) {
         		if (segment.getDesignatedBridge().intValue() == bridgeid.intValue()) {
         			strbfr.append(segment.printTopology());
@@ -518,37 +494,32 @@ E:    	for (BridgeElement element: bridgeelements) {
     }
     
     public Bridge electRootBridge() {
-        if (getBridges().size() == 1) 
-            return getBridges().iterator().next();
-        
-            //if null try set the stp roots
-        Set<String> rootBridgeIds=new HashSet<String>();
-        for (Bridge bridge: m_bridges) {
-        	for (BridgeElement element: bridge.getBridgeElements() ) {
-        		if (InetAddressUtils.
-        				isValidStpBridgeId(element.getStpDesignatedRoot()) 
-        				&& !element.getBaseBridgeAddress().
-        				equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
-        			rootBridgeIds.add(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()));
-        		}
-        	}
+        if (m_bridges.size() == 1) {
+            return m_bridges.iterator().next();
         }
         //well only one root bridge should be defined....
         //otherwise we need to skip calculation
         //so here is the place were we can
         //manage multi stp domains...
         //ignoring for the moment....
-        for (String rootBridgeId: rootBridgeIds) {
-            for (Bridge bridge: m_bridges) {
-            	for (BridgeElement element: bridge.getBridgeElements() ) {
-            		if (element.getBaseBridgeAddress().equals((rootBridgeId))) {
-            			return bridge;
-            		}
-            	}
+        for (Bridge electable: m_bridges) {
+            if (electable.getDesignated() != null) {
+                return getUpperBridge(electable,0);
             }
         }
-
         return null;
     }
-    
+
+    //FIXME throw Exception
+    private Bridge getUpperBridge(Bridge electableroot, int level) {
+        if (level == 30) {
+            return null;
+        }
+        for (Bridge electable: m_bridges) {
+            if (electable.getIdentifiers().contains(electableroot.getDesignated())) {
+                return getUpperBridge(electable, ++level);
+            }
+        }
+        return electableroot;        
+    }
 }

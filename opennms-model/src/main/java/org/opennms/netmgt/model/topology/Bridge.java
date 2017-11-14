@@ -28,16 +28,15 @@
 
 package org.opennms.netmgt.model.topology;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.opennms.netmgt.model.BridgeElement;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Bridge implements BridgeTopology {
     final Integer m_id;
     Integer m_rootPort;
     boolean m_isRootBridge;
-    List<BridgeElement> m_elements = new ArrayList<BridgeElement>();
+    Set<String> m_identifiers = new HashSet<String>();
+    String m_designated;
 
     public Bridge(Integer id) {
         super();
@@ -95,31 +94,39 @@ public class Bridge implements BridgeTopology {
     	StringBuffer strbfr = new StringBuffer();
         strbfr.append("bridge: nodeid[");
         strbfr.append(m_id);
-        strbfr.append("], designated port: [");
+        strbfr.append("], designated port:[");
         if (m_isRootBridge) {
             strbfr.append("isRootBridge");
         } else {
             strbfr.append(m_rootPort);
         }
-        strbfr.append("]\n");
+        strbfr.append("], designated:[");
+        strbfr.append(m_designated);
+        strbfr.append("], identifiers:");
+        strbfr.append(m_identifiers);
         return strbfr.toString();
 
     }
 
-    public void clearBridgeElement() {
-    	m_elements.clear();
+    public Set<String> getIdentifiers() {
+        return m_identifiers;
     }
 
-    public List<BridgeElement> getBridgeElements() {
-        return m_elements;
+    public void setIdentifiers(Set<String> identifiers) {
+        m_identifiers = identifiers;
     }
-	
-    public boolean addBridgeElement(BridgeElement element) {
-        if (element.getNode().getId().intValue() == m_id.intValue()) {
-            m_elements.add(element);
-            return true;
-        }
-        return false;
+
+    public String getDesignated() {
+        return m_designated;
+    }
+
+    public void setDesignated(String designated) {
+        m_designated = designated;
+    }
+
+    public void clear() {
+        m_identifiers.clear();
+        m_designated = null;
     }
 
 }

@@ -948,13 +948,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public List<BridgeElement> getBridgeElements(Set<Integer> nodes) {
-        List<BridgeElement> elems = new ArrayList<BridgeElement>();
-        for (Integer nodeid: nodes)
-            elems.addAll(m_bridgeElementDao.findByNodeId(nodeid));
-        return elems;
+    public List<BridgeElement> getBridgeElements(Integer nodeId) {
+        return m_bridgeElementDao.findByNodeId(nodeId);
     }
-    
+
     @Override
     public void persistForwarders() {
         for (BroadcastDomain domain: m_bridgeTopologyDao.getAll()) {

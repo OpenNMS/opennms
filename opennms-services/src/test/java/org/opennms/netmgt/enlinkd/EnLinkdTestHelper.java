@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -174,7 +175,25 @@ public abstract class EnLinkdTestHelper {
         System.err.println("ospf rem router address less ifindex: " + link.getOspfRemAddressLessIndex());
         System.err.println("");
     }
-        
+    public void setBridgeElements(BroadcastDomain domain, List<BridgeElement> elements) {
+        for (BridgeElement element: elements) {
+            Bridge bridge = domain.getBridge(element.getNode().getId());
+            if (bridge == null) {
+                continue;
+            }
+            if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
+                System.err.println(element.getBaseBridgeAddress());
+                bridge.getIdentifiers().add(element.getBaseBridgeAddress());
+            }
+            if (InetAddressUtils.
+                    isValidStpBridgeId(element.getStpDesignatedRoot()) 
+                    && !element.getBaseBridgeAddress().
+                    equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
+                bridge.setDesignated(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()));
+            }
+        }        
+    }
+    
     public BridgeForwardingTableEntry addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, String mac) {
         BridgeForwardingTableEntry link = new BridgeForwardingTableEntry();
         link.setNodeId(node.getId());

@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
@@ -116,8 +118,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             super();
             Map<String,BridgeForwardingTableEntry> xmactoport = new HashMap<String, BridgeForwardingTableEntry>();
             Map<String,BridgeForwardingTableEntry> ymactoport = new HashMap<String, BridgeForwardingTableEntry>();
-            Set<String> xmacs = new HashSet<String>();
-            Set<String> ymacs = new HashSet<String>();             		
             if (LOG.isDebugEnabled()) {
                 LOG.debug("simple connection [{} <--> {}]: searching.\n xbft -> \n{}\n ybft -> \n{}",
                     xBridge.getId(),
@@ -130,22 +130,18 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     xmactoport.put(xlink.getMacAddress(), xlink);
                 }
                 if (xBridge.getId().intValue() == xlink.getNodeId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
-                    xmacs.add(xlink.getMacAddress());
+                    xBridge.getIdentifiers().add(xlink.getMacAddress());
             }
             for (BridgeForwardingTableEntry ylink: yBFT) {
                 if (yBridge.getId().intValue() == ylink.getNodeId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     ymactoport.put(ylink.getMacAddress(), ylink);
                 }
                 if (yBridge.getId().intValue() == ylink.getNodeId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
-                    ymacs.add(ylink.getMacAddress());
+                    yBridge.getIdentifiers().add(ylink.getMacAddress());
             }
-            if (m_domain.getBridgeMacAddresses(xBridge.getId()) != null)
-                xmacs.addAll(m_domain.getBridgeMacAddresses(xBridge.getId()));
-            if (m_domain.getBridgeMacAddresses(yBridge.getId()) != null)
-                ymacs.addAll(m_domain.getBridgeMacAddresses(yBridge.getId()));
 
             // there is a mac of Y found on X BFT
-            Integer xy = condition1(ymacs, xmactoport);
+            Integer xy = condition1(yBridge.getIdentifiers(), xmactoport);
             if (xy != null) {
             	m_xy=xy;
                 LOG.debug("simple connection: [{} port: {} --> {}].",
@@ -155,7 +151,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             }
 
             // there is a mac of X found on Y BFT
-            Integer yx = condition1(xmacs, ymactoport);
+            Integer yx = condition1(xBridge.getIdentifiers(), ymactoport);
             if (yx != null) {
             	m_yx=yx;
                 LOG.debug("simple connection: [{} <-- {} port: {}].",
@@ -571,6 +567,27 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         return nodeswithupdatedbftonbroadcastdomain;
     }
 
+    public void updateBridgeOnDomain() {
+        if (m_domain == null) {
+            return;
+        }
+
+        for (Bridge bridge: m_domain.getBridges()) {
+            bridge.clear();
+            for (BridgeElement element: m_linkd.getQueryManager().getBridgeElements(bridge.getId())) {
+                if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
+                    bridge.getIdentifiers().add(element.getBaseBridgeAddress());
+                }
+                if (InetAddressUtils.
+                        isValidStpBridgeId(element.getStpDesignatedRoot()) 
+                        && !element.getBaseBridgeAddress().
+                        equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
+                    bridge.setDesignated(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()));
+                }
+            }
+        }
+    }
+
     @Override
     public void run() {
 
@@ -707,7 +724,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             }
             m_linkd.getQueryManager().cleanBroadcastDomains();
 
-            m_domain.setBridgeElements(m_linkd.getQueryManager().getBridgeElements(m_domain.getBridgeNodesOnDomain()));
+            //FIXME check everithing is right
+            updateBridgeOnDomain();
 
 
             if (m_notYetParsedBFTMap.isEmpty()) {
