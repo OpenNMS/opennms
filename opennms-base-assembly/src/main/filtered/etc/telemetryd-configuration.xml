@@ -20,16 +20,16 @@
     </package>
   </protocol>
   
-  <protocol name="cisco-nxos" description="Cisco NXOS Telemetry" enabled="false">
-    <listener name="nxos-udp-50000" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
-      <parameter key="port" value="50000"/>
+  <protocol name="Cisco-NXOS" description="Cisco NXOS Telemetry" enabled="false">
+    <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
+      <parameter key="port" value="50001"/>
     </listener>
 
-    <adapter name="nxos-gpb" class-name="org.opennms.features.telemetry.adapters.nxos.NxosGpbAdapter">
+    <adapter name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter">
       <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/cisco-nxos-telemetry-interface.groovy" />
     </adapter>
 
-    <package name="Nxos-Default">
+    <package name="NXOS-Default">
       <rrd step="300">
         <rra>RRA:AVERAGE:0.5:1:2016</rra>
         <rra>RRA:AVERAGE:0.5:12:1488</rra>

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.adapters.nxos;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -60,10 +58,6 @@ public class NxosTelemetryClient {
                                                         .setCollectionEndTime(1510584402)
                                                         .setMsgTimestamp(new Date().getTime())
                                                         .build();
-        FileOutputStream fos = new FileOutputStream("/home/chandra/dev/opennms/features/telemetry/itests/src/test/resources/cisco-nxos-data.raw");
-        fos.write(telemetrymsg.toByteArray());
-        fos.close();
-        
         return telemetrymsg;
 
     }
