@@ -48,5 +48,10 @@
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.adapters</groupId>
+      <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

@@ -1,0 +1,45 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+	<reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
+
+	<!-- Factory and Adapter -->
+	<bean id="netflow5factory" class="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5AdapterFactory">
+		<property name="metricRegistry" ref="flowAdapterMetricRegistry"/>
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="transactionOperations" ref="transactionOperations" />
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="flowRepository" ref="flowRepository" />
+	</bean>
+	<service ref="netflow5factory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter" />
+		</service-properties>
+	</service>
+
+	<!-- Metrics -->
+	<bean id="flowAdapterMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+	<bean id="flowAdapterMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+		<argument ref="flowAdapterMetricRegistry"/>
+	</bean>
+	<bean id="flowAdapterMetricRegistryDomainedJmxReporterBuilder" factory-ref="flowAdapterMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+		<argument value="org.opennms.netmgt.telemetry.adapters.netflow"/>
+	</bean>
+	<bean id="flowAdapterMetricRegistryJmxReporter"
+		  factory-ref="flowAdapterMetricRegistryJmxReporterBuilder"
+		  factory-method="build"
+		  init-method="start"
+		  destroy-method="stop" />
+	
+</blueprint>

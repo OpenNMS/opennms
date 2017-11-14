@@ -26,9 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.telemetry.adapters.netflow;
 
-public interface FlowRepositoryProvider {
+import org.junit.Assert;
+import org.junit.Test;
 
-    FlowRepository getFlowRepository() throws Exception;
+public class Netflow5AdapterFactoryTest {
+
+    @Test
+    public void verifyInitializing() {
+        Netflow5Adapter adapter = new Netflow5AdapterTestFactory().createAdapter();
+        Assert.assertNotNull(adapter);
+    }
 }
