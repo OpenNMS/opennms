@@ -4,7 +4,6 @@
       <collect>
          <includeGroup>printer-usage</includeGroup>
          <includeGroup>printer-mib-supplies</includeGroup>
-         <includeGroup>mib2-host-resources-storage</includeGroup>
       </collect>
    </systemDef>
 </datacollection-group>
