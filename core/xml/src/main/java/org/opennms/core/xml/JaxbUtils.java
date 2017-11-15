@@ -470,7 +470,10 @@ public abstract class JaxbUtils {
                     };
                 }
                 if (schemaInputStream == null) {
-                    final URL schemaResource = Thread.currentThread().getContextClassLoader().getResource("xsds/" + schemaFileName);
+                    URL schemaResource = Thread.currentThread().getContextClassLoader().getResource("xsds/" + schemaFileName);
+                    if (schemaResource == null) {
+                        schemaResource = clazz.getClassLoader().getResource("xsds/" + schemaFileName);
+                    }
                     if (schemaResource == null) {
                         LOG.debug("Unable to load resource xsds/{} from the classpath.", schemaFileName);
                     } else {
