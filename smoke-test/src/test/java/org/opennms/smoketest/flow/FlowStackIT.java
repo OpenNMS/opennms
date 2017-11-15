@@ -262,9 +262,7 @@ public class FlowStackIT {
             pipe.println("config:property-set elasticUrl http://elasticsearch:9200");
             pipe.println("config:update");
 
-            // Install feature
-            pipe.println("feature:install flows");
-            pipe.println("feature:list | grep -i flows");
+            pipe.println("feature:list");
             pipe.println("log:set INFO");
             pipe.println("logout");
 
