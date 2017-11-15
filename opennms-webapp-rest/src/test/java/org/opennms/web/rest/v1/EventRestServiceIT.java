@@ -40,7 +40,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -129,7 +128,7 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), Status.BAD_REQUEST.getStatusCode());
     }
 
-    @Test(expected=MarshallingResourceFailureException.class)
+    @Test
     public void testStrangeDate() throws Exception {
         final String xml = "<event xmlns=\"http://xmlns.opennms.org/xsd/event\">\n" +
                 "   <uei>some.uei</uei>\n" +
@@ -137,6 +136,6 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 /* fails */ "   <time>Wednesday, November 08, 2017  3:07 PM EST</time>\n" +
                 "   <host>from-some-host</host>\n" +
                 "</event>";
-        sendData(POST, MediaType.APPLICATION_XML, "/events", xml, Status.BAD_REQUEST.getStatusCode());
+        sendData(POST, MediaType.APPLICATION_XML, "/events", xml, Status.INTERNAL_SERVER_ERROR.getStatusCode());
     }
 }
