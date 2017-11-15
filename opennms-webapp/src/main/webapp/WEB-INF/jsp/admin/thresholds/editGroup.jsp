@@ -37,6 +37,7 @@
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Threshold Group" />
@@ -89,16 +90,16 @@
         </tr>
         <c:forEach items="${group.threshold}" varStatus="thresholdIndex" var="threshold">
             <tr>
-              <td>${threshold.type}</td>
-              <td>${threshold.description}</td>
-              <td>${threshold.dsName}</td>
-              <td>${threshold.dsType}</td>
-              <td>${threshold.dsLabel}</td>
-              <td>${threshold.value}</td>
-              <td>${threshold.rearm}</td>
-              <td>${threshold.trigger}</td>
-              <td><a href="javascript: void submitNewNotificationForm('${threshold.triggeredUEI}');" title="Edit notifications for this uei">${threshold.triggeredUEI}</a></td>
-              <td><a href="javascript: void submitNewNotificationForm('${threshold.rearmedUEI}');" title="Edit notifications for this uei">${threshold.rearmedUEI}</a></td>
+              <td><c:out value="${threshold.type}"/></td>
+              <td><c:out value="${threshold.description}"/></td>
+              <td><c:out value="${threshold.dsName}"/></td>
+              <td><c:out value="${threshold.dsType}"/></td>
+              <td><c:out value="${threshold.dsLabel}"/></td>
+              <td><c:out value="${threshold.value}"/></td>
+              <td><c:out value="${threshold.rearm}"/></td>
+              <td><c:out value="${threshold.trigger}"/></td>
+              <td><a href="javascript: void submitNewNotificationForm('${e:forJavaScript(threshold.triggeredUEI)}');" title="Edit notifications for this uei"><c:out value="${threshold.triggeredUEI}"/></a></td>
+              <td><a href="javascript: void submitNewNotificationForm('${e:forJavaScript(threshold.rearmedUEI)}');" title="Edit notifications for this uei"><c:out value="${threshold.rearmedUEI}"/></a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&thresholdIndex=${thresholdIndex.index}&editThreshold">Edit</a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&thresholdIndex=${thresholdIndex.index}&deleteThreshold">Delete</a></td>
             </tr>
@@ -134,16 +135,16 @@
         </tr>
           <c:forEach items="${group.expression}" varStatus="expressionIndex" var="expression">
             <tr>
-              <td>${expression.type}</td>
-              <td>${expression.description}</td>
-              <td>${expression.expression}</td>
-              <td>${expression.dsType}</td>
-              <td>${expression.dsLabel}</td>
-              <td>${expression.value}</td>
-              <td>${expression.rearm}</td>
-              <td>${expression.trigger}</td>
-              <td><a href="javascript: void submitNewNotificationForm('${expression.triggeredUEI}');" title="Edit notifications for this uei">${expression.triggeredUEI}</a></td>
-              <td><a href="javascript: void submitNewNotificationForm('${expression.rearmedUEI}');" title="Edit notifications for this uei">${expression.rearmedUEI}</a></td>
+              <td><c:out value="${expression.type}"/></td>
+              <td><c:out value="${expression.description}"/></td>
+              <td><c:out value="${expression.expression}"/></td>
+              <td><c:out value="${expression.dsType}"/></td>
+              <td><c:out value="${expression.dsLabel}"/></td>
+              <td><c:out value="${expression.value}"/></td>
+              <td><c:out value="${expression.rearm}"/></td>
+              <td><c:out value="${expression.trigger}"/></td>
+              <td><a href="javascript: void submitNewNotificationForm('${e:forJavaScript(expression.triggeredUEI)}');" title="Edit notifications for this uei"><c:out value="${expression.triggeredUEI}"/></a></td>
+              <td><a href="javascript: void submitNewNotificationForm('${e:forJavaScript(expression.rearmedUEI)}');" title="Edit notifications for this uei"><c:out value="${expression.rearmedUEI}"/></a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&expressionIndex=${expressionIndex.index}&editExpression">Edit</a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&expressionIndex=${expressionIndex.index}&deleteExpression">Delete</a></td>
             </tr>
