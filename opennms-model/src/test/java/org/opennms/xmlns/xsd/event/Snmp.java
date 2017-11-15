@@ -36,6 +36,7 @@
 
 package org.opennms.xmlns.xsd.event;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -82,9 +83,11 @@ import javax.xml.bind.annotation.XmlType;
 public class Snmp {
 
     @XmlElement(required = true)
+    @NotNull
     protected String id;
     protected String idtext;
     @XmlElement(required = true)
+    @NotNull
     protected String version;
     protected Integer specific;
     protected Integer generic;
