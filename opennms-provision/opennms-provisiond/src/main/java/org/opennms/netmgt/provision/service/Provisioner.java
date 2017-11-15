@@ -403,7 +403,7 @@ public class Provisioner implements SpringServiceDaemon {
      * <p>importModelFromResource</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
-     * @param rescanExisting TODO
+     * @param rescanExisting a {@link java.lang.String} object - Valid values are "true", "false" and "dbonly".
      * @throws java.lang.Exception if any.
      */
     protected void importModelFromResource(final Resource resource, final String rescanExisting) throws Exception {
@@ -414,7 +414,7 @@ public class Provisioner implements SpringServiceDaemon {
      * <p>importModelFromResource</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
-     * @param rescanExisting TODO
+     * @param rescanExisting a {@link java.lang.String} object - Valid values are "true", "false" and "dbonly".
      * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object.
      * @throws java.lang.Exception if any.
      */
