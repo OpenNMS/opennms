@@ -36,6 +36,10 @@
 	        org.opennms.netmgt.config.*,
 		java.util.*"
 %>
+<%@ page import="org.opennms.netmgt.config.UserFactory" %>
+<%@ page import="org.opennms.netmgt.config.UserManager" %>
+<%@ page import="org.opennms.netmgt.config.WebRole" %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%
 	UserManager userFactory;
@@ -118,13 +122,15 @@
 	 	  
 	 	  <c:otherwise>
 			<c:forEach var="role" items="${roleManager.roles}">
-				<c:set var="deleteUrl" value="javascript:doDelete('${role.name}')" />
-				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />
-				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${role.name}?')"/>
-				
+				<%
+					String deleteUrl = "javascript:doDelete('" + WebSecurityUtils.sanitizeString(((WebRole) pageContext.getAttribute("role")).getName()) + "')";
+					String viewUrl = "javascript:doView('" + WebSecurityUtils.sanitizeString(((WebRole) pageContext.getAttribute("role")).getName()) + "')";
+					String confirmScript = "return confirm('Are you sure you want to delete the role " + WebSecurityUtils.sanitizeString(((WebRole) pageContext.getAttribute("role")).getName()) + "?')";
+				%>
+
 				<tr>
-				<td><a href="${deleteUrl}" onclick="${confirmScript}"><i class="fa fa-trash-o fa-2x"></i></a></td>
-				<td><a href="${viewUrl}">${role.name}</a></td>
+				<td><a href="<%= deleteUrl %>" onclick="<%= confirmScript %>"><i class="fa fa-trash-o fa-2x"></i></a></td>
+				<td><a href="<%= viewUrl %>"><%= WebSecurityUtils.sanitizeString(((WebRole) pageContext.getAttribute("role")).getName()) %></a></td>
 				<td>
 				  <c:set var="supervisorUser">${role.defaultUser}</c:set>
 				  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
@@ -138,7 +144,7 @@
 					</c:forEach>	
 				</td>
 				<td>${role.membershipGroup}</td>
-				<td>${role.description}</td>
+				<td><%= WebSecurityUtils.sanitizeString(((WebRole) pageContext.getAttribute("role")).getDescription()) %></td>
 				</tr>
 			</c:forEach>
 	 	  </c:otherwise>

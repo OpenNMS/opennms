@@ -36,6 +36,7 @@
 	        org.opennms.netmgt.config.*,
 		java.util.*"
 %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%
 	UserManager userFactory;
@@ -126,7 +127,7 @@
   <table class="table table-condensed">
     <tr>
       <th>Name</th>
-        <td>${role.name}</td>
+        <td><%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %></td>
       <th>Currently On Call</th>
   	<td>
   	  <c:forEach var="scheduledUser" items="${role.currentUsers}">
@@ -148,14 +149,14 @@
 
     <tr>
       <th>Description</th>
-  	<td colspan="3">${role.description}</td>
+  	<td colspan="3"><%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getDescription()) %></td>
     </tr>
   </table>
 </div> <!-- panel -->
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
   <input type="hidden" name="operation" value="editDetails"/>
-  <input type="hidden" name="role" value="${role.name}"/>
+  <input type="hidden" name="role" value="<%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %>"/>
   <button type="submit" class="btn btn-default">Value Details</button>
 </form>
 
@@ -169,22 +170,22 @@
   </div>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
 					<input type="hidden" name="operation" value="view"/>
-					<input type="hidden" name="role" value="${role.name}"/>
+					<input type="hidden" name="role" value="<%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %>"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.previousMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="nextMonthForm">
 					<input type="hidden" name="operation" value="view"/>
-					<input type="hidden" name="role" value="${role.name}"/>
+					<input type="hidden" name="role" value="<%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %>"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="addEntryForm">
 					<input type="hidden" name="operation" value="addEntry"/>
-					<input type="hidden" name="role" value="${role.name}"/>
+					<input type="hidden" name="role" value="<%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %>"/>
 					<input type="hidden" name="date"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="editEntryForm">
 					<input type="hidden" name="operation" value="editEntry"/>
-					<input type="hidden" name="role" value="${role.name}"/>
+					<input type="hidden" name="role" value="<%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getName()) %>"/>
 					<input type="hidden" name="schedIndex"/>
 					<input type="hidden" name="timeIndex"/>
 				</form>
