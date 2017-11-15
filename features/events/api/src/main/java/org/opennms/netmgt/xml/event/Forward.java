@@ -41,6 +41,8 @@ package org.opennms.netmgt.xml.event;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -72,18 +74,21 @@ public class Forward implements Serializable {
      * internal content storage
      */
 	@XmlValue
+	@NotNull
     private java.lang.String _content = "";
 
     /**
      * Field _state.
      */
 	@XmlAttribute(name="state")
+	@Pattern(regexp="(on|off)")
     private java.lang.String _state = "off";
 
     /**
      * Field _mechanism.
      */
 	@XmlAttribute(name="mechanism")
+	@Pattern(regexp="(snmpudp|snmptcp|xmltcp|xmludp)")
     private java.lang.String _mechanism = "snmpudp";
 
 
