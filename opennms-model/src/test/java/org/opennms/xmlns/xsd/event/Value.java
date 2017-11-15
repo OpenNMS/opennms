@@ -36,6 +36,8 @@
 
 package org.opennms.xmlns.xsd.event;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -82,10 +84,13 @@ import javax.xml.bind.annotation.XmlValue;
 public class Value {
 
     @XmlValue
+    @NotNull
     protected String value;
     @XmlAttribute(name = "type")
+    @Pattern(regexp="(int|string|Int32|OctetString|Null|ObjectIdentifier|Sequence|IpAddress|Counter32|Gauge32|TimeTicks|Opaque|Counter64)")
     protected String type;
     @XmlAttribute(name = "encoding")
+    @Pattern(regexp="(text|base64)")
     protected String encoding;
 
     /**
