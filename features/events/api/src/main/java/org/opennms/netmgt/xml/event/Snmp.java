@@ -41,6 +41,7 @@ package org.opennms.netmgt.xml.event;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -68,6 +69,7 @@ public class Snmp implements Serializable {
      * The snmp enterprise id
      */
 	@XmlElement(name="id", required=true)
+	@NotNull
     private java.lang.String _id;
 
     /**
@@ -80,6 +82,7 @@ public class Snmp implements Serializable {
      * The snmp version
      */
 	@XmlElement(name="version", required=true)
+	@NotNull
     private java.lang.String _version;
 
     /**
