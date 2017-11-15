@@ -609,11 +609,19 @@
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-rpc-jms" description="OpenNMS :: Core :: IPC :: RPC :: JMS Impl." version="${project.version}">
       <feature>opennms-core-ipc-rpc-api</feature>
-      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel-impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.jms-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-rpc-aws-sqs" description="OpenNMS :: Core :: IPC :: RPC :: AWQ SQS Impl." version="${project.version}">
+      <feature>opennms-core-ipc-rpc-api</feature>
+      <feature>opennms-aws-sqs</feature>
+      <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.aws-sqs/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.aws-sqs-impl/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-rpc-commands" description="OpenNMS :: Core :: IPC :: RPC :: Shell Commands" version="${project.version}">

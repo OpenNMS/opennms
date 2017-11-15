@@ -114,7 +114,8 @@ public class DefaultAmazonSQSManager implements AmazonSQSManager {
     public String getRpcRequestQueueNameAndCreateIfNecessary(String moduleId, String location) throws AmazonSQSQueueException {
         final String rpcRequestQueueName = getRpcRequestQueueName(moduleId, location);
         try {
-            return rpcQueueUrlsByName.get(rpcRequestQueueName);
+            rpcQueueUrlsByName.get(rpcRequestQueueName);
+            return rpcRequestQueueName;
         } catch (ExecutionException e) {
             throw new AmazonSQSQueueException(e);
         }
@@ -124,7 +125,8 @@ public class DefaultAmazonSQSManager implements AmazonSQSManager {
     public String getRpcReplyQueueNameAndCreateIfNecessary(String moduleId, String location) throws AmazonSQSQueueException {
         final String rpcReplyQueueName = getRpcReplyQueueName(moduleId, location);
         try {
-            return rpcQueueUrlsByName.get(rpcReplyQueueName);
+            rpcQueueUrlsByName.get(rpcReplyQueueName);
+            return rpcReplyQueueName;
         } catch (ExecutionException e) {
             throw new AmazonSQSQueueException(e);
         }
