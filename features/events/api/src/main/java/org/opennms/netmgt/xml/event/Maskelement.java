@@ -34,6 +34,8 @@ package org.opennms.netmgt.xml.event;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -61,12 +63,14 @@ public class Maskelement implements Serializable {
      */
 
 	@XmlElement(name="mename", required=true)
+	@NotNull
     private java.lang.String _mename;
 
     /**
      * The mask element value
      */
 	@XmlElement(name="mevalue", required=true)
+	@Size(min=1)
     private java.util.List<java.lang.String> _mevalueList;
 
 
