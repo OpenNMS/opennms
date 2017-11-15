@@ -42,13 +42,13 @@ import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager
 
 import com.google.common.collect.Lists;
 
-public class SubTemplateMultiListValue extends ListValue<List<List<Value<?>>>> {
+public class SubTemplateMultiListValue extends ListValue<List<Value<?>>> {
 
-    private final List<List<List<Value<?>>>> values;
+    private final List<List<Value<?>>> values;
 
     public SubTemplateMultiListValue(final String name,
                                      final Semantic semantic,
-                                     final List<List<List<Value<?>>>> values) {
+                                     final List<List<Value<?>>> values) {
         super(name, semantic);
         this.values = values;
     }
@@ -61,7 +61,7 @@ public class SubTemplateMultiListValue extends ListValue<List<List<Value<?>>>> {
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(BufferUtils.uint8(buffer));
 
-                final List<List<List<Value<?>>>> values = new LinkedList<>();
+                final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
                     final SetHeader header = new SetHeader(buffer);
                     if (header.setId <= 255) {
@@ -71,7 +71,7 @@ public class SubTemplateMultiListValue extends ListValue<List<List<Value<?>>>> {
                     final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, header.length - SetHeader.SIZE);
                     final Set<DataRecord> dataSet = new Set<>(header, DataRecord.parser(templateResolver, header.setId), payloadBuffer);
 
-                    values.add(Lists.transform(dataSet.records, r -> Lists.transform(r.fields, f->f.value)));
+                    values.addAll(Lists.transform(dataSet.records, r -> Lists.transform(r.fields, f->f.value)));
                 }
 
                 return new SubTemplateMultiListValue(name, semantic, values);
@@ -90,7 +90,12 @@ public class SubTemplateMultiListValue extends ListValue<List<List<Value<?>>>> {
     }
 
     @Override
-    public List<List<List<Value<?>>>> getValue() {
+    public List<List<Value<?>>> getValue() {
         return this.values;
+    }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
     }
 }

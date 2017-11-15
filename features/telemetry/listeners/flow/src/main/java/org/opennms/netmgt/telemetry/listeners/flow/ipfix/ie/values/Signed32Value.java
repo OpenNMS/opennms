@@ -76,4 +76,9 @@ public class Signed32Value extends Value<Long> {
     public Long getValue() {
         return this.value;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

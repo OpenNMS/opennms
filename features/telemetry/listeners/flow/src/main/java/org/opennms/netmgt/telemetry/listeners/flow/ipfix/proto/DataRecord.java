@@ -54,14 +54,16 @@ public final class DataRecord implements Record {
      +--------------------------------------------------+
     */
 
+    public final Template template;
     public final List<FieldValue> fields;
 
     public DataRecord(final TemplateManager.TemplateResolver templateResolver,
                       final Template template,
                       final ByteBuffer buffer) throws InvalidPacketException {
+        this.template = template;
 
-        final List<FieldValue> values = new ArrayList<>(template.count());
-        for (final Field templateField : template) {
+        final List<FieldValue> values = new ArrayList<>(this.template.count());
+        for (final Field templateField : this.template) {
             values.add(new FieldValue(templateResolver, templateField, buffer));
         }
 

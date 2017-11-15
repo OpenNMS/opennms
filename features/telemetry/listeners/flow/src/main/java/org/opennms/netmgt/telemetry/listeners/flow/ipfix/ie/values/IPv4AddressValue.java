@@ -83,4 +83,9 @@ public class IPv4AddressValue extends Value<Inet4Address> {
     public Inet4Address getValue() {
         return this.value;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

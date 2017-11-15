@@ -77,4 +77,9 @@ public class Unsigned16Value extends Value<UnsignedLong> {
     public UnsignedLong getValue() {
         return this.value;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

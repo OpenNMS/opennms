@@ -100,4 +100,9 @@ public class SubTemplateListValue extends ListValue<List<Value<?>>> {
     public List<List<Value<?>>> getValue() {
         return this.values;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

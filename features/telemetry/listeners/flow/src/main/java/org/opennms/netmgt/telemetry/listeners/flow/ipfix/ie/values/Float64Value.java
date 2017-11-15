@@ -76,4 +76,9 @@ public class Float64Value extends Value<Double> {
     public Double getValue() {
         return this.value;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

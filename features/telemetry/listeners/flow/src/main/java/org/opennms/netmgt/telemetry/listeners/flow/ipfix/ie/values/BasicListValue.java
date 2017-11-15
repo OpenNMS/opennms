@@ -96,4 +96,9 @@ public class BasicListValue extends ListValue<Value<?>> {
     public List<Value<?>> getValue() {
         return this.values;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

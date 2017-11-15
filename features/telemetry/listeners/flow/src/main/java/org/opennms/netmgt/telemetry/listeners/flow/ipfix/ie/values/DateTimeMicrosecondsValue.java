@@ -88,4 +88,9 @@ public class DateTimeMicrosecondsValue extends Value<Instant> {
     public Instant getValue() {
         return this.value;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

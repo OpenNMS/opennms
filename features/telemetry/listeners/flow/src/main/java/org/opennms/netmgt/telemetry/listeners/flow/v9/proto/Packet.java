@@ -107,7 +107,7 @@ public final class Packet implements Iterable<FlowSet<?>> {
                                 record.header.templateId,
                                 Template.builder()
                                         .withType(Template.Type.OPTIONS_TEMPLATE)
-                                        .withScopedCount(record.header.optionScopeLength / FieldSpecifier.SIZE)
+                                        .withScopeFieldsCount(record.header.optionScopeLength / FieldSpecifier.SIZE)
                                         .withFields(Lists.transform(record.fields, f -> f.specifier))
                                         .build());
                     }

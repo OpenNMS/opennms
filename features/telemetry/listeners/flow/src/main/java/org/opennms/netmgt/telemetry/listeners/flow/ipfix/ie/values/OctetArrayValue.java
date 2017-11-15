@@ -76,4 +76,9 @@ public class OctetArrayValue extends Value<byte[]> {
     public byte[] getValue() {
         return this.value;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

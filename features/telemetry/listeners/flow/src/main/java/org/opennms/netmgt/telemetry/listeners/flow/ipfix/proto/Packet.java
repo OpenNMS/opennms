@@ -122,7 +122,7 @@ public final class Packet implements Iterable<Set<?>> {
                                     record.header.templateId,
                                     Template.builder()
                                     .withType(Template.Type.OPTIONS_TEMPLATE)
-                                    .withScopedCount(record.header.scopeFieldCount)
+                                    .withScopeFieldsCount(record.header.scopeFieldCount)
                                     .withFields(Lists.transform(record.fields, f -> f.specifier))
                                     .build());
                         }

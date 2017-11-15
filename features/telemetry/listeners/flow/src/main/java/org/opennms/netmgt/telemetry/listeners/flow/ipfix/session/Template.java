@@ -44,24 +44,24 @@ public final class Template implements Iterable<Field> {
 
     public final Type type;
 
-    public final List<Field> scopeFields;
-    public final List<Field> valueFields;
+    public final List<Field> fields;
+    public final int scopeFieldsCount;
 
     private Template(final Type type,
-                     final List<Field> scopeFields,
-                     final List<Field> valueFields) {
+                     final List<Field> fields,
+                     final int scopeFieldsCount) {
         this.type = type;
-        this.scopeFields = scopeFields;
-        this.valueFields = valueFields;
+        this.fields = fields;
+        this.scopeFieldsCount = scopeFieldsCount;
     }
 
     public int count() {
-        return this.scopeFields.size() + this.valueFields.size();
+        return this.fields.size();
     }
 
     @Override
     public Iterator<Field> iterator() {
-        return Iterators.concat(this.scopeFields.iterator(), this.valueFields.iterator());
+        return Iterators.concat(this.fields.iterator());
     }
 
     public static class Builder {
@@ -69,7 +69,7 @@ public final class Template implements Iterable<Field> {
 
         private List<Field> fields = new LinkedList<>();
 
-        private int scopedCount = 0;
+        private int scopeFieldsCount = 0;
 
         private Builder() {
         }
@@ -84,20 +84,20 @@ public final class Template implements Iterable<Field> {
             return this;
         }
 
-        public Builder withScopedCount(final int scopedCount) {
-            this.scopedCount = scopedCount;
+        public Builder withScopeFieldsCount(final int scopeFieldsCount) {
+            this.scopeFieldsCount = scopeFieldsCount;
             return this;
         }
 
         public Template build() {
             Preconditions.checkNotNull(this.type);
             Preconditions.checkNotNull(this.fields);
-            Preconditions.checkPositionIndex(this.scopedCount, this.fields.size());
+            Preconditions.checkPositionIndex(this.scopeFieldsCount, this.fields.size());
 
             return new Template(
                     this.type,
-                    this.fields.subList(0, this.scopedCount),
-                    this.fields.subList(this.scopedCount, this.fields.size())
+                    this.fields,
+                    this.scopeFieldsCount
             );
         }
     }

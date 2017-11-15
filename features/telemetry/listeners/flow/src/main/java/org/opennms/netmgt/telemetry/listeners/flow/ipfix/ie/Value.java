@@ -30,6 +30,29 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie;
 
 import java.nio.ByteBuffer;
 
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.BasicListValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.BooleanValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeMicrosecondsValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeMillisecondsValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeNanosecondsValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeSecondsValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Float32Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Float64Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv4AddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv6AddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.MacAddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.OctetArrayValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed16Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed32Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed64Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed8Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.StringValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SubTemplateListValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SubTemplateMultiListValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned16Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned32Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned64Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned8Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
@@ -43,6 +66,32 @@ public abstract class Value<T> {
         int getMinimumFieldLength();
     }
 
+    public interface Visitor {
+        void accept(final BasicListValue value);
+        void accept(final BooleanValue value);
+        void accept(final DateTimeMicrosecondsValue value);
+        void accept(final DateTimeMillisecondsValue value);
+        void accept(final DateTimeNanosecondsValue value);
+        void accept(final DateTimeSecondsValue value);
+        void accept(final Float32Value value);
+        void accept(final Float64Value value);
+        void accept(final IPv4AddressValue value);
+        void accept(final IPv6AddressValue value);
+        void accept(final MacAddressValue value);
+        void accept(final OctetArrayValue octetArrayValue);
+        void accept(final Signed8Value signed8Value);
+        void accept(final Signed16Value signed16Value);
+        void accept(final Signed32Value signed32Value);
+        void accept(final Signed64Value signed64Value);
+        void accept(final StringValue stringValue);
+        void accept(final SubTemplateListValue subTemplateListValue);
+        void accept(final SubTemplateMultiListValue subTemplateMultiListValue);
+        void accept(final Unsigned8Value unsigned8Value);
+        void accept(final Unsigned16Value unsigned16Value);
+        void accept(final Unsigned32Value unsigned32Value);
+        void accept(final Unsigned64Value unsigned64Value);
+    }
+
     private final String name;
 
     protected Value(final String name) {
@@ -54,4 +103,6 @@ public abstract class Value<T> {
     }
 
     public abstract T getValue();
+
+    public abstract void visit(final Visitor visitor);
 }

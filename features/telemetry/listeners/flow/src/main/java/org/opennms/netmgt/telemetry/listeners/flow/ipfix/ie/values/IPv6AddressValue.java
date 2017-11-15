@@ -84,4 +84,9 @@ public class IPv6AddressValue extends Value<Inet6Address> {
     public Inet6Address getValue() {
         return this.value;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

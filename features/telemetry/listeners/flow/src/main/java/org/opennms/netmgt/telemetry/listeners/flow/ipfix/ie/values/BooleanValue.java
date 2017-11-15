@@ -83,4 +83,9 @@ public class BooleanValue extends Value<Boolean> {
     public Boolean getValue() {
         return this.value;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

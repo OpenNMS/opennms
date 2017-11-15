@@ -79,4 +79,9 @@ public class StringValue extends Value<String> {
     public String getValue() {
         return this.value;
     }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
+    }
 }

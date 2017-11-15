@@ -3,18 +3,17 @@ syntax = "proto2";
 option java_package = "org.opennms.netmgt.telemetry.listeners.flow.dto";
 
 message Entry {
-    enum Type {
-        SCOPE = 0;
-        DATA = 1;
+    message Timestamp {
+        required fixed64 seconds = 1;
+        required fixed32 nanos = 2;
     }
 
-    required string key = 1;
-    required Type type = 2;
+    repeated string key = 1;
 
     // TODO: Use extensions here?
     oneof value {
         bool bool = 100;
-        fixed64 timestamp = 101;
+        Timestamp timestamp = 101;
         double float = 102;
         bytes ipv4_address = 103;
         bytes ipv6_address = 104;
@@ -28,7 +27,7 @@ message Entry {
 
 message Flow {
     required fixed64 sourceId = 1;
-//    required fixed64 timestamp = 2;
+    optional fixed32 scopeFieldCount = 2;
 
     repeated Entry entries = 99;
 }
