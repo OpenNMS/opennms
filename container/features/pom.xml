@@ -140,7 +140,7 @@
             <repository>mvn:org.opennms.features.jest/opennms-jest/${project.version}/xml/features</repository>
 
             <!-- Flow Integration -->
-            <repository>mvn:org.opennms.features/flows/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features/opennms-flows/${project.version}/xml/features</repository>
 
           </repositories>
 
@@ -350,7 +350,7 @@
             <feature>ifttt-integration</feature>
 
             <!-- Flows -->
-            <feature>flows</feature>
+            <feature>opennms-flows</feature>
           </features>
         </configuration>
       </plugin>
@@ -784,7 +784,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>flows</artifactId>
+      <artifactId>opennms-flows</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
