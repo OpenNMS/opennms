@@ -106,7 +106,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
-    public static void scanNodes(final Phase currentPhase, final ImportOperationsManager opsMgr, final RequisitionImport ri) {
+    public static void scanNodes(final Phase currentPhase, final ImportOperationsManager opsMgr, final RequisitionImport ri, final String rescanExisting) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping scan phase import.");
             return;
@@ -123,6 +123,7 @@ public class CoreImportActivities {
             
             nodeScan.setAttribute("operation", op);
             nodeScan.setAttribute("requisitionImport", ri);
+            nodeScan.setAttribute("rescanExisting", rescanExisting);
             nodeScan.trigger();
         }
 
