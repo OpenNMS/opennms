@@ -32,7 +32,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Field;
@@ -88,7 +87,7 @@ public final class DataRecord implements Record {
 
             @Override
             public int getMinimumRecordLength() {
-                return Stream.concat(template.scopeFields.stream(), template.valueFields.stream())
+                return template.fields.stream()
                         .mapToInt(f -> f.length).sum();
             }
         };

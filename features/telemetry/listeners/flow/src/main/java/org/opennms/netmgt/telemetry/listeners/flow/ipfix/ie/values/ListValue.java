@@ -28,12 +28,28 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.uint8;
+
+import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldSpecifier;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Set;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.SetHeader;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Template;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
-public abstract class ListValue<T> extends Value<List<T>> {
+import com.google.common.collect.Lists;
+
+public class ListValue extends Value<List<List<Value<?>>>> {
 
     public enum Semantic {
         UNDEFINED,
@@ -65,9 +81,190 @@ public abstract class ListValue<T> extends Value<List<T>> {
 
     private final Semantic semantic;
 
+    private final List<List<Value<?>>> values;
+
     public ListValue(final String name,
-                     final Semantic semantic) {
+                     final Semantic semantic,
+                     final List<List<Value<?>>> values) {
         super(name);
         this.semantic = semantic;
+        this.values = values;
+    }
+
+    /*
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |   Semantic    |0|          Field ID           |   Element...  |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     | ...Length     |           basicList Content ...               |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    */
+    public static Parser parserWithBasicList(final String name) {
+        return new Value.Parser() {
+
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+                final Semantic semantic = Semantic.find(uint8(buffer));
+                final FieldSpecifier field = new FieldSpecifier(buffer);
+
+                final List<List<Value<?>>> values = new LinkedList<>();
+                while (buffer.hasRemaining()) {
+                    values.add(Collections.singletonList(new FieldValue(templateResolver, field.specifier, buffer).value));
+                }
+
+                return new ListValue(name, semantic, values);
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1 + 4;
+            }
+        };
+    }
+
+    /*
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |   Semantic    |         Template ID           |     ...       |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                subTemplateList Content    ...                 |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    */
+    public static Parser parserWithSubTemplateList(final String name) {
+        return new Value.Parser() {
+
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+                final Semantic semantic = Semantic.find(uint8(buffer));
+                final int templateId = uint16(buffer);
+
+                final Template template = templateResolver.lookup(templateId).orElseThrow(() -> new InvalidPacketException("Unknown Template ID: %d", templateId));
+
+                final List<List<Value<?>>> values = new LinkedList<>();
+                while (buffer.hasRemaining()) {
+                    final DataRecord record = new DataRecord(templateResolver, template, buffer);
+                    values.add(Lists.transform(record.fields, f -> f.value));
+                }
+
+                return new ListValue(name, semantic, values);
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 3;
+            }
+        };
+    }
+
+    /*
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |    Semantic   |         Template ID X         |Data Records...|
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     | ... Length X  |        Data Record X.1 Content ...            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      ...      |        Data Record X.2 Content ...            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      ...      |        Data Record X.L Content ...            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      ...      |         Template ID Y         |Data Records...|
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     | ... Length Y  |        Data Record  Y.1 Content ...           |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      ...      |        Data Record Y.2 Content ...            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      ...      |        Data Record Y.M Content ...            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      ...      |         Template ID Z         |Data Records...|
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     | ... Length Z  |        Data Record Z.1 Content ...            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      ...      |        Data Record Z.2 Content ...            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      ...      |        Data Record Z.N Content ...            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                              ...                              |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      ...      |
+     +-+-+-+-+-+-+-+-+
+    */
+    public static Parser parserWithSubTemplateMultiList(final String name) {
+        return new Value.Parser() {
+
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+                final Semantic semantic = Semantic.find(BufferUtils.uint8(buffer));
+
+                final List<List<Value<?>>> values = new LinkedList<>();
+                while (buffer.hasRemaining()) {
+                    final SetHeader header = new SetHeader(buffer);
+                    if (header.setId <= 255) {
+                        throw new InvalidPacketException("Invalid template ID: %d", header.setId);
+                    }
+
+                    final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, header.length - SetHeader.SIZE);
+                    final Set<DataRecord> dataSet = new Set<>(header, DataRecord.parser(templateResolver, header.setId), payloadBuffer);
+
+                    values.addAll(Lists.transform(dataSet.records, r -> Lists.transform(r.fields, f -> f.value)));
+                }
+
+                return new ListValue(name, semantic, values);
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 0;
+            }
+        };
+    }
+
+    @Override
+    public List<List<Value<?>>> getValue() {
+        return this.values;
+    }
+
+    @Override
+    public void visit(final Visitor visitor) {
+        visitor.accept(this);
     }
 }

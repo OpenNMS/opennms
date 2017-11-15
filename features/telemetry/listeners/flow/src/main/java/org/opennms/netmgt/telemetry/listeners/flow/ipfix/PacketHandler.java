@@ -37,34 +37,23 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.flow.dto.Flows;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.BasicListValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.BooleanValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeMicrosecondsValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeMillisecondsValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeNanosecondsValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeSecondsValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Float32Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Float64Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.FloatValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv4AddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv6AddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.ListValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.MacAddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.OctetArrayValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed16Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed32Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed64Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed8Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.StringValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SubTemplateListValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SubTemplateMultiListValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned16Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned32Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned64Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned8Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Set;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.SetHeader;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.EnterpriseField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,14 +132,6 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
         }
 
         @Override
-        public void accept(final BasicListValue value) {
-            for (int i = 0; i < value.getValue().size(); i++) {
-                final FlowBuilderVisitor visitor = new FlowBuilderVisitor(this.flow, this.buildName(value.getName(), Integer.toString(i)));
-                value.getValue().get(i).visit(visitor);
-            }
-        }
-
-        @Override
         public void accept(final BooleanValue value) {
             flow.addEntriesBuilder()
                     .addAllKey(this.buildName(value.getName()))
@@ -158,7 +139,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
         }
 
         @Override
-        public void accept(final DateTimeMicrosecondsValue value) {
+        public void accept(final DateTimeValue value) {
             flow.addEntriesBuilder()
                     .addAllKey(this.buildName(value.getName()))
                     .setTimestamp(Flows.Entry.Timestamp.newBuilder()
@@ -167,41 +148,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
         }
 
         @Override
-        public void accept(final DateTimeMillisecondsValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setTimestamp(Flows.Entry.Timestamp.newBuilder()
-                            .setSeconds(value.getValue().getEpochSecond())
-                            .setNanos(value.getValue().getNano()));
-        }
-
-        @Override
-        public void accept(final DateTimeNanosecondsValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setTimestamp(Flows.Entry.Timestamp.newBuilder()
-                            .setSeconds(value.getValue().getEpochSecond())
-                            .setNanos(value.getValue().getNano()));
-        }
-
-        @Override
-        public void accept(final DateTimeSecondsValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setTimestamp(Flows.Entry.Timestamp.newBuilder()
-                            .setSeconds(value.getValue().getEpochSecond())
-                            .setNanos(value.getValue().getNano()));
-        }
-
-        @Override
-        public void accept(final Float32Value value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setFloat(value.getValue());
-        }
-
-        @Override
-        public void accept(final Float64Value value) {
+        public void accept(final FloatValue value) {
             flow.addEntriesBuilder()
                     .addAllKey(this.buildName(value.getName()))
                     .setFloat(value.getValue());
@@ -236,28 +183,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
         }
 
         @Override
-        public void accept(final Signed8Value value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setSigned(value.getValue());
-        }
-
-        @Override
-        public void accept(final Signed16Value value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setSigned(value.getValue());
-        }
-
-        @Override
-        public void accept(final Signed32Value value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setSigned(value.getValue());
-        }
-
-        @Override
-        public void accept(final Signed64Value value) {
+        public void accept(final SignedValue value) {
             flow.addEntriesBuilder()
                     .addAllKey(this.buildName(value.getName()))
                     .setSigned(value.getValue());
@@ -271,7 +197,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
         }
 
         @Override
-        public void accept(final SubTemplateListValue value) {
+        public void accept(final ListValue value) {
             for (int i = 0; i < value.getValue().size(); i++) {
                 final FlowBuilderVisitor visitor = new FlowBuilderVisitor(this.flow, this.buildName(value.getName(), Integer.toString(i)));
                 for (int j = 0; j < value.getValue().get(i).size(); j++) {
@@ -281,41 +207,17 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
         }
 
         @Override
-        public void accept(final SubTemplateMultiListValue value) {
-            for (int i = 0; i < value.getValue().size(); i++) {
-                final FlowBuilderVisitor visitor = new FlowBuilderVisitor(this.flow, this.buildName(value.getName(), Integer.toString(i)));
-                for (int j = 0; j < value.getValue().get(i).size(); j++) {
-                    value.getValue().get(i).get(j).visit(visitor);
-                }
-            }
-        }
-
-        @Override
-        public void accept(final Unsigned8Value value) {
+        public void accept(final UnsignedValue value) {
             flow.addEntriesBuilder()
                     .addAllKey(this.buildName(value.getName()))
                     .setUnsigned(value.getValue().longValue());
         }
 
         @Override
-        public void accept(final Unsigned16Value value) {
+        public void accept(final EnterpriseField.EnterpriseValue value) {
             flow.addEntriesBuilder()
                     .addAllKey(this.buildName(value.getName()))
-                    .setUnsigned(value.getValue().longValue());
-        }
-
-        @Override
-        public void accept(final Unsigned32Value value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setUnsigned(value.getValue().longValue());
-        }
-
-        @Override
-        public void accept(final Unsigned64Value value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setUnsigned(value.getValue().longValue());
+                    .setBytes(ByteString.copyFrom(value.getValue()));
         }
     }
 }

@@ -31,13 +31,13 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
-public class DateTimeNanosecondsValue extends Value<Instant> {
+public class DateTimeValue extends Value<Instant> {
 
     /**
      * Number of seconds between 1900-01-01 and 1970-01-01 according to RFC 868.
@@ -46,8 +46,8 @@ public class DateTimeNanosecondsValue extends Value<Instant> {
 
     private final Instant value;
 
-    public DateTimeNanosecondsValue(final String name,
-                                    final Instant value) {
+    public DateTimeValue(final String name,
+                         final Instant value) {
         super(name);
         this.value = value;
     }
@@ -60,16 +60,78 @@ public class DateTimeNanosecondsValue extends Value<Instant> {
                 .toString();
     }
 
-    public static Value.Parser parser(final String name) {
+    public static Value.Parser parserWithSeconds(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                return new DateTimeValue(name, Instant.ofEpochSecond(BufferUtils.uint32(buffer)));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 4;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 4;
+            }
+        };
+    }
+
+    public static Value.Parser parserWithMilliseconds(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                return new DateTimeValue(name, Instant.ofEpochMilli(BufferUtils.uint64(buffer).longValue()));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 8;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 8;
+            }
+        };
+    }
+
+    public static Value.Parser parserWithMicroseconds(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                final long seconds = BufferUtils.uint32(buffer);
+                final long fraction = BufferUtils.uint32(buffer) & (0xFFFFFFFF << 11);
+
+                final Instant value = Instant.ofEpochSecond(seconds - SECONDS_TO_EPOCH, fraction * 1_000_000_000L / (1L << 32));
+
+                return new DateTimeValue(name, value);
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 8;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 8;
+            }
+        };
+    }
+
+    public static Value.Parser parserWithNanoseconds(final String name) {
         return new Value.Parser() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 final long seconds = BufferUtils.uint32(buffer);
                 final long fraction = BufferUtils.uint32(buffer);
 
-                final Instant value = Instant.ofEpochSecond(seconds - SECONDS_TO_EPOCH, fraction * 1_000_000_000L / (1L<<32));
+                final Instant value = Instant.ofEpochSecond(seconds - SECONDS_TO_EPOCH, fraction * 1_000_000_000L / (1L << 32));
 
-                return new DateTimeNanosecondsValue(name, value);
+                return new DateTimeValue(name, value);
             }
 
             @Override

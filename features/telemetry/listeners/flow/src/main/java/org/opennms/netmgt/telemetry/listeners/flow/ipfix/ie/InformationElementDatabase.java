@@ -35,29 +35,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.BasicListValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeMicrosecondsValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeNanosecondsValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeSecondsValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Float32Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Float64Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.FloatValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv4AddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.ListValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.MacAddressValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed16Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed64Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed8Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.StringValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SubTemplateListValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned16Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned64Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.BooleanValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeMillisecondsValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv6AddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.OctetArrayValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Signed32Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SubTemplateMultiListValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned32Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.Unsigned8Value;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
@@ -73,28 +61,28 @@ public class InformationElementDatabase {
 
     private static final Map<String, ValueParserFactory> TYPE_LOOKUP = ImmutableMap.<String, ValueParserFactory>builder()
             .put("octetArray", OctetArrayValue::parser)
-            .put("unsigned8", Unsigned8Value::parser)
-            .put("unsigned16", Unsigned16Value::parser)
-            .put("unsigned32", Unsigned32Value::parser)
-            .put("unsigned64", Unsigned64Value::parser)
-            .put("signed8", Signed8Value::parser)
-            .put("signed16", Signed16Value::parser)
-            .put("signed32", Signed32Value::parser)
-            .put("signed64", Signed64Value::parser)
-            .put("float32", Float32Value::parser)
-            .put("float64", Float64Value::parser)
+            .put("unsigned8", UnsignedValue::parserWith8Bit)
+            .put("unsigned16", UnsignedValue::parserWith16Bit)
+            .put("unsigned32", UnsignedValue::parserWith32Bit)
+            .put("unsigned64", UnsignedValue::parserWith64Bit)
+            .put("signed8", SignedValue::parserWith8Bit)
+            .put("signed16", SignedValue::parserWith16Bit)
+            .put("signed32", SignedValue::parserWith32Bit)
+            .put("signed64", SignedValue::parserWith64Bit)
+            .put("float32", FloatValue::parserWith32Bit)
+            .put("float64", FloatValue::parserWith64Bit)
             .put("boolean", BooleanValue::parser)
             .put("macAddress", MacAddressValue::parser)
             .put("string", StringValue::parser)
-            .put("dateTimeSeconds", DateTimeSecondsValue::parser)
-            .put("dateTimeMilliseconds", DateTimeMillisecondsValue::parser)
-            .put("dateTimeMicroseconds", DateTimeMicrosecondsValue::parser)
-            .put("dateTimeNanoseconds", DateTimeNanosecondsValue::parser)
+            .put("dateTimeSeconds", DateTimeValue::parserWithSeconds)
+            .put("dateTimeMilliseconds", DateTimeValue::parserWithMilliseconds)
+            .put("dateTimeMicroseconds", DateTimeValue::parserWithMicroseconds)
+            .put("dateTimeNanoseconds", DateTimeValue::parserWithNanoseconds)
             .put("ipv4Address", IPv4AddressValue::parser)
             .put("ipv6Address", IPv6AddressValue::parser)
-            .put("basicList", BasicListValue::parser)
-            .put("subTemplateList", SubTemplateListValue::parser)
-            .put("subTemplateMultiList", SubTemplateMultiListValue::parser)
+            .put("basicList", ListValue::parserWithBasicList)
+            .put("subTemplateList", ListValue::parserWithSubTemplateList)
+            .put("subTemplateMultiList", ListValue::parserWithSubTemplateMultiList)
             .build();
 
     private static final Map<String, Semantics> SEMANTICS_LOOKUP = ImmutableMap.<String, Semantics>builder()

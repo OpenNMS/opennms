@@ -32,11 +32,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Template;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
@@ -90,7 +89,7 @@ public final class DataRecord implements Record {
             @Override
             public int getMinimumRecordLength() {
                 // For variable length fields we assume at least the length value (1 byte) to be present
-                return Stream.concat(template.scopeFields.stream(), template.valueFields.stream())
+                return template.fields.stream()
                         .mapToInt(f -> f.length != FieldValue.VARIABLE_SIZED ? f.length : 1).sum();
             }
         };

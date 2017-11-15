@@ -55,6 +55,11 @@ public final class EnterpriseField extends Field {
         public byte[] getValue() {
             return this.data;
         }
+
+        @Override
+        public void visit(Visitor visitor) {
+            visitor.accept(this);
+        }
     }
 
     private final int informationElementId;

@@ -35,12 +35,13 @@ import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.UnsignedLong;
 
-public class Signed16Value extends Value<Long> {
-    private final long value;
+public class UnsignedValue extends Value<UnsignedLong> {
+    private final UnsignedLong value;
 
-    public Signed16Value(final String name,
-                         final long value) {
+    public UnsignedValue(final String name,
+                         final UnsignedLong value) {
         super(name);
         this.value = value;
     }
@@ -53,11 +54,30 @@ public class Signed16Value extends Value<Long> {
                 .toString();
     }
 
-    public static Value.Parser parser(final String name) {
+    public static Value.Parser parserWith8Bit(final String name) {
         return new Value.Parser() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new Signed16Value(name, BufferUtils.sint(buffer, buffer.remaining()));
+                return new UnsignedValue(name, BufferUtils.uint(buffer, 1));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 1;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1;
+            }
+        };
+    }
+
+    public static Value.Parser parserWith16Bit(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
             }
 
             @Override
@@ -72,8 +92,46 @@ public class Signed16Value extends Value<Long> {
         };
     }
 
+    public static Value.Parser parserWith32Bit(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 4;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1;
+            }
+        };
+    }
+
+    public static Value.Parser parserWith64Bit(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 8;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1;
+            }
+        };
+    }
+
     @Override
-    public Long getValue() {
+    public UnsignedLong getValue() {
         return this.value;
     }
 

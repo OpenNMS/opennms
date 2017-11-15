@@ -35,13 +35,12 @@ import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.primitives.UnsignedLong;
 
-public class Unsigned64Value extends Value<UnsignedLong> {
-    private final UnsignedLong value;
+public class FloatValue extends Value<Double> {
+    private final double value;
 
-    public Unsigned64Value(final String name,
-                           final UnsignedLong value) {
+    public FloatValue(final String name,
+                      final double value) {
         super(name);
         this.value = value;
     }
@@ -54,11 +53,11 @@ public class Unsigned64Value extends Value<UnsignedLong> {
                 .toString();
     }
 
-    public static Value.Parser parser(final String name) {
+    public static Value.Parser parserWith64Bit(final String name) {
         return new Value.Parser() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new Unsigned64Value(name, BufferUtils.uint(buffer, buffer.remaining()));
+                return new FloatValue(name, Double.longBitsToDouble(BufferUtils.uint(buffer, buffer.remaining()).longValue()));
             }
 
             @Override
@@ -73,8 +72,27 @@ public class Unsigned64Value extends Value<UnsignedLong> {
         };
     }
 
+    public static Value.Parser parserWith32Bit(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                return new FloatValue(name, Float.intBitsToFloat(BufferUtils.uint(buffer, buffer.remaining()).intValue()));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 4;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1;
+            }
+        };
+    }
+
     @Override
-    public UnsignedLong getValue() {
+    public Double getValue() {
         return this.value;
     }
 
