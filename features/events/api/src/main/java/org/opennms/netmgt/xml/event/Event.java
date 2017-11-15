@@ -42,6 +42,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -69,6 +72,7 @@ public class Event implements Serializable {
 	/**
 	 * The event database id
 	 */
+	@Min(1)
 	@XmlElement(name = "dbid")
 	private Integer _dbid;
 
@@ -95,6 +99,7 @@ public class Event implements Serializable {
 	 * The event mask which helps to uniquely identify an event
 	 */
 	@XmlElement(name = "mask")
+	@Valid
 	private Mask _mask;
 
 	/**
@@ -106,6 +111,7 @@ public class Event implements Serializable {
 	/**
 	 * Field _source.
 	 */
+	@NotNull
 	@XmlElement(name = "source")
 	private String _source;
 
@@ -123,6 +129,7 @@ public class Event implements Serializable {
 	 */
 	@XmlElement(name = "time")
 	@XmlJavaTypeAdapter(DateTimeAdapter.class)
+	@NotNull
 	private Date _time;
 
 	/**
@@ -156,6 +163,7 @@ public class Event implements Serializable {
 	 * The snmp information from the trap
 	 */
 	@XmlElement(name = "snmp")
+	@Valid
 	private Snmp _snmp;
 
 	/**
@@ -163,6 +171,7 @@ public class Event implements Serializable {
 	 */
 	@XmlElementWrapper(name="parms")
 	@XmlElement(name="parm")
+	@Valid
 	private List<Parm> _parms;
 
 	/**
@@ -175,6 +184,7 @@ public class Event implements Serializable {
 	 * The event logmsg
 	 */
 	@XmlElement(name = "logmsg")
+	@Valid
 	private Logmsg _logmsg;
 
 	/**
@@ -193,6 +203,7 @@ public class Event implements Serializable {
 	 * The event correlation information
 	 */
 	@XmlElement(name = "correlation")
+	@Valid
 	private Correlation _correlation;
 
 	/**
@@ -205,18 +216,21 @@ public class Event implements Serializable {
 	 * The automatic action to occur when this event occurs
 	 */
 	@XmlElement(name = "autoaction")
+	@Valid
 	private List<Autoaction> _autoactionList;
 
 	/**
 	 * The operator action to be taken when this event occurs
 	 */
 	@XmlElement(name = "operaction")
+	@Valid
 	private List<Operaction> _operactionList;
 
 	/**
 	 * The autoacknowledge information for the user
 	 */
 	@XmlElement(name = "autoacknowledge")
+	@Valid
 	private Autoacknowledge _autoacknowledge;
 
 	/**
@@ -229,18 +243,21 @@ public class Event implements Serializable {
 	 * The trouble ticket info
 	 */
 	@XmlElement(name = "tticket")
+	@Valid
 	private Tticket _tticket;
 
 	/**
 	 * The forwarding information for this event
 	 */
 	@XmlElement(name = "forward")
+	@Valid
 	private List<Forward> _forwardList;
 
 	/**
 	 * The script information for this event
 	 */
 	@XmlElement(name = "script")
+	@Valid
 	private List<Script> _scriptList;
 
 	/**
@@ -266,6 +283,7 @@ public class Event implements Serializable {
 	 * Data used to create an event.
 	 */
 	@XmlElement(name = "alarm-data")
+	@Valid
 	private AlarmData _alarmData;
 
 	// ----------------/
