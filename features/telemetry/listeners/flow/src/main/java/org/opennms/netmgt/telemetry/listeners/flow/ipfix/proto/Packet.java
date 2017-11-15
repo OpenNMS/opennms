@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Iterator;
@@ -58,12 +59,16 @@ public final class Packet implements Iterable<Set<?>> {
      +----------------------------------------------------+
     */
 
+    public final InetSocketAddress sender;
+
     public final Header header;
     public final List<Set<?>> sets;
 
-    public Packet(final TemplateManager templateManager,
+    public Packet(final InetSocketAddress sender,
+                  final TemplateManager templateManager,
                   final Header header,
                   final ByteBuffer buffer) throws InvalidPacketException {
+        this.sender = Objects.requireNonNull(sender);
         this.header = Objects.requireNonNull(header);
 
         final List<Set<?>> sets = new LinkedList<>();

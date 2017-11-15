@@ -57,21 +57,21 @@ public class ParserTest {
                 final TemplateManager templateManager = new TcpSession();
 
                 final Header h1 = new Header(BufferUtils.slice(buffer, Header.SIZE));
-                final Packet p1 = new Packet(templateManager, h1, BufferUtils.slice(buffer, h1.length - Header.SIZE));
+                final Packet p1 = new Packet(sender, templateManager, h1, BufferUtils.slice(buffer, h1.length - Header.SIZE));
 
                 assertThat(p1.header.versionNumber, is(0x000a));
                 assertThat(p1.header.observationDomainId, is(0L));
                 assertThat(p1.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
 
                 final Header h2 = new Header(BufferUtils.slice(buffer, Header.SIZE));
-                final Packet p2 = new Packet(templateManager, h2, BufferUtils.slice(buffer, h2.length - Header.SIZE));
+                final Packet p2 = new Packet(sender, templateManager, h2, BufferUtils.slice(buffer, h2.length - Header.SIZE));
 
                 assertThat(p2.header.versionNumber, is(0x000a));
                 assertThat(p2.header.observationDomainId, is(0L));
                 assertThat(p2.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
 
                 final Header h3 = new Header(BufferUtils.slice(buffer, Header.SIZE));
-                final Packet p3 = new Packet(templateManager, h3, BufferUtils.slice(buffer, h3.length - Header.SIZE));
+                final Packet p3 = new Packet(sender, templateManager, h3, BufferUtils.slice(buffer, h3.length - Header.SIZE));
 
                 assertThat(p3.header.versionNumber, is(0x000a));
                 assertThat(p3.header.observationDomainId, is(0L));

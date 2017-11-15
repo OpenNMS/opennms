@@ -28,9 +28,10 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
@@ -71,9 +72,9 @@ import com.google.common.collect.Iterables;
 import com.google.protobuf.ByteString;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.channel.SimpleChannelInboundHandler;
 
-public class PacketHandler extends MessageToMessageDecoder<Packet> {
+public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketHandler.class);
 
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
@@ -82,18 +83,8 @@ public class PacketHandler extends MessageToMessageDecoder<Packet> {
         this.dispatcher = dispatcher;
     }
 
-//        final TelemetryMessage msg = new TelemetryMessage(ctx, buffer);
-
-//                                // Build the message to dispatch via the Sink API
-//                                final TelemetryMessage msg = new TelemetryMessage(packet.sender(), buffer);
-//                                // Dispatch and retain a reference to the packet
-//                                // in the case that we are sharing the underlying byte array
-//                                final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
-//                                packet.retain();
-//                                future.whenComplete((res,ex) -> packet.release());
-
     @Override
-    protected void decode(final ChannelHandlerContext ctx, final Packet packet, final List<Object> out) throws Exception {
+    protected void channelRead0(final ChannelHandlerContext ctx, final Packet packet) throws Exception {
         LOG.info("Got packet: {}", packet);
 
         for (final Set<?> set : packet.sets) {
@@ -113,7 +104,17 @@ public class PacketHandler extends MessageToMessageDecoder<Packet> {
                     field.value.visit(visitor);
                 }
 
-                out.add(flow);
+                final ByteBuffer buffer = ByteBuffer.wrap(flow.build().toByteArray());
+
+                // Build the message to dispatch via the Sink API
+                final TelemetryMessage msg = new TelemetryMessage(packet.sender, buffer);
+
+                // Dispatch and retain a reference to the packet
+                // in the case that we are sharing the underlying byte array
+                final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
+
+                // TODO: Handle future result and drop connection if dispatching fails
+                future.join();
             }
         }
     }

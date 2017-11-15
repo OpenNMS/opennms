@@ -76,7 +76,7 @@ public class PacketDecoder extends ByteToMessageDecoder {
         }
 
         final ByteBuffer payloadBuffer = in.readSlice(header.length - Header.SIZE).nioBuffer();
-        final Packet packet = new Packet(this.templateManager, header, payloadBuffer);
+        final Packet packet = new Packet(sender, this.templateManager, header, payloadBuffer);
 
         return packet;
     }
