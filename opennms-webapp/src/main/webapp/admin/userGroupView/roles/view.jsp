@@ -149,7 +149,7 @@
 
     <tr>
       <th>Description</th>
-  	<td colspan="3"><%= request.getAttribute("role") == null ? "" : WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getDescription()) %></td>
+  	<td colspan="3"><%= WebSecurityUtils.sanitizeString(((WebRole) request.getAttribute("role")).getDescription()) %></td>
     </tr>
   </table>
 </div> <!-- panel -->
