@@ -31,6 +31,7 @@ The codename for 21.0.1 is _link:https://bladerunner.wikia.com/wiki/Rachael[Rach
 * NPE in Enlinkd bridge topology broadcast domain calculation (Issue http://issues.opennms.org/browse/NMS-9720[NMS-9720])
 * Null pointer exception in SurvellianceViewConfigurationCategoryWindow.java (Issue http://issues.opennms.org/browse/NMS-9722[NMS-9722])
 * ReST v1 does not return errors for unparseable events (Issue http://issues.opennms.org/browse/NMS-9724[NMS-9724])
+
 ===== Enhancement
 
 * System tests for handling JTI payloads (Issue http://issues.opennms.org/browse/HZN-1164[HZN-1164])
