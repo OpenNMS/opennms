@@ -141,6 +141,26 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.9]
+==== Release Meridian-2016.1.9
+
+Release 2016.1.9 is an update to 2016.1.8 that provides a few bug fixes.
+
+The codename for 2016.1.9 is _Winkel tripel_.
+
+===== Bug
+
+* Tweak Mattermost notification docs not to specify a channel (Issue http://issues.opennms.org/browse/NMS-9362[NMS-9362])
+* INFO-level "unable to locate resource" log messages for interfaces not persisted by policy (Issue http://issues.opennms.org/browse/NMS-9388[NMS-9388])
+* Northbounders implementation are not sending feedback events for reloadDaemonConfig (Issue http://issues.opennms.org/browse/NMS-9524[NMS-9524])
+* XSS: HTML attribute values with quotes not escaped properly (Issue http://issues.opennms.org/browse/NMS-9645[NMS-9645])
+* Incorrect logging of exceptions in Slack and Mattermost notifications (Issue http://issues.opennms.org/browse/NMS-9656[NMS-9656])
+* IOActive: Reflected Cross-site Scripting in instrumentationLogReader.jsp searchString Parameter (Issue http://issues.opennms.org/browse/NMS-9672[NMS-9672])
+* Typo prevents FIQL query values from being URI-encoded (Issue http://issues.opennms.org/browse/NMS-9694[NMS-9694])
+* Typo: "not elegible" for SNMP primary N enumeration (Issue http://issues.opennms.org/browse/NMS-9701[NMS-9701])
+* ReST v1 does not return errors for unparseable events (Issue http://issues.opennms.org/browse/NMS-9724[NMS-9724])
+* Sending bad XML to the Requisitions ReST end point makes the API unusable (Issue http://issues.opennms.org/browse/NMS-9725[NMS-9725])
+
 [releasenotes-changelog-Meridian-2016.1.8]
 ==== Release Meridian-2016.1.8
 
