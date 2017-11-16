@@ -49,6 +49,7 @@ import org.osgi.service.cm.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -250,6 +251,13 @@ public class RestClientFactory {
 			clientConfigBuilder.credentialsProvider(customCredentialsProvider);
 
 			credentialList.forEach(c -> customCredentialsProvider.setCredentials(c.getAuthScope(), c.getCredentials()));
+		}
+	}
+
+	public void setProxy(String proxy) throws MalformedURLException {
+		if (!Strings.isNullOrEmpty(proxy)) {
+			final URL proxyURL = new URL(proxy);
+			clientConfigBuilder.proxy(new HttpHost(proxyURL.getHost(), proxyURL.getPort(), proxyURL.getProtocol()));
 		}
 	}
 

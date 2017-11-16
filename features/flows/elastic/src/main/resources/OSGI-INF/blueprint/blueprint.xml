@@ -23,6 +23,7 @@
             <cm:property name="maxTotalConnection" value="-1" />
             <cm:property name="nodeDiscovery" value="false" />
             <cm:property name="nodeDiscoveryFrequency" value="0" />
+            <cm:property name="proxy" value=""/>
 
             <!-- Index settings -->
             <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
@@ -33,7 +34,7 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <!-- Used to very easily define credentials in a properties file and enforcing the bundle to reload when credentials changed -->
+    <!-- Used to very easily define credentials in a properties file and enforcing the bundle to reload when credentials change -->
     <cm:property-placeholder id="elasticFlowRepositoryCredentials"
                              persistent-id="org.opennms.features.flows.persistence.elastic.credentials"
                              placeholder-prefix="#(" placeholder-suffix=")"
@@ -51,6 +52,7 @@
         <property name="discovery" value="${nodeDiscovery}" />
         <property name="discoveryFrequency" value="${nodeDiscoveryFrequency}" />
         <property name="credentials" ref="elasticFlowRepositoryCredentials" />
+        <property name="proxy" value="${proxy}" />
     </bean>
 
     <!-- Actually creates the client, but only once -->
