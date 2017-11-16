@@ -90,8 +90,8 @@ public class RestClientFactory {
 	 */
 	public RestClientFactory(final String elasticSearchURL, final String globalElasticUser, final String globalElasticPassword ) throws MalformedURLException {
 		final List<String> urls = parseUrl(elasticSearchURL);
-		final String user = globalElasticUser != null && !globalElasticUser.isEmpty() ? globalElasticUser : null;
-		final String password = globalElasticPassword != null && !globalElasticPassword.isEmpty() ? globalElasticPassword : null;
+		final String globalUser = globalElasticUser != null && !globalElasticUser.isEmpty() ? globalElasticUser : null;
+		final String globalPassword = globalElasticPassword != null && !globalElasticPassword.isEmpty() ? globalElasticPassword : null;
 
 		// Ensure urls is set
 		if (urls.isEmpty()) {
@@ -116,15 +116,21 @@ public class RestClientFactory {
 					.gson(gson);
 
 		// Apply optional credentials
-		if (user != null && password != null) {
-			final URL targetUrl = new URL(urls.get(0));
-			if (urls.size() > 1) {
-				LOG.warn("Credentials have been defined, but multiple target hosts were found. " +
-						"Each host will use the same credentials. Preemptive auth is only enabled for host {}", urls.get(0));
-			}
+		if (globalUser != null && globalPassword != null) {
+			clientConfigBuilder.defaultCredentials(globalUser, globalPassword);
 
-			clientConfigBuilder.defaultCredentials(user, password);
-			clientConfigBuilder.setPreemptiveAuth(new HttpHost(targetUrl.getHost(), targetUrl.getPort(), targetUrl.getProtocol()));
+			// Enable preemptive auth
+			final Set<HttpHost> targetHosts = urls.stream()
+					.map(url -> {
+						try {
+							return new URL(url);
+						} catch (MalformedURLException ex) {
+							throw new RuntimeException(ex);
+						}
+					})
+					.map(url -> new HttpHost(url.getHost(), url.getPort(), url.getProtocol()))
+					.collect(Collectors.toSet());
+			clientConfigBuilder.preemptiveAuthTargetHosts(targetHosts);
 		}
 	}
 
@@ -235,7 +241,7 @@ public class RestClientFactory {
 		clientConfigBuilder.maxConnectionIdleTime(timeout, unit);
 	}
 
-	public void setCredentials(CmPropertyPlaceholder credentials) throws IOException {
+	public void setCredentials(final CmPropertyPlaceholder credentials) throws IOException {
 		final Configuration configuration = credentials.getConfigAdmin().getConfiguration(credentials.getPersistentId());
 		final Dictionary<String, Object> properties = configuration.getProperties();
 		final List<CredentialsDTO> credentialList = new CredentialsParser().parse(properties);
@@ -243,7 +249,7 @@ public class RestClientFactory {
 			final BasicCredentialsProvider customCredentialsProvider = new BasicCredentialsProvider();
 			clientConfigBuilder.credentialsProvider(customCredentialsProvider);
 
-			credentialList.stream().forEach(c -> customCredentialsProvider.setCredentials(c.getAuthScope(), c.getCredentials()));
+			credentialList.forEach(c -> customCredentialsProvider.setCredentials(c.getAuthScope(), c.getCredentials()));
 		}
 	}
 
