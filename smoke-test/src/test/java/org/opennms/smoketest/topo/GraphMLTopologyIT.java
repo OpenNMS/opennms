@@ -273,7 +273,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
         builder.setTime(new Date());
         builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
-        sendPost("/rest/events", JaxbUtils.marshal(builder.getEvent()), 204);
+        sendPost("/rest/events", JaxbUtils.marshal(builder.getEvent()), 202);
         Thread.sleep(5000); // Wait to allow the event to be processed
     }
 
