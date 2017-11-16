@@ -52,7 +52,7 @@ public class KSCEditorIT extends OpenNMSSeleniumTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(KSCEditorIT.class);
 
     private Integer m_nodeId;
-    private String m_shareDir; // = "/home/ranger/git/opennms/target/opennms-2017.1.2/share";
+    private String m_shareDir; // = "/home/ranger/git/opennms/target/opennms-2017.1.3-SNAPSHOT/share";
     private final Path m_targetDir = Paths.get(m_shareDir, "rrd", "response", "127.0.0.1");
 
     public static void configureTestEnvironment(final TestEnvironmentBuilder builder) {
