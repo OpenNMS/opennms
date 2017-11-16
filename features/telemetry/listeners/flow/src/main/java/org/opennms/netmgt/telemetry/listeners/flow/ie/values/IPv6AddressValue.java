@@ -26,21 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values;
+package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
-public class FloatValue extends Value<Double> {
-    private final double value;
+public class IPv6AddressValue extends Value<Inet6Address> {
+    public final Inet6Address value;
 
-    public FloatValue(final String name,
-                      final double value) {
+    public IPv6AddressValue(final String name,
+                            final Inet6Address value) {
         super(name);
         this.value = value;
     }
@@ -49,50 +53,35 @@ public class FloatValue extends Value<Double> {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("value", value)
+                .add("inet6Address", value)
                 .toString();
     }
 
-    public static Value.Parser parserWith64Bit(final String name) {
+    public static Value.Parser parser(final String name) {
         return new Value.Parser() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new FloatValue(name, Double.longBitsToDouble(BufferUtils.uint(buffer, buffer.remaining()).longValue()));
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+                try {
+                    return new IPv6AddressValue(name, (Inet6Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 16)));
+                } catch (UnknownHostException e) {
+                    throw new InvalidPacketException("Error parsing IPv6 value", e);
+                }
             }
 
             @Override
             public int getMaximumFieldLength() {
-                return 8;
+                return 16;
             }
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
-            }
-        };
-    }
-
-    public static Value.Parser parserWith32Bit(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new FloatValue(name, Float.intBitsToFloat(BufferUtils.uint(buffer, buffer.remaining()).intValue()));
-            }
-
-            @Override
-            public int getMaximumFieldLength() {
-                return 4;
-            }
-
-            @Override
-            public int getMinimumFieldLength() {
-                return 1;
+                return 16;
             }
         };
     }
 
     @Override
-    public Double getValue() {
+    public Inet6Address getValue() {
         return this.value;
     }
 

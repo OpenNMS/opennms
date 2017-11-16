@@ -26,25 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values;
+package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
-public class IPv6AddressValue extends Value<Inet6Address> {
-    public final Inet6Address value;
+public class OctetArrayValue extends Value<byte[]> {
+    public final byte[] value;
 
-    public IPv6AddressValue(final String name,
-                            final Inet6Address value) {
+    public OctetArrayValue(final String name,
+                           final byte[] value) {
         super(name);
         this.value = value;
     }
@@ -53,35 +51,35 @@ public class IPv6AddressValue extends Value<Inet6Address> {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("inet6Address", value)
+                .add("data", value)
                 .toString();
     }
 
     public static Value.Parser parser(final String name) {
-        return new Value.Parser() {
+        return parserWithLimits(0, 0xFFFF).parser(name);
+    }
+
+    public static InformationElementDatabase.ValueParserFactory parserWithLimits(final int minimum, final int maximum) {
+        return name -> new Parser() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-                try {
-                    return new IPv6AddressValue(name, (Inet6Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 16)));
-                } catch (UnknownHostException e) {
-                    throw new InvalidPacketException("Error parsing IPv6 value", e);
-                }
+            public Value<?> parse(TemplateManager.TemplateResolver templateResolver, ByteBuffer buffer) throws InvalidPacketException {
+                return new OctetArrayValue(name, BufferUtils.bytes(buffer, buffer.remaining()));
             }
 
             @Override
             public int getMaximumFieldLength() {
-                return 16;
+                return maximum;
             }
 
             @Override
             public int getMinimumFieldLength() {
-                return 16;
+                return minimum;
             }
         };
     }
 
     @Override
-    public Inet6Address getValue() {
+    public byte[] getValue() {
         return this.value;
     }
 

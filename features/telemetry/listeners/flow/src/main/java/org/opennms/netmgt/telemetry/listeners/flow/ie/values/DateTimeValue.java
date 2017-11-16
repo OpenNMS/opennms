@@ -26,22 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values;
+package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import java.nio.ByteBuffer;
+import java.time.Instant;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.primitives.UnsignedLong;
 
-public class UnsignedValue extends Value<UnsignedLong> {
-    private final UnsignedLong value;
+public class DateTimeValue extends Value<Instant> {
 
-    public UnsignedValue(final String name,
-                         final UnsignedLong value) {
+    /**
+     * Number of seconds between 1900-01-01 and 1970-01-01 according to RFC 868.
+     */
+    public static final long SECONDS_TO_EPOCH = 2208988800L;
+
+    private final Instant value;
+
+    public DateTimeValue(final String name,
+                         final Instant value) {
         super(name);
         this.value = value;
     }
@@ -54,49 +60,11 @@ public class UnsignedValue extends Value<UnsignedLong> {
                 .toString();
     }
 
-    public static Value.Parser parserWith8Bit(final String name) {
+    public static Value.Parser parserWithSeconds(final String name) {
         return new Value.Parser() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, BufferUtils.uint(buffer, 1));
-            }
-
-            @Override
-            public int getMaximumFieldLength() {
-                return 1;
-            }
-
-            @Override
-            public int getMinimumFieldLength() {
-                return 1;
-            }
-        };
-    }
-
-    public static Value.Parser parserWith16Bit(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
-            }
-
-            @Override
-            public int getMaximumFieldLength() {
-                return 2;
-            }
-
-            @Override
-            public int getMinimumFieldLength() {
-                return 1;
-            }
-        };
-    }
-
-    public static Value.Parser parserWith32Bit(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
+                return new DateTimeValue(name, Instant.ofEpochSecond(BufferUtils.uint32(buffer)));
             }
 
             @Override
@@ -106,16 +74,16 @@ public class UnsignedValue extends Value<UnsignedLong> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 4;
             }
         };
     }
 
-    public static Value.Parser parserWith64Bit(final String name) {
+    public static Value.Parser parserWithMilliseconds(final String name) {
         return new Value.Parser() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
+                return new DateTimeValue(name, Instant.ofEpochMilli(BufferUtils.uint64(buffer).longValue()));
             }
 
             @Override
@@ -125,13 +93,61 @@ public class UnsignedValue extends Value<UnsignedLong> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 8;
+            }
+        };
+    }
+
+    public static Value.Parser parserWithMicroseconds(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                final long seconds = BufferUtils.uint32(buffer);
+                final long fraction = BufferUtils.uint32(buffer) & (0xFFFFFFFF << 11);
+
+                final Instant value = Instant.ofEpochSecond(seconds - SECONDS_TO_EPOCH, fraction * 1_000_000_000L / (1L << 32));
+
+                return new DateTimeValue(name, value);
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 8;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 8;
+            }
+        };
+    }
+
+    public static Value.Parser parserWithNanoseconds(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                final long seconds = BufferUtils.uint32(buffer);
+                final long fraction = BufferUtils.uint32(buffer);
+
+                final Instant value = Instant.ofEpochSecond(seconds - SECONDS_TO_EPOCH, fraction * 1_000_000_000L / (1L << 32));
+
+                return new DateTimeValue(name, value);
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 8;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 8;
             }
         };
     }
 
     @Override
-    public UnsignedLong getValue() {
+    public Instant getValue() {
         return this.value;
     }
 

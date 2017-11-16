@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie;
+package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,31 +35,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.FloatValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv4AddressValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.ListValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.MacAddressValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SignedValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.StringValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.UnsignedValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.BooleanValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv6AddressValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.OctetArrayValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.FloatValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv4AddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv6AddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.ListValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.MacAddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-public class InformationElementDatabase {
+public class InformationElementProvider implements InformationElementDatabase.Provider {
+    private static final String COLUMN_ID = "ElementID";
+    private static final String COLUMN_NAME = "Name";
+    private static final String COLUMN_TYPE = "Abstract Data Type";
+    private static final String COLUMN_SEMANTICS = "Data Type Semantics";
 
-    @FunctionalInterface
-    private interface ValueParserFactory {
-        Value.Parser parser(final String name);
-    }
+    private static final Map<String, Semantics> SEMANTICS_LOOKUP = ImmutableMap.<String, Semantics>builder()
+            .put("default", Semantics.DEFAULT)
+            .put("quantity", Semantics.QUANTITY)
+            .put("totalCounter", Semantics.TOTAL_COUNTER)
+            .put("deltaCounter", Semantics.DELTA_COUNTER)
+            .put("identifier", Semantics.IDENTIFIER)
+            .put("flags", Semantics.FLAGS)
+            .put("list", Semantics.LIST)
+            .put("snmpCounter", Semantics.SNMP_COUNTER)
+            .put("snmpGauge", Semantics.SNMP_GAUGE)
+            .build();
 
-    private static final Map<String, ValueParserFactory> TYPE_LOOKUP = ImmutableMap.<String, ValueParserFactory>builder()
+    private static final Map<String, InformationElementDatabase.ValueParserFactory> TYPE_LOOKUP = ImmutableMap.<String, InformationElementDatabase.ValueParserFactory>builder()
             .put("octetArray", OctetArrayValue::parser)
             .put("unsigned8", UnsignedValue::parserWith8Bit)
             .put("unsigned16", UnsignedValue::parserWith16Bit)
@@ -85,30 +100,8 @@ public class InformationElementDatabase {
             .put("subTemplateMultiList", ListValue::parserWithSubTemplateMultiList)
             .build();
 
-    private static final Map<String, Semantics> SEMANTICS_LOOKUP = ImmutableMap.<String, Semantics>builder()
-            .put("default", Semantics.DEFAULT)
-            .put("quantity", Semantics.QUANTITY)
-            .put("totalCounter", Semantics.TOTAL_COUNTER)
-            .put("deltaCounter", Semantics.DELTA_COUNTER)
-            .put("identifier", Semantics.IDENTIFIER)
-            .put("flags", Semantics.FLAGS)
-            .put("list", Semantics.LIST)
-            .put("snmpCounter", Semantics.SNMP_COUNTER)
-            .put("snmpGauge", Semantics.SNMP_GAUGE)
-            .build();
-
-    private static final String COLUMN_ID = "ElementID";
-    private static final String COLUMN_NAME = "Name";
-    private static final String COLUMN_TYPE = "Abstract Data Type";
-    private static final String COLUMN_SEMANTICS = "Data Type Semantics";
-
-    public static final InformationElementDatabase instance = new InformationElementDatabase();
-
-    private final ImmutableMap<Integer, InformationElement> elements;
-
-    private InformationElementDatabase() {
-        // TODO: This is ugly as f**k
-
+    @Override
+    public void load(final ImmutableMap.Builder<InformationElementDatabase.Key, InformationElement> builder) {
         try (final CSVReader reader = new CSVReader(new InputStreamReader(this.getClass().getResourceAsStream("/ipfix-information-elements.csv")),
                 ',', '"', '\\', 0, false)) {
 
@@ -120,8 +113,6 @@ public class InformationElementDatabase {
             final int indexOfSemantics = columns.indexOf(COLUMN_SEMANTICS);
 
             // Read lines
-            // TODO Something better than this? TreeMap? Array?
-            final ImmutableMap.Builder<Integer, InformationElement> elements = ImmutableMap.builder();
             for (String line[] = reader.readNext();
                  line != null;
                  line = reader.readNext()) {
@@ -134,7 +125,7 @@ public class InformationElementDatabase {
                 }
 
                 final String name = line[indexOfName];
-                final ValueParserFactory valueParserFactory = TYPE_LOOKUP.get(line[indexOfType]);
+                final InformationElementDatabase.ValueParserFactory valueParserFactory = TYPE_LOOKUP.get(line[indexOfType]);
 
                 if (valueParserFactory == null) {
                     // TODO: Log me
@@ -144,18 +135,11 @@ public class InformationElementDatabase {
                 final Value.Parser type = valueParserFactory.parser(name);
                 final Optional<Semantics> semantics = Optional.ofNullable(SEMANTICS_LOOKUP.get(line[indexOfSemantics]));
 
-
-                elements.put(id, new InformationElement(id, name, type, semantics));
+                builder.put(new InformationElementDatabase.Key(Optional.empty(), id), new InformationElement(id, name, type, semantics));
             }
-            this.elements = elements.build();
-
         } catch (final IOException e) {
             // TODO: Log me
             throw Throwables.propagate(e);
         }
-    }
-
-    public Optional<InformationElement> lookup(final int id) {
-        return Optional.ofNullable(this.elements.get(id));
     }
 }

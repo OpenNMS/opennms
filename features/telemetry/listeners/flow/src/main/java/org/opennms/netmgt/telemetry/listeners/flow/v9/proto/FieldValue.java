@@ -32,7 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.slic
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Field;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;

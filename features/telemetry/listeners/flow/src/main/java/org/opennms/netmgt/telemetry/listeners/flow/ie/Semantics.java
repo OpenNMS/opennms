@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie;
+package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
 public enum Semantics {
     DEFAULT,

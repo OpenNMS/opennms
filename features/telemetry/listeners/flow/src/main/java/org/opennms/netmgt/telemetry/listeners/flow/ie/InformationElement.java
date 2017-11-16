@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie;
+package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
@@ -43,10 +43,10 @@ public class InformationElement {
     private final Value.Parser parser;
     private final Optional<Semantics> semantics;
 
-    InformationElement(final int id,
-                       final String name,
-                       final Value.Parser parser,
-                       final Optional<Semantics> semantics) {
+    public InformationElement(final int id,
+                              final String name,
+                              final Value.Parser parser,
+                              final Optional<Semantics> semantics) {
         this.id = id;
         this.name = name;
         this.parser = parser;

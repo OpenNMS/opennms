@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values;
+package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.uint8;
@@ -37,7 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldSpecifier;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldValue;

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;

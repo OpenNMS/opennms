@@ -26,21 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values;
+package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
-public class MacAddressValue extends Value<byte[]> {
-    public final byte[] value;
+public class StringValue extends Value<String> {
+    public final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
-    public MacAddressValue(final String name,
-                           final byte[] value) {
+    private final String value;
+
+    public StringValue(final String name,
+                       final String value) {
         super(name);
         this.value = value;
     }
@@ -49,7 +52,7 @@ public class MacAddressValue extends Value<byte[]> {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("name", getName())
-                .add("macAddressOctets", value)
+                .add("value", value)
                 .toString();
     }
 
@@ -57,23 +60,23 @@ public class MacAddressValue extends Value<byte[]> {
         return new Value.Parser() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new MacAddressValue(name, BufferUtils.bytes(buffer, 6));
+                return new StringValue(name, new String(BufferUtils.bytes(buffer, buffer.remaining()), UTF8_CHARSET));
             }
 
             @Override
             public int getMaximumFieldLength() {
-                return 6;
+                return 0xFFFF;
             }
 
             @Override
             public int getMinimumFieldLength() {
-                return 6;
+                return 0;
             }
         };
     }
 
     @Override
-    public byte[] getValue() {
+    public String getValue() {
         return this.value;
     }
 

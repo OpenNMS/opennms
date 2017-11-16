@@ -26,21 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values;
+package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
-public class SignedValue extends Value<Long> {
-    private final long value;
+public class FloatValue extends Value<Double> {
+    private final double value;
 
-    public SignedValue(final String name,
-                       final long value) {
+    public FloatValue(final String name,
+                      final double value) {
         super(name);
         this.value = value;
     }
@@ -53,68 +53,11 @@ public class SignedValue extends Value<Long> {
                 .toString();
     }
 
-    public static Value.Parser parserWith8Bit(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, BufferUtils.sint(buffer, 1));
-            }
-
-            @Override
-            public int getMaximumFieldLength() {
-                return 1;
-            }
-
-            @Override
-            public int getMinimumFieldLength() {
-                return 1;
-            }
-        };
-    }
-
-    public static Value.Parser parserWith16Bit(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, BufferUtils.sint(buffer, buffer.remaining()));
-            }
-
-            @Override
-            public int getMaximumFieldLength() {
-                return 2;
-            }
-
-            @Override
-            public int getMinimumFieldLength() {
-                return 1;
-            }
-        };
-    }
-
-    public static Value.Parser parserWith32Bit(final String name) {
-        return new Value.Parser() {
-            @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, BufferUtils.sint(buffer, buffer.remaining()));
-            }
-
-            @Override
-            public int getMaximumFieldLength() {
-                return 4;
-            }
-
-            @Override
-            public int getMinimumFieldLength() {
-                return 1;
-            }
-        };
-    }
-
     public static Value.Parser parserWith64Bit(final String name) {
         return new Value.Parser() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, BufferUtils.sint(buffer, buffer.remaining()));
+                return new FloatValue(name, Double.longBitsToDouble(BufferUtils.uint(buffer, buffer.remaining()).longValue()));
             }
 
             @Override
@@ -129,8 +72,27 @@ public class SignedValue extends Value<Long> {
         };
     }
 
+    public static Value.Parser parserWith32Bit(final String name) {
+        return new Value.Parser() {
+            @Override
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+                return new FloatValue(name, Float.intBitsToFloat(BufferUtils.uint(buffer, buffer.remaining()).intValue()));
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 4;
+            }
+
+            @Override
+            public int getMinimumFieldLength() {
+                return 1;
+            }
+        };
+    }
+
     @Override
-    public Long getValue() {
+    public Double getValue() {
         return this.value;
     }
 

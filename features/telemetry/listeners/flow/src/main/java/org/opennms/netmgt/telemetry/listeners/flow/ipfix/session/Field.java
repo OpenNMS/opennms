@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix.session;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
 
 public abstract class Field {

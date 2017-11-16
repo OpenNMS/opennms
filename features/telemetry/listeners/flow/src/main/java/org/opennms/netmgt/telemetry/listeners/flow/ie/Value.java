@@ -26,21 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie;
+package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.BooleanValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.DateTimeValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.FloatValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv4AddressValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.IPv6AddressValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.ListValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.MacAddressValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.OctetArrayValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.SignedValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.StringValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.ie.values.UnsignedValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.FloatValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv4AddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv6AddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.ListValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.MacAddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.EnterpriseField;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
