@@ -28,15 +28,26 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import org.apache.aries.blueprint.compendium.cm.CmPropertyPlaceholder;
+import org.apache.http.HttpHost;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsDTO;
+import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsParser;
+import org.osgi.service.cm.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -46,9 +57,6 @@ import io.searchbox.client.AbstractJestClient;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
-import org.apache.http.HttpHost;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This factory wraps the {@link JestClientFactory} to provide instances of
@@ -77,13 +85,13 @@ public class RestClientFactory {
 	 *
 	 * @param elasticSearchURL Elasticsearch URL, either a single URL or
 	 *   multiple URLs that are comma-separated without spaces
-	 * @param elasticUser Optional HTTP username
-	 * @param elasticPassword Optional HTTP password
+	 * @param globalElasticUser Optional HTTP username
+	 * @param globalElasticPassword Optional HTTP password
 	 */
-	public RestClientFactory(final String elasticSearchURL, final String elasticUser, final String elasticPassword ) throws MalformedURLException {
+	public RestClientFactory(final String elasticSearchURL, final String globalElasticUser, final String globalElasticPassword ) throws MalformedURLException {
 		final List<String> urls = parseUrl(elasticSearchURL);
-		final String user = elasticUser != null && !elasticUser.isEmpty() ? elasticUser : null;
-		final String password = elasticPassword != null && !elasticPassword.isEmpty() ? elasticPassword : null;
+		final String user = globalElasticUser != null && !globalElasticUser.isEmpty() ? globalElasticUser : null;
+		final String password = globalElasticPassword != null && !globalElasticPassword.isEmpty() ? globalElasticPassword : null;
 
 		// Ensure urls is set
 		if (urls.isEmpty()) {
@@ -225,6 +233,18 @@ public class RestClientFactory {
 
 	public void setMaxConnectionIdleTime(int timeout, TimeUnit unit) {
 		clientConfigBuilder.maxConnectionIdleTime(timeout, unit);
+	}
+
+	public void setCredentials(CmPropertyPlaceholder credentials) throws IOException {
+		final Configuration configuration = credentials.getConfigAdmin().getConfiguration(credentials.getPersistentId());
+		final Dictionary<String, Object> properties = configuration.getProperties();
+		final List<CredentialsDTO> credentialList = new CredentialsParser().parse(properties);
+		if (!credentialList.isEmpty()) {
+			final BasicCredentialsProvider customCredentialsProvider = new BasicCredentialsProvider();
+			clientConfigBuilder.credentialsProvider(customCredentialsProvider);
+
+			credentialList.stream().forEach(c -> customCredentialsProvider.setCredentials(c.getAuthScope(), c.getCredentials()));
+		}
 	}
 
 	public JestClient createClient() {

@@ -20,6 +20,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.aries.blueprint</groupId>
+      <artifactId>org.apache.aries.blueprint.cm</artifactId>
+      <version>1.0.8</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
@@ -40,6 +46,23 @@
       <artifactId>gson</artifactId>
       <version>${jestGsonVersion}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.jest</groupId>
+      <artifactId>opennms-jest</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
