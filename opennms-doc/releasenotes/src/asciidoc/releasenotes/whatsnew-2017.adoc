@@ -174,6 +174,37 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.2]
+==== Release Meridian-2017.1.2
+
+Release 2017.1.2 is the third release of OpenNMS Meridian 2017.  It is primarily a security and bug fix release.
+
+The codename for 2017.1.2 is _Kraków meridian_.
+
+===== Bug
+
+* JMX config GUI can't connect to JMX service with JNDI name not "jmxrmi" (Issue http://issues.opennms.org/browse/NMS-8596[NMS-8596])
+* Tweak Mattermost notification docs not to specify a channel (Issue http://issues.opennms.org/browse/NMS-9362[NMS-9362])
+* INFO-level "unable to locate resource" log messages for interfaces not persisted by policy (Issue http://issues.opennms.org/browse/NMS-9388[NMS-9388])
+* rescan-exitsing attibute of requisition-def tag in provisiond-configuration.xml is not passed to scanNode() in CoreImportActivities (Issue http://issues.opennms.org/browse/NMS-9492[NMS-9492])
+* Northbounders implementation are not sending feedback events for reloadDaemonConfig (Issue http://issues.opennms.org/browse/NMS-9524[NMS-9524])
+* XSS: HTML attribute values with quotes not escaped properly (Issue http://issues.opennms.org/browse/NMS-9645[NMS-9645])
+* Incorrect logging of exceptions in Slack and Mattermost notifications (Issue http://issues.opennms.org/browse/NMS-9656[NMS-9656])
+* IOActive: Reflected Cross-site Scripting in instrumentationLogReader.jsp searchString Parameter (Issue http://issues.opennms.org/browse/NMS-9672[NMS-9672])
+* Typo prevents FIQL query values from being URI-encoded (Issue http://issues.opennms.org/browse/NMS-9694[NMS-9694])
+* Typo in regional status geo map: Unacknowledges (for unacknolwedged) (Issue http://issues.opennms.org/browse/NMS-9700[NMS-9700])
+* Typo: "not elegible" for SNMP primary N enumeration (Issue http://issues.opennms.org/browse/NMS-9701[NMS-9701])
+* Duty schedules with embedded newlines break startup (Issue http://issues.opennms.org/browse/NMS-9709[NMS-9709])
+* Unexpected errors while generating event definitions from TRAP-TYPE without a DESCRIPTION field (Issue http://issues.opennms.org/browse/NMS-9718[NMS-9718])
+* NPE in Enlinkd bridge topology broadcast domain calculation (Issue http://issues.opennms.org/browse/NMS-9720[NMS-9720])
+* Null pointer exception in SurvellianceViewConfigurationCategoryWindow.java (Issue http://issues.opennms.org/browse/NMS-9722[NMS-9722])
+* ReST v1 does not return errors for unparseable events (Issue http://issues.opennms.org/browse/NMS-9724[NMS-9724])
+* Sending bad XML to the Requisitions ReST end point makes the API unusable (Issue http://issues.opennms.org/browse/NMS-9725[NMS-9725])
+
+===== Enhancement
+
+* ES REST plugin not doing preemptive basic auth (Issue http://issues.opennms.org/browse/NMS-9699[NMS-9699])
+
 [releasenotes-changelog-Meridian-2017.1.1]
 ==== Release Meridian-2017.1.1
 
@@ -291,6 +322,7 @@ The codename for 2017.1.0 is _Bering Strait_.
 * Display the Meridian logo in the Jasper reports (Issue http://issues.opennms.org/browse/LTS-205[LTS-205])
 * Color scheme in "Help improve OpenNMS" is too horizon like (Issue http://issues.opennms.org/browse/LTS-210[LTS-210])
 * The favicon does not comply with the meridian color scheme. (Issue http://issues.opennms.org/browse/LTS-211[LTS-211])
+* Distributed/Geographical Maps do not show images anymore (Issue http://issues.opennms.org/browse/NMS-8597[NMS-8597])
 
 ===== Enhancement
 
@@ -319,8 +351,5 @@ The codename for 2017.1.0 is _Bering Strait_.
 * add HTTPS response time datacollection and graph defintions (Issue http://issues.opennms.org/browse/NMS-9465[NMS-9465])
 * Add parameterized SQL support to Criteria API (Issue http://issues.opennms.org/browse/NMS-9480[NMS-9480])
 * Programmable Northbounder Interfaces (Issue http://issues.opennms.org/browse/NMS-9513[NMS-9513])
-
-===== Configuration
-
-* Distributed/Geographical Maps do not show images anymore (Issue http://issues.opennms.org/browse/NMS-8597[NMS-8597])
 * Remove "delete" flag from default downtime model (Issue http://issues.opennms.org/browse/NMS-9257[NMS-9257])
+
