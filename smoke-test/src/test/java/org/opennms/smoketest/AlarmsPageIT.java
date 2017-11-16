@@ -64,7 +64,7 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
         request.setEntity(new ByteArrayEntity(xml.getBytes(StandardCharsets.UTF_8)));
         final HttpResponse response = client.execute(request);
         final int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode != 200 && statusCode != 204) {
+        if (statusCode != 200 && statusCode != 202 && statusCode != 204) {
             throw new RuntimeException("bad response! " + response.getStatusLine().toString());
         }
     }

@@ -1,7 +1,52 @@
 [[release-21-changelog]]
+
 === Changelog
 
+[[releasenotes-changelog-21.0.1]]
+
+==== Release 21.0.1
+
+Release 21.0.1 is the latest stable release of OpenNMS.  It contains a few enhancements but is primarily a bugfix release, including a fix for the rendering issue in the topology UI and other Vaadin-based UI elements.
+For a high-level overview of what's changed in OpenNMS 21, see link:https://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
+
+The codename for 21.0.1 is _link:https://bladerunner.wikia.com/wiki/Rachael[Rachael]_.
+
+===== Bug
+
+* JMX config GUI can't connect to JMX service with JNDI name not "jmxrmi" (Issue http://issues.opennms.org/browse/NMS-8596[NMS-8596])
+* Tweak Mattermost notification docs not to specify a channel (Issue http://issues.opennms.org/browse/NMS-9362[NMS-9362])
+* INFO-level "unable to locate resource" log messages for interfaces not persisted by policy (Issue http://issues.opennms.org/browse/NMS-9388[NMS-9388])
+* rescan-exitsing attibute of requisition-def tag in provisiond-configuration.xml is not passed to scanNode() in CoreImportActivities (Issue http://issues.opennms.org/browse/NMS-9492[NMS-9492])
+* Northbounders implementation are not sending feedback events for reloadDaemonConfig (Issue http://issues.opennms.org/browse/NMS-9524[NMS-9524])
+* Thread leak in Snmp4JStrategy (Issue http://issues.opennms.org/browse/NMS-9620[NMS-9620])
+* XSS: HTML attribute values with quotes not escaped properly (Issue http://issues.opennms.org/browse/NMS-9645[NMS-9645])
+* Incorrect logging of exceptions in Slack and Mattermost notifications (Issue http://issues.opennms.org/browse/NMS-9656[NMS-9656])
+* IOActive: Reflected Cross-site Scripting in instrumentationLogReader.jsp searchString Parameter (Issue http://issues.opennms.org/browse/NMS-9672[NMS-9672])
+* Typo prevents FIQL query values from being URI-encoded (Issue http://issues.opennms.org/browse/NMS-9694[NMS-9694])
+* Typo in regional status geo map: Unacknowledges (for unacknolwedged) (Issue http://issues.opennms.org/browse/NMS-9700[NMS-9700])
+* Typo: "not elegible" for SNMP primary N enumeration (Issue http://issues.opennms.org/browse/NMS-9701[NMS-9701])
+* Vaadin fragment bundles not loading correctly in Karaf (Issue http://issues.opennms.org/browse/NMS-9704[NMS-9704])
+* Telemetryd does not respond to reloadDaemonConfig events (Issue http://issues.opennms.org/browse/NMS-9708[NMS-9708])
+* Duty schedules with embedded newlines break startup (Issue http://issues.opennms.org/browse/NMS-9709[NMS-9709])
+* Minion WSMAN collector is not functional due to dependency missing (Issue http://issues.opennms.org/browse/NMS-9711[NMS-9711])
+* Unexpected errors while generating event definitions from TRAP-TYPE without a DESCRIPTION field (Issue http://issues.opennms.org/browse/NMS-9718[NMS-9718])
+* NPE in Enlinkd bridge topology broadcast domain calculation (Issue http://issues.opennms.org/browse/NMS-9720[NMS-9720])
+* Null pointer exception in SurvellianceViewConfigurationCategoryWindow.java (Issue http://issues.opennms.org/browse/NMS-9722[NMS-9722])
+* ReST v1 does not return errors for unparseable events (Issue http://issues.opennms.org/browse/NMS-9724[NMS-9724])
+
+===== Enhancement
+
+* System tests for handling JTI payloads (Issue http://issues.opennms.org/browse/HZN-1164[HZN-1164])
+* Create a unique TopologyDao (Issue http://issues.opennms.org/browse/NMS-7443[NMS-7443])
+* Ubiquiti support (Issue http://issues.opennms.org/browse/NMS-9690[NMS-9690])
+* Implement the Sink pattern using AWS SQS (Issue http://issues.opennms.org/browse/NMS-9691[NMS-9691])
+* ES REST plugin not doing preemptive basic auth (Issue http://issues.opennms.org/browse/NMS-9699[NMS-9699])
+* Implement the RPC pattern using AWS SQS (Issue http://issues.opennms.org/browse/NMS-9723[NMS-9723])
+* Documentation error: Admin Guide 5.2.13 for Xmp refers to WMI (Issue http://issues.opennms.org/browse/NMS-9726[NMS-9726])
+* Modularize telemetryd docs and add overview to telemetry daemon (Issue http://issues.opennms.org/browse/NMS-9735[NMS-9735])
+
 [[releasenotes-changelog-21.0.0]]
+
 ==== Release 21.0.0
 
 Release 21.0.0 is the latest stable release of OpenNMS.
