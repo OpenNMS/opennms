@@ -204,6 +204,25 @@ public class RestClientFactory {
 		clientConfigBuilder.maxTotalConnection(connections);
 	}
 
+	/**
+	 * Defines if discovery/sniffing of nodes in the cluster is enabled.
+	 *
+	 * @param discovery true if discovery should be enabled, false otherwise
+	 */
+	public void setDiscovery(boolean discovery) {
+		clientConfigBuilder.discoveryEnabled(discovery);
+	}
+
+	/**
+	 * Sets the frequency to discover the nodes in the cluster.
+	 * Note: This only works if discovery is enabled.
+	 *
+	 * @param discoveryFrequencyInSeconds frequency in seconds
+	 */
+	public void setDiscoveryFrequency(int discoveryFrequencyInSeconds) {
+		clientConfigBuilder.discoveryFrequency(discoveryFrequencyInSeconds, TimeUnit.SECONDS);
+	}
+
 	public void setMaxConnectionIdleTime(int timeout, TimeUnit unit) {
 		clientConfigBuilder.maxConnectionIdleTime(timeout, unit);
 	}
