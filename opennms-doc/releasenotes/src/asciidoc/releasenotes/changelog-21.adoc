@@ -1,7 +1,9 @@
 [[release-21-changelog]]
+
 === Changelog
 
-[releasenotes-changelog-21.0.1]
+[[releasenotes-changelog-21.0.1]]
+
 ==== Release 21.0.1
 
 Release 21.0.1 is the latest stable release of OpenNMS.  It contains a few enhancements but is primarily a bugfix release, including a fix for the rendering issue in the topology UI and other Vaadin-based UI elements.
@@ -44,6 +46,7 @@ The codename for 21.0.1 is _link:https://bladerunner.wikia.com/wiki/Rachael[Rach
 * Modularize telemetryd docs and add overview to telemetry daemon (Issue http://issues.opennms.org/browse/NMS-9735[NMS-9735])
 
 [[releasenotes-changelog-21.0.0]]
+
 ==== Release 21.0.0
 
 Release 21.0.0 is the latest stable release of OpenNMS.
