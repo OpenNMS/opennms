@@ -120,23 +120,23 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             Map<String,BridgeForwardingTableEntry> ymactoport = new HashMap<String, BridgeForwardingTableEntry>();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("simple connection [{} <--> {}]: searching.\n xbft -> \n{}\n ybft -> \n{}",
-                    xBridge.getId(),
-                    yBridge.getId(),
+                    xBridge.getNodeId(),
+                    yBridge.getNodeId(),
                     BridgeForwardingTableEntry.printTopology(xBFT),
                     BridgeForwardingTableEntry.printTopology(yBFT));
             }
             for (BridgeForwardingTableEntry xlink: xBFT) {
-                if (xBridge.getId().intValue() == xlink.getNodeId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
+                if (xBridge.getNodeId().intValue() == xlink.getNodeId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     xmactoport.put(xlink.getMacAddress(), xlink);
                 }
-                if (xBridge.getId().intValue() == xlink.getNodeId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
+                if (xBridge.getNodeId().intValue() == xlink.getNodeId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
                     xBridge.getIdentifiers().add(xlink.getMacAddress());
             }
             for (BridgeForwardingTableEntry ylink: yBFT) {
-                if (yBridge.getId().intValue() == ylink.getNodeId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
+                if (yBridge.getNodeId().intValue() == ylink.getNodeId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     ymactoport.put(ylink.getMacAddress(), ylink);
                 }
-                if (yBridge.getId().intValue() == ylink.getNodeId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
+                if (yBridge.getNodeId().intValue() == ylink.getNodeId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
                     yBridge.getIdentifiers().add(ylink.getMacAddress());
             }
 
@@ -145,9 +145,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             if (xy != null) {
             	m_xy=xy;
                 LOG.debug("simple connection: [{} port: {} --> {}].",
-                          xBridge.getId(),
+                          xBridge.getNodeId(),
                           m_xy,
-                          yBridge.getId());
+                          yBridge.getNodeId());
             }
 
             // there is a mac of X found on Y BFT
@@ -155,8 +155,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             if (yx != null) {
             	m_yx=yx;
                 LOG.debug("simple connection: [{} <-- {} port: {}].",
-                          xBridge.getId(),
-                          yBridge.getId(),
+                          xBridge.getNodeId(),
+                          yBridge.getNodeId(),
                           m_yx);
             }
             	            
@@ -175,9 +175,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     }
                 }
                 LOG.debug("simple connection: [{}, port {} <--> {}, port: {}] common (learned mac): {}",
-                          xBridge.getId(),
+                          xBridge.getNodeId(),
                           m_xy,
-                          yBridge.getId(),
+                          yBridge.getNodeId(),
                           m_yx,
                           commonlearnedmacs);
 
@@ -185,9 +185,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             //FIXME What do do if I do not find the connection?
             if (m_xy == null || m_xy == null) {
                 LOG.warn("simple connection: [{}, port {}] <--> [{}, port {}]. Not found. exiting", 
-                          xBridge.getId(), 
+                          xBridge.getNodeId(), 
                           m_xy,
-                          yBridge.getId()
+                          yBridge.getNodeId()
                           , m_yx);
                 return;
             }
@@ -200,9 +200,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     		&& m_yx == ymactoport.get(xlink.getMacAddress()).getBridgePort()) {
                     	m_macsOnSegment.add(xlink.getMacAddress());
                         LOG.debug("simple connection: [{}, port {}] <--> [{}, port {}], forward set: [bridge:[{}],port:{},mac:{}].", 
-                                  xBridge.getId(), 
+                                  xBridge.getNodeId(), 
                                   m_xy,
-                                  yBridge.getId()
+                                  yBridge.getNodeId()
                                   , m_yx,
                                   xlink.getNodeId(),
                     		xlink.getBridgePort(),
@@ -210,9 +210,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     } else if (ymactoport.get(xlink.getMacAddress()) == null){
                         m_forwardersX.add(xlink);
                         LOG.debug("simple connection: [{}, port {}] <--> [{}, port {}], through set: [bridge:[{}],port:{},mac:{}].", 
-                                  xBridge.getId(), 
+                                  xBridge.getNodeId(), 
                                   m_xy,
-                                  yBridge.getId()
+                                  yBridge.getNodeId()
                                   , m_yx,
                                   xlink.getNodeId(),
                                 xlink.getBridgePort(),
@@ -222,9 +222,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                         xylink = xlink;
                 } else if (xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     LOG.debug("simple connection: [{}, port {}] <--> [{}, port {}], through set: [bridge:[{}],port:{},mac:{}].", 
-                              xBridge.getId(), 
+                              xBridge.getNodeId(), 
                               m_xy,
-                              yBridge.getId()
+                              yBridge.getNodeId()
                               , m_yx,
                               xlink.getNodeId(),
                             xlink.getBridgePort(),
@@ -242,9 +242,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     		m_xy == xmactoport.get(ylink.getMacAddress()).getBridgePort()) {
                     	m_macsOnSegment.add(ylink.getMacAddress());
                         LOG.debug("simple connection: [{}, port {}] <--> [{}, port {}], forward set: [bridge:[{}],port:{},mac:{}].", 
-                                  xBridge.getId(), 
+                                  xBridge.getNodeId(), 
                                   m_xy,
-                                  yBridge.getId()
+                                  yBridge.getNodeId()
                                   , m_yx,
                                   ylink.getNodeId(),
                                 ylink.getBridgePort(),
@@ -252,9 +252,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     } else if (xmactoport.get(ylink.getMacAddress()) == null){
                         m_forwardersY.add(ylink);
                         LOG.debug("simple connection: [{}, port {}] <--> [{}, port {}], through set: [bridge:[{}],port:{},mac:{}].", 
-                                  xBridge.getId(), 
+                                  xBridge.getNodeId(), 
                                   m_xy,
-                                  yBridge.getId()
+                                  yBridge.getNodeId()
                                   , m_yx,
                                   ylink.getNodeId(),
                                 ylink.getBridgePort(),
@@ -264,9 +264,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                         yxlink = ylink;
                 } else if (ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     LOG.debug("simple connection: [{}, port {}] <--> [{}, port {}], through set: [bridge:[{}],port:{},mac:{}].", 
-                              xBridge.getId(), 
+                              xBridge.getNodeId(), 
                               m_xy,
-                              yBridge.getId()
+                              yBridge.getNodeId()
                               , m_yx,
                               ylink.getNodeId(),
                             ylink.getBridgePort(),
@@ -278,9 +278,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 }
             }
             LOG.debug("simple connection: [{}, port {}] <--> [{}, port {}], interse set:{}.",
-                      xBridge.getId(), 
+                      xBridge.getNodeId(), 
                       m_xy,
-                      yBridge.getId()
+                      yBridge.getNodeId()
                       , m_yx,
             		m_macsOnSegment);
     
@@ -574,7 +574,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         for (Bridge bridge: m_domain.getBridges()) {
             bridge.clear();
-            for (BridgeElement element: m_linkd.getQueryManager().getBridgeElements(bridge.getId())) {
+            for (BridgeElement element: m_linkd.getQueryManager().getBridgeElements(bridge.getNodeId())) {
                 if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
                     bridge.getIdentifiers().add(element.getBaseBridgeAddress());
                 }
@@ -617,10 +617,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         LOG.info("run: node: [{}], getting broadcast domain. Start", getNodeId());
         for (BroadcastDomain domain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("run: node: [{}], parsing domain with nodes: {}, macs: {}", 
+                LOG.debug("run: node: [{}], parsing domain: {}", 
                       getNodeId(),
-                      domain.getBridgeNodesOnDomain(),
-                      domain.getMacsOnDomain());
+                      domain.printTopology());
             }
             Set<String>retainedSet = new HashSet<String>(
                                                           domain.getMacsOnDomain());
@@ -631,17 +630,18 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     || retainedSet.size() >= incomingSet.size() * DOMAIN_MATCH_MIN_RATIO) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("run: node: [{}], domain {} found!",getNodeId(), 
-                          domain.getBridgeNodesOnDomain());
+                          domain.printTopology());
                 }
-                    m_domain = domain;
-                    // TODO: We should find the *best* domain, instead of using the last match
+                m_domain = domain;
+                // TODO: We should find the *best* domain, instead of using the last match
             }
         }
         if (m_domain == null) {
             LOG.info("run: node: [{}] Creating a new Domain", getNodeId());
             m_domain = new BroadcastDomain();
             m_linkd.getQueryManager().save(m_domain);
-        } else if (!m_domain.hasRootBridge()) {
+        } else if (m_domain.getRootBridge() == null) {
+            //FIXME????
             LOG.warn("run: node: [{}] Domain without root, clearing topology", getNodeId());
             m_domain.clearTopology();
         }
@@ -661,7 +661,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                       domain.getBridgeNodesOnDomain());
                 }
             for (Integer curNodeId: nodeswithupdatedbftonbroadcastdomain) {
-                if (domain.containBridgeId(curNodeId)) {
+                Bridge bridge = domain.getBridge(curNodeId);
+                if (bridge != null) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("run: node [{}]: node [{}]: removing from broadcast domain {}!",
                     		getNodeId(),
@@ -670,7 +671,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     }
                     synchronized (domain) {
                         try {
-                            domain.clearTopologyForBridge(curNodeId);
+                            domain.clearTopologyForBridge(bridge);
                         } catch (BridgeTopologyException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
@@ -691,7 +692,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             m_notYetParsedBFTMap = new HashMap<Bridge, Set<BridgeForwardingTableEntry>>();
             for (Integer nodeid : nodeswithupdatedbftonbroadcastdomain) {
                 sendStartEvent(nodeid);
-                m_domain.addBridge(new Bridge(nodeid));
+                //FIXME use Bridge class for moving from one domain to another
+                if (m_domain.addBridge(new Bridge(nodeid))) {
+                    LOG.info("run: node: [{}], added bridge  node [{}] on domain", getNodeId(), nodeid);
+                } else {
+                    
+                }
                 LOG.debug("run: node: [{}], getting update bft for node [{}] on domain", getNodeId(), nodeid);
                 Set<BridgeForwardingTableEntry> bft = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
                 if (bft == null || bft.isEmpty()) {
@@ -715,7 +721,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             }
             for (Integer nodeid : nodetoberemovedondomain) {
                 try {
-                    m_domain.clearTopologyForBridge(nodeid);
+                    Bridge bridge = m_domain.getBridge(nodeid);
+                    m_domain.clearTopologyForBridge(bridge);
                 } catch (BridgeTopologyException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -768,10 +775,13 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
         Bridge electedRoot = m_domain.electRootBridge();
         
-        if (electedRoot == null && m_domain.hasRootBridge()) {
-            LOG.debug("calculate: node: [{}], electRootBridge: mantaining old root bridge: {}", 
+        Bridge rootBridge = m_domain.getRootBridge();
+        if (electedRoot == null && rootBridge != null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("calculate: node: [{}], electRootBridge: mantaining old root bridge: {}", 
                     getNodeId(),
-                    m_domain.getRootBridgeId());
+                    rootBridge.printTopology());
+            }
             electedRoot = m_domain.getRootBridge();        	
         } else if (electedRoot == null) {
 	        // no spanning tree root?
@@ -780,11 +790,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 	        // so checking the best into not parsed
 	        int size=0;
 	        
-	        Bridge rootBridge = null;
 	        for (Bridge bridge:  m_notYetParsedBFTMap.keySet()) {
 	            LOG.debug("calculate: node: [{}], bridge [{}]: max bft size \"{}\" in topology",
 	                    getNodeId(),
-	                    bridge.getId(), 
+	                    bridge.getNodeId(), 
 	                    m_notYetParsedBFTMap.get(bridge).size());
 	            if (size < m_notYetParsedBFTMap.get(bridge).size()) {
 	                rootBridge = bridge;
@@ -792,47 +801,57 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 	            }
 	        }
 	        if (rootBridge != null ) {
-	            LOG.debug("calculate: node: [{}], bridge [{}]: elected root with max bft size \"{}\" in topology",
+	            if (LOG.isDebugEnabled()) {
+	                LOG.debug("calculate: node: [{}], bridge [{}]: elected root with max bft size \"{}\" in topology",
 	                    getNodeId(),
-	                    rootBridge.getId(), 
+	                    rootBridge.getNodeId(), 
 	                    size);
+	            }
 	            electedRoot = rootBridge;
 	        }
         } 
         
         if (electedRoot == null ) {
-        	electedRoot = m_domain.getBridges().iterator().next();
-    	   LOG.debug("calculate: node: [{}], electRootBridge: first root bridge: {}", 
+            electedRoot = m_domain.getBridges().iterator().next();
+            if (LOG.isDebugEnabled()) {
+        	LOG.debug("calculate: node: [{}], electRootBridge: first root bridge: {}", 
                        getNodeId(),
-                       electedRoot.getId());
+                       electedRoot.printTopology());
+            }
         }
 
-        if (electedRoot.getId() == null) {
+        if (electedRoot.getNodeId() == null) {
             LOG.error("calculate: node: [{}], electedRootBridge must have an id!",
                     getNodeId()
             		);
-            return;
+            throw new BridgeTopologyException("electedRoot bridge id cannot be null", electedRoot);
         }
         
         Set<BridgeForwardingTableEntry> rootBft = m_notYetParsedBFTMap.remove(electedRoot);
         
-        if (m_domain.hasRootBridge() && m_domain.getRootBridge().getId() == electedRoot.getId() && rootBft == null) {
-            LOG.debug("calculate: node: [{}], elected root bridge: [{}], old root bridge. no updated bft",
+        if (rootBridge != null && rootBridge.getNodeId() == electedRoot.getNodeId() && rootBft == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("calculate: node: [{}], no updated bft, elected is equal to old root bridge: {}",
                     getNodeId(), 
-            		electedRoot.getId());
+            		electedRoot.printTopology());
+            }
             rootBft = m_domain.calculateRootBFT();
         } else if ( rootBft != null ) {
-            LOG.debug("calculate: node: [{}], elected root bridge: [{}], has updated bft",
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("calculate: node: [{}], elected root bridge: [{}], has updated bft",
                     getNodeId(), 
-                     electedRoot.getId());
-            m_domain.clearTopologyForBridge(electedRoot.getId());
-            LOG.debug("calculate: node: [{}], cleared topology: domain root bridge: [{}]",
+                     electedRoot.getNodeId());
+            }
+            m_domain.clearTopologyForBridge(electedRoot);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("calculate: node: [{}], clear topology for domain root bridge: [{}], ",
                       getNodeId(), 
-                       m_domain.getRootBridgeId());
-            if (m_domain.getTopology().isEmpty()) {
+                       m_domain.printTopology());
+            }
+            if (m_domain.getSharedSegments().isEmpty()) {
                LOG.debug("calculate: node: [{}], new elected root bridge: [{}], is the first bridge in topology. Adding root shared segments",
                        getNodeId(), 
-                        electedRoot.getId());
+                        electedRoot.getNodeId());
                 loadFirstLevelSharedSegment(rootBft);
                 electedRoot.setRootBridge();
            } else {
@@ -844,17 +863,20 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         } else {
            LOG.debug("calculate: node: [{}], elected root bridge: [{}], is new, without updated bft",
                     getNodeId(), 
-                     electedRoot.getId());
+                     electedRoot.getNodeId());
            m_domain.hierarchySetUp(electedRoot);
            rootBft = m_domain.calculateRootBFT();
         }
 
         if (!m_notYetParsedBFTMap.isEmpty()) {
             for (Bridge xBridge: m_notYetParsedBFTMap.keySet()) {
-                m_domain.clearTopologyForBridge(xBridge.getId());
-                LOG.debug("calculate: node: [{}], Removed bridge: [{}].", 
+                m_domain.clearTopologyForBridge(xBridge);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("calculate: node: [{}], Removed bridge: [{}] form domain: {}", 
                 		getNodeId(),
-                		xBridge.getId());
+                		xBridge.getNodeId(),
+                		m_domain.printTopology());
+                }
             }
         }
 
@@ -932,8 +954,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         if (rxDesignatedPort == null) {
             LOG.warn("calculate: node: [{}], cannot found simple connection for bridges: [{},{}]", 
             		getNodeId(),
-            		root.getId(), 
-            		xBridge.getId());
+            		root.getNodeId(), 
+            		xBridge.getNodeId());
             m_domain.clearTopology();
             return;
         }
@@ -941,23 +963,23 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         if (xrDesignatedPort == null) {
              LOG.warn("calculate: node: [{}], cannot found simple connectionfor bridges: [{},{}]",
              		getNodeId(),
-             		xBridge.getId(), 
-             		root.getId());
+             		xBridge.getNodeId(), 
+             		root.getNodeId());
              m_domain.clearTopology();
              return;
         }
         LOG.debug("calculate: node: [{}], level: 1, bridge: [{}], root port:[{}] ",
         		getNodeId(),
-        		xBridge.getId(),
+        		xBridge.getNodeId(),
         		xrDesignatedPort);
         xBridge.setRootPort(xrDesignatedPort);
         //get the starting point shared segment of the top bridge
         // where the bridge is learned should not be null
-        SharedSegment topSegment = m_domain.getSharedSegment(root.getId(),rxDesignatedPort);
+        SharedSegment topSegment = m_domain.getSharedSegment(root.getNodeId(),rxDesignatedPort);
         if (topSegment == null) {
             LOG.warn("calculate: node: [{}], level: 1, nodeid: [{}], port {}. top segment not found.",
             		getNodeId(),
-            		m_domain.getRootBridgeId(),
+            		m_domain.getRootBridge().getNodeId(),
             		rxDesignatedPort);
             m_domain.clearTopology();
             return;
@@ -965,7 +987,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         if (LOG.isDebugEnabled()) {
             LOG.debug("calculate: node: [{}], bridge: [{}] -> root segment: \n{} ",
                         getNodeId(),
-                        xBridge.getId(),
+                        xBridge.getNodeId(),
                         topSegment.printTopology());
         }
 
@@ -984,7 +1006,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.warn("calculate: node: [{}]: level: {}, bridge: [{}], top segment is null exiting.....",
                      getNodeId(),
                      level,
-                     xBridge.getId());
+                     xBridge.getNodeId());
          return false;
         }
         level++;
@@ -992,7 +1014,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.warn("calculate: node: [{}]: level: {}, bridge: [{}], too many iteration on topology exiting.....",
                         getNodeId(),
                         level,
-                        xBridge.getId());
+                        xBridge.getNodeId());
             return false;
         }
 
@@ -1000,7 +1022,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.debug("calculate: node: [{}], level: {}, bridge: [{}] -> check if is child of: \n{} ",
         		getNodeId(),
         		level,
-        		xBridge.getId(),
+        		xBridge.getNodeId(),
         		topSegment.printTopology());
         }
         Set<Integer> portsAdded=new HashSet<Integer>();
@@ -1011,11 +1033,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         forwarders.addAll(rx.getSecondBridgeForwarders());
 
         for (Bridge yBridge: m_domain.getBridgeOnSharedSegment(topSegment)) {
-            bftSets.put(yBridge.getId(), m_domain.calculateBFT(yBridge));
+            bftSets.put(yBridge.getNodeId(), m_domain.calculateBFT(yBridge));
         }
         
         for (Bridge yBridge: m_domain.getBridgeOnSharedSegment(topSegment)) {
-            Integer yBridgeId = yBridge.getId();
+            Integer yBridgeId = yBridge.getNodeId();
             // X is a leaf of top segment: of course
             if (yBridgeId.intValue() == topSegment.getDesignatedBridge().intValue()) {
                 continue;
@@ -1024,7 +1046,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.debug("calculate: node: [{}], level: {}, bridge: [{}], bridge: [{}, designated port: {}]",
             		getNodeId(),
                      level,
-                     xBridge.getId(),
+                     xBridge.getNodeId(),
                      yBridgeId,
                      yrDesignatedPort);
             BridgeTopologyHelper   yx = new BridgeTopologyHelper(yBridge,bftSets.get(yBridgeId) ,xBridge, xBFT);
@@ -1034,7 +1056,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             if (xyDesignatedPort == rx.getSecondBridgeConnectionPort() && yxDesignatedPort != yrDesignatedPort) {
                 LOG.debug("calculate: node: [{}]: level: {}, bridge: [{}] is a leaf of bridge: [{}], going one level down",
                 		getNodeId(),
-                		level,xBridge.getId(),yBridge.getId());
+                		level,xBridge.getNodeId(),yBridge.getNodeId());
                 if (!findBridgesTopo(yx,m_domain.getSharedSegment(yBridgeId, yxDesignatedPort), xBridge, xBFT,level))
                 	return false;
                 return true;
@@ -1050,17 +1072,17 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 LOG.info("calculate: node: [{}], level: {}, bridge: [{},designated port [{}]]: found level.", 
                           getNodeId(), 
                           level,
-                          xBridge.getId(),
+                          xBridge.getNodeId(),
                           xyDesignatedPort);
                 LOG.debug("calculate: node: [{}], level: {}, bridge: [{},designated port [{}]]: is 'hierarchy up' for bridge: [{}].", 
                 		getNodeId(), 
                 		level,
-                		xBridge.getId(),
+                		xBridge.getNodeId(),
                 		xyDesignatedPort,
-                                yBridge.getId());
-                SharedSegment leafSegment = m_domain.getSharedSegment(xBridge.getId(), xyDesignatedPort);
+                                yBridge.getNodeId());
+                SharedSegment leafSegment = m_domain.getSharedSegment(xBridge.getNodeId(), xyDesignatedPort);
                 if (leafSegment == null) {
-                    leafSegment = new SharedSegment(m_domain,yx.getSimpleConnection(),yx.getSimpleConnectionMacs(),xBridge.getId());
+                    leafSegment = new SharedSegment(m_domain,yx.getSimpleConnection(),yx.getSimpleConnectionMacs(),xBridge.getNodeId());
                 } else {
                     leafSegment.retain(yx.getSimpleConnectionMacs(),yx.getFirstBridgePort());
                 }
@@ -1070,8 +1092,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     LOG.debug("calculate: node: [{}], level: {}, bridge [{}]. Remove bridge [{}] and macs {} from top segment.\n{}", 
                 		getNodeId(), 
                          level,
-                         xBridge.getId(),
-                         yBridge.getId(),
+                         xBridge.getNodeId(),
+                         yBridge.getNodeId(),
                          topSegment.getMacsOnSegment(),topSegment.printTopology());
                 }
                 topSegment.getMacsOnSegment().clear();
@@ -1080,7 +1102,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 LOG.warn("calculate: node: [{}]: level {}: bridge [{}]. Topology mismatch. Clearing...topology",
                 		getNodeId(), 
                 		level,
-                		xBridge.getId());
+                		xBridge.getNodeId());
                 return false;
             } else {
                 macsOnSegment.retainAll(yx.getSimpleConnectionMacs());                
@@ -1095,7 +1117,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         if (LOG.isDebugEnabled()) {
             LOG.debug("calculate: node: [{}]: level: {}, bridge: [{}], port[{}], macs{} -> assigned.\n{}", 
                         getNodeId(), 
-                 level,xBridge.getId(),rx.getSecondBridgePort().getBridgePort(),macsOnSegment,topSegment.printTopology());
+                 level,xBridge.getNodeId(),rx.getSecondBridgePort().getBridgePort(),macsOnSegment,topSegment.printTopology());
         }
         for (BridgePort xbridgePort : rx.getSecondBridgeTroughSetBft().keySet()) {
             if (portsAdded.contains(xbridgePort.getBridgePort())) {
@@ -1110,7 +1132,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             		+ "mac: {}]",
             		getNodeId(), 
                      level,
-                     xBridge.getId(),
+                     xBridge.getNodeId(),
                      xleafSegment.getDesignatedBridge(),
                      xleafSegment.getDesignatedPort().getBridgePort(),
                      xleafSegment.getMacsOnSegment());

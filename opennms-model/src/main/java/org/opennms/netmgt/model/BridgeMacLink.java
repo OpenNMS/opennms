@@ -41,12 +41,14 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.netmgt.model.topology.BridgeTopology;
 
 @Entity
 @Table(name="bridgeMacLink")
-public class BridgeMacLink {
+public class BridgeMacLink implements BridgeTopology {
 
 
     private Integer m_id;
@@ -168,12 +170,27 @@ public class BridgeMacLink {
 				.append("bridgePortIfIndex", m_bridgePortIfIndex)
 				.append("bridgePortIfName", m_bridgePortIfName)
 				.append("vlan", m_vlan)
-                .append("macAddress", m_macAddress)
+                                .append("macAddress", m_macAddress)
 				.append("m_bridgeMacLinkCreateTime", m_bridgeMacLinkCreateTime)
 				.append("m_bridgeMacLinkLastPollTime", m_bridgeMacLinkLastPollTime)
 				.toString();
 	}
 	
+	@Transient
+        public String printTopology() {
+        StringBuffer strbfr = new StringBuffer();
+
+        strbfr.append("mac link: nodeid:["); 
+        strbfr.append(getNode().getId());
+        strbfr.append("], bridgeport:[");
+        strbfr.append(getBridgePort());
+        strbfr.append("],mac:");
+        strbfr.append(getMacAddress());
+        strbfr.append("]");
+
+	        return strbfr.toString();
+	        }
+
 	public void merge(BridgeMacLink element) {
 		if (element == null)
 			return;

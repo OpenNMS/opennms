@@ -86,7 +86,6 @@ public class BroadcastDomain implements BridgeTopology {
     public void clearTopology() {
         m_forwarding.clear();
         m_topology.clear();
-        m_bridges.clear();
     }
     
     public boolean isEmpty() {
@@ -96,7 +95,7 @@ public class BroadcastDomain implements BridgeTopology {
     public Set<Integer> getBridgeNodesOnDomain() {
         Set<Integer> bridgeIds = new HashSet<Integer>();
         for (Bridge bridge: m_bridges) 
-            bridgeIds.add(bridge.getId());
+            bridgeIds.add(bridge.getNodeId());
         return bridgeIds;
     }
 
@@ -104,26 +103,10 @@ public class BroadcastDomain implements BridgeTopology {
         return m_bridges;
     }
     
-    public List<SharedSegment> getTopology() {
+    public List<SharedSegment> getSharedSegments() {
         return m_topology;
     }
         
-    public boolean hasRootBridge() {
-        for (Bridge bridge: m_bridges) {
-            if (bridge.isRootBridge())
-                return true;
-        }
-        return false;
-    }
-
-    public Integer getRootBridgeId() {
-        for (Bridge bridge: m_bridges) {
-            if (bridge.isRootBridge())
-                return bridge.getId();
-        }
-        return null;
-    }
-
     public Bridge getRootBridge() {
         for (Bridge bridge: m_bridges) {
             if (bridge.isRootBridge())
@@ -141,7 +124,7 @@ public class BroadcastDomain implements BridgeTopology {
 
     public Bridge getBridge(int bridgeId) {
         for (Bridge bridge: m_bridges) {
-            if (bridge.getId().intValue() == bridgeId)
+            if (bridge.getNodeId().intValue() == bridgeId)
                 return bridge;
         }
         return null;
@@ -158,62 +141,25 @@ public class BroadcastDomain implements BridgeTopology {
         m_topology.add(segment);
     }
     
-    public void loadTopologyEntry(SharedSegment segment) {
-        m_topology.add(segment);
-        segment.setBroadcastDomain(this);
-    }
-    
-    public void loadTopologyRoot() throws BridgeTopologyException {
-        if (m_bridges.size() == 1) {
-            hierarchySetUp(m_bridges.iterator().next());
-            return;
-        }
-
-        Integer designated = null;
-        for (SharedSegment segment: m_topology) {
-            Set<Integer> children = segment.getBridgeIdsOnSegment();
-            if (children.size() == 1)
-                continue;
-            designated = segment.getDesignatedBridge();
-            loadTopologyRoot(designated);
-            return;
-        }
-    }
-    
-    private void loadTopologyRoot(Integer bridgeId) throws BridgeTopologyException {
-        for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
-            if (segment.getDesignatedBridge().intValue() != bridgeId.intValue()) {
-                loadTopologyRoot(segment.getDesignatedBridge());
-                return;
-            }
-        }
-        hierarchySetUp(
-                       getBridge(
-                                 bridgeId));
-    }
-
-    public boolean containsAtleastOne(Set<Integer> nodeids) {
-        for (Bridge bridge: m_bridges) {
-            for (Integer nodeid:nodeids) {
-                if (bridge.getId().intValue() == nodeid.intValue())
+    public boolean loadTopologyEntry(SharedSegment segment) {
+        for (BridgePort port: segment.getBridgePortsOnSegment()) {
+            for ( Bridge bridge: m_bridges ) {
+                if ( port.getNodeId().intValue() == bridge.getNodeId().intValue()) {
+                    m_topology.add(segment);
+                    segment.setBroadcastDomain(this);
                     return true;
+                }
             }
         }
         return false;
     }
     
-    public boolean containBridgeId(int nodeid) {
-        for (Bridge bridge: m_bridges) {//ConcurrentModificationException NMS-9557
-            if (bridge.getId().intValue() == nodeid)
-                return true;
-        }
-        return false;
-    }
     
-    public synchronized void removeBridge(int bridgeId) {
+    //FIXME delete a bridge on a domain has some consequences because also bridge port must be removed
+    public void removeBridge(int bridgeId) {
         Bridge bridge = null;
         for (Bridge curbridge: m_bridges) {
-            if (curbridge.getId() == bridgeId) {
+            if (curbridge.getNodeId() == bridgeId) {
                 bridge=curbridge;
                 break;
             }
@@ -230,14 +176,14 @@ public class BroadcastDomain implements BridgeTopology {
         
         Set<Bridge> bridges = new HashSet<Bridge>();
         for (Bridge cur: m_bridges) {
-            if (cur.getId().intValue() == bridgeId) 
+            if (cur.getNodeId().intValue() == bridgeId) 
                 continue;
             bridges.add(cur);
         }
         m_bridges = bridges;            
     }
     
-    public List<SharedSegment> getSharedSegmentOnTopologyForBridge(Integer bridgeId) {
+    public List<SharedSegment> getSharedSegments(Integer bridgeId) {
         List<SharedSegment> segmentsOnBridge = new ArrayList<SharedSegment>();
         for (SharedSegment segment: m_topology) {
             if (segment.getBridgeIdsOnSegment().contains(bridgeId)) 
@@ -263,7 +209,7 @@ public class BroadcastDomain implements BridgeTopology {
         Set<Integer> nodeidsOnSegment = new HashSet<Integer>(segment.getBridgeIdsOnSegment());
         Set<Bridge> bridgesOn = new HashSet<Bridge>();
         for (Bridge bridge: m_bridges) {
-            if (nodeidsOnSegment.contains(bridge.getId()))
+            if (nodeidsOnSegment.contains(bridge.getNodeId()))
                 bridgesOn.add(bridge);
         }
         return bridgesOn;
@@ -293,9 +239,9 @@ public class BroadcastDomain implements BridgeTopology {
         root.setRootBridge();
         if (m_bridges.size() == 1)
             return;
-        for (SharedSegment segment : getSharedSegmentOnTopologyForBridge(root.getId())) {
-            segment.setDesignatedBridge(root.getId());
-            tier(segment, root.getId(), 0);
+        for (SharedSegment segment : getSharedSegments(root.getNodeId())) {
+            segment.setDesignatedBridge(root.getNodeId());
+            tier(segment, root.getNodeId(), 0);
         }
     }
     
@@ -312,7 +258,7 @@ public class BroadcastDomain implements BridgeTopology {
             if (bridge == null)
                 return;
             bridge.setRootPort(segment.getBridgePort(bridgeid).getBridgePort());
-            for (SharedSegment s2: getSharedSegmentOnTopologyForBridge(bridgeid)) {
+            for (SharedSegment s2: getSharedSegments(bridgeid)) {
                 if (s2.getDesignatedBridge() != null && s2.getDesignatedBridge().intValue() == rootid.intValue())
                     continue;
                 s2.setDesignatedBridge(bridgeid);
@@ -321,15 +267,14 @@ public class BroadcastDomain implements BridgeTopology {
         }
     }
     
-    public void clearTopologyForBridge(Integer bridgeId) throws BridgeTopologyException {
-        m_forwarding.remove(bridgeId);
-    	Bridge bridge = getBridge(bridgeId);
-    	if (bridge == null) {
-    	    throw new BridgeTopologyException("Bridge must be not null:" + bridgeId, this);
-    	}
-        SharedSegment topsegment = getSharedSegment(bridge.getId(), bridge.getRootPort());
+    public void clearTopologyForBridge(Bridge bridge) throws BridgeTopologyException {
+        if (bridge == null) {
+            throw new BridgeTopologyException("clearTopologyForBridge: Bridge must be not null:", this);
+        }
+        m_forwarding.remove(bridge.getNodeId());
+        SharedSegment topsegment = getSharedSegment(bridge.getNodeId(), bridge.getRootPort());
         if (bridge.isRootBridge()) {
-            for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
+            for (SharedSegment segment: getSharedSegments(bridge.getNodeId())) {
                 Integer newRootId = segment.getFirstNoDesignatedBridge();
                 if (newRootId == null)
                     continue;
@@ -344,7 +289,7 @@ public class BroadcastDomain implements BridgeTopology {
         }
  
         if (topsegment != null) {
-            topsegment.mergeBridge(bridge.getId());
+            topsegment.mergeBridge(bridge.getNodeId());
         }
     }
 
@@ -358,9 +303,9 @@ public class BroadcastDomain implements BridgeTopology {
     public Set<BridgeForwardingTableEntry> calculateBFT(Bridge bridge) throws BridgeTopologyException {
         Map<Integer,Set<String>> bft = new HashMap<Integer, Set<String>>();
         Map<Integer,BridgePort> portifindexmap = new HashMap<Integer, BridgePort>();
-        Integer bridgeId = bridge.getId();
+        Integer bridgeId = bridge.getNodeId();
         Set<BridgeForwardingTableEntry> links = new HashSet<BridgeForwardingTableEntry>();
-        for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
+        for (SharedSegment segment: getSharedSegments(bridgeId)) {
             BridgePort bridgeport = segment.getBridgePort(bridgeId);
             portifindexmap.put(bridgeport.getBridgePort(), bridgeport);
 
@@ -398,24 +343,23 @@ public class BroadcastDomain implements BridgeTopology {
     
     private Integer goUp(SharedSegment down,Bridge bridge, int level) throws BridgeTopologyException {
         if (level == 30) {
-            clearTopology();
-            return -1;
+            throw new BridgeTopologyException("goUp: to many iteration", down);
         }
             Integer upBridgeId = down.getDesignatedBridge();
             // if segment is on the bridge then...
-            if (upBridgeId.intValue() == bridge.getId().intValue()) {
+            if (upBridgeId.intValue() == bridge.getNodeId().intValue()) {
                 return down.getDesignatedPort().getBridgePort();
             }
             // if segment is a root segment add mac on port
-            if (upBridgeId.intValue() == getRootBridgeId().intValue()) {
+            if (upBridgeId.intValue() == getRootBridge().getNodeId().intValue()) {
                 return bridge.getRootPort();
             }
             // iterate until you got it
             Bridge upBridge = null;
             for (Bridge cbridge: getBridges()) {
-                if (cbridge.getId().intValue() == bridge.getId().intValue())
+                if (cbridge.getNodeId().intValue() == bridge.getNodeId().intValue())
                     continue;
-                if (cbridge.getId().intValue() == upBridgeId.intValue()) {
+                if (cbridge.getNodeId().intValue() == upBridgeId.intValue()) {
                     upBridge=cbridge;
                     break;
                 }
@@ -423,18 +367,12 @@ public class BroadcastDomain implements BridgeTopology {
             if (upBridge == null) {
                 return null;
             }
-            SharedSegment up = getSharedSegment(upBridge.getId(),upBridge.getRootPort());
+            SharedSegment up = getSharedSegment(upBridge.getNodeId(),upBridge.getRootPort());
             if (up == null) {
                 return null;
             }
         return goUp(up, bridge,++level);
     }    
-
-    public void clear() {
-        m_topology.clear();
-        m_bridges.clear();
-        m_forwarding.clear();
-    }
     
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
@@ -442,11 +380,12 @@ public class BroadcastDomain implements BridgeTopology {
         strbfr.append("domain bridges:");
         strbfr.append(getBridgeNodesOnDomain());
         strbfr.append("\n");
-    	if (hasRootBridge()) {
+        Bridge rootBridge = getRootBridge();
+    	if ( rootBridge != null && !m_topology.isEmpty()) {
     		Set<Integer> rootids = new HashSet<Integer>();
-    		rootids.add(getRootBridgeId());
+    		rootids.add(rootBridge.getNodeId());
     		strbfr.append("rootbridge: ");
-    		strbfr.append(getRootBridgeId());
+    		strbfr.append(rootBridge.getNodeId());
     		strbfr.append("\n");
     		strbfr.append(printTopologyFromLevel(rootids,0));
     	} else {
@@ -454,7 +393,7 @@ public class BroadcastDomain implements BridgeTopology {
     	        strbfr.append(bridge.printTopology());
                 strbfr.append("\n");
     	    }
-    	    for (SharedSegment shared: getTopology()) {
+    	    for (SharedSegment shared: getSharedSegments()) {
     	        strbfr.append(shared.printTopology());
     	    }
     	}
@@ -475,7 +414,7 @@ public class BroadcastDomain implements BridgeTopology {
         for (Integer bridgeid : bridgeIds) {
         	strbfr.append(getBridge(bridgeid).printTopology());
                 strbfr.append("\n");
-        	for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeid)) {
+        	for (SharedSegment segment: getSharedSegments(bridgeid)) {
         		if (segment.getDesignatedBridge().intValue() == bridgeid.intValue()) {
         			strbfr.append(segment.printTopology());
                                 strbfr.append("\n");
@@ -493,7 +432,7 @@ public class BroadcastDomain implements BridgeTopology {
     	return strbfr.toString();
     }
     
-    public Bridge electRootBridge() {
+    public Bridge electRootBridge() throws BridgeTopologyException {
         if (m_bridges.size() == 1) {
             return m_bridges.iterator().next();
         }
@@ -510,10 +449,9 @@ public class BroadcastDomain implements BridgeTopology {
         return null;
     }
 
-    //FIXME throw Exception
-    private Bridge getUpperBridge(Bridge electableroot, int level) {
+    private Bridge getUpperBridge(Bridge electableroot, int level) throws BridgeTopologyException {
         if (level == 30) {
-            return null;
+            throw new BridgeTopologyException("getUpperBridge, too many iterations", electableroot);
         }
         for (Bridge electable: m_bridges) {
             if (electable.getIdentifiers().contains(electableroot.getDesignated())) {

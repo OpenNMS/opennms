@@ -490,10 +490,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(nodeDbd, nodeEbd);
         
         assertEquals(2, nodeDbd.getBridges().size());
-        assertEquals(1, nodeDbd.getTopology().size());
-        assertTrue(nodeDbd.containBridgeId(nodeD.getId()));
-        assertTrue(nodeDbd.containBridgeId(nodeE.getId()));
-        SharedSegment deSegment = nodeDbd.getTopology().iterator().next();
+        assertEquals(1, nodeDbd.getSharedSegments().size());
+        assertNotNull(nodeDbd.getBridge(nodeD.getId()));
+        assertNotNull(nodeDbd.getBridge(nodeE.getId()));
+        SharedSegment deSegment = nodeDbd.getSharedSegments().iterator().next();
         assertEquals(2,deSegment.getBridgePortsOnSegment().size());
         assertEquals(1,deSegment.getMacsOnSegment().size());
         assertEquals(45,deSegment.getBridgePort(nodeD.getId()).getBridgePort().intValue());
@@ -505,9 +505,9 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeKbd = m_linkd.getQueryManager().getBroadcastDomain(nodeK.getId().intValue());
         assertNotNull(nodeKbd);
         assertEquals(1, nodeKbd.getBridges().size());
-        assertEquals(1, nodeKbd.getTopology().size());
-        assertTrue(nodeKbd.containBridgeId(nodeK.getId()));
-        SharedSegment kSegment = nodeKbd.getTopology().iterator().next();
+        assertEquals(1, nodeKbd.getSharedSegments().size());
+        assertNotNull(nodeKbd.getBridge(nodeK.getId()));
+        SharedSegment kSegment = nodeKbd.getSharedSegments().iterator().next();
         assertEquals(1,kSegment.getBridgePortsOnSegment().size());
         assertEquals(2,kSegment.getMacsOnSegment().size());
         assertEquals(1099,kSegment.getBridgePort(nodeK.getId()).getBridgePort().intValue());
@@ -601,13 +601,13 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertNotNull(nodeCbd);
         assertEquals(nodeAbd, nodeCbd);
-        assertTrue(nodeAbd.hasRootBridge());
-        assertEquals(nodeAbd.getRootBridgeId().intValue(), nodeB.getId().intValue());
-        assertTrue(nodeAbd.containBridgeId(nodeA.getId()));
-        assertTrue(nodeAbd.containBridgeId(nodeB.getId()));
-        assertTrue(nodeAbd.containBridgeId(nodeC.getId()));
+        assertNotNull(nodeAbd.getRootBridge());
+        assertEquals(nodeAbd.getRootBridge().getNodeId().intValue(), nodeB.getId().intValue());
+        assertNotNull(nodeAbd.getBridge(nodeA.getId()));
+        assertNotNull(nodeAbd.getBridge(nodeB.getId()));
+        assertNotNull(nodeAbd.getBridge(nodeC.getId()));
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
-        assertNotNull(nodeAbd.getRootBridgeId());
+        assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
         
         m_linkd.deleteNode(nodeC.getId());
@@ -699,13 +699,13 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
-        assertTrue(nodeAbd.hasRootBridge());
-        assertEquals(nodeAbd.getRootBridge().getId().intValue(), nodeA.getId().intValue());
-        assertTrue(nodeAbd.containBridgeId(nodeA.getId()));
-        assertTrue(nodeAbd.containBridgeId(nodeB.getId()));
-        assertTrue(nodeAbd.containBridgeId(nodeC.getId()));
+        assertNotNull(nodeAbd.getRootBridge());
+        assertEquals(nodeAbd.getRootBridge().getNodeId().intValue(), nodeA.getId().intValue());
+        assertNotNull(nodeAbd.getBridge(nodeA.getId()));
+        assertNotNull(nodeAbd.getBridge(nodeB.getId()));
+        assertNotNull(nodeAbd.getBridge(nodeC.getId()));
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
-        assertNotNull(nodeAbd.getRootBridgeId());
+        assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 
         assertTrue(m_linkd.scheduleNodeCollection(nodeB.getId()));
@@ -799,13 +799,13 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
-        assertTrue(nodeAbd.hasRootBridge());
-        assertEquals(nodeAbd.getRootBridge().getId().intValue(), nodeA.getId().intValue());
-        assertTrue(nodeAbd.containBridgeId(nodeA.getId()));
-        assertTrue(nodeAbd.containBridgeId(nodeB.getId()));
-        assertTrue(nodeAbd.containBridgeId(nodeC.getId()));
+        assertNotNull(nodeAbd.getRootBridge());
+        assertEquals(nodeAbd.getRootBridge().getNodeId().intValue(), nodeA.getId().intValue());
+        assertNotNull(nodeAbd.getBridge(nodeA.getId()));
+        assertNotNull(nodeAbd.getBridge(nodeB.getId()));
+        assertNotNull(nodeAbd.getBridge(nodeC.getId()));
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
-        assertNotNull(nodeAbd.getRootBridgeId());
+        assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 
         assertTrue(m_linkd.scheduleNodeCollection(nodeA.getId()));

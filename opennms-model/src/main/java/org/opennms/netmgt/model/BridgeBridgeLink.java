@@ -44,10 +44,11 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.netmgt.model.topology.BridgeTopology;
 
 @Entity
 @Table(name="bridgeBridgeLink")
-public class BridgeBridgeLink {
+public class BridgeBridgeLink implements BridgeTopology {
 
 	private Integer m_id;
 	private OnmsNode m_node;
@@ -248,15 +249,15 @@ public class BridgeBridgeLink {
 	public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
 
-    	strbfr.append("bridge link:[nodeid:["); 
+    	strbfr.append("bridge link: nodeid:["); 
     	strbfr.append(getNode().getId());
-    	strbfr.append("], bridgeport:");
+    	strbfr.append("], bridgeport:[");
     	strbfr.append(getBridgePort());
-    	strbfr.append(", designatednodeid:[");
+    	strbfr.append("], designatednodeid:[");
     	strbfr.append(getDesignatedNode().getId());
-    	strbfr.append("], designatedbridgeport: ");
+    	strbfr.append("],designatedbridgeport:");
     	strbfr.append(getDesignatedPort());
-        strbfr.append("]\n");
+        strbfr.append("]");
 
     	return strbfr.toString();
 	}

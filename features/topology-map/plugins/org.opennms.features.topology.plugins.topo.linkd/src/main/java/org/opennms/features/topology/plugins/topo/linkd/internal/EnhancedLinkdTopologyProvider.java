@@ -1045,9 +1045,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private void getBridgeLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap,Map<String, List<OnmsIpInterface>> macToIpMap,Map<Integer, List<OnmsIpInterface>> ipmap, Map<Integer, OnmsIpInterface> ipprimarymap) throws BridgeTopologyException {
         for (BroadcastDomain domain: m_bridgeTopologyDao.getAllPersisted(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao)) {
             LOG.info("loadtopology: parsing broadcast Domain: '{}', {}", domain);
-            for (SharedSegment segment: domain.getTopology()) {
-                if (segment.noMacsOnSegment() && segment.getBridgeBridgeLinks().size() == 1) {
-                    for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
+            for (SharedSegment segment: domain.getSharedSegments()) {
+                if (segment.noMacsOnSegment() && SharedSegment.getBridgeBridgeLinks(segment).size() == 1) {
+                    for (BridgeBridgeLink link : SharedSegment.getBridgeBridgeLinks(segment)) {
                         Vertex source = getOrCreateVertex(nodemap.get(link.getNode().getId()), ipprimarymap.get(link.getNode().getId()));
                         Vertex target = getOrCreateVertex(nodemap.get(link.getDesignatedNode().getId()), ipprimarymap.get(link.getDesignatedNode().getId()));
                         BridgeLinkDetail detail = new BridgeLinkDetail(EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source,link.getBridgePortIfIndex(),  target, link.getDesignatedPortIfIndex(), link.getBridgePort(), link.getDesignatedPort(), link.getId(),link.getId() );
@@ -1056,8 +1056,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     }
                     continue;
                 } 
-                if (segment.getBridgeMacLinks().size() == 1 && segment.getBridgeBridgeLinks().size() == 0) {
-                    for (BridgeMacLink sourcelink: segment.getBridgeMacLinks()) {
+                if (SharedSegment.getBridgeMacLinks(segment).size() == 1 && SharedSegment.getBridgeBridgeLinks(segment).size() == 0) {
+                    for (BridgeMacLink sourcelink: SharedSegment.getBridgeMacLinks(segment)) {
                         if (macToIpMap.containsKey(sourcelink.getMacAddress()) && macToIpMap.get(sourcelink.getMacAddress()).size() > 0) {
                            List<OnmsIpInterface> targetInterfaces = macToIpMap.get(sourcelink.getMacAddress());
                            OnmsIpInterface targetIp = targetInterfaces.get(0);

@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Bridge implements BridgeTopology {
-    final Integer m_id;
+    final Integer m_nodeId;
     Integer m_rootPort;
     boolean m_isRootBridge;
     Set<String> m_identifiers = new HashSet<String>();
@@ -40,7 +40,7 @@ public class Bridge implements BridgeTopology {
 
     public Bridge(Integer id) {
         super();
-        m_id = id;
+        m_nodeId = id;
     }
 
     public Integer getRootPort() {
@@ -61,15 +61,15 @@ public class Bridge implements BridgeTopology {
         m_rootPort = null;
     }
 
-    public Integer getId() {
-        return m_id;
+    public Integer getNodeId() {
+        return m_nodeId;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
+        result = prime * result + ((m_nodeId == null) ? 0 : m_nodeId.hashCode());
         return result;
     }
 
@@ -82,10 +82,10 @@ public class Bridge implements BridgeTopology {
         if (getClass() != obj.getClass())
             return false;
         Bridge other = (Bridge) obj;
-        if (m_id == null) {
-            if (other.m_id != null)
+        if (m_nodeId == null) {
+            if (other.m_nodeId != null)
                 return false;
-        } else if (!m_id.equals(other.m_id))
+        } else if (!m_nodeId.equals(other.m_nodeId))
             return false;
         return true;
     }
@@ -93,7 +93,7 @@ public class Bridge implements BridgeTopology {
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
         strbfr.append("bridge: nodeid[");
-        strbfr.append(m_id);
+        strbfr.append(m_nodeId);
         strbfr.append("], designated port:[");
         if (m_isRootBridge) {
             strbfr.append("isRootBridge");

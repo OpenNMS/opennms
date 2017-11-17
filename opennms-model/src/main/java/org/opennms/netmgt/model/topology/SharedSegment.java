@@ -39,7 +39,46 @@ import org.opennms.netmgt.model.BridgeMacLink;
 
 public class SharedSegment implements BridgeTopology{
     
-    Integer m_designatedBridge;
+    public static List<BridgeBridgeLink> getBridgeBridgeLinks(SharedSegment segment) throws BridgeTopologyException {
+        return BridgePort.getBridgeBridgeLinks(segment.getBridgePortsOnSegment(), segment.getDesignatedPort());
+    }
+
+    public static List<BridgeMacLink> getBridgeMacLinks(SharedSegment segment) throws BridgeTopologyException {
+        List<BridgeMacLink> maclinks = new ArrayList<BridgeMacLink>();
+        for (String mac: segment.getMacsOnSegment()) {
+                for (BridgePort bp: segment.getBridgePortsOnSegment()) {
+                    if (bp == null) {
+                        throw new BridgeTopologyException("BridgePort on segment should not be null", segment);
+                    }
+                    maclinks.add(BridgeForwardingTableEntry.getBridgeMacLinkFromBridgePort(bp, mac));
+                }
+        }
+        return maclinks;
+    }
+
+    public static SharedSegment createFrom(BridgeMacLink link) {
+        SharedSegment segment = new SharedSegment();
+        segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeMacLink(link));
+        segment.getMacsOnSegment().add(link.getMacAddress());
+        segment.setDesignatedBridge(link.getNode().getId());
+        segment.setCreateTime(link.getBridgeMacLinkCreateTime());
+        segment.setPollTime(link.getBridgeMacLinkLastPollTime());
+        
+        return segment;
+    }
+
+    public static SharedSegment createFrom(BridgeBridgeLink link) {
+        SharedSegment segment = new SharedSegment();
+        segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
+        segment.getBridgePortsOnSegment().add(BridgePort.getFromDesignatedBridgeBridgeLink(link));
+        segment.setDesignatedBridge(link.getDesignatedNode().getId());
+        segment.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+        segment.setPollTime(link.getBridgeBridgeLinkLastPollTime());
+
+        return segment;
+    }
+
+    Integer m_designatedBridgeId;
     Set<String> m_macsOnSegment = new HashSet<String>();
     Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
     BroadcastDomain m_domain;
@@ -69,7 +108,7 @@ public class SharedSegment implements BridgeTopology{
     //Constructor for single single port
     public SharedSegment(BroadcastDomain domain, BridgePort port, Set<String> macs) {
         m_domain =domain;
-        m_designatedBridge = port.getNodeId();
+        m_designatedBridgeId = port.getNodeId();
         m_macsOnSegment = macs;
         m_portsOnSegment.add(port);
         m_domain.add(this);
@@ -78,22 +117,18 @@ public class SharedSegment implements BridgeTopology{
     //General constructor
     public SharedSegment(BroadcastDomain domain, Set<BridgePort> ports, Set<String> macs, Integer designatedBridge) {
         m_domain = domain;
-        m_designatedBridge = designatedBridge;
+        m_designatedBridgeId = designatedBridge;
         m_portsOnSegment = ports;
         m_macsOnSegment = macs;
         m_domain.add(this);
     }
         
-    public boolean setDesignatedBridge(Integer designatedBridge) throws BridgeTopologyException {
-        if (designatedBridge == null) 
+    public boolean setDesignatedBridge(Integer designatedBridge) {
+        if (designatedBridge == null) { 
             return false;
-        if (m_designatedBridge != null && m_designatedBridge.intValue() == designatedBridge.intValue())
-            return true;
-        if (getBridgePort(designatedBridge) != null ) {
-            m_designatedBridge = designatedBridge;
-            return true;
         }
-        return false;
+        m_designatedBridgeId = designatedBridge;
+            return true;
     }
 
     public Integer getFirstNoDesignatedBridge() {
@@ -103,7 +138,7 @@ public class SharedSegment implements BridgeTopology{
                     ||port.getBridgePort() == null) {
             continue;
             }
-            if (m_designatedBridge == null || port.getNodeId().intValue() != m_designatedBridge.intValue()) {
+            if (m_designatedBridgeId == null || port.getNodeId().intValue() != m_designatedBridgeId.intValue()) {
                 return port.getNodeId();
             }
         }
@@ -111,14 +146,14 @@ public class SharedSegment implements BridgeTopology{
     }
 
     public Integer getDesignatedBridge() {
-        return m_designatedBridge;
+        return m_designatedBridgeId;
     }
 
     public BridgePort getDesignatedPort() throws BridgeTopologyException {
-        if (m_designatedBridge == null) {
+        if (m_designatedBridgeId == null) {
             throw new BridgeTopologyException("Designated Bridge NodeId cannot be null", this);
         }
-        BridgePort designatedbridge= getBridgePort(m_designatedBridge);
+        BridgePort designatedbridge= getBridgePort(m_designatedBridgeId);
         if (designatedbridge == null) {
             throw new BridgeTopologyException("Designated BridgePort cannot be null", this);
         }
@@ -132,31 +167,6 @@ public class SharedSegment implements BridgeTopology{
     public Set<BridgePort> getBridgePortsOnSegment() {
         return m_portsOnSegment;
     }        
-
-    public List<BridgeBridgeLink> getBridgeBridgeLinks() throws BridgeTopologyException {
-        BridgePort designatedBridge = getDesignatedPort();
-        Set<BridgePort> ports = new HashSet<BridgePort>();
-        for (BridgePort port: m_portsOnSegment) {
-            if (port.getNodeId().intValue()  == m_designatedBridge.intValue()) {
-                continue;
-            }
-            ports.add(port);
-        }
-        return BridgePort.getBridgeBridgeLinks(ports, designatedBridge);
-    }
-
-
-    public List<BridgeMacLink> getBridgeMacLinks() throws BridgeTopologyException {
-    	List<BridgeMacLink> maclinks = new ArrayList<BridgeMacLink>();
-    	for (String mac: m_macsOnSegment) {
-    		for (BridgePort bp: m_portsOnSegment) {
-    		    if (bp == null)
-    	                throw new BridgeTopologyException("BridgePort on segment should not be null", this);
-    		    maclinks.add(BridgeForwardingTableEntry.getBridgeMacLinkFromBridgePort(bp, mac));
-    		}
-    	}
-        return maclinks;
-    }
     
     public boolean noMacsOnSegment() {
         return m_macsOnSegment.isEmpty();
@@ -170,16 +180,6 @@ public class SharedSegment implements BridgeTopology{
             nodes.add(link.getNodeId());
         }
         return nodes;
-    }
-
-    public void add(BridgeMacLink link) {
-        m_macsOnSegment.add(link.getMacAddress());
-        m_portsOnSegment.add(BridgePort.getFromBridgeMacLink(link));
-    }
-
-    public void add(BridgeBridgeLink link) {
-        m_portsOnSegment.add(BridgePort.getFromBridgeBridgeLink(link));
-        m_portsOnSegment.add(BridgePort.getFromDesignatedBridgeBridgeLink(link));
     }
 
     //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId} 
@@ -245,8 +245,8 @@ public class SharedSegment implements BridgeTopology{
         if ( bridgetoremove == null ) {
             return false;
         }
-        if (m_designatedBridge != null && m_designatedBridge.intValue() == bridgeId.intValue()) {
-            m_designatedBridge = null;
+        if (m_designatedBridgeId != null && m_designatedBridgeId.intValue() == bridgeId.intValue()) {
+            m_designatedBridgeId = null;
         }
         return m_portsOnSegment.remove(bridgetoremove);
     }

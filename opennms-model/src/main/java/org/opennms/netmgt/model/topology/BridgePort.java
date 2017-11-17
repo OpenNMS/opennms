@@ -81,11 +81,14 @@ public class BridgePort implements BridgeTopology {
         return bp;
     }
 
-    public static List<BridgeBridgeLink> getBridgeBridgeLinks(Set<BridgePort> ports, BridgePort designatedBridge) {
+    public static List<BridgeBridgeLink> getBridgeBridgeLinks(Set<BridgePort> ports, BridgePort designatedPort) {
         OnmsNode designatedNode = new OnmsNode();
-        designatedNode.setId(designatedBridge.getNodeId());
+        designatedNode.setId(designatedPort.getNodeId());
         List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
         for (BridgePort port:ports) {
+            if (port.equals(designatedPort)) {
+                continue;
+            }
             BridgeBridgeLink link = new BridgeBridgeLink();
             OnmsNode node = new OnmsNode();
             node.setId(port.getNodeId());
@@ -94,9 +97,9 @@ public class BridgePort implements BridgeTopology {
             link.setBridgePortIfIndex(port.getBridgePortIfIndex());
             link.setVlan(port.getVlan());
             link.setDesignatedNode(designatedNode);
-            link.setDesignatedPort(designatedBridge.getBridgePort());
-            link.setDesignatedPortIfIndex(designatedBridge.getBridgePortIfIndex());
-            link.setDesignatedVlan(designatedBridge.getVlan());
+            link.setDesignatedPort(designatedPort.getBridgePort());
+            link.setDesignatedPortIfIndex(designatedPort.getBridgePortIfIndex());
+            link.setDesignatedVlan(designatedPort.getVlan());
             links.add(link);
         }
         return links;

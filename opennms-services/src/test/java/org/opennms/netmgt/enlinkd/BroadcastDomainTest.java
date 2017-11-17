@@ -92,7 +92,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
         
-        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getId().intValue());
+        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain());
 
     }
@@ -111,7 +111,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
-        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getId().intValue());
+        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain());
     }
 
@@ -129,7 +129,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
-        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getId().intValue());
+        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain());
     }
 
@@ -149,11 +149,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
         
-        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getId().intValue());
+        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain(),false);
         
         domain.hierarchySetUp(domain.getBridge(topology.nodeBId));
-        assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getId().intValue());
+        assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain(),true);
         
     }
@@ -173,7 +173,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
-        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getId().intValue());
+        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain());
     }
 
@@ -192,7 +192,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
-        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getId().intValue());
+        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain());
     }
 
@@ -210,28 +210,29 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
-        
-        domain.clearTopologyForBridge(topology.nodeBId);
-        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getId().intValue());
-        assertEquals(2, domain.getTopology().size());
+
+        Bridge bridgeB = domain.getBridge(topology.nodeBId);
+        domain.clearTopologyForBridge(bridgeB);
+        assertEquals(topology.nodeAId.intValue(), domain.getRootBridge().getNodeId().intValue());
+        assertEquals(2, domain.getSharedSegments().size());
         assertEquals(5, domain.getMacsOnDomain().size());
-        for (SharedSegment segment: domain.getTopology()) {
-        	assertEquals(0, segment.getBridgeBridgeLinks().size());
+        for (SharedSegment segment: domain.getSharedSegments()) {
+        	assertEquals(0, SharedSegment.getBridgeBridgeLinks(segment).size());
         	assertEquals(1, segment.getBridgeIdsOnSegment().size());
         	assertEquals(topology.nodeAId.intValue(), segment.getBridgeIdsOnSegment().iterator().next().intValue());
         	
         	if (segment.containsMac(topology.macA11) && segment.containsMac(topology.macA12)) {
             	assertEquals(2, segment.getMacsOnSegment().size());
-            	assertEquals(2, segment.getBridgeMacLinks().size());
-        		for (BridgeMacLink link: segment.getBridgeMacLinks()) {
+            	assertEquals(2, SharedSegment.getBridgeMacLinks(segment).size());
+        		for (BridgeMacLink link: SharedSegment.getBridgeMacLinks(segment)) {
         			assertEquals(topology.portA1.intValue(), link.getBridgePort().intValue());
         		}
         	} else if (segment.containsMac(topology.macB21) 
         			&& segment.containsMac(topology.macB22) 
         			&& segment.containsMac(topology.macAB)){
             	assertEquals(3, segment.getMacsOnSegment().size());
-            	assertEquals(3, segment.getBridgeMacLinks().size());
-        		for (BridgeMacLink link: segment.getBridgeMacLinks()) {
+            	assertEquals(3, SharedSegment.getBridgeMacLinks(segment).size());
+        		for (BridgeMacLink link: SharedSegment.getBridgeMacLinks(segment)) {
         			assertEquals(topology.portAB.intValue(), link.getBridgePort().intValue());
         		}
         		
@@ -257,28 +258,29 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
                 
-        domain.clearTopologyForBridge(topology.nodeAId);
+        Bridge bridgeA=domain.getBridge(topology.nodeAId);
+        domain.clearTopologyForBridge(bridgeA);
         assertEquals(5, domain.getMacsOnDomain().size());
-        assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getId().intValue());
-        assertEquals(2, domain.getTopology().size());
-        for (SharedSegment segment: domain.getTopology()) {
-        	assertEquals(0, segment.getBridgeBridgeLinks().size());
+        assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getNodeId().intValue());
+        assertEquals(2, domain.getSharedSegments().size());
+        for (SharedSegment segment: domain.getSharedSegments()) {
+        	assertEquals(0, SharedSegment.getBridgeBridgeLinks(segment).size());
         	assertEquals(1, segment.getBridgeIdsOnSegment().size());
         	assertEquals(topology.nodeBId.intValue(), segment.getBridgeIdsOnSegment().iterator().next().intValue());
         	
         	if (segment.containsMac(topology.macA11) && segment.containsMac(topology.macA12) 
         		&& segment.containsMac(topology.macAB)) {
             	assertEquals(3, segment.getMacsOnSegment().size());
-            	assertEquals(3, segment.getBridgeMacLinks().size());
-        		for (BridgeMacLink link: segment.getBridgeMacLinks()) {
+            	assertEquals(3, SharedSegment.getBridgeMacLinks(segment).size());
+        		for (BridgeMacLink link: SharedSegment.getBridgeMacLinks(segment)) {
         			assertEquals(topology.portBA.intValue(), link.getBridgePort().intValue());
         		}
         	} else if (segment.containsMac(topology.macB21) 
         			&& segment.containsMac(topology.macB22) 
         			){
             	assertEquals(2, segment.getMacsOnSegment().size());
-            	assertEquals(2, segment.getBridgeMacLinks().size());
-        		for (BridgeMacLink link: segment.getBridgeMacLinks()) {
+            	assertEquals(2, SharedSegment.getBridgeMacLinks(segment).size());
+        		for (BridgeMacLink link: SharedSegment.getBridgeMacLinks(segment)) {
         			assertEquals(topology.portB2.intValue(), link.getBridgePort().intValue());
         		}
         	} else {
@@ -303,7 +305,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
         
-        assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getId().intValue());
+        assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getNodeId().intValue());
         topology.check(ndbt.getDomain());
     }
 
@@ -323,7 +325,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
-        assertEquals(topology.nodeBId, ndbt.getDomain().getRootBridgeId());
+        assertEquals(topology.nodeBId, ndbt.getDomain().getRootBridge().getNodeId());
         topology.check2nodeTopology(ndbt.getDomain(),true);
     }
     
@@ -342,7 +344,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
         
-        List<SharedSegment> shsegs = ndbt.getDomain().getTopology();
+        List<SharedSegment> shsegs = ndbt.getDomain().getSharedSegments();
         assertEquals(3, shsegs.size());
         
         domain.addBridge(new Bridge(topology.nodeAId));
@@ -352,7 +354,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.calculate();
 
         topology.check2nodeTopology(ndbt.getDomain(),true);
-        assertEquals(topology.nodeBId, domain.getRootBridgeId());
+        assertEquals(topology.nodeBId, domain.getRootBridge().getNodeId());
     }
 
     @Test 
@@ -369,7 +371,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
         
-        List<SharedSegment> shsegs = ndbt.getDomain().getTopology();
+        List<SharedSegment> shsegs = ndbt.getDomain().getSharedSegments();
         assertEquals(3, shsegs.size());
         
         domain.addBridge(new Bridge(topology.nodeBId));
@@ -379,7 +381,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.calculate();
 
         topology.check2nodeTopology(ndbt.getDomain(),false);
-        assertEquals(topology.nodeAId, domain.getRootBridgeId());
+        assertEquals(topology.nodeAId, domain.getRootBridge().getNodeId());
     }
 
     @Test
@@ -495,7 +497,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testElectRootBridge() {
+    public void testElectRootBridge() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
@@ -511,49 +513,52 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         domain.getBridge(topology.nodeAId).setDesignated(topology.macB);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macB);
         elected = domain.electRootBridge();
-        assertEquals(topology.nodeBId.intValue(), elected.getId().intValue());
+        assertEquals(topology.nodeBId.intValue(), elected.getNodeId().intValue());
 
         //A Root
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated(topology.macA);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macB);
         elected = domain.electRootBridge();
-        assertEquals(topology.nodeAId.intValue(), elected.getId().intValue());
+        assertEquals(topology.nodeAId.intValue(), elected.getNodeId().intValue());
 
         //C Root
         domain.getBridge(topology.nodeAId).setDesignated(topology.macB);
         domain.getBridge(topology.nodeBId).setDesignated(topology.macC);
         domain.getBridge(topology.nodeCId).setDesignated(null);
         elected = domain.electRootBridge();
-        assertEquals(topology.nodeCId.intValue(), elected.getId().intValue());
+        assertEquals(topology.nodeCId.intValue(), elected.getNodeId().intValue());
 
         //C root
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated(topology.macC);
         domain.getBridge(topology.nodeCId).setDesignated(null);
         elected = domain.electRootBridge();
-        assertEquals(topology.nodeCId.intValue(), elected.getId().intValue());
+        assertEquals(topology.nodeCId.intValue(), elected.getNodeId().intValue());
         
        //D? root
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated("dddddddddddd");
         domain.getBridge(topology.nodeCId).setDesignated(null);
         elected = domain.electRootBridge();
-        assertEquals(topology.nodeBId.intValue(), elected.getId().intValue());
+        assertEquals(topology.nodeBId.intValue(), elected.getNodeId().intValue());
 
         //A root B is bypassed
         domain.getBridge(topology.nodeAId).setDesignated(null);
         domain.getBridge(topology.nodeBId).setDesignated(null);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macA);
         elected = domain.electRootBridge();
-        assertEquals(topology.nodeAId.intValue(), elected.getId().intValue());
+        assertEquals(topology.nodeAId.intValue(), elected.getNodeId().intValue());
 
         //loop is bypassed
         domain.getBridge(topology.nodeAId).setDesignated(topology.macC);
         domain.getBridge(topology.nodeBId).setDesignated(null);
         domain.getBridge(topology.nodeCId).setDesignated(topology.macA);
-        elected = domain.electRootBridge();
-        assertEquals(null, elected);
+        try {
+            elected = domain.electRootBridge();
+        } catch (BridgeTopologyException e) {
+            assertEquals("getUpperBridge, too many iterations", e.getMessage());
+        }
 
         //null root B is bypassed
         domain.getBridge(topology.nodeAId).setDesignated(null);
@@ -911,7 +916,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeLId),topology.bftL);
         ndbt.calculate();
         
-        topology.check(ndbt.getDomain().getTopology());
+        topology.check(ndbt.getDomain().getSharedSegments());
 
     }
 
@@ -941,10 +946,10 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeLId),topology.bftL);
         ndbt.calculate();
         
-        topology.check(ndbt.getDomain().getTopology());
+        topology.check(ndbt.getDomain().getSharedSegments());
         
         domain.hierarchySetUp(domain.getBridge(topology.nodeGId));
-        assertEquals(topology.nodeGId, ndbt.getDomain().getRootBridgeId());
+        assertEquals(topology.nodeGId, ndbt.getDomain().getRootBridge().getNodeId());
         assertEquals(true, ndbt.getDomain().getBridge(topology.nodeGId).isRootBridge());
         assertEquals(null, ndbt.getDomain().getBridge(topology.nodeGId).getRootPort());
         assertEquals(false, ndbt.getDomain().getBridge(topology.nodeDId).isRootBridge());

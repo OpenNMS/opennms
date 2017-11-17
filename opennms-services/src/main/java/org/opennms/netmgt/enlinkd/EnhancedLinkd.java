@@ -45,6 +45,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -383,12 +384,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
         Date now = new Date();
         BroadcastDomain domain = m_queryMgr.getBroadcastDomain(nodeid);
-        LOG.debug("deleteNode: {}, found broadcast domain: nodes {}, macs {}", nodeid, domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteNode: {}, found broadcast domain: {}", nodeid, domain.printTopology());
+        }
         // must be calculated the topology for nodeid...
         synchronized (domain) {
             LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
+            Bridge bridge = domain.getBridge(nodeid);
             try {
-                domain.clearTopologyForBridge(nodeid);
+                domain.clearTopologyForBridge(bridge);
             } catch (BridgeTopologyException e) {
                 LOG.error("deleteNode: node: {}, {}", nodeid, e.printTopology(),e);
             }
@@ -397,6 +401,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             m_queryMgr.store(domain,now);
             LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
             domain.removeBridge(nodeid);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("deleteNode: {}, resulting broadcast domain: {}", nodeid, domain.printTopology());
+            }
+
         }
         Node node = removeNode(nodeid);
 

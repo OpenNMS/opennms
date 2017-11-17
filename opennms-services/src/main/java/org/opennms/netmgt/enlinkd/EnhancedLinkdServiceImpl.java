@@ -199,13 +199,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
         m_bridgeStpLinkDao.deleteByNodeId(nodeId);
         m_bridgeStpLinkDao.flush();
+
         
-        for (BroadcastDomain domain : m_bridgeTopologyDao.getAll()) {
+        BroadcastDomain domain = m_bridgeTopologyDao.get(nodeId);
+        if ( domain != null ) {
             synchronized(domain) {
-                if (domain.containBridgeId(nodeId)) {
-                    domain.removeBridge(nodeId);
-                    break;
-                }
+                domain.removeBridge(nodeId);
             }
         }
     }
@@ -675,15 +674,15 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Override
     public void store(BroadcastDomain domain, Date now) {
-        for (SharedSegment segment : domain.getTopology()) {
+        for (SharedSegment segment : domain.getSharedSegments()) {
             //FIXME why I can have a segment without a designated port?
             try {
                 segment.getDesignatedPort();
-                for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
+                for (BridgeBridgeLink link : SharedSegment.getBridgeBridgeLinks(segment)) {
                     link.setBridgeBridgeLinkLastPollTime(new Date());
                     saveBridgeBridgeLink(link);
                 }
-                for (BridgeMacLink link : segment.getBridgeMacLinks()) {
+                for (BridgeMacLink link : SharedSegment.getBridgeMacLinks(segment)) {
                     link.setBridgeMacLinkLastPollTime(new Date());
                     saveBridgeMacLink(link);
                 }
