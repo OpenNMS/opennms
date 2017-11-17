@@ -40,7 +40,7 @@ import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis;
 
 public class NxosTelemetryClient {
 
-    private static TelemetryBis.Telemetry buildMessage(String ipAddres) throws IOException {
+    private static TelemetryBis.Telemetry buildMessage(String ipAddress) throws IOException {
 
         // Set Telemetry fields
         TelemetryBis.TelemetryField field1 = TelemetryBis.TelemetryField.newBuilder()
@@ -50,7 +50,7 @@ public class NxosTelemetryClient {
         
 
         final TelemetryBis.Telemetry telemetrymsg = TelemetryBis.Telemetry.newBuilder()
-                                                        .setNodeIdStr("192.168.1.1")
+                                                        .setNodeIdStr(ipAddress)
                                                         .addDataGpbkv(field1)
                                                         .setSubscriptionIdStr("18374686715878047745")
                                                         .setCollectionId(4)
@@ -64,7 +64,7 @@ public class NxosTelemetryClient {
     
     public static void main(String... args) throws IOException {
         // Making assumption that NodeId is IpAddress
-        TelemetryBis.Telemetry nxosMsg = buildMessage("192.168.1.1");
+        TelemetryBis.Telemetry nxosMsg = buildMessage("192.168.2.1");
         byte[] nxosMsgBytes = nxosMsg.toByteArray();
 
         InetAddress address = InetAddressUtils.getLocalHostAddress();
