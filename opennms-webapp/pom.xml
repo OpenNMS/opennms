@@ -869,6 +869,11 @@
       <artifactId>org.opennms.features.topology.link</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder-jsp</artifactId>
+      <version>${owaspEncoderVersion}</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>

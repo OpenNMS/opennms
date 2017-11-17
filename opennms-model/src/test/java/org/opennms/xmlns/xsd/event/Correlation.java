@@ -39,6 +39,7 @@ package org.opennms.xmlns.xsd.event;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -97,8 +98,10 @@ public class Correlation {
     protected String cmax;
     protected String ctime;
     @XmlAttribute(name = "state")
+    @Pattern(regexp="(on|off)")
     protected String state;
     @XmlAttribute(name = "path")
+    @Pattern(regexp="(suppressDuplicates|cancellingEvent|suppressAndCancel|pathOutage)")
     protected String path;
 
     /**

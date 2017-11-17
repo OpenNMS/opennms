@@ -250,8 +250,7 @@
     </feature>
 
     <feature name="hibernate-validator41" description="Hibernate :: Hibernate Validator" version="4.1.0.Final">
-      <!-- Declare versions for all exported packages -->
-      <bundle dependency="true">wrap:mvn:javax.validation/validation-api/1.0.0.GA$Bundle-SymbolicName=javax.validation:validation-api&amp;Bundle-Version=1.0.0&amp;Export-Package=javax.validation;version="1.0.0",javax.validation.bootstrap;version="1.0.0",javax.validation.constraints;version="1.0.0",javax.validation.groups;version="1.0.0",javax.validation.metadata;version="1.0.0",javax.validation.spi;version="1.0.0"</bundle>
+      <feature>javax.validation</feature>
       <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/4.1.0.Final</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final</bundle>
     </feature>
@@ -265,6 +264,10 @@
       <bundle>wrap:mvn:javax.mail/mail/1.4.5</bundle>
     </feature>
 
+    <feature name="javax.validation" description="javax.validation" version="1.0.0.GA">
+      <!-- Declare versions for all exported packages -->
+      <bundle dependency="true">wrap:mvn:javax.validation/validation-api/1.0.0.GA$Bundle-SymbolicName=javax.validation:validation-api&amp;Bundle-Version=1.0.0&amp;Export-Package=javax.validation;version="1.0.0",javax.validation.bootstrap;version="1.0.0",javax.validation.constraints;version="1.0.0",javax.validation.groups;version="1.0.0",javax.validation.metadata;version="1.0.0",javax.validation.spi;version="1.0.0"</bundle>
+    </feature>
 
     <!-- This feature contains all of the dependencies from the dependencies/jaxb/pom.xml -->
     <feature name="jaxb" description="EclipseLink :: MOXy" version="${eclipselinkVersion}">
@@ -667,6 +670,7 @@
       <feature>camel-core</feature>
       <feature>commons-lang3</feature>
       <feature>jaxb</feature>
+      <feature>javax.validation</feature>
 
       <feature>opennms-core</feature>
       <!-- TODO: This is a weak dependency inside EventConstants that needs to be removed -->
@@ -779,7 +783,7 @@
       <feature>commons-beanutils</feature>
       <feature>opennms-provisioning-api</feature>
 
-      <bundle dependency="true">wrap:mvn:javax.validation/validation-api/1.0.0.GA</bundle>
+      <feature>javax.validation</feature>
       <bundle dependency="true">mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
 
       <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>

@@ -34,6 +34,8 @@ package org.opennms.netmgt.xml.event;
 
 import java.io.Serializable;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -60,6 +62,8 @@ public class Parms implements Serializable {
      * A varbind from the trap
      */
 	@XmlElement(name="parm", required=true)
+	@Size(min=1)
+	@Valid
     private java.util.List<org.opennms.netmgt.xml.event.Parm> _parmList;
 
 

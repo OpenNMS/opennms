@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -59,12 +62,15 @@ public class AlarmData implements Serializable {
      * Field _reductionKey.
      */
 	@XmlAttribute(name="reduction-key", required=true)
+	@NotNull
     private java.lang.String _reductionKey;
 
     /**
      * Field _alarmType.
      */
 	@XmlAttribute(name="alarm-type", required=true)
+	@NotNull
+	@Min(1)
     private Integer _alarmType;
 
     /**
@@ -95,6 +101,7 @@ public class AlarmData implements Serializable {
 	 * Field m_updateField
 	 */
     @XmlElement(name="update-field", required=false)
+    @Valid
     private List<UpdateField> m_updateFieldList = new ArrayList<>();
     
 

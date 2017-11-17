@@ -30,6 +30,7 @@
 --%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Threshold Editor" />
@@ -163,13 +164,13 @@
                 <tr name="filter.${i.count}">
                     <c:choose>
                       <c:when test="${i.count==filterSelected}">
-                        <td><input type="text" name="updateFilterField" class="form-control" size="60" value="${filter.field}"/></td>
-                        <td><input type="text" name="updateFilterRegexp" class="form-control" size="60" value="${filter.content.orElse(null)}"/></td>
+                        <td><input type="text" name="updateFilterField" class="form-control" size="60" value="${fn:escapeXml(filter.field)}"/></td>
+                        <td><input type="text" name="updateFilterRegexp" class="form-control" size="60" value="${fn:escapeXml(filter.content.orElse(null))}"/></td>
                         <td><input type="submit" name="submitAction" class="btn btn-default" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>          
                       </c:when>
                       <c:otherwise>
-                        <td><input type="text" disabled="disabled" class="form-control" size="60" value="${filter.field}"/></td>
-                        <td><input type="text" disabled="disabled" class="form-control" size="60" value="${filter.content.orElse(null)}"/></td>
+                        <td><input type="text" disabled="disabled" class="form-control" size="60" value="${fn:escapeXml(filter.field)}"/></td>
+                        <td><input type="text" disabled="disabled" class="form-control" size="60" value="${fn:escapeXml(filter.content.orElse(null))}"/></td>
                         <td><input type="submit" name="submitAction" class="btn btn-default" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                             <input type="submit" name="submitAction" class="btn btn-default" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                             <input type="submit" name="submitAction" class="btn btn-default" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
