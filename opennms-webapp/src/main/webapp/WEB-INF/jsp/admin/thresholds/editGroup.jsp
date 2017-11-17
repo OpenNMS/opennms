@@ -98,8 +98,8 @@
               <td name="threshold.${thresholdIndex.index}.value"><c:out value="${threshold.value}"/></td>
               <td name="threshold.${thresholdIndex.index}.rearm"><c:out value="${threshold.rearm}"/></td>
               <td name="threshold.${thresholdIndex.index}.trigger"><c:out value="${threshold.trigger}"/></td>
-              <td name="threshold.${thresholdIndex.index}.triggeredUEI"><a href="javascript: void submitNewNotificationForm('${threshold.triggeredUEI.orElse(null)}');" title="Edit notifications for this uei">${e:forJavaScript(threshold.triggeredUEI.orElse(null))}</a></td>
-              <td name="threshold.${thresholdIndex.index}.rearmedUEI"><a href="javascript: void submitNewNotificationForm('${threshold.rearmedUEI.orElse(null)}');" title="Edit notifications for this uei">${e:forJavaScript(threshold.rearmedUEI.orElse(null))}</a></td>
+              <td name="threshold.${thresholdIndex.index}.triggeredUEI"><a href="javascript: void submitNewNotificationForm('${e:forJavaScript(threshold.triggeredUEI.orElse(null))}');" title="Edit notifications for this uei"><c:out value="${threshold.triggeredUEI.orElse(null)}"/></a></td>
+              <td name="threshold.${thresholdIndex.index}.rearmedUEI"><a href="javascript: void submitNewNotificationForm('${e:forJavaScript(threshold.rearmedUEI.orElse(null))}');" title="Edit notifications for this uei"><c:out value="${threshold.rearmedUEI.orElse(null)}"/></a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&thresholdIndex=${thresholdIndex.index}&editThreshold">Edit</a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&thresholdIndex=${thresholdIndex.index}&deleteThreshold">Delete</a></td>
             </tr>
@@ -143,8 +143,8 @@
               <td name="expression.${expressionIndex.index}.value"><c:out value="${expression.value}"/></td>
               <td name="expression.${expressionIndex.index}.rearm"><c:out value="${expression.rearm}"/></td>
               <td name="expression.${expressionIndex.index}.trigger"><c:out value="${expression.trigger}"/></td>
-              <td name="expression.${expressionIndex.index}.triggeredUEI"><a href="javascript: void submitNewNotificationForm('${expression.triggeredUEI.orElse(null)}');" title="Edit notifications for this uei">${e:forJavaScript(expression.triggeredUEI.orElse(null))}</a></td>
-              <td name="expression.${expressionIndex.index}.rearmedUEI"><a href="javascript: void submitNewNotificationForm('${expression.rearmedUEI.orElse(null)}');" title="Edit notifications for this uei">${e:forJavaScript(expression.rearmedUEI.orElse(null))}</a></td>
+              <td name="expression.${expressionIndex.index}.triggeredUEI"><a href="javascript: void submitNewNotificationForm('${e:forJavaScript(expression.triggeredUEI.orElse(null))}');" title="Edit notifications for this uei"><c:out value="${expression.triggeredUEI.orElse(null)}"/></a></td>
+              <td name="expression.${expressionIndex.index}.rearmedUEI"><a href="javascript: void submitNewNotificationForm('${e:forJavaScript(expression.rearmedUEI.orElse(null))}');" title="Edit notifications for this uei"><c:out value="${expression.rearmedUEI.orElse(null)}"/></a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&expressionIndex=${expressionIndex.index}&editExpression">Edit</a></td>
               <td><a href="admin/thresholds/index.htm?groupName=${group.name}&expressionIndex=${expressionIndex.index}&deleteExpression">Delete</a></td>
             </tr>
