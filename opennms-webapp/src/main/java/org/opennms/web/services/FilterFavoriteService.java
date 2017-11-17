@@ -28,12 +28,16 @@
 
 package org.opennms.web.services;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.List;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.FilterFavoriteDao;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 /**
  * Service to handle CRUD operations and such on {@link OnmsFilterFavorite} objects.
@@ -56,12 +60,12 @@ public class FilterFavoriteService {
      * @param favoriteId   The id of the favorite.
      * @param username     The username which tries to load the favorite.
      * @param filterString The expected filter criteria.
-     * @return The requestes favorite or null.
+     * @return The requested favorite or null.
      */
     public OnmsFilterFavorite getFavorite(String favoriteId, String username, String filterString) {
         OnmsFilterFavorite favorite = getFavorite(favoriteId, username);
         if (favorite == null) return null;
-        if (favorite.getFilter().equals(filterString)) {
+        if (favorite.getFilter().equals(unescapeAndDecode(filterString))) {
             return favorite;
         }
         return null;
@@ -107,6 +111,7 @@ public class FilterFavoriteService {
     public OnmsFilterFavorite getFavorite(Integer favoriteId, String userName) {
         OnmsFilterFavorite favorite = favoriteDao.get(favoriteId);
         if (favorite != null && favorite.getUsername().equalsIgnoreCase(userName)) {
+            sanitizeFavorite(favorite);
             return favorite;
         }
         return null; // not visible for this user
@@ -130,16 +135,24 @@ public class FilterFavoriteService {
      * @return
      */
     public List<OnmsFilterFavorite> getFavorites(String userName, OnmsFilterFavorite.Page page) {
-        return favoriteDao.findBy(userName, page);
+        List<OnmsFilterFavorite> favorites = favoriteDao.findBy(userName, page);
+        favorites.forEach(f -> sanitizeFavorite(f));
+        return favorites;
     }
 
     public OnmsFilterFavorite createFavorite(String userName, String favoriteName, String filterString, OnmsFilterFavorite.Page page) throws FilterFavoriteException {
+        // Validate input
         validate(userName, favoriteName, filterString, page);
+
+        // Create filter
         OnmsFilterFavorite filter = new OnmsFilterFavorite();
         filter.setUsername(userName);
         filter.setFilter(filterString);
         filter.setName(favoriteName);
         filter.setPage(page);
+
+        sanitizeFavorite(filter);
+
         favoriteDao.save(filter);
         return filter;
     }
@@ -161,11 +174,30 @@ public class FilterFavoriteService {
         }
     }
 
-    private boolean deleteFavorite(OnmsFilterFavorite favorite) {
+    private void sanitizeFavorite(OnmsFilterFavorite favorite) {
+        // Input string is URL-Encoded and some html-entities are already escaped.
+        // Revert this process, to allow WebSecurityUtils to work properly.
+        favorite.setName(unescapeAndDecode(favorite.getName()));
+        favorite.setFilter(unescapeAndDecode(favorite.getFilter()));
+
+        // Sanitize input
+        favorite.setName(WebSecurityUtils.sanitizeString(favorite.getName()));
+        favorite.setFilter(WebSecurityUtils.sanitizeString(favorite.getFilter()));
+    }
+
+    protected boolean deleteFavorite(OnmsFilterFavorite favorite) {
         if (favorite != null) {
             favoriteDao.delete(favorite);
             return true;
         }
         return false;
+    }
+
+    private static String unescapeAndDecode(String input) {
+        try {
+            return StringEscapeUtils.unescapeHtml(URLDecoder.decode(input, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
