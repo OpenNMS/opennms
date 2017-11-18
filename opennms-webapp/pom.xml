@@ -917,6 +917,11 @@
       <artifactId>freemarker</artifactId>
       <version>${freemarkerVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder-jsp</artifactId>
+      <version>${owaspEncoderVersion}</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
