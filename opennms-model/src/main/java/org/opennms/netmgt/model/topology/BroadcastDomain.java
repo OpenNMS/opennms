@@ -271,8 +271,12 @@ public class BroadcastDomain implements BridgeTopology {
         if (bridge == null) {
             throw new BridgeTopologyException("clearTopologyForBridge: Bridge must be not null:", this);
         }
+        if (m_bridges.size() == 1) {
+            m_topology.clear();
+            return;
+        }
         m_forwarding.remove(bridge.getNodeId());
-        SharedSegment topsegment = getSharedSegment(bridge.getNodeId(), bridge.getRootPort());
+        SharedSegment topsegment = null;
         if (bridge.isRootBridge()) {
             for (SharedSegment segment: getSharedSegments(bridge.getNodeId())) {
                 Integer newRootId = segment.getFirstNoDesignatedBridge();
@@ -286,6 +290,8 @@ public class BroadcastDomain implements BridgeTopology {
                 hierarchySetUp(newRootBridge);
                 break;
             }
+        } else {
+            topsegment = getSharedSegment(bridge.getNodeId(), bridge.getRootPort());
         }
  
         if (topsegment != null) {
