@@ -1114,19 +1114,21 @@
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-telemetry-jti" description="OpenNMS :: Telemetry :: JTI" version="${project.version}">
+    <feature name="opennms-telemetry-collection" description="OpenNMS :: Telemetry :: Collection" version="${project.version}">
       <feature>opennms-collection-api</feature>
       <feature version="${guavaVersion}">guava</feature>
-      <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.collection/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-telemetry-jti" description="OpenNMS :: Telemetry :: JTI" version="${project.version}">
+      <feature>opennms-telemetry-collection</feature>
+      <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.jti/${project.version}</bundle>
     </feature>
     
-    <feature name="opennms-telemetry-nxos" description="OpenNMS :: Telemetry :: NXOS" version="${project.version}">
-      <feature>opennms-collection-api</feature>
-      <feature version="${guavaVersion}">guava</feature>
+    <feature name="opennms-telemetry-nxos" description="OpenNMS :: Telemetry :: NX-OS" version="${project.version}">
+      <feature>opennms-telemetry-collection</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/3.4.0</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.collection/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.nxos/${project.version}</bundle>
     </feature>
 

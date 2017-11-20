@@ -20,7 +20,7 @@
     </package>
   </protocol>
   
-  <protocol name="NXOS" description="Cisco NXOS Telemetry" enabled="false">
+  <protocol name="NXOS" description="Cisco NX-OS Telemetry" enabled="false">
     <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
       <parameter key="port" value="50001"/>
     </listener>

@@ -31,36 +31,17 @@ package org.opennms.netmgt.telemetry.adapters.jti;
 import java.util.Map;
 
 import org.opennms.features.telemetry.adapters.factory.api.AdapterFactory;
-import org.opennms.netmgt.collection.api.CollectionAgentFactory;
-import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
+import org.opennms.netmgt.telemetry.adapters.collection.AbstractCollectionAdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
-public class JtiAdapterFactory implements AdapterFactory {
+public class JtiAdapterFactory extends AbstractCollectionAdapterFactory implements AdapterFactory {
 
-    private CollectionAgentFactory collectionAgentFactory;
-
-    private InterfaceToNodeCache interfaceToNodeCache;
-
-    private NodeDao nodeDao;
-
-    private TransactionOperations transactionTemplate;
-
-    private FilterDao filterDao;
-
-    private PersisterFactory persisterFactory;
-
-    private final BundleContext bundleContext;
-
-    public JtiAdapterFactory(BundleContext m_bundleContext) {
-        this.bundleContext = m_bundleContext;
+    public JtiAdapterFactory(BundleContext bundleContext) {
+        super(bundleContext);
     }
 
     public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
@@ -73,59 +54,11 @@ public class JtiAdapterFactory implements AdapterFactory {
         adapter.setTransactionTemplate(getTransactionTemplate());
         adapter.setFilterDao(getFilterDao());
         adapter.setPersisterFactory(getPersisterFactory());
-        adapter.setBundleContext(bundleContext);
+        adapter.setBundleContext(getBundleContext());
 
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
         wrapper.setPropertyValues(properties);
         return adapter;
-    }
-
-    public CollectionAgentFactory getCollectionAgentFactory() {
-        return collectionAgentFactory;
-    }
-
-    public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
-        this.collectionAgentFactory = collectionAgentFactory;
-    }
-
-    public InterfaceToNodeCache getInterfaceToNodeCache() {
-        return interfaceToNodeCache;
-    }
-
-    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
-        this.interfaceToNodeCache = interfaceToNodeCache;
-    }
-
-    public NodeDao getNodeDao() {
-        return nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
-    }
-
-    public TransactionOperations getTransactionTemplate() {
-        return transactionTemplate;
-    }
-
-    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
-    }
-
-    public FilterDao getFilterDao() {
-        return filterDao;
-    }
-
-    public void setFilterDao(FilterDao filterDao) {
-        this.filterDao = filterDao;
-    }
-
-    public PersisterFactory getPersisterFactory() {
-        return persisterFactory;
-    }
-
-    public void setPersisterFactory(PersisterFactory persisterFactory) {
-        this.persisterFactory = persisterFactory;
     }
 
 }

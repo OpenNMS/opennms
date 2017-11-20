@@ -1,29 +1,29 @@
 
-===== Cisco NXOS Adapter
+===== Cisco NX-OS Adapter
 
-The JTI adapter is used to handle _Junos Telemetry Interface_ payloads.
-Messages are decoded using the published protobuf specifications and forwarded to a JSR-223 compatible script (i.e. Beanshell or Groovy) for further processing.
-Using the script extension you can extract the desired metrics from the JTI messages and persist the results as time series data.
+The NX-OS adapter is used to handle _Cisco NX-OS Telemetry_ payloads.
+Messages are decoded using the published protobuf (proto3) specifications and forwarded to a JSR-223 compatible script (i.e. Beanshell or Groovy) for further processing.
+Using the script extension you can extract the desired metrics from the NX-OS messages and persist the results as time series data.
 
 ====== Facts
 
 [options="autowidth"]
 |===
-| Class Name          | `org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter`
+| Class Name          | `org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter`
 |===
 
 ====== Parameters
 
-.Adapter specific parameters for the JtiGpbAdapter
+.Adapter specific parameters for the NxosGpbAdapter
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                       | Required | Default value
-| `script`         | Full path to the script used to handle the JTI messages           | required | (none)
+| `script`         | Full path to the script used to handle the NXOS messages           | required | (none)
 |===
 
 ====== Scripting
 
-The script will be invoked for every JTI message that is received and succesfully decoded.
+The script will be invoked for every NX-OS message that is received and succesfully decoded.
 
 The following globals will be passed to the script:
 
@@ -33,5 +33,5 @@ The following globals will be passed to the script:
 | Parameter  | Description                                                    | Type
 | `agent`    | The agent (node) against which the metrics will be associated  | `org.opennms.netmgt.collection.api.CollectionAgent`
 | `builder`  | Builder in which the resources and metrics should be added     | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
-| `msg`      | Decoded JTI message from which the metrics should be extracted | `org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop`
+| `msg`      | Decoded NX-OS message from which the metrics should be extracted | `org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis`
 |===

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <telemetryd-config>
-  <protocol name="Cisco-NXOS" description="Cisco NXOS Telemetry">
+  <protocol name="NXOS" description="Cisco NXOS Telemetry">
     <listener name="NXOS-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
       <parameter key="port" value="50000"/>
     </listener>
