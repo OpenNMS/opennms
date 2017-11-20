@@ -8,28 +8,6 @@ Data is persisted in link:https://www.elastic.co/products/elasticsearch[ElasticS
 
 IMPORTANT: The NetFlow v5 requires a running ElasticSearch 5.6+ to persist the NetFlow data.
 
-By default the persistence is not installed by default and can be enabled through the Karaf Console with:
-
-[source]
-----
-$ ssh -p 8101 admin@localhost
-...
-admin@opennms()> feature:install flows
-----
-
-Ensure the _flow_ feature is installed also when Karaf cache is cleaned by adding it to `featuresBoot` in `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
-
-[source, xml]
-----
-featuresBoot = ( \
-    instance, \
-.
-.
-.
-  ifttt-integration, \
-  flows
-----
-
 To enable support for NetFlow v5, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` and add the following protocol configuration:
 
 .Enable NetFlow v5 in telemetryd-configuration.xml
