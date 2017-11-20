@@ -159,13 +159,6 @@
 		</service-properties>
 	</service>
 
-	<bean id="jbossMonitor" class="org.opennms.netmgt.poller.monitors.JBossMonitor" />
-	<service ref="jbossMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<service-properties>
-			<entry key="type" value="org.opennms.netmgt.poller.monitors.JBossMonitor" />
-		</service-properties>
-	</service>
-
 	<bean id="jdbcMonitor" class="org.opennms.netmgt.poller.monitors.JDBCMonitor" />
 	<service ref="jdbcMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
@@ -187,14 +180,6 @@
 		<service-properties>
 			<entry key="type"
 				value="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor" />
-		</service-properties>
-	</service>
-
-	<bean id="jmxSecureMonitor" class="org.opennms.netmgt.poller.monitors.JMXSecureMonitor" />
-	<service ref="jmxSecureMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<service-properties>
-			<entry key="type"
-				value="org.opennms.netmgt.poller.monitors.JMXSecureMonitor" />
 		</service-properties>
 	</service>
 
@@ -262,13 +247,6 @@
 		<service-properties>
 			<entry key="type"
 				value="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
-		</service-properties>
-	</service>
-
-	<bean id="mx4jMonitor" class="org.opennms.netmgt.poller.monitors.MX4JMonitor" />
-	<service ref="mx4jMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<service-properties>
-			<entry key="type" value="org.opennms.netmgt.poller.monitors.MX4JMonitor" />
 		</service-properties>
 	</service>
 

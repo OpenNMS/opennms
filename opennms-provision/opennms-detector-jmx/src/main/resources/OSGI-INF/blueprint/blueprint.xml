@@ -11,15 +11,7 @@
 ">
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.jmx.JBossDetectorFactory" />
-	</service>
-
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.jmx.Jsr160DetectorFactory" />
-	</service>
-
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.jmx.MX4JDetectorFactory" />
 	</service>
 
 </blueprint>

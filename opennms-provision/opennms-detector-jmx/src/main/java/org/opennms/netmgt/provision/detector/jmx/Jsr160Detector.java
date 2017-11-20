@@ -28,22 +28,15 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
+// Backwards compatibility. Can be removed at some point
+public class Jsr160Detector extends JMXDetector {
+   
+    protected Jsr160Detector(String serviceName, int port) {
+        super(serviceName, port);
+    }
 
-/**
- * <p>Jsr160Detector class.</p>
- *
- * @author Donald Desloge
- * @version $Id: $
- */
-
-public class Jsr160Detector extends AbstractJsr160Detector{
-
-    private static final String DEFAULT_SERVICE_NAME = "JSR160";
-    
-    /**
-     * Default constructor
-     */
+    // Is required to instantiate via Jsr160DetectorFactory
     public Jsr160Detector() {
-        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+        this("JSR160", 9003);
     }
 }
