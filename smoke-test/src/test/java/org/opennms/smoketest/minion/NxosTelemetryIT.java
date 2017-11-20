@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.io.Resources;
 
 public class NxosTelemetryIT {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(JtiTelemetryIT.class);
     public static final String SENDER_IP = "192.168.1.1";
 
@@ -53,9 +53,9 @@ public class NxosTelemetryIT {
         }
         try {
             final TestEnvironmentBuilder builder = TestEnvironment.builder().all();
-            builder.withOpenNMSEnvironment()
-                    .addFile(JtiTelemetryIT.class.getResource("/telemetry/nxos-telemetryd-configuration.xml"),
-                            "etc/telemetryd-configuration.xml");
+            builder.withOpenNMSEnvironment().addFile(
+                    JtiTelemetryIT.class.getResource("/telemetry/nxos-telemetryd-configuration.xml"),
+                    "etc/telemetryd-configuration.xml");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             m_testEnvironment = builder.build();
             return m_testEnvironment;
@@ -79,13 +79,14 @@ public class NxosTelemetryIT {
                 .authPreemptive(opennmsHttpHost);
 
     }
-    
+
     @Test
     public void verifyNxosTelemetryOnOpenNMS() throws Exception {
 
         Date startOfTest = new Date();
 
-        OnmsNode onmsNode = JtiTelemetryIT.sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, false, startOfTest);
+        OnmsNode onmsNode = JtiTelemetryIT.sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, false,
+                startOfTest);
 
         final InetSocketAddress opennmsUdp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
 
@@ -95,7 +96,7 @@ public class NxosTelemetryIT {
                 .until(matchRrdFileFromNodeResource(onmsNode.getId()));
 
     }
-    
+
     @Test
     public void verifyNxosTelemetryOnMinion() throws Exception {
 
@@ -114,7 +115,8 @@ public class NxosTelemetryIT {
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
         }
 
-        OnmsNode onmsNode = JtiTelemetryIT.sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, true, startOfTest);
+        OnmsNode onmsNode = JtiTelemetryIT.sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, true,
+                startOfTest);
 
         final InetSocketAddress minionUdp = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 50000, "udp");
 
@@ -123,10 +125,9 @@ public class NxosTelemetryIT {
         await().atMost(2, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS)
                 .until(matchRrdFileFromNodeResource(onmsNode.getId()));
     }
-    
-    
+
     private void sendNxosTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
-        
+
         byte[] nxosOutBytes = Resources.toByteArray(Resources.getResource("telemetry/cisco-nxos-proto.raw"));
         DatagramPacket packet = new DatagramPacket(nxosOutBytes, nxosOutBytes.length, udpAddress);
 
@@ -159,6 +160,5 @@ public class NxosTelemetryIT {
             }
         };
     }
-
 
 }

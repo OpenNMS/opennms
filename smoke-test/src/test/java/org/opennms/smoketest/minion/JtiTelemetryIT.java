@@ -218,7 +218,8 @@ public class JtiTelemetryIT {
         };
     }
 
-    public static OnmsNode sendnewSuspectEvent( Executor executor,InetSocketAddress opennmsHttp, TestEnvironment m_testEnvironment, boolean isMinion, Date startOfTest)
+    public static OnmsNode sendnewSuspectEvent(Executor executor, InetSocketAddress opennmsHttp,
+            TestEnvironment m_testEnvironment, boolean isMinion, Date startOfTest)
             throws ClientProtocolException, IOException {
 
         Event minionEvent = new Event();
