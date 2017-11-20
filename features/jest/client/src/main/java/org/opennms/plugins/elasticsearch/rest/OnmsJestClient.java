@@ -100,6 +100,10 @@ class OnmsJestClient implements JestClient {
         m_delegate.executeAsync(clientRequest, jestResultHandler);
     }
 
+    /**
+     * @deprecated Use {@link #close()} instead.
+     */
+    @Deprecated
     @Override
     public void shutdownClient() {
         m_delegate.shutdownClient();
@@ -108,5 +112,10 @@ class OnmsJestClient implements JestClient {
     @Override
     public void setServers(Set<String> servers) {
         m_delegate.setServers(servers);
+    }
+
+    @Override
+    public void close() throws IOException {
+        m_delegate.close();
     }
 }

@@ -35,13 +35,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <!-- TODO MVR versions should match the
-        selenium-monitor or globally define the gson version
-        to use in ALL modules (maybe except osgi bundles)
-      -->
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.3.1</version>
+      <version>${gsonVersion}</version>
     </dependency>
   </dependencies>
 </project>

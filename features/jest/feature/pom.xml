@@ -16,9 +16,15 @@
             <plugin>
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
+                <configuration>
+                    <bundles>
+                        <bundle>wrap:mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
+                    </bundles>
+                </configuration>
             </plugin>
         </plugins>
     </build>
+    <!-- Versions below should match versions defined in module "jest-complete-osgi" to avoid problems -->
     <dependencies>
         <dependency>
             <groupId>org.opennms.features.jest</groupId>
@@ -34,31 +40,32 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${jestGsonVersion}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>21.0</version>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore-osgi</artifactId>
+            <version>4.4.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient-osgi</artifactId>
+            <version>4.5.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpasyncclient-osgi</artifactId>
+            <version>4.1.3</version>
         </dependency>
     </dependencies>
 
