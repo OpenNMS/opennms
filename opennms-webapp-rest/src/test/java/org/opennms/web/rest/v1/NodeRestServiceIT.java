@@ -79,6 +79,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * TODO
@@ -506,6 +507,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @Transactional
     @JUnitTemporaryDatabase
     public void testCategory() throws Exception {
         createNode();
