@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.DatabasePopulator.DaoSupport;
 import org.opennms.netmgt.dao.api.FilterFavoriteDao;
@@ -78,13 +79,13 @@ public class FilterFavoriteServiceIT {
 
     		@Override
     		public void onPopulate(DatabasePopulator populator, FilterFavoriteDao dao) {
-    			dao.save(createFavorite("mvr", "First Favorite 1", "filter=severity%3D6&amp;filter=node%3D2", OnmsFilterFavorite.Page.EVENT));
-    			dao.save(createFavorite("mvr", "First Favorite 2", "filter=severity%3D6&amp;filter=node%3D2", OnmsFilterFavorite.Page.EVENT));
-    			dao.save(createFavorite("mvr", "First Favorite 3", "filter=severity%3D6&amp;filter=node%3D2", OnmsFilterFavorite.Page.EVENT));
+    			dao.save(createFavoriteObject("mvr", "First Favorite 1", "filter=severity=6&amp;filter=node=2", OnmsFilterFavorite.Page.EVENT));
+    			dao.save(createFavoriteObject("mvr", "First Favorite 2", "filter=severity=6&amp;filter=node=2", OnmsFilterFavorite.Page.EVENT));
+    			dao.save(createFavoriteObject("mvr", "First Favorite 3", "filter=severity=6&amp;filter=node=2", OnmsFilterFavorite.Page.EVENT));
     			
-    			dao.save(createFavorite("mvr", "First Favorite 1", "filter=severity%3D6&amp;filter=node%3D2", OnmsFilterFavorite.Page.ALARM));
-    			dao.save(createFavorite("mvr", "First Favorite 2", "filter=severity%3D6&amp;filter=node%3D2", OnmsFilterFavorite.Page.ALARM));
-    			dao.save(createFavorite("mvr", "First Favorite 3", "filter=severity%3D6&amp;filter=node%3D2", OnmsFilterFavorite.Page.ALARM));
+    			dao.save(createFavoriteObject("mvr", "First Favorite 1", "filter=severity=6&amp;filter=node=2", OnmsFilterFavorite.Page.ALARM));
+    			dao.save(createFavoriteObject("mvr", "First Favorite 2", "filter=severity=6&amp;filter=node=2", OnmsFilterFavorite.Page.ALARM));
+    			dao.save(createFavoriteObject("mvr", "First Favorite 3", "filter=severity=6&amp;filter=node=2", OnmsFilterFavorite.Page.ALARM));
     		}
 
     		@Override
@@ -92,15 +93,6 @@ public class FilterFavoriteServiceIT {
     			for (OnmsFilterFavorite eachFavorite : dao.findAll()) {
     				dao.delete(eachFavorite);
     			}
-    		}
-    		
-    		private OnmsFilterFavorite createFavorite(String user, String filterName, String filterCriteria, Page page) {
-    			OnmsFilterFavorite favorite = new OnmsFilterFavorite();
-    			favorite.setName(filterName);
-    			favorite.setFilter(filterCriteria);
-    			favorite.setPage(page);
-    			favorite.setUsername(user);
-    			return favorite;
     		}
     	});
     	populator.populateDatabase();
@@ -128,7 +120,7 @@ public class FilterFavoriteServiceIT {
         List<OnmsFilterFavorite> eventFavorites = service.getFavorites("mvr", OnmsFilterFavorite.Page.EVENT);
 
         // CREATE OK
-        OnmsFilterFavorite favorite = createFavorite(service, "mvr", "First Favorite", "filter=severity%3D6&amp;filter=node%3D2", OnmsFilterFavorite.Page.EVENT);
+        OnmsFilterFavorite favorite = createFavorite(service, "mvr", "First Favorite", "filter=severity=6&amp;filter=node=2", OnmsFilterFavorite.Page.EVENT);
         Assert.assertEquals(favorite, service.getFavorite(favorite.getId(), "mvr"));
 
         // check that the created favorite is not in both lists, but in event list
@@ -161,7 +153,34 @@ public class FilterFavoriteServiceIT {
         Assert.assertEquals(true, service.deleteFavorite(favorite.getId(), "mvr")); // does belong to this user
         Assert.assertNull(service.getFavorite(favorite.getId(), "mvr")); // check original user, should be deleted
     }
-    
+
+    @Test
+    public void verifyXSSPreventionOnCreate() throws FilterFavoriteService.FilterFavoriteException {
+        final String maliciousName = "test<script>alert(123);</script>";
+        final String maliciousFilter = "filter=severity=6<script>alert(123);</script>";
+
+        for (Page page : Page.values()) {
+            // try to create malicious favorites
+            OnmsFilterFavorite favorite = service.createFavorite("ulf", maliciousName, maliciousFilter, page);
+
+            // verify that filter name and criteria are not vulnerable to xss
+            Assert.assertEquals(WebSecurityUtils.sanitizeString(maliciousName), favorite.getName());
+            Assert.assertEquals(WebSecurityUtils.sanitizeString(maliciousFilter), favorite.getFilter());
+        }
+    }
+
+    // Due to NMS-9670 there may already be malicious data in the table, verify that we convert that correctly as well
+    @Test
+    public void verifyXSSPreventionOnRead() throws FilterFavoriteService.FilterFavoriteException {
+        for(Page page : Page.values()) {
+            final OnmsFilterFavorite filterToCreate = createFavoriteObject("ulf", "XSS Read Test " + page.name(), "filter=severity%3D6<script>alert(123);</script>", page);
+            int filterId = service.getFilterFavoriteDao().save(filterToCreate);
+
+            final OnmsFilterFavorite filterRead = service.getFavorite(filterId,"ulf");
+            Assert.assertEquals("filter=severity=6&lt;script&gt;alert(123);&lt;/script&gt;", filterRead.getFilter());
+        }
+    }
+
     private static interface AssertionCallback {
         void validate(OnmsFilterFavorite favoriteToCreate, OnmsFilterFavorite createdFavorite);
     }
@@ -188,6 +207,15 @@ public class FilterFavoriteServiceIT {
     private static OnmsFilterFavorite createFavorite(FilterFavoriteService service, OnmsFilterFavorite createFavorite, AssertionCallback callback) throws FilterFavoriteService.FilterFavoriteException {
         final OnmsFilterFavorite favorite = service.createFavorite(createFavorite.getUsername(), createFavorite.getName(), createFavorite.getFilter(), createFavorite.getPage());
         callback.validate(createFavorite, favorite);
+        return favorite;
+    }
+
+    private static OnmsFilterFavorite createFavoriteObject(String user, String filterName, String filterCriteria, Page page) {
+        OnmsFilterFavorite favorite = new OnmsFilterFavorite();
+        favorite.setName(filterName);
+        favorite.setFilter(filterCriteria);
+        favorite.setPage(page);
+        favorite.setUsername(user);
         return favorite;
     }
 }

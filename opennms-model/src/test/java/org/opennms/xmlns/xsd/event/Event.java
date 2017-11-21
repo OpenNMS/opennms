@@ -39,6 +39,9 @@ package org.opennms.xmlns.xsd.event;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -142,6 +145,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "event")
 public class Event {
 
+    @Min(1)
     protected Integer dbid;
     @XmlElement(name = "dist-poller")
     protected String distPoller;
@@ -150,12 +154,15 @@ public class Event {
     @XmlElement(name = "master-station")
     protected String masterStation;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected Mask mask;
     protected String uei;
     @XmlElement(required = true)
+    @NotNull
     protected String source;
     protected Long nodeid;
     @XmlElement(required = true)
+    @NotNull
     protected String time;
     protected String host;
     @XmlElement(name = "interface")
@@ -163,34 +170,45 @@ public class Event {
     protected String snmphost;
     protected String service;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected Snmp snmp;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected Parms parms;
     protected String descr;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected Logmsg logmsg;
     protected String severity;
     protected String pathoutage;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected Correlation correlation;
     protected String operinstruct;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected List<Autoaction> autoaction;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected List<Operaction> operaction;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected Autoacknowledge autoacknowledge;
     protected List<String> loggroup;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected Tticket tticket;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected List<Forward> forward;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected List<Script> script;
     protected Integer ifIndex;
     protected String ifAlias;
     protected String mouseovertext;
     @XmlElement(name = "alarm-data", namespace = "http://xmlns.opennms.org/xsd/event")
+    @Valid
     protected AlarmData alarmData;
     @XmlAttribute(name = "uuid")
     protected String uuid;

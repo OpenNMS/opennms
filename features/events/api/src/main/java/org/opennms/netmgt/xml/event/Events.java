@@ -36,6 +36,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -61,6 +63,8 @@ public class Events implements Serializable {
      * Field _eventList.
      */
 	@XmlElement(name="event")
+	@Size(min=1)
+	@Valid
     private java.util.List<org.opennms.netmgt.xml.event.Event> _eventList;
 
 
