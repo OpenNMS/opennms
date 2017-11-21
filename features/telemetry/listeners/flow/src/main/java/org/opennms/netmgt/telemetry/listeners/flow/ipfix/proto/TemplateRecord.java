@@ -45,7 +45,7 @@ public final class TemplateRecord implements Record {
     public final List<FieldSpecifier> fields;
 
     public TemplateRecord(final TemplateRecordHeader header,
-                   final ByteBuffer buffer) throws InvalidPacketException {
+                          final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<FieldSpecifier> fields = new LinkedList<>();

@@ -45,7 +45,7 @@ public final class OptionsTemplateRecord implements Record {
     public final List<FieldSpecifier> fields;
 
     public OptionsTemplateRecord(final OptionsTemplateRecordHeader header,
-                          final ByteBuffer buffer) throws InvalidPacketException {
+                                 final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<FieldSpecifier> fields = new LinkedList<>();

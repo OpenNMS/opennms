@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Header;
@@ -50,9 +51,9 @@ public class TcpPacketDecoder extends ByteToMessageDecoder {
     public TcpPacketDecoder(final InetSocketAddress senderAddress,
                             final InetSocketAddress recipientAddress,
                             final TemplateManager templateManager) {
-        this.senderAddress = senderAddress;
-        this.recipientAddress = recipientAddress;
-        this.templateManager = templateManager;
+        this.senderAddress = Objects.requireNonNull(senderAddress);
+        this.recipientAddress = Objects.requireNonNull(recipientAddress);
+        this.templateManager = Objects.requireNonNull(templateManager);
     }
 
     @Override

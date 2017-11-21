@@ -32,6 +32,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -67,7 +68,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
     protected final AsyncDispatcher<TelemetryMessage> dispatcher;
 
     public PacketHandler(final AsyncDispatcher<TelemetryMessage> dispatcher) {
-        this.dispatcher = dispatcher;
+        this.dispatcher = Objects.requireNonNull(dispatcher);
     }
 
     @Override

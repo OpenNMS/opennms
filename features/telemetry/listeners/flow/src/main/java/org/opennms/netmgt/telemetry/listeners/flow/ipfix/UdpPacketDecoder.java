@@ -30,10 +30,11 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Packet;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -45,7 +46,7 @@ public class UdpPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
     private final TemplateManager templateManager;
 
     public UdpPacketDecoder(final TemplateManager templateManager) {
-        this.templateManager = templateManager;
+        this.templateManager = Objects.requireNonNull(templateManager);
     }
 
     @Override

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
@@ -48,9 +49,9 @@ public class InformationElement {
                               final Value.Parser parser,
                               final Optional<Semantics> semantics) {
         this.id = id;
-        this.name = name;
-        this.parser = parser;
-        this.semantics = semantics;
+        this.name = Objects.requireNonNull(name);
+        this.parser = Objects.requireNonNull(parser);
+        this.semantics = Objects.requireNonNull(semantics);
     }
 
     public int getId() {

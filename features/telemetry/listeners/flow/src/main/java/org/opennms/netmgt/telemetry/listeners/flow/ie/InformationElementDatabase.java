@@ -39,9 +39,9 @@ public class InformationElementDatabase {
         private final Optional<Long> enterpriseNumber;
         private final Integer informtionElementIdentifier;
 
-        public Key(Optional<Long> enterpriseNumber, Integer informationElementNumber) {
-            this.enterpriseNumber = enterpriseNumber;
-            this.informtionElementIdentifier = informationElementNumber;
+        public Key(final Optional<Long> enterpriseNumber, final Integer informationElementNumber) {
+            this.enterpriseNumber = java.util.Objects.requireNonNull(enterpriseNumber);
+            this.informtionElementIdentifier = java.util.Objects.requireNonNull(informationElementNumber);
         }
 
         @Override

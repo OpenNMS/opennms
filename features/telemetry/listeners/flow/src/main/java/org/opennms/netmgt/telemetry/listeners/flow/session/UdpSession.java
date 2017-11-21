@@ -33,9 +33,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-
-import com.google.common.base.Objects;
 
 public class UdpSession {
 
@@ -49,8 +48,8 @@ public class UdpSession {
             final InetSocketAddress localAddress,
             final long observationDomainId,
             final int templateId) {
-            this.remoteAddress = remoteAddress;
-            this.localAddress = localAddress;
+            this.remoteAddress = Objects.requireNonNull(remoteAddress);
+            this.localAddress = Objects.requireNonNull(localAddress);
             this.observationDomainId = observationDomainId;
             this.templateId = templateId;
         }
@@ -63,13 +62,13 @@ public class UdpSession {
             final Key that = (Key) o;
             return this.observationDomainId == that.observationDomainId &&
                     this.templateId == that.templateId &&
-                    Objects.equal(this.remoteAddress, that.remoteAddress) &&
-                    Objects.equal(this.localAddress, that.localAddress);
+                    Objects.equals(this.remoteAddress, that.remoteAddress) &&
+                    Objects.equals(this.localAddress, that.localAddress);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(this.remoteAddress, this.localAddress, this.observationDomainId, this.templateId);
+            return Objects.hash(this.remoteAddress, this.localAddress, this.observationDomainId, this.templateId);
         }
     }
 
@@ -122,6 +121,6 @@ public class UdpSession {
     }
 
     public void drop(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
-        this.templates.entrySet().removeIf(e -> Objects.equal(e.getKey().remoteAddress, remoteAddress) && Objects.equal(e.getKey().localAddress, localAddress));
+        this.templates.entrySet().removeIf(e -> Objects.equals(e.getKey().remoteAddress, remoteAddress) && Objects.equals(e.getKey().localAddress, localAddress));
     }
 }

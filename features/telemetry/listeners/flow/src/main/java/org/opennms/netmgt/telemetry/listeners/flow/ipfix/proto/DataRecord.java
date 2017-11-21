@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
@@ -60,7 +61,7 @@ public final class DataRecord implements Record {
     public DataRecord(final TemplateManager.TemplateResolver templateResolver,
                       final Template template,
                       final ByteBuffer buffer) throws InvalidPacketException {
-        this.template = template;
+        this.template = Objects.requireNonNull(template);
 
         final List<FieldValue> values = new ArrayList<>(this.template.count());
         for (final Field templateField : this.template) {

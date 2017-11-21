@@ -30,8 +30,8 @@ package org.opennms.netmgt.telemetry.listeners.flow.session;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
 public abstract class Field {
     public final int length;

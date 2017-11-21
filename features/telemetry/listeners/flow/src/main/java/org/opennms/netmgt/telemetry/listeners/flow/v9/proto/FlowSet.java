@@ -51,8 +51,8 @@ public final class FlowSet<R extends Record> implements Iterable<R> {
     public final List<R> records;
 
     public FlowSet(final FlowSetHeader header,
-               final RecordParser<R> parser,
-               final ByteBuffer buffer) throws InvalidPacketException {
+                   final RecordParser<R> parser,
+                   final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<R> records = new LinkedList<>();

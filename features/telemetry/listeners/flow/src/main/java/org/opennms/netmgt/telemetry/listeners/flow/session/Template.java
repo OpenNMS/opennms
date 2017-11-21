@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.flow.session;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
@@ -50,8 +51,8 @@ public final class Template implements Iterable<Field> {
     private Template(final Type type,
                      final List<Field> fields,
                      final int scopeFieldsCount) {
-        this.type = type;
-        this.fields = fields;
+        this.type = Objects.requireNonNull(type);
+        this.fields = Objects.requireNonNull(fields);
         this.scopeFieldsCount = scopeFieldsCount;
     }
 

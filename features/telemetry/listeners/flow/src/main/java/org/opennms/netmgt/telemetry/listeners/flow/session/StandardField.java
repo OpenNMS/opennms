@@ -29,9 +29,10 @@
 package org.opennms.netmgt.telemetry.listeners.flow.session;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
 public final class StandardField extends Field {
@@ -41,7 +42,7 @@ public final class StandardField extends Field {
     public StandardField(final int length,
                          final InformationElement informationElement) {
         super(length);
-        this.informationElement = informationElement;
+        this.informationElement = Objects.requireNonNull(informationElement);
     }
 
     @Override

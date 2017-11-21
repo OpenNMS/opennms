@@ -29,7 +29,9 @@
 package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.FloatValue;
@@ -41,7 +43,6 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
-import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.session.EnterpriseField;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
@@ -57,15 +58,25 @@ public abstract class Value<T> {
 
     public interface Visitor {
         void accept(final BooleanValue value);
+
         void accept(final DateTimeValue value);
+
         void accept(final FloatValue value);
+
         void accept(final IPv4AddressValue value);
+
         void accept(final IPv6AddressValue value);
+
         void accept(final MacAddressValue value);
+
         void accept(final OctetArrayValue value);
+
         void accept(final SignedValue value);
+
         void accept(final StringValue value);
+
         void accept(final UnsignedValue value);
+
         void accept(final ListValue value);
 
         void accept(final EnterpriseField.EnterpriseValue value);
@@ -75,7 +86,7 @@ public abstract class Value<T> {
     private final String name;
 
     protected Value(final String name) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
     }
 
     public String getName() {
