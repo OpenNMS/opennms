@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 

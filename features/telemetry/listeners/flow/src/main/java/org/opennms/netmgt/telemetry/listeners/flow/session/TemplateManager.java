@@ -26,15 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.session;
 
-public class InvalidPacketException extends Exception {
+import java.util.Optional;
 
-    public InvalidPacketException(final String fmt, final Object... args) {
-        super(String.format(fmt, args));
+public interface TemplateManager {
+
+    @FunctionalInterface
+    interface TemplateResolver {
+        Optional<Template> lookup(final int templateId);
     }
 
-    public InvalidPacketException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+    void add(final long observationDomainId, final int templateId, final Template template);
+
+    void remove(final long observationDomainId, final int templateId);
+
+    void removeAll(final long observationDomainId, final Template.Type type);
+
+    TemplateResolver getResolver(final long observationDomainId);
+
 }

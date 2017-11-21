@@ -32,9 +32,9 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 

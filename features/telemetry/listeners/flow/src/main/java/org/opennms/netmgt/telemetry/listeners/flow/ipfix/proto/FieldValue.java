@@ -28,15 +28,16 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
 
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 public class FieldValue {
 

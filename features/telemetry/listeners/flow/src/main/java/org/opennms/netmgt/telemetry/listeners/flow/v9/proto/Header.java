@@ -28,15 +28,14 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
 
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public class PacketHeader {
+public class Header {
 
     /*
      0                   1                   2                   3
@@ -65,7 +64,7 @@ public class PacketHeader {
     public final long sequenceNumber; // uint32
     public final long sourceId; // uint32
 
-    public PacketHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public Header(final ByteBuffer buffer) throws InvalidPacketException {
         this.versionNumber = BufferUtils.uint16(buffer);
         this.count = BufferUtils.uint16(buffer);
         this.sysUpTime = BufferUtils.uint32(buffer);

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.session;
+package org.opennms.netmgt.telemetry.listeners.flow.session;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;

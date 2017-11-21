@@ -31,8 +31,9 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TcpSession;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.PacketHandler;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +79,7 @@ public class TcpListener implements Listener {
                         final TemplateManager templateManager = new TcpSession();
 
                         ch.pipeline()
-                                .addLast(new PacketDecoder(templateManager))
+                                .addLast(new TcpPacketDecoder(ch.remoteAddress(), ch.localAddress(), templateManager))
                                 .addLast(new PacketHandler(TcpListener.this.dispatcher))
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
@@ -127,32 +128,8 @@ public class TcpListener implements Listener {
         this.bindPort = bindPort;
     }
 
-//    public int getMaxPacketSize() {
-//        return maxPacketSize;
-//    }
-//
-//    public void setMaxPacketSize(int maxPacketSize) {
-//        this.maxPacketSize = maxPacketSize;
-//    }
-
     @Override
     public void setDispatcher(final AsyncDispatcher<TelemetryMessage> dispatcher) {
         this.dispatcher = dispatcher;
     }
-
-//    protected static ByteBuffer wrapContentsWithNioByteBuffer(DatagramPacket packet) {
-//        final ByteBuf content = packet.content();
-//        final int length = content.readableBytes();
-//        final byte[] array;
-//        final int offset;
-//        if (content.hasArray()) {
-//            array = content.array();
-//            offset = content.arrayOffset() + content.readerIndex();
-//        } else {
-//            array = new byte[length];
-//            content.getBytes(content.readerIndex(), array, 0, length);
-//            offset = 0;
-//        }
-//        return ByteBuffer.wrap(array, offset, length);
-//    }
 }

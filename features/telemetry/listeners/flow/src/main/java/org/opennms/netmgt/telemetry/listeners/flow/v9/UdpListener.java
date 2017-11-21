@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
+package org.opennms.netmgt.telemetry.listeners.flow.v9;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +60,7 @@ public class UdpListener implements Listener {
     private String name;
 
     private String bindHost = "::";
-    private int bindPort = 4739;
+    private int bindPort = 4738;
 
     private Duration templateTimeout = Duration.ofMinutes(30);
 

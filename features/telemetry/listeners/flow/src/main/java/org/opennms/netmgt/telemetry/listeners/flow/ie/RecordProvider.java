@@ -26,30 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
+import java.util.stream.Stream;
 
-import java.nio.ByteBuffer;
+public interface RecordProvider {
 
-import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+    class Record {
+        public final long observationDomainId;
+        public final int scopeFieldCount;
+        public final Iterable<Value> values;
 
-public class FieldValue {
-
-    /*
-      0                   1                   2                   3
-      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |   Record N - Field Value M    |   Record N - Field Value M+1  |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    */
-
-    public final Value value;
-
-    public FieldValue(final TemplateManager.TemplateResolver templateResolver, final Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
-        value = templateField.parse(templateResolver, slice(buffer, templateField.length));
+        public Record(final long observationDomainId,
+                      final int scopeFieldCount,
+                      final Iterable<Value> values) {
+            this.observationDomainId = observationDomainId;
+            this.scopeFieldCount = scopeFieldCount;
+            this.values = values;
+        }
     }
+
+    Stream<Record> getRecords();
 }

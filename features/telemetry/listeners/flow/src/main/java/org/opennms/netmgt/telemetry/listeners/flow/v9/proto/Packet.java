@@ -34,16 +34,19 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Template;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public final class Packet implements Iterable<FlowSet<?>> {
+public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
 
     /*
      +--------+-------------------------------------------+
@@ -55,11 +58,11 @@ public final class Packet implements Iterable<FlowSet<?>> {
      +--------+-------------------------------------------+
     */
 
-    public final PacketHeader header;
+    public final Header header;
     public final List<FlowSet<?>> sets;
 
     public Packet(final TemplateManager templateManager,
-                  final PacketHeader header,
+                  final Header header,
                   final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
@@ -134,6 +137,14 @@ public final class Packet implements Iterable<FlowSet<?>> {
     @Override
     public Iterator<FlowSet<?>> iterator() {
         return this.sets.iterator();
+    }
+
+    @Override
+    public Stream<RecordProvider.Record> getRecords() {
+        return this.sets.stream()
+                .filter(s -> s.header.getType() == FlowSetHeader.Type.DATA_FLOWSET)
+                .flatMap(s -> ((FlowSet<DataRecord>) s).records.stream())
+                .map(r -> new RecordProvider.Record(this.header.sourceId, r.template.scopeFieldsCount, Iterables.transform(r.fields, f -> f.value)));
     }
 
     @Override

@@ -26,30 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
-
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
+package org.opennms.netmgt.telemetry.listeners.flow.v9;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.v9.proto.Header;
+import org.opennms.netmgt.telemetry.listeners.flow.v9.proto.Packet;
 
-public class FieldValue {
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.DefaultAddressedEnvelope;
+import io.netty.channel.socket.DatagramPacket;
+import io.netty.handler.codec.MessageToMessageDecoder;
 
-    /*
-      0                   1                   2                   3
-      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |   Record N - Field Value M    |   Record N - Field Value M+1  |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    */
+public class UdpPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
+    private final TemplateManager templateManager;
 
-    public final Value value;
+    public UdpPacketDecoder(final TemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
 
-    public FieldValue(final TemplateManager.TemplateResolver templateResolver, final Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
-        value = templateField.parse(templateResolver, slice(buffer, templateField.length));
+    @Override
+    protected void decode(final ChannelHandlerContext ctx, final DatagramPacket msg, final List<Object> out) throws Exception {
+        final ByteBuf buf = msg.content();
+
+        final ByteBuffer headerBuffer = buf.readSlice(Header.SIZE).nioBuffer();
+        final Header header = new Header(headerBuffer);
+
+        final ByteBuffer payloadBuffer = buf.nioBuffer();
+        final Packet packet = new Packet(this.templateManager, header, payloadBuffer);
+
+        out.add(new DefaultAddressedEnvelope<>(packet, msg.recipient(), msg.sender()));
     }
 }

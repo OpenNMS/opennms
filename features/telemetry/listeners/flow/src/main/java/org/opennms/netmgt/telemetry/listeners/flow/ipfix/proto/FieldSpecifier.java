@@ -31,12 +31,13 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.EnterpriseField;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.StandardField;
+import org.opennms.netmgt.telemetry.listeners.flow.session.EnterpriseField;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
+import org.opennms.netmgt.telemetry.listeners.flow.session.StandardField;
 
 import com.google.common.base.MoreObjects;
 

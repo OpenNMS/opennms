@@ -34,6 +34,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+
 import com.google.common.base.MoreObjects;
 
 public final class OptionsTemplateRecord implements Record {

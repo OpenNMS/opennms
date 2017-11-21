@@ -28,22 +28,25 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Template;
+import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public final class Packet implements Iterable<Set<?>> {
+public final class Packet implements Iterable<Set<?>>, RecordProvider {
 
     /*
      +----------------------------------------------------+
@@ -59,16 +62,12 @@ public final class Packet implements Iterable<Set<?>> {
      +----------------------------------------------------+
     */
 
-    public final InetSocketAddress sender;
-
     public final Header header;
     public final List<Set<?>> sets;
 
-    public Packet(final InetSocketAddress sender,
-                  final TemplateManager templateManager,
+    public Packet(final TemplateManager templateManager,
                   final Header header,
                   final ByteBuffer buffer) throws InvalidPacketException {
-        this.sender = Objects.requireNonNull(sender);
         this.header = Objects.requireNonNull(header);
 
         final List<Set<?>> sets = new LinkedList<>();
@@ -97,9 +96,9 @@ public final class Packet implements Iterable<Set<?>> {
                             templateManager.add(this.header.observationDomainId,
                                     record.header.templateId,
                                     Template.builder()
-                                    .withType(Template.Type.TEMPLATE)
-                                    .withFields(Lists.transform(record.fields, f -> f.specifier))
-                                    .build());
+                                            .withType(Template.Type.TEMPLATE)
+                                            .withFields(Lists.transform(record.fields, f -> f.specifier))
+                                            .build());
                         }
                     }
 
@@ -126,10 +125,10 @@ public final class Packet implements Iterable<Set<?>> {
                             templateManager.add(this.header.observationDomainId,
                                     record.header.templateId,
                                     Template.builder()
-                                    .withType(Template.Type.OPTIONS_TEMPLATE)
-                                    .withScopeFieldsCount(record.header.scopeFieldCount)
-                                    .withFields(Lists.transform(record.fields, f -> f.specifier))
-                                    .build());
+                                            .withType(Template.Type.OPTIONS_TEMPLATE)
+                                            .withScopeFieldsCount(record.header.scopeFieldCount)
+                                            .withFields(Lists.transform(record.fields, f -> f.specifier))
+                                            .build());
                         }
                     }
 
@@ -155,6 +154,14 @@ public final class Packet implements Iterable<Set<?>> {
     @Override
     public Iterator<Set<?>> iterator() {
         return this.sets.iterator();
+    }
+
+    @Override
+    public Stream<RecordProvider.Record> getRecords() {
+        return this.sets.stream()
+                .filter(s -> s.header.getType() == SetHeader.Type.DATA_SET)
+                .flatMap(s -> ((Set<DataRecord>) s).records.stream())
+                .map(r -> new RecordProvider.Record(this.header.observationDomainId, r.template.scopeFieldsCount, Iterables.transform(r.fields, f -> f.value)));
     }
 
     @Override

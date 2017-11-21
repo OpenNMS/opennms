@@ -26,23 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.session;
+package org.opennms.netmgt.telemetry.listeners.flow.session;
 
-import java.util.Optional;
+import java.nio.ByteBuffer;
 
-public interface TemplateManager {
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
-    @FunctionalInterface
-    interface TemplateResolver {
-        Optional<Template> lookup(final int templateId);
+public final class StandardField extends Field {
+
+    private final InformationElement informationElement;
+
+    public StandardField(final int length,
+                         final InformationElement informationElement) {
+        super(length);
+        this.informationElement = informationElement;
     }
 
-    void add(final long observationDomainId, final int templateId, final Template template);
+    @Override
+    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+        return this.informationElement.parse(templateResolver, buffer);
+    }
 
-    void remove(final long observationDomainId, final int templateId);
-
-    void removeAll(final long observationDomainId, final Template.Type type);
-
-    TemplateResolver getResolver(final long observationDomainId);
-
+    public InformationElement getInformationElement() {
+        return this.informationElement;
+    }
 }

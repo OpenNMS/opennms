@@ -31,8 +31,8 @@ package org.opennms.netmgt.telemetry.listeners.flow.ie;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 public class InformationElement {
 

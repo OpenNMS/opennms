@@ -26,11 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.session;
+package org.opennms.netmgt.telemetry.listeners.flow.session;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
 public final class EnterpriseField extends Field {

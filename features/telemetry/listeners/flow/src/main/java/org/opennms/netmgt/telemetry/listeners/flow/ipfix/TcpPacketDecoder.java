@@ -28,26 +28,30 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Header;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Packet;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.DefaultAddressedEnvelope;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
-public class PacketDecoder extends ByteToMessageDecoder {
-    private static final Logger LOG = LoggerFactory.getLogger(PacketDecoder.class);
-
+public class TcpPacketDecoder extends ByteToMessageDecoder {
+    private final InetSocketAddress senderAddress;
+    private final InetSocketAddress recipientAddress;
     private final TemplateManager templateManager;
 
-    public PacketDecoder(final TemplateManager templateManager) {
+    public TcpPacketDecoder(final InetSocketAddress senderAddress,
+                            final InetSocketAddress recipientAddress,
+                            final TemplateManager templateManager) {
+        this.senderAddress = senderAddress;
+        this.recipientAddress = recipientAddress;
         this.templateManager = templateManager;
     }
 
@@ -76,10 +80,8 @@ public class PacketDecoder extends ByteToMessageDecoder {
         }
 
         final ByteBuffer payloadBuffer = in.readSlice(header.length - Header.SIZE).nioBuffer();
+        final Packet packet = new Packet(this.templateManager, header, payloadBuffer);
 
-        // TODO: Use real sender address
-        final Packet packet = new Packet(null, this.templateManager, header, payloadBuffer);
-
-        return packet;
+        return new DefaultAddressedEnvelope<>(packet, this.recipientAddress, this.senderAddress);
     }
 }

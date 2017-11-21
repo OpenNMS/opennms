@@ -26,12 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.session;
+package org.opennms.netmgt.telemetry.listeners.flow.session;
 
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 public abstract class Field {
     public final int length;

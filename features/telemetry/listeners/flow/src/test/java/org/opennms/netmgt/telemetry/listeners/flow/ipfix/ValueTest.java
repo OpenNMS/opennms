@@ -46,7 +46,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 public class ValueTest {
 

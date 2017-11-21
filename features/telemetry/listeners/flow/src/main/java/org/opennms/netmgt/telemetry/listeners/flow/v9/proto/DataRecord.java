@@ -33,10 +33,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Template;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
@@ -54,11 +54,13 @@ public final class DataRecord implements Record {
      +--------------------------------------------------+
     */
 
+    public final Template template;
     public final List<FieldValue> fields;
 
     public DataRecord(final TemplateManager.TemplateResolver templateResolver,
                       final Template template,
                       final ByteBuffer buffer) throws InvalidPacketException {
+        this.template = template;
 
         final List<FieldValue> values = new ArrayList<>(template.count());
         for (final Field templateField : template) {

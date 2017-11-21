@@ -28,24 +28,24 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldSpecifier;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Set;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.SetHeader;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.Template;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.collect.Lists;
 

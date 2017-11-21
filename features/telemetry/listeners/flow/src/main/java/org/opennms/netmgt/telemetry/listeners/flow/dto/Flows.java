@@ -2169,20 +2169,29 @@ public final class Flows {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required fixed64 sourceId = 1;</code>
+     * <code>required fixed32 version = 1;</code>
      */
-    boolean hasSourceId();
+    boolean hasVersion();
     /**
-     * <code>required fixed64 sourceId = 1;</code>
+     * <code>required fixed32 version = 1;</code>
      */
-    long getSourceId();
+    int getVersion();
 
     /**
-     * <code>optional fixed32 scopeFieldCount = 2;</code>
+     * <code>required fixed64 observationDomainId = 10;</code>
+     */
+    boolean hasObservationDomainId();
+    /**
+     * <code>required fixed64 observationDomainId = 10;</code>
+     */
+    long getObservationDomainId();
+
+    /**
+     * <code>optional fixed32 scopeFieldCount = 20;</code>
      */
     boolean hasScopeFieldCount();
     /**
-     * <code>optional fixed32 scopeFieldCount = 2;</code>
+     * <code>optional fixed32 scopeFieldCount = 20;</code>
      */
     int getScopeFieldCount();
 
@@ -2262,20 +2271,25 @@ public final class Flows {
               }
               break;
             }
-            case 9: {
+            case 13: {
               bitField0_ |= 0x00000001;
-              sourceId_ = input.readFixed64();
+              version_ = input.readFixed32();
               break;
             }
-            case 21: {
+            case 81: {
               bitField0_ |= 0x00000002;
+              observationDomainId_ = input.readFixed64();
+              break;
+            }
+            case 165: {
+              bitField0_ |= 0x00000004;
               scopeFieldCount_ = input.readFixed32();
               break;
             }
             case 794: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
                 entries_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry>();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000008;
               }
               entries_.add(input.readMessage(org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.PARSER, extensionRegistry));
               break;
@@ -2288,7 +2302,7 @@ public final class Flows {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
           entries_ = java.util.Collections.unmodifiableList(entries_);
         }
         this.unknownFields = unknownFields.build();
@@ -2323,31 +2337,46 @@ public final class Flows {
     }
 
     private int bitField0_;
-    public static final int SOURCEID_FIELD_NUMBER = 1;
-    private long sourceId_;
+    public static final int VERSION_FIELD_NUMBER = 1;
+    private int version_;
     /**
-     * <code>required fixed64 sourceId = 1;</code>
+     * <code>required fixed32 version = 1;</code>
      */
-    public boolean hasSourceId() {
+    public boolean hasVersion() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required fixed64 sourceId = 1;</code>
+     * <code>required fixed32 version = 1;</code>
      */
-    public long getSourceId() {
-      return sourceId_;
+    public int getVersion() {
+      return version_;
     }
 
-    public static final int SCOPEFIELDCOUNT_FIELD_NUMBER = 2;
-    private int scopeFieldCount_;
+    public static final int OBSERVATIONDOMAINID_FIELD_NUMBER = 10;
+    private long observationDomainId_;
     /**
-     * <code>optional fixed32 scopeFieldCount = 2;</code>
+     * <code>required fixed64 observationDomainId = 10;</code>
      */
-    public boolean hasScopeFieldCount() {
+    public boolean hasObservationDomainId() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional fixed32 scopeFieldCount = 2;</code>
+     * <code>required fixed64 observationDomainId = 10;</code>
+     */
+    public long getObservationDomainId() {
+      return observationDomainId_;
+    }
+
+    public static final int SCOPEFIELDCOUNT_FIELD_NUMBER = 20;
+    private int scopeFieldCount_;
+    /**
+     * <code>optional fixed32 scopeFieldCount = 20;</code>
+     */
+    public boolean hasScopeFieldCount() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional fixed32 scopeFieldCount = 20;</code>
      */
     public int getScopeFieldCount() {
       return scopeFieldCount_;
@@ -2389,7 +2418,8 @@ public final class Flows {
     }
 
     private void initFields() {
-      sourceId_ = 0L;
+      version_ = 0;
+      observationDomainId_ = 0L;
       scopeFieldCount_ = 0;
       entries_ = java.util.Collections.emptyList();
     }
@@ -2399,7 +2429,11 @@ public final class Flows {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
-      if (!hasSourceId()) {
+      if (!hasVersion()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasObservationDomainId()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -2417,10 +2451,13 @@ public final class Flows {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeFixed64(1, sourceId_);
+        output.writeFixed32(1, version_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeFixed32(2, scopeFieldCount_);
+        output.writeFixed64(10, observationDomainId_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeFixed32(20, scopeFieldCount_);
       }
       for (int i = 0; i < entries_.size(); i++) {
         output.writeMessage(99, entries_.get(i));
@@ -2436,11 +2473,15 @@ public final class Flows {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFixed64Size(1, sourceId_);
+          .computeFixed32Size(1, version_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFixed32Size(2, scopeFieldCount_);
+          .computeFixed64Size(10, observationDomainId_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFixed32Size(20, scopeFieldCount_);
       }
       for (int i = 0; i < entries_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -2564,13 +2605,15 @@ public final class Flows {
 
       public Builder clear() {
         super.clear();
-        sourceId_ = 0L;
+        version_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        scopeFieldCount_ = 0;
+        observationDomainId_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000002);
+        scopeFieldCount_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (entriesBuilder_ == null) {
           entries_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           entriesBuilder_.clear();
         }
@@ -2605,15 +2648,19 @@ public final class Flows {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.sourceId_ = sourceId_;
+        result.version_ = version_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
+        result.observationDomainId_ = observationDomainId_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
         result.scopeFieldCount_ = scopeFieldCount_;
         if (entriesBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
             entries_ = java.util.Collections.unmodifiableList(entries_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.entries_ = entries_;
         } else {
@@ -2635,8 +2682,11 @@ public final class Flows {
 
       public Builder mergeFrom(org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Flow other) {
         if (other == org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Flow.getDefaultInstance()) return this;
-        if (other.hasSourceId()) {
-          setSourceId(other.getSourceId());
+        if (other.hasVersion()) {
+          setVersion(other.getVersion());
+        }
+        if (other.hasObservationDomainId()) {
+          setObservationDomainId(other.getObservationDomainId());
         }
         if (other.hasScopeFieldCount()) {
           setScopeFieldCount(other.getScopeFieldCount());
@@ -2645,7 +2695,7 @@ public final class Flows {
           if (!other.entries_.isEmpty()) {
             if (entries_.isEmpty()) {
               entries_ = other.entries_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureEntriesIsMutable();
               entries_.addAll(other.entries_);
@@ -2658,7 +2708,7 @@ public final class Flows {
               entriesBuilder_.dispose();
               entriesBuilder_ = null;
               entries_ = other.entries_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
               entriesBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getEntriesFieldBuilder() : null;
@@ -2672,7 +2722,11 @@ public final class Flows {
       }
 
       public final boolean isInitialized() {
-        if (!hasSourceId()) {
+        if (!hasVersion()) {
+          
+          return false;
+        }
+        if (!hasObservationDomainId()) {
           
           return false;
         }
@@ -2704,65 +2758,97 @@ public final class Flows {
       }
       private int bitField0_;
 
-      private long sourceId_ ;
+      private int version_ ;
       /**
-       * <code>required fixed64 sourceId = 1;</code>
+       * <code>required fixed32 version = 1;</code>
        */
-      public boolean hasSourceId() {
+      public boolean hasVersion() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required fixed64 sourceId = 1;</code>
+       * <code>required fixed32 version = 1;</code>
        */
-      public long getSourceId() {
-        return sourceId_;
+      public int getVersion() {
+        return version_;
       }
       /**
-       * <code>required fixed64 sourceId = 1;</code>
+       * <code>required fixed32 version = 1;</code>
        */
-      public Builder setSourceId(long value) {
+      public Builder setVersion(int value) {
         bitField0_ |= 0x00000001;
-        sourceId_ = value;
+        version_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required fixed64 sourceId = 1;</code>
+       * <code>required fixed32 version = 1;</code>
        */
-      public Builder clearSourceId() {
+      public Builder clearVersion() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        sourceId_ = 0L;
+        version_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private long observationDomainId_ ;
+      /**
+       * <code>required fixed64 observationDomainId = 10;</code>
+       */
+      public boolean hasObservationDomainId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required fixed64 observationDomainId = 10;</code>
+       */
+      public long getObservationDomainId() {
+        return observationDomainId_;
+      }
+      /**
+       * <code>required fixed64 observationDomainId = 10;</code>
+       */
+      public Builder setObservationDomainId(long value) {
+        bitField0_ |= 0x00000002;
+        observationDomainId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required fixed64 observationDomainId = 10;</code>
+       */
+      public Builder clearObservationDomainId() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        observationDomainId_ = 0L;
         onChanged();
         return this;
       }
 
       private int scopeFieldCount_ ;
       /**
-       * <code>optional fixed32 scopeFieldCount = 2;</code>
+       * <code>optional fixed32 scopeFieldCount = 20;</code>
        */
       public boolean hasScopeFieldCount() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional fixed32 scopeFieldCount = 2;</code>
+       * <code>optional fixed32 scopeFieldCount = 20;</code>
        */
       public int getScopeFieldCount() {
         return scopeFieldCount_;
       }
       /**
-       * <code>optional fixed32 scopeFieldCount = 2;</code>
+       * <code>optional fixed32 scopeFieldCount = 20;</code>
        */
       public Builder setScopeFieldCount(int value) {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         scopeFieldCount_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional fixed32 scopeFieldCount = 2;</code>
+       * <code>optional fixed32 scopeFieldCount = 20;</code>
        */
       public Builder clearScopeFieldCount() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         scopeFieldCount_ = 0;
         onChanged();
         return this;
@@ -2771,9 +2857,9 @@ public final class Flows {
       private java.util.List<org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry> entries_ =
         java.util.Collections.emptyList();
       private void ensureEntriesIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
           entries_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry>(entries_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
          }
       }
 
@@ -2923,7 +3009,7 @@ public final class Flows {
       public Builder clearEntries() {
         if (entriesBuilder_ == null) {
           entries_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           entriesBuilder_.clear();
@@ -3000,7 +3086,7 @@ public final class Flows {
           entriesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry, org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Builder, org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.EntryOrBuilder>(
                   entries_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000008) == 0x00000008),
                   getParentForChildren(),
                   isClean());
           entries_ = null;
@@ -3050,10 +3136,11 @@ public final class Flows {
       "mac_address\030i \001(\014H\000\022\017\n\005bytes\030j \001(\014H\000\022\020\n\006" +
       "signed\030k \001(\020H\000\022\022\n\010unsigned\030l \001(\006H\000\022\020\n\006st" +
       "ring\030m \001(\tH\000\032+\n\tTimestamp\022\017\n\007seconds\030\001 \002" +
-      "(\006\022\r\n\005nanos\030\002 \002(\007B\007\n\005value\"J\n\004Flow\022\020\n\010so" +
-      "urceId\030\001 \002(\006\022\027\n\017scopeFieldCount\030\002 \001(\007\022\027\n" +
-      "\007entries\030c \003(\0132\006.EntryB1\n/org.opennms.ne",
-      "tmgt.telemetry.listeners.flow.dto"
+      "(\006\022\r\n\005nanos\030\002 \002(\007B\007\n\005value\"f\n\004Flow\022\017\n\007ve" +
+      "rsion\030\001 \002(\007\022\033\n\023observationDomainId\030\n \002(\006" +
+      "\022\027\n\017scopeFieldCount\030\024 \001(\007\022\027\n\007entries\030c \003",
+      "(\0132\006.EntryB1\n/org.opennms.netmgt.telemet" +
+      "ry.listeners.flow.dto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -3084,7 +3171,7 @@ public final class Flows {
     internal_static_Flow_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Flow_descriptor,
-        new java.lang.String[] { "SourceId", "ScopeFieldCount", "Entries", });
+        new java.lang.String[] { "Version", "ObservationDomainId", "ScopeFieldCount", "Entries", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

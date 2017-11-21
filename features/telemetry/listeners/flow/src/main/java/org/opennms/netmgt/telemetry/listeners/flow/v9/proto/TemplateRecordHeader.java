@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.ipfix.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 

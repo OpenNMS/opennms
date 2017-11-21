@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.UnsignedLong;

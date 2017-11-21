@@ -26,8 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
+package org.opennms.netmgt.telemetry.listeners.flow;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +37,7 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.flow.dto.Flows;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
@@ -48,12 +50,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Packet;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Set;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.SetHeader;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.session.EnterpriseField;
+import org.opennms.netmgt.telemetry.listeners.flow.session.EnterpriseField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,58 +58,51 @@ import com.google.common.collect.Iterables;
 import com.google.protobuf.ByteString;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.DefaultAddressedEnvelope;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
+public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedEnvelope<RecordProvider, InetSocketAddress>> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketHandler.class);
 
-    private final AsyncDispatcher<TelemetryMessage> dispatcher;
+    protected final AsyncDispatcher<TelemetryMessage> dispatcher;
 
     public PacketHandler(final AsyncDispatcher<TelemetryMessage> dispatcher) {
         this.dispatcher = dispatcher;
     }
 
     @Override
-    protected void channelRead0(final ChannelHandlerContext ctx, final Packet packet) throws Exception {
+    protected void channelRead0(final ChannelHandlerContext ctx, final DefaultAddressedEnvelope<RecordProvider, InetSocketAddress> packet) throws Exception {
         LOG.info("Got packet: {}", packet);
 
-        for (final Set<?> set : packet.sets) {
-            if (set.header.getType() != SetHeader.Type.DATA_SET) {
-                continue;
+        packet.content().getRecords().forEach(record -> {
+            final Flows.Flow.Builder flow = Flows.Flow.newBuilder()
+                    .setObservationDomainId(record.observationDomainId)
+                    .setScopeFieldCount(record.scopeFieldCount);
+
+            final FlowBuilderVisitor visitor = new FlowBuilderVisitor(flow);
+            for (final Value value : record.values) {
+                value.visit(visitor);
             }
 
-            final Set<DataRecord> dataRecordSet = (Set<DataRecord>) set;
+            final ByteBuffer buffer = ByteBuffer.wrap(flow.build().toByteArray());
 
-            for (final DataRecord record : dataRecordSet.records) {
-                final Flows.Flow.Builder flow = Flows.Flow.newBuilder()
-                        .setSourceId(packet.header.observationDomainId)
-                        .setScopeFieldCount(record.template.scopeFieldsCount);
+            // Build the message to dispatch via the Sink API
+            final TelemetryMessage msg = new TelemetryMessage(packet.sender(), buffer);
 
-                final FlowBuilderVisitor visitor = new FlowBuilderVisitor(flow);
-                for (final FieldValue field : record.fields) {
-                    field.value.visit(visitor);
-                }
+            // Dispatch and retain a reference to the packet
+            // in the case that we are sharing the underlying byte array
+            final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
 
-                final ByteBuffer buffer = ByteBuffer.wrap(flow.build().toByteArray());
-
-                // Build the message to dispatch via the Sink API
-                final TelemetryMessage msg = new TelemetryMessage(packet.sender, buffer);
-
-                // Dispatch and retain a reference to the packet
-                // in the case that we are sharing the underlying byte array
-                final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
-
-                // TODO: Handle future result and drop connection if dispatching fails
-                future.join();
-            }
-        }
+            // TODO: Handle future result and drop connection if dispatching fails
+            future.join();
+        });
     }
 
-    private static class FlowBuilderVisitor implements Value.Visitor {
+    protected static class FlowBuilderVisitor implements Value.Visitor {
         private final Flows.Flow.Builder flow;
         private final Iterable<String> prefix;
 
-        private FlowBuilderVisitor(final Flows.Flow.Builder flow) {
+        public FlowBuilderVisitor(final Flows.Flow.Builder flow) {
             this.flow = flow;
             this.prefix = Collections.emptyList();
         }

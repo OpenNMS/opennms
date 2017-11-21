@@ -26,30 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.session;
+package org.opennms.netmgt.telemetry.listeners.flow;
 
-import java.nio.ByteBuffer;
+public class InvalidPacketException extends Exception {
 
-import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-
-public final class StandardField extends Field {
-
-    private final InformationElement informationElement;
-
-    public StandardField(final int length,
-                         final InformationElement informationElement) {
-        super(length);
-        this.informationElement = informationElement;
+    public InvalidPacketException(final String fmt, final Object... args) {
+        super(String.format(fmt, args));
     }
 
-    @Override
-    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-        return this.informationElement.parse(templateResolver, buffer);
-    }
-
-    public InformationElement getInformationElement() {
-        return this.informationElement;
+    public InvalidPacketException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

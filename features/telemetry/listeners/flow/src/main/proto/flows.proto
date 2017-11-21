@@ -26,8 +26,11 @@ message Entry {
 }
 
 message Flow {
-    required fixed64 sourceId = 1;
-    optional fixed32 scopeFieldCount = 2;
+    required fixed32 version = 1;
+
+    required fixed64 observationDomainId = 10;
+
+    optional fixed32 scopeFieldCount = 20;
 
     repeated Entry entries = 99;
 }
