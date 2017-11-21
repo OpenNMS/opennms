@@ -50,11 +50,11 @@ public class BufferUtilsTest {
 
     @Test
     public void testUnsignedInteger32() throws Exception {
-        Assert.assertEquals(UnsignedLong.valueOf(0L), BufferUtils.uint32(from("00000000")));
-        Assert.assertEquals(UnsignedLong.valueOf(1L), BufferUtils.uint32(from("00000001")));
-        Assert.assertEquals(UnsignedLong.valueOf(1024L), BufferUtils.uint32(from("00000400")));
-        Assert.assertEquals(UnsignedLong.valueOf(65536L - 1), BufferUtils.uint32(from("0000FFFF")));
-        Assert.assertEquals(UnsignedLong.valueOf(65536L * 65536L - 1L), BufferUtils.uint32(from("FFFFFFFF")));
+        Assert.assertEquals(0L, BufferUtils.uint32(from("00000000")));
+        Assert.assertEquals(1L, BufferUtils.uint32(from("00000001")));
+        Assert.assertEquals(1024L, BufferUtils.uint32(from("00000400")));
+        Assert.assertEquals(65536L - 1, BufferUtils.uint32(from("0000FFFF")));
+        Assert.assertEquals(65536L * 65536L - 1L, BufferUtils.uint32(from("FFFFFFFF")));
     }
 
     @Test
