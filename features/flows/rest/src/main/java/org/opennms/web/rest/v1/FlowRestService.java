@@ -32,6 +32,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.ServiceUnavailableException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -40,13 +41,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.api.FlowRepositoryProvider;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -65,14 +67,15 @@ public class FlowRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowRestService.class);
 
-    // TODO MVR This is duplicated  from ClientFactory, should be merged or removed at some point
+    private ServiceLookup serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
+            .blocking()
+            .build();
+
+    // TODO MVR This is duplicated from ClientFactory, should be merged or removed at some point
     private static final Gson gson =  new GsonBuilder()
             .setDateFormat(ELASTIC_SEARCH_DATE_FORMAT)
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
-
-    @Autowired
-    private FlowRepositoryProvider flowRepositoryProvider;
 
     @POST
     @Path("/proxy")
@@ -138,8 +141,11 @@ public class FlowRestService {
         }
     }
 
-    private FlowRepository getFlowRepository() throws Exception {
-        return flowRepositoryProvider.getFlowRepository();
+    private FlowRepository getFlowRepository() throws ServiceUnavailableException {
+        final FlowRepository lookup = serviceLookup.lookup(FlowRepository.class);
+        if (lookup == null) {
+            throw new ServiceUnavailableException("A service of type " + FlowRepository.class.getName() + " is not available.");
+        }
+        return lookup;
     }
-
 }

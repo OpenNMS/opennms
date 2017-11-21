@@ -42,29 +42,29 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {Netflow5AdapterTestConfig.class})
+@ContextConfiguration(classes = {Netflow5AdapterTestFactory.class})
 public class Netflow5AdapterTest {
 
-    @Autowired
     private Netflow5Adapter netflow5Adapter;
 
-    @Autowired
     private NodeDao nodeDao;
 
-    @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    @Autowired
-    @Qualifier("nodeDaoGetCounter")
     private AtomicInteger nodeDaoGetCounter;
 
     @Before
     public void setUp() {
+        final Netflow5AdapterTestFactory factory = new Netflow5AdapterTestFactory();
+        netflow5Adapter = factory.createAdapter();
+
+        nodeDao = factory.getNodeDao();
+        interfaceToNodeCache = factory.getInterfaceToNodeCache();
+        nodeDaoGetCounter = factory.getNodeDaoGetCounter();
+
         interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.1"), 1);
         interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.2"), 2);
         interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.3"), 3);

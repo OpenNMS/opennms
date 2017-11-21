@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
-  <artifactId>flows</artifactId>
+  <artifactId>opennms-flows</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Flows :: Feature Definition</name>
   <description>Feature definition to start all required bundles related to *flow-support.</description>
@@ -47,6 +47,11 @@
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.adapters</groupId>
+      <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>
