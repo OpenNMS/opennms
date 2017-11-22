@@ -292,11 +292,12 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
         Set<BroadcastDomain> domains = new CopyOnWriteArraySet<BroadcastDomain>();
         for (Integer rootnode : rootnodetodomainnodemap.keySet()) {
             BroadcastDomain domain = new BroadcastDomain();
-            domain.addBridge(Bridge.createRootBridge(rootnode));
+            Bridge.createRootBridge(domain,rootnode);
             for (Integer bridgenodeId: rootnodetodomainnodemap.get(rootnode)) {
-                domain.addBridge(Bridge.create(bridgenodeId, 
+                Bridge.create(domain,
+                              bridgenodeId, 
                                                designatebridgemap.get(
-                                                                      bridgenodeId).getBridgePort()));
+                                                                      bridgenodeId).getBridgePort());
             }
                 
             if (LOG.isDebugEnabled()) {

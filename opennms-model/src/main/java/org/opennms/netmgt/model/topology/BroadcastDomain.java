@@ -115,13 +115,6 @@ public class BroadcastDomain implements BridgeTopology {
         return null;
     }
 
-    public boolean addBridge(Bridge bridge) {
-        if (bridge == null) {
-            return false;
-        }
-        return m_bridges.add(bridge);
-    }
-
     public Bridge getBridge(int bridgeId) {
         for (Bridge bridge: m_bridges) {
             if (bridge.getNodeId().intValue() == bridgeId)

@@ -42,6 +42,7 @@ import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.topology.BridgePort;
+import org.opennms.netmgt.model.topology.BridgeTopology;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
@@ -102,7 +103,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     // then we work on this set (if the size is only 2......no way)
     // get m_1 m_2 m_3 and check the ports on the two bridges...to match rules
     // 
-    public class BridgeTopologyHelper {
+    public class BridgeTopologyHelper implements BridgeTopology {
         
         Integer m_xy;
         Integer m_yx;
@@ -114,7 +115,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         BridgePort m_xyPort;
         BridgePort m_yxPort;
 
-        public BridgeTopologyHelper(Bridge xBridge, Set<BridgeForwardingTableEntry> xBFT,Bridge yBridge, Set<BridgeForwardingTableEntry> yBFT) {
+        public BridgeTopologyHelper(Bridge xBridge, 
+                Set<BridgeForwardingTableEntry> xBFT,
+                Bridge yBridge, 
+                Set<BridgeForwardingTableEntry> yBFT) throws BridgeTopologyException {
             super();
             Map<String,BridgeForwardingTableEntry> xmactoport = new HashMap<String, BridgeForwardingTableEntry>();
             Map<String,BridgeForwardingTableEntry> ymactoport = new HashMap<String, BridgeForwardingTableEntry>();
@@ -182,14 +186,13 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                           commonlearnedmacs);
 
             }    
-            //FIXME What do do if I do not find the connection?
             if (m_xy == null || m_xy == null) {
                 LOG.warn("simple connection: [{}, port {}] <--> [{}, port {}]. Not found. exiting", 
                           xBridge.getNodeId(), 
                           m_xy,
                           yBridge.getNodeId()
                           , m_yx);
-                return;
+                throw new BridgeTopologyException("No simple connection found", this);
             }
             
             BridgeForwardingTableEntry xylink = null;
@@ -509,6 +512,24 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             ports.add(m_yxPort);
             return ports;
         }
+        
+        public String printTopology() {
+            StringBuffer strbfr = new StringBuffer();
+            strbfr.append("simple connection: port[");
+            if (m_xyPort != null) {
+                strbfr.append(m_xyPort.printTopology());
+            } else {
+                strbfr.append("null");
+            }
+            strbfr.append("], port [");
+            if (m_yxPort != null) {
+                strbfr.append(m_yxPort.printTopology());
+            } else {
+                strbfr.append("null");
+            }
+           strbfr.append("].");
+           return strbfr.toString();
+        }
 
     }
 
@@ -693,11 +714,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             for (Integer nodeid : nodeswithupdatedbftonbroadcastdomain) {
                 sendStartEvent(nodeid);
                 //FIXME use Bridge class for moving from one domain to another
-                if (m_domain.addBridge(Bridge.create(nodeid))) {
-                    LOG.info("run: node: [{}], added bridge  node [{}] on domain", getNodeId(), nodeid);
-                } else {
-                    LOG.info("run: node: [{}], bridge  node [{}] already on domain", getNodeId(), nodeid);                    
-                }
+                Bridge.create(m_domain,nodeid);
+                LOG.info("run: node: [{}], added bridge  node [{}] on domain", getNodeId(), nodeid);
                 LOG.debug("run: node: [{}], getting update bft for node [{}] on domain", getNodeId(), nodeid);
                 Set<BridgeForwardingTableEntry> bft = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
                 if (bft == null || bft.isEmpty()) {

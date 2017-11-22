@@ -33,19 +33,23 @@ import java.util.Set;
 
 public class Bridge implements BridgeTopology {
 
-    public static Bridge create(Integer nodeid) {
-        return new Bridge(nodeid);
+    public static Bridge create(BroadcastDomain domain, Integer nodeid) {
+        Bridge bridge = new Bridge(nodeid);
+        domain.getBridges().add(bridge);
+        return bridge;
     }
 
-    public static Bridge createRootBridge(Integer nodeid) {
+    public static Bridge createRootBridge(BroadcastDomain domain, Integer nodeid) {
         Bridge bridge = new Bridge(nodeid);
         bridge.setRootBridge();
+        domain.getBridges().add(bridge);
         return bridge;
     }
     
-    public static Bridge create(Integer nodeid, Integer rootport) {
+    public static Bridge create(BroadcastDomain domain, Integer nodeid, Integer rootport) {
         Bridge bridge = new Bridge(nodeid);
-        bridge.setRootPort(rootport);;
+        bridge.setRootPort(rootport);
+        domain.getBridges().add(bridge);
         return bridge;
     }
 
