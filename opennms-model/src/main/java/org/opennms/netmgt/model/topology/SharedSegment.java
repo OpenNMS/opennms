@@ -36,11 +36,34 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.OnmsNode;
 
 public class SharedSegment implements BridgeTopology{
     
     public static List<BridgeBridgeLink> getBridgeBridgeLinks(SharedSegment segment) throws BridgeTopologyException {
-        return BridgePort.getBridgeBridgeLinks(segment.getBridgePortsOnSegment(), segment.getDesignatedPort());
+        BridgePort designatedPort = segment.getDesignatedPort();
+        OnmsNode designatedNode = new OnmsNode();
+        designatedNode.setId(designatedPort.getNodeId());
+        List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
+        for (BridgePort port:segment.getBridgePortsOnSegment()) {
+            if (port.equals(designatedPort)) {
+                continue;
+            }
+            BridgeBridgeLink link = new BridgeBridgeLink();
+            OnmsNode node = new OnmsNode();
+            node.setId(port.getNodeId());
+            link.setNode(node);
+            link.setBridgePort(port.getBridgePort());
+            link.setBridgePortIfIndex(port.getBridgePortIfIndex());
+            link.setVlan(port.getVlan());
+            link.setDesignatedNode(designatedNode);
+            link.setDesignatedPort(designatedPort.getBridgePort());
+            link.setDesignatedPortIfIndex(designatedPort.getBridgePortIfIndex());
+            link.setDesignatedVlan(designatedPort.getVlan());
+            links.add(link);
+        }
+        return links;
+
     }
 
     public static List<BridgeMacLink> getBridgeMacLinks(SharedSegment segment) throws BridgeTopologyException {
@@ -78,10 +101,32 @@ public class SharedSegment implements BridgeTopology{
         return segment;
     }
 
+    public static SharedSegment createAndAddToBroadcastDomain(BroadcastDomain domain, BridgePort port, Set<String> macs) {
+        SharedSegment segment = new SharedSegment();
+        segment.getBridgePortsOnSegment().add(port);
+        segment.getMacsOnSegment().addAll(macs);
+        segment.setDesignatedBridge(port.getNodeId());
+        domain.add(segment);
+        return segment;
+    }
+    
+    public static SharedSegment createAndAddToBroadcastDomain(BroadcastDomain domain, Set<BridgePort> ports, Set<String> macs, Integer designatedBridge) {
+        SharedSegment segment = new SharedSegment();
+        segment.getBridgePortsOnSegment().addAll(ports);
+        segment.getMacsOnSegment().addAll(macs);
+        segment.setDesignatedBridge(designatedBridge);
+        domain.add(segment);
+        return segment;
+    }
+    
+    public static SharedSegment create() {
+        return new SharedSegment();
+                
+    }
+    
     Integer m_designatedBridgeId;
     Set<String> m_macsOnSegment = new HashSet<String>();
     Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
-    BroadcastDomain m_domain;
     Date m_createTime;
     Date m_pollTime;
     
@@ -101,28 +146,10 @@ public class SharedSegment implements BridgeTopology{
         m_pollTime = pollTime;
     }
 
-    public SharedSegment(){
+    private SharedSegment() {
         
     }
-            
-    //Constructor for single single port
-    public SharedSegment(BroadcastDomain domain, BridgePort port, Set<String> macs) {
-        m_domain =domain;
-        m_designatedBridgeId = port.getNodeId();
-        m_macsOnSegment = macs;
-        m_portsOnSegment.add(port);
-        m_domain.add(this);
-    }
-
-    //General constructor
-    public SharedSegment(BroadcastDomain domain, Set<BridgePort> ports, Set<String> macs, Integer designatedBridge) {
-        m_domain = domain;
-        m_designatedBridgeId = designatedBridge;
-        m_portsOnSegment = ports;
-        m_macsOnSegment = macs;
-        m_domain.add(this);
-    }
-        
+                    
     public boolean setDesignatedBridge(Integer designatedBridge) {
         if (designatedBridge == null) { 
             return false;
@@ -191,36 +218,6 @@ public class SharedSegment implements BridgeTopology{
     //       A B C
     //    move all the macs and port on shared
     //  ------> topSegment {tmac...}U{smac....} {(tbridge,tport)}U{(sbridge,sport).....}
-    public boolean mergeBridge(Integer bridgeId) throws BridgeTopologyException {
-        if (bridgeId == null) {
-            return false;
-        }
-        
-        BridgePort toberemoved = getBridgePort(bridgeId);
-        if (toberemoved == null) {
-            return false;
-        }
-    	
-        Set<BridgePort> portsOnSegment = new HashSet<BridgePort>();
-        for (BridgePort bp: m_portsOnSegment) {
-        	if (   bp.getNodeId().intValue() == bridgeId.intValue()) {
-        		continue;
-        	}
-        	portsOnSegment.add(bp);
-        }
-        m_portsOnSegment = portsOnSegment;
-        
-        for (SharedSegment shared: m_domain.removeSharedSegmentOnTopologyForBridge(bridgeId)) {
-            for (BridgePort port: shared.getBridgePortsOnSegment()) {
-                if ( port.getNodeId().intValue() == bridgeId.intValue()) {
-                    continue;
-                }
-                m_portsOnSegment.add(port);
-            }
-            m_macsOnSegment.addAll(shared.getMacsOnSegment());    
-        }
-    	return true;
-    }
 
     public void retain(Set<String> macs, BridgePort dlink) {
         m_portsOnSegment.add(dlink);
@@ -257,14 +254,6 @@ public class SharedSegment implements BridgeTopology{
     
     public Set<String> getMacsOnSegment() {
         return m_macsOnSegment;
-    }
-
-    public BroadcastDomain getBroadcastDomain() {
-        return m_domain; 
-    }
-
-    public void setBroadcastDomain(BroadcastDomain domain) {
-        m_domain = domain; 
     }
 
     public boolean containsMac(String mac) {

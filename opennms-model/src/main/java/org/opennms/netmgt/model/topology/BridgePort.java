@@ -28,13 +28,8 @@
 
 package org.opennms.netmgt.model.topology;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.OnmsNode;
 
 public class BridgePort implements BridgeTopology {
 
@@ -79,31 +74,6 @@ public class BridgePort implements BridgeTopology {
         bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
         bp.setVlan(link.getDesignatedVlan());
         return bp;
-    }
-
-    public static List<BridgeBridgeLink> getBridgeBridgeLinks(Set<BridgePort> ports, BridgePort designatedPort) {
-        OnmsNode designatedNode = new OnmsNode();
-        designatedNode.setId(designatedPort.getNodeId());
-        List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
-        for (BridgePort port:ports) {
-            if (port.equals(designatedPort)) {
-                continue;
-            }
-            BridgeBridgeLink link = new BridgeBridgeLink();
-            OnmsNode node = new OnmsNode();
-            node.setId(port.getNodeId());
-            link.setNode(node);
-            link.setBridgePort(port.getBridgePort());
-            link.setBridgePortIfIndex(port.getBridgePortIfIndex());
-            link.setVlan(port.getVlan());
-            link.setDesignatedNode(designatedNode);
-            link.setDesignatedPort(designatedPort.getBridgePort());
-            link.setDesignatedPortIfIndex(designatedPort.getBridgePortIfIndex());
-            link.setDesignatedVlan(designatedPort.getVlan());
-            links.add(link);
-        }
-        return links;
-   
     }
 
     @Override

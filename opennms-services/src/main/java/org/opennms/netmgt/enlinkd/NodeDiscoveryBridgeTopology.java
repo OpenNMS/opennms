@@ -970,7 +970,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
         
         for (BridgePort port : rootleafs.keySet()) {
-            SharedSegment segment = new SharedSegment(m_domain,port,rootleafs.get(port));
+            SharedSegment segment = SharedSegment.createAndAddToBroadcastDomain(m_domain,port,rootleafs.get(port));
             if (LOG.isDebugEnabled()) {
                 LOG.debug("calculate: node: [{}], add shared segment[designated bridge:[{}],"
             		+ "designated port:{}, macs: {}]",
@@ -1120,7 +1120,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                                 yBridge.getNodeId());
                 SharedSegment leafSegment = m_domain.getSharedSegment(xBridge.getNodeId(), xyDesignatedPort);
                 if (leafSegment == null) {
-                    leafSegment = new SharedSegment(m_domain,yx.getSimpleConnection(),yx.getSimpleConnectionMacs(),xBridge.getNodeId());
+                    leafSegment = SharedSegment.createAndAddToBroadcastDomain(m_domain,yx.getSimpleConnection(),yx.getSimpleConnectionMacs(),xBridge.getNodeId());
                 } else {
                     leafSegment.retain(yx.getSimpleConnectionMacs(),yx.getFirstBridgePort());
                 }
@@ -1161,7 +1161,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             if (portsAdded.contains(xbridgePort.getBridgePort())) {
                 continue;
             }
-            SharedSegment xleafSegment = new SharedSegment(m_domain, xbridgePort,
+            SharedSegment xleafSegment = SharedSegment.createAndAddToBroadcastDomain(m_domain, xbridgePort,
                                                            rx.getSecondBridgeTroughSetBft().get(xbridgePort));  
             if (LOG.isDebugEnabled()) {
                 LOG.debug("calculate: node: [{}]: level: {}, bridge: [{}]. Add shared segment. "

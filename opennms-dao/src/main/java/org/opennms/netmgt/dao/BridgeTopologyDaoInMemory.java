@@ -121,17 +121,16 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
         
         List<BridgeMacLink> links = bridgeMacLinkDao.findByMacAddress(mac);
         if (links.size() == 0 )
-            return new SharedSegment();
+            return SharedSegment.create();
         BridgeMacLink link = links.get(0);
         for (SharedSegment segment: getBridgeNodeSharedSegments(bridgeBridgeLinkDao, bridgeMacLinkDao, link.getNode().getId()) ) {
             if (segment.containsPort(BridgePort.getFromBridgeMacLink(link))) {
                 return segment;
             }
         }
-        return new SharedSegment();
+        return SharedSegment.create();
     }
 
-    //FIXME we do not need to call loadTopologyRoot because we have the information we need..... here....put the bridge port into objects...
     @Override
     public Set<BroadcastDomain> getAllPersisted(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao) {
 
