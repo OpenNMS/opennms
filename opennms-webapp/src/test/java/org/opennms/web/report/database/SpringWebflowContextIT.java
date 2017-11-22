@@ -58,6 +58,8 @@ import org.springframework.web.context.WebApplicationContext;
         "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
         "classpath:/META-INF/opennms/applicationContext-reporting.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/spring-security.d/header-preauth.xml",
+        "file:src/main/webapp/WEB-INF/spring-security.d/attribute-preauth.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-spring-webflow.xml"
 })
 @JUnitConfigurationEnvironment
