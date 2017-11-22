@@ -160,7 +160,7 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
                 dao.afterPropertiesSet();
                 m_configDaosByPath.put(xmlFile, dao);
             } else {
-                xmlFilesWithUnusedDaos.remove(xmlFilesWithUnusedDaos);
+                xmlFilesWithUnusedDaos.remove(xmlFile);
             }
         }
 
