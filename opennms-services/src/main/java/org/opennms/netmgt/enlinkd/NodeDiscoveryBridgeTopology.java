@@ -672,13 +672,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     }
                     synchronized (domain) {
                         try {
-                            domain.clearTopologyForBridge(bridge);
+                            domain.removeBridge(curNodeId);
+                            m_linkd.getQueryManager().store(domain,now);
                         } catch (BridgeTopologyException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            LOG.error("run: node [{}]: node [{}] cannot remove bridge {}",getNodeId(),
+                                      curNodeId, e.getMessage(),e);
                         }
-                        domain.removeBridge(curNodeId);
-                        m_linkd.getQueryManager().store(domain,now);
                     }
                     clean=true;
                 }
@@ -694,10 +693,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             for (Integer nodeid : nodeswithupdatedbftonbroadcastdomain) {
                 sendStartEvent(nodeid);
                 //FIXME use Bridge class for moving from one domain to another
-                if (m_domain.addBridge(new Bridge(nodeid))) {
+                if (m_domain.addBridge(Bridge.create(nodeid))) {
                     LOG.info("run: node: [{}], added bridge  node [{}] on domain", getNodeId(), nodeid);
                 } else {
-                    
+                    LOG.info("run: node: [{}], bridge  node [{}] already on domain", getNodeId(), nodeid);                    
                 }
                 LOG.debug("run: node: [{}], getting update bft for node [{}] on domain", getNodeId(), nodeid);
                 Set<BridgeForwardingTableEntry> bft = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
@@ -722,13 +721,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             }
             for (Integer nodeid : nodetoberemovedondomain) {
                 try {
-                    Bridge bridge = m_domain.getBridge(nodeid);
-                    m_domain.clearTopologyForBridge(bridge);
+                    m_domain.removeBridge(nodeid);
                 } catch (BridgeTopologyException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.error("run: node [{}]: node [{}] cannot remove bridge {}",getNodeId(),
+                              nodeid, e.getMessage(),e);
                 }
-                m_domain.removeBridge(nodeid);
             }
             m_linkd.getQueryManager().cleanBroadcastDomains();
 

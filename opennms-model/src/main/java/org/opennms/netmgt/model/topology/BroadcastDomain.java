@@ -136,10 +136,6 @@ public class BroadcastDomain implements BridgeTopology {
             macs.addAll(segment.getMacsOnSegment());
         return macs;
     }
-
-    public void add(SharedSegment segment) {
-        m_topology.add(segment);
-    }
     
     public boolean loadTopologyEntry(SharedSegment segment) {
         for (BridgePort port: segment.getBridgePortsOnSegment()) {
@@ -153,9 +149,7 @@ public class BroadcastDomain implements BridgeTopology {
         return false;
     }
     
-    
-    //FIXME delete a bridge on a domain has some consequences because also bridge port must be removed
-    public void removeBridge(int bridgeId) {
+    public void removeBridge(int bridgeId) throws BridgeTopologyException {
         Bridge bridge = null;
         for (Bridge curbridge: m_bridges) {
             if (curbridge.getNodeId() == bridgeId) {
@@ -173,6 +167,7 @@ public class BroadcastDomain implements BridgeTopology {
             return;
         }
         
+        clearTopologyForBridge(bridge);
         Set<Bridge> bridges = new HashSet<Bridge>();
         for (Bridge cur: m_bridges) {
             if (cur.getNodeId().intValue() == bridgeId) 
@@ -252,7 +247,7 @@ public class BroadcastDomain implements BridgeTopology {
             }
         }
     }
-    
+        
     //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId} 
     //        |
     //     bridge Id
@@ -277,7 +272,17 @@ public class BroadcastDomain implements BridgeTopology {
         SharedSegment topsegment = null;
         if (bridge.isRootBridge()) {
             for (SharedSegment segment: getSharedSegments(bridge.getNodeId())) {
-                Integer newRootId = segment.getFirstNoDesignatedBridge();
+                Integer newRootId = null;
+                for (BridgePort port: segment.getBridgePortsOnSegment() ) {
+                    if (port == null 
+                            || port.getNodeId() == null
+                            ||port.getBridgePort() == null) {
+                    continue;
+                    }
+                    if (segment.getDesignatedBridge() == null || port.getNodeId().intValue() != segment.getDesignatedBridge().intValue()) {
+                        newRootId = port.getNodeId();
+                    }
+                }
                 if (newRootId == null)
                     continue;
                 Bridge newRootBridge=getBridge(newRootId);

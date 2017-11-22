@@ -32,7 +32,6 @@ package org.opennms.netmgt.enlinkd;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -45,8 +44,6 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
-import org.opennms.netmgt.model.topology.Bridge;
-import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
@@ -382,30 +379,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
 
-        Date now = new Date();
-        BroadcastDomain domain = m_queryMgr.getBroadcastDomain(nodeid);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("deleteNode: {}, found broadcast domain: {}", nodeid, domain.printTopology());
-        }
-        // must be calculated the topology for nodeid...
-        synchronized (domain) {
-            LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
-            Bridge bridge = domain.getBridge(nodeid);
-            try {
-                domain.clearTopologyForBridge(bridge);
-            } catch (BridgeTopologyException e) {
-                LOG.error("deleteNode: node: {}, {}", nodeid, e.printTopology(),e);
-            }
-            LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
-            LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
-            m_queryMgr.store(domain,now);
-            LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
-            domain.removeBridge(nodeid);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("deleteNode: {}, resulting broadcast domain: {}", nodeid, domain.printTopology());
-            }
-
-        }
         Node node = removeNode(nodeid);
 
         if (node == null) {

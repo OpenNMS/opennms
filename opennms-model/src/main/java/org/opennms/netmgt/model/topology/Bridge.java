@@ -32,13 +32,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Bridge implements BridgeTopology {
+
+    public static Bridge create(Integer nodeid) {
+        return new Bridge(nodeid);
+    }
+
+    public static Bridge createRootBridge(Integer nodeid) {
+        Bridge bridge = new Bridge(nodeid);
+        bridge.setRootBridge();
+        return bridge;
+    }
+    
+    public static Bridge create(Integer nodeid, Integer rootport) {
+        Bridge bridge = new Bridge(nodeid);
+        bridge.setRootPort(rootport);;
+        return bridge;
+    }
+
     final Integer m_nodeId;
     Integer m_rootPort;
     boolean m_isRootBridge;
     Set<String> m_identifiers = new HashSet<String>();
     String m_designated;
 
-    public Bridge(Integer id) {
+    private Bridge(Integer id) {
         super();
         m_nodeId = id;
     }

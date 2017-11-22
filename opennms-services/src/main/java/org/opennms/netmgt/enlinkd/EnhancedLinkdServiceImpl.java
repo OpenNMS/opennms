@@ -77,11 +77,15 @@ import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
+
+    private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -201,11 +205,30 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_bridgeStpLinkDao.flush();
 
         
-        BroadcastDomain domain = m_bridgeTopologyDao.get(nodeId);
-        if ( domain != null ) {
-            synchronized(domain) {
+        Date now = new Date();
+        BroadcastDomain domain = getBroadcastDomain(nodeId);
+        if (domain == null) {
+            LOG.info("delete: node: {}, start: broadcast domain not found",nodeId);
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("delete: {}, found broadcast domain: {}", nodeId, domain.printTopology());
+        }
+        // must be calculated the topology for nodeid...
+        synchronized (domain) {
+            LOG.info("delete: node: {}, start: merging topology for domain",nodeId);
+            try {
                 domain.removeBridge(nodeId);
+                LOG.info("delete: node: {}, start: save topology for domain",nodeId);
+                store(domain,now);
+                LOG.info("delete: node: {}, end: save topology for domain",nodeId);
+             } catch (BridgeTopologyException e) {
+                LOG.error("delete: node: {}, {}", nodeId, e.getMessage(),e);
             }
+            LOG.info("delete: node: {}, end: merging topology for domain",nodeId);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("delete: {}, resulting broadcast domain: {}", nodeId, domain.printTopology());
+            }
+
         }
     }
 

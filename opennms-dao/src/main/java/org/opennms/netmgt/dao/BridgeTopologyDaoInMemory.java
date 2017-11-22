@@ -44,6 +44,7 @@ import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgePort;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
@@ -66,41 +67,37 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
         m_domains=getAllPersisted(bridgeBridgeLinkDao, bridgeMacLinkDao);
     }
 
+    //FIXME check forwarders.....should not be included here..
     @Override
     public List<SharedSegment> getBridgeNodeSharedSegments(
            BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao, int nodeid) 
         {
         List<SharedSegment> segments = new ArrayList<SharedSegment>();
+        
         Set<Integer> designated = new HashSet<Integer>();
-BRIDGELINK:        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByNodeId(nodeid)) {
-            for (SharedSegment segment : segments) {
-                if (segment.containsPort(BridgePort.getFromBridgeBridgeLink(link))
-                     || segment.containsPort(BridgePort.getFromDesignatedBridgeBridgeLink(link))) {
-                    segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
-                    designated.add(link.getDesignatedNode().getId());
-                    continue BRIDGELINK;
-                }
-            }
-            SharedSegment segment = SharedSegment.createFrom(link);
-            segments.add(segment);
+        designated.add(nodeid);
+        
+        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByNodeId(nodeid)) {
+            designated.add(link.getDesignatedNode().getId());
         }
         
-        designated.add(nodeid);
         for (Integer curNodeId: designated) {
-DBRIDGELINK:        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByDesignatedNodeId(curNodeId)) {
-            for (SharedSegment segment : segments) {
-                if (segment.containsPort(BridgePort.getFromBridgeBridgeLink(link))
-                        || segment.containsPort(BridgePort.getFromDesignatedBridgeBridgeLink(link))) {
-                    segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
-                    continue DBRIDGELINK;
+            DBRIDGELINK:for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByDesignatedNodeId(curNodeId)) {
+                for (SharedSegment segment : segments) {
+                    if (segment.containsPort(BridgePort.getFromDesignatedBridgeBridgeLink(link))) {
+                        segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
+                        continue DBRIDGELINK;
+                    }
                 }
-            }
-            SharedSegment segment = SharedSegment.createFrom(link);
-            segments.add(segment);
+                try {
+                    segments.add(SharedSegment.createFrom(link));
+                } catch (BridgeTopologyException e) {
+                    LOG.error("getBridgeNodeSharedSegments: cannot create shared segment {}", e.getMessage(),e);
+                }
             }
         }
 
-MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid)) {
+        MACLINK:for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid)) {
             for (SharedSegment segment : segments) {
                 if (segment.containsMac(link.getMacAddress())
                         || segment.containsPort(BridgePort.getFromBridgeMacLink(link))) {
@@ -108,14 +105,19 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
                     continue MACLINK;
                 }
             }
-            SharedSegment segment = SharedSegment.createFrom(link);
-            segments.add(segment);
+            try {
+                segments.add(SharedSegment.createFrom(link));
+            } catch (BridgeTopologyException e) {
+                LOG.error("getBridgeNodeSharedSegments: cannot create shared segment {}", e.getMessage(),e);
+            }
         }
 
         return segments;
     }
     
     //FIXME what if there are duplicated macs?
+    //FIXME check forwarders.....should not be here..
+    //FIXME should be revised
     @Override
     public SharedSegment getHostNodeSharedSegment(BridgeBridgeLinkDao bridgeBridgeLinkDao, BridgeMacLinkDao bridgeMacLinkDao, String mac) {
         
@@ -159,11 +161,11 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
                 }
             }
             if (segmentnotfound)  {
-                SharedSegment bblsegment = SharedSegment.createFrom(link);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("getAllPersisted: created new Shared Segment:\n{}", bblsegment.printTopology());
+                try {
+                    bblsegments.add(SharedSegment.createFrom(link));
+                } catch (BridgeTopologyException e) {
+                    LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(),e);
                 }
-                bblsegments.add(bblsegment);
             }
             // set up domains
             if (rootnodetodomainnodemap.containsKey(link.getDesignatedNode().getId())) {
@@ -204,7 +206,6 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
                     rootnodetodomainnodemap.put(link.getDesignatedNode().getId(), new HashSet<Integer>());
                     rootnodetodomainnodemap.get(link.getDesignatedNode().getId()).add(link.getNode().getId());                
                 }
-                // FIXME: Check if node is a child of some other and manage exception :-)
             }
             if (LOG.isDebugEnabled()) {
                 LOG.info("getAllPersisted: bridge topology node set: {}", rootnodetodomainnodemap );
@@ -255,11 +256,11 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
                     continue BML;
                 }
             }
-            SharedSegment bmlsegment = SharedSegment.createFrom(link);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getAllPersisted: created new Bridge Mac Link Shared Segment:\n{}", bmlsegment.printTopology());
+            try {
+                bmlsegments.add(SharedSegment.createFrom(link));
+            } catch (BridgeTopologyException e) {
+                LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(), e);
             }
-            bmlsegments.add(bmlsegment);
         }
 
         List<BridgeMacLink> forwarders = new ArrayList<BridgeMacLink>();
@@ -291,13 +292,11 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
         Set<BroadcastDomain> domains = new CopyOnWriteArraySet<BroadcastDomain>();
         for (Integer rootnode : rootnodetodomainnodemap.keySet()) {
             BroadcastDomain domain = new BroadcastDomain();
-            Bridge rootBridge = new Bridge(rootnode);
-            rootBridge.setRootBridge();
-            domain.addBridge(rootBridge);
+            domain.addBridge(Bridge.createRootBridge(rootnode));
             for (Integer bridgenodeId: rootnodetodomainnodemap.get(rootnode)) {
-                Bridge bridge = new Bridge(bridgenodeId);
-                bridge.setRootPort(designatebridgemap.get(bridgenodeId).getBridgePort());
-                domain.addBridge(bridge);
+                domain.addBridge(Bridge.create(bridgenodeId, 
+                                               designatebridgemap.get(
+                                                                      bridgenodeId).getBridgePort()));
             }
                 
             if (LOG.isDebugEnabled()) {

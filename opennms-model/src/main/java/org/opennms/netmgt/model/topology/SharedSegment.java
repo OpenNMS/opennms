@@ -79,7 +79,7 @@ public class SharedSegment implements BridgeTopology{
         return maclinks;
     }
 
-    public static SharedSegment createFrom(BridgeMacLink link) {
+    public static SharedSegment createFrom(BridgeMacLink link) throws BridgeTopologyException {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeMacLink(link));
         segment.getMacsOnSegment().add(link.getMacAddress());
@@ -90,7 +90,7 @@ public class SharedSegment implements BridgeTopology{
         return segment;
     }
 
-    public static SharedSegment createFrom(BridgeBridgeLink link) {
+    public static SharedSegment createFrom(BridgeBridgeLink link) throws BridgeTopologyException {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
         segment.getBridgePortsOnSegment().add(BridgePort.getFromDesignatedBridgeBridgeLink(link));
@@ -101,21 +101,24 @@ public class SharedSegment implements BridgeTopology{
         return segment;
     }
 
-    public static SharedSegment createAndAddToBroadcastDomain(BroadcastDomain domain, BridgePort port, Set<String> macs) {
+    public static SharedSegment createAndAddToBroadcastDomain(BroadcastDomain domain, BridgePort port, Set<String> macs) 
+            throws BridgeTopologyException {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(port);
         segment.getMacsOnSegment().addAll(macs);
         segment.setDesignatedBridge(port.getNodeId());
-        domain.add(segment);
+        domain.getSharedSegments().add(segment);
         return segment;
     }
     
-    public static SharedSegment createAndAddToBroadcastDomain(BroadcastDomain domain, Set<BridgePort> ports, Set<String> macs, Integer designatedBridge) {
+    public static SharedSegment createAndAddToBroadcastDomain(BroadcastDomain domain, 
+            Set<BridgePort> ports, Set<String> macs, 
+            Integer designatedBridge) throws BridgeTopologyException {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().addAll(ports);
         segment.getMacsOnSegment().addAll(macs);
         segment.setDesignatedBridge(designatedBridge);
-        domain.add(segment);
+        domain.getSharedSegments().add(segment);
         return segment;
     }
     
@@ -150,26 +153,12 @@ public class SharedSegment implements BridgeTopology{
         
     }
                     
-    public boolean setDesignatedBridge(Integer designatedBridge) {
+    public boolean setDesignatedBridge(Integer designatedBridge) throws BridgeTopologyException {
         if (designatedBridge == null) { 
-            return false;
+            throw new BridgeTopologyException("Designated Bridge NodeId cannot be null", this);
         }
         m_designatedBridgeId = designatedBridge;
             return true;
-    }
-
-    public Integer getFirstNoDesignatedBridge() {
-        for (BridgePort port: m_portsOnSegment ) {
-            if (port == null 
-                    || port.getNodeId() == null
-                    ||port.getBridgePort() == null) {
-            continue;
-            }
-            if (m_designatedBridgeId == null || port.getNodeId().intValue() != m_designatedBridgeId.intValue()) {
-                return port.getNodeId();
-            }
-        }
-        return null;
     }
 
     public Integer getDesignatedBridge() {
@@ -209,16 +198,6 @@ public class SharedSegment implements BridgeTopology{
         return nodes;
     }
 
-    //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId} 
-    //        |
-    //     bridge Id
-    //        |
-    //      shared {smac....} {(sbridge,sport).....}U{bridgeId,bridgePort)
-    //       | | |
-    //       A B C
-    //    move all the macs and port on shared
-    //  ------> topSegment {tmac...}U{smac....} {(tbridge,tport)}U{(sbridge,sport).....}
-
     public void retain(Set<String> macs, BridgePort dlink) {
         m_portsOnSegment.add(dlink);
         m_macsOnSegment.retainAll(macs);
@@ -247,11 +226,7 @@ public class SharedSegment implements BridgeTopology{
         }
         return m_portsOnSegment.remove(bridgetoremove);
     }
-    
-    public void removeMacs(Set<String> mactoberemoved) {
-        m_macsOnSegment.removeAll(mactoberemoved);
-    }
-    
+        
     public Set<String> getMacsOnSegment() {
         return m_macsOnSegment;
     }
@@ -291,10 +266,11 @@ public class SharedSegment implements BridgeTopology{
         strbfr.append("]\n");
         for (BridgePort blink:  m_portsOnSegment) {
             if (blink == null) {
-                strbfr.append("       -> port:[null]\n");
+                strbfr.append("       -> port:[null]");
             } else {
                 strbfr.append(blink.printTopology());
             }
+            strbfr.append("\n");
         }
         strbfr.append("        -> macs:");
         strbfr.append(getMacsOnSegment());        
