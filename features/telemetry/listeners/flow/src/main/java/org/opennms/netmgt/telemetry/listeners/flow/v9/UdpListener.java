@@ -35,6 +35,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.flow.PacketHandler;
+import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
 import org.slf4j.Logger;
@@ -90,7 +91,7 @@ public class UdpListener implements Listener {
 
                         ch.pipeline()
                                 .addLast(new UdpPacketDecoder(templateManager))
-                                .addLast(new PacketHandler(UdpListener.this.dispatcher))
+                                .addLast(new PacketHandler(Protocol.NETFLOW9, UdpListener.this.dispatcher))
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {

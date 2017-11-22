@@ -29,6 +29,12 @@
 package org.opennms.netmgt.telemetry.listeners.flow;
 
 public enum Protocol {
-    NETFLOW9,
-    IPFIX,
+    NETFLOW9(org.opennms.netmgt.telemetry.listeners.flow.v9.proto.Header.VERSION),
+    IPFIX(org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Header.VERSION);
+
+    public final int magic;
+
+    Protocol(final int magic) {
+        this.magic = magic;
+    }
 }

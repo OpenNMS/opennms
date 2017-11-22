@@ -41,22 +41,4 @@ public interface InformationElement {
     int getMinimumFieldLength();
 
     int getMaximumFieldLength();
-
-//    private final Value.Parser parser;
-//
-//    public InformationElement(final Value.Parser parser) {
-//        this.parser = Objects.requireNonNull(parser);
-//    }
-//
-//    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-//        return this.parser.parse(templateResolver, buffer);
-//    }
-//
-//    public int getMaximumFieldLength() {
-//        return this.parser.getMaximumFieldLength();
-//    }
-//
-//    public int getMinimumFieldLength() {
-//        return this.parser.getMinimumFieldLength();
-//    }
 }

@@ -60,6 +60,15 @@ public final class Flows {
         getKeyBytes(int index);
 
     /**
+     * <code>optional .Entry.Semantics semantics = 2;</code>
+     */
+    boolean hasSemantics();
+    /**
+     * <code>optional .Entry.Semantics semantics = 2;</code>
+     */
+    org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics getSemantics();
+
+    /**
      * <code>optional bool bool = 100;</code>
      */
     boolean hasBool();
@@ -219,6 +228,17 @@ public final class Flows {
               key_.add(bs);
               break;
             }
+            case 16: {
+              int rawValue = input.readEnum();
+              org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics value = org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(2, rawValue);
+              } else {
+                bitField0_ |= 0x00000001;
+                semantics_ = value;
+              }
+              break;
+            }
             case 800: {
               valueCase_ = 100;
               value_ = input.readBool();
@@ -318,6 +338,151 @@ public final class Flows {
     @java.lang.Override
     public com.google.protobuf.Parser<Entry> getParserForType() {
       return PARSER;
+    }
+
+    /**
+     * Protobuf enum {@code Entry.Semantics}
+     */
+    public enum Semantics
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>DEFAULT = 0;</code>
+       */
+      DEFAULT(0, 0),
+      /**
+       * <code>QUANTITY = 1;</code>
+       */
+      QUANTITY(1, 1),
+      /**
+       * <code>TOTAL_COUNTER = 2;</code>
+       */
+      TOTAL_COUNTER(2, 2),
+      /**
+       * <code>DELTA_COUNTER = 3;</code>
+       */
+      DELTA_COUNTER(3, 3),
+      /**
+       * <code>IDENTIFIER = 4;</code>
+       */
+      IDENTIFIER(4, 4),
+      /**
+       * <code>FLAGS = 5;</code>
+       */
+      FLAGS(5, 5),
+      /**
+       * <code>LIST = 6;</code>
+       */
+      LIST(6, 6),
+      /**
+       * <code>SNMP_COUNTER = 7;</code>
+       */
+      SNMP_COUNTER(7, 7),
+      /**
+       * <code>SNMP_GAUGE = 8;</code>
+       */
+      SNMP_GAUGE(8, 8),
+      ;
+
+      /**
+       * <code>DEFAULT = 0;</code>
+       */
+      public static final int DEFAULT_VALUE = 0;
+      /**
+       * <code>QUANTITY = 1;</code>
+       */
+      public static final int QUANTITY_VALUE = 1;
+      /**
+       * <code>TOTAL_COUNTER = 2;</code>
+       */
+      public static final int TOTAL_COUNTER_VALUE = 2;
+      /**
+       * <code>DELTA_COUNTER = 3;</code>
+       */
+      public static final int DELTA_COUNTER_VALUE = 3;
+      /**
+       * <code>IDENTIFIER = 4;</code>
+       */
+      public static final int IDENTIFIER_VALUE = 4;
+      /**
+       * <code>FLAGS = 5;</code>
+       */
+      public static final int FLAGS_VALUE = 5;
+      /**
+       * <code>LIST = 6;</code>
+       */
+      public static final int LIST_VALUE = 6;
+      /**
+       * <code>SNMP_COUNTER = 7;</code>
+       */
+      public static final int SNMP_COUNTER_VALUE = 7;
+      /**
+       * <code>SNMP_GAUGE = 8;</code>
+       */
+      public static final int SNMP_GAUGE_VALUE = 8;
+
+
+      public final int getNumber() { return value; }
+
+      public static Semantics valueOf(int value) {
+        switch (value) {
+          case 0: return DEFAULT;
+          case 1: return QUANTITY;
+          case 2: return TOTAL_COUNTER;
+          case 3: return DELTA_COUNTER;
+          case 4: return IDENTIFIER;
+          case 5: return FLAGS;
+          case 6: return LIST;
+          case 7: return SNMP_COUNTER;
+          case 8: return SNMP_GAUGE;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<Semantics>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static com.google.protobuf.Internal.EnumLiteMap<Semantics>
+          internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<Semantics>() {
+              public Semantics findValueByNumber(int number) {
+                return Semantics.valueOf(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        return getDescriptor().getValues().get(index);
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.getDescriptor().getEnumTypes().get(0);
+      }
+
+      private static final Semantics[] VALUES = values();
+
+      public static Semantics valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int index;
+      private final int value;
+
+      private Semantics(int index, int value) {
+        this.index = index;
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:Entry.Semantics)
     }
 
     public interface TimestampOrBuilder extends
@@ -888,6 +1053,21 @@ public final class Flows {
       return key_.getByteString(index);
     }
 
+    public static final int SEMANTICS_FIELD_NUMBER = 2;
+    private org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics semantics_;
+    /**
+     * <code>optional .Entry.Semantics semantics = 2;</code>
+     */
+    public boolean hasSemantics() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional .Entry.Semantics semantics = 2;</code>
+     */
+    public org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics getSemantics() {
+      return semantics_;
+    }
+
     public static final int BOOL_FIELD_NUMBER = 100;
     /**
      * <code>optional bool bool = 100;</code>
@@ -1101,6 +1281,7 @@ public final class Flows {
 
     private void initFields() {
       key_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      semantics_ = org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics.DEFAULT;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1123,6 +1304,9 @@ public final class Flows {
       getSerializedSize();
       for (int i = 0; i < key_.size(); i++) {
         output.writeBytes(1, key_.getByteString(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeEnum(2, semantics_.getNumber());
       }
       if (valueCase_ == 100) {
         output.writeBool(
@@ -1179,6 +1363,10 @@ public final class Flows {
         }
         size += dataSize;
         size += 1 * getKeyList().size();
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, semantics_.getNumber());
       }
       if (valueCase_ == 100) {
         size += com.google.protobuf.CodedOutputStream
@@ -1347,6 +1535,8 @@ public final class Flows {
         super.clear();
         key_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
+        semantics_ = org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics.DEFAULT;
+        bitField0_ = (bitField0_ & ~0x00000002);
         valueCase_ = 0;
         value_ = null;
         return this;
@@ -1382,6 +1572,10 @@ public final class Flows {
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.key_ = key_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.semantics_ = semantics_;
         if (valueCase_ == 100) {
           result.value_ = value_;
         }
@@ -1442,6 +1636,9 @@ public final class Flows {
             key_.addAll(other.key_);
           }
           onChanged();
+        }
+        if (other.hasSemantics()) {
+          setSemantics(other.getSemantics());
         }
         switch (other.getValueCase()) {
           case BOOL: {
@@ -1627,6 +1824,41 @@ public final class Flows {
   }
   ensureKeyIsMutable();
         key_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics semantics_ = org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics.DEFAULT;
+      /**
+       * <code>optional .Entry.Semantics semantics = 2;</code>
+       */
+      public boolean hasSemantics() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional .Entry.Semantics semantics = 2;</code>
+       */
+      public org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics getSemantics() {
+        return semantics_;
+      }
+      /**
+       * <code>optional .Entry.Semantics semantics = 2;</code>
+       */
+      public Builder setSemantics(org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        semantics_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .Entry.Semantics semantics = 2;</code>
+       */
+      public Builder clearSemantics() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        semantics_ = org.opennms.netmgt.telemetry.listeners.flow.dto.Flows.Entry.Semantics.DEFAULT;
         onChanged();
         return this;
       }
@@ -3129,18 +3361,23 @@ public final class Flows {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013flows.proto\"\242\002\n\005Entry\022\013\n\003key\030\001 \003(\t\022\016\n\004" +
-      "bool\030d \001(\010H\000\022%\n\ttimestamp\030e \001(\0132\020.Entry." +
-      "TimestampH\000\022\017\n\005float\030f \001(\001H\000\022\026\n\014ipv4_add" +
-      "ress\030g \001(\014H\000\022\026\n\014ipv6_address\030h \001(\014H\000\022\025\n\013" +
-      "mac_address\030i \001(\014H\000\022\017\n\005bytes\030j \001(\014H\000\022\020\n\006" +
-      "signed\030k \001(\020H\000\022\022\n\010unsigned\030l \001(\006H\000\022\020\n\006st" +
-      "ring\030m \001(\tH\000\032+\n\tTimestamp\022\017\n\007seconds\030\001 \002" +
-      "(\006\022\r\n\005nanos\030\002 \002(\007B\007\n\005value\"f\n\004Flow\022\017\n\007ve" +
-      "rsion\030\001 \002(\007\022\033\n\023observationDomainId\030\n \002(\006" +
-      "\022\027\n\017scopeFieldCount\030\024 \001(\007\022\027\n\007entries\030c \003",
-      "(\0132\006.EntryB1\n/org.opennms.netmgt.telemet" +
-      "ry.listeners.flow.dto"
+      "\n\013flows.proto\"\335\003\n\005Entry\022\013\n\003key\030\001 \003(\t\022#\n\t" +
+      "semantics\030\002 \001(\0162\020.Entry.Semantics\022\016\n\004boo" +
+      "l\030d \001(\010H\000\022%\n\ttimestamp\030e \001(\0132\020.Entry.Tim" +
+      "estampH\000\022\017\n\005float\030f \001(\001H\000\022\026\n\014ipv4_addres" +
+      "s\030g \001(\014H\000\022\026\n\014ipv6_address\030h \001(\014H\000\022\025\n\013mac" +
+      "_address\030i \001(\014H\000\022\017\n\005bytes\030j \001(\014H\000\022\020\n\006sig" +
+      "ned\030k \001(\020H\000\022\022\n\010unsigned\030l \001(\006H\000\022\020\n\006strin" +
+      "g\030m \001(\tH\000\032+\n\tTimestamp\022\017\n\007seconds\030\001 \002(\006\022" +
+      "\r\n\005nanos\030\002 \002(\007\"\223\001\n\tSemantics\022\013\n\007DEFAULT\020" +
+      "\000\022\014\n\010QUANTITY\020\001\022\021\n\rTOTAL_COUNTER\020\002\022\021\n\rDE",
+      "LTA_COUNTER\020\003\022\016\n\nIDENTIFIER\020\004\022\t\n\005FLAGS\020\005" +
+      "\022\010\n\004LIST\020\006\022\020\n\014SNMP_COUNTER\020\007\022\016\n\nSNMP_GAU" +
+      "GE\020\010B\007\n\005value\"f\n\004Flow\022\017\n\007version\030\001 \002(\007\022\033" +
+      "\n\023observationDomainId\030\n \002(\006\022\027\n\017scopeFiel" +
+      "dCount\030\024 \001(\007\022\027\n\007entries\030c \003(\0132\006.EntryB1\n" +
+      "/org.opennms.netmgt.telemetry.listeners." +
+      "flow.dto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -3159,7 +3396,7 @@ public final class Flows {
     internal_static_Entry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Entry_descriptor,
-        new java.lang.String[] { "Key", "Bool", "Timestamp", "Float", "Ipv4Address", "Ipv6Address", "MacAddress", "Bytes", "Signed", "Unsigned", "String", "Value", });
+        new java.lang.String[] { "Key", "Semantics", "Bool", "Timestamp", "Float", "Ipv4Address", "Ipv6Address", "MacAddress", "Bytes", "Signed", "Unsigned", "String", "Value", });
     internal_static_Entry_Timestamp_descriptor =
       internal_static_Entry_descriptor.getNestedTypes().get(0);
     internal_static_Entry_Timestamp_fieldAccessorTable = new

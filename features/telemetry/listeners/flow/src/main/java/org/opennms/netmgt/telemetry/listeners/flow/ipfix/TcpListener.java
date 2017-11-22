@@ -32,6 +32,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.flow.PacketHandler;
+import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 import org.slf4j.Logger;
@@ -80,7 +81,7 @@ public class TcpListener implements Listener {
 
                         ch.pipeline()
                                 .addLast(new TcpPacketDecoder(ch.remoteAddress(), ch.localAddress(), templateManager))
-                                .addLast(new PacketHandler(TcpListener.this.dispatcher))
+                                .addLast(new PacketHandler(Protocol.IPFIX, TcpListener.this.dispatcher))
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {

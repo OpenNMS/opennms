@@ -33,12 +33,14 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.flow.dto.Flows;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
@@ -65,9 +67,13 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedEnvelope<RecordProvider, InetSocketAddress>> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketHandler.class);
 
-    protected final AsyncDispatcher<TelemetryMessage> dispatcher;
+    private final Protocol protocol;
 
-    public PacketHandler(final AsyncDispatcher<TelemetryMessage> dispatcher) {
+    private final AsyncDispatcher<TelemetryMessage> dispatcher;
+
+    public PacketHandler(final Protocol protocol,
+                         final AsyncDispatcher<TelemetryMessage> dispatcher) {
+        this.protocol = Objects.requireNonNull(protocol);
         this.dispatcher = Objects.requireNonNull(dispatcher);
     }
 
@@ -77,6 +83,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
 
         packet.content().getRecords().forEach(record -> {
             final Flows.Flow.Builder flow = Flows.Flow.newBuilder()
+                    .setVersion(protocol.magic)
                     .setObservationDomainId(record.observationDomainId)
                     .setScopeFieldCount(record.scopeFieldCount);
 
@@ -119,20 +126,32 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
         }
 
         private Iterable<String> buildName(final String... names) {
-           return Iterables.concat(this.prefix, Arrays.asList(names));
+            return Iterables.concat(this.prefix, Arrays.asList(names));
+        }
+
+        private Flows.Entry.Builder buildEntry(final String name, final Optional<Semantics> semantics) {
+            final Flows.Entry.Builder builder = this.flow.addEntriesBuilder();
+
+            builder.addAllKey(this.buildName(name));
+
+            if (semantics.isPresent()) {
+                builder.setSemantics(Flows.Entry.Semantics.valueOf(semantics.get().ordinal()));
+            } else {
+                builder.clearSemantics();
+            }
+
+            return builder;
         }
 
         @Override
         public void accept(final BooleanValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
+            this.buildEntry(value.getName(), value.getSemantics())
                     .setBool(value.getValue());
         }
 
         @Override
         public void accept(final DateTimeValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
+            this.buildEntry(value.getName(), value.getSemantics())
                     .setTimestamp(Flows.Entry.Timestamp.newBuilder()
                             .setSeconds(value.getValue().getEpochSecond())
                             .setNanos(value.getValue().getNano()));
@@ -140,50 +159,43 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
 
         @Override
         public void accept(final FloatValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
+            this.buildEntry(value.getName(), value.getSemantics())
                     .setFloat(value.getValue());
         }
 
         @Override
         public void accept(final IPv4AddressValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
+            this.buildEntry(value.getName(), value.getSemantics())
                     .setIpv4Address(ByteString.copyFrom(value.getValue().getAddress()));
         }
 
         @Override
         public void accept(final IPv6AddressValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
+            this.buildEntry(value.getName(), value.getSemantics())
                     .setIpv6Address(ByteString.copyFrom(value.getValue().getAddress()));
         }
 
         @Override
         public void accept(final MacAddressValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
+            this.buildEntry(value.getName(), value.getSemantics())
                     .setMacAddress(ByteString.copyFrom(value.getValue()));
         }
 
         @Override
         public void accept(final OctetArrayValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
+            this.buildEntry(value.getName(), value.getSemantics())
                     .setBytes(ByteString.copyFrom(value.getValue()));
         }
 
         @Override
         public void accept(final SignedValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
+            this.buildEntry(value.getName(), value.getSemantics())
                     .setSigned(value.getValue());
         }
 
         @Override
         public void accept(final StringValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
+            this.buildEntry(value.getName(), value.getSemantics())
                     .setString(value.getValue());
         }
 

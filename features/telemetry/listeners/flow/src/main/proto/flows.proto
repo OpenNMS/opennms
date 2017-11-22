@@ -8,7 +8,21 @@ message Entry {
         required fixed32 nanos = 2;
     }
 
+    enum Semantics {
+        DEFAULT = 0;
+        QUANTITY = 1;
+        TOTAL_COUNTER = 2;
+        DELTA_COUNTER = 3;
+        IDENTIFIER = 4;
+        FLAGS = 5;
+        LIST = 6;
+        SNMP_COUNTER = 7;
+        SNMP_GAUGE = 8;
+    }
+
     repeated string key = 1;
+
+    optional Semantics semantics = 2;
 
     // TODO: Use extensions here?
     oneof value {
