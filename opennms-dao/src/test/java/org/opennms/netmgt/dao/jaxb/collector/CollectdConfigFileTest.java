@@ -61,8 +61,8 @@ public class CollectdConfigFileTest extends TestCase {
         
         m_invocationAnticipator.anticipateCalls(1, "visitCollectdConfiguration");
         m_invocationAnticipator.anticipateCalls(1, "completeCollectdConfiguration");
-        m_invocationAnticipator.anticipateCalls(4, "visitCollectorCollection");
-        m_invocationAnticipator.anticipateCalls(4, "completeCollectorCollection");
+        m_invocationAnticipator.anticipateCalls(2, "visitCollectorCollection");
+        m_invocationAnticipator.anticipateCalls(2, "completeCollectorCollection");
         
         configFile.visit(m_visitor);
         

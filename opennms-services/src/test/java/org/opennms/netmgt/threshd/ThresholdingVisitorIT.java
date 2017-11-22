@@ -1140,7 +1140,7 @@ public class ThresholdingVisitorIT {
     }
 
     private void runTestForBug3554() throws Exception {
-        MockLogAppender.resetEvents();
+        MockLogAppender.resetState();
         System.err.println("----------------------------------------------------------------------------------- begin test");
 
         String baseIpAddress = "10.0.0.";

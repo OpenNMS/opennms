@@ -1,0 +1,23 @@
+[[release-22-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-22.0.0]]
+==== Release 22.0.0
+
+Release 22.0.0 is the latest stable release of OpenNMS.
+// For a high-level overview of what's changed in OpenNMS 22, see link:http://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-22[What's New in OpenNMS 22].
+
+The codename for 22.0.0 is TODO
+
+===== Bug
+
+
+===== Epic
+
+
+===== Story
+
+
+===== Enhancement
+
+
