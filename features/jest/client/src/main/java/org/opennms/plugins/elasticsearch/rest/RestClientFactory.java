@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.http.HttpHost;
@@ -46,6 +47,8 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsParser;
 import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider;
+import org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor;
+import org.opennms.plugins.elasticsearch.rest.executors.RequestExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +83,11 @@ public class RestClientFactory {
 	private int m_timeout = 0;
 	private int m_retries = 0;
 	private JestClient client;
+	private Supplier<RequestExecutor> requestExecutorSupplier = () -> new DefaultRequestExecutor(m_timeout, m_retries);
+
+	public RestClientFactory(final String elasticSearchURL) throws MalformedURLException {
+		this(elasticSearchURL, null, null);
+	}
 
 	/**
 	 * Create a RestClientFactory.
@@ -262,11 +270,21 @@ public class RestClientFactory {
 		}
 	}
 
+	public void setRequestExecutorFactory(RequestExecutorFactory requestExecutorFactory) {
+		this.requestExecutorSupplier = () -> requestExecutorFactory.createExecutor(m_timeout, m_retries);
+	}
+
+	public void setRequestExecutorSupplier(Supplier<RequestExecutor> requestExecutorSupplier) {
+		this.requestExecutorSupplier = requestExecutorSupplier;
+	}
+
 	public JestClient createClient() {
 		if (this.client == null) {
-			JestClientFactory factory = new JestClientFactory();
+			final JestClientFactory factory = new JestClientFactory();
 			factory.setHttpClientConfig(this.clientConfigBuilder.build());
-			this.client = new OnmsJestClient(factory.getObject(), m_timeout, m_retries);
+
+			final RequestExecutor executor = requestExecutorSupplier.get();
+			this.client = new OnmsJestClient(factory.getObject(), executor);
 		}
 		return this.client;
 	}
@@ -280,5 +298,4 @@ public class RestClientFactory {
 		}
 		return Collections.emptyList();
 	}
-
 }

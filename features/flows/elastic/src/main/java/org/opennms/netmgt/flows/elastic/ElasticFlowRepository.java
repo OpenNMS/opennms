@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import static org.opennms.netmgt.flows.api.PersistenceException.FailedItem;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -38,9 +41,14 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.IndexStrategy;
 import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.flows.api.PersistenceException;
 import org.opennms.netmgt.flows.api.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
@@ -81,12 +89,26 @@ public class ElasticFlowRepository implements FlowRepository {
                 final Bulk bulk = bulkBuilder.build();
                 final BulkResult result = executeRequest(bulk);
                 if (!result.isSucceeded()) {
-                    LOG.error("Error while writing flows: {}", result.getErrorMessage());
+                    final List<FailedItem> failedFlows = determineFailedFlows(flowDocuments, result);
+                    throw new PersistenceException(result.getErrorMessage(), failedFlows);
                 }
             }
         } else {
             LOG.warn("Received empty or null flows. Nothing to do.");
         }
+    }
+
+    private List<FailedItem> determineFailedFlows(List<NetflowDocument> flowDocuments, BulkResult result) {
+        final List<FailedItem> failedFlows = new ArrayList<>();
+        for (int i=0; i<result.getItems().size(); i++) {
+            final BulkResult.BulkResultItem bulkResultItem = result.getItems().get(i);
+            if (bulkResultItem.error != null && !bulkResultItem.error.isEmpty()) {
+                final Exception cause = convertToException(bulkResultItem.error);
+                final NetflowDocument failedFlow = flowDocuments.get(i);
+                failedFlows.add(new FailedItem(failedFlow, cause));
+            }
+        }
+        return failedFlows;
     }
 
     @Override
@@ -105,21 +127,38 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private <T extends JestResult> T executeRequest(Action<T> clientRequest) throws FlowException {
         try {
-            final T result = client.execute(clientRequest);
+            T result = client.execute(clientRequest);
             return result;
-        } catch (IOException e) {
-            throw new FlowException("Error executing query", e);
+        } catch (IOException ex) {
+            LOG.error("An error occurred while executing the given request: {}", clientRequest, ex);
+            throw new FlowException(ex.getMessage(), ex);
         }
     }
 
     private SearchResult search(String query) throws FlowException {
         final SearchResult result = executeRequest(new Search.Builder(query)
                 .addType("flow")
+                .ignoreUnavailable(true)
                 .build());
         if (!result.isSucceeded()) {
-            LOG.error("Error reading flows {}", result.getErrorMessage());
+            LOG.error("Error reading flows. Query: {}, error message: {}", query, result.getErrorMessage());
             throw new QueryException("Could not read flows from repository. " + result.getErrorMessage());
         }
         return result;
+    }
+
+    protected static Exception convertToException(String error) {
+        // Read error data
+        final JsonObject errorObject = new JsonParser().parse(error).getAsJsonObject();
+        final String errorType = errorObject.get("type").getAsString();
+        final String errorReason = errorObject.get("reason").getAsString();
+        final JsonElement errorCause = errorObject.get("caused_by");
+
+        // Create Exception
+        final String errorMessage = String.format("%s: %s", errorType, errorReason);
+        if (errorCause != null) {
+            return new Exception(errorMessage, convertToException(errorCause.toString()));
+        }
+        return new Exception(errorMessage);
     }
 }

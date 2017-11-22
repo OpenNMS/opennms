@@ -98,6 +98,11 @@ The following configuration properties can be set:
 | optional
 | -
 
+| _retryCooldown_
+| Defines the cooldown in ms to wait before retrying. Value of `0` means no cooldown. Value must be >= `0`.
+| optional
+| `500`
+
 | _settings.index.number_of_shards_
 | The number of primary shards that an index should have. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
 | optional
