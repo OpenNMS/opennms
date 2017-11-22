@@ -385,13 +385,13 @@ public class Main implements Runnable {
 		try {
 			String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
 			File killSwitch = null;
-			if (! "".equals(killSwitchFileName) && killSwitchFileName != null) {
-				killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
+			if (!"".equals(killSwitchFileName) && killSwitchFileName != null) {
+				killSwitch = new File(killSwitchFileName);
 				if (!killSwitch.exists()) {
 					try {
 						killSwitch.createNewFile();
-					} catch (IOException ioe) {
-						// We'll just do without one
+					} catch (IOException e) {
+						LOG.error("Could not create kill switch file at path {}", killSwitchFileName, e);
 					}
 				}
 			}
