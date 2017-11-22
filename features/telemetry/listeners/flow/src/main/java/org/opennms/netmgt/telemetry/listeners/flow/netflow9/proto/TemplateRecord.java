@@ -26,51 +26,57 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
-
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public final class OptionsTemplateRecordHeader {
+public final class TemplateRecord implements Record {
 
-    /*
-      0                   1                   2                   3
-      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |         Template ID           |      Option Scope Length      |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |        Option Length          |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    */
+    public final TemplateRecordHeader header;
 
-    public static final int SIZE = 6;
+    public final List<FieldSpecifier> fields;
 
-    public final int templateId; // uint16
-    public final int optionScopeLength; // uint16
-    public final int optionLength; // uint16
+    public TemplateRecord(final TemplateRecordHeader header,
+                          final ByteBuffer buffer) throws InvalidPacketException {
+        this.header = Objects.requireNonNull(header);
 
-    public OptionsTemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
-        this.templateId = uint16(buffer);
-        this.optionScopeLength = uint16(buffer);
-        this.optionLength = uint16(buffer);
-
-        // Since Template IDs are used as Set IDs in the Sets they describe
-        if (this.templateId <= 255) {
-            throw new InvalidPacketException("Invalid template ID: %d", this.templateId);
+        final List<FieldSpecifier> fields = new LinkedList<>();
+        for (int i = 0; i < this.header.fieldCount; i++) {
+            final FieldSpecifier field = new FieldSpecifier(buffer);
+            fields.add(field);
         }
+
+        this.fields = Collections.unmodifiableList(fields);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("templateId", templateId)
-                .add("optionScopeLength", optionScopeLength)
-                .add("optionLength", optionLength)
+                .add("header", header)
+                .add("fields", fields)
                 .toString();
+    }
+
+    public static FlowSet.RecordParser<TemplateRecord> parser() {
+        return new FlowSet.RecordParser<TemplateRecord>() {
+            @Override
+            public TemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
+                final TemplateRecordHeader header = new TemplateRecordHeader(buffer);
+                return new TemplateRecord(header, buffer);
+            }
+
+            @Override
+            public int getMinimumRecordLength() {
+                return TemplateRecordHeader.SIZE;
+            }
+        };
     }
 }

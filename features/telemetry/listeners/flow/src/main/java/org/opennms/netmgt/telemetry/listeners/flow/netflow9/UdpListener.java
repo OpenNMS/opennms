@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;

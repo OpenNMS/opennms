@@ -26,10 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -38,52 +39,43 @@ import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public final class OptionsTemplateRecord implements Record {
+public final class FlowSet<R extends Record> implements Iterable<R> {
 
-    public final OptionsTemplateRecordHeader header;
+    public interface RecordParser<R extends Record> {
+        R parse(final ByteBuffer buffer) throws InvalidPacketException;
 
-    public final List<FieldSpecifier> fields;
+        int getMinimumRecordLength();
+    }
 
-    public OptionsTemplateRecord(final OptionsTemplateRecordHeader header,
-                                 final ByteBuffer buffer) throws InvalidPacketException {
+    public final FlowSetHeader header;
+    public final List<R> records;
+
+    public FlowSet(final FlowSetHeader header,
+                   final RecordParser<R> parser,
+                   final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
-        final List<FieldSpecifier> fields = new LinkedList<>();
-
-        for (int i = 0; i < this.header.optionScopeLength / FieldSpecifier.SIZE; i++) {
-            final FieldSpecifier field = new FieldSpecifier(buffer);
-            fields.add(field);
+        final List<R> records = new LinkedList<>();
+        while (buffer.remaining() >= parser.getMinimumRecordLength()) {
+            records.add(parser.parse(buffer));
         }
+        this.records = Collections.unmodifiableList(records);
 
-        for (int i = 0; i < this.header.optionLength / FieldSpecifier.SIZE; i++) {
-            final FieldSpecifier field = new FieldSpecifier(buffer);
-            fields.add(field);
+        if (this.records.size() == 0) {
+            throw new InvalidPacketException("Empty set");
         }
+    }
 
-        this.fields = Collections.unmodifiableList(fields);
+    @Override
+    public Iterator<R> iterator() {
+        return this.records.iterator();
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", header)
-                .add("fields", fields)
+                .add("records", records)
                 .toString();
-    }
-
-    public static FlowSet.RecordParser<OptionsTemplateRecord> parser() {
-        return new FlowSet.RecordParser<OptionsTemplateRecord>() {
-            @Override
-            public OptionsTemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
-                final OptionsTemplateRecordHeader header = new OptionsTemplateRecordHeader(buffer);
-
-                return new OptionsTemplateRecord(header, buffer);
-            }
-
-            @Override
-            public int getMinimumRecordLength() {
-                return TemplateRecordHeader.SIZE;
-            }
-        };
     }
 }

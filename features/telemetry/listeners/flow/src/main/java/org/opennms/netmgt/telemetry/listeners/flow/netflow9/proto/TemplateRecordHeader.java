@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
 import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
 
@@ -36,52 +36,35 @@ import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public final class FlowSetHeader {
+public final class TemplateRecordHeader {
 
     /*
-     0                   1                   2                   3
-     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |       FlowSet ID = 1          |          Length               |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Template ID (> 255)      |         Field Count           |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
-
-    public static final int TEMPLATE_SET_ID = 0;
-    public static final int OPTIONS_TEMPLATE_SET_ID = 1;
-
-    public enum Type {
-        TEMPLATE_FLOWSET,
-        OPTIONS_TEMPLATE_FLOWSET,
-        DATA_FLOWSET
-    }
 
     public static final int SIZE = 4;
 
-    public final int flowSetId; // uint16
-    public final int length; // uint16
+    public final int templateId; // uint16
+    public final int fieldCount; // uint16
 
-    public FlowSetHeader(final ByteBuffer buffer) throws InvalidPacketException {
-        this.flowSetId = uint16(buffer);
-        this.length = uint16(buffer);
+    public TemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
+        this.templateId = uint16(buffer);
+        this.fieldCount = uint16(buffer);
 
-        if (this.flowSetId < 256 && this.flowSetId != TEMPLATE_SET_ID && this.flowSetId != OPTIONS_TEMPLATE_SET_ID) {
-            throw new InvalidPacketException("Invalid set ID: %d", this.flowSetId);
+        if (this.templateId <= 255) {
+            throw new InvalidPacketException("Invalid template ID: %d", this.templateId);
         }
-    }
-
-    public Type getType() {
-        if (this.flowSetId == TEMPLATE_SET_ID) return Type.TEMPLATE_FLOWSET;
-        if (this.flowSetId == OPTIONS_TEMPLATE_SET_ID) return Type.OPTIONS_TEMPLATE_FLOWSET;
-        if (this.flowSetId >= 256) return Type.DATA_FLOWSET;
-
-        return null;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("flowSetId", flowSetId)
-                .add("length", length)
+                .add("templateId", templateId)
+                .add("fieldCount", fieldCount)
                 .toString();
     }
 }

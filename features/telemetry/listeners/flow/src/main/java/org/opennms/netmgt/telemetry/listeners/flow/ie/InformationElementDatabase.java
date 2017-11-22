@@ -106,7 +106,7 @@ public class InformationElementDatabase {
 
     public static final InformationElementDatabase instance = new InformationElementDatabase(
             new org.opennms.netmgt.telemetry.listeners.flow.ipfix.InformationElementProvider(),
-            new org.opennms.netmgt.telemetry.listeners.flow.v9.InformationElementProvider());
+            new org.opennms.netmgt.telemetry.listeners.flow.netflow9.InformationElementProvider());
 
     private final Map<Key, InformationElement> elements;
 

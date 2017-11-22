@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -45,8 +45,8 @@ import org.junit.runners.Parameterized;
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
-import org.opennms.netmgt.telemetry.listeners.flow.v9.proto.Header;
-import org.opennms.netmgt.telemetry.listeners.flow.v9.proto.Packet;
+import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Header;
+import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Packet;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest {

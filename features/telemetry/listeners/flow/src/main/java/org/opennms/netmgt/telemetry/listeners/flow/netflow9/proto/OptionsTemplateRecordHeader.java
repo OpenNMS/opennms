@@ -26,56 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
+
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
 
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public final class FlowSet<R extends Record> implements Iterable<R> {
+public final class OptionsTemplateRecordHeader {
 
-    public interface RecordParser<R extends Record> {
-        R parse(final ByteBuffer buffer) throws InvalidPacketException;
+    /*
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |         Template ID           |      Option Scope Length      |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |        Option Length          |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    */
 
-        int getMinimumRecordLength();
-    }
+    public static final int SIZE = 6;
 
-    public final FlowSetHeader header;
-    public final List<R> records;
+    public final int templateId; // uint16
+    public final int optionScopeLength; // uint16
+    public final int optionLength; // uint16
 
-    public FlowSet(final FlowSetHeader header,
-                   final RecordParser<R> parser,
-                   final ByteBuffer buffer) throws InvalidPacketException {
-        this.header = Objects.requireNonNull(header);
+    public OptionsTemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
+        this.templateId = uint16(buffer);
+        this.optionScopeLength = uint16(buffer);
+        this.optionLength = uint16(buffer);
 
-        final List<R> records = new LinkedList<>();
-        while (buffer.remaining() >= parser.getMinimumRecordLength()) {
-            records.add(parser.parse(buffer));
+        // Since Template IDs are used as Set IDs in the Sets they describe
+        if (this.templateId <= 255) {
+            throw new InvalidPacketException("Invalid template ID: %d", this.templateId);
         }
-        this.records = Collections.unmodifiableList(records);
-
-        if (this.records.size() == 0) {
-            throw new InvalidPacketException("Empty set");
-        }
-    }
-
-    @Override
-    public Iterator<R> iterator() {
-        return this.records.iterator();
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("header", header)
-                .add("records", records)
+                .add("templateId", templateId)
+                .add("optionScopeLength", optionScopeLength)
+                .add("optionLength", optionLength)
                 .toString();
     }
 }

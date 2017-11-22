@@ -26,15 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9;
 
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
-import org.opennms.netmgt.telemetry.listeners.flow.v9.proto.Header;
-import org.opennms.netmgt.telemetry.listeners.flow.v9.proto.Packet;
+import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Header;
+import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Packet;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

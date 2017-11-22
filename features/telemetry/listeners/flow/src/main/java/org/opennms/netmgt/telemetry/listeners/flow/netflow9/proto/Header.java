@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
 import java.nio.ByteBuffer;
 

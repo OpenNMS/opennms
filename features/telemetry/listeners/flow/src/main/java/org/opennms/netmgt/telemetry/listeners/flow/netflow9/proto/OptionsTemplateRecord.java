@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.v9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -38,18 +38,24 @@ import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public final class TemplateRecord implements Record {
+public final class OptionsTemplateRecord implements Record {
 
-    public final TemplateRecordHeader header;
+    public final OptionsTemplateRecordHeader header;
 
     public final List<FieldSpecifier> fields;
 
-    public TemplateRecord(final TemplateRecordHeader header,
-                          final ByteBuffer buffer) throws InvalidPacketException {
+    public OptionsTemplateRecord(final OptionsTemplateRecordHeader header,
+                                 final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<FieldSpecifier> fields = new LinkedList<>();
-        for (int i = 0; i < this.header.fieldCount; i++) {
+
+        for (int i = 0; i < this.header.optionScopeLength / FieldSpecifier.SIZE; i++) {
+            final FieldSpecifier field = new FieldSpecifier(buffer);
+            fields.add(field);
+        }
+
+        for (int i = 0; i < this.header.optionLength / FieldSpecifier.SIZE; i++) {
             final FieldSpecifier field = new FieldSpecifier(buffer);
             fields.add(field);
         }
@@ -65,12 +71,13 @@ public final class TemplateRecord implements Record {
                 .toString();
     }
 
-    public static FlowSet.RecordParser<TemplateRecord> parser() {
-        return new FlowSet.RecordParser<TemplateRecord>() {
+    public static FlowSet.RecordParser<OptionsTemplateRecord> parser() {
+        return new FlowSet.RecordParser<OptionsTemplateRecord>() {
             @Override
-            public TemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
-                final TemplateRecordHeader header = new TemplateRecordHeader(buffer);
-                return new TemplateRecord(header, buffer);
+            public OptionsTemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
+                final OptionsTemplateRecordHeader header = new OptionsTemplateRecordHeader(buffer);
+
+                return new OptionsTemplateRecord(header, buffer);
             }
 
             @Override
