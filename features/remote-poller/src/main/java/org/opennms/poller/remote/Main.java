@@ -38,6 +38,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
@@ -69,7 +70,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class Main implements Runnable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+	private static final Logger LOG;
 
 	protected final String[] m_args;
 	protected URI m_uri = null;
@@ -78,6 +79,39 @@ public class Main implements Runnable {
 	protected String m_password = null;
 	protected boolean m_gui = false;
 	protected boolean m_disableIcmp = false;
+
+	/**
+	 * Make sure that we copy the system properties before we initialize
+	 * log4j2 so that we can set {@code log4j.configurationFile} when we
+	 * are executing via JNLP.
+	 */
+	static {
+		copyJnlpSystemProperties();
+		LOG = LoggerFactory.getLogger(Main.class);
+	}
+
+	/**
+	 * Since Java 1.7.0u45, only "secure" system properties are allowed 
+	 * via Java Web Start so remap properties with "secure" prefixes to 
+	 * normal system properties. This circumvents the Java Web Start 
+	 * checks without altering any of our code or vendor code that relies 
+	 * on system properties (like log4j2).
+	 * 
+	 * @see https://docs.oracle.com/javase/7/docs/technotes/guides/javaws/developersguide/syntax.html#application_desc
+	 */
+	private static void copyJnlpSystemProperties() {
+		Properties systemPropertiesClone = (Properties)System.getProperties().clone();
+		for (String prefix : new String[] { "jnlp.", "javaws." }) {
+			systemPropertiesClone.forEach((propKey,value) -> {
+				String key = (String)propKey;
+				if (key.startsWith(prefix)) {
+					String newKey = key.substring(prefix.length());
+					System.out.printf("Copying system property %s to %s\n", key, newKey);
+					System.setProperty(newKey, (String)value);
+				}
+			});
+		}
+	}
 
 	private Main(String[] args) {
 		// Give us some time to attach a debugger if necessary
