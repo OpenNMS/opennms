@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.listeners.flow.session;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
@@ -44,7 +45,7 @@ public final class EnterpriseField extends Field {
         public EnterpriseValue(final int informationElementId,
                                final long enterpriseNumber,
                                final byte[] data) {
-            super("enterprise");
+            super("enterprise", Optional.empty());
             this.informationElementId = informationElementId;
             this.enterpriseNumber = enterpriseNumber;
 

@@ -29,44 +29,34 @@
 package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
-import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
-public class InformationElement {
+public interface InformationElement {
 
-    private final String name;
+    Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
+                   final ByteBuffer buffer) throws InvalidPacketException;
 
-    private final Value.Parser parser;
-    private final Optional<Semantics> semantics;
+    int getMinimumFieldLength();
 
-    public InformationElement(final String name,
-                              final Value.Parser parser,
-                              final Optional<Semantics> semantics) {
-        this.name = Objects.requireNonNull(name);
-        this.parser = Objects.requireNonNull(parser);
-        this.semantics = Objects.requireNonNull(semantics);
-    }
+    int getMaximumFieldLength();
 
-    public String getName() {
-        return this.name;
-    }
-
-    public Optional<Semantics> getSemantics() {
-        return this.semantics;
-    }
-
-    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-        return this.parser.parse(templateResolver, buffer);
-    }
-
-    public int getMaximumFieldLength() {
-        return this.parser.getMaximumFieldLength();
-    }
-
-    public int getMinimumFieldLength() {
-        return this.parser.getMinimumFieldLength();
-    }
+//    private final Value.Parser parser;
+//
+//    public InformationElement(final Value.Parser parser) {
+//        this.parser = Objects.requireNonNull(parser);
+//    }
+//
+//    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+//        return this.parser.parse(templateResolver, buffer);
+//    }
+//
+//    public int getMaximumFieldLength() {
+//        return this.parser.getMaximumFieldLength();
+//    }
+//
+//    public int getMinimumFieldLength() {
+//        return this.parser.getMinimumFieldLength();
+//    }
 }

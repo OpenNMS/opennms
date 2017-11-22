@@ -32,9 +32,12 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
@@ -44,8 +47,9 @@ public class IPv6AddressValue extends Value<Inet6Address> {
     public final Inet6Address value;
 
     public IPv6AddressValue(final String name,
+                            final Optional<Semantics> semantics,
                             final Inet6Address value) {
-        super(name);
+        super(name, semantics);
         this.value = value;
     }
 
@@ -57,12 +61,12 @@ public class IPv6AddressValue extends Value<Inet6Address> {
                 .toString();
     }
 
-    public static Value.Parser parser(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 try {
-                    return new IPv6AddressValue(name, (Inet6Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 16)));
+                    return new IPv6AddressValue(name, semantics, (Inet6Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 16)));
                 } catch (UnknownHostException e) {
                     throw new InvalidPacketException("Error parsing IPv6 value", e);
                 }

@@ -30,8 +30,11 @@ package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
@@ -47,8 +50,9 @@ public class DateTimeValue extends Value<Instant> {
     private final Instant value;
 
     public DateTimeValue(final String name,
+                         final Optional<Semantics> semantics,
                          final Instant value) {
-        super(name);
+        super(name, semantics);
         this.value = value;
     }
 
@@ -60,11 +64,11 @@ public class DateTimeValue extends Value<Instant> {
                 .toString();
     }
 
-    public static Value.Parser parserWithSeconds(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWithSeconds(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new DateTimeValue(name, Instant.ofEpochSecond(BufferUtils.uint32(buffer)));
+                return new DateTimeValue(name, semantics, Instant.ofEpochSecond(BufferUtils.uint32(buffer)));
             }
 
             @Override
@@ -79,11 +83,11 @@ public class DateTimeValue extends Value<Instant> {
         };
     }
 
-    public static Value.Parser parserWithMilliseconds(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWithMilliseconds(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new DateTimeValue(name, Instant.ofEpochMilli(BufferUtils.uint64(buffer).longValue()));
+                return new DateTimeValue(name, semantics, Instant.ofEpochMilli(BufferUtils.uint64(buffer).longValue()));
             }
 
             @Override
@@ -98,8 +102,8 @@ public class DateTimeValue extends Value<Instant> {
         };
     }
 
-    public static Value.Parser parserWithMicroseconds(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWithMicroseconds(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 final long seconds = BufferUtils.uint32(buffer);
@@ -107,7 +111,7 @@ public class DateTimeValue extends Value<Instant> {
 
                 final Instant value = Instant.ofEpochSecond(seconds - SECONDS_TO_EPOCH, fraction * 1_000_000_000L / (1L << 32));
 
-                return new DateTimeValue(name, value);
+                return new DateTimeValue(name, semantics, value);
             }
 
             @Override
@@ -122,8 +126,8 @@ public class DateTimeValue extends Value<Instant> {
         };
     }
 
-    public static Value.Parser parserWithNanoseconds(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWithNanoseconds(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
                 final long seconds = BufferUtils.uint32(buffer);
@@ -131,7 +135,7 @@ public class DateTimeValue extends Value<Instant> {
 
                 final Instant value = Instant.ofEpochSecond(seconds - SECONDS_TO_EPOCH, fraction * 1_000_000_000L / (1L << 32));
 
-                return new DateTimeValue(name, value);
+                return new DateTimeValue(name, semantics, value);
             }
 
             @Override

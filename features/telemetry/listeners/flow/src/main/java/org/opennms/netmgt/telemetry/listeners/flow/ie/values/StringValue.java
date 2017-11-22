@@ -30,8 +30,11 @@ package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
@@ -43,8 +46,9 @@ public class StringValue extends Value<String> {
     private final String value;
 
     public StringValue(final String name,
+                       final Optional<Semantics> semantics,
                        final String value) {
-        super(name);
+        super(name, semantics);
         this.value = value;
     }
 
@@ -56,11 +60,11 @@ public class StringValue extends Value<String> {
                 .toString();
     }
 
-    public static Value.Parser parser(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new StringValue(name, new String(BufferUtils.bytes(buffer, buffer.remaining()), UTF8_CHARSET));
+                return new StringValue(name, semantics, new String(BufferUtils.bytes(buffer, buffer.remaining()), UTF8_CHARSET));
             }
 
             @Override

@@ -35,9 +35,12 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldSpecifier;
@@ -84,9 +87,10 @@ public class ListValue extends Value<List<List<Value<?>>>> {
     private final List<List<Value<?>>> values;
 
     public ListValue(final String name,
+                     final Optional<Semantics> semantics,
                      final Semantic semantic,
                      final List<List<Value<?>>> values) {
-        super(name);
+        super(name, semantics);
         this.semantic = semantic;
         this.values = values;
     }
@@ -104,9 +108,8 @@ public class ListValue extends Value<List<List<Value<?>>>> {
      |                              ...                              |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
-    public static Parser parserWithBasicList(final String name) {
-        return new Value.Parser() {
-
+    public static InformationElement parserWithBasicList(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(uint8(buffer));
@@ -117,7 +120,7 @@ public class ListValue extends Value<List<List<Value<?>>>> {
                     values.add(Collections.singletonList(new FieldValue(templateResolver, field.specifier, buffer).value));
                 }
 
-                return new ListValue(name, semantic, values);
+                return new ListValue(name, semantics, semantic, values);
             }
 
             @Override
@@ -143,9 +146,8 @@ public class ListValue extends Value<List<List<Value<?>>>> {
      |                              ...                              |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
-    public static Parser parserWithSubTemplateList(final String name) {
-        return new Value.Parser() {
-
+    public static InformationElement parserWithSubTemplateList(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(uint8(buffer));
@@ -159,7 +161,7 @@ public class ListValue extends Value<List<List<Value<?>>>> {
                     values.add(Lists.transform(record.fields, f -> f.value));
                 }
 
-                return new ListValue(name, semantic, values);
+                return new ListValue(name, semantics, semantic, values);
             }
 
             @Override
@@ -223,9 +225,8 @@ public class ListValue extends Value<List<List<Value<?>>>> {
      |      ...      |
      +-+-+-+-+-+-+-+-+
     */
-    public static Parser parserWithSubTemplateMultiList(final String name) {
-        return new Value.Parser() {
-
+    public static InformationElement parserWithSubTemplateMultiList(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.find(BufferUtils.uint8(buffer));
@@ -243,7 +244,7 @@ public class ListValue extends Value<List<List<Value<?>>>> {
                     values.addAll(Lists.transform(dataSet.records, r -> Lists.transform(r.fields, f -> f.value)));
                 }
 
-                return new ListValue(name, semantic, values);
+                return new ListValue(name, semantics, semantic, values);
             }
 
             @Override

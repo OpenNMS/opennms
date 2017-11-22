@@ -29,8 +29,11 @@
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
@@ -40,8 +43,9 @@ public class FloatValue extends Value<Double> {
     private final double value;
 
     public FloatValue(final String name,
+                      final Optional<Semantics> semantics,
                       final double value) {
-        super(name);
+        super(name, semantics);
         this.value = value;
     }
 
@@ -53,16 +57,16 @@ public class FloatValue extends Value<Double> {
                 .toString();
     }
 
-    public static Value.Parser parserWith64Bit(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWith32Bit(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new FloatValue(name, Double.longBitsToDouble(BufferUtils.uint(buffer, buffer.remaining()).longValue()));
+                return new FloatValue(name, semantics, Float.intBitsToFloat(BufferUtils.uint(buffer, buffer.remaining()).intValue()));
             }
 
             @Override
             public int getMaximumFieldLength() {
-                return 8;
+                return 4;
             }
 
             @Override
@@ -72,16 +76,16 @@ public class FloatValue extends Value<Double> {
         };
     }
 
-    public static Value.Parser parserWith32Bit(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWith64Bit(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new FloatValue(name, Float.intBitsToFloat(BufferUtils.uint(buffer, buffer.remaining()).intValue()));
+                return new FloatValue(name, semantics, Double.longBitsToDouble(BufferUtils.uint(buffer, buffer.remaining()).longValue()));
             }
 
             @Override
             public int getMaximumFieldLength() {
-                return 4;
+                return 8;
             }
 
             @Override

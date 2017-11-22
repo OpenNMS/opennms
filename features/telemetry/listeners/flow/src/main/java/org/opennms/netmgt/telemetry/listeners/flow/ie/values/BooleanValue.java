@@ -29,9 +29,12 @@
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
@@ -41,9 +44,9 @@ public class BooleanValue extends Value<Boolean> {
     private final boolean value;
 
     public BooleanValue(final String name,
+                        final Optional<Semantics> semantics,
                         final boolean value) {
-        super(name);
-
+        super(name, semantics);
         this.value = value;
     }
 
@@ -55,16 +58,17 @@ public class BooleanValue extends Value<Boolean> {
                 .toString();
     }
 
-    public static Value.Parser parser(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
+                                  final ByteBuffer buffer) throws InvalidPacketException {
                 final int value = BufferUtils.uint8(buffer);
 
                 if (value < 1 || value > 2) {
                     throw new InvalidPacketException("Illegal value '%d' for boolean type (only 1/true and 2/false allowed)", value);
                 }
-                return new BooleanValue(name, value == 1);
+                return new BooleanValue(name, semantics, value == 1);
             }
 
             @Override

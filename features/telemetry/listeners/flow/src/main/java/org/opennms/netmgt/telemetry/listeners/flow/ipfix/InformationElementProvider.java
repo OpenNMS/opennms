@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
@@ -133,7 +133,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
 
                 final Optional<Semantics> semantics = Optional.ofNullable(SEMANTICS_LOOKUP.get(line[indexOfSemantics]));
 
-                adder.add(Protocol.IPFIX, id, name, valueParserFactory, semantics);
+                adder.add(Protocol.IPFIX, id, valueParserFactory, name, semantics);
             }
         } catch (final IOException e) {
             // TODO: Log me

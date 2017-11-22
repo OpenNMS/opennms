@@ -29,8 +29,11 @@
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
@@ -41,8 +44,9 @@ public class UnsignedValue extends Value<UnsignedLong> {
     private final UnsignedLong value;
 
     public UnsignedValue(final String name,
+                         final Optional<Semantics> semantics,
                          final UnsignedLong value) {
-        super(name);
+        super(name, semantics);
         this.value = value;
     }
 
@@ -54,11 +58,11 @@ public class UnsignedValue extends Value<UnsignedLong> {
                 .toString();
     }
 
-    public static Value.Parser parserWith8Bit(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWith8Bit(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, BufferUtils.uint(buffer, 1));
+                return new UnsignedValue(name, semantics, BufferUtils.uint(buffer, 1));
             }
 
             @Override
@@ -73,11 +77,11 @@ public class UnsignedValue extends Value<UnsignedLong> {
         };
     }
 
-    public static Value.Parser parserWith16Bit(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWith16Bit(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
+                return new UnsignedValue(name, semantics, BufferUtils.uint(buffer, buffer.remaining()));
             }
 
             @Override
@@ -92,11 +96,11 @@ public class UnsignedValue extends Value<UnsignedLong> {
         };
     }
 
-    public static Value.Parser parserWith24Bit(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWith24Bit(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
+                return new UnsignedValue(name, semantics, BufferUtils.uint(buffer, buffer.remaining()));
             }
 
             @Override
@@ -111,11 +115,11 @@ public class UnsignedValue extends Value<UnsignedLong> {
         };
     }
 
-    public static Value.Parser parserWith32Bit(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWith32Bit(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
+                return new UnsignedValue(name, semantics, BufferUtils.uint(buffer, buffer.remaining()));
             }
 
             @Override
@@ -130,11 +134,11 @@ public class UnsignedValue extends Value<UnsignedLong> {
         };
     }
 
-    public static Value.Parser parserWith64Bit(final String name) {
-        return new Value.Parser() {
+    public static InformationElement parserWith64Bit(final String name, final Optional<Semantics> semantics) {
+        return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, BufferUtils.uint(buffer, buffer.remaining()));
+                return new UnsignedValue(name, semantics, BufferUtils.uint(buffer, buffer.remaining()));
             }
 
             @Override

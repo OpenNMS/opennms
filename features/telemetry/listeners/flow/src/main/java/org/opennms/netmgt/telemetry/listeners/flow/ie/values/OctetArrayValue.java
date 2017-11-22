@@ -29,10 +29,13 @@
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
@@ -42,8 +45,9 @@ public class OctetArrayValue extends Value<byte[]> {
     public final byte[] value;
 
     public OctetArrayValue(final String name,
+                           final Optional<Semantics> semantics,
                            final byte[] value) {
-        super(name);
+        super(name, semantics);
         this.value = value;
     }
 
@@ -55,15 +59,15 @@ public class OctetArrayValue extends Value<byte[]> {
                 .toString();
     }
 
-    public static Value.Parser parser(final String name) {
-        return parserWithLimits(0, 0xFFFF).parser(name);
+    public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
+        return parserWithLimits(0, 0xFFFF).parser(name, semantics);
     }
 
     public static InformationElementDatabase.ValueParserFactory parserWithLimits(final int minimum, final int maximum) {
-        return name -> new Parser() {
+        return (name, semantics) -> new InformationElement() {
             @Override
             public Value<?> parse(TemplateManager.TemplateResolver templateResolver, ByteBuffer buffer) throws InvalidPacketException {
-                return new OctetArrayValue(name, BufferUtils.bytes(buffer, buffer.remaining()));
+                return new OctetArrayValue(name, semantics, BufferUtils.bytes(buffer, buffer.remaining()));
             }
 
             @Override

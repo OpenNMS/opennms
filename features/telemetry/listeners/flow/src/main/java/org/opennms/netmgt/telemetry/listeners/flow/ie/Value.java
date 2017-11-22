@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
+import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.FloatValue;
@@ -44,17 +43,8 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.session.EnterpriseField;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 public abstract class Value<T> {
-
-    public interface Parser {
-        Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
-
-        int getMinimumFieldLength();
-
-        int getMaximumFieldLength();
-    }
 
     public interface Visitor {
         void accept(final BooleanValue value);
@@ -85,12 +75,20 @@ public abstract class Value<T> {
 
     private final String name;
 
-    protected Value(final String name) {
+    private final Optional<Semantics> semantics;
+
+    protected Value(final String name,
+                    final Optional<Semantics> semantics) {
         this.name = Objects.requireNonNull(name);
+        this.semantics = Objects.requireNonNull(semantics);
     }
 
     public String getName() {
         return this.name;
+    }
+
+    public Optional<Semantics> getSemantics() {
+        return this.semantics;
     }
 
     public abstract T getValue();
