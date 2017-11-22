@@ -90,6 +90,14 @@ public class InformationElementDatabase {
                          final Optional<Semantics> semantics) {
             this.add(protocol, Optional.empty(), informationElementNumber, parserFactory, name, semantics);
         }
+
+        default void add(final Protocol protocol,
+                         final Integer informationElementNumber,
+                         final ValueParserFactory parserFactory,
+                         final String name,
+                         final Semantics semantics) {
+            this.add(protocol, Optional.empty(), informationElementNumber, parserFactory, name, Optional.of(semantics));
+        }
     }
 
     public interface Provider {
