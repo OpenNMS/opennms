@@ -51,9 +51,9 @@ public abstract class Value<T> {
     public interface Parser {
         Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
 
-        int getMaximumFieldLength();
-
         int getMinimumFieldLength();
+
+        int getMaximumFieldLength();
     }
 
     public interface Visitor {

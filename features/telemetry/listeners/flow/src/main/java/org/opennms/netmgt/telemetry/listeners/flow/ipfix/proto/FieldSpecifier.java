@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.listeners.flow.session.EnterpriseField;
@@ -70,7 +71,7 @@ public final class FieldSpecifier {
             this.enterpriseNumber = Optional.empty();
 
             final InformationElement informationElement = InformationElementDatabase.instance
-                    .lookup(this.informationElementId)
+                    .lookup(Protocol.IPFIX, this.informationElementId)
                     .orElseThrow(() -> new InvalidPacketException("Undefined information element ID: %d", this.informationElementId));
 
             if (this.fieldLength > informationElement.getMaximumFieldLength() || this.fieldLength < informationElement.getMinimumFieldLength()) {

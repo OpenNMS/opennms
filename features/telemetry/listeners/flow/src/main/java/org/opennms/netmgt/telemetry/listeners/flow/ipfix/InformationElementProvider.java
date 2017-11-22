@@ -35,10 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
+import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.FloatValue;
@@ -101,7 +100,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
             .build();
 
     @Override
-    public void load(final ImmutableMap.Builder<InformationElementDatabase.Key, InformationElement> builder) {
+    public void load(final InformationElementDatabase.Adder adder) {
         try (final CSVReader reader = new CSVReader(new InputStreamReader(this.getClass().getResourceAsStream("/ipfix-information-elements.csv")),
                 ',', '"', '\\', 0, false)) {
 
@@ -132,10 +131,9 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
                     continue;
                 }
 
-                final Value.Parser type = valueParserFactory.parser(name);
                 final Optional<Semantics> semantics = Optional.ofNullable(SEMANTICS_LOOKUP.get(line[indexOfSemantics]));
 
-                builder.put(new InformationElementDatabase.Key(Optional.empty(), id), new InformationElement(id, name, type, semantics));
+                adder.add(Protocol.IPFIX, id, name, valueParserFactory, semantics);
             }
         } catch (final IOException e) {
             // TODO: Log me

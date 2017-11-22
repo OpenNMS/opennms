@@ -37,25 +37,17 @@ import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 public class InformationElement {
 
-    private final int id;
-
     private final String name;
 
     private final Value.Parser parser;
     private final Optional<Semantics> semantics;
 
-    public InformationElement(final int id,
-                              final String name,
+    public InformationElement(final String name,
                               final Value.Parser parser,
                               final Optional<Semantics> semantics) {
-        this.id = id;
         this.name = Objects.requireNonNull(name);
         this.parser = Objects.requireNonNull(parser);
         this.semantics = Objects.requireNonNull(semantics);
-    }
-
-    public int getId() {
-        return this.id;
     }
 
     public String getName() {

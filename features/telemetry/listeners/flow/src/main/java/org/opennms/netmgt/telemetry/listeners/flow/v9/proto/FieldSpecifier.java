@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
@@ -61,7 +62,7 @@ public final class FieldSpecifier {
         this.fieldLength = BufferUtils.uint16(buffer);
 
         final InformationElement informationElement = InformationElementDatabase.instance
-                .lookup(this.fieldType)
+                .lookup(Protocol.NETFLOW9, this.fieldType)
                 .orElseThrow(() -> new InvalidPacketException("Undefined information element ID: %d", this.fieldType));
 
         if (this.fieldLength > informationElement.getMaximumFieldLength() || this.fieldLength < informationElement.getMinimumFieldLength()) {
