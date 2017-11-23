@@ -62,7 +62,7 @@ public class ShowConfigCommand implements Action {
         System.out.println("ProxyForAddress: " + InetAddrUtils.str(agent.getProxyFor()));
         System.out.println("Port: " + agent.getPort());
         System.out.println("Timeout: " + agent.getTimeout());
-        System.out.println("Retries: " + agent.getTimeout());
+        System.out.println("Retries: " + agent.getRetries());
         System.out.println("MaxVarsPerPdu: " + agent.getMaxVarsPerPdu());
         System.out.println("MaxRepetitions: " + agent.getMaxRepetitions());
         System.out.println("MaxRequestSize: " + agent.getMaxRequestSize());
