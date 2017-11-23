@@ -998,8 +998,9 @@
       <feature>opennms-collection-api</feature>
       <feature>opennms-provisioning-api</feature>
       <feature>opennms-dao-api</feature>
-      <!-- The version of Xalan and BCEL declared here should match the versions
-           declared in the parent pom of the corresponding CXF version -->
+      <!-- The version of Xerces, Xalan and BCEL declared here should match the
+           versions declared in the parent pom of the corresponding CXF version -->
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1</bundle>
       <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/5.2_4</bundle>
       <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/2.7.2_3</bundle>
       <feature version="${cxfVersion}">cxf-jaxws</feature>
