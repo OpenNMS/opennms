@@ -73,6 +73,7 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -698,7 +699,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     @Override
     public void store(BroadcastDomain domain, Date now) {
         for (SharedSegment segment : domain.getSharedSegments()) {
-            //FIXME why I can have a segment without a designated port?
             try {
                 segment.getDesignatedPort();
                 for (BridgeBridgeLink link : SharedSegment.getBridgeBridgeLinks(segment)) {
@@ -710,8 +710,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                     saveBridgeMacLink(link);
                 }
             } catch (BridgeTopologyException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("No designated port, {}, on segment {}", e.getMessage(),e.printTopology(),e);
             }
         }
         
@@ -847,6 +846,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     @Override
     public void loadBridgeTopology() {
         m_bridgeTopologyDao.load(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao);
+        for (BroadcastDomain domain: m_bridgeTopologyDao.getAll()) {
+            updateBridgesOnDomain(domain);
+        }
     }
     
     public CdpLinkDao getCdpLinkDao() {
@@ -970,8 +972,34 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public List<BridgeElement> getBridgeElements(Integer nodeId) {
-        return m_bridgeElementDao.findByNodeId(nodeId);
+    public void updateBridgesOnDomain(BroadcastDomain domain) {
+        if (domain == null) {
+            return;
+        }
+
+        for (Bridge bridge: domain.getBridges()) {
+            bridge.clear();
+            List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(bridge.getNodeId());
+            bridge.getIdentifiers().addAll(Bridge.getIdentifier(elems));
+            bridge.setDesignated(Bridge.getDesignated(elems));
+        }        
+    }
+
+    @Override
+    public void updateBridgeOnDomain(BroadcastDomain domain, Integer nodeId) {
+        if (domain == null) {
+            return;
+        }
+
+        for (Bridge bridge: domain.getBridges()) {
+            if (bridge.getNodeId().intValue() == nodeId.intValue()) {
+                bridge.clear();
+                List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(nodeId);
+                bridge.getIdentifiers().addAll(Bridge.getIdentifier(elems));
+                bridge.setDesignated(Bridge.getDesignated(elems));
+                break;
+            }
+        }        
     }
 
     @Override

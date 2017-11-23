@@ -83,6 +83,10 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
         
         for (Integer curNodeId: designated) {
             DBRIDGELINK:for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByDesignatedNodeId(curNodeId)) {
+                if (link.getNode().getId().intValue() != nodeid
+                        && link.getDesignatedNode().getId().intValue() != nodeid) {
+                    continue;
+                }
                 for (SharedSegment segment : segments) {
                     if (segment.containsPort(BridgePort.getFromDesignatedBridgeBridgeLink(link))) {
                         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
@@ -109,6 +113,13 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                 segments.add(SharedSegment.createFrom(link));
             } catch (BridgeTopologyException e) {
                 LOG.error("getBridgeNodeSharedSegments: cannot create shared segment {}", e.getMessage(),e);
+            }
+        }
+        if (LOG.isDebugEnabled()) {
+            for (SharedSegment segment: segments) {
+                LOG.debug("getBridgeNodeSharedSegments: node[{}] found:\n{}", nodeid,
+                          segment.printTopology());
+                
             }
         }
 
@@ -162,7 +173,12 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             }
             if (segmentnotfound)  {
                 try {
-                    bblsegments.add(SharedSegment.createFrom(link));
+                    SharedSegment segment = SharedSegment.createFrom(link); 
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getAllPersisted: created Shared Segment:\n{}", 
+                                  segment.printTopology());
+                    }
+                    bblsegments.add(segment);
                 } catch (BridgeTopologyException e) {
                     LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(),e);
                 }
@@ -208,7 +224,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                 }
             }
             if (LOG.isDebugEnabled()) {
-                LOG.info("getAllPersisted: bridge topology node set: {}", rootnodetodomainnodemap );
+                LOG.debug("getAllPersisted: bridge topology node set: {}", rootnodetodomainnodemap );
             }
         }
         LOG.info("getAllPersisted: bridge topology node set: {}", rootnodetodomainnodemap );
@@ -229,7 +245,7 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
                         mactobridgeportbbl.put(link.getMacAddress(), new ArrayList<BridgeMacLink>());
                     }
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("getAllPersisted: Found BridgeBridgeLink Segment: {}", bblsegment.printTopology());
+                        LOG.debug("getAllPersisted: Found Segment:\n{}", bblsegment.printTopology());
                     }
                     mactobridgeportbbl.get(link.getMacAddress()).add(link);
                     continue BML;
@@ -251,13 +267,20 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
                 if (bmlsegment.containsPort(BridgePort.getFromBridgeMacLink(link))) {
                     bmlsegment.getMacsOnSegment().add(link.getMacAddress());
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("getAllPersisted: Shared Segment:\n{}", bmlsegment.printTopology());
+                        LOG.debug("getAllPersisted: added mac {} to Shared Segment:\n{}", 
+                                  link.getMacAddress(),
+                                  bmlsegment.printTopology());
                     }
                     continue BML;
                 }
             }
             try {
-                bmlsegments.add(SharedSegment.createFrom(link));
+                SharedSegment segment = SharedSegment.createFrom(link); 
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getAllPersisted: created Shared Segment:\n{}", 
+                              segment.printTopology());
+                }
+                bmlsegments.add(segment);
             } catch (BridgeTopologyException e) {
                 LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(), e);
             }
@@ -265,24 +288,20 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
 
         List<BridgeMacLink> forwarders = new ArrayList<BridgeMacLink>();
         for (String macaddress: mactobridgeportbbl.keySet()) {
-            LOG.debug("getAllPersisted: parsing mac {} ",macaddress);
-            
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getAllPersisted: parsing backbone mac {} ",macaddress);
+            }
             for (SharedSegment segment : bblsegments) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("getAllPersisted: parsing:\n {}",segment.printTopology());
-                }
                 List<BridgeMacLink> bblfoundonsegment = new ArrayList<BridgeMacLink>();
                 for (BridgeMacLink link : mactobridgeportbbl.get(macaddress)) {
                     if (segment.containsPort(BridgePort.getFromBridgeMacLink(link))) {
                         bblfoundonsegment.add(link);
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("getAllPersisted: topology: {}",segment.printTopology());
-                        }
                    }
                 }
                 if (bblfoundonsegment.size() == segment.getBridgePortsOnSegment().size()) {
-                    for (BridgeMacLink link: bblfoundonsegment)
+                    for (BridgeMacLink link: bblfoundonsegment) {
                         segment.getMacsOnSegment().add(link.getMacAddress());
+                    }
                 } else {
                     forwarders.addAll(bblfoundonsegment);
                 }

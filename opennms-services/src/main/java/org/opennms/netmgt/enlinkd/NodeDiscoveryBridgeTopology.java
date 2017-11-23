@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
@@ -588,33 +586,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         return nodeswithupdatedbftonbroadcastdomain;
     }
     
-    public void updateBridgeOnDomain() {
-        if (m_domain == null) {
-            return;
-        }
-
-        for (Bridge bridge: m_domain.getBridges()) {
-            bridge.clear();
-            for (BridgeElement element: m_linkd.getQueryManager().getBridgeElements(bridge.getNodeId())) {
-                if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
-                    bridge.getIdentifiers().add(element.getBaseBridgeAddress());
-                }
-                if (InetAddressUtils.
-                        isValidStpBridgeId(element.getStpDesignatedRoot()) 
-                        && !element.getBaseBridgeAddress().
-                        equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
-                    bridge.setDesignated(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()));
-                }
-            }
-        }
-    }
-
-
     @Override
     public void run() {
 
         if (!m_linkd.getQueryManager().hasUpdatedBft(getNodeId())) {
-            LOG.info("run: node: [{}], no bft.Exiting Bridge Topology Discovery", getNodeId());
+            LOG.info("run: node: [{}], no updated bft. End Topology Bridge Discovery run", getNodeId());
             return;
         }
 
@@ -638,6 +614,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         LOG.info("run: node: [{}], getting broadcast domain. Start", getNodeId());
         for (BroadcastDomain domain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
+            synchronized (domain) {
+                
             if (LOG.isDebugEnabled()) {
                 LOG.debug("run: node: [{}], parsing domain: {}", 
                       getNodeId(),
@@ -657,6 +635,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 m_domain = domain;
                 // TODO: We should find the *best* domain, instead of using the last match
             }
+            }
+
         }
         if (m_domain == null) {
             LOG.info("run: node: [{}] Creating a new Domain", getNodeId());
@@ -748,7 +728,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             m_linkd.getQueryManager().cleanBroadcastDomains();
 
             //FIXME check everything is right
-            updateBridgeOnDomain();
+            m_linkd.getQueryManager().updateBridgesOnDomain(m_domain);
 
             if (m_notYetParsedBFTMap.isEmpty()) {
                 LOG.info("run: node: [{}], broadcast domain has no topology updates. No more action is needed.", getNodeId());

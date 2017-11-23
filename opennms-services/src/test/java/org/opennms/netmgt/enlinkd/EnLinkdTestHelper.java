@@ -175,6 +175,7 @@ public abstract class EnLinkdTestHelper {
         System.err.println("ospf rem router address less ifindex: " + link.getOspfRemAddressLessIndex());
         System.err.println("");
     }
+
     public void setBridgeElements(BroadcastDomain domain, List<BridgeElement> elements) {
         for (BridgeElement element: elements) {
             Bridge bridge = domain.getBridge(element.getNode().getId());

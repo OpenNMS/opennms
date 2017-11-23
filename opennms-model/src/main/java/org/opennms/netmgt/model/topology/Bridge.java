@@ -29,9 +29,38 @@
 package org.opennms.netmgt.model.topology;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.BridgeElement;
+
 public class Bridge implements BridgeTopology {
+
+    public static Set<String> getIdentifier(List<BridgeElement> elems) {
+        Set<String> identifiers = new HashSet<String>();
+        for (BridgeElement element: elems) {
+            if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress())) {
+                identifiers.add(element.getBaseBridgeAddress());
+            }
+
+        }
+        return identifiers;
+    }
+
+    public static String getDesignated(List<BridgeElement> elems) {
+        String designated = null;
+        for (BridgeElement element: elems) {
+            if (InetAddressUtils.
+                    isValidStpBridgeId(element.getStpDesignatedRoot()) 
+                    && !element.getBaseBridgeAddress().
+                    equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
+                designated=InetAddressUtils.
+                               getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot());
+            }
+        }
+        return designated;
+    }
 
     public static Bridge create(BroadcastDomain domain, Integer nodeid) {
         Bridge bridge = new Bridge(nodeid);

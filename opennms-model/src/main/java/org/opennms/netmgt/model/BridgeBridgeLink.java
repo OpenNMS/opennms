@@ -255,7 +255,7 @@ public class BridgeBridgeLink implements BridgeTopology {
     	strbfr.append(getBridgePort());
     	strbfr.append("], designatednodeid:[");
     	strbfr.append(getDesignatedNode().getId());
-    	strbfr.append("],designatedbridgeport:");
+    	strbfr.append("],designatedbridgeport:[");
     	strbfr.append(getDesignatedPort());
         strbfr.append("]");
 

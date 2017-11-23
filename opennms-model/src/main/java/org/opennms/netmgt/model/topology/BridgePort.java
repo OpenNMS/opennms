@@ -142,6 +142,7 @@ public class BridgePort implements BridgeTopology {
         strbfr.append(getNodeId());
         strbfr.append("], bridgeport:[");
         strbfr.append(getBridgePort());
+        strbfr.append("].");
 
         return strbfr.toString();
         }
