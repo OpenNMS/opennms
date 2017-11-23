@@ -38,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Objects;
 
 public class TelemetrySinkModule extends AbstractXmlSinkModule<TelemetryMessage, TelemetryMessageLogDTO> {
-    private static final String MODULE_ID_PREFIX = "Telemetry.";
+    private static final String MODULE_ID_PREFIX = "Telemetry-";
 
     private static final int DEFAULT_NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     private static final int DEFAULT_BATCH_SIZE = 1000;
