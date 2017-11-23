@@ -760,17 +760,6 @@
         </configuration>
       </plugin>    
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>sonar-maven-plugin</artifactId>
-        <version>2.2</version>
-        <dependencies>
-          <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.7.5.201505241946</version>
@@ -1028,17 +1017,6 @@
           <generateXml>true</generateXml>
           <generateHtml>true</generateHtml>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>sonar-maven-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <!-- jacoco code coverage testing library -->
       <!--
