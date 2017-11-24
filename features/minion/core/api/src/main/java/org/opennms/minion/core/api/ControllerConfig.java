@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,30 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.xml.bind;
+package org.opennms.minion.core.api;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+public interface ControllerConfig {
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+    String getBrokerUrl();
 
-public class SetXmlAdapter extends XmlAdapter<List<?>,Set<?>> {
-    @Override
-    public Set<?> unmarshal(final List<?> v) throws Exception {
-        if (v == null) {
-            return null;
-        }
-        return new LinkedHashSet<>(v);
-    }
+    int getBrokerMaxConnections();
 
-    @Override
-    public List<?> marshal(final Set<?> v) throws Exception {
-        if (v == null) {
-            return null;
-        }
-        return new ArrayList<>(v);
-    }
+    int getBrokerConcurrentConsumers();
+
+    int getBrokerIdleTimeout();
 
 }
