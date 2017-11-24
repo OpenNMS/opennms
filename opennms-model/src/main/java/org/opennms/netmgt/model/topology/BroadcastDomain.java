@@ -355,7 +355,10 @@ public class BroadcastDomain implements BridgeTopology {
                 BridgeForwardingTableEntry link = new BridgeForwardingTableEntry();
                 link.setNodeId(bridgeId);
                 link.setBridgePort(bridgePort);
-                link.setBridgePortIfIndex(portifindexmap.get(bridgePort).getBridgePortIfIndex()); //NPE? NMS-9557
+                if (portifindexmap.get(bridgePort) == null) {
+                    throw new BridgeTopologyException("calculateBFT: cannot find ifindex for bridgeport", bridge);
+                }
+                link.setBridgePortIfIndex(portifindexmap.get(bridgePort).getBridgePortIfIndex());
                 link.setVlan(portifindexmap.get(bridgePort).getVlan());
                 link.setMacAddress(mac);
                 link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);

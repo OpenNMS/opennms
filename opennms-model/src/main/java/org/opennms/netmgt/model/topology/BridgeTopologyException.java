@@ -36,6 +36,15 @@ public class BridgeTopologyException extends Exception implements BridgeTopology
     private static final long serialVersionUID = -6913989384724814658L;
 
     BridgeTopology m_topology;
+
+    public BridgeTopologyException(String message) {
+        super(message);
+    }
+
+    public BridgeTopologyException(String message,Throwable throwable) {
+        super(message, throwable);
+    }
+
     public BridgeTopologyException(String message, BridgeTopology topology) {
         super(message);
         m_topology=topology;
@@ -47,6 +56,9 @@ public class BridgeTopologyException extends Exception implements BridgeTopology
     }
     
     public String printTopology() {
+        if (m_topology == null) {
+            return "no topology associated to this";
+        }
         return m_topology.printTopology();
     }
 
