@@ -1,33 +1,24 @@
 <blueprint
     xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-    xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
     xsi:schemaLocation="
         http://www.osgi.org/xmlns/blueprint/v1.0.0 
         http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-
-        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
-        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
-
-        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
-        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <cm:property-placeholder id="minionProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
-        <cm:default-properties>
-            <cm:property name="broker-url" value="failover:tcp://127.0.0.1:61616"/>
-            <cm:property name="broker-max-connections" value="8"/>
-            <cm:property name="broker-concurrent-consumers" value="10"/>
-            <cm:property name="broker-idle-timeout" value="0"/>
-        </cm:default-properties>
-    </cm:property-placeholder>
+    <!-- Retrieve the broker settings from the controller configuration service since
+         we can't reliably reference the same PID from multiple bundles -->
+    <reference id="controllerConfig" interface="org.opennms.minion.core.api.ControllerConfig" />
+    <bean id="brokerUrl" factory-ref="controllerConfig" factory-method="getBrokerUrl"/>
+    <bean id="brokerMaxConnections" factory-ref="controllerConfig" factory-method="getBrokerMaxConnections"/>
+    <bean id="brokerConcurrentConsumers" factory-ref="controllerConfig" factory-method="getBrokerConcurrentConsumers"/>
+    <bean id="brokerIdleTimeout" factory-ref="controllerConfig" factory-method="getBrokerIdleTimeout"/>
 
     <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
 
     <!-- Connection factory used by the Camel component and shell commands -->
     <bean id="jmsConnectionFactory" class="org.opennms.minion.jms.impl.ScvEnabledActiveMQConnectionFactory">
-        <argument value="[[broker-url]]"/>
+        <argument ref="brokerUrl"/>
         <argument ref="secureCredentialsVault"/>
         <argument value="opennms.broker"/>
     </bean>
@@ -38,13 +29,13 @@
     </service>
 
     <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
-       <property name="maxConnections" value="[[broker-max-connections]]" />
-       <property name="idleTimeout" value="[[broker-idle-timeout]]" />
+       <property name="maxConnections" ref="brokerMaxConnections" />
+       <property name="idleTimeout" ref="brokerIdleTimeout" />
        <property name="connectionFactory" ref="jmsConnectionFactory" />
     </bean>
     <bean id="jmsConfig"  class="org.apache.camel.component.jms.JmsConfiguration">
        <property name="connectionFactory" ref="pooledConnectionFactory"/>
-       <property name="concurrentConsumers" value="[[broker-concurrent-consumers]]"/>
+       <property name="concurrentConsumers" ref="brokerConcurrentConsumers"/>
     </bean>
 
     <!-- A canonical ActiveMQ component pointing to the OpenNMS controller -->
