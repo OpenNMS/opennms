@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.DatagramPacket;
@@ -47,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
-import javax.xml.bind.JAXBException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -72,8 +72,6 @@ import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.Port;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -85,6 +83,9 @@ import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.io.Resources;
+
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 
@@ -95,9 +96,9 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
  * @author cgorantla
  */
 
-public class TelemetryIT {
+public class JtiTelemetryIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TelemetryIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JtiTelemetryIT.class);
     public static final String SENDER_IP = "192.168.1.1";
 
     private static TestEnvironment m_testEnvironment;
@@ -112,7 +113,7 @@ public class TelemetryIT {
         try {
             final TestEnvironmentBuilder builder = TestEnvironment.builder().all();
             builder.withOpenNMSEnvironment()
-                    .addFile(TelemetryIT.class.getResource("/telemetryd-configuration.xml"),
+                    .addFile(JtiTelemetryIT.class.getResource("/telemetry/jti-telemetryd-configuration.xml"),
                             "etc/telemetryd-configuration.xml");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             m_testEnvironment = builder.build();
@@ -139,15 +140,15 @@ public class TelemetryIT {
     }
 
     @Test
-    public void verifyJtiListenerOnOpenNMS() throws IOException, InterruptedException, JAXBException {
+    public void verifyJtiTelemetryOnOpenNMS() throws Exception {
 
         Date startOfTest = new Date();
 
-        OnmsNode onmsNode = sendnewSuspectEvent(false, startOfTest);
+        OnmsNode onmsNode = sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, false, startOfTest);
 
         final InetSocketAddress opennmsUdp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
 
-        sendTelemetryMessage(opennmsUdp);
+        sendJtiTelemetryMessage(opennmsUdp);
 
         await().atMost(30, SECONDS).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
                 .until(matchRrdFileFromNodeResource(onmsNode.getId()));
@@ -155,7 +156,7 @@ public class TelemetryIT {
     }
 
     @Test
-    public void verifyJtiListenerOnMinion() throws Exception {
+    public void verifyJtiTelemetryOnMinion() throws Exception {
 
         Date startOfTest = new Date();
 
@@ -172,21 +173,20 @@ public class TelemetryIT {
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
         }
 
-        OnmsNode onmsNode = sendnewSuspectEvent(true, startOfTest);
+        OnmsNode onmsNode = sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, true, startOfTest);
 
         final InetSocketAddress minionUdp = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 50000, "udp");
 
-        sendTelemetryMessage(minionUdp);
+        sendJtiTelemetryMessage(minionUdp);
 
         await().atMost(2, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS)
                 .until(matchRrdFileFromNodeResource(onmsNode.getId()));
     }
 
-    private void sendTelemetryMessage(InetSocketAddress udpAddress) {
+    private void sendJtiTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
        
-        TelemetryTop.TelemetryStream jtiMsg = buildJtiMessage(SENDER_IP, "eth0_system_test", 100, 100);
-        byte[] jtiMsgBytes = jtiMsg.toByteArray();
-        DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, udpAddress);
+        byte[] jtiOutBytes = Resources.toByteArray(Resources.getResource("telemetry/jti-proto.raw"));
+        DatagramPacket packet = new DatagramPacket(jtiOutBytes, jtiOutBytes.length, udpAddress);
 
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.send(packet);
@@ -207,7 +207,7 @@ public class TelemetryIT {
                         .returnResponse();
 
                 String message = EntityUtils.toString(response.getEntity());
-                System.out.println(message);
+                LOG.info(message);
                 if (message.contains("rrdFile=\"ifOutOctets") && message.contains("eth0_system_test")) {
                     return true;
                 } else {
@@ -218,49 +218,8 @@ public class TelemetryIT {
         };
     }
 
-    private static TelemetryTop.TelemetryStream buildJtiMessage(String ipAddress, String ifName, long ifInOctets,
-            long ifOutOctets) {
-        final Port.GPort port = Port.GPort.newBuilder()
-                .addInterfaceStats(Port.InterfaceInfos.newBuilder()
-                        .setIfName(ifName)
-                        .setInitTime(1457647123)
-                        .setSnmpIfIndex(517)
-                        .setParentAeName("ae0")
-                        .setIngressStats(Port.InterfaceStats.newBuilder()
-                                .setIfOctets(ifInOctets)
-                                .setIfPkts(1)
-                                .setIf1SecPkts(1)
-                                .setIf1SecOctets(1)
-                                .setIfUcPkts(1)
-                                .setIfMcPkts(1)
-                                .setIfBcPkts(1)
-                                .build())
-                        .setEgressStats(Port.InterfaceStats.newBuilder()
-                                .setIfOctets(ifOutOctets)
-                                .setIfPkts(1)
-                                .setIf1SecPkts(1)
-                                .setIf1SecOctets(1)
-                                .setIfUcPkts(1)
-                                .setIfMcPkts(1)
-                                .setIfBcPkts(1)
-                                .build())
-                        .build())
-                .build();
-
-        final TelemetryTop.JuniperNetworksSensors juniperNetworksSensors = TelemetryTop.JuniperNetworksSensors
-                .newBuilder().setExtension(Port.jnprInterfaceExt, port).build();
-
-        final TelemetryTop.EnterpriseSensors sensors = TelemetryTop.EnterpriseSensors.newBuilder()
-                .setExtension(TelemetryTop.juniperNetworks, juniperNetworksSensors).build();
-
-        final TelemetryTop.TelemetryStream jtiMsg = TelemetryTop.TelemetryStream.newBuilder().setSystemId(ipAddress)
-                .setComponentId(0).setSensorName("intf-stats").setSequenceNumber(49103)
-                .setTimestamp(new Date().getTime()).setEnterprise(sensors).build();
-
-        return jtiMsg;
-    }
-
-    private OnmsNode sendnewSuspectEvent(boolean isMinion, Date startOfTest)
+    public static OnmsNode sendnewSuspectEvent(Executor executor, InetSocketAddress opennmsHttp,
+            TestEnvironment m_testEnvironment, boolean isMinion, Date startOfTest)
             throws ClientProtocolException, IOException {
 
         Event minionEvent = new Event();

@@ -317,8 +317,10 @@ include::text/telemetryd/introduction.adoc[]
 
 [[ga-telemetryd-protocols]]
 === Protocol Reference
-include::text/telemetryd/protocols/junos-telemetry-interface.adoc[]
-include::text/telemetryd/protocols/jti-adapter.adoc[]
+include::text/telemetryd/protocols/jti/junos-telemetry-interface.adoc[]
+include::text/telemetryd/protocols/jti/jti-adapter.adoc[]
+include::text/telemetryd/protocols/nxos/cisco-nxos-telemetry.adoc[]
+include::text/telemetryd/protocols/nxos/nxos-adapter.adoc[]
 
 [[ga-telemetryd-listener]]
 === Listener Reference

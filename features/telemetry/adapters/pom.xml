@@ -16,5 +16,6 @@
     <module>jti</module>
     <module>registry</module>
     <module>factory</module>
+    <module>nxos</module>
   </modules>
 </project>
