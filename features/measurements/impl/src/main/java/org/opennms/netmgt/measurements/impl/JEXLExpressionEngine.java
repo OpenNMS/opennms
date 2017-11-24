@@ -69,8 +69,8 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         functions.put("math", Math.class);
         functions.put("strictmath", StrictMath.class);
         
-        // Add PriorSample functions
-        functions.put("prior", PriorSample.class);
+        // Add SampleArrayFunctions functions
+        functions.put("fn", SampleArrayFunctions.class);
         
         jexl.setFunctions(functions);
     }
@@ -130,7 +130,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         // add context as a reference to be picked up by complex formulae
         jexlValues.put("__context", context);
         
-        // add jexl engine to execute formulae since thread safe
+        // add jexl engine to execute complex formulae since thread safe
         jexlValues.put("__jexl", jexl);
 
         final long timestamps[] = results.getTimestamps();

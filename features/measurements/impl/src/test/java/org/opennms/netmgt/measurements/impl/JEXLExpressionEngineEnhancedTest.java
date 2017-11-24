@@ -51,8 +51,8 @@ public class JEXLExpressionEngineEnhancedTest {
 	private final ExpressionEngine jexlExpressionEngine = new JEXLExpressionEngine();
 
 	@Test
-	public void checkSamplePrior5NaN(){
-		final String expression = "prior:zStartNaN(\"x\", 5, __context)";
+	public void checkSamplefn5NaN(){
+		final String expression = "fn:arrayNaN(\"x\", 5)";
 		boolean success = true;
 
 		StringBuffer sb = new StringBuffer("");
@@ -63,13 +63,47 @@ public class JEXLExpressionEngineEnhancedTest {
 			for (double value: result){
 				sb.append(value+",");
 			}
-			success = (result[0] == Double.NaN);
-			success = (result[1] == Double.NaN);
-			success = (result[2] == Double.NaN);
-			success = (result[3] == Double.NaN);
-			success = (result[4] == Double.NaN);
-			success = (result[5] == 5);
-			success = (result[6] == 6);
+
+			success = 
+					Double.isNaN(result[0]) &&
+					Double.isNaN(result[1]) &&
+					Double.isNaN(result[2]) &&
+					Double.isNaN(result[3]) &&
+					Double.isNaN(result[4]) &&
+					(result[5] == 5) &&
+					(result[6] == 6);
+
+		} catch (Exception e){
+			e.printStackTrace();
+			success = false;
+		}
+
+
+		System.out.println("JEXLExpressionEngineEnhancedTest: expression="+expression +"\n    result "+sb.toString());
+		assertTrue(success);
+	}
+
+	@Test
+	public void checkSamplefn5Zero(){
+		final String expression = "fn:arrayZero(\"x\", 5)";
+		boolean success = true;
+
+		StringBuffer sb = new StringBuffer("");
+		try{
+
+			double[] result = performExpression(expression);
+
+			for (double value: result){
+				sb.append(value+",");
+			}
+
+			success = (result[0] == 0) &&
+					(result[1] == 0) &&
+					(result[2] == 0) &&
+					(result[3] == 0) &&
+					(result[4] == 0) &&
+					(result[5] == 5) &&
+					(result[6] == 6);
 
 
 		} catch (Exception e){
@@ -83,8 +117,9 @@ public class JEXLExpressionEngineEnhancedTest {
 	}
 
 	@Test
-	public void checkSamplePrior5Zero(){
-		final String expression = "prior:zStartZero(\"x\", 5, __context)";
+	public void checkSamplefn5First(){
+		final String expression = "fn:arrayFirst(\"x\", 5)";
+
 		boolean success = true;
 
 		StringBuffer sb = new StringBuffer("");
@@ -95,14 +130,13 @@ public class JEXLExpressionEngineEnhancedTest {
 			for (double value: result){
 				sb.append(value+",");
 			}
-
-			success = (result[0] == 0);
-			success = (result[1] == 0);
-			success = (result[2] == 0);
-			success = (result[3] == 0);
-			success = (result[4] == 0);
-			success = (result[5] == 5);
-			success = (result[6] == 6);
+			success = (result[0] == 5) &&
+					(result[1] == 5) &&
+					(result[2] == 5) &&
+					(result[3] == 5) &&
+					(result[4] == 5) &&
+					(result[5] == 5) &&
+					(result[6] == 6);
 
 
 		} catch (Exception e){
@@ -113,11 +147,12 @@ public class JEXLExpressionEngineEnhancedTest {
 
 		System.out.println("JEXLExpressionEngineEnhancedTest: expression:"+expression +"\n    result "+sb.toString());
 		assertTrue(success);
+
 	}
 
 	@Test
-	public void checkSamplePrior5First(){
-		final String expression = "prior:zStartFirst(\"x\", 5, __context)";
+	public void checkSamplefn5Start(){
+		final String expression = "fn:arrayStart(\"x\", 5, 10)";
 
 		boolean success = true;
 
@@ -129,14 +164,14 @@ public class JEXLExpressionEngineEnhancedTest {
 			for (double value: result){
 				sb.append(value+",");
 			}
-			success = (result[0] == 5);
-			success = (result[1] == 5);
-			success = (result[2] == 5);
-			success = (result[3] == 5);
-			success = (result[4] == 5);
-			success = (result[5] == 5);
-			success = (result[6] == 6);
-
+			success = 
+					(result[0] == 10) && 
+					(result[1] == 10) &&
+					(result[2] == 10) &&
+					(result[3] == 10) &&
+					(result[4] == 10) &&
+					(result[5] == 5) &&
+					(result[6] == 6);
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -193,7 +228,7 @@ public class JEXLExpressionEngineEnhancedTest {
 	@Test
 	public void checkTimeSeriesContextExpression(){
 		final String expression = "__jexl.createExpression(__formula).evaluate(__context)";
-		final String formula = "a * x + b * prior:zStartNaN(\"x\", 1, __context) + c * prior:zStartNaN(\"x\", 2, __context)";
+		final String formula = "a * x + b * fn:arrayNaN(\"x\", 1) + c * fn:arrayNaN(\"x\", 2)";
 
 		final Map<String,Object> constants = Maps.newHashMap();
 
@@ -214,12 +249,13 @@ public class JEXLExpressionEngineEnhancedTest {
 				sb.append(value+",");
 			}
 
-			success = (result[0] == Double.NaN);
-			success = (result[1] == Double.NaN);
-			success = (result[2] == 18.25);
-			success = (result[3] == 21.0);
-			success = (result[4] == 23.75);
-			success = (result[5] == 26.5);
+			success = 
+					Double.isNaN(result[0]) &&
+					Double.isNaN(result[1]) &&
+					(result[2] == 18.25) &&
+					(result[3] == 21.0) &&
+					(result[4] == 23.75) &&
+					(result[5] == 26.5);
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -256,7 +292,7 @@ public class JEXLExpressionEngineEnhancedTest {
 		double xValues[] = new double[N];
 		for (int i = 0; i < N; i++) {
 			timestamps[i] = i * 1000;
-			xValues[i] = Double.valueOf(i+5);
+			xValues[i] = Double.valueOf(i+5); // note for tests values start from 5
 		}
 		Map<String, double[]> values = Maps.newHashMap();
 		values.put("x", xValues);

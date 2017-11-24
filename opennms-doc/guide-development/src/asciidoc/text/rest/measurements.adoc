@@ -160,3 +160,99 @@ curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" 
     ]
 }
 ----
+===== More Advanced Expressions
+
+The jexl 2.1.x library is used to parse the expression string and this also allows java objects and predefined functions to be included in the expression.
+Jexl uses a context which is pre-populated by OpenNMS with the results of the query.
+The context contains some extra definitions which allows expressions to defined within a string constant stored with the node data and also allows previous values in a time series to be referenced.
+
+Pre defined functions
+[%header,cols=3*] 
+|===
+|Function
+|Description
+|Example
+
+|math:
+|references java.lang.Math class
+|math:cos(20)
+
+|strictmath:
+|references java.lang.StrictMath class
+|math:cos(20)
+
+|fn:
+|references the class org.opennms.netmgt.measurements.impl.SampleArrayFunctions. 
+This contains several functions which can reference previous samples in the time series.
+|
+
+|fn:arrayNaN("sampleName", n)
+|references the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with NaN.
+|fn:arrayNaN("x", 5)
+
+|fn:arrayZero("sampleName", n)
+|references the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with 0 (zero).
+|fn:arrayZero("x", 5)
+
+|fn:arrayFirst("sampleName", n)
+|references the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with the first sample.
+|fn:arrayFirst("x", 5)
+
+|fn:arrayStart("sampleName", n, constant)
+|references the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with a supplied constant.
+|fn:arrayStart("x", 5, 10)
+|===
+
+So for example with these additional variables and functions it is possible to create a Finite Impulse Response (FIR) filter function such as
+----
+y = a * f(n) + b * f(n-1) + c * f(n-2)
+----
+using the following expression where a,b and c are string constants and x is a time series value
+----
+a * x + b * fn:arrayNaN("x", 1) + c * fn:arrayNaN("x", 2)
+----
+
+Several constants and classes are also predefined by OpenNMS in the context
+
+[%header,cols=2*] 
+|===
+|Constant or prefix
+|Description
+
+|__context 
+|references the context (org.apache.commons.jexl2.JexlContext) injected into jexl
+
+|__jexl 
+|references the JexlEngine
+
+|__inf 
+|Double.POSITIVE_INFINITY
+
+|__neg_inf 
+|Double.NEGATIVE_INFINITY
+
+|NaN
+|Double.NaN
+
+|__diff_time
+|time span between start and end of samples
+
+|__i
+|index into samples array which the present calculation is referencing
+
+|__AttributeName (where AttributeName is the searched for attribute)
+|this returns the complete double[] array of samples for AttributeName
+|===
+
+This also makes it possible to reference and evaluate a formula which has been stored in OpenNMS as a string variable.
+
+The following expression will evaluate an expression string stored in the string constant called __formula
+----
+__jexl.createExpression(__formula).evaluate(__context)
+----
+The use case for this capability is that it gives us the ability to define and store a per-node and per-value correction formula which can normalise samples from different sample sources
+
+
+
+
+    
