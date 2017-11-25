@@ -137,27 +137,27 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         for (BroadcastDomain domain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
             synchronized (domain) {
                 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("run: node: [{}], parsing domain: {}", 
-                      getNodeId(),
-                      domain.printTopology());
-            }
-            Set<String>retainedSet = new HashSet<String>(
-                                                          domain.getMacsOnDomain());
-            retainedSet.retainAll(incomingSet);
-            LOG.info("run: node: [{}], retained: {}", getNodeId(), retainedSet);
-            // should contain at list 5 or 10% of the all size
-            if (retainedSet.size() > DOMAIN_MATCH_MIN_SIZE
-                    || retainedSet.size() >= incomingSet.size() * DOMAIN_MATCH_MIN_RATIO) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("run: node: [{}], domain {} found!",getNodeId(), 
+                    LOG.debug("run: node: [{}], parsing domain: {}", 
+                          getNodeId(),
                           domain.printTopology());
                 }
-                m_domain = domain;
-                // TODO: We should find the *best* domain, instead of using the last match
+                Set<String>retainedSet = new HashSet<String>(
+                                                              domain.getMacsOnDomain());
+                retainedSet.retainAll(incomingSet);
+                LOG.info("run: node: [{}], retained: {}", getNodeId(), retainedSet);
+                // should contain at list 5 or 10% of the all size
+                if (retainedSet.size() > DOMAIN_MATCH_MIN_SIZE
+                        || retainedSet.size() >= incomingSet.size() * DOMAIN_MATCH_MIN_RATIO) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("run: node: [{}], domain {} found!",getNodeId(), 
+                              domain.printTopology());
+                    }
+                    m_domain = domain;
+                    break;
+                    // TODO: We should find the *best* domain, instead of using the last match
+                }
             }
-            }
-
         }
         if (m_domain == null) {
             LOG.info("run: node: [{}] Creating a new Domain", getNodeId());
@@ -171,6 +171,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         LOG.info("run: node: [{}], getting broadcast domain. End", getNodeId());
                 
         Map<Integer,Set<BridgeForwardingTableEntry>> nodeBftMap = m_linkd.getQueryManager().getUpdateBftMap();
+        //FIXME this should be synchronized?
         Set<Integer> nodeswithupdatedbftonbroadcastdomain = getAllNodesWithUpdatedBFTOnDomain(incomingSet,nodeBftMap);            
 
         LOG.info("run: node: [{}], clean broadcast domains. Start", getNodeId());
