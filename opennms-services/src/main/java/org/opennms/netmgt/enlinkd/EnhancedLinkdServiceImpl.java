@@ -740,7 +740,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             protected BridgeMacLink doUpdate(BridgeMacLink link) {
                 link.merge(saveMe);
                 m_dao.update(link);
-                m_dao.flush();
+                m_dao.flush(); //FIXME  org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException: 
+                                //Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1; 
+                                //nested exception is org.hibernate.StaleStateException: 
                 return link;
             }
 

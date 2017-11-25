@@ -272,7 +272,7 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
         return strbfr.toString();
     }
     
-    public static String printTopology(Set<BridgeForwardingTableEntry> bft) {
+    public String printTopology(Set<BridgeForwardingTableEntry> bft) {
         StringBuffer strbfr = new StringBuffer();
         boolean rn = false;
         for (BridgeForwardingTableEntry bftentry: bft) {
