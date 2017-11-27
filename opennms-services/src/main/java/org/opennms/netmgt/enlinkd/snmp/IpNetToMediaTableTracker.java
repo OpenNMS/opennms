@@ -136,14 +136,19 @@ public class IpNetToMediaTableTracker extends TableTracker
 		 */
 		public String getIpNetToMediaPhysAddress(){
 		    SnmpValue mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR);
-		        // Try to fetch the physical address value as a hex string.
+		    if ( mac == null ) {
+		        return null;
+		    }
+		    // Try to fetch the physical address value as a hex string.
 	            String hexString = mac.toHexString();
 	            LOG.debug("getIpNetToMediaPhysAddress: checking as hexString {}", hexString);
-	            if (hexString != null && isValidBridgeAddress(hexString))
+	            if (hexString != null && 
+	                    isValidBridgeAddress(hexString)) {
 	                // If the hex string is 12 characters long, than the agent is kinda weird and
 	                // is returning the value as a raw binary value that is 6 bytes in length.
 	                // But that's OK, as long as we can convert it into a string, that's fine. 
 	                return hexString;
+	            }
 	            try{ 
 	                if (mac.isDisplayable()) {
 	                // This is the normal case that most agents conform to: the value is an ASCII 
