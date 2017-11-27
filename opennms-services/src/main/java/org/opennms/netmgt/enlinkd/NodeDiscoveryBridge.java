@@ -387,18 +387,34 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         } else if (beforePort == null) {
             bridgeifindex.put(bridgeport, bridgeport+bridgeifindex.get(afterPort)-afterPort);
         } else {
-        	int diffbefore = bridgeifindex.get(beforePort)-beforePort;
-        	int diffafter  = bridgeifindex.get(afterPort)-afterPort;
-        	if (diffafter == diffbefore) {
-        	    bridgeifindex.put(bridgeport, bridgeport+diffafter);
-        	} else if ((bridgeport-beforePort) > (afterPort-bridgeport) ) {
-            	    bridgeifindex.put(bridgeport, diffafter+bridgeport);
-        	} else {
-            	    bridgeifindex.put(bridgeport, diffbefore+bridgeport);
-        	}
+            int diffbefore = 0;
+            int diffafter = 0;
+            if (bridgeifindex.get(beforePort) != null ) {
+                 diffbefore = bridgeifindex.get(beforePort)-beforePort;
+            } else {
+                LOG.error("fixCiscoBridgeMibPort: node [{}]:  null ifindex found for before port {}.",
+                          getNodeId(),
+                          beforePort);
+            }
+            if (bridgeifindex.get(afterPort) != null ) {
+                diffafter  = bridgeifindex.get(afterPort)-afterPort;
+            } else {
+                LOG.error("fixCiscoBridgeMibPort: node [{}]:  null ifindex found for after port {}.",
+                          getNodeId(),
+                          afterPort);
+            }
+            if (diffafter == diffbefore) {
+                bridgeifindex.put(bridgeport, bridgeport+diffafter);
+            } else if ((bridgeport-beforePort) > (afterPort-bridgeport) ) {
+                bridgeifindex.put(bridgeport, diffafter+bridgeport);
+            } else {
+                bridgeifindex.put(bridgeport, diffbefore+bridgeport);
+            }
         }
         LOG.info("fixCiscoBridgeMibPort: node [{}]: port {} ifindex {}.",
-        		bridgeport,bridgeifindex.get(bridgeport));
+                 getNodeId(),
+    		bridgeport,
+    		bridgeifindex.get(bridgeport));
     }
     
     private List<BridgeForwardingTableEntry> walkDot1qTpFdb(SnmpAgentConfig peer,
