@@ -356,7 +356,7 @@ public class BroadcastDomain implements BridgeTopology {
                 link.setNodeId(bridgeId);
                 link.setBridgePort(bridgePort);
                 if (portifindexmap.get(bridgePort) == null) {
-                    throw new BridgeTopologyException("calculateBFT: cannot find ifindex for bridgeport", bridge);
+                    continue;
                 }
                 link.setBridgePortIfIndex(portifindexmap.get(bridgePort).getBridgePortIfIndex());
                 link.setVlan(portifindexmap.get(bridgePort).getVlan());

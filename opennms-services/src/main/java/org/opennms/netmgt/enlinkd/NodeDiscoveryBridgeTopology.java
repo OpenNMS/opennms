@@ -254,19 +254,20 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 LOG.info("run: node: [{}], broadcast domain has no topology updates. No more action is needed.", getNodeId());
             } else {
                 if (LOG.isInfoEnabled()) {
-                    LOG.info("calculate: node: [{}], start: broadcast domain {} topology calculation.", 
+                    LOG.info("calculate: node: [{}], topology calculation start:\n{}.", 
                          getNodeId(),
                          m_domain.printTopology());
                 }
                 calculate();
                 if (LOG.isInfoEnabled()) {
-                    LOG.info("calculate: node: [{}], end: broadcast domain {} topology calculation.", 
+                    LOG.info("calculate: node: [{}], topology calculation end: \n{}.", 
                          getNodeId(),
                          m_domain.printTopology());
                 }
             }
 
             LOG.info("run: node: [{}], saving Topology.", getNodeId());
+            m_domain.cleanForwarders();
             m_linkd.getQueryManager().store(m_domain, now);
             LOG.info("run: node: [{}], saved Topology.", getNodeId());
 
@@ -430,10 +431,14 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 try {
                     m_domain.clearTopologyForBridge(xBridge);
                 } catch (BridgeTopologyException e) {
-                    LOG.error("calculate: node: [{}]. {}, topology:\n{}", getNodeId(),e.getMessage(),e.printTopology(),e);
+                    LOG.error("calculate: node: [{}]. {}, topology:\n{}", 
+                              getNodeId(),
+                              e.getMessage(),
+                              e.printTopology(),
+                              e);
                 }
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("calculate: node: [{}], Removed bridge: [{}] form domain: {}", 
+                    LOG.debug("calculate: node: [{}], Removed bridge: [{}] from domain:\n{}", 
                 		getNodeId(),
                 		xBridge.getNodeId(),
                 		m_domain.printTopology());
@@ -448,21 +453,14 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 xbridgeft = BridgeForwardingTable.create(xBridge, 
                                    new HashSet<BridgeForwardingTableEntry>(m_notYetParsedBFTMap.remove(xBridge)));
             } catch (BridgeTopologyException e) {
-                LOG.error("calculate: node: [{}]. {}, topology:\n{}", getNodeId(),e.getMessage(),e.printTopology(),e);
+                LOG.error("calculate: node: [{}]. {}, topology:\n{}", 
+                          getNodeId(),
+                          e.getMessage(),
+                          e.printTopology(),
+                          e);
                 return;
             }
             calculate(rootft, xbridgeft);
-        }
-        m_domain.cleanForwarders();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("calculate: node: [{}], Print Topology {}",
-                    getNodeId(),
-                    m_domain.printTopology());
-        }
-        if (LOG.isInfoEnabled()) {
-            LOG.info("calculate: node: [{}], stop: broadcast domain {} topology calculated.",
-                    getNodeId(),
-                    m_domain.getBridgeNodesOnDomain());
         }
     }
      
@@ -512,39 +510,25 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }      
    }
     
+    //FIXME what to do when not found the simple connection (it should!)
     private void calculate(BridgeForwardingTable root,  
             BridgeForwardingTable xBridge) {
         BridgeSimpleConnection rx = new BridgeSimpleConnection(root, xBridge);
         if (rx.findSimpleConnection()) {
-            if (LOG.isInfoEnabled()) {
-                LOG.info("calculate: node: [{}]. {}, simple connection found:\n{}", rx.printTopology());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("calculate: node: [{}], found:\n{}", 
+                         getNodeId(),
+                         rx.printTopology());
             }
         } else {
-            LOG.warn("calculate: node: [{}]. {}, no simple connection found:\n{}", rx.printTopology());
+            LOG.warn("calculate: node: [{}], cannot found simple connection for bridges: [{},{}]", 
+                     getNodeId(),
+                     root.getNodeId(), 
+                     xBridge.getNodeId());
             return;
         }
         Integer rxDesignatedPort = rx.getFirstBridgeConnectionPort();
-        if (rxDesignatedPort == null) {
-            LOG.warn("calculate: node: [{}], cannot found simple connection for bridges: [{},{}]", 
-            		getNodeId(),
-            		root.getNodeId(), 
-            		xBridge.getNodeId());
-            m_domain.clearTopology();
-            return;
-        }
         Integer xrDesignatedPort = rx.getSecondBridgeConnectionPort();
-        if (xrDesignatedPort == null) {
-             LOG.warn("calculate: node: [{}], cannot found simple connectionfor bridges: [{},{}]",
-             		getNodeId(),
-             		xBridge.getNodeId(), 
-             		root.getNodeId());
-             m_domain.clearTopology();
-             return;
-        }
-        LOG.debug("calculate: node: [{}], level: 1, bridge: [{}], root port:[{}] ",
-        		getNodeId(),
-        		xBridge.getNodeId(),
-        		xrDesignatedPort);
         xBridge.setRootPort(xrDesignatedPort);
         //get the starting point shared segment of the top bridge
         // where the bridge is learned should not be null
@@ -554,7 +538,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             		getNodeId(),
             		m_domain.getRootBridge().getNodeId(),
             		rxDesignatedPort);
-            m_domain.clearTopology();
             return;
         }
         if (LOG.isDebugEnabled()) {
@@ -564,10 +547,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                         topSegment.printTopology());
         }
 
-        //FIXME manage error should really clear topology?
         if (!findBridgesTopo(rx,topSegment, xBridge,0)) {
             return;
-            //m_domain.clearTopology();
         }
     }
 
