@@ -9,7 +9,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<bean id="jtiFactory" class="org.opennms.netmgt.telemetry.adapters.jti.JtiAdapterFactory">
+	<bean id="nxosAdapterFactory" class="org.opennms.netmgt.telemetry.adapters.nxos.NxosAdapterFactory">
 		<argument ref="blueprintBundleContext" />
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
@@ -19,10 +19,10 @@
 		<property name="persisterFactory" ref="persisterFactory" />
 	</bean>
 
-	<service id="jtiFactoryService" ref="jtiFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+	<service id="nxosFactoryService" ref="nxosAdapterFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter" />
 		</service-properties>
 	</service>
 

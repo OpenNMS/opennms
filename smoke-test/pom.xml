@@ -123,6 +123,9 @@
          <version>2.7</version>
          <configuration>
            <encoding>UTF-8</encoding>
+           <nonFilteredFileExtensions>
+             <nonFilteredFileExtension>raw</nonFilteredFileExtension>
+           </nonFilteredFileExtensions>
          </configuration>
       </plugin>
       <plugin>
@@ -355,11 +358,6 @@
       <artifactId>jest-complete-osgi</artifactId>
       <version>${jestVersion}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.jti</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>

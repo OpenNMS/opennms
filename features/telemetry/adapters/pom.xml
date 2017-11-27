@@ -15,6 +15,7 @@
     <module>collection</module>
     <module>jti</module>
     <module>netflow</module>
+    <module>nxos</module>
     <module>registry</module>
   </modules>
 </project>

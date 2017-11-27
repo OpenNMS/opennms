@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.jti;
+package org.opennms.netmgt.telemetry.adapters.nxos;
 
 import java.util.Map;
 
@@ -37,24 +37,20 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-public class JtiAdapterFactory extends AbstractCollectionAdapterFactory {
+public class NxosAdapterFactory extends AbstractCollectionAdapterFactory {
 
-    public JtiAdapterFactory() {
-        super(null);
-    }
-
-    public JtiAdapterFactory(BundleContext bundleContext) {
+    public NxosAdapterFactory(BundleContext bundleContext) {
         super(bundleContext);
     }
 
     @Override
     public Class<? extends Adapter> getAdapterClass() {
-        return JtiGpbAdapter.class;
+        return NxosGpbAdapter.class;
     }
 
     @Override
     public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
-        final JtiGpbAdapter adapter = new JtiGpbAdapter();
+        final NxosGpbAdapter adapter = new NxosGpbAdapter();
         adapter.setProtocol(protocol);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
@@ -68,4 +64,5 @@ public class JtiAdapterFactory extends AbstractCollectionAdapterFactory {
         wrapper.setPropertyValues(properties);
         return adapter;
     }
+
 }

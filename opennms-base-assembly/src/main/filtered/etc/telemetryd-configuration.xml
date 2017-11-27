@@ -19,6 +19,7 @@
       </rrd>
     </package>
   </protocol>
+
   <protocol name="Netflow-5" description="Listener for Netflow 5 UDP packets" enabled="false">
     <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
          <parameter key="port" value="8877"/>
@@ -26,5 +27,25 @@
 
      <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter">
      </adapter>
+  </protocol>
+
+  <protocol name="NXOS" description="Cisco NX-OS Telemetry" enabled="false">
+    <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
+      <parameter key="port" value="50001"/>
+    </listener>
+
+    <adapter name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter">
+      <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/cisco-nxos-telemetry-interface.groovy" />
+    </adapter>
+
+    <package name="NXOS-Default">
+      <rrd step="300">
+        <rra>RRA:AVERAGE:0.5:1:2016</rra>
+        <rra>RRA:AVERAGE:0.5:12:1488</rra>
+        <rra>RRA:AVERAGE:0.5:288:366</rra>
+        <rra>RRA:MAX:0.5:288:366</rra>
+        <rra>RRA:MIN:0.5:288:366</rra>
+      </rrd>
+    </package>
   </protocol>
 </telemetryd-config>
