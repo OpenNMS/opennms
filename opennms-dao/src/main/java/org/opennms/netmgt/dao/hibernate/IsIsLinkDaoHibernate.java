@@ -57,14 +57,13 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
         super(IsIsLink.class);
     }
 
-	/** {@inheritDoc} */
-	@Override
-	public IsIsLink get(OnmsNode node, Integer isisCircIndex,
-			Integer isisISAdjIndex) {
-		return findUnique(
-				"from IsIsLink as isisLink where isisLink.node = ? and isisLink.isisCircIndex = ? and isisLink.isisISAdjIndex = ? ",
-				node, isisCircIndex, isisISAdjIndex);
-	}
+    /** {@inheritDoc} */
+    @Override
+    public IsIsLink get(OnmsNode node, Integer isisCircIndex,
+            Integer isisISAdjIndex) {
+        return findUnique("from IsIsLink as isisLink where isisLink.node = ? and isisLink.isisCircIndex = ? and isisLink.isisISAdjIndex = ? ",
+                          node, isisCircIndex, isisISAdjIndex);
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -86,18 +85,14 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        for (IsIsLink link : find("from IsIsLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",
-                                  nodeId, now)) {
-            delete(link);
-        }
+        getHibernateTemplate().bulkUpdate("delete from IsIsLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",
+                                  new Object[] {nodeId, now});
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        for (IsIsLink link : find("from IsIsLink isisLink where isisLink.node.id = ? ",
-                                  nodeId)) {
-            delete(link);
-        }
+        getHibernateTemplate().bulkUpdate("delete from IsIsLink isisLink where isisLink.node.id = ? ",
+                                  new Object[] {nodeId});
     }
 
 	private final static String SQL_GET_ISIS_LINKS=

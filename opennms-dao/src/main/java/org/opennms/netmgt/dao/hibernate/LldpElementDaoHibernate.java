@@ -58,22 +58,23 @@ public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, I
         return findUnique("from LldpElement rec where rec.node.id = ?", id);
     }
 
-	@Override
-	public List<LldpElement> findByChassisId(String chassisId, LldpChassisIdSubType type) {
-        return find("from LldpElement rec where rec.lldpChassisId = ? and rec.lldpChassisIdSubType = ?", chassisId, type);
-	}
+    @Override
+    public List<LldpElement> findByChassisId(String chassisId,
+            LldpChassisIdSubType type) {
+        return find("from LldpElement rec where rec.lldpChassisId = ? and rec.lldpChassisIdSubType = ?",
+                    chassisId, type);
+    }
 
-	@Override
-	public LldpElement findBySysname(String sysname) {
-        return findUnique("from LldpElement rec where rec.lldpSysname = ?", sysname);
-	}
+    @Override
+    public LldpElement findBySysname(String sysname) {
+        return findUnique("from LldpElement rec where rec.lldpSysname = ?",
+                          sysname);
+    }
 
-	@Override
-	public void deleteByNodeId(Integer nodeId) {
-	           for (LldpElement rec: find("from LldpElement rec where rec.node.id = ? ",nodeId)) {
-                       delete(rec);
-               }
-
-	}
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        getHibernateTemplate().bulkUpdate("delete from LldpElement rec where rec.node.id = ? ",
+                                    new Object[] {nodeId});
+    }
 
 }

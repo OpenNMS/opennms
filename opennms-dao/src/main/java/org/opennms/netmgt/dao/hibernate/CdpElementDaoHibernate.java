@@ -58,22 +58,23 @@ public class CdpElementDaoHibernate extends AbstractDaoHibernate<CdpElement, Int
         return findUnique("from CdpElement rec where rec.node.id = ?", id);
     }
 
-	@Override
-	public CdpElement findByGlobalDeviceId(String deviceId) {
-        List<CdpElement> elements = find("from CdpElement rec where rec.cdpGlobalDeviceId = ? order by rec.id", deviceId);
+    @Override
+    public CdpElement findByGlobalDeviceId(String deviceId) {
+        List<CdpElement> elements = find("from CdpElement rec where rec.cdpGlobalDeviceId = ? order by rec.id",
+                                         deviceId);
         if (elements.size() > 1) {
-            LoggerFactory.getLogger(getClass()).warn("Expected 1 CdpElement for device with id '{}' but found {}. Using CdpElement {} and ignoring others.", deviceId, elements.size(), elements.get(0));
+            LoggerFactory.getLogger(getClass()).warn("Expected 1 CdpElement for device with id '{}' but found {}. Using CdpElement {} and ignoring others.",
+                                                     deviceId,
+                                                     elements.size(),
+                                                     elements.get(0));
         }
         return elements.isEmpty() ? null : elements.get(0);
-	}
+    }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        for (CdpElement rec : find("from CdpElement rec where rec.node.id = ? ",
-                                    nodeId)) {
-            delete(rec);
-        }
-
+        getHibernateTemplate().bulkUpdate("delete from CdpElement rec where rec.node.id = ? ",
+                                    new Object[] {nodeId});
     }
 
 
