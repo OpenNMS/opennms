@@ -177,32 +177,31 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         LOG.info("run: node: [{}], clean broadcast domains. Start", getNodeId());
         boolean clean = false;
         for (BroadcastDomain domain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
-        	if (m_domain == domain)
-        		continue;
+            synchronized (domain) {
+                if (m_domain == domain)
+                    continue;
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("run: node [{}]: cleaning broadcast domain {}.",
-            		getNodeId(),
-                      domain.printTopology());
+                              getNodeId(), domain.printTopology());
                 }
-            for (Integer curNodeId: nodeswithupdatedbftonbroadcastdomain) {
-                Bridge bridge = domain.getBridge(curNodeId);
-                if (bridge != null) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("run: node [{}]: node [{}]: removing from broadcast domain {}!",
-                    		getNodeId(),
-                    		  curNodeId,
-                              domain.getBridgeNodesOnDomain());
-                    }
-                    synchronized (domain) {
+                for (Integer curNodeId : nodeswithupdatedbftonbroadcastdomain) {
+                    Bridge bridge = domain.getBridge(curNodeId);
+                    if (bridge != null) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("run: node [{}]: node [{}]: removing from broadcast domain {}!",
+                                      getNodeId(), curNodeId,
+                                      domain.getBridgeNodesOnDomain());
+                        }
                         try {
                             domain.removeBridge(curNodeId);
-                            m_linkd.getQueryManager().store(domain,now);
+                            m_linkd.getQueryManager().store(domain, now);
                         } catch (BridgeTopologyException e) {
-                            LOG.error("run: node [{}]: node [{}] cannot remove bridge {}",getNodeId(),
-                                      curNodeId, e.getMessage(),e);
+                            LOG.error("run: node [{}]: node [{}] cannot remove bridge {}",
+                                      getNodeId(), curNodeId, e.getMessage(),
+                                      e);
                         }
                     }
-                    clean=true;
+                    clean = true;
                 }
             }
         }

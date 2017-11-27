@@ -406,23 +406,17 @@ public class BroadcastDomain implements BridgeTopology {
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
         strbfr.append("\n------broadcast domain-----\n");
-        strbfr.append("domain bridges:");
-        strbfr.append(getBridgeNodesOnDomain());
-        strbfr.append("\n");
         Bridge rootBridge = getRootBridge();
     	if ( rootBridge != null && !m_topology.isEmpty()) {
     		Set<Integer> rootids = new HashSet<Integer>();
     		rootids.add(rootBridge.getNodeId());
-    		strbfr.append("rootbridge: ");
-    		strbfr.append(rootBridge.getNodeId());
-    		strbfr.append("\n");
     		strbfr.append(printTopologyFromLevel(rootids,0));
     	} else {
     	    for (Bridge bridge: getBridges()) {
     	        strbfr.append(bridge.printTopology());
                 strbfr.append("\n");
     	    }
-    	    for (SharedSegment shared: getSharedSegments()) {
+    	    for (SharedSegment shared: m_topology) {
     	        strbfr.append(shared.printTopology());
     	    }
     	}
