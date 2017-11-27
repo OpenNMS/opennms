@@ -351,7 +351,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         Set<BridgeForwardingTableEntry> rootBft = 
                 m_notYetParsedBFTMap.remove(electedRoot);
         
-        if (rootBridge != null && rootBridge.getNodeId() == electedRoot.getNodeId() && rootBft == null) {         // FIXME NPE
+        if (rootBridge != null && rootBridge.getNodeId() == electedRoot.getNodeId() && rootBft == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("calculate: node: [{}], no updated bft, elected is equal to old root bridge: {}",
                     getNodeId(), 
@@ -393,7 +393,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         } else {
            LOG.debug("calculate: node: [{}], elected root bridge: [{}], is new, without updated bft",
                     getNodeId(), 
-                     electedRoot.getNodeId()); //FIXME NPE
+                     electedRoot.getNodeId());
            m_domain.hierarchySetUp(electedRoot);
            rootBft = m_domain.calculateRootBFT();
         }
@@ -405,11 +405,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         try {
             electedRoot = getElectedRootBridge();
         } catch (BridgeTopologyException e) {
-            LOG.error("calculate: node: [{}], no bridge to be elected.Clearing topology:\n{}",
+            LOG.error("calculate: node: [{}], no bridge to be elected. Return without changes:\n{}",
                       getNodeId(), 
                       m_domain.printTopology());
-            m_domain.clearTopology();
-            m_domain.getBridgeNodesOnDomain().clear();
+            return;
         }
         Set<BridgeForwardingTableEntry> rootBft = null;
         try {
