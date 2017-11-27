@@ -173,7 +173,11 @@ public class IpNetToMediaTableTracker extends TableTracker
 		 * @return a {@link java.net.InetAddress} object.
 		 */
 		public InetAddress getIpNetToMediaNetAddress(){
-			return getValue(IPNETTOMEDIA_TABLE_NETADDR).toInetAddress();
+		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_NETADDR);
+                    if (value == null) {
+                        return null;
+                    }		    
+		    return value.toInetAddress();
 		}
 		
 		/**
@@ -182,11 +186,19 @@ public class IpNetToMediaTableTracker extends TableTracker
 		 * @return a int.
 		 */
 		public Integer getIpNetToMediatype(){
-			return getValue(IPNETTOMEDIA_TABLE_TYPE).toInt();
+		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_TYPE);
+		    if (value == null) {
+		        return null;
+		    }
+		    return value.toInt();
 		}
 		
 		public Integer getIpNetToMediaIfIndex() {
-			return getValue(IPNETTOMEDIA_TABLE_IFINDEX).toInt();
+		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_IFINDEX);
+                    if (value == null) {
+                        return null;
+                    }
+		    return value.toInt();
 		}
 		
 		public IpNetToMedia getIpNetToMedia() {

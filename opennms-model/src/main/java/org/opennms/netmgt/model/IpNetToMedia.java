@@ -95,15 +95,15 @@ public class IpNetToMedia implements Serializable {
         }
         
         public static IpNetToMediaType get(Integer code) {
-            if (code == null)
-                throw new IllegalArgumentException("Cannot create IpNetToMediaType from null code");
+            if (code == null) {
+                return null;
+            }
             switch (code) {
             case 1: 	return IPNETTOMEDIA_TYPE_OTHER;
             case 2: 	return IPNETTOMEDIA_TYPE_INVALID;
             case 3: 	return IPNETTOMEDIA_TYPE_DYNAMIC;
             case 4: 	return IPNETTOMEDIA_TYPE_STATIC;
-            default:
-                throw new IllegalArgumentException("Cannot create IpNetToMediaType from code "+code);
+            default:    return null;
             }
         }
         
