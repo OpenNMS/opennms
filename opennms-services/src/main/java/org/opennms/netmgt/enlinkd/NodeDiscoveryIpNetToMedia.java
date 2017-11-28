@@ -71,11 +71,11 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
             public void processIpNetToMediaRow(final IpNetToMediaRow row) {
                 IpNetToMedia macep = row.getIpNetToMedia();
                 if (macep.getPhysAddress() == null && macep.getNetAddress() == null) {
-                    LOG.debug("processIpNetToMediaRow: node [{}], null:null:{}. ip and mac addresses null. skipping",
+                    LOG.warn("processIpNetToMediaRow: node [{}], null:null:{}. ip and mac addresses null. skipping",
                               getNodeId(),
                               macep.getIpNetToMediaType());
                 } else  if (macep.getPhysAddress() == null) {
-                        LOG.debug("processIpNetToMediaRow: node [{}], null:{}:{}. mac address null. skipping",
+                        LOG.warn("processIpNetToMediaRow: node [{}], null:{}:{}. mac address null. skipping",
                                   getNodeId(),
                                   str(macep.getNetAddress()),
                                   macep.getIpNetToMediaType());
@@ -84,20 +84,22 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
                              getNodeId(),
                              macep.getPhysAddress(), 
                              macep.getIpNetToMediaType());
-                } else if (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC
+                } else if (macep.getSourceIfIndex() != null &&
+                        macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC
                         || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC) {
-                    LOG.debug("processIpNetToMediaRow: node [{}], mac address {} and ip {} mediatype {}. saving",
+                    LOG.info("processIpNetToMediaRow: node [{}], mac address {} and ip {} mediatype {}. saving",
                               getNodeId(),
                               macep.getPhysAddress(), 
                               str(macep.getNetAddress()),
                               macep.getIpNetToMediaType());
                     m_linkd.getQueryManager().store(getNodeId(), macep);
                 } else {
-                    LOG.warn("processIpNetToMediaRow: node [{}],  {}:{}:{}. mediatype not valid. skipping",
+                    LOG.warn("processIpNetToMediaRow: node [{}],  {}:{}:{}:{}. not valid. skipping",
                              getNodeId(),
                              macep.getPhysAddress(), 
                              str(macep.getNetAddress()),
-                             macep.getIpNetToMediaType());
+                             macep.getIpNetToMediaType(),
+                             macep.getSourceIfIndex());
                 }
 
             }
