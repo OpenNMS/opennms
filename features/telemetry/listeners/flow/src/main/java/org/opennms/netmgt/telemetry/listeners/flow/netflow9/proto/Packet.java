@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.SetHeader;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
@@ -67,8 +68,9 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
         this.header = Objects.requireNonNull(header);
 
         final List<FlowSet<?>> sets = new LinkedList<>();
-        while (buffer.hasRemaining()) {
-            final FlowSetHeader flowSetHeader = new FlowSetHeader(buffer);
+        for (int i = 0; i < header.count; i++) {
+            final ByteBuffer headerBuffer = BufferUtils.slice(buffer, SetHeader.SIZE);
+            final FlowSetHeader flowSetHeader = new FlowSetHeader(headerBuffer);
 
             final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, flowSetHeader.length - FlowSetHeader.SIZE);
             final FlowSet<?> set;

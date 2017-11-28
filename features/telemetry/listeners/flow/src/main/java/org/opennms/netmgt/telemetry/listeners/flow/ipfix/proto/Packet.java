@@ -72,7 +72,8 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
 
         final List<Set<?>> sets = new LinkedList<>();
         while (buffer.hasRemaining()) {
-            final SetHeader setHeader = new SetHeader(buffer);
+            final ByteBuffer headerBuffer = BufferUtils.slice(buffer, SetHeader.SIZE);
+            final SetHeader setHeader = new SetHeader(headerBuffer);
 
             final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, setHeader.length - SetHeader.SIZE);
             final Set<?> set;
