@@ -165,7 +165,7 @@
         }
       });
       modalInstance.result.then(function(targetForeignSource) {
-        bootbox.confirm('This action will override the existing foreign source definition for the target requisition. Are you sure you want to continue ?', function(ok) {
+        bootbox.confirm('This action will override the existing foreign source definition for the requisition named ' + targetForeignSource + ', using ' + foreignSource + ' as a template. Are you sure you want to continue ? This cannot be undone.', function(ok) {
           if (!ok) return;
           RequisitionsService.startTiming();
           RequisitionsService.cloneForeignSourceDefinition(foreignSource, targetForeignSource).then(
