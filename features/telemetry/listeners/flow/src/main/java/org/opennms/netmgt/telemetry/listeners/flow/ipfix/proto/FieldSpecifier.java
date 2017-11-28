@@ -89,10 +89,6 @@ public final class FieldSpecifier {
 
             this.specifier = new EnterpriseField(this.fieldLength, this.informationElementId, enterpriseNumber);
         }
-
-        if (this.fieldLength < 1) {
-            throw new InvalidPacketException("Zero-sized field");
-        }
     }
 
     @Override

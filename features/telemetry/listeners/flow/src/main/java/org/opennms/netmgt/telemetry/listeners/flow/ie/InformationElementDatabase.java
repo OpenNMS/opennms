@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.NullValue;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -76,7 +77,7 @@ public class InformationElementDatabase {
 
         default void add(final Protocol protocol,
                          final Optional<Long> enterpriseNumber,
-                         final Integer informationElementNumber,
+                         final int informationElementNumber,
                          final ValueParserFactory parserFactory,
                          final String name,
                          final Optional<Semantics> semantics) {
@@ -84,7 +85,7 @@ public class InformationElementDatabase {
         }
 
         default void add(final Protocol protocol,
-                         final Integer informationElementNumber,
+                         final int informationElementNumber,
                          final ValueParserFactory parserFactory,
                          final String name,
                          final Optional<Semantics> semantics) {
@@ -92,7 +93,7 @@ public class InformationElementDatabase {
         }
 
         default void add(final Protocol protocol,
-                         final Integer informationElementNumber,
+                         final int informationElementNumber,
                          final ValueParserFactory parserFactory,
                          final String name,
                          final Semantics semantics) {
@@ -112,6 +113,12 @@ public class InformationElementDatabase {
 
     private InformationElementDatabase(final Provider... providers) {
         final AdderImpl adder = new AdderImpl();
+
+        // Add null element - this derives from the standard but is required by some exporters
+        adder.add(Protocol.NETFLOW9, 0, NullValue::parser, "null", Optional.empty());
+        adder.add(Protocol.IPFIX, 0, NullValue::parser, "null", Optional.empty());
+
+        // Load providers
         for (final Provider provider : providers) {
             provider.load(adder);
         }

@@ -73,10 +73,6 @@ public final class FieldSpecifier {
         }
 
         this.specifier = new StandardField(this.fieldLength, informationElement);
-
-        if (this.fieldLength < 1) {
-            throw new InvalidPacketException("Zero-sized field");
-        }
     }
 
     @Override

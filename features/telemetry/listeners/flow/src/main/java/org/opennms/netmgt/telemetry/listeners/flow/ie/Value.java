@@ -38,6 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv4AddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv6AddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.ListValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.MacAddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.NullValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
@@ -47,6 +48,8 @@ import org.opennms.netmgt.telemetry.listeners.flow.session.EnterpriseField;
 public abstract class Value<T> {
 
     public interface Visitor {
+        void accept(final NullValue value);
+
         void accept(final BooleanValue value);
 
         void accept(final DateTimeValue value);

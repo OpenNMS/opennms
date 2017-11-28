@@ -49,6 +49,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv4AddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv6AddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.ListValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.MacAddressValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.NullValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
@@ -141,6 +142,11 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
             }
 
             return builder;
+        }
+
+        @Override
+        public void accept(final NullValue value) {
+            // Ignored
         }
 
         @Override

@@ -53,7 +53,7 @@ public class BufferUtils {
     }
 
     public static UnsignedLong uint(final ByteBuffer buffer, final int octets) {
-        Preconditions.checkArgument(octets > 0 && octets < 9);
+        Preconditions.checkArgument(0 <= octets && octets <= 8);
 
         long result = 0;
 
@@ -65,7 +65,7 @@ public class BufferUtils {
     }
 
     public static Long sint(final ByteBuffer buffer, final int octets) {
-        Preconditions.checkArgument(octets > 0 && octets < 9);
+        Preconditions.checkArgument(0 <= octets && octets <= 8);
 
         long result = buffer.get() & 0xFFL;
         boolean s = (result & 0x80L) != 0;
