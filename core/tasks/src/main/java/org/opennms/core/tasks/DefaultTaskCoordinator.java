@@ -273,15 +273,11 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
         // and then sleep for the delay
         CompletableFuture<Void> future = null;
         if (m_loopDelay > 0) {
-            future = CompletableFuture.runAsync(new Runnable() {
-                @Override
-                public void run() {
-                    r.run();
-                    try {
-                        Thread.sleep(m_loopDelay);
-                    } catch (InterruptedException e) {}
-                }
-                
+            future = CompletableFuture.runAsync(() -> {
+                r.run();
+                try {
+                    Thread.sleep(m_loopDelay);
+                } catch (InterruptedException e) {}
             }, m_actorExecutor);
         } else {
             future = CompletableFuture.runAsync(r, m_actorExecutor);

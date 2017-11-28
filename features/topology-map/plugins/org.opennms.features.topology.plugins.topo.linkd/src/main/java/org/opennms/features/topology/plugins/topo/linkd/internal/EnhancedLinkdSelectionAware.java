@@ -81,12 +81,7 @@ public class EnhancedLinkdSelectionAware implements SelectionAware {
             } else if( ((Vertex)eachRef).isGroup() && "category".equals(eachRef.getNamespace()) ){
                 try{
                     GroupRef group = (GroupRef) eachRef;
-                    nodeIdList.addAll(Collections2.transform(group.getChildren(), new Function<VertexRef, Integer>(){
-                        @Override
-                        public Integer apply(VertexRef input) {
-                            return Integer.valueOf(input.getId());
-                        }
-                    }));
+                    nodeIdList.addAll(Collections2.transform(group.getChildren(), input -> Integer.valueOf(input.getId())));
                 } catch (ClassCastException e){
                     LoggerFactory.getLogger(getClass()).warn("Cannot filter category with ID: {} children: {}", eachRef.getId(), ((GroupRef) eachRef).getChildren());
 

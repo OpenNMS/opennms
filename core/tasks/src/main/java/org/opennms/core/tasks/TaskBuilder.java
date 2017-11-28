@@ -144,11 +144,8 @@ public class TaskBuilder<T extends ContainerTask<?>> {
     public TaskBuilder<T> add(RunInBatch... runIns) {
         for(final RunInBatch runIn : runIns) {
             final TaskBuilder<BatchTask> bldr = createBatch();
-            bldr.add(new Runnable() {
-                @Override
-                public void run() {
-                    runIn.run(bldr.get());
-                }
+            bldr.add(() -> {
+                runIn.run(bldr.get());
             }).setParent(m_task);
         }
         return this;
@@ -162,11 +159,8 @@ public class TaskBuilder<T extends ContainerTask<?>> {
      */
     public TaskBuilder<T> add(NeedsContainer... needers) {
         for(final NeedsContainer needer : needers) {
-            add(new Runnable() {
-                @Override
-                public void run() {
-                    needer.run(m_task);
-                }
+            add(() -> {
+                needer.run(m_task);
             });
         }
         return this;

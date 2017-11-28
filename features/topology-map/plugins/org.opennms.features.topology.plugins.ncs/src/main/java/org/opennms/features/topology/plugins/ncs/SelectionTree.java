@@ -73,45 +73,34 @@ public abstract class SelectionTree extends Tree {
     public SelectionTree(FilterableHierarchicalContainer container) {
         super(null, container);
         
-        this.addValueChangeListener(new ValueChangeListener() {
-            
-            @Override
-            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+        this.addValueChangeListener(event -> {
+            //if(m_itemClicked) {
+                Set<Object> selectedIds = (Set<Object>) event.getProperty().getValue();
                 
-                //if(m_itemClicked) {
-                    Set<Object> selectedIds = (Set<Object>) event.getProperty().getValue();
-                    
-                    Collection<Object> allIds = (Collection<Object>) getContainerDataSource().getItemIds();
-                    
-                    Set<Object> itemsToSelect = getSelectedItemIds(selectedIds);
-                    
-                    Set<Object> itemsToDeselected = getItemsToDeselect(allIds, itemsToSelect);
-                    
-                    deselectContainerItems(itemsToDeselected);
-                    
-                    selectContainerItemAndChildren(itemsToSelect);
-                //} 
+                Collection<Object> allIds = (Collection<Object>) getContainerDataSource().getItemIds();
                 
-            }
+                Set<Object> itemsToSelect = getSelectedItemIds(selectedIds);
+                
+                Set<Object> itemsToDeselected = getItemsToDeselect(allIds, itemsToSelect);
+                
+                deselectContainerItems(itemsToDeselected);
+                
+                selectContainerItemAndChildren(itemsToSelect);
+            //} 
         });
 
         /**
          * This listener responds to clicks on items within the list and then 
          */
-        this.addItemClickListener(new ItemClickListener() {
+        this.addItemClickListener(event -> {
+            Set<Object> selectedIds = (Set<Object>) ((SelectionTree) event.getSource()).getValue();
             
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                Set<Object> selectedIds = (Set<Object>) ((SelectionTree) event.getSource()).getValue();
-                
-                Object itemId = event.getItemId();
-                m_treeItemClickTracker.setClickedItemId(itemId);
-                
-                if((event.isCtrlKey() || event.isMetaKey()) && selectedIds.contains(itemId)) {
-                    m_treeItemClickTracker.setRemove(true);
-                } 
-                
-            }
+            Object itemId = event.getItemId();
+            m_treeItemClickTracker.setClickedItemId(itemId);
+            
+            if((event.isCtrlKey() || event.isMetaKey()) && selectedIds.contains(itemId)) {
+                m_treeItemClickTracker.setRemove(true);
+            } 
         });
     }
 

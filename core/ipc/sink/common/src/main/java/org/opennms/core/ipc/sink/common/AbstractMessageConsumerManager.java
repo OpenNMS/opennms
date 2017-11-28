@@ -66,14 +66,11 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
         try {
             int initialSleep = Integer.parseInt(initialSleepString);
             if (initialSleep > 0) {
-                startupFuture = CompletableFuture.runAsync(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(initialSleep);
-                        } catch (InterruptedException e) {
-                            LOG.warn(e.getMessage(), e);
-                        }
+                startupFuture = CompletableFuture.runAsync(() -> {
+                    try {
+                        Thread.sleep(initialSleep);
+                    } catch (InterruptedException e) {
+                        LOG.warn(e.getMessage(), e);
                     }
                 });
             }
@@ -104,15 +101,12 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
             final int numConsumersBefore = consumersByModule.get(module).size();
             consumersByModule.put(module, (MessageConsumer<?, Message>)consumer);
             if (numConsumersBefore < 1) {
-                waitForStartup.thenRunAsync(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            LOG.info("Starting to consume messages for module: {}", module);
-                            startConsumingForModule(module);
-                        } catch (Exception e) {
-                            LOG.error("Unexpected exception while trying to start consumer for module: {}", module, e);
-                        }
+                waitForStartup.thenRunAsync(() -> {
+                    try {
+                        LOG.info("Starting to consume messages for module: {}", module);
+                        startConsumingForModule(module);
+                    } catch (Exception e) {
+                        LOG.error("Unexpected exception while trying to start consumer for module: {}", module, e);
                     }
                 });
             }
@@ -132,15 +126,12 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
             final SinkModule<?, Message> module = (SinkModule<?, Message>)consumer.getModule();
             consumersByModule.remove(module, (MessageConsumer<?, Message>)consumer);
             if (consumersByModule.get(module).size() < 1) {
-                waitForStartup.thenRunAsync(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            LOG.info("Stopping consumption of messages for module: {}", module);
-                            stopConsumingForModule(module);
-                        } catch (Exception e) {
-                            LOG.error("Unexpected exception while trying to stop consumer for module: {}", module, e);
-                        }
+                waitForStartup.thenRunAsync(() -> {
+                    try {
+                        LOG.info("Stopping consumption of messages for module: {}", module);
+                        stopConsumingForModule(module);
+                    } catch (Exception e) {
+                        LOG.error("Unexpected exception while trying to stop consumer for module: {}", module, e);
                     }
                 });
             }

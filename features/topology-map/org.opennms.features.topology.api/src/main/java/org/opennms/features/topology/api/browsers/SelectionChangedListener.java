@@ -58,12 +58,7 @@ public interface SelectionChangedListener {
          * Dummy selection for "NO SELECTION".
          * This does not filter the underlying {@link OnmsVaadinContainer}
          */
-        Selection NONE = new Selection() {
-            @Override
-            public List<Restriction> toRestrictions() {
-                return Lists.newArrayList();
-            }
-        };
+        Selection NONE = Lists::newArrayList;
 
         /**
          * The list of restrictions to return.

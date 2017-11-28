@@ -80,14 +80,11 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
             queue = new LinkedBlockingQueue<Runnable>(asyncPolicy.getQueueSize());
             // Reject and increase the dropped counter when the queue is full
             final Counter droppedCounter = state.getMetrics().counter(MetricRegistry.name(state.getModule().getId(), "dropped"));
-            rejectedExecutionHandler = new RejectedExecutionHandler() {
-                @Override
-                public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-                    droppedCounter.inc();
-                    throw new RejectedExecutionException("Task " + r.toString() +
-                            " rejected from " +
-                            e.toString());
-                }
+            rejectedExecutionHandler = (runnable,executor) -> { 
+                droppedCounter.inc();
+                throw new RejectedExecutionException("Task " + runnable.toString() +
+                        " rejected from " +
+                        executor.toString());
             };
         }
 

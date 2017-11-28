@@ -553,15 +553,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         }
 
         //create VaadinApplicationContext
-        m_applicationContext = m_serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
-            @Override
-            public VaadinApplicationContext create(OnmsServiceManager manager) {
-                VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
-                context.setSessionId(request.getWrappedSession().getId());
-                context.setUiId(getUIId());
-                context.setUsername(request.getRemoteUser());
-                return context;
-            }
+        m_applicationContext = m_serviceManager.createApplicationContext(manager -> {
+            VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
+            context.setSessionId(request.getWrappedSession().getId());
+            context.setUiId(getUIId());
+            context.setUsername(request.getRemoteUser());
+            return context;
         });
         m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
         m_serviceManager.getEventRegistry().addPossibleEventConsumer(this, m_applicationContext);

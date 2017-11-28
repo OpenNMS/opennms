@@ -90,11 +90,8 @@ public class NCSEdgeStatusProvider implements EdgeStatusProvider{
 
     @Override
     public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria) {
-        List<EdgeRef> ncsEdges = new ArrayList<EdgeRef>(Collections2.filter(edges, new Predicate<EdgeRef>() {
-            @Override
-            public boolean apply(EdgeRef edgeRef) {
-                return edgeRef.getNamespace().equals("ncs");
-            }
+        List<EdgeRef> ncsEdges = new ArrayList<EdgeRef>(Collections2.filter(edges, edgeRef -> {
+            return edgeRef.getNamespace().equals("ncs");
         }));
 
         Set<String> alarms = getNCSImpactedAlarms();

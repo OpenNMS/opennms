@@ -125,12 +125,6 @@ public class QueryResult {
     }
 
     public void sort() {
-        comparator = new Comparator<MBeanResult>() {
-
-            @Override
-            public int compare(QueryResult.MBeanResult o1, QueryResult.MBeanResult o2) {
-                return o1.objectName.compareTo(o2.objectName);
-            }
-        };
+        comparator = (o1,o2) -> o1.objectName.compareTo(o2.objectName);
     }
 }

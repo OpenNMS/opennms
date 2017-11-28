@@ -126,11 +126,8 @@ public class ApplicationStatusProvider implements StatusProvider {
     }
 
     private Collection<VertexRef> getRootElements(Collection<VertexRef> vertices) {
-        return Collections2.filter(vertices, new Predicate<VertexRef>() {
-            @Override
-            public boolean apply(VertexRef input) {
-                return ((ApplicationVertex) input).isRoot();
-            }
+        return Collections2.filter(vertices, input -> {
+            return ((ApplicationVertex)input).isRoot();
         });
     }
 

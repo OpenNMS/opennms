@@ -52,8 +52,6 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
@@ -229,20 +227,12 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
             List<OnmsNode> onmsNodes = getNodeDao().findAll();
 
             //Transform the onmsNodes list to a list of Ids
-            final List<Integer> nodes = Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
-                @Override
-                public Integer apply(OnmsNode node) {
-                    return node.getId();
-                }
-            });
+            final List<Integer> nodes = Lists.transform(onmsNodes, OnmsNode::getId);
 
 
             //Filter out the nodes that are not viewable by the user.
-            return Lists.newArrayList(Collections2.filter(m_vertexProvider.getVertices(), new Predicate<Vertex>() {
-                @Override
-                public boolean apply(Vertex vertex) {
-                    return nodes.contains(vertex.getNodeID());
-                }
+            return Lists.newArrayList(Collections2.filter(m_vertexProvider.getVertices(), vertex -> {
+                return nodes.contains(vertex.getNodeID());
             }));
         } else{
             return m_vertexProvider.getVertices();

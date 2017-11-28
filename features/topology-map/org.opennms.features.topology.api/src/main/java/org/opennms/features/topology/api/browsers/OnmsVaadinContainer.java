@@ -219,11 +219,8 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
     public OnmsVaadinContainer(Class<T> itemClass, OnmsContainerDatasource<T,K> datasource) {
         m_itemClass = Objects.requireNonNull(itemClass);
         m_datasource = Objects.requireNonNull(datasource);
-        size = new Size(new SizeReloadStrategy() {
-            @Override
-            public int reload() {
-                return m_datasource.countMatching(getCriteria(null, false));  // no paging!!!!
-            }
+        size = new Size(() -> {
+            return m_datasource.countMatching(getCriteria(null, false));  // no paging!!!!
         });
         page = new Page(DEFAULT_PAGE_SIZE, size);
         cache = new Cache();

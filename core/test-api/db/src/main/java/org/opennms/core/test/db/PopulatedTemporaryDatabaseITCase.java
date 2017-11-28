@@ -118,16 +118,7 @@ public class PopulatedTemporaryDatabaseITCase extends
         File ipLikeDir = new File(topDir, "opennms-iplike");
         assertTrue("iplike directory exists at ../opennms-iplike: " + ipLikeDir.getAbsolutePath(), ipLikeDir.exists());
         
-        File[] ipLikePlatformDirs = ipLikeDir.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if (file.getName().matches("opennms-iplike-.*") && file.isDirectory()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
+        File[] ipLikePlatformDirs = ipLikeDir.listFiles(file -> (file.getName().matches("opennms-iplike-.*") && file.isDirectory()));
         assertTrue("expecting at least one opennms iplike platform directory in " + ipLikeDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikePlatformDirs.length > 0);
 
         File ipLikeFile = null;
@@ -140,16 +131,7 @@ public class PopulatedTemporaryDatabaseITCase extends
                 continue;
             }
           
-            File[] ipLikeFiles = ipLikeTargetDir.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    if (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
+            File[] ipLikeFiles = ipLikeTargetDir.listFiles(file -> (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")));
             assertFalse("expecting zero or one iplike file in " + ipLikeTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikeFiles, ", "), ipLikeFiles.length > 1);
             
             if (ipLikeFiles.length == 1) {

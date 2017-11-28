@@ -64,14 +64,11 @@ public class ApplicationSelectionLinkGenerator extends AbstractSelectionLinkGene
 				Button button = new Button(cellValue.toString());
 				button.setStyleName(BaseTheme.BUTTON_LINK);
 				button.setDescription(idProperty.getValue().toString());
-				button.addClickListener(new Button.ClickListener() {
-					@Override
-					public void buttonClick(Button.ClickEvent event) {
-						Integer applicationId = idProperty.getValue();
-						String applicationName = labelProperty.getValue();
-						ApplicationVertex vertex = new ApplicationVertex(applicationId.toString(), applicationName);
-						fireVertexUpdatedEvent(vertex);
-					}
+				button.addClickListener(event -> {
+					Integer applicationId = idProperty.getValue();
+					String applicationName = labelProperty.getValue();
+					ApplicationVertex vertex = new ApplicationVertex(applicationId.toString(), applicationName);
+					fireVertexUpdatedEvent(vertex);
 				});
 				return button;
 			}

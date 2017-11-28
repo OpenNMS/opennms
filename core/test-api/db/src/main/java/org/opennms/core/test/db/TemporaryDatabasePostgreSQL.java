@@ -232,16 +232,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         File ipLikeDir = new File(topDir, "opennms-iplike");
         assertTrue("iplike directory exists at ../opennms-iplike: " + ipLikeDir.getAbsolutePath(), ipLikeDir.exists());
 
-        File[] ipLikePlatformDirs = ipLikeDir.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if (file.getName().matches("opennms-iplike-.*") && file.isDirectory()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
+        File[] ipLikePlatformDirs = ipLikeDir.listFiles(file -> (file.getName().matches("opennms-iplike-.*") && file.isDirectory()));
         assertTrue("expecting at least one opennms iplike platform directory in " + ipLikeDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikePlatformDirs.length > 0);
 
         File ipLikeFile = null;
@@ -254,16 +245,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                 continue;
             }
 
-            File[] ipLikeFiles = ipLikeTargetDir.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    if (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
+            File[] ipLikeFiles = ipLikeTargetDir.listFiles(file -> (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")));
             assertFalse("expecting zero or one iplike file in " + ipLikeTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikeFiles, ", "), ipLikeFiles.length > 1);
 
             if (ipLikeFiles.length == 1) {
@@ -544,12 +526,9 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
         }
         System.err.println("Thread dump of " + threads.size() + " threads (" + daemons + " daemons):");
-        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(new Comparator<Thread>() {
-            @Override
-            public int compare(final Thread t1, final Thread t2) {
-                return Long.valueOf(t1.getId()).compareTo(Long.valueOf(t2.getId()));
-            }
-        });
+        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(
+            (t1,t2) -> Long.valueOf(t1.getId()).compareTo(Long.valueOf(t2.getId()))
+        );
         sortedThreads.putAll(threads);
 
         for (Entry<Thread, StackTraceElement[]> entry : sortedThreads.entrySet()) {

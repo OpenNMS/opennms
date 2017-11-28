@@ -76,33 +76,19 @@ public abstract class Bootstrap {
     /**
      * Matches any file that is a directory.
      */
-    private static FileFilter m_dirFilter = new FileFilter() {
-        @Override
-        public boolean accept(File pathname) {
-            return pathname.isDirectory();
-        }
-    };
+    private static FileFilter m_dirFilter = File::isDirectory;
 
     /**
      * Matches any file that has a name ending in ".jar".
      */
-    private static FilenameFilter m_jarFilter = new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.endsWith(".jar");
-        }
-    };
+    private static FilenameFilter m_jarFilter = (dir,name) -> name.endsWith(".jar");
+
     private static HostRMIServerSocketFactory m_rmiServerSocketFactory;
 
     /**
      * Matches any file that has a name ending in ".properties".
      */
-    private static FilenameFilter m_propertiesFilter = new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.endsWith(".properties");
-        }
-    };
+    private static FilenameFilter m_propertiesFilter = (dir,name) -> name.endsWith(".properties");
 
     /**
      * A list of sub-folders found in $OPENNMS_HOME that should always be excluded
@@ -518,18 +504,15 @@ public abstract class Bootstrap {
             Class<?> c = cl.loadClass(className);
             final Method method = c.getMethod(classToExecMethod, classes);
 
-            Runnable execer = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        method.invoke(null, methodArgs);
-                    } catch (final Exception e) {
-                        e.printStackTrace();
-                        System.exit(1);
-                    }
+            Runnable execer = () -> {
+                try {
+                    method.invoke(null, methodArgs);
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    System.exit(1);
                 }
-
             };
+
             Thread bootstrapper = new Thread(execer, "Main");
             bootstrapper.setContextClassLoader(cl);
             bootstrapper.start();

@@ -140,14 +140,11 @@ public abstract class DataSourceFactory {
 
         final ClosableDataSource dataSource = parseDataSource(dsName);
 
-        m_closers.add(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    dataSource.close();
-                } catch (final Throwable cause) {
-                	LOG.info("Unable to close datasource {}.", dsName, cause);
-                }
+        m_closers.add(() -> {
+            try {
+                dataSource.close();
+            } catch (final Throwable cause) {
+                LOG.info("Unable to close datasource {}.", dsName, cause);
             }
         });
 

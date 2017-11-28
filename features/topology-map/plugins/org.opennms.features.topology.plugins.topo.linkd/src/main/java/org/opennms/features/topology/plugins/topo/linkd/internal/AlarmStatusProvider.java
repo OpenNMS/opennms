@@ -202,11 +202,8 @@ public class AlarmStatusProvider implements StatusProvider {
 
     private static AlarmStatus calculateAlarmStatusForGroup(List<AlarmSummary> alarmSummaries) {
         if (!alarmSummaries.isEmpty()) {
-            Collections.sort(alarmSummaries, new Comparator<AlarmSummary>() {
-                @Override
-                public int compare(AlarmSummary o1, AlarmSummary o2) {
-                    return o1.getMaxSeverity().compareTo(o2.getMaxSeverity());
-                }
+            Collections.sort(alarmSummaries, (o1,o2) -> {
+                return o1.getMaxSeverity().compareTo(o2.getMaxSeverity());
             });
             OnmsSeverity severity = alarmSummaries.get(0).getMaxSeverity();
             int count = 0;

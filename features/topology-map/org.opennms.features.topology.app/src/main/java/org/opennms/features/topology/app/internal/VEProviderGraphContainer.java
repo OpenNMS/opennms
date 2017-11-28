@@ -122,13 +122,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
         private void fireValueChange() {
-            ValueChangeEvent event = new ValueChangeEvent() {
-
-                @Override
-                public Property<Double> getProperty() {
-                    return ScaleProperty.this;
-                }
+            ValueChangeEvent event = () -> {
+                return ScaleProperty.this;
             };
+
             for(ValueChangeListener listener : m_listeners) {
                 listener.valueChange(event);
             }

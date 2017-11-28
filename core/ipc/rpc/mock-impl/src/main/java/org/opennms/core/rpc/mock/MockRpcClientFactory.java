@@ -28,13 +28,13 @@
 
 package org.opennms.core.rpc.mock;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link RpcClientFactory} implementation that always executes the requests locally.
@@ -42,13 +42,16 @@ import org.opennms.core.rpc.api.RpcResponse;
  * @author jwhite
  */
 public class MockRpcClientFactory implements RpcClientFactory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MockRpcClientFactory.class);
+
     @Override
     public <R extends RpcRequest, S extends RpcResponse> RpcClient<R, S> getClient(RpcModule<R, S> module) {
-        return new RpcClient<R, S>() {
-            @Override
-            public CompletableFuture<S> execute(R request) {
-                return module.execute(request);
-            }
-        };
+        if (module == null) {
+            LOG.warn("Null module passed to {}", getClass().getSimpleName());
+            return null;
+        } else {
+            return module::execute;
+        }
     }
 }

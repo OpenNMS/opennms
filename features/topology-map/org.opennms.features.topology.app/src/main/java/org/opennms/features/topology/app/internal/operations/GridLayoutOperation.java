@@ -28,18 +28,12 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
-import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.jung.GridLayoutAlgorithm;
 
 public class GridLayoutOperation extends LayoutOperation {
 
     public GridLayoutOperation() {
-        super(new LayoutFactory() {
-            @Override
-            public LayoutAlgorithm getLayoutAlgorithm() {
-                return new GridLayoutAlgorithm();
-            }
-        });
+        super(GridLayoutAlgorithm::new);
     }
 
     @Override

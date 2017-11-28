@@ -29,20 +29,13 @@
 package org.opennms.features.topology.app.internal.operations;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.app.internal.jung.HierarchyLayoutAlgorithm;
 
 public class HierarchyLayoutOperation extends LayoutOperation {
 
     public HierarchyLayoutOperation() {
-        super(new LayoutFactory() {
-
-            @Override
-            public LayoutAlgorithm getLayoutAlgorithm() {
-                return new HierarchyLayoutAlgorithm();
-            }
-        });
+        super(HierarchyLayoutAlgorithm::new);
     }
 
 

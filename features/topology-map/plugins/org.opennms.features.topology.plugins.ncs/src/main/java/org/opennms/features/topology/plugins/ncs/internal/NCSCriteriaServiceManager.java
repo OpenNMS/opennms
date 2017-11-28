@@ -116,16 +116,11 @@ public class NCSCriteriaServiceManager {
 
     public void setBundleContext(BundleContext context) {
         m_bundleContext = context;
-        m_bundleContext.addBundleListener(new BundleListener() {
-
-            @Override
-            public void bundleChanged(BundleEvent event) {
-                switch(event.getType()) {
-                    case BundleEvent.STOPPING:
-                        removeAllServices();
-                }
+        m_bundleContext.addBundleListener(event -> {
+            switch(event.getType()) {
+                case BundleEvent.STOPPING:
+                    removeAllServices();
             }
-            
         });
     }
 

@@ -70,16 +70,9 @@ public class InstallerDb {
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
     private static final int s_fetch_size = 1024;
-    
-    private static Comparator<Constraint> constraintComparator = new Comparator<Constraint>() {
 
-                @Override
-		public int compare(final Constraint o1, final Constraint o2) {
-			return o1.getName().compareTo(o2.getName());
-		}
-    	
-    }; 
-    
+    private static Comparator<Constraint> constraintComparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
+
     private final IndexDao m_indexDao = new IndexDao();
 
     private final TriggerDao m_triggerDao = new TriggerDao();
@@ -150,13 +143,9 @@ public class InstallerDb {
 
 	private final Pattern m_createLanguagePattern = Pattern.compile("(?i)\\s*create\\s+trusted procedural language\\s+[\"']?(\\w+)[\"']?.*");
 
-	private final FileFilter m_sqlFilter = new FileFilter() {
-            @Override
-	    public boolean accept(final File pathname) {
-	        return (pathname.getName().startsWith("get") && pathname.getName().endsWith(".sql"))
-	             || pathname.getName().endsWith("Trigger.sql");
-	    }
-	};
+	private final FileFilter m_sqlFilter = pathname -> 
+	         (pathname.getName().startsWith("get") && pathname.getName().endsWith(".sql"))
+	         || pathname.getName().endsWith("Trigger.sql");
 
 	private final Pattern m_createFunction = Pattern.compile("(?is)\\b(CREATE(?: OR REPLACE)? FUNCTION\\s+"
 	                                    + "(\\w+)\\s*\\((.*?)\\)\\s+"

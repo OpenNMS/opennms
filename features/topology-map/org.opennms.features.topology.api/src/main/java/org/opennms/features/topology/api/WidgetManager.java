@@ -46,11 +46,8 @@ public class WidgetManager {
     private List<IViewContribution> m_viewContributors = new CopyOnWriteArrayList<>();
     private List<WidgetUpdateListener> m_listeners = new CopyOnWriteArrayList<>();
     
-    private Comparator<IViewContribution> TITLE_COMPARATOR = new Comparator<IViewContribution>() {
-        @Override
-        public int compare(final IViewContribution o1, final IViewContribution o2) {
-            return o1.getTitle().compareTo(o2.getTitle());
-        }
+    private Comparator<IViewContribution> TITLE_COMPARATOR = (o1,o2) -> {
+        return o1.getTitle().compareTo(o2.getTitle());
     };
 
     public WidgetManager() {}

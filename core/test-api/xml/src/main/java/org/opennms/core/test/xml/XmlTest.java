@@ -234,12 +234,9 @@ abstract public class XmlTest<T> {
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final Schema schema = factory.newSchema(new StreamSource(schemaFile));
         unmarshaller.setSchema(schema);
-        unmarshaller.setEventHandler(new ValidationEventHandler() {
-            @Override
-            public boolean handleEvent(final ValidationEvent event) {
-                LOG.warn("Received validation event: {}", event, event.getLinkedException());
-                return false;
-            }
+        unmarshaller.setEventHandler(event -> {
+            LOG.warn("Received validation event: {}", event, event.getLinkedException());
+            return false;
         });
         try {
             final InputSource inputSource = new InputSource(getSampleXmlInputStream());

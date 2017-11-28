@@ -61,14 +61,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
         super();
         m_container = container;
         m_container.addItemSetChangeListener(this);
-        m_container.addPropertySetChangeListener(new PropertySetChangeListener() {
-
-            @Override
-            public void containerPropertySetChange(PropertySetChangeEvent event) {
-                event.getContainer();
-                
-            }
-        });
+        m_container.addPropertySetChangeListener(PropertySetChangeEvent::getContainer);
     }
 
  @Override

@@ -104,16 +104,13 @@ public abstract class Logging {
 
     public static Runnable preserve(final Runnable runnable) {
         final Map<String, String> parentMdc = Logging.getCopyOfContextMap();
-        return new Runnable() {
-            @Override
-            public void run() {
-                final Map<String, String> localMdc = Logging.getCopyOfContextMap();
-                try {
-                    Logging.setContextMap(parentMdc);
-                    runnable.run();
-                } finally {
-                    Logging.setContextMap(localMdc);
-                }
+        return () -> {
+            final Map<String, String> localMdc = Logging.getCopyOfContextMap();
+            try {
+                Logging.setContextMap(parentMdc);
+                runnable.run();
+            } finally {
+                Logging.setContextMap(localMdc);
             }
         };
     }

@@ -177,15 +177,11 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         setGraph(m_graphContainer.getGraph());
 
-        m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
-
-            @Override
-            public void selectionChanged(SelectionContext selectionContext) {
-                if (!m_blockSelectionEvents) {
-                    computeBoundsForSelected(selectionContext);
-                }
-                updateGraph();
+        m_graphContainer.getSelectionManager().addSelectionListener(context -> {
+            if (!m_blockSelectionEvents) {
+                computeBoundsForSelected(context);
             }
+            updateGraph();
         });
 
         m_graphContainer.getMapViewManager().addListener(this);

@@ -62,13 +62,10 @@ public class OnmsDaoContainerDatasource<T, K extends Serializable> implements On
     @Override
     public List<T> findMatching(Criteria criteria) {
         // Wrap the find and callbacks in a single transaction
-        return transactionTemplate.execute(new TransactionCallback<List<T>>() {
-            @Override
-            public List<T> doInTransaction(TransactionStatus arg0) {
-                final List<T> matchingItems = dao.findMatching(criteria);
-                matchingItems.forEach(t -> findMatchingCallback(t));
-                return matchingItems;
-            }
+        return transactionTemplate.execute(status-> {
+            final List<T> matchingItems = dao.findMatching(criteria);
+            matchingItems.forEach(t -> findMatchingCallback(t));
+            return matchingItems;
         });
     }
 
