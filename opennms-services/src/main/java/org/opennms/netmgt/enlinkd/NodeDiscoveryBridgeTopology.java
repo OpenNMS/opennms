@@ -675,7 +675,18 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                         return false;
                     }
                 } else {
-                    leafSegment.retain(yx.getSimpleConnectionMacs(),yx.getFirstBridgePort());
+                    try {
+                        leafSegment.retain(yx.getSimpleConnectionMacs(),yx.getFirstBridgePort());
+                    } catch (BridgeTopologyException e) {
+                        LOG.error("calculate: node: [{}]: level {}: bridge [{}]. Topology mismatch. {}:\n{}",
+                                  getNodeId(), 
+                                  level,
+                                  xBridge.getNodeId(),
+                                  e.getMessage(),
+                                  e.printTopology(),
+                                  e);
+                         return false;
+                    }
                 }
                 portsAdded.add(xyDesignatedPort);
                 
@@ -698,7 +709,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     return false;
                 }
             } else if (xyDesignatedPort != rx.getSecondBridgeConnectionPort() && yxDesignatedPort != yrDesignatedPort) {
-                LOG.warn("calculate: node: [{}]: level {}: bridge [{}]. Topology mismatch. Clearing...topology",
+                LOG.warn("calculate: node: [{}]: level {}: bridge [{}]. Topology mismatch. return",
                 		getNodeId(), 
                 		level,
                 		xBridge.getNodeId());
@@ -712,11 +723,25 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         // if we are here is because X is NOT a leaf of any bridge found
         // on topSegment so X is connected to top Segment by it's root 
         // port or rx is a direct connection
-        topSegment.assign(macsOnSegment,rx.getSecondBridgePort());
+        try {
+            topSegment.assign(macsOnSegment,rx.getSecondBridgePort());
+        } catch (BridgeTopologyException e) {
+            LOG.error("calculate: node: [{}]: level {}: bridge [{}]. Topology mismatch. {}:\n{}",
+                     getNodeId(), 
+                     level,
+                     xBridge.getNodeId(),
+                     e.getMessage(),
+                     e.printTopology(),
+                     e);
+            return false;
+        }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("calculate: node: [{}]: level: {}, bridge: [{}], port[{}], macs{} -> assigned.\n{}", 
+            LOG.debug("calculate: node: [{}]: level: {}, [{}], macs{} -> assigned.\n{}", 
                         getNodeId(), 
-                 level,xBridge.getNodeId(),rx.getSecondBridgePort().getBridgePort(),macsOnSegment,topSegment.printTopology());
+                        level,
+                        rx.getSecondBridgePort().printTopology(),
+                        macsOnSegment,
+                        topSegment.printTopology());
         }
         for (BridgePort xbridgePort : rx.getSecondBridgeTroughSetBft().keySet()) {
             if (portsAdded.contains(xbridgePort.getBridgePort())) {

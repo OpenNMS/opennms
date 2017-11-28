@@ -198,12 +198,24 @@ public class SharedSegment implements BridgeTopology{
         return nodes;
     }
 
-    public void retain(Set<String> macs, BridgePort dlink) {
+    public void retain(Set<String> macs, BridgePort dlink) throws BridgeTopologyException {
+        if (dlink == null) {
+            throw new BridgeTopologyException("SharedSegment: retain. BridgePort cannot be null", this);
+        }
+        if (macs == null) {
+            throw new BridgeTopologyException("SharedSegment: retain. macs cannot be null", this);
+        }
         m_portsOnSegment.add(dlink);
         m_macsOnSegment.retainAll(macs);
     }
     
-    public void assign(Set<String> macs, BridgePort dlink) {
+    public void assign(Set<String> macs, BridgePort dlink) throws BridgeTopologyException {
+        if (dlink == null) {
+            throw new BridgeTopologyException("SharedSegment: assign. BridgePort cannot be null", this);
+        }
+        if (macs == null) {
+            throw new BridgeTopologyException("SharedSegment: assign. macs cannot be null", this);
+        }
         m_portsOnSegment.add(dlink);
         m_macsOnSegment = macs;
     }

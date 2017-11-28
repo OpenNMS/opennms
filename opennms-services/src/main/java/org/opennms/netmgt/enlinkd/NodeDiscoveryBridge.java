@@ -382,7 +382,9 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             bridgeifindex.put(bridgeport, bridgeport);        	
         } else if (afterPort == null && bridgeifindex.get(beforePort) == 0) {
             bridgeifindex.put(bridgeport, bridgeport);
-        } else if (afterPort == null && bridgeifindex.get(beforePort) == 0) {
+        } else if (beforePort == null && bridgeifindex.get(afterPort) == 0) {
+            bridgeifindex.put(bridgeport, bridgeport);
+        } else if (afterPort == null) {
             bridgeifindex.put(bridgeport, bridgeport+bridgeifindex.get(beforePort)-beforePort);
         } else if (beforePort == null) {
             bridgeifindex.put(bridgeport, bridgeport+bridgeifindex.get(afterPort)-afterPort);
@@ -405,7 +407,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             }
             if (diffafter == diffbefore) {
                 bridgeifindex.put(bridgeport, bridgeport+diffafter);
-            } else if ((bridgeport-beforePort) > (afterPort-bridgeport) ) {
+            } else if ((bridgeport-beforePort) > (afterPort-bridgeport) ) { //FIXME NPE
                 bridgeifindex.put(bridgeport, diffafter+bridgeport);
             } else {
                 bridgeifindex.put(bridgeport, diffbefore+bridgeport);
