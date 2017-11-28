@@ -64,7 +64,6 @@ import com.spotify.docker.client.messages.ContainerInfo;
  * 
  * @author Seth
  */
-@Ignore
 public class SyslogKafkaElasticsearchBufferingIT extends AbstractSyslogTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearchBufferingIT.class);
