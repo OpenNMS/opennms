@@ -108,12 +108,12 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
             m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       ipNetToMediaTableTracker).withDescription("ipNetToMedia").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: ipNetToMedia table: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: ExecutionException: ipNetToMedia: {}", 
+                     getNodeId(), e.getMessage(),e);
             return;
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: ipNetToMedia table: {}",
-                     getNodeId(),e.getMessage());
+            LOG.info("run: node [{}]: InterruptedException: ipNetToMedia: {}",
+                     getNodeId(),e.getMessage(),e);
             return;       
         }
 

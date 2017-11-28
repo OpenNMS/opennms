@@ -172,7 +172,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             m_linkd.getLocationAwareSnmpClient().walk(peer, dot1dbase).withDescription("dot1dbase").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: node [{}]: ExecutionException: dot1dbase: {}", 
-                     getNodeId(), e.getMessage());
+                     getNodeId(), e.getMessage(),e); //FIXME remove when finished
             return null; 
         } catch (final InterruptedException e) {
             LOG.info("run: node [{}]: InterruptedException: dot1dbase: {}", 
@@ -261,10 +261,10 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: ciscoVtpVlan table: {}", 
+            LOG.info("run: node [{}]: ExecutionException: ciscoVtpVlan: {}", 
                      getNodeId(), e.getMessage());
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: ciscoVtpVlan table: {}", 
+            LOG.info("run: node [{}]: InterruptedException: ciscoVtpVlan: {}", 
                      getNodeId(), e.getMessage());
         }
         return vlanmap;
@@ -287,10 +287,10 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: dot1dBasePortTable table: {}", 
+            LOG.info("run: node [{}]: ExecutionException: dot1dBasePortTable: {}", 
                      getNodeId(), e.getMessage());
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: dot1dBasePortTable table: {}", 
+            LOG.info("run: node [{}]: InterruptedException: dot1dBasePortTable: {}", 
                      getNodeId(), e.getMessage());
         }
         return bridgetoifindex;
