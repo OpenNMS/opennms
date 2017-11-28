@@ -111,5 +111,46 @@
     <dropColumn tableName="snmpinterface" columnName="snmpipadentnetmask" />
   </changeSet>
 
+  <!-- Seee NMS-9687 -->
+  <changeSet id="21.0.2-remove-duplicate-reductionkey-memos" author="mvrueden">
+    <!-- Merge existing duplicate entries -->
+    <sql>
+      WITH subquery AS (
+      SELECT
+      reductionkey,
+      type,
+      max(updated) AS updated,
+      string_agg(body, E'\n\nMerged by database installer - ' || to_char(current_timestamp, 'YYYY-MM-DD') || E':\n') AS body,
+      count(*)
+      FROM memos
+      WHERE reductionkey IS NOT NULL
+      GROUP BY reductionkey, type
+      HAVING count(*) > 1
+      )
+      UPDATE memos
+      SET body = subquery.body
+      FROM subquery
+      WHERE memos.reductionkey = subquery.reductionkey
+      AND memos.type = subquery.type
+      AND memos.updated = subquery.updated;
+    </sql>
+    <!-- Delete duplicate entries except the newest -->
+    <sql>
+      DELETE FROM memos WHERE id IN (
+      SELECT id
+      FROM memos
+      WHERE reductionkey IN (
+      SELECT reductionkey
+      FROM memos
+      WHERE reductionkey IS NOT NULL
+      GROUP BY reductionkey
+      HAVING count(*) > 1
+      ) ORDER BY updated DESC OFFSET 1
+      )
+    </sql>
+    <!-- Add constraint to prevent duplicate entries in the future -->
+    <addUniqueConstraint tableName="memos" columnNames="reductionkey, type" />
+
+  </changeSet>
 
 </databaseChangeLog>
