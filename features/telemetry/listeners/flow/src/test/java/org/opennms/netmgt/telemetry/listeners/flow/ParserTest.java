@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
+package org.opennms.netmgt.telemetry.listeners.flow;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
