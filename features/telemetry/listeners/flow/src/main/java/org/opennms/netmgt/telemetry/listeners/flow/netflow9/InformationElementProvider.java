@@ -73,7 +73,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 28, IPv6AddressValue::parser, "IPV6_DST_ADDR", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 29, UnsignedValue::parserWith8Bit, "IPV6_SRC_MASK", Optional.empty());
         adder.add(Protocol.NETFLOW9, 30, UnsignedValue::parserWith8Bit, "IPV6_DST_MASK", Optional.empty());
-        adder.add(Protocol.NETFLOW9, 31, UnsignedValue::parserWith24Bit, "IPV6_FLOW_LABEL", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 31, UnsignedValue::parserWith32Bit, "IPV6_FLOW_LABEL", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 32, UnsignedValue::parserWith16Bit, "ICMP_TYPE", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 33, UnsignedValue::parserWith8Bit, "MUL_IGMP_TYPE", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 34, UnsignedValue::parserWith32Bit, "SAMPLING_INTERVAL", Semantics.QUANTITY);
@@ -90,7 +90,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         // 45 reserved
         adder.add(Protocol.NETFLOW9, 46, UnsignedValue::parserWith8Bit, "MPLS_TOP_LABEL_TYPE", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 47, OctetArrayValue.parserWithLimits(4, 4), "MPLS_TOP_LABEL_IP_ADDR", Semantics.DEFAULT);
-        adder.add(Protocol.NETFLOW9, 48, UnsignedValue::parserWith8Bit, "FLOW_SAMPLER_ID", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 48, UnsignedValue::parserWith16Bit, "FLOW_SAMPLER_ID", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 49, UnsignedValue::parserWith8Bit, "FLOW_SAMPLER_MODE", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 50, UnsignedValue::parserWith32Bit, "FLOW_SAMPLER_RANDOM_INTERVAL", Semantics.QUANTITY);
         // 51 reserved
