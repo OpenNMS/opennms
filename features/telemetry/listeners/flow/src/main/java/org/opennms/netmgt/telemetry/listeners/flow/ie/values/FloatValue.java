@@ -71,7 +71,7 @@ public class FloatValue extends Value<Double> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }
@@ -90,7 +90,7 @@ public class FloatValue extends Value<Double> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }

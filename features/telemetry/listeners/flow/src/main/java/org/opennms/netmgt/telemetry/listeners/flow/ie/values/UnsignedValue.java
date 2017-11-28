@@ -72,7 +72,7 @@ public class UnsignedValue extends Value<UnsignedLong> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }
@@ -91,7 +91,7 @@ public class UnsignedValue extends Value<UnsignedLong> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }
@@ -110,7 +110,7 @@ public class UnsignedValue extends Value<UnsignedLong> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }
@@ -129,7 +129,7 @@ public class UnsignedValue extends Value<UnsignedLong> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }
@@ -148,7 +148,7 @@ public class UnsignedValue extends Value<UnsignedLong> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }

@@ -71,7 +71,7 @@ public class SignedValue extends Value<Long> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }
@@ -90,7 +90,7 @@ public class SignedValue extends Value<Long> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }
@@ -109,7 +109,7 @@ public class SignedValue extends Value<Long> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }
@@ -128,7 +128,7 @@ public class SignedValue extends Value<Long> {
 
             @Override
             public int getMinimumFieldLength() {
-                return 1;
+                return 0;
             }
         };
     }
