@@ -28,82 +28,63 @@
 
 package org.opennms.plugins.elasticsearch.rest.credentials;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Dictionary;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public class CredentialsParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(CredentialsParser.class);
 
-    public List<CredentialsDTO> parse(Dictionary<String, Object> properties) {
-        if (properties.isEmpty()) {
-            return Collections.emptyList();
-        }
+    public Map<AuthScope, Credentials> parse(final List<CredentialsScope> credentialsScopes) {
+        final Map<AuthScope, Credentials> credentialsMap = new HashMap<>();
+        if (credentialsScopes != null) {
+            for (CredentialsScope scope : credentialsScopes) {
+                // Verify username/password
+                if (Strings.isNullOrEmpty(scope.getUsername()) || Strings.isNullOrEmpty(scope.getPassword())) {
+                    LOG.warn("Found incomplete credentials (username={}, password={}) for host {}. Username or password is empty/null. Ignoring.",
+                            scope.getUsername(),
+                            scope.getPassword() != null ? scope.getPassword().isEmpty() ? "" : "******" : null, // Censor password if provided
+                            scope.getUrl());
+                    continue;
+                }
+                // Verify URL
+                if (Strings.isNullOrEmpty(scope.getUrl())) {
+                    LOG.warn("No url specified. Ignoring.");
+                    continue;
+                }
 
-        final List<CredentialsDTO> credentialsList = new ArrayList<>();
-        final List<String> keys = Collections.list(properties.keys());
-        for (String originalKey : keys) {
-            // Flatten key
-            final String flattenedKey = flattenKey(originalKey);
-
-            // Retrieve value
-            Object object = properties.get(originalKey);
-            if (object == null || !(object instanceof String)) {
-                LOG.warn("Detected non string property for key '{}'. Skipping.", originalKey);
-                continue;
-            }
-            final String value = (String) object;
-
-            // Parse properties
-            final String[] usernamePassword = value.split(":");
-            final String[] hostPort = flattenedKey.split(":");
-
-            // Verify correct format
-            if (usernamePassword.length != 2) {
-                LOG.warn("Could not determine username:password from value '{}' for key '{}'. Ignoring", value, originalKey);
-                continue;
-            }
-            if (hostPort.length != 2) {
-                LOG.warn("could not determine host:port from key '{}'", originalKey);
-                continue;
-            }
-
-            // Finally set it
-            try {
-                // Try parsing port
-                final int port = Integer.parseInt(hostPort[1]);
-
-                // Set credentials
-                final CredentialsDTO credentials = new CredentialsDTO(
-                        new AuthScope(hostPort[0], port),
-                        new UsernamePasswordCredentials(usernamePassword[0], usernamePassword[1])
-                );
-
-                credentialsList.add(credentials);
-            } catch (NumberFormatException ex) {
-                LOG.error("Defined port " + hostPort[1] + " is not a valid number. Skipping username:password definition for " + originalKey, ex);
-                continue;
+                // Try parsing url
+                final String urlString = fixUrl(scope.getUrl());
+                try {
+                    final URL url = new URL(urlString);
+                    final HttpHost httpHost = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
+                    credentialsMap.put(
+                            new AuthScope(httpHost),
+                            new UsernamePasswordCredentials(scope.getUsername(), scope.getPassword()));
+                } catch (MalformedURLException ex) {
+                    LOG.error("Defined url is invalid: {}", ex.getMessage());
+                }
             }
         }
-
-        return credentialsList;
+        return credentialsMap;
     }
 
-    // remove http:// or https:// if provided
-    private static String flattenKey(String key) {
-        if (key.startsWith("http://")) {
-            key = key.substring("http://".length());
+    private static String fixUrl(String input) {
+        if (!input.startsWith("http://") && !input.startsWith("https://")) {
+            return "http://" + input;
         }
-        if (key.startsWith("https://")) {
-            key = key.substring("https://".length());
-        }
-        return key;
+        return input;
     }
 }

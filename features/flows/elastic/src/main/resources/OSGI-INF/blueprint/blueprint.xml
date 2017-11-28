@@ -34,13 +34,10 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <!-- Used to very easily define credentials in a properties file and enforcing the bundle to reload when credentials change -->
-    <cm:property-placeholder id="elasticFlowRepositoryCredentials"
-                             persistent-id="org.opennms.features.flows.persistence.elastic.credentials"
-                             placeholder-prefix="#(" placeholder-suffix=")"
-                             update-strategy="reload">
-
-    </cm:property-placeholder>
+    <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
+    <bean id="credentialsProvider" class="org.opennms.netmgt.flows.elastic.credentials.ElasticFlowRepositoryCredentialsProvider">
+        <argument value="elastic-flow-persistence-credentials.xml" />
+    </bean>
 
     <!-- Proxy for the JestClientFactory -->
     <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
@@ -51,8 +48,8 @@
         <property name="maxTotalConnection" value="${maxTotalConnection}"/>
         <property name="discovery" value="${nodeDiscovery}" />
         <property name="discoveryFrequency" value="${nodeDiscoveryFrequency}" />
-        <property name="credentials" ref="elasticFlowRepositoryCredentials" />
         <property name="proxy" value="${proxy}" />
+        <property name="credentials" ref="credentialsProvider" />
     </bean>
 
     <!-- Actually creates the client, but only once -->

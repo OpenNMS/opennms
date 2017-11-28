@@ -28,42 +28,38 @@
 
 package org.opennms.plugins.elasticsearch.rest.credentials;
 
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Hashtable;
-import java.util.List;
+import java.util.Map;
 
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public class CredentialsParserTest {
-
     @Test
     public void verifyParsing() {
-        final Hashtable<String, Object> table = new Hashtable<>();
+        final CredentialsWrapper configuration = new CredentialsWrapper(){};
+
         // Valid
-        table.put("192.168.0.1:9200", "ulf:ulf");
-        table.put("http://192.168.0.2:9200", "ulf:ulf2");
-        table.put("https://192.168.0.3:9300", "ulf:ulf3");
+        configuration.withCredentials(new CredentialsScope("192.168.0.1:9200", "ulf", "ulf"));
+        configuration.withCredentials(new CredentialsScope("http://192.168.0.2:9200", "ulf", "ulf2"));
+        configuration.withCredentials(new CredentialsScope("https://192.168.0.3:9300", "ulf", "ulf3"));
 
         // Invalid
-        table.put("http://192.168.0.1:x", "ulf:ulf");
-        table.put("192.168.0.1", "ulf");
+        configuration.withCredentials(new CredentialsScope("http://192.168.0.1:x", "ulf", "ulf"));
+        configuration.withCredentials(new CredentialsScope("192.168.0.1", "ulf", null));
 
-        // Parse
-        final CredentialsParser parser = new CredentialsParser();
-        final List<CredentialsDTO> credentials = parser.parse(table);
+        final Map<AuthScope, Credentials> credentials = new CredentialsParser().parse(configuration.getCredentialsScopes());
 
         // Verify
         assertThat(credentials.size(), is(3));
-        assertThat(credentials, hasItems(
-                new CredentialsDTO(new AuthScope("192.168.0.1", 9200), new UsernamePasswordCredentials("ulf", "ulf")),
-                new CredentialsDTO(new AuthScope("192.168.0.2", 9200), new UsernamePasswordCredentials("ulf", "ulf2")),
-                new CredentialsDTO(new AuthScope("192.168.0.3", 9300), new UsernamePasswordCredentials("ulf", "ulf3"))
-        ));
+        assertThat(credentials, Matchers.hasEntry(new AuthScope(new HttpHost("192.168.0.1", 9200, "http")), new UsernamePasswordCredentials("ulf", "ulf")));
+        assertThat(credentials, Matchers.hasEntry(new AuthScope(new HttpHost("192.168.0.2", 9200,"http")), new UsernamePasswordCredentials("ulf", "ulf2")));
+        assertThat(credentials, Matchers.hasEntry(new AuthScope(new HttpHost("192.168.0.3", 9300, "https")), new UsernamePasswordCredentials("ulf", "ulf3")));
     }
-
 }

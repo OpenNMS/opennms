@@ -34,18 +34,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.aries.blueprint.compendium.cm.CmPropertyPlaceholder;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsDTO;
 import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsParser;
-import org.osgi.service.cm.Configuration;
+import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -242,15 +242,16 @@ public class RestClientFactory {
 		clientConfigBuilder.maxConnectionIdleTime(timeout, unit);
 	}
 
-	public void setCredentials(final CmPropertyPlaceholder credentials) throws IOException {
-		final Configuration configuration = credentials.getConfigAdmin().getConfiguration(credentials.getPersistentId());
-		final Dictionary<String, Object> properties = configuration.getProperties();
-		final List<CredentialsDTO> credentialList = new CredentialsParser().parse(properties);
-		if (!credentialList.isEmpty()) {
-			final BasicCredentialsProvider customCredentialsProvider = new BasicCredentialsProvider();
-			clientConfigBuilder.credentialsProvider(customCredentialsProvider);
-
-			credentialList.forEach(c -> customCredentialsProvider.setCredentials(c.getAuthScope(), c.getCredentials()));
+	public void setCredentials(final CredentialsProvider credentialsProvider) throws IOException {
+		if (credentialsProvider != null) {
+			final Map<AuthScope, Credentials> credentials = new CredentialsParser().parse(credentialsProvider.getCredentials());
+			if (!credentials.isEmpty()) {
+				final BasicCredentialsProvider customCredentialsProvider = new BasicCredentialsProvider();
+				clientConfigBuilder.credentialsProvider(customCredentialsProvider);
+				credentials.forEach((key, value) -> customCredentialsProvider.setCredentials(key, value));
+			} else {
+				LOG.warn("setCredentials was invoked, but no credentials or no valid credentials were provided.");
+			}
 		}
 	}
 

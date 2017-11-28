@@ -137,17 +137,15 @@ elasticGlobalPassword=changeme
 ====== Configure ElasticSearch Credentials
 
 It is possible to define credentials for each ElasticSearch node individually.
-Credentials for each node must be stored in `${OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.credentials.cfg`.
-The format is as follows:
-
-```
-[<scheme>]<host>:<port>=<username>:<password>
-```
+Credentials for each node must be stored in `${OPENNMS_HOME}/etc/elastic-flow-persistence-credentials.xml`.
 
 .Custom credentials
-```
-localhost:9200 = ulf:ulf
-10.10.0.1:9200 = ulf:flu
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<elastic-credentials>
+    <credentials url="http://localhost:9200" username="ulf" password="ulf" />
+    <credentials url="https://10.10.0.1:9333" username="ulf" password="flu" />
+</elastic-credentials>
 ```
 
 ===== Configure NetFlow v5 Listener on a Minion

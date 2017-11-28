@@ -26,42 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.plugins.elasticsearch.rest.credentials;
+package org.opennms.netmgt.flows.elastic.credentials;
 
-import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
+import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsWrapper;
 
-public class CredentialsDTO {
-    private final Credentials credentials;
-    private final AuthScope authScope;
-
-    public CredentialsDTO(AuthScope authScope, Credentials credentials) {
-        this.authScope = Objects.requireNonNull(authScope);
-        this.credentials = Objects.requireNonNull(credentials);
-    }
-
-    public Credentials getCredentials() {
-        return credentials;
-    }
-
-    public AuthScope getAuthScope() {
-        return authScope;
-    }
+@XmlRootElement(name="elastic-credentials")
+@XmlAccessorType(value= XmlAccessType.NONE)
+public class ElasticFlowRepositoryCredentialsWrapper extends CredentialsWrapper {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final CredentialsDTO that = (CredentialsDTO) o;
-        final boolean equals = Objects.equals(credentials, that.credentials)
-                && Objects.equals(authScope, that.authScope);
-        return equals;
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(credentials, authScope);
+        return super.hashCode();
     }
 }
