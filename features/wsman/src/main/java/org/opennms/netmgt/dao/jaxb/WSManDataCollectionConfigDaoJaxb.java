@@ -92,7 +92,7 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
         List<SystemDefinition> sysDefs = getSystemDefinitionsForCollection(collection);
 
         // Map all of the available groups by name for easy lookup
-        final Map<String, Group> groupsByName = Maps.uniqueIndex(getConfig().getGroup(), g -> g.getName());
+        final Map<String, Group> groupsByName = Maps.uniqueIndex(getConfig().getGroup(), Group::getName);
 
         // Gather the groups from all of the supported system definitions
         final List<Group> groups = Lists.newArrayList();
@@ -118,7 +118,7 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
             return getConfig().getSystemDefinition();
         } else {
             // Map all of the available system definitions by name for easy lookup
-            final Map<String, SystemDefinition> sysDefsByName = Maps.uniqueIndex(getConfig().getSystemDefinition(), sd -> sd.getName());
+            final Map<String, SystemDefinition> sysDefsByName = Maps.uniqueIndex(getConfig().getSystemDefinition(), SystemDefinition::getName);
             // Gather the requested system definitions
             final List<SystemDefinition> sysDefs = Lists.newArrayList();
             for (String sysDefName : collection.getIncludeSystemDefinition()) {

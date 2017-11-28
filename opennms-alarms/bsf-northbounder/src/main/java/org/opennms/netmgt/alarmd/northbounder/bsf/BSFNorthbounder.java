@@ -174,7 +174,7 @@ public class BSFNorthbounder extends AbstractNorthbounder implements Initializin
             throw e;
         }
         LOG.info("Forwarding {} alarms to engine {}", alarms.size(), m_engine.getName());
-        alarms.forEach(a -> process(a));
+        alarms.forEach(this::process);
     }
 
     /**

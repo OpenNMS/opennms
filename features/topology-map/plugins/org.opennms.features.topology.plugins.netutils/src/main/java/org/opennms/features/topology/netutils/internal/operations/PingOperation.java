@@ -43,7 +43,9 @@ import org.opennms.features.topology.netutils.internal.ping.PingWindow;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -68,13 +70,13 @@ public class PingOperation extends AbstractOperation {
         final Vertex vertex = getVertexItem(operationContext, target);
         final Optional<OnmsNode> node = getNodeIfAvailable(vertex);
 
-        final List<String> locations = monitoringLocationDao.findAll().stream().map(eachLocation -> eachLocation.getLocationName()).collect(Collectors.toList());
+        final List<String> locations = monitoringLocationDao.findAll().stream().map(OnmsMonitoringLocation::getLocationName).collect(Collectors.toList());
         final String defaultLocation = node.isPresent()
                 ? node.get().getLocation().getLocationName()
                 : MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
 
         final List<InetAddress> ipAddresses = node.isPresent()
-                ? Lists.newArrayList(node.get().getIpInterfaces()).stream().map(eachInterface -> eachInterface.getIpAddress()).collect(Collectors.toList())
+                ? Lists.newArrayList(node.get().getIpInterfaces()).stream().map(OnmsIpInterface::getIpAddress).collect(Collectors.toList())
                 : Lists.newArrayList(InetAddressUtils.addr(vertex.getIpAddress()));
         final InetAddress defaultIp = getDefaultIp(vertex, node);
 

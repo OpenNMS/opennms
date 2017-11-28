@@ -145,7 +145,7 @@ public class ConvertToEvent {
             InterfaceToNodeCache cache = AbstractInterfaceToNodeCache.getInstance();
             if (cache != null) {
                 cache.getFirstNodeId(location, hostAddress)
-                        .ifPresent(nodeId -> bldr.setNodeid(nodeId));
+                        .ifPresent(bldr::setNodeid);
             }
 
             bldr.setInterface(hostAddress);

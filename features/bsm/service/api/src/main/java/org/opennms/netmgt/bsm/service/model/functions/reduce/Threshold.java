@@ -97,7 +97,7 @@ public class Threshold implements ReductionFunction {
 
     public Map<Status, Integer> getHitsByStatusWithIndex(List<StatusWithIndex> statuses) {
         return getHitsByStatus(statuses.stream()
-                .map(si -> si.getStatus())
+                .map(StatusWithIndex::getStatus)
                 .collect(Collectors.toList()));
     }
 

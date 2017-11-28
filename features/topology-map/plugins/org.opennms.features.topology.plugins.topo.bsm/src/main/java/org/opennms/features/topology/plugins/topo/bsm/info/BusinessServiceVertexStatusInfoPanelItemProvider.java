@@ -173,7 +173,7 @@ public class BusinessServiceVertexStatusInfoPanelItemProvider extends VertexInfo
         if (graph.getOutEdges(graph.getVertexByBusinessServiceId(businessService.getId())).size() <= MAX_EDGES_FOR_IMPACTING) {
             return stateMachine.calculateImpacting(businessService)
                     .stream()
-                    .map(e -> graph.getDest(e))
+                    .map(graph::getDest)
                     .collect(Collectors.toSet());
         }
         LOG.warn("Try to calculate impacting vertices for more than {} edges. This is currently not supported. See http://http://issues.opennms.org/browse/NMS-8527.", MAX_EDGES_FOR_IMPACTING);

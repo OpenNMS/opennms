@@ -58,7 +58,7 @@ public class LazyChildResourceLoader implements LazyList.Loader<OnmsResource> {
         // into a single list
         List<OnmsResource> children = getAvailableResourceTypes().stream()
                 .map(t -> t.getResourcesForParent(m_parent))
-                .flatMap(rs -> rs.stream())
+                .flatMap(List::stream)
                 .collect(Collectors.toList());
 
         // Set the parent field on all of the resources

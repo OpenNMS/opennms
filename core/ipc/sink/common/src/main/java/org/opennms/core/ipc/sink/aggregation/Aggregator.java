@@ -166,7 +166,7 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
         // Lock all the buckets
         final Iterable<Lock> locks = lockStripes.bulkGet(keys);
         try {
-            locks.forEach(l -> l.lock());
+            locks.forEach(Lock::lock);
             // Determine which buckets are ready to be dispatched
             // and remove these from the map
             final long cutOff = System.currentTimeMillis() - completionIntervalMs;
@@ -181,7 +181,7 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
                 }
             }
         } finally {
-            locks.forEach(l -> l.unlock());
+            locks.forEach(Lock::unlock);
         }
 
         // Dispatch!

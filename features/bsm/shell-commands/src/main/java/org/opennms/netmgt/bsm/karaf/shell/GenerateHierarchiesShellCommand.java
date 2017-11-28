@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.karaf.shell;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
@@ -60,7 +61,7 @@ public class GenerateHierarchiesShellCommand implements Action {
     @Override
     public Object execute() throws Exception {
         final Map<String, BusinessService> businessServicesByName = businessServiceManager.getAllBusinessServices()
-                .stream().collect(Collectors.toMap(b -> b.getName(), b -> b));
+                .stream().collect(Collectors.toMap(BusinessService::getName, Function.identity()));
 
         int showStatusEvery = 100;
         int numServicesToGenerate = numServices != null ? numServices : DEFAULT_NUM_SERVICES;

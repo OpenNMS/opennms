@@ -50,6 +50,7 @@ import org.opennms.features.status.api.node.strategy.NodeStatusCalculationStrate
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculatorConfig;
 import org.opennms.features.status.api.node.strategy.Status;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -75,7 +76,7 @@ public class DefaultGeolocationService implements GeolocationService {
                 .filter(n -> geoLocation(n) != null && geoLocation(n).getLongitude() != null && geoLocation(n).getLatitude() != null)
                 // Avoid including -inf values, just in case. See NMS-9338
                 .filter(n -> geoLocation(n).getLatitude() != Float.NEGATIVE_INFINITY && geoLocation(n).getLongitude() != Float.NEGATIVE_INFINITY)
-                .map(node -> convert(node))
+                .map(this::convert)
                 .collect(Collectors.toList());
 
         if (query.getStatusCalculationStrategy() != null) {
@@ -137,7 +138,7 @@ public class DefaultGeolocationService implements GeolocationService {
         }
         nodeInfo.setCategories(node.getCategories()
                 .stream()
-                .map(c -> c.getName())
+                .map(OnmsCategory::getName)
                 .collect(Collectors.toList()));
         geolocationInfo.setNodeInfo(nodeInfo);
         return geolocationInfo;

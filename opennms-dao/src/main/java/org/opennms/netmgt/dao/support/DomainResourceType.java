@@ -94,7 +94,7 @@ public final class DomainResourceType extends AbstractTopLevelResourceType {
     @Override
     public List<OnmsResource> getTopLevelResources() {
         return findDomainNames().stream()
-                .map(domain -> createResourceForDomain(domain))
+                .map(this::createResourceForDomain)
                 .collect(Collectors.toList());
     }
 

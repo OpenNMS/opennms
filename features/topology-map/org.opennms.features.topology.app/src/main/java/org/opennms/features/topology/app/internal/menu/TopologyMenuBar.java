@@ -74,7 +74,7 @@ public class TopologyMenuBar extends MenuBar {
             }
 
         }
-        menuBuilder.apply(this, targets, operationContext, () -> notifyMenuUpdateListener());
+        menuBuilder.apply(this, targets, operationContext, this::notifyMenuUpdateListener);
     }
 
     protected void notifyMenuUpdateListener() {

@@ -168,7 +168,7 @@ public class SingleInstanceTracker extends CollectionTracker {
         responses.stream()
             .flatMap(res -> res.getResults().stream())
             .filter(res -> m_oid.equals(SnmpObjId.get(res.getBase(), res.getInstance())))
-            .forEach(res -> storeResult(res));
+            .forEach(this::storeResult);
         setFinished(true);
     }
 }

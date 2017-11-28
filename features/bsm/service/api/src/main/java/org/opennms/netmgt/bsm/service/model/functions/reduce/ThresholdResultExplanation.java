@@ -116,10 +116,10 @@ public class ThresholdResultExplanation {
     }
 
     public int getWeightSum() {
-        return getGraphEdges().stream().mapToInt(e -> e.getWeight()).sum();
+        return getGraphEdges().stream().mapToInt(GraphEdge::getWeight).sum();
     }
 
     public double getWeightSumFactor() {
-        return getGraphEdges().stream().mapToDouble(e -> getWeightFactor(e)).sum();
+        return getGraphEdges().stream().mapToDouble(this::getWeightFactor).sum();
     }
 }

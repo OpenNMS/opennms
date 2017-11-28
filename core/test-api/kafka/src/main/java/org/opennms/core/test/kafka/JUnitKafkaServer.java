@@ -109,7 +109,7 @@ public class JUnitKafkaServer extends ExternalResource {
         final Buffer<KafkaMetricsReporter> metricsList = scala.collection.JavaConversions.asScalaBuffer(kmrList);
         kafkaServer = new KafkaServer(kafkaConfig, new SystemTime(), Option.<String>empty(), metricsList);
         kafkaServer.startup();
-        await().atMost(1, MINUTES).until(() -> getBrokerMetadatas(), hasSize(greaterThanOrEqualTo(1)));
+        await().atMost(1, MINUTES).until(this::getBrokerMetadatas, hasSize(greaterThanOrEqualTo(1)));
 
         System.err.println("Kafka Address: " + getKafkaConnectString());
         System.err.println("Zookeeper Address: " + getZookeeperConnectString());

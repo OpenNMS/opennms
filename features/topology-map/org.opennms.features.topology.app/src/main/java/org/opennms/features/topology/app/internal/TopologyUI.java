@@ -208,11 +208,11 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         private TopologyUIRequestHandler() {
             requestHandlerList = Lists.newArrayList(
                     // The order matters
-                    request -> loadHistoryFragment(request),
-                    request -> loadGraphProvider(request),
-                    request -> loadVertexHopCriteria(request),
-                    request -> loadSemanticZoomLevel(request),
-                    request -> loadLayout(request));
+                    this::loadHistoryFragment,
+                    this::loadGraphProvider,
+                    this::loadVertexHopCriteria,
+                    this::loadSemanticZoomLevel,
+                    this::loadLayout);
         }
 
         @Override
@@ -441,7 +441,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                                                      return null;
                                                  }
                                              })
-                                             .filter(component -> component != null)
+                                             .filter(Objects::nonNull)
                                              .sorted()
                                              .map(this::wrap)
                                              .collect(Collectors.toList());
@@ -591,7 +591,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         if (getWrappedVertexHopCriteria(m_graphContainer).isEmpty() && noAdditionalFocusCriteria()) {
             List<Criteria> defaultCriteriaList = m_graphContainer.getTopologyServiceClient().getDefaults().getCriteria();
             if (defaultCriteriaList != null) {
-                defaultCriteriaList.forEach(eachCriteria -> m_graphContainer.addCriteria(eachCriteria)); // set default
+                defaultCriteriaList.forEach(m_graphContainer::addCriteria); // set default
             }
         }
 
