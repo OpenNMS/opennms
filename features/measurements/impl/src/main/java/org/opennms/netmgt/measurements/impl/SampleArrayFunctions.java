@@ -43,7 +43,7 @@ import com.google.common.base.Preconditions;
 public class SampleArrayFunctions {
 	private static final Logger LOG = LoggerFactory.getLogger(SampleArrayFunctions.class);
 	
-	JexlContext m_context =null;
+	private JexlContext m_context =null;
 	
 	/**
 	 * The context will be populated by jexl prior to expression execution
@@ -71,16 +71,20 @@ public class SampleArrayFunctions {
 			Preconditions.checkNotNull(n, "n");
 			
 			sample = (double[]) m_context.get("__"+sampleName);
-			if(sample==null) throw new RuntimeException("not in jexl context: __"+sampleName);
+			if(sample==null) {
+				LOG.warn("fn:arrayZero attribute not in jexl context: __"+sampleName);
+				return Double.NaN;
+			}
+			
 			i = (Integer) m_context.get("__i");
-			if(i==null) throw new RuntimeException("not in jexl context: __i");
+			Preconditions.checkNotNull(i, "sample index __i"); // should not happen
 			
 			if(i-n < 0) return Double.valueOf(0);
 			
 			return sample[i-n];
-		}
-		catch (Exception ex){
-			LOG.error("problem retrieving prior sample "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
+			
+		} catch (Exception ex){
+			LOG.error("fn:arrayZero problem retrieving prior attribute sample  "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
 		}
 		return Double.NaN;
 	}
@@ -102,16 +106,20 @@ public class SampleArrayFunctions {
 			Preconditions.checkNotNull(n, "n");
 			
 			sample = (double[]) m_context.get("__"+sampleName);
-			if(sample==null) throw new RuntimeException("not in jexl context: __"+sampleName);
+			if(sample==null) {
+				LOG.warn("fn:arrayFirst attribute not in jexl context: __"+sampleName);
+				return Double.NaN;
+			}
+			
 			i = (Integer) m_context.get("__i");
-			if(i==null) throw new RuntimeException("not in jexl context: __i");
+			Preconditions.checkNotNull(i, "sample index __i"); // should not happen
 			
 			if(i-n < 0) return Double.valueOf(sample[0]);
 			
 			return sample[i-n];
 		}
 		catch (Exception ex){
-			LOG.error("problem retrieving prior sample "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
+			LOG.error("fn:arrayFirst problem retrieving prior attribute sample "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
 		}
 		return Double.NaN;
 	}
@@ -133,16 +141,20 @@ public class SampleArrayFunctions {
 			Preconditions.checkNotNull(n, "n");
 			
 			sample = (double[]) m_context.get("__"+sampleName);
-			if(sample==null) throw new RuntimeException("not in jexl context: __"+sampleName);
+			if(sample==null) {
+				LOG.warn("fn:arrayNaN attribute not in jexl context: __"+sampleName);
+				return Double.NaN;
+			}
+			
 			i = (Integer) m_context.get("__i");
-			if(i==null) throw new RuntimeException("not in jexl context: __i");
+			Preconditions.checkNotNull(i, "sample index __i"); // should not happen
 			
 			if(i-n < 0) return Double.NaN;
 			
 			return sample[i-n];
 		}
 		catch (Exception ex){
-			LOG.error("problem retrieving prior sample "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
+			LOG.error("fn:arrayNaN problem retrieving prior attribute sample "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
 		}
 		return Double.NaN;
 	}
@@ -165,16 +177,20 @@ public class SampleArrayFunctions {
 			Preconditions.checkNotNull(n, "n");
 			
 			sample = (double[]) m_context.get("__"+sampleName);
-			if(sample==null) throw new RuntimeException("not in jexl context: __"+sampleName);
+			if(sample==null) {
+				LOG.warn("fn:arrayStart attribute not in jexl context: __"+sampleName);
+				return Double.NaN;
+			}
+			
 			i = (Integer) m_context.get("__i");
-			if(i==null) throw new RuntimeException("not in jexl context: __i");
+			Preconditions.checkNotNull(i, "sample index __i"); // should not happen
 			
 			if(i-n < 0) return start;
 			
 			return sample[i-n];
 		}
 		catch (Exception ex){
-			LOG.error("problem retrieving prior sample "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
+			LOG.error("fn:arrayStart problem retrieving prior attribute sample  "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
 		}
 		return Double.NaN;
 	}

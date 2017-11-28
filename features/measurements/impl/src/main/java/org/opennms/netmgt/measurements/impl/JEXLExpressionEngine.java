@@ -126,13 +126,13 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         jexlValues.put("__inf", Double.POSITIVE_INFINITY);
         jexlValues.put("__neg_inf", Double.NEGATIVE_INFINITY);
         jexlValues.put("NaN", Double.NaN);
+        jexlValues.put("__E", java.lang.Math.E);
+        jexlValues.put("__PI", java.lang.Math.PI);
         
-        // add context as a reference to be picked up by complex formulae
-        jexlValues.put("__context", context);
+        // Add JexlEvaluateFunctions with current context and jexl engine to allow string constants to be evaluated.
+        JexlEvaluateFunctions jexlEvaluateFunctions = new JexlEvaluateFunctions(context, jexl) ;
+        jexl.getFunctions().put("jexl", jexlEvaluateFunctions);
         
-        // add jexl engine to execute complex formulae since thread safe
-        jexlValues.put("__jexl", jexl);
-
         final long timestamps[] = results.getTimestamps();
         final Map<String, double[]> columns = results.getColumns();
         final int numRows = timestamps.length;
