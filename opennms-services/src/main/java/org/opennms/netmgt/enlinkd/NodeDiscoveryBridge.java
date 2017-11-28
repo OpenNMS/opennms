@@ -432,8 +432,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 if (link.getBridgeDot1qTpFdbStatus() == null) {
                     LOG.info("processDot1qTpFdbRow: node [{}]: mac {}: on port {}. row has null status.",
                     		getNodeId(),
-                             row.getDot1qTpFdbAddress(),
-                             row.getDot1qTpFdbPort());
+                             link.getMacAddress(),
+                             link.getBridgePort());
                     return;
                 }
                 if (link.getBridgePort() == null) {
