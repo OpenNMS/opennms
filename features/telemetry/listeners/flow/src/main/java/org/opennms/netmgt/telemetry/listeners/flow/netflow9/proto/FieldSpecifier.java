@@ -66,7 +66,8 @@ public final class FieldSpecifier {
                 .orElseThrow(() -> new InvalidPacketException("Undefined information element ID: %d", this.fieldType));
 
         if (this.fieldLength > informationElement.getMaximumFieldLength() || this.fieldLength < informationElement.getMinimumFieldLength()) {
-            throw new InvalidPacketException("Template field has illegal size: %d (min=%d, max=%d)",
+            throw new InvalidPacketException("Template field '%s' has illegal size: %d (min=%d, max=%d)",
+                    informationElement.getName(),
                     this.fieldLength,
                     informationElement.getMinimumFieldLength(),
                     informationElement.getMaximumFieldLength());

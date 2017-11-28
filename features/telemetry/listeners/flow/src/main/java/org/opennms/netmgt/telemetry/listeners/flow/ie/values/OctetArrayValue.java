@@ -71,13 +71,18 @@ public class OctetArrayValue extends Value<byte[]> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return maximum;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return minimum;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return maximum;
             }
         };
     }

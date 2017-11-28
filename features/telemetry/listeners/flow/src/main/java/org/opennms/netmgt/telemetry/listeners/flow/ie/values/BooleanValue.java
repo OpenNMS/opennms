@@ -72,13 +72,18 @@ public class BooleanValue extends Value<Boolean> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 1;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 0;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 1;
             }
         };
     }

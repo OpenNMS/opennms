@@ -65,12 +65,17 @@ public class MacAddressValue extends Value<byte[]> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 6;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
+                return 6;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
                 return 6;
             }
         };

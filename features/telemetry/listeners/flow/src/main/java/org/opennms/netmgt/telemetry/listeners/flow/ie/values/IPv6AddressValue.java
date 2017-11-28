@@ -73,12 +73,17 @@ public class IPv6AddressValue extends Value<Inet6Address> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 16;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
+                return 16;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
                 return 16;
             }
         };

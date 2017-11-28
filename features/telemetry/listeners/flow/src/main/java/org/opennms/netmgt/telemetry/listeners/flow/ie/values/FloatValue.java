@@ -65,13 +65,18 @@ public class FloatValue extends Value<Double> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 4;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 0;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 4;
             }
         };
     }
@@ -84,13 +89,18 @@ public class FloatValue extends Value<Double> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 8;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 0;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 8;
             }
         };
     }

@@ -72,12 +72,17 @@ public class IPv4AddressValue extends Value<Inet4Address> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 4;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
+                return 4;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
                 return 4;
             }
         };

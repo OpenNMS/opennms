@@ -65,13 +65,18 @@ public class SignedValue extends Value<Long> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 1;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 0;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 1;
             }
         };
     }
@@ -84,13 +89,18 @@ public class SignedValue extends Value<Long> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 2;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 0;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 2;
             }
         };
     }
@@ -103,13 +113,18 @@ public class SignedValue extends Value<Long> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 4;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 0;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 4;
             }
         };
     }
@@ -122,13 +137,18 @@ public class SignedValue extends Value<Long> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 8;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 0;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 8;
             }
         };
     }

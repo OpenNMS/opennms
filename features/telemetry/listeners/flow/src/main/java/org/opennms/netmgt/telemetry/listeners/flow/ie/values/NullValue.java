@@ -62,12 +62,17 @@ public class NullValue extends Value<Void> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 0;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
+                return 0;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
                 return 0;
             }
         };

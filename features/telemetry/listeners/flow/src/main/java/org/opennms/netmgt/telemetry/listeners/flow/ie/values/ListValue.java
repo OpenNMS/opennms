@@ -124,13 +124,18 @@ public class ListValue extends Value<List<List<Value<?>>>> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 0xFFFF;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 1 + 4;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
             }
         };
     }
@@ -165,13 +170,18 @@ public class ListValue extends Value<List<List<Value<?>>>> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 0xFFFF;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 3;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
             }
         };
     }
@@ -248,13 +258,18 @@ public class ListValue extends Value<List<List<Value<?>>>> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 0xFFFF;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
                 return 0;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
+                return 0xFFFF;
             }
         };
     }

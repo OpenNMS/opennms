@@ -147,6 +147,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
         @Override
         public void accept(final NullValue value) {
             // Ignored
+            // TODO: Not sure if this is used as some kind of marker in enterprise extensions
         }
 
         @Override

@@ -72,12 +72,17 @@ public class DateTimeValue extends Value<Instant> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 4;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
+                return 4;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
                 return 4;
             }
         };
@@ -91,12 +96,17 @@ public class DateTimeValue extends Value<Instant> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 8;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
+                return 8;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
                 return 8;
             }
         };
@@ -115,12 +125,17 @@ public class DateTimeValue extends Value<Instant> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 8;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
+                return 8;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
                 return 8;
             }
         };
@@ -139,12 +154,17 @@ public class DateTimeValue extends Value<Instant> {
             }
 
             @Override
-            public int getMaximumFieldLength() {
-                return 8;
+            public String getName() {
+                return name;
             }
 
             @Override
             public int getMinimumFieldLength() {
+                return 8;
+            }
+
+            @Override
+            public int getMaximumFieldLength() {
                 return 8;
             }
         };

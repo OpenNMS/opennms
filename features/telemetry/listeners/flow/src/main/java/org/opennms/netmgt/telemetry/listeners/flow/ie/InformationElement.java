@@ -38,6 +38,8 @@ public interface InformationElement {
     Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
                    final ByteBuffer buffer) throws InvalidPacketException;
 
+    String getName();
+
     int getMinimumFieldLength();
 
     int getMaximumFieldLength();
