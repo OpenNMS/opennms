@@ -439,17 +439,17 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 if (link.getBridgePort() == null) {
                     LOG.info("processDot1qTpFdbRow: node [{}]: mac {}: on port {} status {}. row has null bridge port.",
                     		getNodeId(),
-                             row.getDot1qTpFdbAddress(),
-                             row.getDot1qTpFdbPort(),
-                             link.getBridgeDot1qTpFdbStatus());
+                                link.getMacAddress(),
+                                link.getBridgePort(),
+                                link.getBridgeDot1qTpFdbStatus());
                     return;
                 }
                 if (link.getMacAddress() == null
                         || !isValidBridgeAddress(link.getMacAddress())) {
                     LOG.info("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. row has invalid mac.",
                     		getNodeId(),
-                             row.getDot1qTpFdbAddress(),
-                             row.getDot1qTpFdbPort(),
+                    	     link.getMacAddress(),
+                             link.getBridgePort(),
                              link.getBridgePortIfIndex(),
                              link.getBridgeDot1qTpFdbStatus());
                     return;
@@ -458,8 +458,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                     link.setBridgePortIfIndex(link.getBridgePort());
                     LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. Empty map from bridgeport to ifindex. Assuming ifindex=bridgeport",
                               getNodeId(),
-                           row.getDot1qTpFdbAddress(),
-                           row.getDot1qTpFdbPort(),
+                           link.getMacAddress(),
+                           link.getBridgePort(),
                            link.getBridgePortIfIndex(),
                            link.getBridgeDot1qTpFdbStatus());
                 } else  if (!bridgeifindex.containsKey(link.getBridgePort()) && bridgeifindex.containsValue(link.getBridgePort())
@@ -472,16 +472,16 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                     }
                     LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. Assument bridgeport index is ifindex. Reverting bridgeport/ifindex",
                              getNodeId(),
-                          row.getDot1qTpFdbAddress(),
-                          row.getDot1qTpFdbPort(),
+                          link.getMacAddress(),
+                          link.getBridgePort(),   
                           link.getBridgePortIfIndex(),
                           link.getBridgeDot1qTpFdbStatus());
                 } else  if (!bridgeifindex.containsKey(link.getBridgePort()) 
                         && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
                     LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. Cnnot find suitable skipping entry",
                              getNodeId(),
-                          row.getDot1qTpFdbAddress(),
-                          row.getDot1qTpFdbPort(),
+                          link.getMacAddress(),
+                          link.getBridgePort(),
                           link.getBridgePortIfIndex(),
                           link.getBridgeDot1qTpFdbStatus());
                     return;
