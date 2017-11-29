@@ -62,7 +62,7 @@ public class ListValue extends Value<List<List<Value<?>>>> {
         ALL_OF,
         ORDERED;
 
-        public static Semantic find(final int i) throws InvalidPacketException {
+        public static Semantic parse(final ByteBuffer buffer, final int i) throws InvalidPacketException {
             switch (i) {
                 case 0xFF:
                     return UNDEFINED;
@@ -77,7 +77,7 @@ public class ListValue extends Value<List<List<Value<?>>>> {
                 case 0x04:
                     return ORDERED;
                 default:
-                    throw new InvalidPacketException("Illegal semantic value: 0x%02x", i);
+                    throw new InvalidPacketException(buffer, "Illegal semantic value: 0x%02x", i);
             }
         }
     }
@@ -112,7 +112,7 @@ public class ListValue extends Value<List<List<Value<?>>>> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-                final Semantic semantic = Semantic.find(uint8(buffer));
+                final Semantic semantic = Semantic.parse(buffer, uint8(buffer));
                 final FieldSpecifier field = new FieldSpecifier(buffer);
 
                 final List<List<Value<?>>> values = new LinkedList<>();
@@ -155,10 +155,10 @@ public class ListValue extends Value<List<List<Value<?>>>> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-                final Semantic semantic = Semantic.find(uint8(buffer));
+                final Semantic semantic = Semantic.parse(buffer, uint8(buffer));
                 final int templateId = uint16(buffer);
 
-                final Template template = templateResolver.lookup(templateId).orElseThrow(() -> new InvalidPacketException("Unknown Template ID: %d", templateId));
+                final Template template = templateResolver.lookup(templateId).orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", templateId));
 
                 final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
@@ -239,17 +239,19 @@ public class ListValue extends Value<List<List<Value<?>>>> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-                final Semantic semantic = Semantic.find(BufferUtils.uint8(buffer));
+                final Semantic semantic = Semantic.parse(buffer, BufferUtils.uint8(buffer));
 
                 final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
                     final SetHeader header = new SetHeader(buffer);
                     if (header.setId <= 255) {
-                        throw new InvalidPacketException("Invalid template ID: %d", header.setId);
+                        throw new InvalidPacketException(buffer, "Invalid template ID: %d", header.setId);
                     }
 
                     final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, header.length - SetHeader.SIZE);
-                    final Set<DataRecord> dataSet = new Set<>(header, DataRecord.parser(templateResolver, header.setId), payloadBuffer);
+                    final Template template = templateResolver.lookup(header.setId)
+                            .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", header.setId));
+                    final Set<DataRecord> dataSet = new Set<>(header, DataRecord.parser(template, templateResolver), payloadBuffer);
 
                     values.addAll(Lists.transform(dataSet.records, r -> Lists.transform(r.fields, f -> f.value)));
                 }

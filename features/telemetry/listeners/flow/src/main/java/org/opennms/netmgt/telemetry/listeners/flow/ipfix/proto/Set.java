@@ -75,10 +75,10 @@ public final class Set<R extends Record> implements Iterable<R> {
         while (buffer.remaining() >= parser.getMinimumRecordLength()) {
             records.add(parser.parse(buffer));
         }
-        this.records = Collections.unmodifiableList(records);
 
+        this.records = Collections.unmodifiableList(records);
         if (this.records.size() == 0) {
-            throw new InvalidPacketException("Empty set");
+            throw new InvalidPacketException(buffer, "Empty set");
         }
     }
 

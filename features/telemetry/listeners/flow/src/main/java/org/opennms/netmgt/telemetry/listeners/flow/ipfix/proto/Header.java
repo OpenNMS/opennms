@@ -63,18 +63,18 @@ public final class Header {
 
     public Header(final ByteBuffer buffer) throws InvalidPacketException {
         this.versionNumber = BufferUtils.uint16(buffer);
+        if (this.versionNumber != VERSION) {
+            throw new InvalidPacketException(buffer, "Invalid version number: 0x%04X", this.versionNumber);
+        }
+
         this.length = BufferUtils.uint16(buffer);
+        if (this.length <= 0) {
+            throw new InvalidPacketException(buffer, "Empty packet");
+        }
+
         this.exportTime = BufferUtils.uint32(buffer);
         this.sequenceNumber = BufferUtils.uint32(buffer);
         this.observationDomainId = BufferUtils.uint32(buffer);
-
-        if (this.versionNumber != VERSION) {
-            throw new InvalidPacketException("Invalid version number: 0x%04X", this.versionNumber);
-        }
-
-        if (this.length <= 0) {
-            throw new InvalidPacketException("Empty packet");
-        }
     }
 
     @Override

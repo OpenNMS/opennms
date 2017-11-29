@@ -31,13 +31,13 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,37 +50,44 @@ import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest {
-    private final static File folder = new File("src/test/resources/flows");
-    private final static String PROTOCOL = "ipfix";
-    private final File file;
+    private final static Path FOLDER = Paths.get("src/test/resources/flows");
 
     @Parameterized.Parameters(name = "file: {0}")
     public static Iterable<Object[]> data() throws IOException {
-        return Arrays.stream(folder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith(PROTOCOL) && name.endsWith(".dat");
-            }
-        })).map(f -> new Object[]{f.getAbsoluteFile()}).collect(Collectors.toList());
+        return Arrays.asList(
+                new Object[]{Arrays.asList("ipfix.dat")},
+                new Object[]{Arrays.asList("ipfix_test_openbsd_pflow_tpl.dat", "ipfix_test_openbsd_pflow_data.dat")},
+                new Object[]{Arrays.asList("ipfix_test_mikrotik_tpl.dat", "ipfix_test_mikrotik_data258.dat", "ipfix_test_mikrotik_data259.dat")},
+                new Object[]{Arrays.asList("ipfix_test_vmware_vds_tpl.dat", "ipfix_test_vmware_vds_data264.dat", "ipfix_test_vmware_vds_data266.dat", "ipfix_test_vmware_vds_data266_267.dat")},
+                new Object[]{Arrays.asList("ipfix_test_barracuda_tpl.dat", "ipfix_test_barracuda_data256.dat")},
+                new Object[]{Arrays.asList("ipfix_test_yaf_tpls_option_tpl.dat", "ipfix_test_yaf_tpl45841.dat", "ipfix_test_yaf_data45841.dat", "ipfix_test_yaf_data45873.dat", "ipfix_test_yaf_data53248.dat")}
+        );
     }
 
-    public BlackboxTest(final File file) {
-        this.file = file;
+    private final List<String> files;
+
+    public BlackboxTest(final List<String> files) {
+        this.files = files;
     }
 
     @Test
     public void testFiles() throws Exception {
-        try (final FileChannel channel = FileChannel.open(file.toPath())) {
-            final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
-            channel.read(buffer);
-            buffer.flip();
-            final TemplateManager templateManager = new TcpSession();
+        final TemplateManager templateManager = new TcpSession();
 
-            do {
-                final Header header = new Header(BufferUtils.slice(buffer, Header.SIZE));
-                final Packet packet = new Packet(templateManager, header, BufferUtils.slice(buffer, header.length - Header.SIZE));
-                assertThat(packet.header.versionNumber, is(0x000a));
-            } while (buffer.hasRemaining());
+        for (final String file : this.files) {
+            try (final FileChannel channel = FileChannel.open(FOLDER.resolve(file))) {
+                final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
+                channel.read(buffer);
+                buffer.flip();
+
+                do {
+                    final Header header = new Header(BufferUtils.slice(buffer, Header.SIZE));
+                    final Packet packet = new Packet(templateManager, header, BufferUtils.slice(buffer, header.length - Header.SIZE));
+
+                    assertThat(packet.header.versionNumber, is(0x000a));
+
+                } while (buffer.hasRemaining());
+            }
         }
     }
 }

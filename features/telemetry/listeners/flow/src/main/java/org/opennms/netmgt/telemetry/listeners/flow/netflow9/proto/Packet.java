@@ -68,7 +68,9 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
         this.header = Objects.requireNonNull(header);
 
         final List<FlowSet<?>> sets = new LinkedList<>();
-        for (int i = 0; i < header.count; i++) {
+        while(buffer.hasRemaining()) {
+            // We ignore header.counter here, because different exporters interpret it as flowset count or record count
+
             final ByteBuffer headerBuffer = BufferUtils.slice(buffer, SetHeader.SIZE);
             final FlowSetHeader flowSetHeader = new FlowSetHeader(headerBuffer);
 
@@ -122,16 +124,24 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
                 }
 
                 case DATA_FLOWSET: {
-                    set = new FlowSet<>(flowSetHeader, DataRecord.parser(templateManager.getResolver(header.sourceId), flowSetHeader.flowSetId), payloadBuffer);
+                    final TemplateManager.TemplateResolver templateResolver = templateManager.getResolver(header.sourceId);
+                    final Template template = templateResolver.lookup(flowSetHeader.flowSetId)
+                            .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", flowSetHeader.flowSetId));
+                    set = new FlowSet<>(flowSetHeader, DataRecord.parser(template, templateResolver), payloadBuffer);
                     break;
                 }
 
                 default: {
-                    throw new InvalidPacketException("Invalid Set ID: %d", flowSetHeader.flowSetId);
+                    throw new InvalidPacketException(buffer, "Invalid Set ID: %d", flowSetHeader.flowSetId);
                 }
             }
 
             sets.add(set);
+
+            System.out.println(set);
+            for (final org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Record record: set.records) {
+                System.out.println("    " + record);
+            }
         }
         this.sets = Collections.unmodifiableList(sets);
     }

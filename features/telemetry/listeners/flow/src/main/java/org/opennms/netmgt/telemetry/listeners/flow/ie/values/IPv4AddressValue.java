@@ -67,7 +67,7 @@ public class IPv4AddressValue extends Value<Inet4Address> {
                 try {
                     return new IPv4AddressValue(name, semantics, (Inet4Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 4)));
                 } catch (final UnknownHostException e) {
-                    throw new InvalidPacketException("Error parsing IPv4 value", e);
+                    throw new InvalidPacketException(buffer, "Error parsing IPv4 value", e);
                 }
             }
 

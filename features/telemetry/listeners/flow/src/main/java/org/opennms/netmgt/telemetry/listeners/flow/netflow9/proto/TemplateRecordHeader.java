@@ -53,11 +53,11 @@ public final class TemplateRecordHeader {
 
     public TemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.templateId = uint16(buffer);
-        this.fieldCount = uint16(buffer);
-
         if (this.templateId <= 255) {
-            throw new InvalidPacketException("Invalid template ID: %d", this.templateId);
+            throw new InvalidPacketException(buffer, "Invalid template ID: %d", this.templateId);
         }
+
+        this.fieldCount = uint16(buffer);
     }
 
     @Override

@@ -29,18 +29,22 @@
 package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UndeclaredValue;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.session.StandardField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 
 public final class FieldSpecifier {
+    private static final Logger LOG = LoggerFactory.getLogger(FieldSpecifier.class);
 
     /*
       0                   1                   2                   3
@@ -62,18 +66,20 @@ public final class FieldSpecifier {
         this.fieldLength = BufferUtils.uint16(buffer);
 
         final InformationElement informationElement = InformationElementDatabase.instance
-                .lookup(Protocol.NETFLOW9, this.fieldType)
-                .orElseThrow(() -> new InvalidPacketException("Undefined information element ID: %d", this.fieldType));
+                .lookup(Protocol.NETFLOW9, this.fieldType).orElseGet(() -> {
+                    LOG.warn("Undeclared field type: {}", UndeclaredValue.nameFor(Optional.empty(), this.fieldType));
+                    return UndeclaredValue.parser(this.fieldType);
+                });
 
         if (this.fieldLength > informationElement.getMaximumFieldLength() || this.fieldLength < informationElement.getMinimumFieldLength()) {
-            throw new InvalidPacketException("Template field '%s' has illegal size: %d (min=%d, max=%d)",
+            throw new InvalidPacketException(buffer, "Template field '%s' has illegal size: %d (min=%d, max=%d)",
                     informationElement.getName(),
                     this.fieldLength,
                     informationElement.getMinimumFieldLength(),
                     informationElement.getMaximumFieldLength());
         }
 
-        this.specifier = new StandardField(this.fieldLength, informationElement);
+        this.specifier = new Field(this.fieldLength, informationElement);
     }
 
     @Override

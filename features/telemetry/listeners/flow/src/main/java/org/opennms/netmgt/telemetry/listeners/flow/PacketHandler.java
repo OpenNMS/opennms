@@ -53,8 +53,8 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.NullValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UndeclaredValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
-import org.opennms.netmgt.telemetry.listeners.flow.session.EnterpriseField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -224,7 +224,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
         }
 
         @Override
-        public void accept(final EnterpriseField.EnterpriseValue value) {
+        public void accept(final UndeclaredValue value) {
             flow.addEntriesBuilder()
                     .addAllKey(this.buildName(value.getName()))
                     .setBytes(ByteString.copyFrom(value.getValue()));

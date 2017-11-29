@@ -138,12 +138,16 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                 }
 
                 case DATA_SET: {
-                    set = new Set<>(setHeader, DataRecord.parser(templateManager.getResolver(header.observationDomainId), setHeader.setId), payloadBuffer);
+                    final TemplateManager.TemplateResolver templateResolver = templateManager.getResolver(header.observationDomainId);
+                    final Template template = templateResolver.lookup(setHeader.setId)
+                                .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", setHeader.setId));
+
+                    set = new Set<>(setHeader, DataRecord.parser(template, templateResolver), payloadBuffer);
                     break;
                 }
 
                 default: {
-                    throw new InvalidPacketException("Invalid Set ID: %d", setHeader.setId);
+                    throw new InvalidPacketException(buffer, "Invalid Set ID: %d", setHeader.setId);
                 }
             }
 

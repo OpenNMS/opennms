@@ -64,10 +64,10 @@ public class BooleanValue extends Value<Boolean> {
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
                                   final ByteBuffer buffer) throws InvalidPacketException {
                 final int value = BufferUtils.uint8(buffer);
-
                 if (value < 1 || value > 2) {
-                    throw new InvalidPacketException("Illegal value '%d' for boolean type (only 1/true and 2/false allowed)", value);
+                    throw new InvalidPacketException(buffer, "Illegal value '%d' for boolean type (only 1/true and 2/false allowed)", value);
                 }
+
                 return new BooleanValue(name, semantics, value == 1);
             }
 

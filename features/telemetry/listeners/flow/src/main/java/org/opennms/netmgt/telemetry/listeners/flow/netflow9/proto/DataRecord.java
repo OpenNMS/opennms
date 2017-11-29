@@ -78,10 +78,7 @@ public final class DataRecord implements Record {
                 .toString();
     }
 
-    public static FlowSet.RecordParser<DataRecord> parser(final TemplateManager.TemplateResolver templateResolver, final int templateId) throws InvalidPacketException {
-        final Template template = templateResolver.lookup(templateId)
-                .orElseThrow(() -> new InvalidPacketException("Unknown Template ID: %d", templateId));
-
+    public static FlowSet.RecordParser<DataRecord> parser(final Template template, final TemplateManager.TemplateResolver templateResolver) throws InvalidPacketException {
         return new FlowSet.RecordParser<DataRecord>() {
             @Override
             public DataRecord parse(final ByteBuffer buffer) throws InvalidPacketException {

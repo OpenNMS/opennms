@@ -28,13 +28,19 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow;
 
+import java.nio.ByteBuffer;
+
 public class InvalidPacketException extends Exception {
 
-    public InvalidPacketException(final String fmt, final Object... args) {
-        super(String.format(fmt, args));
+    public InvalidPacketException(final ByteBuffer buffer, final String fmt, final Object... args) {
+        super(appendPosition(String.format(fmt, args), buffer));
     }
 
-    public InvalidPacketException(final String message, final Throwable cause) {
-        super(message, cause);
+    public InvalidPacketException(final ByteBuffer buffer, final String message, final Throwable cause) {
+        super(appendPosition(message, buffer), cause);
+    }
+
+    private static String appendPosition(final String message, final ByteBuffer buffer) {
+        return String.format("%s [0x%04X]", message, buffer.arrayOffset() + buffer.position());
     }
 }

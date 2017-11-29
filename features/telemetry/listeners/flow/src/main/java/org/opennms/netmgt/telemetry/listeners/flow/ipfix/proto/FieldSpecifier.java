@@ -36,13 +36,15 @@ import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
-import org.opennms.netmgt.telemetry.listeners.flow.session.EnterpriseField;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UndeclaredValue;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.session.StandardField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 
 public final class FieldSpecifier {
+    private static final Logger LOG = LoggerFactory.getLogger(FieldSpecifier.class);
 
     /*
      0                   1                   2                   3
@@ -69,27 +71,26 @@ public final class FieldSpecifier {
 
         if ((elementId & 0x8000) == 0) {
             this.enterpriseNumber = Optional.empty();
-
-            final InformationElement informationElement = InformationElementDatabase.instance
-                    .lookup(Protocol.IPFIX, this.informationElementId)
-                    .orElseThrow(() -> new InvalidPacketException("Undefined information element ID: %d", this.informationElementId));
-
-            if (this.fieldLength > informationElement.getMaximumFieldLength() || this.fieldLength < informationElement.getMinimumFieldLength()) {
-                throw new InvalidPacketException("Template field '%s' has illegal size: %d (min=%d, max=%d)",
-                        informationElement.getName(),
-                        this.fieldLength,
-                        informationElement.getMinimumFieldLength(),
-                        informationElement.getMaximumFieldLength());
-            }
-
-            this.specifier = new StandardField(this.fieldLength, informationElement);
-
         } else {
             long enterpriseNumber = BufferUtils.uint32(buffer);
             this.enterpriseNumber = Optional.of(enterpriseNumber);
-
-            this.specifier = new EnterpriseField(this.fieldLength, this.informationElementId, enterpriseNumber);
         }
+
+        final InformationElement informationElement = InformationElementDatabase.instance
+                .lookup(Protocol.IPFIX, this.enterpriseNumber, this.informationElementId).orElseGet(() -> {
+                    LOG.warn("Undeclared information element: {}", UndeclaredValue.nameFor(this.enterpriseNumber, this.informationElementId));
+                    return UndeclaredValue.parser(this.enterpriseNumber, this.informationElementId);
+                });
+
+        if (this.fieldLength > informationElement.getMaximumFieldLength() || this.fieldLength < informationElement.getMinimumFieldLength()) {
+            throw new InvalidPacketException(buffer, "Template field '%s' has illegal size: %d (min=%d, max=%d)",
+                    informationElement.getName(),
+                    this.fieldLength,
+                    informationElement.getMinimumFieldLength(),
+                    informationElement.getMaximumFieldLength());
+        }
+
+        this.specifier = new Field(this.fieldLength, informationElement);
     }
 
     @Override

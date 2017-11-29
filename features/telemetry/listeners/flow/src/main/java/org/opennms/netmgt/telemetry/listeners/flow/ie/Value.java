@@ -42,8 +42,8 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.NullValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.SignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UndeclaredValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
-import org.opennms.netmgt.telemetry.listeners.flow.session.EnterpriseField;
 
 public abstract class Value<T> {
 
@@ -72,7 +72,7 @@ public abstract class Value<T> {
 
         void accept(final ListValue value);
 
-        void accept(final EnterpriseField.EnterpriseValue value);
+        void accept(final UndeclaredValue value);
 
     }
 

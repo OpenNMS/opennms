@@ -56,16 +56,16 @@ public final class OptionsTemplateRecordHeader {
 
     public OptionsTemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.templateId = uint16(buffer);
-        this.fieldCount = uint16(buffer);
-        this.scopeFieldCount = uint16(buffer);
-
-        // Since Template IDs are used as Set IDs in the Sets they describe
         if (this.templateId <= 255 && this.templateId != SetHeader.OPTIONS_TEMPLATE_SET_ID) {
-            throw new InvalidPacketException("Invalid template ID: %d", this.templateId);
+            // Since Template IDs are used as Set IDs in the Sets they describe
+            throw new InvalidPacketException(buffer, "Invalid template ID: %d", this.templateId);
         }
 
+        this.fieldCount = uint16(buffer);
+
+        this.scopeFieldCount = uint16(buffer);
         if (this.scopeFieldCount > this.fieldCount) {
-            throw new InvalidPacketException("More scope fields than fields available: %d > %d", this.scopeFieldCount, this.fieldCount);
+            throw new InvalidPacketException(buffer, "More scope fields than fields available: %d > %d", this.scopeFieldCount, this.fieldCount);
         }
     }
 

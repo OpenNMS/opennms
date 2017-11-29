@@ -29,16 +29,23 @@
 package org.opennms.netmgt.telemetry.listeners.flow.session;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
-public abstract class Field {
+public class Field {
     public final int length;
+    public final InformationElement informationElement;
 
-    public Field(final int length) {
+    public Field(final int length,
+                 final InformationElement informationElement) {
         this.length = length;
+        this.informationElement = Objects.requireNonNull(informationElement);
     }
 
-    public abstract Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException;
+    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+        return this.informationElement.parse(templateResolver, buffer);
+    }
 }

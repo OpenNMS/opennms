@@ -68,7 +68,7 @@ public class IPv6AddressValue extends Value<Inet6Address> {
                 try {
                     return new IPv6AddressValue(name, semantics, (Inet6Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 16)));
                 } catch (UnknownHostException e) {
-                    throw new InvalidPacketException("Error parsing IPv6 value", e);
+                    throw new InvalidPacketException(buffer, "Error parsing IPv6 value", e);
                 }
             }
 

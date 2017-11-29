@@ -62,11 +62,11 @@ public final class FlowSetHeader {
 
     public FlowSetHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.flowSetId = uint16(buffer);
-        this.length = uint16(buffer);
-
         if (this.flowSetId < 256 && this.flowSetId != TEMPLATE_SET_ID && this.flowSetId != OPTIONS_TEMPLATE_SET_ID) {
-            throw new InvalidPacketException("Invalid set ID: %d", this.flowSetId);
+            throw new InvalidPacketException(buffer, "Invalid set ID: %d", this.flowSetId);
         }
+
+        this.length = uint16(buffer);
     }
 
     public Type getType() {
