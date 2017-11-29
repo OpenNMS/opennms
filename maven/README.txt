@@ -11,12 +11,12 @@
   Documentation
   -------------
 
-  The most up-to-date documentation can be found at http://maven.apache.org/.
+  The most up-to-date documentation can be found at https://maven.apache.org/.
 
   Release Notes
   -------------
 
-  The full list of changes can be found at http://maven.apache.org/release-notes.html.
+  The full list of changes can be found at https://maven.apache.org/docs/history.html.
 
   System Requirements
   -------------------
@@ -39,7 +39,7 @@
   Installing Maven
   ----------------
 
-  1) Unpack the archive where you would like to store the binaries, eg:
+  1) Unpack the archive where you would like to store the binaries, e.g.:
 
     Unix-based operating systems (Linux, Solaris and Mac OS X)
       tar zxvf apache-maven-3.x.y.tar.gz
@@ -48,7 +48,7 @@
 
   2) A directory called "apache-maven-3.x.y" will be created.
 
-  3) Add the bin directory to your PATH, eg:
+  3) Add the bin directory to your PATH, e.g.:
 
     Unix-based operating systems (Linux, Solaris and Mac OS X)
       export PATH=/usr/local/apache-maven-3.x.y/bin:$PATH
@@ -59,7 +59,7 @@
 
   5) Run "mvn --version" to verify that it is correctly installed.
 
-  For complete documentation, see http://maven.apache.org/download.html#Installation
+  For complete documentation, see https://maven.apache.org/download.html#Installation
 
   Licensing
   ---------
@@ -69,11 +69,11 @@
   Maven URLS
   ----------
 
-  Home Page:          http://maven.apache.org/
-  Downloads:          http://maven.apache.org/download.html
-  Release Notes:      http://maven.apache.org/release-notes.html
-  Mailing Lists:      http://maven.apache.org/mail-lists.html
-  Source Code:        https://git-wip-us.apache.org/repos/asf/maven.git/apache-maven
-  Issue Tracking:     http://jira.codehaus.org/browse/MNG
+  Home Page:          https://maven.apache.org/
+  Downloads:          https://maven.apache.org/download.html
+  Release Notes:      https://maven.apache.org/docs/history.html
+  Mailing Lists:      https://maven.apache.org/mail-lists.html
+  Source Code:        https://git-wip-us.apache.org/repos/asf/maven.git
+  Issue Tracking:     https://issues.apache.org/jira/browse/MNG
   Wiki:               https://cwiki.apache.org/confluence/display/MAVEN/
-  Available Plugins:  http://maven.apache.org/plugins/index.html
+  Available Plugins:  https://maven.apache.org/plugins/index.html
