@@ -281,6 +281,10 @@ public class ListValue extends Value<List<List<Value<?>>>> {
         return this.values;
     }
 
+    public Semantic getSemantic() {
+        return this.semantic;
+    }
+
     @Override
     public void visit(final Visitor visitor) {
         visitor.accept(this);

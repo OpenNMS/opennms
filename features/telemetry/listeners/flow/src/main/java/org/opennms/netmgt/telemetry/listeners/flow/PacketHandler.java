@@ -30,17 +30,16 @@ package org.opennms.netmgt.telemetry.listeners.flow;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.bson.BsonBinary;
+import org.bson.BsonBinaryWriter;
+import org.bson.BsonWriter;
+import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.flow.dto.Flows;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
@@ -57,9 +56,6 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UndeclaredValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Iterables;
-import com.google.protobuf.ByteString;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultAddressedEnvelope;
@@ -83,17 +79,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
         LOG.info("Got packet: {}", packet);
 
         packet.content().getRecords().forEach(record -> {
-            final Flows.Flow.Builder flow = Flows.Flow.newBuilder()
-                    .setVersion(protocol.magic)
-                    .setObservationDomainId(record.observationDomainId)
-                    .setScopeFieldCount(record.scopeFieldCount);
-
-            final FlowBuilderVisitor visitor = new FlowBuilderVisitor(flow);
-            for (final Value value : record.values) {
-                value.visit(visitor);
-            }
-
-            final ByteBuffer buffer = ByteBuffer.wrap(flow.build().toByteArray());
+            final ByteBuffer buffer = serialize(this.protocol, record);
 
             // Build the message to dispatch via the Sink API
             final TelemetryMessage msg = new TelemetryMessage(packet.sender(), buffer);
@@ -107,41 +93,38 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
         });
     }
 
-    protected static class FlowBuilderVisitor implements Value.Visitor {
-        private final Flows.Flow.Builder flow;
-        private final Iterable<String> prefix;
+    public static ByteBuffer serialize(final Protocol protocol, final RecordProvider.Record record) {
+        // Build BSON document from flow
+        final BasicOutputBuffer output = new BasicOutputBuffer();
+        try (final BsonBinaryWriter writer = new BsonBinaryWriter(output)) {
+            writer.writeStartDocument();
 
-        public FlowBuilderVisitor(final Flows.Flow.Builder flow) {
-            this.flow = flow;
-            this.prefix = Collections.emptyList();
-        }
+            writer.writeInt32("version", protocol.magic);
+            writer.writeInt64("domain", record.observationDomainId);
+            writer.writeInt32("scoped", record.scopeFieldCount);
 
-        private FlowBuilderVisitor(final Flows.Flow.Builder flow,
-                                   final Iterable<String> prefix) {
-            this.flow = flow;
-            this.prefix = prefix;
-        }
+            writer.writeStartDocument("elements");
 
-        private Iterable<String> buildName(final String name) {
-            return Iterables.concat(this.prefix, Collections.singleton(name));
-        }
-
-        private Iterable<String> buildName(final String... names) {
-            return Iterables.concat(this.prefix, Arrays.asList(names));
-        }
-
-        private Flows.Entry.Builder buildEntry(final String name, final Optional<Semantics> semantics) {
-            final Flows.Entry.Builder builder = this.flow.addEntriesBuilder();
-
-            builder.addAllKey(this.buildName(name));
-
-            if (semantics.isPresent()) {
-                builder.setSemantics(Flows.Entry.Semantics.valueOf(semantics.get().ordinal()));
-            } else {
-                builder.clearSemantics();
+            final FlowBuilderVisitor visitor = new FlowBuilderVisitor(writer);
+            for (final Value value : record.values) {
+                value.visit(visitor);
             }
 
-            return builder;
+            writer.writeEndDocument();
+
+            writer.writeEndDocument();
+        }
+
+        return output.getByteBuffers().get(0).asNIO();
+    }
+
+    private static class FlowBuilderVisitor implements Value.Visitor {
+        // TODO: Really use ordinal for enums?
+
+        private final BsonWriter writer;
+
+        public FlowBuilderVisitor(final BsonWriter writer) {
+            this.writer = writer;
         }
 
         @Override
@@ -152,82 +135,142 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
 
         @Override
         public void accept(final BooleanValue value) {
-            this.buildEntry(value.getName(), value.getSemantics())
-                    .setBool(value.getValue());
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            this.writer.writeBoolean("v", value.getValue());
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final DateTimeValue value) {
-            this.buildEntry(value.getName(), value.getSemantics())
-                    .setTimestamp(Flows.Entry.Timestamp.newBuilder()
-                            .setSeconds(value.getValue().getEpochSecond())
-                            .setNanos(value.getValue().getNano()));
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            this.writer.writeStartDocument("v");
+            this.writer.writeInt64("epoch", value.getValue().getEpochSecond());
+            if (value.getValue().getNano() != 0) {
+                this.writer.writeInt64("nano", value.getValue().getNano());
+            }
+            this.writer.writeEndDocument();
+
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final FloatValue value) {
-            this.buildEntry(value.getName(), value.getSemantics())
-                    .setFloat(value.getValue());
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            this.writer.writeDouble("v", value.getValue());
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final IPv4AddressValue value) {
-            this.buildEntry(value.getName(), value.getSemantics())
-                    .setIpv4Address(ByteString.copyFrom(value.getValue().getAddress()));
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            // TODO: Transport as binary?
+            this.writer.writeString("v", value.getValue().getHostAddress());
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final IPv6AddressValue value) {
-            this.buildEntry(value.getName(), value.getSemantics())
-                    .setIpv6Address(ByteString.copyFrom(value.getValue().getAddress()));
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            // TODO: Transport as binary?
+            this.writer.writeString("v", value.getValue().getHostAddress());
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final MacAddressValue value) {
-            this.buildEntry(value.getName(), value.getSemantics())
-                    .setMacAddress(ByteString.copyFrom(value.getValue()));
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            this.writer.writeBinaryData("v", new BsonBinary(value.getValue()));
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final OctetArrayValue value) {
-            this.buildEntry(value.getName(), value.getSemantics())
-                    .setBytes(ByteString.copyFrom(value.getValue()));
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            this.writer.writeBinaryData("v", new BsonBinary(value.getValue()));
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final SignedValue value) {
-            this.buildEntry(value.getName(), value.getSemantics())
-                    .setSigned(value.getValue());
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            this.writer.writeInt64("v", value.getValue());
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final StringValue value) {
-            this.buildEntry(value.getName(), value.getSemantics())
-                    .setString(value.getValue());
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            this.writer.writeString("v", value.getValue());
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final ListValue value) {
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            this.writer.writeInt32("semantic", value.getSemantic().ordinal());
+            this.writer.writeStartArray("v");
             for (int i = 0; i < value.getValue().size(); i++) {
-                final FlowBuilderVisitor visitor = new FlowBuilderVisitor(this.flow, this.buildName(value.getName(), Integer.toString(i)));
+                this.writer.writeStartArray();
                 for (int j = 0; j < value.getValue().get(i).size(); j++) {
-                    value.getValue().get(i).get(j).visit(visitor);
+                    writer.writeStartDocument();
+                    value.getValue().get(i).get(j).visit(this);
+                    this.writer.writeEndDocument();
                 }
+                this.writer.writeEndArray();
             }
+            this.writer.writeEndArray();
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final UnsignedValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setUnsigned(value.getValue().longValue());
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            // TODO: Mark this as unsigned?
+            this.writer.writeInt64("v", value.getValue().longValue());
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final UndeclaredValue value) {
-            flow.addEntriesBuilder()
-                    .addAllKey(this.buildName(value.getName()))
-                    .setBytes(ByteString.copyFrom(value.getValue()));
+            this.writer.writeStartDocument(value.getName());
+            value.getSemantics().ifPresent(semantics -> {
+                this.writer.writeInt32("s", semantics.ordinal());
+            });
+            this.writer.writeBinaryData("v", new BsonBinary(value.getValue()));
+            this.writer.writeEndDocument();
         }
     }
 }
