@@ -31,17 +31,16 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.jest</groupId>
-      <artifactId>opennms-jest</artifactId>
+      <artifactId>org.opennms.features.jest.dependencies</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
-      <exclusions>
-        <!-- Exclude this module otherwise it would be a circle dependency -->
-        <exclusion>
-          <groupId>org.opennms.features.jest</groupId>
-          <artifactId>org.opennms.features.jest.client</artifactId>
-        </exclusion>
-      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest-complete-osgi</artifactId>
+      <version>${jestVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>

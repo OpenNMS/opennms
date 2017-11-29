@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>client</module>
+        <module>dependencies</module>
         <module>feature</module>
         <module>jest-complete-osgi</module>
     </modules>
