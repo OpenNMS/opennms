@@ -49,122 +49,103 @@ public class JEXLExpressionEngineEnhancedTest {
 	private final ExpressionEngine jexlExpressionEngine = new JEXLExpressionEngine();
 
 	@Test
-	public void checkSamplefn5NaN() {
+	public void checkSamplefn5NaN() throws ExpressionException {
 		final String expression = "fn:arrayNaN(\"x\", 5)";
 
 		StringBuffer sb = new StringBuffer("");
-		try{
 
-			double[] result = performExpression(expression);
+		double[] result = performExpression(expression);
 
-			for (double value: result){
-				sb.append(value+",");
-			}
-			System.out.println("JEXLExpressionEngineEnhancedTest: expression="+expression +"\n    result "+sb.toString());
-			
-			assertEquals(Double.NaN, result[0], DELTA);
-			assertEquals(Double.NaN, result[1], DELTA);
-			assertEquals(Double.NaN, result[2], DELTA);
-			assertEquals(Double.NaN, result[3], DELTA);
-			assertEquals(Double.NaN, result[4], DELTA);
-			assertEquals(5, result[5], DELTA);
-			assertEquals(6, result[6], DELTA);
-
-		} catch (Exception e){
-			throw new RuntimeException(e);
+		for (double value: result){
+			sb.append(value+",");
 		}
+		System.out.println("JEXLExpressionEngineEnhancedTest: expression="+expression +"\n    result "+sb.toString());
+
+		assertEquals(Double.NaN, result[0], DELTA);
+		assertEquals(Double.NaN, result[1], DELTA);
+		assertEquals(Double.NaN, result[2], DELTA);
+		assertEquals(Double.NaN, result[3], DELTA);
+		assertEquals(Double.NaN, result[4], DELTA);
+		assertEquals(5, result[5], DELTA);
+		assertEquals(6, result[6], DELTA);
+
 
 	}
 
 	@Test
-	public void checkSamplefn5Zero(){
+	public void checkSamplefn5Zero() throws ExpressionException{
 		final String expression = "fn:arrayZero(\"x\", 5)";
 
 		StringBuffer sb = new StringBuffer("");
-		try{
 
-			double[] result = performExpression(expression);
+		double[] result = performExpression(expression);
 
-			for (double value: result){
-				sb.append(value+",");
-			}
-			System.out.println("JEXLExpressionEngineEnhancedTest: expression:"+expression +"\n    result "+sb.toString());
-			
-			assertEquals(Double.valueOf(0), result[0], DELTA);
-			assertEquals(Double.valueOf(0), result[1], DELTA);
-			assertEquals(Double.valueOf(0), result[2], DELTA);
-			assertEquals(Double.valueOf(0), result[3], DELTA);
-			assertEquals(Double.valueOf(0), result[4], DELTA);
-			assertEquals(Double.valueOf(5), result[5], DELTA);
-			assertEquals(Double.valueOf(6), result[6], DELTA);
-
-		} catch (Exception e){
-			throw new RuntimeException(e);
+		for (double value: result){
+			sb.append(value+",");
 		}
+		System.out.println("JEXLExpressionEngineEnhancedTest: expression:"+expression +"\n    result "+sb.toString());
+
+		assertEquals(Double.valueOf(0), result[0], DELTA);
+		assertEquals(Double.valueOf(0), result[1], DELTA);
+		assertEquals(Double.valueOf(0), result[2], DELTA);
+		assertEquals(Double.valueOf(0), result[3], DELTA);
+		assertEquals(Double.valueOf(0), result[4], DELTA);
+		assertEquals(Double.valueOf(5), result[5], DELTA);
+		assertEquals(Double.valueOf(6), result[6], DELTA);
+
 	}
 
 	@Test
-	public void checkSamplefn5First(){
+	public void checkSamplefn5First() throws ExpressionException{
 		final String expression = "fn:arrayFirst(\"x\", 5)";
 
 
 		StringBuffer sb = new StringBuffer("");
-		try{
 
-			double[] result = performExpression(expression);
+		double[] result = performExpression(expression);
 
-			for (double value: result){
-				sb.append(value+",");
-			}
-			System.out.println("JEXLExpressionEngineEnhancedTest: expression:"+expression +"\n    result "+sb.toString());
-			
-			assertEquals(Double.valueOf(5), result[0], DELTA);
-			assertEquals(Double.valueOf(5), result[1], DELTA);
-			assertEquals(Double.valueOf(5), result[2], DELTA);
-			assertEquals(Double.valueOf(5), result[3], DELTA);
-			assertEquals(Double.valueOf(5), result[4], DELTA);
-			assertEquals(Double.valueOf(5), result[5], DELTA);
-			assertEquals(Double.valueOf(6), result[6], DELTA);
-
-
-		} catch (Exception e){
-			throw new RuntimeException(e);
+		for (double value: result){
+			sb.append(value+",");
 		}
+		System.out.println("JEXLExpressionEngineEnhancedTest: expression:"+expression +"\n    result "+sb.toString());
+
+		assertEquals(Double.valueOf(5), result[0], DELTA);
+		assertEquals(Double.valueOf(5), result[1], DELTA);
+		assertEquals(Double.valueOf(5), result[2], DELTA);
+		assertEquals(Double.valueOf(5), result[3], DELTA);
+		assertEquals(Double.valueOf(5), result[4], DELTA);
+		assertEquals(Double.valueOf(5), result[5], DELTA);
+		assertEquals(Double.valueOf(6), result[6], DELTA);
 
 	}
 
 	@Test
-	public void checkSamplefn5Start(){
+	public void checkSamplefn5Start() throws ExpressionException{
 		final String expression = "fn:arrayStart(\"x\", 5, 10)";
 
 		StringBuffer sb = new StringBuffer("");
-		try{
 
-			double[] result = performExpression(expression);
+		double[] result = performExpression(expression);
 
-			for (double value: result){
-				sb.append(value+",");
-			}
-			System.out.println("JEXLExpressionEngineEnhancedTest: expression:"+expression +"\n    result "+sb.toString());
-			
-			assertEquals(Double.valueOf(10), result[0], DELTA);
-			assertEquals(Double.valueOf(10), result[1], DELTA);
-			assertEquals(Double.valueOf(10), result[2], DELTA);
-			assertEquals(Double.valueOf(10), result[3], DELTA);
-			assertEquals(Double.valueOf(10), result[4], DELTA);
-			assertEquals(Double.valueOf(5), result[5], DELTA);
-			assertEquals(Double.valueOf(6), result[6], DELTA);
-			
-		} catch (Exception e){
-			throw new RuntimeException(e);
+		for (double value: result){
+			sb.append(value+",");
 		}
+		System.out.println("JEXLExpressionEngineEnhancedTest: expression:"+expression +"\n    result "+sb.toString());
+
+		assertEquals(Double.valueOf(10), result[0], DELTA);
+		assertEquals(Double.valueOf(10), result[1], DELTA);
+		assertEquals(Double.valueOf(10), result[2], DELTA);
+		assertEquals(Double.valueOf(10), result[3], DELTA);
+		assertEquals(Double.valueOf(10), result[4], DELTA);
+		assertEquals(Double.valueOf(5), result[5], DELTA);
+		assertEquals(Double.valueOf(6), result[6], DELTA);
 
 	}
 
 
 	// y = m * x +c
 	@Test
-	public void checkConstantBasedContextExpression(){
+	public void checkConstantBasedContextExpression() throws ExpressionException{
 		final String expression = "jexl:evaluate(__formula)";
 		final String formula="m*x+c";
 
@@ -176,34 +157,29 @@ public class JEXLExpressionEngineEnhancedTest {
 
 
 		StringBuffer sb = new StringBuffer("");
-		try{
 
-			double[] result = performExpression(expression,constants);
+		double[] result = performExpression(expression,constants);
 
-			for (double value: result){
-				sb.append(value+",");
-			}
-
-			System.out.println("JEXLExpressionEngineEnhancedTest:\n   expression:"+expression +"\n   formula:"+formula+ "\n   result "+sb.toString());
-			
-			assertEquals(Double.valueOf(51.5), result[0], DELTA);
-			assertEquals(Double.valueOf(61.5), result[1], DELTA);
-			assertEquals(Double.valueOf(71.5), result[2], DELTA);
-			assertEquals(Double.valueOf(81.5), result[3], DELTA);
-			assertEquals(Double.valueOf(91.5), result[4], DELTA);
-			assertEquals(Double.valueOf(101.5), result[5], DELTA);
-
-
-		} catch (Exception e){
-			throw new RuntimeException(e);
+		for (double value: result){
+			sb.append(value+",");
 		}
+
+		System.out.println("JEXLExpressionEngineEnhancedTest:\n   expression:"+expression +"\n   formula:"+formula+ "\n   result "+sb.toString());
+
+		assertEquals(Double.valueOf(51.5), result[0], DELTA);
+		assertEquals(Double.valueOf(61.5), result[1], DELTA);
+		assertEquals(Double.valueOf(71.5), result[2], DELTA);
+		assertEquals(Double.valueOf(81.5), result[3], DELTA);
+		assertEquals(Double.valueOf(91.5), result[4], DELTA);
+		assertEquals(Double.valueOf(101.5), result[5], DELTA);
+
 	}
 
 	// y = a * f(n) + b * f(n-1) + c * f(n-2)
 	@Test
-	public void checkTimeSeriesConstantBasedContextExpression(){
+	public void checkTimeSeriesConstantBasedContextExpression() throws ExpressionException{
 		final String expression = "jexl:evaluate(__formula)";
-		
+
 		final String formula = "a * x + b * fn:arrayNaN(\"x\", 1) + c * fn:arrayNaN(\"x\", 2)";
 
 		final Map<String,Object> constants = Maps.newHashMap();
@@ -216,65 +192,52 @@ public class JEXLExpressionEngineEnhancedTest {
 
 
 		StringBuffer sb = new StringBuffer("");
-		try{
 
-			double[] result = performExpression(expression,constants);
+		double[] result = performExpression(expression,constants);
 
-			for (double value: result){
-				sb.append(value+",");
-			}
-			System.out.println("JEXLExpressionEngineEnhancedTest:\n   expression:"+expression +"\n   formula:"+formula+ "\n   result "+sb.toString());
-
-			assertEquals(Double.NaN, result[0], DELTA);
-			assertEquals(Double.NaN, result[1], DELTA);
-			assertEquals(Double.valueOf(18.25), result[2], DELTA);
-			assertEquals(Double.valueOf(21.0), result[3], DELTA);
-			assertEquals(Double.valueOf(23.75), result[4], DELTA);
-			assertEquals(Double.valueOf(26.5), result[5], DELTA);
-
-		} catch (Exception e){
-			throw new RuntimeException(e);
+		for (double value: result){
+			sb.append(value+",");
 		}
+		System.out.println("JEXLExpressionEngineEnhancedTest:\n   expression:"+expression +"\n   formula:"+formula+ "\n   result "+sb.toString());
+
+		assertEquals(Double.NaN, result[0], DELTA);
+		assertEquals(Double.NaN, result[1], DELTA);
+		assertEquals(Double.valueOf(18.25), result[2], DELTA);
+		assertEquals(Double.valueOf(21.0), result[3], DELTA);
+		assertEquals(Double.valueOf(23.75), result[4], DELTA);
+		assertEquals(Double.valueOf(26.5), result[5], DELTA);
+
 	}
-	
+
 
 	@Test
-	public void checkEconstant(){
+	public void checkEconstant() throws ExpressionException{
 		final String expression = "jexl:evaluate(__formula)";
-		
+
 		final String formula = "__E";
 
 		final Map<String,Object> constants = Maps.newHashMap();
 
 		constants.put("__formula", formula);
 
-		
-		double x = java.lang.Math.E;
-		double x2 = java.lang.Math.PI;
-
-
 		StringBuffer sb = new StringBuffer("");
-		try{
 
-			double[] result = performExpression(expression,constants);
+		double[] result = performExpression(expression,constants);
 
-			for (double value: result){
-				sb.append(value+",");
-			}
-			System.out.println("JEXLExpressionEngineEnhancedTest:\n   expression:"+expression +"\n   formula:"+formula+ "\n   result "+sb.toString());
-
-			assertEquals(java.lang.Math.E, result[0], DELTA);
-			assertEquals(java.lang.Math.E, result[1], DELTA);
-
-		} catch (Exception e){
-			throw new RuntimeException(e);
+		for (double value: result){
+			sb.append(value+",");
 		}
+		System.out.println("JEXLExpressionEngineEnhancedTest:\n   expression:"+expression +"\n   formula:"+formula+ "\n   result "+sb.toString());
+
+		assertEquals(java.lang.Math.E, result[0], DELTA);
+		assertEquals(java.lang.Math.E, result[1], DELTA);
+
 	}
-	
+
 	@Test
-	public void checkPIconstant(){
+	public void checkPIconstant() throws ExpressionException{
 		final String expression = "jexl:evaluate(__formula)";
-		
+
 		final String formula = "__PI";
 
 		final Map<String,Object> constants = Maps.newHashMap();
@@ -282,21 +245,17 @@ public class JEXLExpressionEngineEnhancedTest {
 		constants.put("__formula", formula);
 
 		StringBuffer sb = new StringBuffer("");
-		try{
 
-			double[] result = performExpression(expression,constants);
+		double[] result = performExpression(expression,constants);
 
-			for (double value: result){
-				sb.append(value+",");
-			}
-			System.out.println("JEXLExpressionEngineEnhancedTest:\n   expression:"+expression +"\n   formula:"+formula+ "\n   result "+sb.toString());
-
-			assertEquals(java.lang.Math.PI, result[0], DELTA);
-			assertEquals(java.lang.Math.PI, result[1], DELTA);
-
-		} catch (Exception e){
-			throw new RuntimeException(e);
+		for (double value: result){
+			sb.append(value+",");
 		}
+		System.out.println("JEXLExpressionEngineEnhancedTest:\n   expression:"+expression +"\n   formula:"+formula+ "\n   result "+sb.toString());
+
+		assertEquals(java.lang.Math.PI, result[0], DELTA);
+		assertEquals(java.lang.Math.PI, result[1], DELTA);
+
 	}
 
 

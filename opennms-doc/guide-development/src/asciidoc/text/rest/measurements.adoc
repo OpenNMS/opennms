@@ -197,7 +197,8 @@ Several constants and arrays are also predefined as references in the context by
 |This returns the complete double[] array of samples for AttributeName
 |===
 
-OpenNMS predefines a number of functions for use in expressions which are referenced by namespace:function
+OpenNMS predefines a number of functions for use in expressions which are referenced by namespace:function.
+All of these functions return a java double value.
 
 Pre defined functions
 [%header,cols=3*] 
@@ -208,6 +209,7 @@ Pre defined functions
 
 |jexl:evaluate("_formula"):
 |Passes a string to the JEXL engine to be evaluated as if it was entered as a normal expression. 
+Like normal expressions, expressions evaluated through this function will return a Java double value.
 This makes it possible to reference and evaluate a formula which has been stored in OpenNMS as a string variable.
 The use case for this capability is that it gives us the ability to define and store a per-node and per-value correction formula which can normalise samples from different sample sources.
 |

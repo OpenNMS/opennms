@@ -48,12 +48,8 @@ public class JexlEvaluateFunctions {
 	private JexlContext m_context =null;
 
 	public JexlEvaluateFunctions(JexlContext context, JexlEngine jexl){
-		Preconditions.checkNotNull(context, "JexlContext context");
-		Preconditions.checkNotNull(jexl, "JexlEngine jexl");
-
-		m_context= context;
-		m_jexl = jexl;
-
+		m_context = Preconditions.checkNotNull(context, "JexlContext context");
+		m_jexl = Preconditions.checkNotNull(jexl, "JexlEngine jexl");
 	}
 
 	/**
