@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.utils;
+package org.opennms.core.test.elastic;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -35,8 +35,6 @@ import java.util.concurrent.Executors;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import com.google.common.base.Throwables;
 
 /**
  * A JUnit rule which starts an embedded elastic-search instance.
@@ -85,7 +83,7 @@ public class ElasticSearchRule implements TestRule {
             try {
                 eserver.start();
             } catch (Exception e) {
-                throw Throwables.propagate(e);
+                throw new RuntimeException(e);
             }
         });
 

@@ -41,9 +41,9 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.IndexStrategy;
 import org.opennms.netmgt.flows.api.NetflowDocument;
-import org.opennms.netmgt.flows.elastic.utils.ElasticSearchRule;
-import org.opennms.netmgt.flows.elastic.utils.ElasticSearchServerConfig;
-import org.opennms.netmgt.flows.elastic.utils.ExecutionTime;
+import org.opennms.core.test.elastic.ElasticSearchRule;
+import org.opennms.core.test.elastic.ElasticSearchServerConfig;
+import org.opennms.core.test.elastic.ExecutionTime;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 
 import com.google.common.base.Throwables;

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.utils;
+package org.opennms.core.test.elastic;
 
 import java.util.Objects;
 
