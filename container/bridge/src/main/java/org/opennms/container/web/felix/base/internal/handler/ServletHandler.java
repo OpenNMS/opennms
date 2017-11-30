@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.container.web.felix.base.internal.context.ExtServletContext;
 
-public final class ServletHandler
+public class ServletHandler
     extends AbstractHandler implements Comparable<ServletHandler>
 {
     private final String alias;
@@ -79,7 +79,7 @@ public final class ServletHandler
         throws ServletException, IOException
     {
         // pathInfo is null if using *.htm style uri-mapping, or if we're in a filter rather than a specific servlet
-        final boolean matches = matches(req.getPathInfo() == null? req.getServletPath() : req.getPathInfo());
+        final boolean matches = matches(getUri(req));
         if (matches) {
             doHandle(req, res);
         }
@@ -100,6 +100,10 @@ public final class ServletHandler
 
             this.servlet.service(new ServletHandlerRequest(req, this.alias), res);
         }
+    }
+
+    protected String getUri(HttpServletRequest req) {
+        return req.getPathInfo() == null? req.getServletPath() : req.getPathInfo();
     }
 
     @Override

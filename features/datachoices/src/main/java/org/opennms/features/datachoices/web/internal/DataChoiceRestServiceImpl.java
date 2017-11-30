@@ -32,37 +32,31 @@ import java.io.IOException;
 import java.util.Objects;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
 
 import org.opennms.features.datachoices.internal.StateManager;
+import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
 import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
+import org.opennms.features.datachoices.web.DataChoiceRestService;
 
 import com.google.common.base.Throwables;
 
 /** 
- * Servlet mounted at /datachoices. Supported paths are:
+ * Rest-Endpoint mounted at /datachoices. Supported paths are:
  *
- * POST /opennms/datachoices?action=enable
- * POST /opennms/datachoices?action=disable
- * GET /opennms/datachoices
- *
- * Ideally this would be implemented as a JAX-RS endpoint registered
- * with CXF via Blueprint, but this doesn't currently play well with our
- * HTTP bridge.
+ * POST /opennms/rest/datachoices?action=enable
+ * POST /opennms/rest/datachoices?action=disable
+ * GET /opennms/rest/datachoices
  *
  * @author jwhite
+ * @author mvrueden
  */
-public class ApiServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-
+public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     private StateManager m_stateManager;
     private UsageStatisticsReporter m_usageStatisticsReporter;
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) {
-        final String action = request.getParameter("action");
+    @Override
+    public void updateCollectUsageStatisticFlag(HttpServletRequest request, String action) {
         if (action == null) {
             return;
         }
@@ -83,9 +77,9 @@ public class ApiServlet extends HttpServlet {
         }
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType(MediaType.APPLICATION_JSON);
-        response.getWriter().println(m_usageStatisticsReporter.generateReport().toJson(true));
+    @Override
+    public UsageStatisticsReportDTO getUsageStatistics() throws ServletException, IOException {
+        return m_usageStatisticsReporter.generateReport();
     }
 
     public void setStateManager(StateManager stateManager) {

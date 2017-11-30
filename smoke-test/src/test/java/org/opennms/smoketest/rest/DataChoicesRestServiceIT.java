@@ -26,25 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.support;
+package org.opennms.smoketest.rest;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 
-/**
- * This provider handles all exceptions which are not handled by any other provider.
- * @author mvrueden
- */
-public class ErrorResponseProvider implements ExceptionMapper<Exception> {
-    @Override
-    public Response toResponse(Exception exception) {
-        // if there is an optional exception message, we add it to the response
-        if (exception.getMessage() != null) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(exception.getMessage()).build();
-        }
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+import org.junit.Before;
+import org.junit.Test;
+import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+
+import io.restassured.RestAssured;
+
+public class DataChoicesRestServiceIT extends OpenNMSSeleniumTestCase {
+
+    @Before
+    public void before() {
+        System.out.println("before");
+        RestAssured.baseURI = getBaseUrl();
+        RestAssured.port = getServerHttpPort();
+        RestAssured.basePath = "/opennms";
+        RestAssured.authentication = RestAssured.preemptive().basic(OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME, OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD);
+    }
+
+    @Test
+    public void verifyGet() {
+        given()
+            .queryParam("action", "disable")
+        .when()
+            .get("/rest/datachoices")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void verifyUpdate() {
+        when()
+            .post("/rest/datachoices")
+                .then()
+                .statusCode(204);
     }
 }

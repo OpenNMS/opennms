@@ -39,6 +39,9 @@ include::text/rest/CORS.adoc[]
 == ReST API
 include::text/rest/rest-api.adoc[]
 
+// Expose ReST services via OSGi
+include::text/rest/osgi.adoc[]
+
 // Include section for all implemented ReST API resources
 === Currently Implemented Interfaces
 include::text/rest/acknowledgements.adoc[]

@@ -42,13 +42,13 @@
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
     </bean>
 
-    <bean id="apiServlet" class="org.opennms.features.datachoices.web.internal.ApiServlet">
+    <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">
         <property name="stateManager" ref="stateManager"/>
         <property name="usageStatisticsReporter" ref="usageStatisticsReporter"/>
     </bean>
-    <service interface="javax.servlet.Servlet" ref="apiServlet" >
+    <service interface="org.opennms.features.datachoices.web.DataChoiceRestService" ref="dataChoiceRestService" >
         <service-properties>
-            <entry key="alias" value="/datachoices" />
+            <entry key="application-path" value="/rest" />
         </service-properties>
     </service>
 
