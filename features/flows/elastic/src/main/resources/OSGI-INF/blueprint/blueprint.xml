@@ -14,12 +14,19 @@
     <!-- Configuration properties -->
     <cm:property-placeholder id="esEventForwarderProperties" persistent-id="org.opennms.features.flows.persistence.elastic" update-strategy="reload">
         <cm:default-properties>
+            <!-- Elastic Connection Settings -->
             <cm:property name="elasticUrl" value="http://localhost:9200" />
             <cm:property name="elasticUser" value="" />
             <cm:property name="elasticPassword" value="" />
             <cm:property name="elasticIndexStrategy" value="monthly" />
             <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
             <cm:property name="maxTotalConnection" value="-1" />
+            <!-- Index settings -->
+            <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
+            <cm:property name="settings.index.number_of_shards" value="" />
+            <cm:property name="settings.index.number_of_replicas" value="" />
+            <cm:property name="settings.index.refresh_interval" value="" />
+            <cm:property name="settings.index.routing_partition_size" value="" />
             <!-- TODO MVR add more -->
         </cm:default-properties>
     </cm:property-placeholder>
@@ -40,6 +47,13 @@
         <argument value="${elasticIndexStrategy}"/>
     </bean>
 
+    <bean id="indexSettings" class="org.opennms.netmgt.flows.elastic.template.IndexSettings">
+        <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
+        <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
+        <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
+        <property name="routingPartitionSize" value="${settings.index.routing_partition_size}"/>
+    </bean>
+
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository">
         <argument ref="jestClient"/>
@@ -49,6 +63,7 @@
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">
         <argument ref="elasticFlowRepository" />
         <argument ref="jestClient" />
+        <argument ref="indexSettings" />
     </bean>
     <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository">
         <service-properties>

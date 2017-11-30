@@ -34,6 +34,7 @@ import java.util.Objects;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.flows.elastic.template.IndexSettings;
 
 import io.searchbox.client.JestClient;
 
@@ -42,10 +43,12 @@ public class InitializingFlowRepository implements FlowRepository {
     private final ElasticFlowRepositoryInitializer initializer;
     private final FlowRepository delegate;
 
-    public InitializingFlowRepository(final FlowRepository delegate, final JestClient client) {
+    public InitializingFlowRepository(final FlowRepository delegate, final JestClient client, final IndexSettings indexSettings) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(delegate);
-        this.initializer = new ElasticFlowRepositoryInitializer(client);
+        Objects.requireNonNull(indexSettings);
+
+        this.initializer = new ElasticFlowRepositoryInitializer(client, indexSettings);
         this.delegate = delegate;
     }
 
