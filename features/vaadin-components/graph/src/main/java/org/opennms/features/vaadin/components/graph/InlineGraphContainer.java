@@ -30,8 +30,6 @@ package org.opennms.features.vaadin.components.graph;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 
-import java.util.Date;
-
 /**
  * Graph container that allows graphs to be rendered using different graphing
  * engines.

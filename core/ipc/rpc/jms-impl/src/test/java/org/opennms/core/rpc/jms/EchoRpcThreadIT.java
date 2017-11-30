@@ -28,32 +28,20 @@
 
 package org.opennms.core.rpc.jms;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
-
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.rpc.api.RpcClient;
-import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.camel.MockMinionIdentity;
-import org.opennms.core.rpc.echo.EchoRequest;
-import org.opennms.core.rpc.echo.EchoResponse;
-import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
-import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.ThreadLocker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;

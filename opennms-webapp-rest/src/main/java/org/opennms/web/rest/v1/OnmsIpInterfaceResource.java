@@ -28,8 +28,6 @@
 
 package org.opennms.web.rest.v1;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

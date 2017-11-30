@@ -118,8 +118,8 @@ public class GeolocationRestService {
         return null;
     }
 
-    private static <T> T getEnum(String input, Enum[] values) {
-        for (Enum eachEnum : values) {
+    private static <T> T getEnum(String input, Enum<?>[] values) {
+        for (Enum<?> eachEnum : values) {
             if (input.equalsIgnoreCase(eachEnum.name())) {
                 return (T) eachEnum;
             }

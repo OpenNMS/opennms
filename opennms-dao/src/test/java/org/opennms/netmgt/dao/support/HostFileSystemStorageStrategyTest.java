@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.nio.file.Paths;
-
 import org.junit.Assert;
 
 import org.easymock.EasyMock;

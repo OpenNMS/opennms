@@ -28,27 +28,13 @@
 
 package org.opennms.core.rpc.camel;
 
-import java.util.Dictionary;
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.camel.Component;
-import org.apache.camel.util.KeyValueHolder;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.opennms.core.rpc.echo.EchoClient;
 import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
 
 public abstract class EchoRpcBlueprintIT extends CamelBlueprintTest {
 

@@ -29,12 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.api;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.utils.LocationUtils;
-
-import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Date;
 
 public class TelemetryMessage implements Message {

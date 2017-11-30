@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller;
 
-import java.nio.file.Paths;
 import java.util.Map;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;

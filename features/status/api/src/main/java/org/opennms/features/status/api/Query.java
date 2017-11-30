@@ -30,7 +30,6 @@ package org.opennms.features.status.api;
 
 import java.util.Objects;
 
-import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.opennms.web.utils.QueryParameters;
 
 public class Query {

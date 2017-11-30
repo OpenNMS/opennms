@@ -32,7 +32,6 @@ import static org.opennms.netmgt.newts.support.NewtsUtils.findResourcesWithMetri
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

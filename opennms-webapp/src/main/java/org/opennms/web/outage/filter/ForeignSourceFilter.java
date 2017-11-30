@@ -28,8 +28,6 @@
 
 package org.opennms.web.outage.filter;
 
-import javax.servlet.ServletContext;
-
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;

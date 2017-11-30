@@ -257,7 +257,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return getHibernateTemplate().loadAll(m_entityClass);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
         final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);

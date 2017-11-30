@@ -31,8 +31,6 @@
 
 package org.opennms.plugins.com.impossibl.postgres.jdbc.test.manual;
 
-import static org.junit.Assert.*;
-
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import org.opennms.plugins.dbnotifier.DatabaseChangeNotifier;

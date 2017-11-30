@@ -55,7 +55,6 @@ import org.opennms.netmgt.config.vacuumd.Assignment;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;

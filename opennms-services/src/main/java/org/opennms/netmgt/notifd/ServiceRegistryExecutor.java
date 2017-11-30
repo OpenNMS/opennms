@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.management.ManagementFactory;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class ServiceRegistryExecutor implements ExecutorStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceRegistryExecutor.class);

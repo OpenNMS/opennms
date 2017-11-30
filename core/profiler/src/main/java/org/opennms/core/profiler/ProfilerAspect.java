@@ -68,7 +68,7 @@ public class ProfilerAspect {
      *
      * @return the return of the block. If no return is required, simply return null.
      */
-    public static <T> T wrapProfile(Class clazz, String signature, Block<T> block) {
+    public static <T> T wrapProfile(Class<?> clazz, String signature, Block<T> block) {
         return wrapProfile(clazz.getSimpleName() + "." + signature, block);
     }
 

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.model.events;
 
-import java.util.stream.Collectors;
-
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
