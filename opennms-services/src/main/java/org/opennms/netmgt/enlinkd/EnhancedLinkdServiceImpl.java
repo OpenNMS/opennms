@@ -703,11 +703,15 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                 segment.getDesignatedPort();
                 for (BridgeBridgeLink link : SharedSegment.getBridgeBridgeLinks(segment)) {
                     link.setBridgeBridgeLinkLastPollTime(new Date());
-                    saveBridgeBridgeLink(link);
+                        saveBridgeBridgeLink(link);
                 }
                 for (BridgeMacLink link : SharedSegment.getBridgeMacLinks(segment)) {
                     link.setBridgeMacLinkLastPollTime(new Date());
-                    saveBridgeMacLink(link);
+                    try {
+                        saveBridgeMacLink(link);
+                    } catch (Exception e) {
+                        LOG.error("Exception: {}. {}", e.getMessage(), link.printTopology(),e );
+                    }
                 }
             } catch (BridgeTopologyException e) {
                 LOG.error("No designated port, {}, on segment {}", e.getMessage(),e.printTopology(),e);
@@ -716,10 +720,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         
         for (Integer nodeid: domain.getBridgeNodesOnDomain()) {
             m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
-            m_bridgeMacLinkDao.flush();
             m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
             m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeid, now);
+        }
+        try {
+            m_bridgeMacLinkDao.flush();
+        } catch (Exception e) {
+            LOG.error("BridgeMacLinkDao: {}", e.getMessage(),e );
+        }
+        try {
             m_bridgeBridgeLinkDao.flush();
+        } catch (Exception e) {
+            LOG.error("BridgeBridgeLinkDao: {}", e.getMessage(),e );
         }
     }
 
@@ -740,22 +752,20 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             protected BridgeMacLink doUpdate(BridgeMacLink link) {
                 link.merge(saveMe);
                 m_dao.update(link);
-                m_dao.flush(); //FIXME  org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException: 
-                                //Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1; 
-                                //nested exception is org.hibernate.StaleStateException: 
                 return link;
             }
 
             @Override
             protected BridgeMacLink doInsert() {
                 final OnmsNode node = m_nodeDao.get(saveMe.getNode().getId());
-                if (node == null)
+                if (node == null) {
                     return null;
+                }
                 saveMe.setNode(node);
-                if (saveMe.getBridgeMacLinkLastPollTime() == null)
+                if (saveMe.getBridgeMacLinkLastPollTime() == null) {
                     saveMe.setBridgeMacLinkLastPollTime(saveMe.getBridgeMacLinkCreateTime());
+                }
                 m_dao.saveOrUpdate(saveMe);
-                m_dao.flush();
                 return saveMe;
             }
 
@@ -778,7 +788,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             protected BridgeBridgeLink doUpdate(BridgeBridgeLink link) {
                 link.merge(saveMe);
                 m_dao.update(link);
-                m_dao.flush();
                 return link;
             }
 
@@ -791,7 +800,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                 if (saveMe.getBridgeBridgeLinkLastPollTime() == null)
                     saveMe.setBridgeBridgeLinkLastPollTime(saveMe.getBridgeBridgeLinkCreateTime());
                 m_dao.saveOrUpdate(saveMe);
-                m_dao.flush();
                 return saveMe;
             }
 
