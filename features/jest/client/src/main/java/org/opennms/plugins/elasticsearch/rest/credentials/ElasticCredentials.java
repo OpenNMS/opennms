@@ -35,9 +35,11 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name="elastic-credentials")
 @XmlAccessorType(XmlAccessType.NONE)
-public class CredentialsWrapper {
+public class ElasticCredentials {
     @XmlElement(name = "credentials")
     private List<CredentialsScope> credentialsScopes = new ArrayList<>();
 
@@ -49,7 +51,7 @@ public class CredentialsWrapper {
         this.credentialsScopes = credentialsScopes;
     }
 
-    public CredentialsWrapper withCredentials(CredentialsScope credentialsScope) {
+    public ElasticCredentials withCredentials(CredentialsScope credentialsScope) {
         if (credentialsScope != null) {
             this.credentialsScopes.add(credentialsScope);
         }
@@ -60,8 +62,8 @@ public class CredentialsWrapper {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if (o instanceof CredentialsWrapper) {
-            final CredentialsWrapper that = (CredentialsWrapper) o;
+        if (o instanceof ElasticCredentials) {
+            final ElasticCredentials that = (ElasticCredentials) o;
             return Objects.equals(credentialsScopes, that.credentialsScopes);
         }
         return false;

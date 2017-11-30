@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.credentials;
+package org.opennms.plugins.elasticsearch.rest.credentials;
 
 
 import java.util.Arrays;
@@ -34,12 +34,11 @@ import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
-import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsScope;
 
 
-public class ElasticFlowRepositoryCredentialsWrapperTest extends XmlTestNoCastor {
+public class ElasticCredentialsTest extends XmlTestNoCastor {
 
-    public ElasticFlowRepositoryCredentialsWrapperTest(Object sampleObject, Object sampleXml, String schemaFile) {
+    public ElasticCredentialsTest(Object sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
 
@@ -47,13 +46,13 @@ public class ElasticFlowRepositoryCredentialsWrapperTest extends XmlTestNoCastor
     public static Collection<Object[]> getData() {
         return Arrays.asList(new Object[][]{
             {
-                new ElasticFlowRepositoryCredentialsWrapper(),
+                new ElasticCredentials(),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<elastic-credentials/>",
                 null
             },
             {
-                new ElasticFlowRepositoryCredentialsWrapper()
+                new ElasticCredentials()
                         .withCredentials(new CredentialsScope("http://localhost:9200", "admin", "admin"))
                         .withCredentials(new CredentialsScope("https://localhost:9333", "ulf", "flu")),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +

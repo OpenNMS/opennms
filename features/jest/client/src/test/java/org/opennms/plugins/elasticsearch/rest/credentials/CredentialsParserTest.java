@@ -43,7 +43,7 @@ import org.junit.Test;
 public class CredentialsParserTest {
     @Test
     public void verifyParsing() {
-        final CredentialsWrapper configuration = new CredentialsWrapper(){};
+        final ElasticCredentials configuration = new ElasticCredentials(){};
 
         // Valid
         configuration.withCredentials(new CredentialsScope("192.168.0.1:9200", "ulf", "ulf"));

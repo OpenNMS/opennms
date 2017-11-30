@@ -129,6 +129,7 @@ import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfiguration;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.plugins.elasticsearch.rest.credentials.ElasticCredentials;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -214,6 +215,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, true, null);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, false, null);
         addFile(Source.CONFIG, "drools-northbounder-configuration.xml", DroolsNorthbounderConfig.class, true, null);
+        addFile(Source.CONFIG, "elastic-credentials.xml", ElasticCredentials.class, true, null);
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, false, null);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, true, null);

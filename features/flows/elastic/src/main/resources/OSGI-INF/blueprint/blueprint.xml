@@ -35,8 +35,8 @@
     </cm:property-placeholder>
 
     <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
-    <bean id="credentialsProvider" class="org.opennms.netmgt.flows.elastic.credentials.ElasticFlowRepositoryCredentialsProvider">
-        <argument value="elastic-flow-persistence-credentials.xml" />
+    <bean id="credentialsProvider" class="org.opennms.plugins.elasticsearch.rest.credentials.DefaultCredentialsProvider">
+        <argument value="elastic-credentials.xml" />
     </bean>
 
     <!-- Proxy for the JestClientFactory -->

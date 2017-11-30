@@ -26,25 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.credentials;
+package org.opennms.plugins.elasticsearch.rest.credentials;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsWrapper;
+import javax.xml.bind.JAXB;
 
-@XmlRootElement(name="elastic-credentials")
-@XmlAccessorType(value= XmlAccessType.NONE)
-public class ElasticFlowRepositoryCredentialsWrapper extends CredentialsWrapper {
+public class DefaultCredentialsProvider implements CredentialsProvider {
 
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    private final Path configPath;
+
+    public DefaultCredentialsProvider(String configName) {
+        Path configPath = Paths.get(System.getProperty("opennms.home"), "etc", configName);
+        this.configPath = configPath;
     }
 
     @Override
-    public int hashCode() {
-        return super.hashCode();
+    public List<CredentialsScope> getCredentials() {
+        if (Files.exists(configPath)) {
+            final ElasticCredentials credentialsWrapper = JAXB.unmarshal(configPath.toFile(), ElasticCredentials.class);
+            return credentialsWrapper.getCredentialsScopes();
+        }
+        return new ArrayList<>();
     }
 }

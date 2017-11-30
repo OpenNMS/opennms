@@ -137,7 +137,7 @@ elasticGlobalPassword=changeme
 ====== Configure ElasticSearch Credentials
 
 It is possible to define credentials for each ElasticSearch node individually.
-Credentials for each node must be stored in `${OPENNMS_HOME}/etc/elastic-flow-persistence-credentials.xml`.
+Credentials for each node must be stored in `${OPENNMS_HOME}/etc/elastic-credentials.xml`.
 
 .Custom credentials
 ```xml
