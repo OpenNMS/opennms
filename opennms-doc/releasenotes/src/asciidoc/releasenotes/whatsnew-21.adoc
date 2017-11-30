@@ -5,7 +5,7 @@
 
 * *Java 8*: OpenNMS Horizon 21 requires Java 8 as the runtime environment.
   To run Horizon 21, we recommend the most recent version of Oracle JDK 8 for your platform.
-* *PostgreSQL 9.2 or higher*: Horizon 21 requires PostgreSQL 9.2 or higher.
+* *PostgreSQL 9.3 or higher*: Horizon 21 requires PostgreSQL 9.3 or higher. All older versions of PostgreSQL are past their end-of-life support date.
 
 === Important Upgrade Notes
 
