@@ -32,7 +32,7 @@
   <xs:complexType name="businessServiceRequestDTO">
     <xs:sequence>
       <xs:element minOccurs="0" name="name" type="xs:string"/>
-      <xs:element minOccurs="0" ref="attributes"/>
+      <xs:element minOccurs="0" ref="bs:attributes"/>
       <xs:element minOccurs="0" name="ip-service-edges">
         <xs:complexType>
           <xs:sequence>
@@ -141,7 +141,7 @@
     <xs:sequence>
       <xs:element minOccurs="0" name="id" type="xs:long"/>
       <xs:element minOccurs="0" name="name" type="xs:string"/>
-      <xs:element minOccurs="0" ref="attributes"/>
+      <xs:element minOccurs="0" ref="bs:attributes"/>
       <xs:element minOccurs="0" name="ip-service-edges">
         <xs:complexType>
           <xs:sequence>
@@ -171,7 +171,7 @@
         </xs:complexType>
       </xs:element>
       <xs:element minOccurs="0" name="reduce-function" type="bs:reduceFunctionDTO"/>
-      <xs:element minOccurs="0" name="operational-status" type="status"/>
+      <xs:element minOccurs="0" name="operational-status" type="bs:status"/>
       <xs:element minOccurs="0" name="location" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
@@ -190,7 +190,7 @@
   <xs:complexType abstract="true" name="abstractEdgeResponseDTO">
     <xs:sequence>
       <xs:element name="id" type="xs:long"/>
-      <xs:element minOccurs="0" name="operational-status" type="status"/>
+      <xs:element minOccurs="0" name="operational-status" type="bs:status"/>
       <xs:element minOccurs="0" name="map-function" type="bs:mapFunctionDTO"/>
       <xs:element minOccurs="0" name="location" type="xs:string"/>
       <xs:element minOccurs="0" name="reduction-keys">
@@ -258,7 +258,7 @@
 
   <xs:complexType name="jaxbMap">
     <xs:sequence>
-      <xs:element maxOccurs="unbounded" ref="attribute"/>
+      <xs:element maxOccurs="unbounded" ref="bs:attribute"/>
     </xs:sequence>
   </xs:complexType>
 
