@@ -723,6 +723,19 @@
                     <execute></execute>
                 </action>
               </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.apache.karaf.tooling</groupId>
+                  <artifactId>karaf-maven-plugin</artifactId>
+                  <versionRange>[4.0,)</versionRange>
+                  <goals>
+                    <goal>assembly</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
             </pluginExecutions>
           </lifecycleMappingMetadata>
         </configuration>
