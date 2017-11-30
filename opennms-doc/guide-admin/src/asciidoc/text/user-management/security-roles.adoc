@@ -49,7 +49,7 @@ endif::opennms-prime[]
 . Click *Finish* to persist and apply the Changes
 . *Logout* and *Login* to apply the new _Security Role_ settings
 
-.How to add custom rules
+.How to add custom roles
 
 * Create a file called `$OPENNMS_HOME/etc/security-roles.properties`.
 * Add a property called `roles`, and for its value, a comma separated list of the custom roles, for example:
