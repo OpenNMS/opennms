@@ -172,7 +172,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             m_linkd.getLocationAwareSnmpClient().walk(peer, dot1dbase).withDescription("dot1dbase").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: node [{}]: ExecutionException: dot1dbase: {}", 
-                     getNodeId(), e.getMessage(),e); //FIXME remove when finished
+                     getNodeId(), e.getMessage());
             return null; 
         } catch (final InterruptedException e) {
             LOG.info("run: node [{}]: InterruptedException: dot1dbase: {}", 
