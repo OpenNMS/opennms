@@ -70,38 +70,47 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
         IpNetToMediaTableTracker ipNetToMediaTableTracker = new IpNetToMediaTableTracker() {
             public void processIpNetToMediaRow(final IpNetToMediaRow row) {
                 IpNetToMedia macep = row.getIpNetToMedia();
-                if (macep.getPhysAddress() == null && macep.getNetAddress() == null) {
-                    LOG.warn("processIpNetToMediaRow: node [{}], null:null:{}. ip and mac addresses null. skipping",
-                              getNodeId(),
-                              macep.getIpNetToMediaType());
-                } else  if (macep.getPhysAddress() == null) {
-                        LOG.warn("processIpNetToMediaRow: node [{}], null:{}:{}. mac address null. skipping",
-                                  getNodeId(),
-                                  str(macep.getNetAddress()),
-                                  macep.getIpNetToMediaType());
-                } else if (macep.getNetAddress() == null) {
-                    LOG.warn("processIpNetToMediaRow: node [{}], {}:null:{}. ip address null. skipping",
-                             getNodeId(),
-                             macep.getPhysAddress(), 
-                             macep.getIpNetToMediaType());
-                } else if (macep.getSourceIfIndex() != null &&
-                        macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC
-                        || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC) {
-                    LOG.info("processIpNetToMediaRow: node [{}], mac address {} and ip {} mediatype {}. saving",
+                if (macep.getPhysAddress() != null && 
+                        macep.getNetAddress() != null && 
+                        macep.getSourceIfIndex() != null &&
+                        (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC
+                        || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC)) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("processIpNetToMediaRow: node [{}], mac address {} and ip {} mediatype {}. saving",
                               getNodeId(),
                               macep.getPhysAddress(), 
                               str(macep.getNetAddress()),
                               macep.getIpNetToMediaType());
+                    }
                     m_linkd.getQueryManager().store(getNodeId(), macep);
-                } else {
-                    LOG.warn("processIpNetToMediaRow: node [{}],  {}:{}:{}:{}. not valid. skipping",
+                    return;
+                } 
+                if (macep.getPhysAddress() == null && macep.getNetAddress() == null) {
+                    LOG.info("processIpNetToMediaRow: node [{}], null:null:{}. ip and mac addresses null. skipping",
+                              getNodeId(),
+                              macep.getIpNetToMediaType());
+                    return;
+                } 
+                if (macep.getPhysAddress() == null) {
+                        LOG.info("processIpNetToMediaRow: node [{}], null:{}:{}. mac address null. skipping",
+                                  getNodeId(),
+                                  str(macep.getNetAddress()),
+                                  macep.getIpNetToMediaType());
+                        return;
+                } 
+                if (macep.getNetAddress() == null) {
+                    LOG.info("processIpNetToMediaRow: node [{}], {}:null:{}. ip address null. skipping",
+                             getNodeId(),
+                             macep.getPhysAddress(), 
+                             macep.getIpNetToMediaType());
+                    return;
+                } 
+                LOG.info("processIpNetToMediaRow: node [{}],  {}:{}:{}:{}. not valid. skipping",
                              getNodeId(),
                              macep.getPhysAddress(), 
                              str(macep.getNetAddress()),
                              macep.getIpNetToMediaType(),
                              macep.getSourceIfIndex());
-                }
-
             }
         };
 		
