@@ -49,17 +49,19 @@ public class Bridge implements BridgeTopology {
     }
 
     public static String getDesignated(List<BridgeElement> elems) {
-        String designated = null;
         for (BridgeElement element: elems) {
             if (InetAddressUtils.
                     isValidStpBridgeId(element.getStpDesignatedRoot()) 
                     && !element.getBaseBridgeAddress().
                     equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
-                designated=InetAddressUtils.
+                String designated=InetAddressUtils.
                                getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot());
+                if (InetAddressUtils.isValidBridgeAddress(designated)) {
+                    return designated;
+                }
             }
         }
-        return designated;
+        return null;
     }
 
     public static Bridge create(BroadcastDomain domain, Integer nodeid) {
