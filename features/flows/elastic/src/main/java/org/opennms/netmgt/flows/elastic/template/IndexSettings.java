@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.elastic.template;
 
+import com.google.common.base.Strings;
+
 public class IndexSettings {
     private Integer numberOfShards;
 
@@ -44,6 +46,7 @@ public class IndexSettings {
     public void setNumberOfShards(Integer numberOfShards) {
         this.numberOfShards = numberOfShards;
     }
+
 
     public Integer getNumberOfReplicas() {
         return numberOfReplicas;
@@ -66,7 +69,25 @@ public class IndexSettings {
     }
 
     public void setRefreshInterval(String refreshInterval) {
-        this.refreshInterval = refreshInterval;
+        this.refreshInterval = Strings.isNullOrEmpty(refreshInterval) ? null : refreshInterval;
+    }
+
+    public void setRoutingPartitionSize(String routingPartitionSize) {
+        if (!Strings.isNullOrEmpty(routingPartitionSize)) {
+            setRoutingPartitionSize(Integer.valueOf(routingPartitionSize));
+        }
+    }
+
+    public void setNumberOfShards(String numberOfShards) {
+        if (!Strings.isNullOrEmpty(numberOfShards)) {
+            setNumberOfShards(Integer.valueOf(numberOfShards));
+        }
+    }
+
+    public void setNumberOfReplicas(String numberOfReplicas) {
+        if (!Strings.isNullOrEmpty(numberOfReplicas)) {
+            setNumberOfReplicas(Integer.valueOf(numberOfReplicas));
+        }
     }
 
     public boolean isEmpty() {
