@@ -277,7 +277,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     }
                     calculate();
                     if (LOG.isInfoEnabled()) {
-                        LOG.info("calculate: node: [{}], topology calculation end: \n{}.", 
+                        LOG.info("calculate: node: [{}], topology calculation end:\n{}.", 
                              getNodeId(),
                              m_domain.printTopology());
                     }
@@ -650,9 +650,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 return false;
             }
             if (!yx.findSimpleConnection()) {;
-                LOG.error("calculate: node: [{}]. level: {}. no simple connection:\n{}", 
+                LOG.error("calculate: node: [{}]. level: {}, no simple connection:[{}<-->{}]", 
                           getNodeId(),
-                          level, yx.printTopology());
+                          level, 
+                          xBridge.getNodeId(),
+                          yBridge.getNodeId());
                 return false;
             }
             Integer  xyDesignatedPort = yx.getSecondBridgeConnectionPort();

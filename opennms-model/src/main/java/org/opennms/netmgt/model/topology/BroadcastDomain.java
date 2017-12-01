@@ -405,7 +405,7 @@ public class BroadcastDomain implements BridgeTopology {
     
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
-        strbfr.append("\n------broadcast domain-----\n");
+        strbfr.append("------broadcast domain-----\n");
         Bridge rootBridge = getRootBridge();
     	if ( rootBridge != null && !m_topology.isEmpty()) {
     		Set<Integer> rootids = new HashSet<Integer>();
