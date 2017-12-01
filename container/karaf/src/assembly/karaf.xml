@@ -82,6 +82,19 @@
             <destName>${project.artifactId}-${project.version}-spring.xml.sha1</destName>
             <lineEnding>unix</lineEnding>
         </file>
+        <!-- OpenNMS-modified copy of Karaf's mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features -->
+        <file>
+            <source>${project.build.directory}/filtered-resources/features/spring-legacy.xml</source>
+            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <destName>${project.artifactId}-${project.version}-spring-legacy.xml</destName>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <file>
+            <source>${project.build.directory}/filtered-resources/features/spring-legacy.xml.sha1</source>
+            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <destName>${project.artifactId}-${project.version}-spring-legacy.xml.sha1</destName>
+            <lineEnding>unix</lineEnding>
+        </file>
     </files>
 
 </assembly>
