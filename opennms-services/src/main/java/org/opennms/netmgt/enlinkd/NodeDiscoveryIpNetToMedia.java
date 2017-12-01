@@ -120,11 +120,11 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
                                                       ipNetToMediaTableTracker).withDescription("ipNetToMedia").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: node [{}]: ExecutionException: ipNetToMedia: {}", 
-                     getNodeId(), e.getMessage(),e);
+                     getNodeId(), e.getMessage());
             return;
         } catch (final InterruptedException e) {
             LOG.info("run: node [{}]: InterruptedException: ipNetToMedia: {}",
-                     getNodeId(),e.getMessage(),e);
+                     getNodeId(),e.getMessage());
             return;       
         }
 
