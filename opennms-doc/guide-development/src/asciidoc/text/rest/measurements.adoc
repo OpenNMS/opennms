@@ -160,3 +160,101 @@ curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" 
     ]
 }
 ----
+===== More Advanced Expressions
+
+The JEXL 2.1.x library is used to parse the expression string and this also allows java objects and predefined functions to be included in the expression.
+
+JEXL uses a context which is pre-populated by OpenNMS with the results of the query.
+Several constants and arrays are also predefined as references in the context by OpenNMS.
+
+[%header,cols=2*] 
+|===
+|Constant or prefix
+|Description
+
+|__inf 
+|Double.POSITIVE_INFINITY
+
+|__neg_inf 
+|Double.NEGATIVE_INFINITY
+
+|NaN
+|Double.NaN
+
+|__E
+|java.lang.Math.E
+
+|__PI
+|java.lang.Math.PI
+
+|__diff_time
+|Time span between start and end of samples
+
+|__i
+|Index into the samples array which the present calculation is referencing
+
+|__AttributeName (where AttributeName is the searched for attribute)
+|This returns the complete double[] array of samples for AttributeName
+|===
+
+OpenNMS predefines a number of functions for use in expressions which are referenced by namespace:function.
+All of these functions return a java double value.
+
+Pre defined functions
+[%header,cols=3*] 
+|===
+|Function
+|Description
+|Example
+
+|jexl:evaluate("_formula"):
+|Passes a string to the JEXL engine to be evaluated as if it was entered as a normal expression. 
+Like normal expressions, expressions evaluated through this function will return a Java double value.
+This makes it possible to reference and evaluate a formula which has been stored in OpenNMS as a string variable.
+The use case for this capability is that it gives us the ability to define and store a per-node and per-value correction formula which can normalise samples from different sample sources.
+|
+
+|math:
+|References java.lang.Math class
+|math:cos(20)
+
+|strictmath:
+|References java.lang.StrictMath class
+|math:cos(20)
+
+|fn:
+|References the class org.opennms.netmgt.measurements.impl.SampleArrayFunctions. 
+This contains several functions which can reference previous samples in the time series.
+|
+
+|fn:arrayNaN("sampleName", n)
+|References the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with NaN.
+|fn:arrayNaN("x", 5)
+
+|fn:arrayZero("sampleName", n)
+|References the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with 0 (zero).
+|fn:arrayZero("x", 5)
+
+|fn:arrayFirst("sampleName", n)
+|References the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with the first sample.
+|fn:arrayFirst("x", 5)
+
+|fn:arrayStart("sampleName", n, constant)
+|References the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with a supplied constant.
+|fn:arrayStart("x", 5, 10)
+|===
+
+So for example with these additional variables and functions it is possible to create a Finite Impulse Response (FIR) filter function such as
+----
+y = a * f(n) + b * f(n-1) + c * f(n-2)
+----
+using the following expression where a,b and c are string constants and x is a time series value
+----
+a * x + b * fn:arrayNaN("x", 1) + c * fn:arrayNaN("x", 2)
+----
+
+
+
+
+
+    
