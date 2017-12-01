@@ -51,11 +51,48 @@ The following configuration properties can be set:
 
 [options="header, autowidth"]
 |===
-| Property               | Description                                                                                                                         | Required | default
-| _elasticUrl_           | URL to ReST API of ElasticSearch which is by default on port 9200                                                                   | required | -
-| _elasticIndexStrategy_ | Index strategy for data, allowed values _yearly_, _monthly_, _daily_, _hourly_                                                      | optional | `daily`
-| _elasticUser_          | User name in when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured | optional | -
-| _elasticPassword_      | Password in when _X-Pack Security_ is configured                                                                                    | optional | -
+
+| Property | Description | Required | default
+
+| _elasticUrl_
+| URL to ReST API of ElasticSearch.
+| required
+| `http://localhost:9200`
+
+| _elasticIndexStrategy_
+| Index strategy for data, allowed values _yearly_, _monthly_, _daily_, _hourly_
+| optional
+| `daily`
+
+| _elasticUser_
+| User name in when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured
+| optional
+| -
+
+| _elasticPassword_
+| Password in when _X-Pack Security_ is configured
+| optional
+| -
+
+| _settings.index.number_of_shards_
+| The number of primary shards that an index should have. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| optional
+| -
+
+| _settings.index.number_of_replicas_
+| The number of replicas each primary shard has. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| optional
+| -
+
+| _settings.index.refresh_interval_
+| How often to perform a refresh operation, which makes recent changes to the index visible to search. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| optional
+| -
+
+| _settings.index.routing_partition_size_
+| The number of shards a custom routing valuce can go to. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| optional
+| -
 |===
 
 The configuration properties will be stored in `${OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
