@@ -23,6 +23,7 @@ include::text/datachoices.adoc[]
 == User Management
 include::text/user-management/users.adoc[]
 include::text/user-management/security-roles.adoc[]
+include::text/user-management/pre-authentication.adoc[]
 
 [[ga-admin-ui]]
 == Administrative Webinterface
