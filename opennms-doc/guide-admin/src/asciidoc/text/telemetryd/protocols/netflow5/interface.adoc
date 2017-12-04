@@ -51,11 +51,10 @@ The following configuration properties can be set:
 
 [options="header, autowidth"]
 |===
-
 | Property | Description | Required | default
 
 | _elasticUrl_
-| URL to ReST API of ElasticSearch.
+| URL(s) to ElasticSearch nodes. Can either point directly to ReST API or seed nodes. The format is: `<host>:<port>`. Comma separate multiple values.
 | required
 | `http://localhost:9200`
 
@@ -64,13 +63,38 @@ The following configuration properties can be set:
 | optional
 | `daily`
 
-| _elasticUser_
-| User name in when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured
+| _elasticGlobalUser_
+| User name to use for all nodes, when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured.
 | optional
 | -
 
-| _elasticPassword_
-| Password in when _X-Pack Security_ is configured
+| _elasticGlobalPassword_
+| Password to use for all nodes, when _X-Pack Security_ is configured.
+| optional
+| -
+
+| _defaultMaxTotalConnectionPerRoute_
+| Sets the default max connections per route. If a negative value is given, the value is ignored.
+| optional
+| `<available processors> * 2`
+
+| _maxTotalConnection_
+| Sets the default max total connections. If a negative value is given, the value is ignored.
+| optional
+| `<max connections per route> * 3`
+
+| _nodeDiscovery_
+| Enable/Disable node discovery. Valid values are `true\|false`.
+| optional
+| `false`
+
+| _nodeDiscoveryFrequency_
+| Defines the frequency in seconds in which the nodes are re-discovered. Must be set, if `discovery=true`
+| optional
+| -
+
+| _proxy_
+| Allows defining a HTTP proxy. Only accepts valid URLs.
 | optional
 | -
 
@@ -99,14 +123,30 @@ The configuration properties will be stored in `${OPENNMS_HOME}/etc/org.opennms.
 
 TIP: If a configuration management tool is used, the properties file can be created and is used as startup configuration
 
+NOTE: If credentials are provided preemptive auth is used for all defined ElasticSearch nodes.
+
 .Configuration properties for access to ElasticSearch
 [source]
 ----
 elasticUrl=http://elastic:9200
 elasticIndexStrategy=daily
-elasticUser=elastic
-elasticPassword=changeme
+elasticGlobalUser=elastic
+elasticGlobalPassword=changeme
 ----
+
+====== Configure ElasticSearch Credentials
+
+It is possible to define credentials for each ElasticSearch node individually.
+Credentials for each node must be stored in `${OPENNMS_HOME}/etc/elastic-credentials.xml`.
+
+.Custom credentials
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<elastic-credentials>
+    <credentials url="http://localhost:9200" username="ulf" password="ulf" />
+    <credentials url="https://10.10.0.1:9333" username="ulf" password="flu" />
+</elastic-credentials>
+```
 
 ===== Configure NetFlow v5 Listener on a Minion
 

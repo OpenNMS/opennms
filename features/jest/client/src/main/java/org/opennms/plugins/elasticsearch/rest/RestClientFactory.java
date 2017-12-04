@@ -28,16 +28,28 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsParser;
+import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -46,9 +58,6 @@ import io.searchbox.client.AbstractJestClient;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
-import org.apache.http.HttpHost;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This factory wraps the {@link JestClientFactory} to provide instances of
@@ -77,13 +86,13 @@ public class RestClientFactory {
 	 *
 	 * @param elasticSearchURL Elasticsearch URL, either a single URL or
 	 *   multiple URLs that are comma-separated without spaces
-	 * @param elasticUser Optional HTTP username
-	 * @param elasticPassword Optional HTTP password
+	 * @param globalElasticUser Optional HTTP username
+	 * @param globalElasticPassword Optional HTTP password
 	 */
-	public RestClientFactory(final String elasticSearchURL, final String elasticUser, final String elasticPassword ) throws MalformedURLException {
+	public RestClientFactory(final String elasticSearchURL, final String globalElasticUser, final String globalElasticPassword ) throws MalformedURLException {
 		final List<String> urls = parseUrl(elasticSearchURL);
-		final String user = elasticUser != null && !elasticUser.isEmpty() ? elasticUser : null;
-		final String password = elasticPassword != null && !elasticPassword.isEmpty() ? elasticPassword : null;
+		final String globalUser = globalElasticUser != null && !globalElasticUser.isEmpty() ? globalElasticUser : null;
+		final String globalPassword = globalElasticPassword != null && !globalElasticPassword.isEmpty() ? globalElasticPassword : null;
 
 		// Ensure urls is set
 		if (urls.isEmpty()) {
@@ -108,15 +117,21 @@ public class RestClientFactory {
 					.gson(gson);
 
 		// Apply optional credentials
-		if (user != null && password != null) {
-			final URL targetUrl = new URL(urls.get(0));
-			if (urls.size() > 1) {
-				LOG.warn("Credentials have been defined, but multiple target hosts were found. " +
-						"Each host will use the same credentials. Preemptive auth is only enabled for host {}", urls.get(0));
-			}
+		if (globalUser != null && globalPassword != null) {
+			clientConfigBuilder.defaultCredentials(globalUser, globalPassword);
 
-			clientConfigBuilder.defaultCredentials(user, password);
-			clientConfigBuilder.setPreemptiveAuth(new HttpHost(targetUrl.getHost(), targetUrl.getPort(), targetUrl.getProtocol()));
+			// Enable preemptive auth
+			final Set<HttpHost> targetHosts = urls.stream()
+					.map(url -> {
+						try {
+							return new URL(url);
+						} catch (MalformedURLException ex) {
+							throw new RuntimeException(ex);
+						}
+					})
+					.map(url -> new HttpHost(url.getHost(), url.getPort(), url.getProtocol()))
+					.collect(Collectors.toSet());
+			clientConfigBuilder.preemptiveAuthTargetHosts(targetHosts);
 		}
 	}
 
@@ -204,8 +219,47 @@ public class RestClientFactory {
 		clientConfigBuilder.maxTotalConnection(connections);
 	}
 
+	/**
+	 * Defines if discovery/sniffing of nodes in the cluster is enabled.
+	 *
+	 * @param discovery true if discovery should be enabled, false otherwise
+	 */
+	public void setDiscovery(boolean discovery) {
+		clientConfigBuilder.discoveryEnabled(discovery);
+	}
+
+	/**
+	 * Sets the frequency to discover the nodes in the cluster.
+	 * Note: This only works if discovery is enabled.
+	 *
+	 * @param discoveryFrequencyInSeconds frequency in seconds
+	 */
+	public void setDiscoveryFrequency(int discoveryFrequencyInSeconds) {
+		clientConfigBuilder.discoveryFrequency(discoveryFrequencyInSeconds, TimeUnit.SECONDS);
+	}
+
 	public void setMaxConnectionIdleTime(int timeout, TimeUnit unit) {
 		clientConfigBuilder.maxConnectionIdleTime(timeout, unit);
+	}
+
+	public void setCredentials(final CredentialsProvider credentialsProvider) throws IOException {
+		if (credentialsProvider != null) {
+			final Map<AuthScope, Credentials> credentials = new CredentialsParser().parse(credentialsProvider.getCredentials());
+			if (!credentials.isEmpty()) {
+				final BasicCredentialsProvider customCredentialsProvider = new BasicCredentialsProvider();
+				clientConfigBuilder.credentialsProvider(customCredentialsProvider);
+				credentials.forEach((key, value) -> customCredentialsProvider.setCredentials(key, value));
+			} else {
+				LOG.warn("setCredentials was invoked, but no credentials or no valid credentials were provided.");
+			}
+		}
+	}
+
+	public void setProxy(String proxy) throws MalformedURLException {
+		if (!Strings.isNullOrEmpty(proxy)) {
+			final URL proxyURL = new URL(proxy);
+			clientConfigBuilder.proxy(new HttpHost(proxyURL.getHost(), proxyURL.getPort(), proxyURL.getProtocol()));
+		}
 	}
 
 	public JestClient createClient() {
