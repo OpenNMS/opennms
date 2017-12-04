@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Home page of The Apache Software Foundation">
+  
   <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
   <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
@@ -27,12 +28,11 @@
   <meta name="theme-color" content="#303284">
 
   <title>Apache License, Version 2.0</title>
-  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700%7cDroid+Serif:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700%7cDroid+Serif:400,700' rel='stylesheet' type='text/css'>
   <link href="/css/min.bootstrap.css" rel="stylesheet">
   <link href="/css/styles.css" rel="stylesheet">  
     
 
-    
     <!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.  The ASF licenses this file to you under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License.  You may obtain a copy of the License at . http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License. -->
 
 </head>
@@ -63,6 +63,7 @@
       				<li><a href="/foundation/sponsorship.html">Sponsorship</a></li>
       				<li><a href="/foundation/glossary.html">Glossary</a></li>
       				<li><a href="/foundation/preFAQ.html">FAQ</a></li>
+      				<li><a href="/foundation/policies/conduct.html">Code of Conduct</a></li>
       				<li><a href="/foundation/contact.html ">Contact</a></li>      				
           	</ul>
           </li>
@@ -74,6 +75,7 @@
   						<li><a href="http://people.apache.org/committer-index.html">Committers</a></li>
   						<li><a href="/foundation/how-it-works.html#meritocracy">Meritocracy</a></li>
   						<li><a href="/foundation/how-it-works.html#roles">Roles</a></li>
+      				<li><a href="/foundation/policies/conduct.html">Code of Conduct</a></li>
   						<li><a href="http://planet.apache.org/">Planet Apache</a></li>
 	        	</ul>
 	        </li>
@@ -82,6 +84,8 @@
             <ul class="dropdown-menu" role="menu">
               <li><a href="/foundation/getinvolved.html">Overview</a></li>
       				<li><a href="http://community.apache.org/">Community Development</a></li>
+      				<li><a href="/foundation/policies/conduct.html">Code of Conduct</a></li>
+                    <li><a href="http://helpwanted.apache.org/">Help Wanted</a></li>
       				<li><a href="http://www.apachecon.com/">ApacheCon</a></li>
             </ul>
   				</li>
@@ -103,10 +107,15 @@
 <!-- / Navigation -->
 <div class="container">
   <div class="row">
-    <div class="col-md-9 col-sm-8 col-xs-12">
+        <div class="col-md-6 col-sm-5 col-xs-12">
       <img src="/img/asf_logo.png" alt="Apache Logo" style="max-width: 100%;">
     </div>
-    <div class="col-md-3 col-sm-4 col-xs-12">
+    <div class="col-md-3 col-sm-3 col-xs-6">
+    <a href="http://apache.org/foundation/contributing.html" title="Support Apache">
+      <img src="/images/SupportApache-small.png" style="height: 150px; width: 150px; margin-top: 5px; margin-bottom: 5px;">
+    </a>
+    </div>
+    <div class="col-md-3 col-sm-4 col-xs-6">
       <div class="input-group" style="margin-bottom: 5px;">
 				<script>
   (function() {
@@ -335,7 +344,9 @@ limitations under the License.
 						<li><a href="/foundation/how-it-works.html">The Apache Way</a></li>
 						<li><a href="/travel/">Travel Assistance</a></li>
 						<li><a href="/foundation/getinvolved.html">Get Involved</a></li>
+      		  <li><a href="/foundation/policies/conduct.html">Code of Conduct</a></li>
 						<li><a href="http://community.apache.org/newbiefaq.html">Community FAQ</a></li>
+						<li><a href="/memorials/">Memorials</a></li>
 		        	</ul>
 				</div>
 				
@@ -377,6 +388,7 @@ limitations under the License.
 					<h5 class="white">Legal</h5>
         	<ul class="list-unstyled white" role="menu">
 						<li><a href="/legal/">Legal Affairs</a></li>
+						<li><a href="/legal/dmca.html">DMCA</a></li>
 						<li><a href="/licenses/">Licenses</a></li>
 						<li><a href="/foundation/marks/">Trademark Policy</a></li>
 						<li><a href="/foundation/records/">Public Records</a></li>
@@ -394,7 +406,7 @@ limitations under the License.
 			<hr class="col-lg-12 hr-white" />
 			<div class="row">
 				<div class="col-lg-12">
-					<p class="text-center">Copyright &#169; 2015 The Apache Software Foundation, Licensed under the <a class="white" href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+					<p class="text-center">Copyright &#169; 2017 The Apache Software Foundation, Licensed under the <a class="white" href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 					<p class="text-center">Apache and the Apache feather logo are trademarks of The Apache Software Foundation.</p>
 				</div>
 			</div>

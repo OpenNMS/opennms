@@ -194,8 +194,8 @@ public class VmwareImportRequest implements RequisitionRequest {
         }
 
         if (queryParameter(params, "importVMAll", false)) {
-            setImportHostPoweredOff(true);
-            setImportHostPoweredOn(true);
+            setImportVMPoweredOff(true);
+            setImportVMPoweredOn(true);
             setImportVMSuspended(true);
         }
 

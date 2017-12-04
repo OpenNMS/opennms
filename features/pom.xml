@@ -63,11 +63,15 @@
     <!-- OpenNMS REST -->
     <module>rest</module>
 
+    <!-- OpenNMS rest provider module -->
+    <module>rest-provider</module>
+
     <!-- OpenNMS OSGI Core -->
     <module>opennms-osgi-core</module>
     
     <!-- OSGi Script Engine -->
     <module>osgi-jsr223</module>
+    <module>opennms-osgi-core-rest</module>
 
     <!-- JMX config generator -->
     <module>jmx-config-generator</module>

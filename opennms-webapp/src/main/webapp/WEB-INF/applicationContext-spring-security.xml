@@ -46,6 +46,8 @@
 
     <http-basic />
 
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
@@ -59,6 +61,8 @@
 
     <http-basic />
 
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
@@ -82,6 +86,8 @@
 
     <http-basic />
 
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
@@ -91,6 +97,8 @@
 
     <http-basic />
 
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
@@ -147,6 +155,8 @@
       <!-- added for custom authentication filter -->
     <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
 
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
@@ -177,8 +187,19 @@
     </beans:bean>
     <!-- END CUSTOM AUthentication Filter -->
 
+  <!-- If a user is pre-authenticated, this will provide user details for the pre-authenticated user -->
+  <beans:bean id="preauthAuthProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+    <beans:property name="preAuthenticatedUserDetailsService">
+      <beans:bean id="userDetailsServiceWrapper" class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+        <beans:property name="userDetailsService" ref="openNMSUserDetailsService"/>
+      </beans:bean>
+    </beans:property>
+  </beans:bean>
+
   <!-- use our custom authentication provider; to use RADIUS instead, change this to "radiusAuthenticationProvider" and uncomment below -->
   <authentication-manager alias="authenticationManager">
+    <!-- If a user is pre-authenticated, make sure their user details are populated correctly. -->
+    <authentication-provider ref="preauthAuthProvider" />
     <!-- Use our custom authentication provider -->
     <authentication-provider ref="hybridAuthenticationProvider" />
     <!-- To enable external (e.g. LDAP, RADIUS) authentication, uncomment the following.

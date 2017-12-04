@@ -1297,7 +1297,7 @@
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jcifsVersion>1.3.14</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
-    <jettyVersion>9.4.0.v20161208</jettyVersion>
+    <jettyVersion>9.4.2.v20170220</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
@@ -1329,6 +1329,7 @@
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
+    <osgiJaxRsVersion>1.0.0-ONMS</osgiJaxRsVersion>
     <quartzVersion>2.2.3</quartzVersion>
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <servletApiVersion>3.1.0</servletApiVersion>

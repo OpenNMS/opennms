@@ -67,6 +67,9 @@
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
+            <!-- OpenNMS OSGI Core feature bundle -->
+            <repository>mvn:org.opennms.osgi/opennms-osgi-core-rest/${project.version}/xml/features</repository>
+
             <!-- JAAS Login Module -->
             <repository>mvn:org.opennms.container/org.opennms.container.jaas-login-module/${project.version}/xml/features</repository>
 
@@ -283,6 +286,11 @@
             <feature>opennms-trapd</feature>
             <!-- <feature>opennms-webapp</feature> -->
 
+            <!-- OSGI Rest -->
+            <feature>jax-rs-connector</feature>
+            <feature>jax-rs-shell-commands</feature>
+            <feature>opennms-osgi-core-rest</feature>
+
             <feature>org.json</feature>
             <feature>postgresql</feature>
             <feature>qpid</feature>
@@ -411,6 +419,12 @@
       <artifactId>org.opennms.container.karaf</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi</groupId>
+      <artifactId>opennms-osgi-core-rest</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -809,4 +823,22 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <!-- Required for com.eclipsesource.jaxrs/* -->
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+  </repositories>
 </project>
