@@ -74,6 +74,7 @@ public class FlowRequestExecutor implements RequestExecutor, RequestExecutorFact
             try {
                 Thread.sleep(cooldownInMs);
             } catch (InterruptedException e) {
+                throw new RuntimeException("Thread interrupted.", e);
             }
         }
         LOG.debug("Retrying now");
