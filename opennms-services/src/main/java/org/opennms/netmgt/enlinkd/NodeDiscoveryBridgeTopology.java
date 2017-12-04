@@ -1,5 +1,4 @@
 /*******************************************************************************
-        calculate();
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2014 The OpenNMS Group, Inc.
