@@ -68,13 +68,14 @@ public class DefaultRequestExecutorTest {
             client.execute(new Search.Builder("").build());
             Assert.fail("Request should not have been successful");
         } catch (Exception ex) {
+            final long executionTime = System.currentTimeMillis() - startTime;
+            
             // Expected an exception, verify execution of methods
             Mockito.verify(requestExecutor, Mockito.times(1)).execute(Mockito.any(), Mockito.any());
             Mockito.verify(client, Mockito.times(1)).execute(Mockito.any());
             Mockito.verify(clientDelegate, Mockito.times(attempts)).execute(Mockito.any());
 
             // Ensure that we actually waited
-            final long executionTime = System.currentTimeMillis() - startTime;
             Assert.assertThat(executionTime, CoreMatchers.allOf(
                     Matchers.greaterThan(timeout * retryCount * 1L),
                     Matchers.lessThan(timeout * retryCount * 1L + 250)));
