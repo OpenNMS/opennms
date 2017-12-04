@@ -61,7 +61,7 @@ public class ElasticSearchRule implements TestRule {
                 try {
                     base.evaluate(); // execute the unit test
                 } finally {
-                    eserver.shutdown();
+                    stopServer();
                 }
             }
         };
@@ -90,6 +90,8 @@ public class ElasticSearchRule implements TestRule {
     }
 
     public void stopServer() throws IOException {
-        eserver.shutdown();
+        if (eserver != null) {
+            eserver.shutdown();
+        }
     }
 }
