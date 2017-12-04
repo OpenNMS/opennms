@@ -45,6 +45,7 @@ import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 
 /**
@@ -90,7 +91,9 @@ public interface EnhancedLinkdService {
      *            Remove any reference in topology for nodeid
      *            </p>
      */
-    void delete(int nodeid);
+    void delete(int nodeid) throws BridgeTopologyException;
+
+    BroadcastDomain reconcileTopologyForDeleteNode(BroadcastDomain domain,int nodeid) throws BridgeTopologyException;
 
     void reconcileLldp(int nodeId, Date now);
 
@@ -128,7 +131,7 @@ public interface EnhancedLinkdService {
 
     void store(int nodeId, List<BridgeForwardingTableEntry> bft);
     
-    void store(BroadcastDomain domain, Date now);
+    void store(BroadcastDomain domain, Date now) throws BridgeTopologyException;
     
     void save(BroadcastDomain domain);
 
@@ -150,7 +153,6 @@ public interface EnhancedLinkdService {
 
     void updateBridgesOnDomain(BroadcastDomain domain);
     
-
     void persistForwarders();
     
     

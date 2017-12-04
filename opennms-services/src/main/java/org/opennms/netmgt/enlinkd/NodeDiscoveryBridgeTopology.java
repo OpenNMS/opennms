@@ -1,4 +1,5 @@
 /*******************************************************************************
+        calculate();
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2014 The OpenNMS Group, Inc.
@@ -53,7 +54,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     private static final int DOMAIN_MATCH_MIN_SIZE = 5;
     private static final float DOMAIN_MATCH_MIN_RATIO = 0.1f;
 
-    Map<Bridge,Set<BridgeForwardingTableEntry>> m_notYetParsedBFTMap;
+    Map<Integer,Set<BridgeForwardingTableEntry>> m_notYetParsedBFTMap;
     BroadcastDomain m_domain;
     
     public void setDomain(BroadcastDomain domain) {
@@ -64,13 +65,13 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         return m_domain;
     }
     
-    public Map<Bridge, Set<BridgeForwardingTableEntry>> getNotYetParsedBFTMap() {
+    public Map<Integer, Set<BridgeForwardingTableEntry>> getNotYetParsedBFTMap() {
         return m_notYetParsedBFTMap;
     }
 
-    public void addUpdatedBFT(Bridge bridge, Set<BridgeForwardingTableEntry> notYetParsedBFT) {
+    public void addUpdatedBFT(Integer bridge, Set<BridgeForwardingTableEntry> notYetParsedBFT) {
         if (m_notYetParsedBFTMap==null)
-            m_notYetParsedBFTMap = new HashMap<Bridge, Set<BridgeForwardingTableEntry>>();
+            m_notYetParsedBFTMap = new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
         m_notYetParsedBFTMap.put(bridge, notYetParsedBFT);
     }
 
@@ -78,30 +79,87 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         super(linkd, node);
     }
 
-    private Set<Integer> getAllNodesWithUpdatedBFTOnDomain(Set<String>incomingSet, Map<Integer,Set<BridgeForwardingTableEntry>> nodeBftMap) {
-        Set<Integer> nodeswithupdatedbftonbroadcastdomain= new HashSet<Integer>();
-        nodeswithupdatedbftonbroadcastdomain.add(getNodeId());
+    private Map<Integer, Set<BridgeForwardingTableEntry>> 
+    getAllNodesWithUpdatedBFTOnDomain(Set<String>setA) 
+            throws BridgeTopologyException {
+        Map<Integer,Set<BridgeForwardingTableEntry>> nodeswithupdatedbftonbroadcastdomain= 
+                new HashMap<Integer,Set<BridgeForwardingTableEntry>>();
 
+        Map<Integer,Set<BridgeForwardingTableEntry>> nodeBftMap = m_linkd.getQueryManager().getUpdateBftMap();
+
+        Set<Integer> nodes = new HashSet<Integer>();
+        Set<Integer> delnodes = new HashSet<Integer>();
         synchronized (nodeBftMap) {
             for (Integer curNodeId: nodeBftMap.keySet()) {
-                if (curNodeId.intValue() == getNodeId())
-                    continue;
-                Set<String>retainedSet = new HashSet<String>();
+                Set<String> setB = new HashSet<String>();
                 for (BridgeForwardingTableEntry link: nodeBftMap.get(curNodeId)) {
-                    retainedSet.add(link.getMacAddress());
+                    setB.add(link.getMacAddress());
                 }
-                if (checkMacSets(incomingSet, retainedSet)) {
-                    nodeswithupdatedbftonbroadcastdomain.add(curNodeId);
-                    LOG.info("run: node: [{}], node: [{}] - same broadcast domain", 
-                             getNodeId(), 
-                             curNodeId);
+                
+                if (checkMacSets(setA, setB)) {
+                    nodes.add(curNodeId);
+                } else if (m_domain.getBridge(curNodeId) != null) {
+                    delnodes.add(curNodeId);
                 }
             }            
         }
+        for (Integer nodeid : nodes) {
+            Set<BridgeForwardingTableEntry> bft = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
+            if (bft == null || bft.isEmpty()) {
+                LOG.warn("getAllNodesWithUpdatedBFTOnDomain: node: [{}], no update bft for node [{}] on domain", getNodeId(), nodeid);
+                continue;
+            }
+            nodeswithupdatedbftonbroadcastdomain.put(nodeid, bft);
+            LOG.info("getAllNodesWithUpdatedBFTOnDomain: node: [{}], node: [{}] - common broadcast domain", 
+                     getNodeId(), 
+                     nodeid);
+        }
+        for (Integer nodeid : delnodes) {
+            m_linkd.getQueryManager().reconcileTopologyForDeleteNode(m_domain, nodeid);
+            LOG.info("getAllNodesWithUpdatedBFTOnDomain: node: [{}], node: [{}] with update bft removed from domain", 
+                     getNodeId(), 
+                     nodeid);
+        }
         return nodeswithupdatedbftonbroadcastdomain;
     }
+
+    private void verify(BroadcastDomain domain, Integer nodeid) throws BridgeTopologyException {
+        if (domain.getBridge(nodeid) != null) {
+            LOG.info("verify: node: [{}]. bridge: [{}]. Found on Shared Domain", 
+                     getNodeId(),
+                     nodeid);
+            return;
+        }
+        BroadcastDomain olddomain = m_linkd.getQueryManager().getBroadcastDomain(nodeid);
+        if (olddomain != null) {
+            m_linkd.getQueryManager().reconcileTopologyForDeleteNode(olddomain, nodeid);
+            LOG.info("verify: node: [{}]. bridge: [{}]. Removed from Old Domain", getNodeId());
+        }
+    }
     
-    // FIXME: We should find the *best* domain, instead of using the last match
+    private BroadcastDomain find(Set<String> setA) throws BridgeTopologyException {
+
+        BroadcastDomain olddomain = m_linkd.getQueryManager().getBroadcastDomain(getNodeId());
+        if (olddomain != null &&
+                checkMacSets(setA, olddomain.getMacsOnDomain())) {
+            LOG.info("find: node: [{}]. Same Domain", getNodeId());
+            return olddomain;
+        } 
+        BroadcastDomain domain = findUsingRetainedSet(setA);
+        if ( domain != null ) {
+            if (olddomain != null) {
+                m_linkd.getQueryManager().reconcileTopologyForDeleteNode(olddomain, getNodeId());
+                LOG.info("find: node: [{}]. Removed from Old Domain", getNodeId());
+            }
+            LOG.info("find: node: [{}] Moving to a new Domain", getNodeId());
+            return domain;
+        }
+        LOG.info("find: node: [{}] Creating a new Domain", getNodeId());
+        domain = new BroadcastDomain();
+        m_linkd.getQueryManager().save(domain);
+        return domain;        
+    }
+    
     private BroadcastDomain findUsingRetainedSet(Set<String> incomingSet) {
         for (BroadcastDomain domain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
             synchronized (domain) {
@@ -116,18 +174,15 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 }
             }
         }
-        LOG.info("run: node: [{}] Creating a new Domain", getNodeId());
-        BroadcastDomain domain = new BroadcastDomain();
-        Bridge.createRootBridge(domain, getNodeId());
-        m_linkd.getQueryManager().save(domain);
-        return domain;
+        return null;
     }
     
+    //FIXME check better fit
     private boolean checkMacSets(Set<String> setA, Set<String> setB) {
         Set<String>retainedSet = new HashSet<String>(setB);
         retainedSet.retainAll(setA);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("retainedSet: node: [{}], retained Set on:\n{}", 
+            LOG.debug("checkMacSets: node: [{}], retained Set {}, \n setA {} \n setB {}", 
                   getNodeId(),
                   retainedSet,
                   setA,
@@ -140,18 +195,13 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
         return false;
     }
-    
+        
     @Override
     public void run() {
 
-        if (!m_linkd.getQueryManager().hasUpdatedBft(getNodeId())) {
-            LOG.info("run: node: [{}], no updated bft. End Topology Bridge Discovery run", getNodeId());
-            return;
-        }
-
     	Set<BridgeForwardingTableEntry> links =  m_linkd.
         		getQueryManager().
-        		getBridgeTopologyUpdateBFT(
+        		useBridgeTopologyUpdateBFT(
         				getNodeId());
     	
     	if (links == null || links.size() == 0) {
@@ -159,136 +209,96 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             return;
     	}
     	Date now = new Date();
-                
-        Set<String> incomingSet = new HashSet<String>();
+
+    	Set<String> nodemacset = new HashSet<String>();
         synchronized (links) {
             for (BridgeForwardingTableEntry link : links) {
-                incomingSet.add(link.getMacAddress());
+                nodemacset.add(link.getMacAddress());
             }            
         }
-        LOG.info("run: node: [{}]. macs:{}", getNodeId(), incomingSet);
-
+        LOG.info("run: node: [{}]. macs:{}", 
+                 getNodeId(), 
+                 nodemacset);
+    	
         LOG.info("run: node: [{}], getting broadcast domain. Start", getNodeId());
-        m_domain = findUsingRetainedSet(incomingSet);
-        LOG.info("run: node: [{}], getting broadcast domain. End", getNodeId());
-        if (m_domain.getRootBridge() == null) {
-            LOG.warn("run: node: [{}] Domain without root. Return", getNodeId());
+        try {
+            m_domain = find(nodemacset);
+        } catch (BridgeTopologyException e) {
+            LOG.error("run: node: [{}], getting broadcast domain. Failed {}", getNodeId(),
+                      e.getMessage());
             return;
         }
-                
-      //FIXME this should be synchronized?
-        Map<Integer,Set<BridgeForwardingTableEntry>> nodeBftMap = m_linkd.getQueryManager().getUpdateBftMap();
-        
+        LOG.info("run: node: [{}], getting broadcast domain. End", getNodeId());
+                             
         LOG.info("run: node: [{}], getting nodes with updated bft on broadcast domain. Start", getNodeId());
-        Set<Integer> nodeswithupdatedbftonbroadcastdomain = getAllNodesWithUpdatedBFTOnDomain(incomingSet,nodeBftMap);            
+        try {
+            m_notYetParsedBFTMap = getAllNodesWithUpdatedBFTOnDomain(nodemacset);
+        } catch (BridgeTopologyException e) {
+            LOG.error("run: node: [{}], error on getting bft upadates. {}", 
+                      getNodeId(), 
+                      e.getMessage());
+            return;
+        }
         LOG.info("run: node: [{}], getting nodes with updated bft on broadcast domain. End", getNodeId());
 
-        LOG.info("run: node: [{}], clean broadcast domains. Start", getNodeId());
-        boolean clean = false;
-        for (BroadcastDomain domain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
-            synchronized (domain) {
-                if (m_domain == domain)
-                    continue;
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("run: node [{}]: cleaning broadcast domain {}.",
-                              getNodeId(), domain.printTopology());
-                }
-                for (Integer curNodeId : nodeswithupdatedbftonbroadcastdomain) {
-                    Bridge bridge = domain.getBridge(curNodeId);
-                    if (bridge != null) {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("run: node [{}]: node [{}]: removing from broadcast domain {}!",
-                                      getNodeId(), curNodeId,
-                                      domain.getBridgeNodesOnDomain());
-                        }
-                        try {
-                            domain.removeBridge(curNodeId);
-                            m_linkd.getQueryManager().store(domain, now);
-                        } catch (BridgeTopologyException e) {
-                            LOG.error("run: node [{}]: node [{}] cannot remove bridge {}",
-                                      getNodeId(), curNodeId, e.getMessage(),
-                                      e);
-                        }
-                    }
-                    clean = true;
+        for (Integer nodeid : m_notYetParsedBFTMap.keySet()) {
+            LOG.info("run: node: [{}], added bridge  node [{}] on domain", 
+                     getNodeId(), 
+                     nodeid);
+            synchronized (m_domain) {
+                Bridge.create(m_domain, nodeid);
+                try {
+                    verify(m_domain, nodeid);
+                } catch (BridgeTopologyException e) {
+                    LOG.warn("run: node: [{}], bridge  node [{}] on domain. {}", 
+                              getNodeId(), 
+                              nodeid,
+                              e.getMessage());
                 }
             }
+            m_linkd.getQueryManager().updateBridgeOnDomain(m_domain,nodeid);
+            sendStartEvent(nodeid);
         }
-        if (clean) {
-            m_linkd.getQueryManager().cleanBroadcastDomains();
-        }
-        LOG.info("run: node: [{}], clean broadcast domains. End", getNodeId());
+        
+        m_notYetParsedBFTMap.put(getNodeId(), links);
+        Bridge.create(m_domain, getNodeId());
+        m_linkd.getQueryManager().updateBridgeOnDomain(m_domain,getNodeId());
+        sendStartEvent(getNodeId());
 
+        Set<Integer> nodeswithupdatedbft= new HashSet<Integer>(m_notYetParsedBFTMap.keySet());
+
+        if (LOG.isInfoEnabled()) {
+            LOG.info("calculate: node: [{}], topology calculation start:\n{}.", 
+                 getNodeId(),
+                 m_domain.printTopology());
+        }
         synchronized (m_domain) {
-            m_notYetParsedBFTMap = new HashMap<Bridge, Set<BridgeForwardingTableEntry>>();
-            for (Integer nodeid : nodeswithupdatedbftonbroadcastdomain) {
-                sendStartEvent(nodeid);
-                Bridge.create(m_domain,nodeid);
-                LOG.info("run: node: [{}], added bridge  node [{}] on domain", getNodeId(), nodeid);
-                LOG.debug("run: node: [{}], getting update bft for node [{}] on domain", getNodeId(), nodeid);
-                Set<BridgeForwardingTableEntry> bft = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
-                if (bft == null || bft.isEmpty()) {
-                    LOG.debug("run: node: [{}], no update bft for node [{}] on domain", getNodeId(), nodeid);
-                    continue;
-                }
-                m_notYetParsedBFTMap.put(m_domain.getBridge(nodeid), bft);
-            }
+            calculate();
+        }
+        if (LOG.isInfoEnabled()) {
+            LOG.info("calculate: node: [{}], topology calculation end:\n{}.", 
+                 getNodeId(),
+                 m_domain.printTopology());
+        }
 
-            Set<Integer> nodetoberemovedondomain = new HashSet<Integer>();
-            synchronized (nodeBftMap) {
-                for (Integer nodeid : nodeBftMap.keySet()) {
-                    if (nodeswithupdatedbftonbroadcastdomain.contains(nodeid))
-                        continue;
-                    LOG.info("run: node [{}]: bridge [{}] with updated bft. Not on:\n{}",
-                            getNodeId(),
-                            nodeid,
-                            m_domain.printTopology());
-                    nodetoberemovedondomain.add(nodeid);
-                }
-            }
-            
-            synchronized (m_domain) {
-                for (Integer nodeid : nodetoberemovedondomain) {
-                    try {
-                        m_domain.removeBridge(nodeid);
-                    } catch (BridgeTopologyException e) {
-                        LOG.error("run: node [{}]: node [{}] cannot remove bridge {}",getNodeId(),
-                                  nodeid, e.getMessage(),e);
-                    }
-                }
-            }
-
-            m_linkd.getQueryManager().cleanBroadcastDomains();
-
-            //FIXME check everything is right
-            // the domain must contain all the bridges
-            synchronized (m_domain) {
-                m_linkd.getQueryManager().updateBridgesOnDomain(m_domain);
-            }
-
-            if (m_notYetParsedBFTMap.isEmpty()) {
-                LOG.info("run: node: [{}], broadcast domain has no topology updates. No more action is needed.", getNodeId());
-            } else {
-                synchronized (m_domain) {
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("calculate: node: [{}], topology calculation start:\n{}.", 
-                             getNodeId(),
-                             m_domain.printTopology());
-                    }
-                    calculate();
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("calculate: node: [{}], topology calculation end:\n{}.", 
-                             getNodeId(),
-                             m_domain.printTopology());
-                    }
-                }
-            }
-
-            LOG.info("run: node: [{}], saving Topology.", getNodeId());
+        LOG.info("run: node: [{}], saving Topology.", getNodeId());
+        try {
             m_linkd.getQueryManager().store(m_domain, now);
-            LOG.info("run: node: [{}], saved Topology.", getNodeId());
+        } catch (BridgeTopologyException e) {
+            LOG.error("run: node: [{}], saving topology failed: {}. {}", 
+                      getNodeId(), 
+                      e.getMessage(),
+                      e.printTopology());
+            return;
+        }
+        LOG.info("run: node: [{}], saved Topology.", getNodeId());
 
-            for (Integer curNode : nodeswithupdatedbftonbroadcastdomain) {
+        for (Integer curNode : nodeswithupdatedbft) {
+            if (m_notYetParsedBFTMap.containsKey(curNode)) {
+                LOG.error("run: node: [{}], bridge [{}], topology calcutation failed.", 
+                          getNodeId(), 
+                          curNode);
+            } else {
                 sendCompletedEvent(curNode);
             }
         }
@@ -300,7 +310,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
     @Override
     public String getName() {
-        return "DiscoveryBridgeTopology";
+        return "NodeDiscoveryBridgeTopology";
     }
 
     private Bridge getElectedRootBridge(BroadcastDomain domain) throws BridgeTopologyException {
@@ -322,14 +332,15 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 	        // so checking the best into not parsed
 	        int size=0;
 	        
-	        for (Bridge bridge:  m_notYetParsedBFTMap.keySet()) {
+	        for (Integer bridgeid:  m_notYetParsedBFTMap.keySet()) {
+	            Bridge bridge = domain.getBridge(bridgeid);
 	            LOG.debug("calculate: node: [{}], bridge [{}]: max bft size \"{}\" in topology",
 	                    getNodeId(),
 	                    bridge.getNodeId(), 
-	                    m_notYetParsedBFTMap.get(bridge).size());
-	            if (size < m_notYetParsedBFTMap.get(bridge).size()) {
+	                    m_notYetParsedBFTMap.get(bridgeid).size());
+	            if (size < m_notYetParsedBFTMap.get(bridgeid).size()) {
 	                rootBridge = bridge;
-	                size = m_notYetParsedBFTMap.get(bridge).size();
+	                size = m_notYetParsedBFTMap.get(bridgeid).size();
 	            }
 	        }
 	        if (rootBridge != null ) {
@@ -366,7 +377,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         Bridge rootBridge = domain.getRootBridge();
         Set<BridgeForwardingTableEntry> rootBft = 
-                m_notYetParsedBFTMap.remove(electedRoot);
+                m_notYetParsedBFTMap.remove(electedRoot.getNodeId());
         
         if (rootBridge != null && rootBridge.getNodeId() == electedRoot.getNodeId() && rootBft == null) {
             if (LOG.isDebugEnabled()) {
@@ -425,7 +436,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.error("calculate: node: [{}], no bridge to be elected. Return without changes:\n{}",
                       getNodeId(), 
                       m_domain.printTopology());
-            m_domain.cleanForwarders();
             return;
         }
         Set<BridgeForwardingTableEntry> rootBft = null;
@@ -433,7 +443,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             rootBft = getRootBridgeForwardingTable(m_domain,electedRoot);
         } catch (BridgeTopologyException e) {
             LOG.error("calculate: node: [{}]. {}, topology:\n{}", getNodeId(),e.getMessage(),e.printTopology(),e);
-            m_domain.cleanForwarders();
             return;
         }
 
@@ -442,49 +451,47 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             rootft = BridgeForwardingTable.create(electedRoot, rootBft);
         } catch (BridgeTopologyException e) {
             LOG.error("calculate: node: [{}]. {}, topology:\n{}", getNodeId(),e.getMessage(),e.printTopology(),e);
-            m_domain.cleanForwarders();
             return;
         }
 
-        if (!m_notYetParsedBFTMap.isEmpty()) {
-            for (Bridge xBridge: m_notYetParsedBFTMap.keySet()) {
-                try {
-                    m_domain.clearTopologyForBridge(xBridge);
-                } catch (BridgeTopologyException e) {
-                    LOG.error("calculate: node: [{}]. {}, topology:\n{}", 
-                              getNodeId(),
-                              e.getMessage(),
-                              e.printTopology(),
-                              e);
-                }
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("calculate: node: [{}], Removed bridge: [{}] from domain:\n{}", 
-                		getNodeId(),
-                		xBridge.getNodeId(),
-                		m_domain.printTopology());
-                }
-            }
-        }
-
-        Set<Bridge> nodetobeparsed = new HashSet<Bridge>(m_notYetParsedBFTMap.keySet());
-        for (Bridge xBridge: nodetobeparsed) {
-            BridgeForwardingTable xbridgeft;
+        for (Integer xBridgeId: m_notYetParsedBFTMap.keySet()) {
+            Bridge xBridge = m_domain.getBridge(xBridgeId);
             try {
-                xbridgeft = BridgeForwardingTable.create(xBridge, 
-                                   new HashSet<BridgeForwardingTableEntry>(m_notYetParsedBFTMap.remove(xBridge)));
+                m_domain.clearTopologyForBridge(xBridge);
             } catch (BridgeTopologyException e) {
                 LOG.error("calculate: node: [{}]. {}, topology:\n{}", 
                           getNodeId(),
                           e.getMessage(),
                           e.printTopology(),
                           e);
-                m_domain.cleanForwarders();
                 return;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("calculate: node: [{}], Removed bridge: [{}] from domain:\n{}", 
+            		getNodeId(),
+            		xBridge.getNodeId(),
+            		m_domain.printTopology());
+            }
+        }
 
+        Set<Integer> nodetobeparsed = new HashSet<Integer>(m_notYetParsedBFTMap.keySet());
+        for (Integer xBridgeId: nodetobeparsed) {
+            Bridge xBridge = m_domain.getBridge(xBridgeId);
+            BridgeForwardingTable xbridgeft;
+            try {
+                xbridgeft = BridgeForwardingTable.create(xBridge, 
+                                   new HashSet<BridgeForwardingTableEntry>(m_notYetParsedBFTMap.remove(xBridgeId)));
+            } catch (BridgeTopologyException e) {
+                LOG.error("calculate: node: [{}]. {}, topology:\n{}", 
+                          getNodeId(),
+                          e.getMessage(),
+                          e.printTopology(),
+                          e);
+                continue;
             }
             calculate(rootft, xbridgeft);
-            m_domain.cleanForwarders();
         }
+        m_domain.cleanForwarders();
     }
      
     public void addForwarding(BroadcastDomain domain, Set<BridgeForwardingTableEntry> bft) {

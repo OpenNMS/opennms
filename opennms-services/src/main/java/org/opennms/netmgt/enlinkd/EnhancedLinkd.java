@@ -44,6 +44,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
@@ -407,8 +408,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                 rr.unschedule();
             }
         }
-        m_queryMgr.delete(nodeid);
-        m_queryMgr.cleanBroadcastDomains();
+        try {
+            m_queryMgr.delete(nodeid);
+        } catch (BridgeTopologyException e) {
+            LOG.error("deleteNode: {}", e.getMessage());
+        }
 
     }
 

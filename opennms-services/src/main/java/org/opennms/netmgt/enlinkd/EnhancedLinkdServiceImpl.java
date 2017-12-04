@@ -76,6 +76,7 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
+//import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
@@ -167,7 +168,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public void delete(int nodeId) {
+    public void delete(int nodeId) throws BridgeTopologyException {
 
         m_lldpElementDao.deleteByNodeId(nodeId);
         m_lldpLinkDao.deleteByNodeId(nodeId);
@@ -195,42 +196,58 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_bridgeElementDao.deleteByNodeId(nodeId);
         m_bridgeElementDao.flush();
 
+        m_bridgeStpLinkDao.deleteByNodeId(nodeId);
+        m_bridgeStpLinkDao.flush();
+        
+        reconcileTopologyForDeleteNode(getBroadcastDomain(nodeId), nodeId);
+    
+    }
+    
+    @Override
+    public BroadcastDomain reconcileTopologyForDeleteNode(BroadcastDomain domain,int nodeId) throws BridgeTopologyException {
+        
+        Date now = new Date();
+        if (domain == null || domain.isEmpty()) {
+            LOG.warn("reconcileTopologyForDeleteNode: node: {}, start: null domain or empty",nodeId);
+            return domain;
+        }
+        if (domain.getBridge(nodeId) == null) {
+            LOG.info("reconcileTopologyForDeleteNode: node: {}, not on domain",nodeId);
+            return domain;
+        }
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("reconcileTopologyForDeleteNode: node:[{}], domain:\n{}", nodeId, domain.printTopology());
+        }
+
         m_bridgeBridgeLinkDao.deleteByDesignatedNodeId(nodeId);
         m_bridgeBridgeLinkDao.deleteByNodeId(nodeId);
         m_bridgeBridgeLinkDao.flush();
 
         m_bridgeMacLinkDao.deleteByNodeId(nodeId);
         m_bridgeMacLinkDao.flush();
-
-        m_bridgeStpLinkDao.deleteByNodeId(nodeId);
-        m_bridgeStpLinkDao.flush();
-
         
-        Date now = new Date();
-        BroadcastDomain domain = getBroadcastDomain(nodeId);
-        if (domain == null) {
-            LOG.info("delete: node: {}, start: broadcast domain not found",nodeId);
-        }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("delete: {}, found broadcast domain: {}", nodeId, domain.printTopology());
-        }
-        // must be calculated the topology for nodeid...
-        synchronized (domain) {
-            LOG.info("delete: node: {}, start: merging topology for domain",nodeId);
-            try {
-                domain.removeBridge(nodeId);
-                LOG.info("delete: node: {}, start: save topology for domain",nodeId);
-                store(domain,now);
-                LOG.info("delete: node: {}, end: save topology for domain",nodeId);
-             } catch (BridgeTopologyException e) {
-                LOG.error("delete: node: {}, {}", nodeId, e.getMessage(),e);
-            }
-            LOG.info("delete: node: {}, end: merging topology for domain",nodeId);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("delete: {}, resulting broadcast domain: {}", nodeId, domain.printTopology());
-            }
 
+        LOG.info("reconcileTopologyForDeleteNode: node:[{}], start: save topology for domain",nodeId);
+        synchronized (domain) {
+            domain.removeBridge(nodeId);
         }
+        store(domain,now);
+        LOG.info("reconcileTopologyForDeleteNode: node:[{}], end: save topology for domain",nodeId);
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("reconcileTopologyForDeleteNode: node:[{}], resulting domain: {}", nodeId, domain.printTopology());
+        }
+        
+        if (domain.isEmpty()) {
+            cleanBroadcastDomains();
+            LOG.info("reconcileTopologyForDeleteNode: node:[{}], empty domain",nodeId);
+            return domain;
+        }
+        if (domain.getRootBridge() == null) {
+            throw new BridgeTopologyException("reconcileTopologyForDeleteNode: Domain without root", domain);
+        }
+        return domain;
     }
 
     @Override
@@ -697,24 +714,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public void store(BroadcastDomain domain, Date now) {
+    public void store(BroadcastDomain domain, Date now) throws BridgeTopologyException {
         for (SharedSegment segment : domain.getSharedSegments()) {
-            try {
-                segment.getDesignatedPort();
-                for (BridgeBridgeLink link : SharedSegment.getBridgeBridgeLinks(segment)) {
-                    link.setBridgeBridgeLinkLastPollTime(new Date());
-                        saveBridgeBridgeLink(link);
-                }
-                for (BridgeMacLink link : SharedSegment.getBridgeMacLinks(segment)) {
-                    link.setBridgeMacLinkLastPollTime(new Date());
-                    try {
-                        saveBridgeMacLink(link);
-                    } catch (Exception e) {
-                        LOG.error("Exception: {}. {}", e.getMessage(), link.printTopology(),e );
-                    }
-                }
-            } catch (BridgeTopologyException e) {
-                LOG.error("No designated port, {}, on segment {}", e.getMessage(),e.printTopology(),e);
+            segment.getDesignatedPort();
+        }
+        for (SharedSegment segment : domain.getSharedSegments()) {
+            for (BridgeBridgeLink link : SharedSegment.getBridgeBridgeLinks(segment)) {
+                link.setBridgeBridgeLinkLastPollTime(new Date());
+                    saveBridgeBridgeLink(link);
+            }
+            for (BridgeMacLink link : SharedSegment.getBridgeMacLinks(segment)) {
+                link.setBridgeMacLinkLastPollTime(new Date());
+                saveBridgeMacLink(link);
             }
         }
         
@@ -723,6 +734,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
             m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeid, now);
         }
+       
         try {
             m_bridgeMacLinkDao.flush();
         } catch (Exception e) {
@@ -987,12 +999,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             return;
         }
 
-        for (Bridge bridge: domain.getBridges()) {
-            bridge.clear();
-            List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(bridge.getNodeId());
-            bridge.getIdentifiers().addAll(Bridge.getIdentifier(elems));
-            bridge.setDesignated(Bridge.getDesignated(elems));
-        }        
+        synchronized (domain) {
+            for (Bridge bridge: domain.getBridges()) {
+                bridge.clear();
+                List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(bridge.getNodeId());
+                bridge.getIdentifiers().addAll(Bridge.getIdentifier(elems));
+                bridge.setDesignated(Bridge.getDesignated(elems));
+            }        
+        }
     }
 
     @Override
@@ -1000,16 +1014,17 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         if (domain == null) {
             return;
         }
-
-        for (Bridge bridge: domain.getBridges()) {
-            if (bridge.getNodeId().intValue() == nodeId.intValue()) {
-                bridge.clear();
-                List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(nodeId);
-                bridge.getIdentifiers().addAll(Bridge.getIdentifier(elems));
-                bridge.setDesignated(Bridge.getDesignated(elems));
-                break;
-            }
-        }        
+        synchronized (domain) {
+            for (Bridge bridge: domain.getBridges()) {
+                if (bridge.getNodeId().intValue() == nodeId.intValue()) {
+                    bridge.clear();
+                    List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(nodeId);
+                    bridge.getIdentifiers().addAll(Bridge.getIdentifier(elems));
+                    bridge.setDesignated(Bridge.getDesignated(elems));
+                    break;
+                }
+            }        
+        }
     }
 
     @Override
