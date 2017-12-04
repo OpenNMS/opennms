@@ -28,6 +28,7 @@
 
 package org.opennms.core.test.elastic;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,12 +63,17 @@ public class ElasticSearchRule implements TestRule {
                     base.evaluate(); // execute the unit test
                 } finally {
                     stopServer();
+                    if (!config.isKeepElasticHomeAfterShutdown()) {
+                        deleteHomeDirectory();
+                    }
                 }
             }
         };
     }
 
     public void startServer() throws Exception {
+        createHomDirectory();
+
         eserver = new EmbeddedElasticSearchServer(config);
         if (config.getStartDelay() > 0) {
             startServerWithDelay(config.getStartDelay());
@@ -93,5 +99,25 @@ public class ElasticSearchRule implements TestRule {
         if (eserver != null) {
             eserver.shutdown();
         }
+    }
+
+
+    private void createHomDirectory() {
+        deleteHomeDirectory();
+        new File(config.getHomeDirectory()).mkdirs();
+    }
+
+    private void deleteHomeDirectory() {
+        recursiveDelete(new File(config.getHomeDirectory()));
+    }
+
+    private void recursiveDelete(File file) {
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File each : files) {
+                recursiveDelete(each);
+            }
+        }
+        file.delete();
     }
 }

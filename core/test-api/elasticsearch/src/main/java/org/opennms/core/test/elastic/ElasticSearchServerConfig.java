@@ -43,6 +43,7 @@ public class ElasticSearchServerConfig {
     private final Settings.Builder builder = Settings.builder();
     private long startDelay; // in ms
     private boolean manualStartup;
+    private boolean keepElasticHomeAfterShutdown;
 
     public ElasticSearchServerConfig withDefaults() {
         withNodeName("testNode");
@@ -91,6 +92,11 @@ public class ElasticSearchServerConfig {
         return this;
     }
 
+    public ElasticSearchServerConfig withKeepElasticHomeAfterShutdown(boolean keepElasticHomeAfterShutdown) {
+        this.keepElasticHomeAfterShutdown = keepElasticHomeAfterShutdown;
+        return this;
+    }
+
     public ElasticSearchServerConfig enableCors() {
         this.withSetting("http.cors.allow-headers", "X-Requested-With,X-Auth-Token,Content-Type, Content-Length, Authorization")
                 .withSetting("http.cors.allow-methods", "OPTIONS, HEAD, GET, POST, PUT, DELETE")
@@ -115,6 +121,14 @@ public class ElasticSearchServerConfig {
 
     public boolean isManualStartup() {
         return manualStartup;
+    }
+
+    public boolean isKeepElasticHomeAfterShutdown() {
+        return keepElasticHomeAfterShutdown;
+    }
+
+    public String getHomeDirectory() {
+        return builder.get(Environment.PATH_HOME_SETTING.getKey());
     }
 
     public Settings build() {
