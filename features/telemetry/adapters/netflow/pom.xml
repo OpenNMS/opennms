@@ -46,6 +46,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.jest</groupId>
+      <artifactId>org.opennms.features.jest.client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
       <version>${dropwizardMetricsVersion}</version>

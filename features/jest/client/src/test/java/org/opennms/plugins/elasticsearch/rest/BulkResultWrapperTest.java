@@ -26,23 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.plugins.elasticsearch.rest;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
 
-import org.opennms.plugins.elasticsearch.rest.FailedItem;
+public class BulkResultWrapperTest {
 
-public class PersistenceException extends FlowException {
+    @Test
+    public void verifyExceptionParsing() {
+        // Parse Error
+        final String error = "{\"type\":\"mapper_parsing_exception\",\"reason\":\"failed to parse [timestamp]\",\"caused_by\":{\"type\":\"number_format_exception\",\"reason\":\"For input string: \\\"XXX\\\"\"}}";
+        final Exception exception = BulkResultWrapper.convertToException(error);
 
-    private List<FailedItem<NetflowDocument>> failedItems = new ArrayList<>();
-
-    public PersistenceException(String message, List<FailedItem<NetflowDocument>> failedItems) {
-        super(message);
-        this.failedItems = failedItems;
-    }
-
-    public List<FailedItem<NetflowDocument>> getFailedItems() {
-        return failedItems;
+        // Manually verify exception
+        Assert.assertEquals("mapper_parsing_exception: failed to parse [timestamp]", exception.getMessage());
+        Assert.assertNotNull(exception.getCause());
+        Assert.assertEquals("number_format_exception: For input string: \"XXX\"", exception.getCause().getMessage());
+        Assert.assertNull(exception.getCause().getCause());
     }
 }

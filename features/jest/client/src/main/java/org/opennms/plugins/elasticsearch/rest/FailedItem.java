@@ -26,23 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.Objects;
 
-public class ElasticFlowRepositoryTest {
+public class FailedItem<T> {
+    private final T item;
+    private final Exception cause;
 
-    @Test
-    public void verifyExceptionParsing() {
-        // Parse Error
-        final String error = "{\"type\":\"mapper_parsing_exception\",\"reason\":\"failed to parse [timestamp]\",\"caused_by\":{\"type\":\"number_format_exception\",\"reason\":\"For input string: \\\"XXX\\\"\"}}";
-        final Exception exception = ElasticFlowRepository.convertToException(error);
+    public FailedItem(T failedItem, Exception cause) {
+        this.item = Objects.requireNonNull(failedItem);
+        this.cause = cause;
+    }
 
-        // Manually verify exception
-        Assert.assertEquals("mapper_parsing_exception: failed to parse [timestamp]", exception.getMessage());
-        Assert.assertNotNull(exception.getCause());
-        Assert.assertEquals("number_format_exception: For input string: \"XXX\"", exception.getCause().getMessage());
-        Assert.assertNull(exception.getCause().getCause());
+    public T getItem() {
+        return item;
+    }
+
+    public Exception getCause() {
+        return cause;
     }
 }
