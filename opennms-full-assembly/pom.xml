@@ -181,6 +181,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+          <!-- Unpack our OpenNMS-modified Karaf container -->
           <execution>
             <id>unpack-karaf</id>
             <phase>process-resources</phase>
@@ -188,9 +189,6 @@
               <goal>unpack</goal>
             </goals>
             <configuration>
-              <!-- Unpack the Karaf boot classpath JARs so that we can put them into the lib directory in base-assembly.xml -->
-              <includes>lib/boot/*.jar</includes>
-              <outputDirectory>${project.build.directory}</outputDirectory>
               <artifactItems>
                 <artifactItem>
                   <groupId>org.opennms.container</groupId>
