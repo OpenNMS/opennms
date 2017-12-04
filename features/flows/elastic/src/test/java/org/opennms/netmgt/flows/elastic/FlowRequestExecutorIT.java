@@ -68,7 +68,7 @@ public class FlowRequestExecutorIT {
 
         // Create client manually, as we want to spy on it
         final JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig.Builder("http://192.168.2.0:9200").build());
+        factory.setHttpClientConfig(new HttpClientConfig.Builder("http://192.168.2.0:9200").build()); // 192.168.2.0 should not be reachable
         JestClient clientDelegate = spy(factory.getObject());
         final JestClient client = spy(new OnmsJestClient(clientDelegate, new FlowRequestExecutor(1000)));
 
@@ -89,12 +89,14 @@ public class FlowRequestExecutorIT {
         };
         final Future<?> future = executorService.submit(runMe);
         try {
+            // Interrupt Thread after 10 seconds
             future.get(10, TimeUnit.SECONDS);
             Assert.fail("The test should have failed with an exception, as we interrupted it manually. Failing.");
         } catch (InterruptedException | TimeoutException e) {
             // Expected behaviour, now do some verification
 
             // Verify re-trying
+            // Cooldown is 1 second, therefore the invocation should be ~10 times
             Mockito.verify(clientDelegate, Mockito.times(10)).execute(Mockito.any());
 
             // Verify that we actually cooled down between retries
