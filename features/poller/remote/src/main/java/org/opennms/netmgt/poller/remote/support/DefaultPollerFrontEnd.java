@@ -238,9 +238,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             }
             final String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
             if (!"".equals(killSwitchFileName) && killSwitchFileName != null) {
-                final File killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
+                final File killSwitch = new File(killSwitchFileName);
                 if (!killSwitch.exists()) {
-                    LOG.info("Kill-switch file {} does not exist; stopping.", killSwitch.getPath());
+                    LOG.info("Kill-switch file {} does not exist; stopping.", killSwitchFileName);
                     stop();
                 }
             }
