@@ -77,8 +77,7 @@ public class DefaultRequestExecutorTest {
 
             // Ensure that we actually waited
             Assert.assertThat(executionTime, CoreMatchers.allOf(
-                    Matchers.greaterThan(timeout * retryCount * 1L),
-                    Matchers.lessThan(timeout * retryCount * 1L + 250)));
+                    Matchers.greaterThan(timeout * retryCount * 1L)));
         }
     }
 
