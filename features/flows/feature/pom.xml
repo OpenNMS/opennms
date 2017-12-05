@@ -33,6 +33,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.classification</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.elastic</artifactId>
       <version>${project.version}</version>
     </dependency>

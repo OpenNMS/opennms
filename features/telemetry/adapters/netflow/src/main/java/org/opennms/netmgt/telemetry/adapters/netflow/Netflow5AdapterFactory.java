@@ -34,6 +34,7 @@ import java.util.Objects;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
@@ -47,6 +48,7 @@ public class Netflow5AdapterFactory implements AdapterFactory {
     private NodeDao nodeDao;
     private TransactionOperations transactionOperations;
     private FlowRepository flowRepository;
+    private ClassificationEngine classificationEngine;
 
     @Override
     public Class<? extends Adapter> getAdapterClass() {
@@ -60,6 +62,7 @@ public class Netflow5AdapterFactory implements AdapterFactory {
         Objects.requireNonNull(nodeDao);
         Objects.requireNonNull(transactionOperations);
         Objects.requireNonNull(flowRepository);
+        Objects.requireNonNull(classificationEngine);
 
         final Netflow5Adapter adapter = new Netflow5Adapter();
         adapter.setInterfaceToNodeCache(interfaceToNodeCache);
@@ -67,6 +70,7 @@ public class Netflow5AdapterFactory implements AdapterFactory {
         adapter.setNodeDao(nodeDao);
         adapter.setFlowRepository(flowRepository);
         adapter.setTransactionOperations(transactionOperations);
+        adapter.setClassificationEngine(classificationEngine);
         adapter.setProtocol(protocol);
 
         adapter.init();
@@ -92,5 +96,9 @@ public class Netflow5AdapterFactory implements AdapterFactory {
 
     public void setFlowRepository(FlowRepository flowRepository) {
         this.flowRepository = flowRepository;
+    }
+
+    public void setClassificationEngine(ClassificationEngine classificationEngine) {
+        this.classificationEngine = classificationEngine;
     }
 }

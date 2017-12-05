@@ -12,6 +12,7 @@
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 	<reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
+	<reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
 
 	<!-- Factory and Adapter -->
 	<bean id="netflow5factory" class="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5AdapterFactory">
@@ -20,6 +21,7 @@
 		<property name="transactionOperations" ref="transactionOperations" />
 		<property name="nodeDao" ref="nodeDao" />
 		<property name="flowRepository" ref="flowRepository" />
+		<property name="classificationEngine" ref="classificationEngine" />
 	</bean>
 	<service ref="netflow5factory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>

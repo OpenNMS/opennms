@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +45,8 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.api.PersistenceException;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.DefaultClassificationEngine;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
@@ -105,6 +108,8 @@ public class Netflow5Adapter implements Adapter {
     private FlowRepository flowRepository;
 
     private final Netflow5Converter converter = new Netflow5Converter();
+
+    private ClassificationEngine classificationEngine;
 
     /**
      * Flows/second throughput
@@ -236,6 +241,10 @@ public class Netflow5Adapter implements Adapter {
         this.flowRepository = flowRepository;
     }
 
+    public void setClassificationEngine(ClassificationEngine classificationEngine) {
+        this.classificationEngine = classificationEngine;
+    }
+
     private NetflowPacket parse(TelemetryMessage message) {
         // Create NetflowPacket which delegates all calls to the byte array
         final NetflowPacket flowPacket = new NetflowPacket(message.getByteArray());
@@ -292,6 +301,9 @@ public class Netflow5Adapter implements Adapter {
                 getNodeInfoFromCache(location, sourceAddress).ifPresent(node -> document.setExporterNodeInfo(node));
                 getNodeInfoFromCache(location, document.getIpv4DestAddress()).ifPresent(node -> document.setDestNodeInfo(node));
                 getNodeInfoFromCache(location, document.getIpv4SourceAddress()).ifPresent(node -> document.setSourceNodeInfo(node));
+
+                // Apply Application mapping
+                document.setApplication(classificationEngine.classify(document));
             });
             return null;
         });
