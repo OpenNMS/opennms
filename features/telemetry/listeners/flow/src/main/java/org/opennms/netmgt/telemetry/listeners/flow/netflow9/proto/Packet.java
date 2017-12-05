@@ -137,11 +137,6 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
             }
 
             sets.add(set);
-
-            System.out.println(set);
-            for (final org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Record record: set.records) {
-                System.out.println("    " + record);
-            }
         }
         this.sets = Collections.unmodifiableList(sets);
     }

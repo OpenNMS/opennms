@@ -35,6 +35,7 @@ import java.util.Objects;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Packet;
+import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,21 +44,23 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
 public class UdpPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
-    private final TemplateManager templateManager;
+    private final UdpSession session;
 
-    public UdpPacketDecoder(final TemplateManager templateManager) {
-        this.templateManager = Objects.requireNonNull(templateManager);
+    public UdpPacketDecoder(final UdpSession session) {
+        this.session = Objects.requireNonNull(session);
     }
 
     @Override
     protected void decode(final ChannelHandlerContext ctx, final DatagramPacket msg, final List<Object> out) throws Exception {
+        final TemplateManager templateManager = this.session.getTemplateManager(msg.sender(), msg.recipient());
+
         final ByteBuf buf = msg.content();
 
         final ByteBuffer headerBuffer = buf.readSlice(Header.SIZE).nioBuffer();
         final Header header = new Header(headerBuffer);
 
         final ByteBuffer payloadBuffer = buf.nioBuffer();
-        final Packet packet = new Packet(this.templateManager, header, payloadBuffer);
+        final Packet packet = new Packet(templateManager, header, payloadBuffer);
 
         out.add(new DefaultAddressedEnvelope<>(packet, msg.recipient(), msg.sender()));
     }

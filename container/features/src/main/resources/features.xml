@@ -1121,6 +1121,12 @@
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.collection/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-telemetry-flow" description="OpenNMS :: Telemetry :: Flow" version="${project.version}">
+      <feature>opennms-telemetry-collection</feature>
+      <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.flow/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-telemetry-jti" description="OpenNMS :: Telemetry :: JTI" version="${project.version}">
       <feature>opennms-telemetry-collection</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>

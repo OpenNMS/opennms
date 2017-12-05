@@ -52,8 +52,6 @@ import com.google.common.primitives.UnsignedLong;
 
 public class PacketHandlerTest {
 
-
-
     @Test
     public void test() throws Exception {
         final RecordProvider.Record record = new RecordProvider.Record(0, 3, Arrays.asList(

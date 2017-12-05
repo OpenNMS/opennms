@@ -36,7 +36,6 @@ import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.flow.PacketHandler;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,15 +86,13 @@ public class UdpListener implements Listener {
                 .handler(new ChannelInitializer<DatagramChannel>() {
                     @Override
                     protected void initChannel(final DatagramChannel ch) throws Exception {
-                        final TemplateManager templateManager = UdpListener.this.session.getTemplateManager(ch.remoteAddress(), ch.localAddress());
-
                         ch.pipeline()
-                                .addLast(new UdpPacketDecoder(templateManager))
+                                .addLast(new UdpPacketDecoder(UdpListener.this.session))
                                 .addLast(new PacketHandler(Protocol.NETFLOW9, UdpListener.this.dispatcher))
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-                                        LOG.warn("Invalid packet: {}", cause);
+                                        LOG.warn("Invalid packet: {}", cause.getMessage());
                                         UdpListener.this.session.drop(ch.remoteAddress(), ch.localAddress());
                                     }
                                 });

@@ -41,6 +41,10 @@ public class InvalidPacketException extends Exception {
     }
 
     private static String appendPosition(final String message, final ByteBuffer buffer) {
-        return String.format("%s [0x%04X]", message, buffer.arrayOffset() + buffer.position());
+        if (buffer.hasArray()) {
+            return String.format("%s [0x%04X]", message, buffer.arrayOffset() + buffer.position());
+        } else {
+            return message;
+        }
     }
 }

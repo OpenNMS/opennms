@@ -76,7 +76,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
 
     @Override
     protected void channelRead0(final ChannelHandlerContext ctx, final DefaultAddressedEnvelope<RecordProvider, InetSocketAddress> packet) throws Exception {
-        LOG.info("Got packet: {}", packet);
+        LOG.trace("Got packet: {}", packet);
 
         packet.content().getRecords().forEach(record -> {
             final ByteBuffer buffer = serialize(this.protocol, record);
