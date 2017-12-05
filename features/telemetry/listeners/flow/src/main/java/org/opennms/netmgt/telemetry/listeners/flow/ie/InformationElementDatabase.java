@@ -130,8 +130,8 @@ public class InformationElementDatabase {
         return Optional.ofNullable(this.elements.get(new Key(protocol, enterpriseNumber, informationElementIdentifier)));
     }
 
-    public Optional<InformationElement> lookup(final Protocol protocol, final int informationElementIdetifier) {
-        return lookup(protocol, Optional.empty(), informationElementIdetifier);
+    public Optional<InformationElement> lookup(final Protocol protocol, final int informationElementIdentifier) {
+        return lookup(protocol, Optional.empty(), informationElementIdentifier);
     }
 
     private static class AdderImpl implements Adder {

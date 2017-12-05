@@ -37,6 +37,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv4AddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.IPv6AddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.MacAddressValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.OctetArrayValue;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.StringValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
 
 public class InformationElementProvider implements InformationElementDatabase.Provider {
@@ -67,8 +68,8 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 22, UnsignedValue::parserWith32Bit, "FIRST_SWITCHED", Optional.empty());
         adder.add(Protocol.NETFLOW9, 23, UnsignedValue::parserWith64Bit, "OUT_BYTES", Semantics.DELTA_COUNTER);
         adder.add(Protocol.NETFLOW9, 24, UnsignedValue::parserWith64Bit, "OUT_PKTS", Semantics.DELTA_COUNTER);
-        // 25 reserved
-        // 26 reserved
+        adder.add(Protocol.NETFLOW9, 25, UnsignedValue::parserWith16Bit, "MIN_PKT_LNGTH", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 26, UnsignedValue::parserWith16Bit, "MAX_PKT_LNGTH", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 27, IPv6AddressValue::parser, "IPV6_SRC_ADDR", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 28, IPv6AddressValue::parser, "IPV6_DST_ADDR", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 29, UnsignedValue::parserWith8Bit, "IPV6_SRC_MASK", Optional.empty());
@@ -85,18 +86,18 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 40, UnsignedValue::parserWith64Bit, "TOTAL_BYTES_EXP", Semantics.TOTAL_COUNTER);
         adder.add(Protocol.NETFLOW9, 41, UnsignedValue::parserWith64Bit, "TOTAL_PKTS_EXP", Semantics.TOTAL_COUNTER);
         adder.add(Protocol.NETFLOW9, 42, UnsignedValue::parserWith64Bit, "TOTAL_FLOWS_EXP", Semantics.TOTAL_COUNTER);
-        // 43 reserved
-        // 44 reserved
-        // 45 reserved
+        // 43 vendor proprietary
+        adder.add(Protocol.NETFLOW9, 44, UnsignedValue::parserWith32Bit, "IPV4_SRC_PREFIX", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 45, UnsignedValue::parserWith32Bit, "IPV4_DST_PREFIX", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 46, UnsignedValue::parserWith8Bit, "MPLS_TOP_LABEL_TYPE", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 47, OctetArrayValue.parserWithLimits(4, 4), "MPLS_TOP_LABEL_IP_ADDR", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 48, UnsignedValue::parserWith32Bit, "FLOW_SAMPLER_ID", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 49, UnsignedValue::parserWith8Bit, "FLOW_SAMPLER_MODE", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 50, UnsignedValue::parserWith32Bit, "FLOW_SAMPLER_RANDOM_INTERVAL", Semantics.QUANTITY);
-        // 51 reserved
-        // 52 reserved
-        // 53 reserved
-        // 54 reserved
+        // 51 vendor proprietary
+        adder.add(Protocol.NETFLOW9, 52, UnsignedValue::parserWith8Bit, "MIN_TTL", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 53, UnsignedValue::parserWith8Bit, "MAX_TTL", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 54, UnsignedValue::parserWith32Bit, "IPV4_IDENT", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 55, UnsignedValue::parserWith8Bit, "DST_TOS", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 56, MacAddressValue::parser, "SRC_MAC", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 57, MacAddressValue::parser, "DST_MAC", Semantics.DEFAULT);
@@ -107,11 +108,11 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 62, IPv6AddressValue::parser, "IPV6_NEXT_HOP", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 63, IPv6AddressValue::parser, "BGP_IPV6_NEXT_HOP", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 64, UnsignedValue::parserWith32Bit, "IPV6_OPTION_HEADERS", Semantics.FLAGS);
-        // 65 reserved
-        // 66 reserved
-        // 67 reserved
-        // 68 reserved
-        // 69 reserved
+        // 65 vendor proprietary
+        // 66 vendor proprietary
+        // 67 vendor proprietary
+        // 68 vendor proprietary
+        // 69 vendor proprietary
         adder.add(Protocol.NETFLOW9, 70, UnsignedValue::parserWith24Bit, "MPLS_LABEL_1", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 71, UnsignedValue::parserWith24Bit, "MPLS_LABEL_2", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 72, UnsignedValue::parserWith24Bit, "MPLS_LABEL_3", Semantics.DEFAULT);
@@ -122,5 +123,32 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 77, UnsignedValue::parserWith24Bit, "MPLS_LABEL_8", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 78, UnsignedValue::parserWith24Bit, "MPLS_LABEL_9", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 79, UnsignedValue::parserWith24Bit, "MPLS_LABEL_10", Semantics.DEFAULT);
+
+        adder.add(Protocol.NETFLOW9, 80, MacAddressValue::parser, "IN_DST_MAC", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 81, MacAddressValue::parser, "OUT_SRC_MAC", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 82, StringValue::parser, "IF_NAME", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 83, StringValue::parser, "IF_DESC", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 84, StringValue::parser, "SAMPLER_NAME", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 85, UnsignedValue::parserWith64Bit, "IN_PERMANENT_BYTES", Semantics.TOTAL_COUNTER);
+        adder.add(Protocol.NETFLOW9, 86, UnsignedValue::parserWith64Bit, "IN_PERMANENT_PKTS", Semantics.TOTAL_COUNTER);
+        // 87 vendor proprietary
+        adder.add(Protocol.NETFLOW9, 88, UnsignedValue::parserWith16Bit, "FRAGMENT_OFFSET", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 89, UnsignedValue::parserWith8Bit, "FORWARDING STATUS", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 90, OctetArrayValue::parser, "MPLS PAL RD", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 91, UnsignedValue::parserWith8Bit, "MPLS PREFIX LEN", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 92, UnsignedValue::parserWith32Bit, "SRC TRAFFIC INDEX", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 93, UnsignedValue::parserWith32Bit, "DST TRAFFIC INDEX", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 94, StringValue::parser, "APPLICATION DESCRIPTION", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 95, UnsignedValue::parserWith64Bit, "APPLICATION TAG", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 96, StringValue::parser, "APPLICATION NAME", Semantics.DEFAULT);
+        // 97 ?
+        adder.add(Protocol.NETFLOW9, 98, UnsignedValue::parserWith8Bit, "postipDiffServCodePoint", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 99, UnsignedValue::parserWith32Bit, "replication factor", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 100, OctetArrayValue::parser, "DEPRECATED", Semantics.DEFAULT);
+        // 101 ?
+        adder.add(Protocol.NETFLOW9, 102, UnsignedValue::parserWith32Bit, "layer2packetSectionOffset", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 103, UnsignedValue::parserWith32Bit, "layer2packetSectionSize", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 104, OctetArrayValue::parser, "layer2packetSectionData", Semantics.DEFAULT);
+        // 105-127 reserved for future use by cisco
     }
 }
