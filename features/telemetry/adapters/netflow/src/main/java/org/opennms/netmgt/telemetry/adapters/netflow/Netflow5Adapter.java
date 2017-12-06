@@ -43,6 +43,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.api.NodeInfo;
+import org.opennms.netmgt.flows.api.PersistenceException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
@@ -332,6 +333,13 @@ public class Netflow5Adapter implements Adapter {
             return;
         }
 
-        flowRepository.save(documents);
+        try {
+            flowRepository.save(documents);
+        } catch (PersistenceException ex) {
+            LOG.error("Not all flows have been persisted: {}", ex.getMessage());
+            ex.getFailedItems().forEach(failedItem -> {
+                LOG.error("Flow {} could not be persisted. Reason: {}", failedItem.getItem(), failedItem.getCause().getMessage(), failedItem.getCause());
+            });
+        }
     }
 }

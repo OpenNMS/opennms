@@ -34,10 +34,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.plugins.elasticsearch.rest.BulkResultWrapper;
+import org.opennms.plugins.elasticsearch.rest.FailedItem;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.IndexStrategy;
 import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.flows.api.PersistenceException;
 import org.opennms.netmgt.flows.api.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +49,6 @@ import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Bulk;
-import io.searchbox.core.BulkResult;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
@@ -79,9 +81,10 @@ public class ElasticFlowRepository implements FlowRepository {
                     bulkBuilder.addAction(indexBuilder.build());
                 }
                 final Bulk bulk = bulkBuilder.build();
-                final BulkResult result = executeRequest(bulk);
+                final BulkResultWrapper result = new BulkResultWrapper(executeRequest(bulk));
                 if (!result.isSucceeded()) {
-                    LOG.error("Error while writing flows: {}", result.getErrorMessage());
+                    final List<FailedItem<NetflowDocument>> failedFlows = result.getFailedItems(flowDocuments);
+                    throw new PersistenceException(result.getErrorMessage(), failedFlows);
                 }
             }
         } else {
@@ -105,19 +108,21 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private <T extends JestResult> T executeRequest(Action<T> clientRequest) throws FlowException {
         try {
-            final T result = client.execute(clientRequest);
+            T result = client.execute(clientRequest);
             return result;
-        } catch (IOException e) {
-            throw new FlowException("Error executing query", e);
+        } catch (IOException ex) {
+            LOG.error("An error occurred while executing the given request: {}", clientRequest, ex);
+            throw new FlowException(ex.getMessage(), ex);
         }
     }
 
     private SearchResult search(String query) throws FlowException {
         final SearchResult result = executeRequest(new Search.Builder(query)
                 .addType("flow")
+                .ignoreUnavailable(true)
                 .build());
         if (!result.isSucceeded()) {
-            LOG.error("Error reading flows {}", result.getErrorMessage());
+            LOG.error("Error reading flows. Query: {}, error message: {}", query, result.getErrorMessage());
             throw new QueryException("Could not read flows from repository. " + result.getErrorMessage());
         }
         return result;

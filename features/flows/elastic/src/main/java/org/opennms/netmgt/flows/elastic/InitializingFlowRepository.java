@@ -52,6 +52,10 @@ public class InitializingFlowRepository implements FlowRepository {
         this.delegate = delegate;
     }
 
+    protected InitializingFlowRepository(final FlowRepository delegate, final JestClient client) {
+        this(delegate, client, new IndexSettings());
+    }
+
     @Override
     public void save(List<NetflowDocument> document) throws FlowException {
         ensureInitialized();

@@ -29,70 +29,31 @@
 package org.opennms.plugins.elasticsearch.rest;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.core.utils.TimeoutTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.plugins.elasticsearch.rest.executors.RequestExecutor;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.JestResultHandler;
 
-class OnmsJestClient implements JestClient {
-
-    private static final Logger LOG = LoggerFactory.getLogger(OnmsJestClient.class);
+public class OnmsJestClient implements JestClient {
 
     private final JestClient m_delegate;
 
-    private final int m_retries;
+    private final RequestExecutor m_requestExecutor;
 
-    private final int m_timeout;
-
-    public OnmsJestClient(JestClient delegate) {
-        this(delegate, 0, 0);
+    public OnmsJestClient(JestClient delegate, RequestExecutor requestExecutor) {
+        m_delegate = Objects.requireNonNull(delegate);
+        m_requestExecutor = Objects.requireNonNull(requestExecutor);
     }
 
-    public OnmsJestClient(JestClient delegate, int timeout, int retries) {
-        m_delegate = delegate;
-        m_timeout = timeout;
-        m_retries = retries;
-    }
-
-    /**
-     * Perform the REST operation and retry in case of exceptions.
-     */
     @Override
     public <T extends JestResult> T execute(Action<T> clientRequest) throws IOException {
-        // if there are no retries or no timeout, there is no need to use the TimeoutTracker
-        if (m_retries == 0 && m_timeout == 0) {
-            return m_delegate.execute(clientRequest);
-        }
-
-        // 'strict-timeout' will enforce that the timeout time elapses between subsequent
-        // attempts even if the operation returns more quickly than the timeout
-        final Map<String,Object> params = new HashMap<>();
-        params.put("strict-timeout", Boolean.TRUE);
-
-        final TimeoutTracker timeoutTracker = new TimeoutTracker(params, m_retries, m_timeout);
-        for (timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
-            timeoutTracker.startAttempt();
-            try {
-                return m_delegate.execute(clientRequest);
-            } catch (Exception e) {
-                if (timeoutTracker.shouldRetry()) {
-                    LOG.warn("Exception while trying to execute REST operation (attempt {}/{}). Retrying.", timeoutTracker.getAttempt() + 1, m_retries + 1, e);
-                } else {
-                    throw e; // we are out of retries, forward exception
-                }
-            }
-        }
-        // In order to proper handle error cases, we must bail in this case, as m_delegate was never invoked.
-        // In theory this should never happen.
-        throw new IllegalStateException("Execution did not provide a JestResult. This should not have happened.");
+        final T result = m_requestExecutor.execute(m_delegate, clientRequest);
+        return result;
     }
 
     @Override

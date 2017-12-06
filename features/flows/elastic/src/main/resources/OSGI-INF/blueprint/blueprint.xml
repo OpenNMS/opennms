@@ -24,6 +24,7 @@
             <cm:property name="nodeDiscovery" value="false" />
             <cm:property name="nodeDiscoveryFrequency" value="0" />
             <cm:property name="proxy" value=""/>
+            <cm:property name="retryCooldown" value="500" />
 
             <!-- Index settings -->
             <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
@@ -40,6 +41,9 @@
     </bean>
 
     <!-- Proxy for the JestClientFactory -->
+    <bean id="flowRequestExecutorFactory" class="org.opennms.netmgt.flows.elastic.FlowRequestExecutor">
+        <argument value="${retryCooldown}"/>
+    </bean>
     <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
         <argument value="${elasticUrl}"/>
         <argument value="${globalElasticUser}"/>
@@ -50,6 +54,7 @@
         <property name="discoveryFrequency" value="${nodeDiscoveryFrequency}" />
         <property name="proxy" value="${proxy}" />
         <property name="credentials" ref="credentialsProvider" />
+        <property name="requestExecutorFactory" ref="flowRequestExecutorFactory" />
     </bean>
 
     <!-- Actually creates the client, but only once -->
