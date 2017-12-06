@@ -45,6 +45,24 @@
       <filtered>false</filtered>
       <!-- Output to the root directory -->
       <outputDirectory></outputDirectory>
+      <!--
+        Exclude Karaf scripts from bin that cannot be invoked
+        on our embedded container
+      -->
+      <excludes>
+        <exclude>bin/*.bat</exclude>
+        <exclude>bin/client</exclude>
+        <exclude>bin/contrib</exclude>
+        <exclude>bin/contrib/*</exclude>
+        <exclude>bin/inc</exclude>
+        <exclude>bin/instance</exclude>
+        <exclude>bin/karaf</exclude>
+        <exclude>bin/setenv</exclude>
+        <exclude>bin/shell</exclude>
+        <exclude>bin/start</exclude>
+        <exclude>bin/status</exclude>
+        <exclude>bin/stop</exclude>
+      </excludes>
     </fileSet>
     <!-- Put the Karaf 4 boot classpath files into /lib so that they are available in the OpenNMS classpath -->
     <fileSet>
