@@ -184,7 +184,7 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
             }
             // Ensure that the number of items expected matches with the actual ones. See issue NMS-8079 fore more details.
             if (beans.size() != rowMap.size()) {
-                throw new IllegalStateException("The cache is supposed to carry " + beans.size() + " but only contains " + rowMap.size() + " items.");
+                throw new IllegalStateException("The cache is supposed to carry " + beans.size() + " but contains " + rowMap.size() + " items.");
             }
         }
     }
@@ -462,6 +462,8 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
         }
         // Ensure that the number of items expected matches with the actual ones. See issue NMS-8079 fore more details.
         if (itemIds.size() != numberOfItems) {
+            LOG.warn("The container is supposed to carry {} but contains {} item. Expected itemIds: {}. Actual items: {}. Executed Criteria: {}. Bailing.",
+                    numberOfItems, itemIds.size(), itemIds, getItemsForCache(m_datasource, getPage()), getCriteria(getPage(), true));
             throw new IllegalStateException("The container is supposed to carry " + numberOfItems + " but only contains " + itemIds.size() + " items.");
         }
         return itemIds;
