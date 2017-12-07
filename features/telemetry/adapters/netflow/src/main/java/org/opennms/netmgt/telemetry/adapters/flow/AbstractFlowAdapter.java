@@ -244,7 +244,7 @@ public abstract class AbstractFlowAdapter<T> implements Adapter {
         enrich(documents, messageLog.getLocation(), messageLog.getSourceAddress());
     }
 
-    protected void enrich(final List<NetflowDocument> documents, final String location, final String sourceAddress) {
+    public void enrich(final List<NetflowDocument> documents, final String location, final String sourceAddress) {
         if (documents.isEmpty()) {
             LOG.debug("Nothing to enrich.");
             return;

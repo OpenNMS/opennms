@@ -61,7 +61,7 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.flows.api.NetflowDocument;
-import org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Converter;
+import org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter;
 import org.opennms.netmgt.telemetry.adapters.netflow.v5.NetflowPacket;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
@@ -187,7 +187,7 @@ public class FlowStackIT {
         // Verify via OpenNMS ReST API
         final String flowRestUrl = "http://" + opennmsWebAddress.getHostString().toString() + ":" + opennmsWebAddress.getPort() + "/opennms/" + REST_URL;
         final NetflowPacket netflowPacket = new NetflowPacket(ByteBuffer.wrap(getNetflowPacketContent()));
-        final List<NetflowDocument> documents = new Netflow5Converter().convert(netflowPacket);
+        final List<NetflowDocument> documents = new Netflow5Adapter().convert(netflowPacket);
         documents.stream().forEach(d -> {
             d.setLocation("Default");
             d.setExporterAddress("127.0.0.1");
