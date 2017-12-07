@@ -140,7 +140,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                         @Override
                         protected void doInTransactionWithoutResult(TransactionStatus status) {
                             final List<AlarmWrapper> alarms = m_alarmDao.findAll().stream()
-                                .map(a -> new AlarmWrapperImpl(a))
+                                .map(AlarmWrapperImpl::new)
                                 .collect(Collectors.toList());
                             if (LOG.isDebugEnabled()) {
                                 LOG.debug("Handling {} alarms.", alarms.size());

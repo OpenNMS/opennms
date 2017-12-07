@@ -439,7 +439,7 @@ public class NewtsConverter implements AutoCloseable {
             // Find an process all '.meta' files and the according RRD files
             Files.walk(path)
                  .filter(p -> p.getFileName().toString().endsWith(".meta"))
-                 .forEach(p -> this.processStoreByMetricResource(p));
+                 .forEach(this::processStoreByMetricResource);
 
         } catch (Exception e) {
             LOG.error("Error while reading RRD files", e);

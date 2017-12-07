@@ -49,7 +49,7 @@ class PingSummaryCalculator {
     }
 
     int getPacketsReceived() {
-        return (int) sequences.stream().filter(eachSequence -> eachSequence.isSuccess()).count();
+        return (int) sequences.stream().filter(PingSequence::isSuccess).count();
     }
 
     long getMin() {
@@ -69,7 +69,7 @@ class PingSummaryCalculator {
     }
 
     private LongStream getDiffTimeNanos() {
-        return sequences.stream().filter(eachSequence -> eachSequence.isSuccess()).mapToLong(eachSequence -> (long) eachSequence.getResponse().getRtt());
+        return sequences.stream().filter(PingSequence::isSuccess).mapToLong(eachSequence -> (long) eachSequence.getResponse().getRtt());
     }
 
 }

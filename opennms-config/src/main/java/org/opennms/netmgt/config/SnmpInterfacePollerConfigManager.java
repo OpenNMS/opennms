@@ -51,6 +51,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.snmpinterfacepoller.CriticalService;
 import org.opennms.netmgt.config.snmpinterfacepoller.ExcludeRange;
 import org.opennms.netmgt.config.snmpinterfacepoller.IncludeRange;
 import org.opennms.netmgt.config.snmpinterfacepoller.Interface;
@@ -264,9 +265,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     @Override
     public synchronized String[] getCriticalServiceIds() {
-        return m_config.getNodeOutage().getCriticalServices().stream().map(crit -> {
-            return crit.getName();
-        }).collect(Collectors.toList()).toArray(new String[0]);
+        return m_config.getNodeOutage().getCriticalServices().stream()
+            .map(CriticalService::getName)
+            .collect(Collectors.toList()).toArray(new String[0]);
    }
 
      /**

@@ -765,7 +765,7 @@ public enum Layers {
 
         @Override
         public ItemProvider<String> getItemProvider() {
-            return node -> node.getLabel();
+            return OnmsNode::getLabel;
         }
     }),
 
@@ -788,7 +788,7 @@ public enum Layers {
 
         @Override
         public ItemProvider<String> getItemProvider() {
-            return node -> node.getNodeId();
+            return OnmsNode::getNodeId;
         }
     }),
 
@@ -811,7 +811,7 @@ public enum Layers {
 
         @Override
         public ItemProvider<String> getItemProvider() {
-            return node -> node.getForeignSource();
+            return OnmsNode::getForeignSource;
         }
     }),
 
@@ -834,7 +834,7 @@ public enum Layers {
 
         @Override
         public ItemProvider<String> getItemProvider() {
-            return node -> node.getForeignId();
+            return OnmsNode::getForeignId;
         }
     }),
 
@@ -857,7 +857,7 @@ public enum Layers {
 
         @Override
         public ItemProvider<String> getItemProvider() {
-            return node -> node.getSysName();
+            return OnmsNode::getSysName;
         }
     }),
 
@@ -880,7 +880,7 @@ public enum Layers {
 
         @Override
         public ItemProvider<String> getItemProvider() {
-            return node -> node.getSysLocation();
+            return OnmsNode::getSysLocation;
         }
     }),
 
@@ -903,7 +903,7 @@ public enum Layers {
 
         @Override
         public ItemProvider<String> getItemProvider() {
-            return node -> node.getOperatingSystem();
+            return OnmsNode::getOperatingSystem;
         }
     }),
 

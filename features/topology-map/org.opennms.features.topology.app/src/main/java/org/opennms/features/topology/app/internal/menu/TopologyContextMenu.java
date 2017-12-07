@@ -86,7 +86,7 @@ public class TopologyContextMenu extends ContextMenu {
 		}
 		addNavigateToItems(menuBuilder, targets, operationContext);
 
-		MenuBar menu = menuBuilder.build(targets, operationContext, () -> notifyMenuUpdateListener());
+		MenuBar menu = menuBuilder.build(targets, operationContext, this::notifyMenuUpdateListener);
 		addItems(menu);
 	}
 
@@ -144,7 +144,7 @@ public class TopologyContextMenu extends ContextMenu {
 			final Collection<VertexRef> oppositeVertices = graphContainer.getTopologyServiceClient().getOppositeVertices(targets.get(0));
 
 			// Find all namespaces
-			final Set<String> targetNamespaces = oppositeVertices.stream().map(v -> v.getNamespace()).collect(Collectors.toSet());
+			final Set<String> targetNamespaces = oppositeVertices.stream().map(VertexRef::getNamespace).collect(Collectors.toSet());
 
 			// Find provider for namespaces and add menu entry
 			for (String eachTargetNamespace : targetNamespaces) {

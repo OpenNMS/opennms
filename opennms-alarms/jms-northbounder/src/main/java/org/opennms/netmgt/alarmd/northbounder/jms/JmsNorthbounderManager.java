@@ -109,7 +109,7 @@ public class JmsNorthbounderManager implements InitializingBean, Northbounder, D
      */
     @Override
     public void destroy() throws Exception {
-        m_registrations.values().forEach(r -> r.unregister());
+        m_registrations.values().forEach(Registration::unregister);
     }
 
     /* (non-Javadoc)

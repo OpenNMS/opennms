@@ -61,7 +61,7 @@ public class OpenNMSJaasBrokerPlugin implements BrokerPlugin {
             trustedHostAddresses.add(InetAddress.getByName(trustedHost));
         }
         final Set<Principal> principalsForTrustedHosts = groupsForTrustedHosts.stream()
-                .map(g -> new GroupPrincipal(g))
+                .map(GroupPrincipal::new)
                 .collect(Collectors.toSet());
         return new OpenNMSJaasAuthenticationBroker(broker, trustedHostAddresses, usernameForTrustedHosts, principalsForTrustedHosts);
     }

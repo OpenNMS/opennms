@@ -136,7 +136,7 @@ public class JettyServer extends AbstractServiceDaemon {
         return Arrays.stream(m_server.getConnectors())
                 .filter(conn -> conn instanceof ServerConnector)
                 .map(conn -> (ServerConnector)conn)
-                .filter(conn -> isSsl(conn));
+                .filter(JettyServer::isSsl);
     }
 
     private Stream<ServerConnector> getHttpServerStream() {
@@ -149,42 +149,42 @@ public class JettyServer extends AbstractServiceDaemon {
     public long getHttpsConnectionsTotal() {
         return getHttpsServerStream()
                 .map(conn -> conn.getBean(ConnectorStatistics.class))
-                .mapToLong(stats -> stats.getConnections())
+                .mapToLong(ConnectorStatistics::getConnections)
                 .sum();
     }
 
     public long getHttpsConnectionsOpen() {
         return getHttpsServerStream()
                 .map(conn -> conn.getBean(ConnectorStatistics.class))
-                .mapToLong(stats -> stats.getConnectionsOpen())
+                .mapToLong(ConnectorStatistics::getConnectionsOpen)
                 .sum();
     }
 
     public long getHttpsConnectionsOpenMax() {
         return getHttpsServerStream()
                 .map(conn -> conn.getBean(ConnectorStatistics.class))
-                .mapToLong(stats -> stats.getConnectionsOpenMax())
+                .mapToLong(ConnectorStatistics::getConnectionsOpenMax)
                 .sum();
     }
 
     public long getHttpConnectionsTotal() {
         return getHttpServerStream()
                 .map(conn -> conn.getBean(ConnectorStatistics.class))
-                .mapToLong(stats -> stats.getConnections())
+                .mapToLong(ConnectorStatistics::getConnections)
                 .sum();
     }
     
     public long getHttpConnectionsOpen() {
         return getHttpServerStream()
                 .map(conn -> conn.getBean(ConnectorStatistics.class))
-                .mapToLong(stats -> stats.getConnectionsOpen())
+                .mapToLong(ConnectorStatistics::getConnectionsOpen)
                 .sum();
     }
     
     public long getHttpConnectionsOpenMax() {
         return getHttpServerStream()
                 .map(conn -> conn.getBean(ConnectorStatistics.class))
-                .mapToLong(stats -> stats.getConnectionsOpenMax())
+                .mapToLong(ConnectorStatistics::getConnectionsOpenMax)
                 .sum();
     }
 

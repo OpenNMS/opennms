@@ -95,7 +95,7 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
             public void run() {
                 jobsByLocation.entrySet().stream()
                     .map(e -> triggerJobsAsync(e.getKey(), e.getValue(), taskId))
-                    .forEach(f -> futures.add(f));
+                    .forEach(futures::add);
             }
         });
 

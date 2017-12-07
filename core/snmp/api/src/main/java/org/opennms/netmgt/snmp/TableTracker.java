@@ -218,11 +218,11 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
         // Store each result
         responses.stream()
             .flatMap(res -> res.getResults().stream())
-            .forEach(res -> storeResult(res));
+            .forEach(this::storeResult);
         // Mark all of the base columns as completed
         m_columnTrackers.stream()
-            .map(c -> c.getBase())
-            .forEach(base -> m_tableResult.columnFinished(base));
+            .map(ColumnTracker::getBase)
+            .forEach(m_tableResult::columnFinished);
         // Mark all of the column trackers as completed
         m_columnTrackers.stream()
             .forEach(t -> t.setFinished(true));

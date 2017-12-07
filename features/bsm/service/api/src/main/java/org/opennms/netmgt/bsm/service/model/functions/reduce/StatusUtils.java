@@ -54,7 +54,7 @@ public class StatusUtils {
     protected static List<Integer> getIndicesWithStatusGe(List<StatusWithIndex> statuses, Status threshold) {
         return statuses.stream()
             .filter(si -> si.getStatus().isGreaterThanOrEqual(threshold))
-            .map(si -> si.getIndex())
+            .map(StatusWithIndex::getIndex)
             .collect(Collectors.toList());
     }
 

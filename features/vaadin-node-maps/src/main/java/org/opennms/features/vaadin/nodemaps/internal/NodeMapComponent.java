@@ -116,7 +116,7 @@ public class NodeMapComponent extends AbstractComponent implements GeoAssetProvi
 
         // Convert
         m_activeNodes = locations.stream()
-                .map(l -> createMapNode(l))
+                .map(NodeMapComponent::createMapNode)
                 .collect(Collectors.toMap(l -> Integer.valueOf(l.getNodeId()), Function.identity()));
         showNodes(m_activeNodes);
     }

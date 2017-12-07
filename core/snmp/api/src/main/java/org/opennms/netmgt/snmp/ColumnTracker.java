@@ -206,7 +206,7 @@ public class ColumnTracker extends CollectionTracker {
                 SnmpObjId responseOid = SnmpObjId.get(res.getBase(), res.getInstance());
                 return m_base.isPrefixOf(responseOid) && !m_base.equals(responseOid);
             })
-            .forEach(res -> storeResult(res));
+            .forEach(this::storeResult);
         setFinished(true);
     }
 }

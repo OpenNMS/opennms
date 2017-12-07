@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.asset;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
@@ -98,16 +99,18 @@ public class GeneratorConfigBuilder {
 		}
 		if (hierarchy != null && !hierarchy.trim().isEmpty()) {
 			final List<String> layers = Arrays.asList(hierarchy.split(",")).stream()
-					.filter(h -> h != null && !h.trim().isEmpty())
-					.map(h -> h.trim())
+					.filter(Objects::nonNull)
+					.map(String::trim)
+					.filter(h -> !h.isEmpty())
 					.collect(Collectors.toList());
 			config.setLayerHierarchies(layers);
 		}
 
 		if(filter != null && !filter.trim().isEmpty()) {
 			final List<String> filters = Arrays.asList(filter.split(";")).stream()
-					.filter(h -> h != null && !h.trim().isEmpty())
-					.map(h -> h.trim())
+					.filter(Objects::nonNull)
+					.map(String::trim)
+					.filter(h -> !h.isEmpty())
 					.collect(Collectors.toList());
 			config.setFilters(filters);
 		}
