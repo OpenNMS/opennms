@@ -37,6 +37,7 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
+import org.opennms.netmgt.telemetry.adapters.flow.AbstractFlowAdapter;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.springframework.transaction.support.TransactionOperations;
 
@@ -52,7 +53,7 @@ public class Netflow5AdapterFactory implements AdapterFactory {
 
     @Override
     public Class<? extends Adapter> getAdapterClass() {
-        return Netflow5Adapter.class;
+        return AbstractFlowAdapter.class;
     }
 
     @Override

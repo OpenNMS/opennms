@@ -54,7 +54,7 @@ public class PacketHandlerTest {
 
     @Test
     public void test() throws Exception {
-        final RecordProvider.Record record = new RecordProvider.Record(0, 3, Arrays.asList(
+        final RecordProvider.Record record = new RecordProvider.Record(0, 0, 3, Arrays.asList(
                 new StringValue("name1", Optional.empty(), "my value 1"),
                 new UnsignedValue("name2", Optional.of(Semantics.TOTAL_COUNTER), UnsignedLong.valueOf(23)),
                 new IPv6AddressValue("name3", Optional.of(Semantics.IDENTIFIER), (Inet6Address) Inet6Address.getByName("::1")),

@@ -22,7 +22,7 @@
 	<service id="flowFactoryService" ref="flowAdapterFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.flow.FlowAdapter" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.flow.AbstractFlowAdapter" />
 		</service-properties>
 	</service>
 

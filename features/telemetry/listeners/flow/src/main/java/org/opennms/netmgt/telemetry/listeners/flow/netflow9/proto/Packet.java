@@ -151,7 +151,7 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
         return this.sets.stream()
                 .filter(s -> s.header.getType() == FlowSetHeader.Type.DATA_FLOWSET)
                 .flatMap(s -> ((FlowSet<DataRecord>) s).records.stream())
-                .map(r -> new RecordProvider.Record(this.header.sourceId, r.template.scopeFieldsCount, Iterables.transform(r.fields, f -> f.value)));
+                .map(r -> new RecordProvider.Record(this.header.sourceId, this.header.unixSecs, r.template.scopeFieldsCount, Iterables.transform(r.fields, f -> f.value)));
     }
 
     @Override

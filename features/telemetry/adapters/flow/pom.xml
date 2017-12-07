@@ -29,7 +29,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.collection</artifactId>
+      <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -40,6 +40,11 @@
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>bson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

@@ -53,6 +53,7 @@ import org.opennms.netmgt.flows.classification.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.StaticRuleClassificationDAO;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
+import org.opennms.netmgt.telemetry.adapters.flow.AbstractFlowAdapter;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionCallback;
@@ -84,7 +85,7 @@ public class Netflow5AdapterTestFactory implements AdapterFactory {
 
     @Override
     public Class<? extends Adapter> getAdapterClass() {
-        return Netflow5Adapter.class;
+        return AbstractFlowAdapter.class;
     }
 
     @Override
@@ -101,9 +102,9 @@ public class Netflow5AdapterTestFactory implements AdapterFactory {
         return delegateFactory.createAdapter(protocol, properties);
     }
 
-    public Netflow5Adapter createAdapter() {
+    public AbstractFlowAdapter createAdapter() {
         Adapter adapter = createAdapter(Mockito.mock(Protocol.class), new HashMap<>());
-        return (Netflow5Adapter) adapter;
+        return (AbstractFlowAdapter) adapter;
     }
 
     public NodeDao getNodeDao() {

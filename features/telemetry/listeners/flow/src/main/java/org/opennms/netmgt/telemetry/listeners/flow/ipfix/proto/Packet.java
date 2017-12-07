@@ -166,7 +166,7 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
         return this.sets.stream()
                 .filter(s -> s.header.getType() == SetHeader.Type.DATA_SET)
                 .flatMap(s -> ((Set<DataRecord>) s).records.stream())
-                .map(r -> new RecordProvider.Record(this.header.observationDomainId, r.template.scopeFieldsCount, Iterables.transform(r.fields, f -> f.value)));
+                .map(r -> new RecordProvider.Record(this.header.observationDomainId, this.header.exportTime, r.template.scopeFieldsCount, Iterables.transform(r.fields, f -> f.value)));
     }
 
     @Override

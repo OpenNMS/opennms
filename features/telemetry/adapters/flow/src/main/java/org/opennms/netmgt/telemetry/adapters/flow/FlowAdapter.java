@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,121 +28,233 @@
 
 package org.opennms.netmgt.telemetry.adapters.flow;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.bson.RawBsonDocument;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAgentFactory;
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.flows.api.FlowType;
+import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
-import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
-import org.opennms.netmgt.telemetry.adapters.collection.AbstractPersistingAdapter;
-import org.opennms.netmgt.telemetry.adapters.collection.CollectionSetWithAgent;
-import org.opennms.netmgt.telemetry.adapters.collection.ScriptedCollectionSetBuilder;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.support.TransactionOperations;
 
-public class FlowAdapter extends AbstractPersistingAdapter {
+public class FlowAdapter extends AbstractFlowAdapter<BsonDocument> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FlowAdapter.class);
-
-    @Autowired
-    private CollectionAgentFactory collectionAgentFactory;
-
-    @Autowired
-    private InterfaceToNodeCache interfaceToNodeCache;
-
-    @Autowired
-    private NodeDao nodeDao;
-
-    @Autowired
-    private TransactionOperations transactionTemplate;
-    
-    private BundleContext bundleContext;
-
-    private String script;
-
-    private final ThreadLocal<ScriptedCollectionSetBuilder> scriptedCollectionSetBuilders = new ThreadLocal<ScriptedCollectionSetBuilder>() {
-        @Override
-        protected ScriptedCollectionSetBuilder initialValue() {
-            try {
-                if (bundleContext != null) {
-                    return new ScriptedCollectionSetBuilder(new File(script), bundleContext);
-                } else {
-                    return new ScriptedCollectionSetBuilder(new File(script));
-                }
-            } catch (Exception e) {
-                LOG.error("Failed to create builder for script '{}'.", script, e);
-                return null;
+    private static Optional<BsonValue> get(final BsonDocument doc, final String... path) {
+        BsonValue value = doc;
+        for (final String p : path) {
+            value = value.asDocument().get(p);
+            if (value == null) {
+                return Optional.empty();
             }
         }
-    };
 
-    public String getScript() {
-        return this.script;
+        return Optional.of(value);
     }
 
-    public void setScript(String script) {
-        this.script = script;
-    }
-    
     @Override
-    public Optional<CollectionSetWithAgent> handleMessage(final TelemetryMessage message, final TelemetryMessageLog messageLog) throws Exception {
-        final RawBsonDocument flow = new RawBsonDocument(message.getByteArray());
+    protected BsonDocument parse(final TelemetryMessage message) {
+        return new RawBsonDocument(message.getByteArray());
+    }
 
-        LOG.warn("Flow: {}", flow.toJson());
+    @Override
+    protected List<NetflowDocument> convert(final BsonDocument packet) {
+        final NetflowDocument document = new NetflowDocument();
 
-        CollectionAgent agent = null;
-        try {
-            final InetAddress inetAddress = InetAddress.getByName(messageLog.getSourceAddress());
-            final Optional<Integer> nodeId = this.interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), inetAddress);
-            if (nodeId.isPresent()) {
-                // NOTE: This will throw a IllegalArgumentException if the nodeId/inetAddress pair does not exist in the database
-                agent = this.collectionAgentFactory.createCollectionAgent(Integer.toString(nodeId.get()), inetAddress);
-            }
-        } catch (UnknownHostException e) {
-            LOG.debug("Could not convert source address: {}", messageLog.getSourceAddress());
+        switch (get(packet, "version").get().asInt32().getValue()) {
+            case 5:
+                document.setFlowType(FlowType.NETFLOW_5);
+                // TODO: Implement
+                break;
+
+            case 9:
+                document.setFlowType(FlowType.NETFLOW_9);
+                convertNetflow9(packet, document);
+                break;
+
+            case 10:
+                document.setFlowType(FlowType.IPFIX);
+                convertIpfix(packet, document);
+                break;
+
+            default:
+                throw new RuntimeException("Illegal flow version");
         }
 
-        if (agent == null) {
-            LOG.warn("Unable to find node for address: {}", messageLog.getSourceAddress());
-            return Optional.empty();
-        }
+        document.setTimestamp(get(packet, "exportTime").get().asTimestamp().getTime() * 1000);
+        document.setVersion(get(packet, "version").get().asInt32().getValue());
 
-        final ScriptedCollectionSetBuilder builder = this.scriptedCollectionSetBuilders.get();
-        if (builder == null) {
-            throw new Exception(String.format("Error compiling script '%s'. See logs for details.", script));
-        }
-        final CollectionSet collectionSet = builder.build(agent, flow);
-        return Optional.of(new CollectionSetWithAgent(agent, collectionSet));
+        return Collections.singletonList(document);
     }
 
-    public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
-        this.collectionAgentFactory = collectionAgentFactory;
+    private void convertNetflow9(final BsonDocument packet, final NetflowDocument document) {
+        // TODO: The nr of records in pkt is totally irrelevant
+//        document.setFlowRecords();
+
+        // TODO: This is contained in v9 header and not transported right now
+//            document.setSysUptime(document.getTimestamp() - v.asInt32().getValue());
+
+        // TODO: The seq nr is totally irrelevant
+//        document.setFlowSequenceNumber(netflowPacket.getFlowSequence());
+
+//        get(packet, "elements", "engineType").ifPresent(v -> {
+//            document.setEngineType(v.asInt32().getValue());
+//        });
+//
+//        // TODO: v5 samplingInterval is { method:2, interval:14} for real
+//        get(packet, "elements", "samplingInterval").ifPresent(v -> {
+//            // TODO: also use samplingMethod
+//            document.setSamplingInterval(v.asInt32().getValue());
+//        });
+//
+//        get(packet, "elements", "sourceIPv4Address").ifPresent(v -> {
+//            document.setIpv4SourceAddress(v.asString().getValue());
+//        });
+//        get(packet, "elements", "sourceTransportPort").ifPresent(v -> {
+//            document.setSourcePort(v.asInt32().getValue());
+//        });
+//
+//        get(packet, "elements", "destinationIPv4Address").ifPresent(v -> {
+//            document.setIpv4DestAddress(v.asString().getValue());
+//        });
+//        get(packet, "elements", "destinationTransportPort").ifPresent(v -> {
+//            document.setDestPort(v.asInt32().getValue());
+//        });
+//
+//        // TODO: Also bgpNextHopIPv4Address
+//        get(packet, "elements", "ipNextHopIPv4Address").ifPresent(v -> {
+//            document.setIpv4NextHopAddress(v.asString().getValue());
+//        });
+//
+//        get(packet, "elements", "ingressInterface").ifPresent(v -> {
+//            document.setInputSnmpInterfaceIndex(v.asInt32().getValue());
+//        });
+//        get(packet, "elements", "egressInterface").ifPresent(v -> {
+//            document.setOutputSnmpInterfaceIndex(v.asInt32().getValue());
+//        });
+//
+//        get(packet, "elements", "octetDeltaCount").ifPresent(v -> {
+//            document.setInBytes(v.asInt32().getValue());
+//        });
+//        get(packet, "elements", "packetDeltaCount").ifPresent(v -> {
+//            document.setInPackets(v.asInt32().getValue());
+//        });
+//
+//        // TODO: By flowStartSysUpTime, flowStart*, flowStartDelta*, flowDuration*, minFlowStart*,
+////        document.setFirst(record.getFirst());
+////        document.setLast(record.getLast());
+//
+//        get(packet, "elements", "tcpControlBits").ifPresent(v -> {
+//            document.setTcpFlags(v.asInt32().getValue());
+//        });
+//
+//        get(packet, "elements", "protocolIdentifier").ifPresent(v -> {
+//            document.setIpProtocol(v.asInt32().getValue());
+//        });
+//
+//        get(packet, "elements", "ipClassOfService").ifPresent(v -> {
+//            document.setTos(v.asInt32().getValue());
+//        });
+//
+//        get(packet, "elements", "bgpSourceAsNumber").ifPresent(v -> {
+//            document.setSourceAutonomousSystemNumber(v.asInt32().getValue());
+//        });
+//        get(packet, "elements", "bgpDestinationAsNumber").ifPresent(v -> {
+//            document.setDestAutonomousSystemNumber(v.asInt32().getValue());
+//        });
+//
+//        get(packet, "elements", "sourceIPv4PrefixLength").ifPresent(v -> {
+//            document.setSourceMask(v.asInt32().getValue());
+//        });
+//        get(packet, "elements", "destinationIPv4PrefixLength").ifPresent(v -> {
+//            document.setDestMask(v.asInt32().getValue());
+//        });
     }
 
-    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
-        this.interfaceToNodeCache = interfaceToNodeCache;
-    }
+    private void convertIpfix(final BsonDocument packet, final NetflowDocument document) {
 
-    public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
-    }
+        // TODO: The nr of records in pkt is totally irrelevant
+//        document.setFlowRecords();
 
-    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
-    }
+        get(packet, "elements", "systemInitTimeMilliseconds").ifPresent(v -> {
+            document.setSysUptime(document.getTimestamp() - v.asInt32().getValue());
+        });
 
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
+        // TODO: The seq nr is totally irrelevant
+//        document.setFlowSequenceNumber(netflowPacket.getFlowSequence());
 
+        get(packet, "elements", "engineType").ifPresent(v -> {
+            document.setEngineType(v.asInt32().getValue());
+        });
+
+        // TODO: v5 samplingInterval is { method:2, interval:14} for real
+        get(packet, "elements", "samplingInterval").ifPresent(v -> {
+            // TODO: also use samplingMethod
+            document.setSamplingInterval(v.asInt32().getValue());
+        });
+
+        get(packet, "elements", "sourceIPv4Address").ifPresent(v -> {
+            document.setIpv4SourceAddress(v.asString().getValue());
+        });
+        get(packet, "elements", "sourceTransportPort").ifPresent(v -> {
+            document.setSourcePort(v.asInt32().getValue());
+        });
+
+        get(packet, "elements", "destinationIPv4Address").ifPresent(v -> {
+            document.setIpv4DestAddress(v.asString().getValue());
+        });
+        get(packet, "elements", "destinationTransportPort").ifPresent(v -> {
+            document.setDestPort(v.asInt32().getValue());
+        });
+
+        // TODO: Also bgpNextHopIPv4Address
+        get(packet, "elements", "ipNextHopIPv4Address").ifPresent(v -> {
+            document.setIpv4NextHopAddress(v.asString().getValue());
+        });
+
+        get(packet, "elements", "ingressInterface").ifPresent(v -> {
+            document.setInputSnmpInterfaceIndex(v.asInt32().getValue());
+        });
+        get(packet, "elements", "egressInterface").ifPresent(v -> {
+            document.setOutputSnmpInterfaceIndex(v.asInt32().getValue());
+        });
+
+        get(packet, "elements", "octetDeltaCount").ifPresent(v -> {
+            document.setInBytes(v.asInt32().getValue());
+        });
+        get(packet, "elements", "packetDeltaCount").ifPresent(v -> {
+            document.setInPackets(v.asInt32().getValue());
+        });
+
+        // TODO: By flowStartSysUpTime, flowStart*, flowStartDelta*, flowDuration*, minFlowStart*,
+//        document.setFirst(record.getFirst());
+//        document.setLast(record.getLast());
+
+        get(packet, "elements", "tcpControlBits").ifPresent(v -> {
+            document.setTcpFlags(v.asInt32().getValue());
+        });
+
+        get(packet, "elements", "protocolIdentifier").ifPresent(v -> {
+            document.setIpProtocol(v.asInt32().getValue());
+        });
+
+        get(packet, "elements", "ipClassOfService").ifPresent(v -> {
+            document.setTos(v.asInt32().getValue());
+        });
+
+        get(packet, "elements", "bgpSourceAsNumber").ifPresent(v -> {
+            document.setSourceAutonomousSystemNumber(v.asInt32().getValue());
+        });
+        get(packet, "elements", "bgpDestinationAsNumber").ifPresent(v -> {
+            document.setDestAutonomousSystemNumber(v.asInt32().getValue());
+        });
+
+        get(packet, "elements", "sourceIPv4PrefixLength").ifPresent(v -> {
+            document.setSourceMask(v.asInt32().getValue());
+        });
+        get(packet, "elements", "destinationIPv4PrefixLength").ifPresent(v -> {
+            document.setDestMask(v.asInt32().getValue());
+        });
+    }
 }

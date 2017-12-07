@@ -35,6 +35,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.bson.BsonBinary;
 import org.bson.BsonBinaryWriter;
+import org.bson.BsonTimestamp;
 import org.bson.BsonWriter;
 import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -101,6 +102,7 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
 
             writer.writeInt32("version", protocol.magic);
             writer.writeInt64("domain", record.observationDomainId);
+            writer.writeTimestamp("exportTime", new BsonTimestamp(record.exportTime << 32));
             writer.writeInt32("scoped", record.scopeFieldCount);
 
             writer.writeStartDocument("elements");

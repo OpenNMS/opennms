@@ -29,19 +29,24 @@
 package org.opennms.netmgt.telemetry.adapters.flow;
 
 import java.util.Map;
+import java.util.Objects;
 
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
-import org.opennms.netmgt.telemetry.adapters.collection.AbstractCollectionAdapterFactory;
+import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
-import org.osgi.framework.BundleContext;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
-public class FlowAdapterFactory extends AbstractCollectionAdapterFactory {
+import com.codahale.metrics.MetricRegistry;
 
-    public FlowAdapterFactory(BundleContext bundleContext) {
-        super(bundleContext);
-    }
+public class FlowAdapterFactory implements AdapterFactory {
+    private MetricRegistry metricRegistry;
+    private InterfaceToNodeCache interfaceToNodeCache;
+    private NodeDao nodeDao;
+    private TransactionOperations transactionOperations;
+    private FlowRepository flowRepository;
 
     @Override
     public Class<? extends Adapter> getAdapterClass() {
@@ -50,19 +55,42 @@ public class FlowAdapterFactory extends AbstractCollectionAdapterFactory {
 
     @Override
     public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
-        final FlowAdapter adapter = new FlowAdapter();
-        adapter.setProtocol(protocol);
-        adapter.setCollectionAgentFactory(getCollectionAgentFactory());
-        adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
-        adapter.setNodeDao(getNodeDao());
-        adapter.setTransactionTemplate(getTransactionTemplate());
-        adapter.setFilterDao(getFilterDao());
-        adapter.setPersisterFactory(getPersisterFactory());
-        adapter.setBundleContext(getBundleContext());
+        Objects.requireNonNull(interfaceToNodeCache);
+        Objects.requireNonNull(metricRegistry);
+        Objects.requireNonNull(nodeDao);
+        Objects.requireNonNull(transactionOperations);
+        Objects.requireNonNull(flowRepository);
 
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
-        wrapper.setPropertyValues(properties);
+        final AbstractFlowAdapter adapter = new FlowAdapter();
+        adapter.setInterfaceToNodeCache(interfaceToNodeCache);
+        adapter.setMetricRegistry(metricRegistry);
+        adapter.setNodeDao(nodeDao);
+        adapter.setFlowRepository(flowRepository);
+        adapter.setTransactionOperations(transactionOperations);
+        adapter.setProtocol(protocol);
+
+        adapter.init();
+
         return adapter;
     }
 
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+    }
+
+    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
+        this.interfaceToNodeCache = interfaceToNodeCache;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
+    }
+
+    public void setTransactionOperations(TransactionOperations transactionOperations) {
+        this.transactionOperations = transactionOperations;
+    }
+
+    public void setFlowRepository(FlowRepository flowRepository) {
+        this.flowRepository = flowRepository;
+    }
 }

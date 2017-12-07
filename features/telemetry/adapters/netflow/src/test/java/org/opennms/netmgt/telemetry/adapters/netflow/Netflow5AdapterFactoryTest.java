@@ -30,12 +30,13 @@ package org.opennms.netmgt.telemetry.adapters.netflow;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.adapters.flow.AbstractFlowAdapter;
 
 public class Netflow5AdapterFactoryTest {
 
     @Test
     public void verifyInitializing() {
-        Netflow5Adapter adapter = new Netflow5AdapterTestFactory().createAdapter();
+        AbstractFlowAdapter adapter = new Netflow5AdapterTestFactory().createAdapter();
         Assert.assertNotNull(adapter);
     }
 }
