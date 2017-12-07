@@ -1010,6 +1010,8 @@ create table memos (
   type character varying(64),
   CONSTRAINT memos_pkey PRIMARY KEY (id)
 );
+ALTER TABLE memos ADD CONSTRAINT reductionkey_type_unique_constraint UNIQUE (reductionkey, type);
+
 --########################################################################
 --#
 --# This table contains the following fields:
