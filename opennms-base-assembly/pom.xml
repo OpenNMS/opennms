@@ -670,11 +670,6 @@
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.rest</artifactId>
       <version>${project.version}</version>
