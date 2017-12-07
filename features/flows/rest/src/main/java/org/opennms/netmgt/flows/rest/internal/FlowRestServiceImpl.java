@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v1;
+package org.opennms.netmgt.flows.rest.internal;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.naming.ServiceUnavailableException;
 import javax.ws.rs.Consumes;
@@ -47,10 +48,9 @@ import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.flows.rest.FlowRestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.FieldNamingPolicy;
@@ -58,30 +58,28 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 
-@Component
-@Scope("prototype")
-@Path("flows")
-public class FlowRestService {
+public class FlowRestServiceImpl implements FlowRestService {
 
     private static final String ELASTIC_SEARCH_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
-    private static final Logger LOG = LoggerFactory.getLogger(FlowRestService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FlowRestServiceImpl.class);
 
-    private ServiceLookup serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
-            .blocking()
-            .build();
+    private FlowRepository flowRepository;
 
+    public FlowRestServiceImpl(FlowRepository flowRepository) {
+        this.flowRepository = Objects.requireNonNull(flowRepository);
+    }
+    
     // TODO MVR This is duplicated from ClientFactory, should be merged or removed at some point
     private static final Gson gson =  new GsonBuilder()
             .setDateFormat(ELASTIC_SEARCH_DATE_FORMAT)
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
-    @POST
-    @Path("/proxy")
-    public Response proxySearch(String query) throws Exception {
+    @Override
+    public Response proxySearch(String query) {
         try {
-            final String result = getFlowRepository().rawQuery(query);
+            final String result = flowRepository.rawQuery(query);
             return Response.status(200)
                     .type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(result)
@@ -95,16 +93,15 @@ public class FlowRestService {
         }
     }
 
-    @GET
-    public Response getFlows() throws Exception {
+    @Override
+    public Response getFlows() {
         return getFlows("");
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response getFlows(String query) throws Exception {
+    @Override
+    public Response getFlows(String query) {
         try {
-            final List<NetflowDocument> documents = getFlowRepository().findAll(query);
+            final List<NetflowDocument> documents = flowRepository.findAll(query);
             final String json = gson.toJson(documents);
             return Response.ok().type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
         } catch (FlowException ex) {
@@ -116,20 +113,19 @@ public class FlowRestService {
         }
     }
 
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response saveFlows(String input) throws Exception {
+    @Override
+    public Response saveFlows(String input) {
         try {
             final JsonElement jsonElement = gson.fromJson(input, JsonElement.class);
             if (jsonElement.isJsonArray()) {
                 final Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
                 }.getType();
                 List<NetflowDocument> netflowDocuments = gson.fromJson(jsonElement, listType);
-                getFlowRepository().save(netflowDocuments);
+                flowRepository.save(netflowDocuments);
             } else {
                 List<NetflowDocument> documents = new ArrayList<>();
                 documents.add(gson.fromJson(jsonElement, NetflowDocument.class));
-                getFlowRepository().save(documents);
+                flowRepository.save(documents);
             }
             return Response.accepted().build();
         } catch (FlowException e) {
@@ -139,13 +135,5 @@ public class FlowRestService {
                     .entity("Error while persisting flow(s): " + e.getMessage())
                     .build();
         }
-    }
-
-    private FlowRepository getFlowRepository() throws ServiceUnavailableException {
-        final FlowRepository lookup = serviceLookup.lookup(FlowRepository.class);
-        if (lookup == null) {
-            throw new ServiceUnavailableException("A service of type " + FlowRepository.class.getName() + " is not available.");
-        }
-        return lookup;
     }
 }
