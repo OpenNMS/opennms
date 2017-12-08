@@ -69,12 +69,10 @@ public class SharedSegment implements BridgeTopology{
     public static List<BridgeMacLink> getBridgeMacLinks(SharedSegment segment) throws BridgeTopologyException {
         List<BridgeMacLink> maclinks = new ArrayList<BridgeMacLink>();
         for (String mac: segment.getMacsOnSegment()) {
-                for (BridgePort bp: segment.getBridgePortsOnSegment()) {
-                    if (bp == null) {
-                        throw new BridgeTopologyException("BridgePort on segment should not be null", segment);
-                    }
-                    maclinks.add(BridgeForwardingTableEntry.getBridgeMacLinkFromBridgePort(bp, mac));
-                }
+                maclinks.add(BridgeForwardingTableEntry.
+                             getBridgeMacLinkFromBridgePort(
+                                segment.getDesignatedPort(), 
+                                mac));
         }
         return maclinks;
     }
@@ -277,8 +275,9 @@ public class SharedSegment implements BridgeTopology{
         strbfr.append(getDesignatedBridge());
         strbfr.append("]\n");
         for (BridgePort blink:  m_portsOnSegment) {
+            strbfr.append("        -> port:");            
             if (blink == null) {
-                strbfr.append("       -> port:[null]");
+                strbfr.append("[null]");
             } else {
                 strbfr.append(blink.printTopology());
             }

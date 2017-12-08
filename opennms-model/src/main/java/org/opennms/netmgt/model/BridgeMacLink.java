@@ -29,6 +29,8 @@
 package org.opennms.netmgt.model;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,12 +46,57 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.topology.BridgeTopology;
 
 @Entity
 @Table(name="bridgeMacLink")
 public class BridgeMacLink implements BridgeTopology {
 
+    
+    public enum BridgeMacLinkType {
+        BRIDGE_LINK(1), BRIDGE_FORWARDER(2);
+
+        private int m_type;
+
+        BridgeMacLinkType(int type) {
+            m_type = type;
+        }
+
+        protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
+
+        static {
+            s_typeMap.put(1, "bridge-link");
+            s_typeMap.put(2, "bridge-forwarder");
+        }
+
+        public static String getTypeString(Integer code) {
+            if (s_typeMap.containsKey(code))
+                return s_typeMap.get(code);
+            return null;
+        }
+
+        public Integer getValue() {
+            return m_type;
+        }
+
+        public static BridgeMacLinkType get(Integer code) {
+            if (code == null)
+                throw new IllegalArgumentException(
+                                                   "Cannot create BridgeMacLinkType from null code");
+            switch (code) {
+            case 1:
+                return BRIDGE_LINK;
+            case 2:
+                return BRIDGE_FORWARDER;
+            default:
+                throw new IllegalArgumentException(
+                                                   "Cannot create BridgeMacLinkType from code "
+                                                           + code);
+            }
+        }
+
+    }
 
     private Integer m_id;
     private OnmsNode m_node;
@@ -58,6 +105,7 @@ public class BridgeMacLink implements BridgeTopology {
     private String  m_bridgePortIfName;
     private String m_macAddress;
     private Integer m_vlan;
+    private BridgeMacLinkType m_linkType;
     private Date m_bridgeMacLinkCreateTime = new Date();
     private Date m_bridgeMacLinkLastPollTime;
 	
@@ -139,6 +187,16 @@ public class BridgeMacLink implements BridgeTopology {
 		m_macAddress = macAddress;
 	}
 
+    @Column(name = "linkType", nullable = false)
+    @Type(type = "org.opennms.netmgt.model.BridgeMacLinkTypeUserType")
+    public BridgeMacLinkType getLinkType() {
+        return m_linkType;
+    }
+
+    public void setLinkType(BridgeMacLinkType linkType) {
+        m_linkType = linkType;
+    }
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="bridgeMacLinkCreateTime", nullable=false)
 	public Date getBridgeMacLinkCreateTime() {
@@ -171,6 +229,10 @@ public class BridgeMacLink implements BridgeTopology {
 				.append("bridgePortIfName", m_bridgePortIfName)
 				.append("vlan", m_vlan)
                                 .append("macAddress", m_macAddress)
+                                .append("linktype", BridgeMacLinkType.
+                                        getTypeString(
+                                                      getLinkType().
+                                                      getValue()))
 				.append("m_bridgeMacLinkCreateTime", m_bridgeMacLinkCreateTime)
 				.append("m_bridgeMacLinkLastPollTime", m_bridgeMacLinkLastPollTime)
 				.toString();
@@ -180,12 +242,17 @@ public class BridgeMacLink implements BridgeTopology {
         public String printTopology() {
         StringBuffer strbfr = new StringBuffer();
 
-        strbfr.append("mac link: nodeid:["); 
+        strbfr.append("link: nodeid:["); 
         strbfr.append(getNode().getId());
         strbfr.append("], bridgeport:[");
         strbfr.append(getBridgePort());
-        strbfr.append("],mac:");
+        strbfr.append("],");
         strbfr.append(getMacAddress());
+        strbfr.append(",");
+        strbfr.append(BridgeMacLinkType.
+                      getTypeString(
+                                    getLinkType().
+                                    getValue()));
         strbfr.append("]");
 
 	        return strbfr.toString();

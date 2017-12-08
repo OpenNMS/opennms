@@ -729,6 +729,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             }
         }
         
+        for (Integer nodeId: domain.getBridgeNodesOnDomain()) {
+            Set<BridgeForwardingTableEntry> forwarders = domain.getForwarders(nodeId);
+            if (forwarders == null || forwarders.size() == 0)
+                continue;
+            for (BridgeForwardingTableEntry forward: forwarders) {
+                BridgeMacLink link = BridgeForwardingTableEntry.getBridgeMacLink(forward);
+                link.setBridgeMacLinkLastPollTime(new Date());
+                saveBridgeMacLink(link);
+            }
+        }
+
+        
         for (Integer nodeid: domain.getBridgeNodesOnDomain()) {
             m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
             m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
@@ -867,10 +879,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Override
     public void loadBridgeTopology() {
-        m_bridgeTopologyDao.load(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao);
-        for (BroadcastDomain domain: m_bridgeTopologyDao.getAll()) {
-            updateBridgesOnDomain(domain);
-        }
+        m_bridgeTopologyDao.load(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao,m_bridgeElementDao);
     }
     
     public CdpLinkDao getCdpLinkDao() {
@@ -994,22 +1003,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public void updateBridgesOnDomain(BroadcastDomain domain) {
-        if (domain == null) {
-            return;
-        }
-
-        synchronized (domain) {
-            for (Bridge bridge: domain.getBridges()) {
-                bridge.clear();
-                List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(bridge.getNodeId());
-                bridge.getIdentifiers().addAll(Bridge.getIdentifier(elems));
-                bridge.setDesignated(Bridge.getDesignated(elems));
-            }        
-        }
-    }
-
-    @Override
     public void updateBridgeOnDomain(BroadcastDomain domain, Integer nodeId) {
         if (domain == null) {
             return;
@@ -1027,19 +1020,4 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
     }
 
-    @Override
-    public void persistForwarders() {
-        for (BroadcastDomain domain: m_bridgeTopologyDao.getAll()) {
-            for (Integer nodeId: domain.getBridgeNodesOnDomain()) {
-                Set<BridgeForwardingTableEntry> forwarders = domain.getForwarders(nodeId);
-                if (forwarders == null || forwarders.size() == 0)
-                    continue;
-                for (BridgeForwardingTableEntry forward: forwarders) {
-                    BridgeMacLink link = BridgeForwardingTableEntry.getBridgeMacLink(forward);
-                    link.setBridgeMacLinkLastPollTime(new Date());
-                    saveBridgeMacLink(link);
-                }
-            }
-        }
-    }
 }

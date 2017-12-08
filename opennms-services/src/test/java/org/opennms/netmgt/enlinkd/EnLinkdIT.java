@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
@@ -391,6 +392,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         forward.setNode(nodeB);
         forward.setBridgePort(topology.portBA);
         forward.setMacAddress(topology.macA);
+        forward.setLinkType(BridgeMacLinkType.BRIDGE_FORWARDER);
         forward.setBridgeMacLinkLastPollTime(forward.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(forward);
 
@@ -398,20 +400,15 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         sharedB.setNode(nodeB);
         sharedB.setBridgePort(topology.portBC);
         sharedB.setMacAddress(topology.shar);
+        sharedB.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         sharedB.setBridgeMacLinkLastPollTime(sharedB.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(sharedB);
-
-        BridgeMacLink sharedC = new BridgeMacLink();
-        sharedC.setNode(nodeC);
-        sharedC.setBridgePort(topology.portCB);
-        sharedC.setMacAddress(topology.shar);
-        sharedC.setBridgeMacLinkLastPollTime(sharedC.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(sharedC);
         
         BridgeMacLink mac1 = new BridgeMacLink();
         mac1.setNode(nodeA);
         mac1.setBridgePort(topology.portA);
         mac1.setMacAddress(topology.mac1);
+        mac1.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac1.setBridgeMacLinkLastPollTime(mac1.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac1);
 
@@ -419,6 +416,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac2.setNode(nodeB);
         mac2.setBridgePort(topology.portB);
         mac2.setMacAddress(topology.mac2);
+        mac2.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac2.setBridgeMacLinkLastPollTime(mac2.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac2);
 
@@ -426,6 +424,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac3.setNode(nodeC);
         mac3.setBridgePort(topology.portC);
         mac3.setMacAddress(topology.mac3);
+        mac3.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac3.setBridgeMacLinkLastPollTime(mac3.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac3);
         
@@ -433,6 +432,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         sharedD.setNode(nodeD);
         sharedD.setBridgePort(45);
         sharedD.setMacAddress(topology.shar);
+        sharedD.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         sharedD.setBridgeMacLinkLastPollTime(sharedD.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(sharedD);
 
@@ -440,6 +440,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         sharedE.setNode(nodeE);
         sharedE.setBridgePort(54);
         sharedE.setMacAddress(topology.shar);
+        sharedE.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         sharedE.setBridgeMacLinkLastPollTime(sharedE.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(sharedE);
 
@@ -447,6 +448,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         sharedK.setNode(nodeK);
         sharedK.setBridgePort(1099);
         sharedK.setMacAddress(topology.shar);
+        sharedK.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         sharedK.setBridgeMacLinkLastPollTime(sharedK.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(sharedK);
 
@@ -454,6 +456,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         macK.setNode(nodeK);
         macK.setBridgePort(1099);
         macK.setMacAddress("1234567800aa");
+        macK.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         macK.setBridgeMacLinkLastPollTime(macK.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(macK);
 
@@ -567,6 +570,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac1.setNode(nodeA);
         mac1.setBridgePort(topology.portA);
         mac1.setMacAddress(topology.mac1);
+        mac1.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac1.setBridgeMacLinkLastPollTime(mac1.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac1);
 
@@ -574,6 +578,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac2.setNode(nodeB);
         mac2.setBridgePort(topology.portB);
         mac2.setMacAddress(topology.mac2);
+        mac2.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac2.setBridgeMacLinkLastPollTime(mac2.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac2);
 
@@ -581,6 +586,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac3.setNode(nodeC);
         mac3.setBridgePort(topology.portC);
         mac3.setMacAddress(topology.mac3);
+        mac3.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac3.setBridgeMacLinkLastPollTime(mac3.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac3);
 
@@ -667,6 +673,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac1.setNode(nodeA);
         mac1.setBridgePort(topology.portA);
         mac1.setMacAddress(topology.mac1);
+        mac1.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac1.setBridgeMacLinkLastPollTime(mac1.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac1);
 
@@ -674,6 +681,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac2.setNode(nodeB);
         mac2.setBridgePort(topology.portB);
         mac2.setMacAddress(topology.mac2);
+        mac2.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac2.setBridgeMacLinkLastPollTime(mac2.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac2);
 
@@ -681,6 +689,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac3.setNode(nodeC);
         mac3.setBridgePort(topology.portC);
         mac3.setMacAddress(topology.mac3);
+        mac3.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac3.setBridgeMacLinkLastPollTime(mac3.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac3);
 
@@ -767,6 +776,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac1.setNode(nodeA);
         mac1.setBridgePort(topology.portA);
         mac1.setMacAddress(topology.mac1);
+        mac1.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac1.setBridgeMacLinkLastPollTime(mac1.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac1);
 
@@ -774,6 +784,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac2.setNode(nodeB);
         mac2.setBridgePort(topology.portB);
         mac2.setMacAddress(topology.mac2);
+        mac2.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac2.setBridgeMacLinkLastPollTime(mac2.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac2);
 
@@ -781,6 +792,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac3.setNode(nodeC);
         mac3.setBridgePort(topology.portC);
         mac3.setMacAddress(topology.mac3);
+        mac3.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac3.setBridgeMacLinkLastPollTime(mac3.getBridgeMacLinkCreateTime());
         m_bridgeMacLinkDao.save(mac3);
 

@@ -34,6 +34,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 
 public class BridgeForwardingTableEntry implements BridgeTopology {
 
@@ -118,7 +119,20 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
             }
         }
     }
-    
+    public static String printTopology(Set<BridgeForwardingTableEntry> bft) {
+        StringBuffer strbfr = new StringBuffer();
+        boolean rn = false;
+        for (BridgeForwardingTableEntry bftentry: bft) {
+            if (rn) {
+                strbfr.append("\n");
+            } else {
+                rn = true;
+            }
+            strbfr.append(bftentry.printTopology());
+        }
+        return strbfr.toString();
+    }
+
     public static BridgeMacLink getBridgeMacLinkFromBridgePort(BridgePort bp, String macAddress) {
         BridgeMacLink maclink = new BridgeMacLink();
         OnmsNode node = new OnmsNode();
@@ -128,6 +142,7 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
         maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
         maclink.setMacAddress(macAddress);
         maclink.setVlan(bp.getVlan());
+        maclink.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         return maclink;
     }
 
@@ -140,6 +155,7 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
         maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
         maclink.setMacAddress(bp.getMacAddress());
         maclink.setVlan(bp.getVlan());
+        maclink.setLinkType(BridgeMacLinkType.BRIDGE_FORWARDER);
         return maclink;
     }
 
@@ -269,20 +285,6 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
             strbfr.append(BridgeDot1qTpFdbStatus.getTypeString(getBridgeDot1qTpFdbStatus().getValue()));
         }
         strbfr.append("]");
-        return strbfr.toString();
-    }
-    
-    public String printTopology(Set<BridgeForwardingTableEntry> bft) {
-        StringBuffer strbfr = new StringBuffer();
-        boolean rn = false;
-        for (BridgeForwardingTableEntry bftentry: bft) {
-            if (rn) {
-                strbfr.append("\n");
-            } else {
-                rn = true;
-            }
-            strbfr.append(bftentry.printTopology());
-        }
         return strbfr.toString();
     }
 

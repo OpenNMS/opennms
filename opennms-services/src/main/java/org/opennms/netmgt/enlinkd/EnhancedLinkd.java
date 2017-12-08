@@ -232,14 +232,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * </p>
      */
     protected synchronized void onStop() {
-
-        LOG.info("stop: persisting forwarders");
-        try {
-            m_queryMgr.persistForwarders();
-        } catch (Exception e) {
-            LOG.warn("Failed to persist one or more forwarders. The resulting bridge topoplogy may be inconsistent.", e);
-        }
-        LOG.info("stop: persisted forwarders");
               // Stop the scheduler
         LOG.info("stop: Stopping enhanced linkd scheduler");
         m_scheduler.stop();

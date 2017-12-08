@@ -48,6 +48,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
@@ -550,8 +551,14 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         // The following code will print the links as they are discovered
         for (String mac: macsonbbport) {
         	List<BridgeMacLink> maclinks = m_bridgeMacLinkDao.findByMacAddress(mac);
-        	assertEquals(2,maclinks.size());
-    		printBackboneBridgeMacLink(maclinks.get(0),maclinks.get(1));
+        	assertEquals(1,maclinks.size());
+        	for (BridgeMacLink link: maclinks) {
+        	    assertEquals(BridgeMacLinkType.BRIDGE_LINK, link.getLinkType());
+        	    assertEquals(mac, link.getMacAddress());
+        	    System.err.println(link.printTopology());
+        	}
+        	
+
         }
 
     }

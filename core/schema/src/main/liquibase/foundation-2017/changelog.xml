@@ -39,4 +39,22 @@
     </rollback>
   </changeSet>
 
+	<!-- NMS-9559 store forwarders -->
+  <changeSet author="rssntn67" id="foundation2017-store-forwarders">
+    <sql>DELETE FROM bridgebridgelink;</sql>
+    <sql>DELETE FROM bridgemaclink;</sql>
+    
+    <addColumn tableName="bridgemaclink">
+      <column name="linktype" type="integer">
+       <constraints nullable="false" />
+      </column>
+    </addColumn>
+    
+       <rollback>
+            <dropColumn tableName="bridgemaclink" columnName="linktype" />
+        </rollback>
+    
+    
+  </changeSet>
+
 </databaseChangeLog>

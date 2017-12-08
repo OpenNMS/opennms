@@ -70,13 +70,13 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
 	}
 
 	@Override
-	public BridgeBridgeLink getByDesignatedNodeIdBridgePort(Integer id, Integer port) {
-		return findUnique("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePort = ?", id,port);
+	public List<BridgeBridgeLink> getByDesignatedNodeIdBridgePort(Integer id, Integer port) {
+		return find("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePort = ?", id,port);
 	}
 
 	@Override
-	public BridgeBridgeLink getByDesignatedNodeIdBridgePortIfIndex(Integer id, Integer ifindex) {
-		return findUnique("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePortIfIndex = ?", id,ifindex);
+	public List<BridgeBridgeLink> getByDesignatedNodeIdBridgePortIfIndex(Integer id, Integer ifindex) {
+		return find("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePortIfIndex = ?", id,ifindex);
 	}
 
 	@Override

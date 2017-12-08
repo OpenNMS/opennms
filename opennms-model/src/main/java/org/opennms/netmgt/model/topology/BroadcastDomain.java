@@ -160,7 +160,7 @@ public class BroadcastDomain implements BridgeTopology {
             return;
         }
         
-        clearTopologyForBridge(bridge);
+        clearTopologyForBridge(bridgeId);
         Set<Bridge> bridges = new HashSet<Bridge>();
         for (Bridge cur: m_bridges) {
             if (cur.getNodeId().intValue() == bridgeId) 
@@ -250,7 +250,8 @@ public class BroadcastDomain implements BridgeTopology {
     //       A B C
     //    move all the macs and port on shared
     //  ------> topSegment {tmac...}U{smac....} {(tbridge,tport)}U{(sbridge,sport).....}
-    public void clearTopologyForBridge(Bridge bridge) throws BridgeTopologyException {
+    public void clearTopologyForBridge(Integer bridgeid) throws BridgeTopologyException {
+        Bridge bridge = getBridge(bridgeid);
         if (bridge == null) {
             throw new BridgeTopologyException("clearTopologyForBridge: Bridge must be not null:", this);
         }
@@ -405,21 +406,29 @@ public class BroadcastDomain implements BridgeTopology {
     
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
-        strbfr.append("------broadcast domain-----\n");
+        strbfr.append("------broadcast domain-----");
+        for (Bridge bridge: getBridges()) {
+            strbfr.append("\n");
+            strbfr.append(bridge.printTopology());
+        }
         Bridge rootBridge = getRootBridge();
     	if ( rootBridge != null && !m_topology.isEmpty()) {
     		Set<Integer> rootids = new HashSet<Integer>();
     		rootids.add(rootBridge.getNodeId());
     		strbfr.append(printTopologyFromLevel(rootids,0));
     	} else {
-    	    for (Bridge bridge: getBridges()) {
-    	        strbfr.append(bridge.printTopology());
-                strbfr.append("\n");
-    	    }
     	    for (SharedSegment shared: m_topology) {
     	        strbfr.append(shared.printTopology());
     	    }
     	}
+        strbfr.append("\n");
+        for (Set<BridgeForwardingTableEntry> bfteset: m_forwarding.values()) {
+            for (BridgeForwardingTableEntry bfte:bfteset) {
+                strbfr.append("forwarder: ");
+                strbfr.append(bfte.printTopology());
+                strbfr.append("\n");
+            }
+        }
         strbfr.append("------broadcast domain-----");
     	return strbfr.toString();
     }
@@ -427,7 +436,7 @@ public class BroadcastDomain implements BridgeTopology {
     public String printTopologyFromLevel(Set<Integer> bridgeIds, int level) {
     	Set<Integer> bridgesDownLevel = new HashSet<Integer>();
     	StringBuffer strbfr = new StringBuffer();
-        strbfr.append("------level ");
+        strbfr.append("\n------level ");
     	strbfr.append(level);
         strbfr.append(" -----\n");
 
@@ -448,7 +457,7 @@ public class BroadcastDomain implements BridgeTopology {
         
         strbfr.append("------level ");
     	strbfr.append(level);
-        strbfr.append(" -----\n");
+        strbfr.append(" -----");
         bridgesDownLevel.removeAll(bridgeIds);
     	if (!bridgesDownLevel.isEmpty())
     		strbfr.append(printTopologyFromLevel(bridgesDownLevel,level+1));

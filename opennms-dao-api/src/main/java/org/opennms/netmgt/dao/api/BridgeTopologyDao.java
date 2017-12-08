@@ -43,7 +43,7 @@ public interface BridgeTopologyDao {
     // update broadcastdomain
     void save(BroadcastDomain domain);
     // Load the topology from the scratch
-    void load(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao);
+    void load(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao,BridgeElementDao bridgeElementDao);
     
     List<SharedSegment> getBridgeNodeSharedSegments(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao, int nodeid);
 

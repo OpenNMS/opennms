@@ -146,13 +146,15 @@ public class Bridge implements BridgeTopology {
     	StringBuffer strbfr = new StringBuffer();
         strbfr.append("bridge: nodeid[");
         strbfr.append(m_nodeId);
-        strbfr.append("], designated port:[");
+        strbfr.append("],");
         if (m_isRootBridge) {
-            strbfr.append("isRootBridge");
+            strbfr.append(" isRootBridge,");
         } else {
+            strbfr.append(" designated port:[");
             strbfr.append(m_rootPort);
+            strbfr.append("],");
         }
-        strbfr.append("], designated:[");
+        strbfr.append(" designated:[");
         strbfr.append(m_designated);
         strbfr.append("], identifiers:");
         strbfr.append(m_identifiers);
