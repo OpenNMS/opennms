@@ -55,8 +55,8 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Before
 	public void setUp() {
 		final String version = getOpenNMSVersion();
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("features").getURL());
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("spring-legacy").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("standard").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("spring-legacy").getURL());
 		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 	}
 
@@ -184,6 +184,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureJolokia() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("jolokia");
 		System.out.println(executeCommand("feature:list -i"));
 	}
@@ -376,6 +377,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureOpennmsProvisioningDetectors() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("opennms-config"); // System classpath
 		installFeature("opennms-provisioning-detectors");
 		System.out.println(executeCommand("feature:list -i"));
@@ -482,6 +484,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureTsrmTroubleticketer() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("opennms-core"); // System classpath
 		installFeature("tsrm-troubleticketer");
 		System.out.println(executeCommand("feature:list -i"));
@@ -525,6 +528,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureInternalPluginsDescriptor() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("internal-plugins-descriptor");
 		System.out.println(executeCommand("feature:list -i"));
 	}
