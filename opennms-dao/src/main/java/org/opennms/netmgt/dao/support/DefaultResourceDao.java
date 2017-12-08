@@ -276,8 +276,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         final List<OnmsResource> resources = m_resourceTypes.values().stream()
                 .distinct()
                 .map(type -> type.getResourcesForParent(null))
-                .flatMap(rs -> rs.stream())
-                .filter(resource -> hasAnyChildResources(resource))
+                .flatMap(List::stream)
+                .filter(this::hasAnyChildResources)
                 .collect(Collectors.toList());
         return resources;
     }

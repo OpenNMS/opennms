@@ -312,7 +312,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         }
 
         return m_resourceStorageDao.children(parent.getPath(), 1).stream()
-                .map(rp -> rp.getName())
+                .map(ResourcePath::getName)
                 .collect(Collectors.toSet());
     }
 

@@ -545,9 +545,9 @@ public class AutomationProcessor implements ReadyRunnable {
             m_actionEvent = actionEvent;
             
             if (actionEvent != null) {
-                m_assignments = actionEvent.getAssignments().parallelStream().map(a -> {
-                    return new EventAssignment(a);
-                }).collect(Collectors.toList());
+                m_assignments = actionEvent.getAssignments().parallelStream()
+                    .map(EventAssignment::new)
+                    .collect(Collectors.toList());
             } else {
                 m_assignments = null;
             }

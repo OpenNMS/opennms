@@ -61,7 +61,9 @@
             <!-- <descriptor>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</descriptor> -->
 
             <!-- OpenNMS-modified Karaf base features -->
-            <!-- <repository>mvn:org.opennms.container/org.opennms.container.karaf/${project.version}/xml/features</repository> -->
+            <!-- <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/standard</repository> -->
+            <!-- <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</repository> -->
+            <!-- <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository> -->
 
 
             <!-- OpenNMS features bundle -->
@@ -364,7 +366,7 @@
           </features>
         </configuration>
       </plugin>
-      <!-- Filter the features.xml file -->
+      <!-- Filter the features.xml files -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -406,6 +408,21 @@
                   <type>xml</type>
                   <classifier>minion</classifier>
                 </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/karaf/standard.xml</file>
+                  <type>xml</type>
+                  <classifier>standard</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/karaf/spring.xml</file>
+                  <type>xml</type>
+                  <classifier>spring</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/karaf/spring-legacy.xml</file>
+                  <type>xml</type>
+                  <classifier>spring-legacy</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
@@ -414,13 +431,6 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.container</groupId>
-      <artifactId>org.opennms.container.karaf</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms.osgi</groupId>
       <artifactId>opennms-osgi-core-rest</artifactId>

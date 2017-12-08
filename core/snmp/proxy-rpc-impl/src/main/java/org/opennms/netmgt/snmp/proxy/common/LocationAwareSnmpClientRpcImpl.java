@@ -74,7 +74,7 @@ public class LocationAwareSnmpClientRpcImpl implements LocationAwareSnmpClient, 
     @Override
     public SNMPRequestBuilder<List<SnmpResult>> walk(SnmpAgentConfig agent, String... oids) {
         final List<SnmpObjId> snmpObjIds = Arrays.stream(oids)
-                .map(oid -> SnmpObjId.get(oid))
+                .map(SnmpObjId::get)
                 .collect(Collectors.toList());
         return walk(agent, snmpObjIds);
     }
@@ -107,7 +107,7 @@ public class LocationAwareSnmpClientRpcImpl implements LocationAwareSnmpClient, 
     @Override
     public SNMPRequestBuilder<List<SnmpValue>> get(SnmpAgentConfig agent, String... oids) {
         final List<SnmpObjId> snmpObjIds = Arrays.stream(oids)
-                .map(oid -> SnmpObjId.get(oid))
+                .map(SnmpObjId::get)
                 .collect(Collectors.toList());
         return get(agent, snmpObjIds);
     }

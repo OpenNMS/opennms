@@ -102,7 +102,7 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
             .map(v -> (GraphMLVertex) v)
             .filter(v -> matches(searchQuery, v))
             .sorted((v1, v2) -> v1.getId().compareTo(v2.getId()))
-            .forEach(v -> matchingVertices.add(v));
+            .forEach(matchingVertices::add);
         return matchingVertices;
     }
 

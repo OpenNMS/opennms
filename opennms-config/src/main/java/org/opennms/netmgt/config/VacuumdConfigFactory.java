@@ -289,9 +289,9 @@ public final class VacuumdConfigFactory {
      * @return an array of {@link java.lang.String} objects.
      */
     public synchronized String[] getSqlStatements() {
-        return m_config.getStatements().parallelStream().map(st -> {
-            return st.getContent();
-        }).collect(Collectors.toList()).toArray(EMPTY_STRING_ARRAY);
+        return m_config.getStatements().parallelStream()
+            .map(Statement::getContent)
+            .collect(Collectors.toList()).toArray(EMPTY_STRING_ARRAY);
     }
     
     /**

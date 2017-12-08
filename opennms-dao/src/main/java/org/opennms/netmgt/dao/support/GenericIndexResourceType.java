@@ -180,7 +180,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
      */
     private List<String> getQueryableIndexes(ResourcePath path) {
         return m_resourceStorageDao.children(path, 1).stream()
-                .map(rp -> rp.getName())
+                .map(ResourcePath::getName)
                 .collect(Collectors.toList());
     }
 

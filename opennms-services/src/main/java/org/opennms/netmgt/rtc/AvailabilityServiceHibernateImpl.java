@@ -266,7 +266,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
 
         // Retrieve the outages and group them by node id
         return m_outageDao.findMatching(builder.toCriteria()).stream()
-            .collect(Collectors.groupingBy(outage -> outage.getNodeId()));
+            .collect(Collectors.groupingBy(OnmsOutage::getNodeId));
     }
 
     private List<Integer> getNodes(RTCCategory category) {

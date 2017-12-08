@@ -12,39 +12,20 @@
     <packaging>karaf-assembly</packaging>
     <name>OpenNMS :: Features :: Minion :: Container :: Karaf</name>
 
+    <properties>
+      <servicemix.specs.version>2.9.0</servicemix.specs.version>
+    </properties>
+
     <build>
         <!-- if you want to include resources in the distribution -->
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-            <resource>
                 <directory>src/main/filtered-resources</directory>
                 <filtering>true</filtering>
-                <includes>
-                    <include>**/*</include>
-                </includes>
             </resource>
         </resources>
 
         <plugins>
-            <!-- if you want to include resources in the distribution -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>process-resources</id>
-                        <goals>
-                            <goal>resources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <!--
                 This configuration mimics the default Karaf assembly from:
 
@@ -97,18 +78,18 @@
                     </bootFeatures>
                     <libraries>
                         <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1;type:=endorsed;export:=true;delegate:=true</library>
-                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/2.9.0;type:=endorsed;export:=true</library>
-                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/2.9.0;type:=endorsed;export:=true</library>
-                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.2/2.9.0;type:=endorsed;export:=true</library>
-                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/2.9.0;type:=endorsed;export:=true</library>
-                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/2.9.0;type:=endorsed;export:=true</library>
-                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.2/2.9.0;type:=endorsed;export:=true</library>
+                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemix.specs.version};type:=endorsed;export:=true</library>
+                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/${servicemix.specs.version};type:=endorsed;export:=true</library>
+                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.2/${servicemix.specs.version};type:=endorsed;export:=true</library>
+                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/${servicemix.specs.version};type:=endorsed;export:=true</library>
+                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version};type:=endorsed;export:=true</library>
+                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.2/${servicemix.specs.version};type:=endorsed;export:=true</library>
                         <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/2.7.2_3;type:=endorsed;export:=true</library>
                         <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/2.7.2_1;type:=endorsed;export:=true</library>
                         <library>mvn:javax.annotation/javax.annotation-api/1.2;type:=endorsed;export:=true</library>
 
-                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activator/2.9.0;type:=default;export:=true</library>
-                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.locator/2.9.0;type:=default;export:=true</library>
+                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activator/${servicemix.specs.version};type:=default;export:=true</library>
+                        <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.locator/${servicemix.specs.version};type:=default;export:=true</library>
 
                         <library>mvn:net.java.dev.jna/jna/${jnaVersion};type:=boot;export:=false</library>
                         <library>mvn:net.java.dev.jna/jna-platform/${jnaVersion};type:=boot;export:=false</library>
@@ -140,42 +121,6 @@
                 </executions>
             </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse 
-                    m2e settings only. It has no influence on the Maven build itself. -->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            org.apache.karaf.tooling
-                                        </groupId>
-                                        <artifactId>
-                                            karaf-maven-plugin
-                                        </artifactId>
-                                        <versionRange>
-                                            [4.0.4,)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>assembly</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
 
     <dependencies>
@@ -197,7 +142,7 @@
         </dependency>
         <dependency>
             <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
-                file, and features will installed into the system directory if specify in 
+                file, and features will installed into the system directory if specified in 
                 the plugin configuration -->
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>spring</artifactId>
@@ -208,7 +153,7 @@
         </dependency>
         <dependency>
             <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
-                file, and features will installed into the system directory if specify in 
+                file, and features will installed into the system directory if specified in 
                 the plugin configuration -->
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>spring-legacy</artifactId>

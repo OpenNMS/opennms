@@ -106,7 +106,7 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
         return m_nodeDao.findAll().stream()
                 // Only return non-deleted nodes - see NMS-2977
                 .filter(node -> node.getType() == null || !node.getType().equals("D"))
-                .map(node -> createResourceForNode(node))
+                .map(this::createResourceForNode)
                 .collect(Collectors.toList());
     }
 

@@ -198,7 +198,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         try {
             stringAttributes.get().entrySet().stream()
                 .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
-                .forEach(attr -> attributes.add(attr));
+                .forEach(attributes::add);
         } catch (InterruptedException|ExecutionException e) {
             throw Throwables.propagate(e);
         }

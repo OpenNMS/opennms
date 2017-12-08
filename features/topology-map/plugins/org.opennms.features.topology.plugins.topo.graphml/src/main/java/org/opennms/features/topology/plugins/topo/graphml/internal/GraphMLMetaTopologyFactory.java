@@ -44,9 +44,11 @@ import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.osgi.script.OSGiScriptEngineManager;
 import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
@@ -106,10 +108,10 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 				// Create and register additional services
 				final Set<String> iconKeys = metaTopologyProvider.getGraphProviders().stream()
-						.map(eachProvider -> eachProvider.getNamespace())
+						.map(GraphProvider::getNamespace)
 						.flatMap(eachNamespace -> metaTopologyProvider.getRawTopologyProvider(eachNamespace).getVertices().stream())
-						.map(eachVertex -> eachVertex.getIconKey())
-						.filter(eachIconKey -> eachIconKey != null)
+						.map(Vertex::getIconKey)
+						.filter(Objects::nonNull)
 						.collect(Collectors.toSet());
 				registerService(pid, IconRepository.class, new GraphMLIconRepository(iconKeys));
 
