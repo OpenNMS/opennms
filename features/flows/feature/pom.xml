@@ -31,8 +31,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.rest</artifactId>
+      <groupId>org.opennms.features.flows.rest</groupId>
+      <artifactId>org.opennms.features.flows.rest.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.flows.rest</groupId>
+      <artifactId>org.opennms.features.flows.rest.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

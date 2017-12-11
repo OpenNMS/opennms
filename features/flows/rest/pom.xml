@@ -8,8 +8,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.flows</groupId>
   <artifactId>org.opennms.features.flows.rest</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Flows :: ReST</name>
+  <modules>
+    <module>api</module>
+    <module>impl</module>
+  </modules>
   <build>
     <plugins>
       <plugin>
@@ -26,40 +30,4 @@
       </plugin>
     </plugins>
   </build>
-  <dependencies>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.web</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>cxf-dependencies</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.api</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>${gsonVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
 </project>
