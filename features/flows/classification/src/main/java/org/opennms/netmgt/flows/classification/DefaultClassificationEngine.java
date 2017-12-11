@@ -95,7 +95,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         request.setLocation(document.getLocation());
 
         // Decide whether to use source or dest address/port to determine application mapping
-        if (isInitiator(document)) {
+        if (document.isInitiator()) {
             request.setIpAddress(document.getIpv4DestAddress());
             request.setPort(document.getDestPort());
         } else {
@@ -103,15 +103,5 @@ public class DefaultClassificationEngine implements ClassificationEngine {
             request.setPort(document.getSourcePort());
         }
         return request;
-    }
-
-    protected static boolean isInitiator(NetflowDocument document) {
-        if (document.getSourcePort()  > document.getDestPort()) {
-            return true;
-        } else if (document.getSourcePort() == document.getDestPort()) {
-            // Tie breaker
-            return document.getIpv4SourceAddress().compareTo(document.getIpv4DestAddress()) > 0;
-        }
-        return false;
     }
 }
