@@ -70,7 +70,7 @@ public class Rule {
 
     /**
      * The protocol to map.
-     * May define ranges, e.g. 17-20; 2,7,17
+     * May contain multiple values,e.g. 2,7,17
      */
     private String protocol;
 
