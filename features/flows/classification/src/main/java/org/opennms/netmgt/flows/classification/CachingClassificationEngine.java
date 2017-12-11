@@ -50,8 +50,8 @@ public class CachingClassificationEngine implements ClassificationEngine {
     public CachingClassificationEngine(ClassificationEngine delegate) {
         this.delegate = Objects.requireNonNull(delegate);
         this.cache = CacheBuilder.newBuilder()
-            .maximumSize(5000) // TODO MVR make it configurable
-            .expireAfterAccess(60 * 1000, TimeUnit.MILLISECONDS) // TODO MVR make it configurable
+            .maximumSize(Integer.getInteger("org.opennms.features.flows.classification.caching.maxSize", 5000))
+            .expireAfterAccess(Long.getLong("org.opennms.features.flows.classification.caching.expireTime", 60 * 1000), TimeUnit.MILLISECONDS)
             .build(
                 new CacheLoader<ClassificationRequest, Optional<String>>() {
                     @Override
