@@ -51,48 +51,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-		"classpath:/META-INF/opennms/applicationContext-soa.xml",
-		"classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-		"classpath:/META-INF/opennms/applicationContext-ipc-sink-kafka-offset.xml" })
+@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-ipc-sink-kafka-offset.xml" })
 @JUnitConfigurationEnvironment
 public class KafkaOffsetIT {
 
-	@Rule
-	public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
+    @Rule
+    public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
 
-	@Autowired
-	private KafkaOffsetProvider consumerManager;
+    @Autowired
+    private KafkaOffsetProvider consumerManager;
 
+    @Before
+    public void setup() throws Exception {
+        System.setProperty(String.format("%sbootstrap.servers", KafkaOffsetConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
+                kafkaServer.getKafkaConnectString());
+        System.setProperty(String.format("%sauto.offset.reset", KafkaOffsetConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
+                "earliest");
+        consumerManager.afterPropertiesSet();
+    }
 
-	@Before
-	public void setup() throws Exception {
-		System.setProperty(String.format("%sbootstrap.servers", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
-				kafkaServer.getKafkaConnectString());
-		System.setProperty(String.format("%sauto.offset.reset", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
-				"earliest");
-		consumerManager.afterPropertiesSet();
-	}
-	
-	@Test
-	public void testOffsetGeneration() throws Exception {
+    @Test
+    public void testOffsetGeneration() throws Exception {
 
-		KafkaMessageConsumer kafkaConsumer = new KafkaMessageConsumer(kafkaServer.getKafkaConnectString());
-		kafkaConsumer.startConsumer();
-		KafkaMessageProducer kafkaProducer = new KafkaMessageProducer(kafkaServer.getKafkaConnectString());
-		kafkaProducer.produce();
-		KafkaOffsetConsumer consumer = new KafkaOffsetConsumer();
-		consumer.setMessageConsumerManager(consumerManager);
-		consumer.afterPropertiesSet();
-		Thread.sleep(30000);
-		Set<KafkaOffset> offsets = consumer.getKafkaOffsets();
-		List<String> groupName = new ArrayList<>();
-		offsets.forEach(offset -> groupName.add(offset.getConsumerGroupName()));
-		assertThat(offsets, not(IsEmptyCollection.empty()));
-		
-		await().atMost(1, MINUTES).until(() -> groupName.contains(kafkaConsumer.getGroupName()));
-		assertTrue(groupName.contains(kafkaConsumer.getGroupName()));
-	}
+        KafkaMessageConsumer kafkaConsumer = new KafkaMessageConsumer(kafkaServer.getKafkaConnectString());
+        kafkaConsumer.startConsumer();
+        KafkaMessageProducer kafkaProducer = new KafkaMessageProducer(kafkaServer.getKafkaConnectString());
+        kafkaProducer.produce();
+        KafkaOffsetConsumer consumer = new KafkaOffsetConsumer();
+        consumer.setMessageConsumerManager(consumerManager);
+        consumer.afterPropertiesSet();
+        Thread.sleep(30000);
+        Set<KafkaOffset> offsets = consumer.getKafkaOffsets();
+        List<String> groupName = new ArrayList<>();
+        offsets.forEach(offset -> groupName.add(offset.getConsumerGroupName()));
+        assertThat(offsets, not(IsEmptyCollection.empty()));
+
+        await().atMost(1, MINUTES).until(() -> groupName.contains(kafkaConsumer.getGroupName()));
+        assertTrue(groupName.contains(kafkaConsumer.getGroupName()));
+    }
 
 }

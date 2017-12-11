@@ -34,94 +34,98 @@ import org.opennms.core.ipc.sink.api.Message;
 
 public class KafkaOffset implements Message {
 
-	private String consumerGroupName;
-	private String topic;
-	private int partition;
-	private long logSize;
-	private long consumerOffset;
-	private long lag;
+    private String consumerGroupName;
+    private String topic;
+    private int partition;
+    private long logSize;
+    private long consumerOffset;
+    private long lag;
 
-	public KafkaOffset() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    public KafkaOffset() {
 
-	public KafkaOffset(String consumerGroupName, String topic, int partition, long logSize, long consumerOffset,
-			long lag) {
-		super();
-		this.consumerGroupName = consumerGroupName;
-		this.topic = topic;
-		this.partition = partition;
-		this.logSize = logSize;
-		this.consumerOffset = consumerOffset;
-		this.lag = lag;
-	}
+    }
 
-	public String getConsumerGroupName() {
-		return consumerGroupName;
-	}
+    public KafkaOffset(String consumerGroupName, String topic, int partition, long logSize, long consumerOffset,
+            long lag) {
+        super();
+        this.consumerGroupName = consumerGroupName;
+        this.topic = topic;
+        this.partition = partition;
+        this.logSize = logSize;
+        this.consumerOffset = consumerOffset;
+        this.lag = lag;
+    }
 
-	public void setConsumerGroupName(String consumerGroupName) {
-		this.consumerGroupName = consumerGroupName;
-	}
+    public String getConsumerGroupName() {
+        return consumerGroupName;
+    }
 
-	public String getTopic() {
-		return topic;
-	}
+    public void setConsumerGroupName(String consumerGroupName) {
+        this.consumerGroupName = consumerGroupName;
+    }
 
-	public void setTopic(String topic) {
-		this.topic = topic;
-	}
+    public String getTopic() {
+        return topic;
+    }
 
-	public int getPartition() {
-		return partition;
-	}
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
 
-	public void setPartition(int partition) {
-		this.partition = partition;
-	}
+    public int getPartition() {
+        return partition;
+    }
 
-	public long getLogSize() {
-		return logSize;
-	}
+    public void setPartition(int partition) {
+        this.partition = partition;
+    }
 
-	public void setLogSize(long logSize) {
-		this.logSize = logSize;
-	}
+    public long getLogSize() {
+        return logSize;
+    }
 
-	public long getConsumerOffset() {
-		return consumerOffset;
-	}
+    public void setLogSize(long logSize) {
+        this.logSize = logSize;
+    }
 
-	public void setConsumerOffset(long consumerOffset) {
-		this.consumerOffset = consumerOffset;
-	}
+    public long getConsumerOffset() {
+        return consumerOffset;
+    }
 
-	public long getLag() {
-		return lag;
-	}
+    public void setConsumerOffset(long consumerOffset) {
+        this.consumerOffset = consumerOffset;
+    }
 
-	public void setLag(long lag) {
-		this.lag = lag;
-	}
+    public long getLag() {
+        return lag;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(consumerGroupName, topic, partition);
-	}
+    public void setLag(long lag) {
+        this.lag = lag;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		KafkaOffset other = (KafkaOffset) obj;
-		return Objects.equals(this.consumerGroupName, other.consumerGroupName)
-				&& Objects.equals(this.topic, other.topic) 
-				&& Objects.equals(this.partition, other.partition);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(consumerGroupName, topic, partition);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        KafkaOffset other = (KafkaOffset) obj;
+        return Objects.equals(this.consumerGroupName, other.consumerGroupName)
+                && Objects.equals(this.topic, other.topic) && Objects.equals(this.partition, other.partition);
+    }
+
+    @Override
+    public String toString() {
+        return "KafkaOffset [consumerGroupName=" + consumerGroupName + ", topic=" + topic + ", partition=" + partition
+                + ", logSize=" + logSize + ", consumerOffset=" + consumerOffset + ", lag=" + lag + "]";
+    }
 
 }

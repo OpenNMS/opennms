@@ -28,12 +28,45 @@
 
 package org.opennms.features.kafka.offset;
 
-public interface KafkaSinkConstants {
+public class HostAndPort {
 
-	static final String KAFKA_TOPIC_PREFIX = "Sink";
+    private String host;
+    private int port;
 
-	static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.sink.kafka";
+    public final static HostAndPort fromString(final String hostWithPort) {
 
-	static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
+        int i = hostWithPort.lastIndexOf(":");
+        if (i < 0 || (hostWithPort.length() == i)) {
+            return null;
+        }
+        String[] hostWithPortArray = { hostWithPort.substring(0, i), hostWithPort.substring(i + 1) };
+
+        HostAndPort hostAndPort = new HostAndPort();
+        hostAndPort.setHost(hostWithPortArray[0]);
+        hostAndPort.setPort(Integer.parseInt(hostWithPortArray[1]));
+        return hostAndPort;
+
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    @Override
+    public String toString() {
+        return "HostAndPort [host=" + host + ", port=" + port + "]";
+    }
 
 }
