@@ -22,7 +22,7 @@
         <argument ref="defaultClassificationEngine" />
     </bean>
     <bean id="threadSafeClassificationEngine" class="org.opennms.netmgt.flows.classification.ThreadSafeClassificationEngine">
-        <argument ref="cachingClassificationEngine" />
+        <argument ref="defaultClassificationEngine" />
     </bean>
 
     <!-- Expose Classification Engine -->
