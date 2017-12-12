@@ -34,6 +34,7 @@ import java.util.Objects;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.CacheSettings;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
@@ -47,6 +48,7 @@ public class Netflow5AdapterFactory implements AdapterFactory {
     private NodeDao nodeDao;
     private TransactionOperations transactionOperations;
     private FlowRepository flowRepository;
+    private CacheSettings nodeInfoCacheSettings;
 
     @Override
     public Class<? extends Adapter> getAdapterClass() {
@@ -60,12 +62,14 @@ public class Netflow5AdapterFactory implements AdapterFactory {
         Objects.requireNonNull(nodeDao);
         Objects.requireNonNull(transactionOperations);
         Objects.requireNonNull(flowRepository);
+        Objects.requireNonNull(nodeInfoCacheSettings);
 
         final Netflow5Adapter adapter = new Netflow5Adapter();
         adapter.setInterfaceToNodeCache(interfaceToNodeCache);
         adapter.setMetricRegistry(metricRegistry);
         adapter.setNodeDao(nodeDao);
         adapter.setFlowRepository(flowRepository);
+        adapter.setNodeInfoCacheSettings(nodeInfoCacheSettings);
         adapter.setTransactionOperations(transactionOperations);
         adapter.setProtocol(protocol);
 
@@ -92,5 +96,9 @@ public class Netflow5AdapterFactory implements AdapterFactory {
 
     public void setFlowRepository(FlowRepository flowRepository) {
         this.flowRepository = flowRepository;
+    }
+
+    public void setNodeInfoCacheSettings(CacheSettings nodeInfoCacheSettings) {
+        this.nodeInfoCacheSettings = nodeInfoCacheSettings;
     }
 }

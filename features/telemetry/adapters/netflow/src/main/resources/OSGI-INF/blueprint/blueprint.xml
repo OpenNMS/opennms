@@ -12,6 +12,9 @@
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 	<reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
+	<reference id="flowConfig" interface="org.opennms.netmgt.flows.api.FlowConfiguration" availability="mandatory" />
+
+	<bean id="nodeInfoCacheSettings" factory-ref="flowConfig" factory-method="getNodeInfoCacheSettings"/>
 
 	<!-- Factory and Adapter -->
 	<bean id="netflow5factory" class="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5AdapterFactory">
@@ -20,6 +23,7 @@
 		<property name="transactionOperations" ref="transactionOperations" />
 		<property name="nodeDao" ref="nodeDao" />
 		<property name="flowRepository" ref="flowRepository" />
+		<property name="nodeInfoCacheSettings" ref="nodeInfoCacheSettings"/>
 	</bean>
 	<service ref="netflow5factory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>

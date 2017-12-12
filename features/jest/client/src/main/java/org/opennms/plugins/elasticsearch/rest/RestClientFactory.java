@@ -28,7 +28,6 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -84,6 +83,39 @@ public class RestClientFactory {
 	private int m_retries = 0;
 	private JestClient client;
 	private Supplier<RequestExecutor> requestExecutorSupplier = () -> new DefaultRequestExecutor(m_timeout, m_retries);
+
+	public RestClientFactory(RestClientConfiguration config) throws MalformedURLException {
+		this(config.getElasticUrl(), config.getGlobalElasticUsername(), config.getGlobalElasticPassword());
+
+		setProxy(config.getProxy());
+		if (config.getDefaultMaxTotalConnectionsPerRoute() != null) {
+			setDefaultMaxTotalConnectionPerRoute(config.getDefaultMaxTotalConnectionsPerRoute());
+		}
+		if (config.getMaxTotalConnection() != null) {
+			setMaxTotalConnection(config.getMaxTotalConnection());
+		}
+		if (config.getNodeDiscovery() != null) {
+			setDiscovery(config.isNodeDiscovery());
+		}
+		if (config.getNodeDiscoveryFrequency() != null) {
+			setDiscoveryFrequency(config.getNodeDiscoveryFrequency());
+		}
+		if (config.getConnectionTimeout() != null) {
+			setConnTimeout(config.getConnectionTimeout());
+		}
+		if (config.getMaxConnectionIdleTimeout() != null) {
+			setMaxConnectionIdleTime(config.getMaxConnectionIdleTimeout(), TimeUnit.SECONDS);
+		}
+		if (config.getMultiThreaded() != null) {
+			setMultiThreaded(config.isMultiThreaded());
+		}
+		if (config.getReadTimeout() != null) {
+			setReadTimeout(config.getReadTimeout());
+		}
+		if (config.getRetries() != null) {
+			setRetries(config.getRetries());
+		}
+	}
 
 	public RestClientFactory(final String elasticSearchURL) throws MalformedURLException {
 		this(elasticSearchURL, null, null);
@@ -250,7 +282,7 @@ public class RestClientFactory {
 		clientConfigBuilder.maxConnectionIdleTime(timeout, unit);
 	}
 
-	public void setCredentials(final CredentialsProvider credentialsProvider) throws IOException {
+	public void setCredentials(final CredentialsProvider credentialsProvider) {
 		if (credentialsProvider != null) {
 			final Map<AuthScope, Credentials> credentials = new CredentialsParser().parse(credentialsProvider.getCredentials());
 			if (!credentials.isEmpty()) {

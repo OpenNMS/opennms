@@ -1,0 +1,77 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+    <!-- Configuration properties -->
+    <cm:property-placeholder id="elasticFlowRepositoryProperties" persistent-id="org.opennms.features.flows.config" update-strategy="reload">
+        <cm:default-properties>
+            <!-- Elastic Connection Settings -->
+            <cm:property name="elasticUrl" value="http://localhost:9200" />
+            <cm:property name="globalElasticUser" value="" />
+            <cm:property name="globalElasticPassword" value="" />
+            <cm:property name="elasticIndexStrategy" value="monthly" />
+            <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
+            <cm:property name="maxTotalConnection" value="-1" />
+            <cm:property name="nodeDiscovery" value="false" />
+            <cm:property name="nodeDiscoveryFrequency" value="0" />
+            <cm:property name="proxy" value=""/>
+            <cm:property name="retryCooldown" value="500" />
+
+            <!-- Caching settings -->
+            <cm:property name="cache.nodeinfo.maxSize" value="1000" />
+            <cm:property name="cache.nodeinfo.expireAfter" value="300" />
+
+            <!-- Index settings -->
+            <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
+            <cm:property name="settings.index.number_of_shards" value="" />
+            <cm:property name="settings.index.number_of_replicas" value="" />
+            <cm:property name="settings.index.refresh_interval" value="" />
+            <cm:property name="settings.index.routing_partition_size" value="" />
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
+    <bean id="credentialsProvider" class="org.opennms.plugins.elasticsearch.rest.credentials.DefaultCredentialsProvider">
+        <argument value="elastic-credentials.xml" />
+    </bean>
+
+    <bean id="nodeInfoCacheSettings" class="org.opennms.netmgt.flows.api.CacheSettings">
+        <property name="expireAfterSeconds" value="${cache.nodeinfo.expireAfter}" />
+        <property name="maxSize" value="${cache.nodeinfo.maxSize}" />
+    </bean>
+
+    <bean id="indexSettings" class="org.opennms.netmgt.flows.api.IndexSettings">
+        <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
+        <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
+        <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
+        <property name="routingPartitionSize" value="${settings.index.routing_partition_size}"/>
+    </bean>
+
+    <bean id="flowConfig" class="org.opennms.netmgt.flows.api.internal.FlowConfigurationImpl">
+        <property name="elasticUrl" value="${elasticUrl}" />
+        <property name="globalElasticUsername" value="${globalElasticUser}" />
+        <property name="globalElasticPassword" value="${globalElasticPassword}" />
+        <property name="elasticIndexStrategy" value="${elasticIndexStrategy}" />
+        <property name="defaultMaxTotalConnectionPerRoute" value="${defaultMaxTotalConnectionPerRoute}" />
+        <property name="maxTotalConnection" value="${maxTotalConnection}" />
+        <property name="nodeDiscovery" value="${nodeDiscovery}" />
+        <property name="nodeDiscoveryFrequency" value="${nodeDiscoveryFrequency}" />
+        <property name="proxy" value="${proxy}"/>
+        <property name="retryCooldown" value="${retryCooldown}" />
+        <property name="indexSettings" ref="indexSettings" />
+        <property name="nodeInfoCacheSettings" ref="nodeInfoCacheSettings" />
+    </bean>
+
+    <service ref="credentialsProvider" interface="org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider" />
+    <service ref="flowConfig" interface="org.opennms.netmgt.flows.api.FlowConfiguration" />
+
+</blueprint>

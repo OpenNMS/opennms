@@ -71,13 +71,17 @@
     <property name="archiveAssetData" value="${archiveAssetData}" />
   </bean>
 
-  <bean id="restClientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
-    <argument value="${elasticsearchUrl}" />
-    <argument value="${esusername}" />
-    <argument value="${espassword}" />
-    <property name="timeout" value="${timeout}" />
+  <bean id="restClientConfig" class="org.opennms.plugins.elasticsearch.rest.RestClientConfiguration">
+    <property name="elasticUrl" value="${elasticsearchUrl}" />
+    <property name="globalElasticUsername" value="${esusername}" />
+    <property name="globalElasticPassword" value="${espassword}" />
+    <property name="connectionTimeout" value="${timeout}" />
     <property name="retries" value="${retries}" />
-    <property name="socketTimeout" value="${socketTimeout}" />
+    <property name="readTimeout" value="${socketTimeout}" />
+  </bean>
+
+  <bean id="restClientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
+    <argument ref="restClientConfig" />
   </bean>
   <bean id="restClient" factory-ref="restClientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 

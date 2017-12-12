@@ -32,9 +32,9 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.opennms.netmgt.flows.api.IndexSettings;
 import org.opennms.netmgt.flows.elastic.template.CachingTemplateLoader;
 import org.opennms.netmgt.flows.elastic.template.DefaultTemplateLoader;
-import org.opennms.netmgt.flows.elastic.template.IndexSettings;
 import org.opennms.netmgt.flows.elastic.template.MergingTemplateLoader;
 import org.opennms.netmgt.flows.elastic.template.TemplateLoader;
 import org.slf4j.Logger;

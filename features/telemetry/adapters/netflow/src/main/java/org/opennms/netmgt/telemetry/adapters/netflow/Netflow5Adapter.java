@@ -44,6 +44,7 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.api.PersistenceException;
+import org.opennms.netmgt.flows.api.CacheSettings;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
@@ -104,6 +105,8 @@ public class Netflow5Adapter implements Adapter {
 
     private FlowRepository flowRepository;
 
+    private CacheSettings nodeInfoCacheSettings;
+
     private final Netflow5Converter converter = new Netflow5Converter();
 
     /**
@@ -140,17 +143,18 @@ public class Netflow5Adapter implements Adapter {
     private LoadingCache<NodeInfoKey, Optional<NodeInfo>> nodeInfoCache;
 
     public void init() {
-        flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
-        logParsingTimer = metricRegistry.timer("logParsing");
-        logEnrichementTimer = metricRegistry.timer("logEnrichment");
-        logPersistingTimer = metricRegistry.timer("logPersisting");
-        packetsPerLogHistogram = metricRegistry.histogram("packetsPerLog");
-        flowsPerPacketHistogram = metricRegistry.histogram("flowsPerPacket");
+        // Verify initialized
+        Objects.requireNonNull(metricRegistry);
+        Objects.requireNonNull(interfaceToNodeCache);
+        Objects.requireNonNull(nodeDao);
+        Objects.requireNonNull(transactionOperations);
+        Objects.requireNonNull(flowRepository);
+        Objects.requireNonNull(nodeInfoCacheSettings);
 
-        // TODO MVR make this configurable, when it is actually an osgi-module
+        // Initialize cache
         nodeInfoCache = CacheBuilder.newBuilder()
-                .maximumSize(1000)
-                .expireAfterWrite(300, TimeUnit.SECONDS) // 5 Minutes
+                .maximumSize(nodeInfoCacheSettings.getMaxSize())
+                .expireAfterWrite(nodeInfoCacheSettings.getExpireAfterSeconds(), TimeUnit.SECONDS)
                 .build(new CacheLoader<NodeInfoKey, Optional<NodeInfo>>() {
                     @Override
                     public Optional<NodeInfo> load(NodeInfoKey key) throws Exception {
@@ -158,12 +162,13 @@ public class Netflow5Adapter implements Adapter {
                     }
                 });
 
-        // Verify initialized
-        Objects.requireNonNull(metricRegistry);
-        Objects.requireNonNull(interfaceToNodeCache);
-        Objects.requireNonNull(nodeDao);
-        Objects.requireNonNull(transactionOperations);
-        Objects.requireNonNull(flowRepository);
+        // Initialize metrics
+        flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
+        logParsingTimer = metricRegistry.timer("logParsing");
+        logEnrichementTimer = metricRegistry.timer("logEnrichment");
+        logPersistingTimer = metricRegistry.timer("logPersisting");
+        packetsPerLogHistogram = metricRegistry.histogram("packetsPerLog");
+        flowsPerPacketHistogram = metricRegistry.histogram("flowsPerPacket");
     }
 
     @Override
@@ -234,6 +239,10 @@ public class Netflow5Adapter implements Adapter {
 
     public void setFlowRepository(FlowRepository flowRepository) {
         this.flowRepository = flowRepository;
+    }
+
+    public void setNodeInfoCacheSettings(CacheSettings nodeInfoCacheSettings) {
+        this.nodeInfoCacheSettings = nodeInfoCacheSettings;
     }
 
     private NetflowPacket parse(TelemetryMessage message) {

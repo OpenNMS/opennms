@@ -26,23 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.template;
+package org.opennms.netmgt.flows.api;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+public interface FlowConfiguration {
+        String getElasticUrl();
 
-import org.junit.Test;
+        String getGlobalElasticUsername();
 
-public class IndexSettingsTest {
+        String getGlobalElasticPassword();
 
-    @Test
-    public void verifyStringValues() {
-        IndexSettings indexSettings = new IndexSettings();
-        indexSettings.setRoutingPartitionSize("");
-        indexSettings.setRefreshInterval("");
-        indexSettings.setNumberOfShards("");
-        indexSettings.setNumberOfReplicas("");
+        String getElasticIndexStrategy();
 
-        assertThat(indexSettings.isEmpty(), is(true));
-    }
+        int getDefaultMaxTotalConnectionPerRoute();
+
+        int getMaxTotalConnection();
+
+        boolean isNodeDiscovery();
+
+        int getNodeDiscoveryFrequency();
+
+        String getProxy();
+
+        long getRetryCooldown();
+
+        CacheSettings getNodeInfoCacheSettings();
+
+        IndexSettings getIndexSettings();
 }

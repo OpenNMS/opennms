@@ -26,34 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.template;
+package org.opennms.netmgt.flows.api;
 
-import java.io.IOException;
-import java.util.Objects;
+public class CacheSettings {
+    private long expireAfterSeconds;
+    private long maxSize;
 
-import org.opennms.netmgt.flows.api.IndexSettings;
-
-/**
- * Merges a template which is loaded from a delegate {@link TemplateLoader} with optional {@link IndexSettings}.
- */
-public class MergingTemplateLoader implements TemplateLoader {
-
-    private final TemplateLoader delegate;
-    private final IndexSettings indexSettings;
-
-    public MergingTemplateLoader(TemplateLoader delegate, IndexSettings indexSettings) {
-        this.delegate = Objects.requireNonNull(delegate);
-        this.indexSettings = indexSettings;
+    public long getExpireAfterSeconds() {
+        return expireAfterSeconds;
     }
 
-    @Override
-    public String load(String resource) throws IOException {
-        final String template = delegate.load(resource);
-        return merge(template);
+    public void setExpireAfterSeconds(long expireAfterSeconds) {
+        this.expireAfterSeconds = expireAfterSeconds;
     }
 
-    private String merge(String template) {
-        final String mergedTemplate = new TemplateMerger().merge(template, indexSettings);
-        return mergedTemplate;
+    public long getMaxSize() {
+        return maxSize;
+    }
+
+    public void setMaxSize(long maxSize) {
+        this.maxSize = maxSize;
     }
 }
