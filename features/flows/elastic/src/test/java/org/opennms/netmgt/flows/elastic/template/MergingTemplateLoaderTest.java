@@ -34,6 +34,7 @@ import static org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer.
 import java.io.IOException;
 
 import org.junit.Test;
+import org.opennms.netmgt.flows.config.IndexSettings;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;

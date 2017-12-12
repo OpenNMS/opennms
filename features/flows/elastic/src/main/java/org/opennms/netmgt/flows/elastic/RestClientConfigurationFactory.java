@@ -26,34 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.template;
+package org.opennms.netmgt.flows.elastic;
 
-import java.io.IOException;
-import java.util.Objects;
+import org.opennms.netmgt.flows.config.FlowConfiguration;
+import org.opennms.plugins.elasticsearch.rest.RestClientConfiguration;
 
-import org.opennms.netmgt.flows.config.IndexSettings;
-
-/**
- * Merges a template which is loaded from a delegate {@link TemplateLoader} with optional {@link IndexSettings}.
- */
-public class MergingTemplateLoader implements TemplateLoader {
-
-    private final TemplateLoader delegate;
-    private final IndexSettings indexSettings;
-
-    public MergingTemplateLoader(TemplateLoader delegate, IndexSettings indexSettings) {
-        this.delegate = Objects.requireNonNull(delegate);
-        this.indexSettings = indexSettings;
-    }
-
-    @Override
-    public String load(String resource) throws IOException {
-        final String template = delegate.load(resource);
-        return merge(template);
-    }
-
-    private String merge(String template) {
-        final String mergedTemplate = new TemplateMerger().merge(template, indexSettings);
-        return mergedTemplate;
+public class RestClientConfigurationFactory {
+    public static RestClientConfiguration create(final FlowConfiguration flowConfig) {
+        final RestClientConfiguration config = new RestClientConfiguration();
+        config.setDefaultMaxTotalConnectionsPerRoute(flowConfig.getDefaultMaxTotalConnectionPerRoute());
+        config.setElasticUrl(flowConfig.getElasticUrl());
+        config.setGlobalElasticPassword(flowConfig.getGlobalElasticPassword());
+        config.setGlobalElasticUsername(flowConfig.getGlobalElasticUsername());
+        config.setMaxTotalConnection(flowConfig.getMaxTotalConnection());
+        config.setNodeDiscovery(flowConfig.isNodeDiscovery());
+        config.setNodeDiscoveryFrequency(flowConfig.getNodeDiscoveryFrequency());
+        config.setProxy(flowConfig.getProxy());
+        return config;
     }
 }

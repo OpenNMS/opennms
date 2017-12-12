@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.elastic.template;
 
+import org.opennms.netmgt.flows.config.IndexSettings;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

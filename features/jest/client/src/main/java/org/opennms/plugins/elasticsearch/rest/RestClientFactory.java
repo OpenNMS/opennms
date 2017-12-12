@@ -85,6 +85,15 @@ public class RestClientFactory {
 	private JestClient client;
 	private Supplier<RequestExecutor> requestExecutorSupplier = () -> new DefaultRequestExecutor(m_timeout, m_retries);
 
+	public RestClientFactory(RestClientConfiguration config) throws MalformedURLException {
+		this(config.getElasticUrl(), config.getGlobalElasticUsername(), config.getGlobalElasticPassword());
+		setDefaultMaxTotalConnectionPerRoute(config.getDefaultMaxTotalConnectionsPerRoute());
+		setMaxTotalConnection(config.getMaxTotalConnection());
+		setDiscovery(config.isNodeDiscovery());
+		setDiscoveryFrequency(config.getNodeDiscoveryFrequency());
+		setProxy(config.getProxy());
+	}
+
 	public RestClientFactory(final String elasticSearchURL) throws MalformedURLException {
 		this(elasticSearchURL, null, null);
 	}
@@ -250,7 +259,7 @@ public class RestClientFactory {
 		clientConfigBuilder.maxConnectionIdleTime(timeout, unit);
 	}
 
-	public void setCredentials(final CredentialsProvider credentialsProvider) throws IOException {
+	public void setCredentials(final CredentialsProvider credentialsProvider) {
 		if (credentialsProvider != null) {
 			final Map<AuthScope, Credentials> credentials = new CredentialsParser().parse(credentialsProvider.getCredentials());
 			if (!credentials.isEmpty()) {

@@ -26,34 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.template;
+package org.opennms.netmgt.flows.elastic.config;
 
-import java.io.IOException;
-import java.util.Objects;
-
+import org.hamcrest.core.Is;
+import org.junit.Assert;
+import org.junit.Test;
 import org.opennms.netmgt.flows.config.IndexSettings;
 
-/**
- * Merges a template which is loaded from a delegate {@link TemplateLoader} with optional {@link IndexSettings}.
- */
-public class MergingTemplateLoader implements TemplateLoader {
+public class IndexSettingsTest {
 
-    private final TemplateLoader delegate;
-    private final IndexSettings indexSettings;
+    @Test
+    public void verifyStringValues() {
+        IndexSettings indexSettings = new IndexSettings();
+        indexSettings.setRoutingPartitionSize("");
+        indexSettings.setRefreshInterval("");
+        indexSettings.setNumberOfShards("");
+        indexSettings.setNumberOfReplicas("");
 
-    public MergingTemplateLoader(TemplateLoader delegate, IndexSettings indexSettings) {
-        this.delegate = Objects.requireNonNull(delegate);
-        this.indexSettings = indexSettings;
-    }
-
-    @Override
-    public String load(String resource) throws IOException {
-        final String template = delegate.load(resource);
-        return merge(template);
-    }
-
-    private String merge(String template) {
-        final String mergedTemplate = new TemplateMerger().merge(template, indexSettings);
-        return mergedTemplate;
+        Assert.assertThat(indexSettings.isEmpty(), Is.is(true));
     }
 }

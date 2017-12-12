@@ -11,48 +11,21 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <!-- Configuration properties -->
-    <cm:property-placeholder id="elasticFlowRepositoryProperties" persistent-id="org.opennms.features.flows.persistence.elastic" update-strategy="reload">
-        <cm:default-properties>
-            <!-- Elastic Connection Settings -->
-            <cm:property name="elasticUrl" value="http://localhost:9200" />
-            <cm:property name="globalElasticUser" value="" />
-            <cm:property name="globalElasticPassword" value="" />
-            <cm:property name="elasticIndexStrategy" value="monthly" />
-            <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
-            <cm:property name="maxTotalConnection" value="-1" />
-            <cm:property name="nodeDiscovery" value="false" />
-            <cm:property name="nodeDiscoveryFrequency" value="0" />
-            <cm:property name="proxy" value=""/>
-            <cm:property name="retryCooldown" value="500" />
+    <reference id="flowConfiguration" interface="org.opennms.netmgt.flows.config.FlowConfiguration" availability="mandatory" />
+    <reference id="credentialsProvider" interface="org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider" availability="mandatory" />
 
-            <!-- Index settings -->
-            <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
-            <cm:property name="settings.index.number_of_shards" value="" />
-            <cm:property name="settings.index.number_of_replicas" value="" />
-            <cm:property name="settings.index.refresh_interval" value="" />
-            <cm:property name="settings.index.routing_partition_size" value="" />
-        </cm:default-properties>
-    </cm:property-placeholder>
-
-    <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
-    <bean id="credentialsProvider" class="org.opennms.plugins.elasticsearch.rest.credentials.DefaultCredentialsProvider">
-        <argument value="elastic-credentials.xml" />
-    </bean>
+    <!-- properties -->
+    <bean id="retryCooldown" factory-ref="flowConfiguration" factory-method="getRetryCooldown"/>
 
     <!-- Proxy for the JestClientFactory -->
+    <bean id="restClientConfig" class="org.opennms.netmgt.flows.elastic.RestClientConfigurationFactory" factory-method="create" >
+        <argument ref="flowConfiguration"/>
+    </bean>
     <bean id="flowRequestExecutorFactory" class="org.opennms.netmgt.flows.elastic.FlowRequestExecutor">
-        <argument value="${retryCooldown}"/>
+        <argument ref="retryCooldown"/>
     </bean>
     <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
-        <argument value="${elasticUrl}"/>
-        <argument value="${globalElasticUser}"/>
-        <argument value="${globalElasticPassword}"/>
-        <property name="defaultMaxTotalConnectionPerRoute" value="${defaultMaxTotalConnectionPerRoute}"/>
-        <property name="maxTotalConnection" value="${maxTotalConnection}"/>
-        <property name="discovery" value="${nodeDiscovery}" />
-        <property name="discoveryFrequency" value="${nodeDiscoveryFrequency}" />
-        <property name="proxy" value="${proxy}" />
+        <argument ref="restClientConfig" />
         <property name="credentials" ref="credentialsProvider" />
         <property name="requestExecutorFactory" ref="flowRequestExecutorFactory" />
     </bean>
@@ -60,16 +33,12 @@
     <!-- Actually creates the client, but only once -->
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 
+    <bean id="indexStrategyString" factory-ref="flowConfiguration" factory-method="getElasticIndexStrategy" />
     <bean id="indexStrategy" class="org.opennms.netmgt.flows.elastic.IndexStrategyFactory" factory-method="createIndexStrategy">
-        <argument value="${elasticIndexStrategy}"/>
+        <argument ref="indexStrategyString"/>
     </bean>
 
-    <bean id="indexSettings" class="org.opennms.netmgt.flows.elastic.template.IndexSettings">
-        <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
-        <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
-        <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
-        <property name="routingPartitionSize" value="${settings.index.routing_partition_size}"/>
-    </bean>
+    <bean id="indexSettings" class="org.opennms.netmgt.flows.config.IndexSettings" factory-ref="flowConfiguration" factory-method="getIndexSettings" />
 
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository">
