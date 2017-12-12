@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.netmgt.config.poller.PollerClassObjectAdapter;
+
 @XmlRootElement(name = "attribute")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PollerAttributeDTO {

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.client.rpc;
+package org.opennms.netmgt.config.poller;
 
 import org.opennms.core.xml.JaxbClassObjectAdapter;
 import org.opennms.netmgt.config.pagesequence.PageSequence;

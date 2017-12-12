@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.passive;
 
 import org.opennms.netmgt.poller.PollStatus;
 
@@ -56,7 +56,7 @@ public class PassiveStatusValue {
     /**
      * <p>Constructor for PassiveStatusValue.</p>
      *
-     * @param key a {@link org.opennms.netmgt.config.PassiveStatusKey} object.
+     * @param key a {@link org.opennms.netmgt.passive.PassiveStatusKey} object.
      * @param status a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PassiveStatusValue(PassiveStatusKey key, PollStatus status) {
@@ -85,7 +85,7 @@ public class PassiveStatusValue {
     /**
      * <p>getKey</p>
      *
-     * @return a {@link org.opennms.netmgt.config.PassiveStatusKey} object.
+     * @return a {@link org.opennms.netmgt.passive.PassiveStatusKey} object.
      */
     public PassiveStatusKey getKey() {
         return m_key;

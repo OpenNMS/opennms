@@ -40,9 +40,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.opennms.core.collections.LazySet;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.SIUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;

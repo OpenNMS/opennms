@@ -26,7 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.passive;
+
+import org.opennms.netmgt.passive.PassiveStatusKey;
 
 import junit.framework.TestCase;
 
