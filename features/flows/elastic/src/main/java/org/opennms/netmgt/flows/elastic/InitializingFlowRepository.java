@@ -34,7 +34,7 @@ import java.util.Objects;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
-import org.opennms.netmgt.flows.config.IndexSettings;
+import org.opennms.netmgt.flows.api.IndexSettings;
 
 import io.searchbox.client.JestClient;
 

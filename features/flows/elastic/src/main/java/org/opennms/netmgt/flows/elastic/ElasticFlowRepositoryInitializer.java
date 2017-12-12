@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.opennms.netmgt.flows.config.IndexSettings;
+import org.opennms.netmgt.flows.api.IndexSettings;
 import org.opennms.netmgt.flows.elastic.template.CachingTemplateLoader;
 import org.opennms.netmgt.flows.elastic.template.DefaultTemplateLoader;
 import org.opennms.netmgt.flows.elastic.template.MergingTemplateLoader;

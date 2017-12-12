@@ -31,7 +31,7 @@ package org.opennms.netmgt.flows.elastic.template;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opennms.netmgt.flows.config.IndexSettings;
+import org.opennms.netmgt.flows.api.IndexSettings;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

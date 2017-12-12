@@ -31,7 +31,7 @@ package org.opennms.netmgt.flows.elastic.template;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.opennms.netmgt.flows.config.IndexSettings;
+import org.opennms.netmgt.flows.api.IndexSettings;
 
 /**
  * Merges a template which is loaded from a delegate {@link TemplateLoader} with optional {@link IndexSettings}.

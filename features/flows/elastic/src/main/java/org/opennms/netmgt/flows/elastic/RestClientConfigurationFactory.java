@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import org.opennms.netmgt.flows.config.FlowConfiguration;
+import org.opennms.netmgt.flows.api.FlowConfiguration;
 import org.opennms.plugins.elasticsearch.rest.RestClientConfiguration;
 
 public class RestClientConfigurationFactory {

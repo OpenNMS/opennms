@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.config;
+package org.opennms.netmgt.flows.api;
 
 public interface FlowConfiguration {
         String getElasticUrl();

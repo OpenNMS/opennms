@@ -11,7 +11,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <reference id="flowConfiguration" interface="org.opennms.netmgt.flows.config.FlowConfiguration" availability="mandatory" />
+    <reference id="flowConfiguration" interface="org.opennms.netmgt.flows.api.FlowConfiguration" availability="mandatory" />
     <reference id="credentialsProvider" interface="org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider" availability="mandatory" />
 
     <!-- properties -->
@@ -38,7 +38,7 @@
         <argument ref="indexStrategyString"/>
     </bean>
 
-    <bean id="indexSettings" class="org.opennms.netmgt.flows.config.IndexSettings" factory-ref="flowConfiguration" factory-method="getIndexSettings" />
+    <bean id="indexSettings" class="org.opennms.netmgt.flows.api.IndexSettings" factory-ref="flowConfiguration" factory-method="getIndexSettings" />
 
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository">

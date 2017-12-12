@@ -44,7 +44,7 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.api.PersistenceException;
-import org.opennms.netmgt.flows.config.CacheSettings;
+import org.opennms.netmgt.flows.api.CacheSettings;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;

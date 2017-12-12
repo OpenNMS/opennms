@@ -26,12 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.config;
+package org.opennms.netmgt.flows.api;
 
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.flows.config.IndexSettings;
 
 public class IndexSettingsTest {
 

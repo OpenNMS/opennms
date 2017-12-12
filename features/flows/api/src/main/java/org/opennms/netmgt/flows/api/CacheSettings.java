@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.config;
+package org.opennms.netmgt.flows.api;
 
 public class CacheSettings {
     private long expireAfterSeconds;

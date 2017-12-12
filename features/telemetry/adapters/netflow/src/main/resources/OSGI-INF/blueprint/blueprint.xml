@@ -12,7 +12,7 @@
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 	<reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
-	<reference id="flowConfig" interface="org.opennms.netmgt.flows.config.FlowConfiguration" availability="mandatory" />
+	<reference id="flowConfig" interface="org.opennms.netmgt.flows.api.FlowConfiguration" availability="mandatory" />
 
 	<bean id="nodeInfoCacheSettings" factory-ref="flowConfig" factory-method="getNodeInfoCacheSettings"/>
 

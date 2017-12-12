@@ -44,19 +44,19 @@
         <argument value="elastic-credentials.xml" />
     </bean>
 
-    <bean id="nodeInfoCacheSettings" class="org.opennms.netmgt.flows.config.CacheSettings">
+    <bean id="nodeInfoCacheSettings" class="org.opennms.netmgt.flows.api.CacheSettings">
         <property name="expireAfterSeconds" value="${cache.nodeinfo.expireAfter}" />
         <property name="maxSize" value="${cache.nodeinfo.maxSize}" />
     </bean>
 
-    <bean id="indexSettings" class="org.opennms.netmgt.flows.config.IndexSettings">
+    <bean id="indexSettings" class="org.opennms.netmgt.flows.api.IndexSettings">
         <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
         <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
         <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
         <property name="routingPartitionSize" value="${settings.index.routing_partition_size}"/>
     </bean>
 
-    <bean id="flowConfig" class="org.opennms.netmgt.flows.config.internal.FlowConfigurationImpl">
+    <bean id="flowConfig" class="org.opennms.netmgt.flows.api.internal.FlowConfigurationImpl">
         <property name="elasticUrl" value="${elasticUrl}" />
         <property name="globalElasticUsername" value="${globalElasticUser}" />
         <property name="globalElasticPassword" value="${globalElasticPassword}" />
@@ -72,6 +72,6 @@
     </bean>
 
     <service ref="credentialsProvider" interface="org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider" />
-    <service ref="flowConfig" interface="org.opennms.netmgt.flows.config.FlowConfiguration" />
+    <service ref="flowConfig" interface="org.opennms.netmgt.flows.api.FlowConfiguration" />
 
 </blueprint>

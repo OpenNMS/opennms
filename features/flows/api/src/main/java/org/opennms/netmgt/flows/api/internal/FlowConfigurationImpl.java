@@ -26,11 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.config.internal;
+package org.opennms.netmgt.flows.api.internal;
 
-import org.opennms.netmgt.flows.config.CacheSettings;
-import org.opennms.netmgt.flows.config.FlowConfiguration;
-import org.opennms.netmgt.flows.config.IndexSettings;
+import org.opennms.netmgt.flows.api.CacheSettings;
+import org.opennms.netmgt.flows.api.FlowConfiguration;
+import org.opennms.netmgt.flows.api.IndexSettings;
 
 public class FlowConfigurationImpl implements FlowConfiguration {
 
