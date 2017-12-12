@@ -49,13 +49,9 @@ import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.protocol.types.Schema;
 import org.apache.kafka.common.protocol.types.Struct;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -67,12 +63,12 @@ import kafka.javaapi.TopicMetadata;
 import kafka.javaapi.TopicMetadataRequest;
 import kafka.javaapi.consumer.SimpleConsumer;
 
-public class KafkaOffsetProvider extends AbstractMessageConsumerManager implements InitializingBean {
+public class KafkaOffsetProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaOffsetProvider.class);
-    
+
     private KafkaOffsetConsumerRunner consumerRunner;
-    
+
     private final Properties kafkaConfig = new Properties();
 
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("kafka-offset-consumer-%d")
@@ -86,12 +82,10 @@ public class KafkaOffsetProvider extends AbstractMessageConsumerManager implemen
 
     private class KafkaOffsetConsumerRunner implements Runnable {
 
-        private final SinkModule<?, Message> module;
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final KafkaConsumer<byte[], byte[]> consumer;
 
-        public KafkaOffsetConsumerRunner(SinkModule<?, Message> module) {
-            this.module = module;
+        public KafkaOffsetConsumerRunner() {
             consumer = new KafkaConsumer<>(kafkaConfig);
         }
 
@@ -131,7 +125,6 @@ public class KafkaOffsetProvider extends AbstractMessageConsumerManager implemen
                                         consumerOffsetMap.put(topic, map);
                                     }
                                     map.put(group + "%" + partition, mon);
-                                    dispatch(module, mon);
 
                                 } catch (Exception e) {
                                     LOGGER.error("Exception while getting offset", e);
@@ -232,8 +225,7 @@ public class KafkaOffsetProvider extends AbstractMessageConsumerManager implemen
         }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    public void start() {
         // Set the defaults
         kafkaConfig.clear();
         kafkaConfig.put("group.id", SystemInfoUtils.getInstanceId());
@@ -260,21 +252,12 @@ public class KafkaOffsetProvider extends AbstractMessageConsumerManager implemen
                 kafkaConfig.put(kafkaConfigKey, entry.getValue());
             }
         }
-
-    }
-
-    @Override
-    protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
-        consumerRunner = new KafkaOffsetConsumerRunner(module);
+        consumerRunner = new KafkaOffsetConsumerRunner();
         executor.execute(consumerRunner);
-
     }
 
-    @Override
-    protected void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
+    public void stop() throws InterruptedException {
         consumerRunner.shutdown();
         closeConnection();
-
     }
-
 }

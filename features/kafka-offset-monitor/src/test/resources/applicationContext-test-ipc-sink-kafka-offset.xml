@@ -13,7 +13,6 @@
 
   <context:annotation-config />
 
-	<bean id="kafkaOffsetProvider" class="org.opennms.features.kafka.offset.KafkaOffsetProvider"
-		init-method="start" destroy-method="stop" />
+	<bean id="kafkaOffsetProvider" class="org.opennms.features.kafka.offset.KafkaOffsetProvider"/>
 
 </beans>
