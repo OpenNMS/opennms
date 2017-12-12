@@ -36,7 +36,7 @@ public class ProtocolMatcher implements Matcher {
     private final ProtocolType protocol;
 
     public ProtocolMatcher(String protocol) {
-        this.protocol = ProtocolType.valueOf(protocol);
+        this.protocol = ProtocolType.createFrom(protocol);
     }
 
     @Override

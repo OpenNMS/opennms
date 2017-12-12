@@ -12,7 +12,7 @@
 ">
 
     <!-- DAO -->
-    <bean id="classificationRuleDao" class="org.opennms.netmgt.flows.classification.persistence.DummyClassificationRuleDAO"/>
+    <bean id="classificationRuleDao" class="org.opennms.netmgt.flows.classification.persistence.StaticRuleClassificationDAO"/>
 
     <!-- Classification Engine -->
     <bean id="defaultClassificationEngine" class="org.opennms.netmgt.flows.classification.DefaultClassificationEngine">

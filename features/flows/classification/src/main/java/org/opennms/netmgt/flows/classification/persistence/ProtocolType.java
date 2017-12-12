@@ -61,7 +61,18 @@ public enum ProtocolType {
     ISO_TP4(29),
 
     // ...
-    RESERVED(255);
+
+    DDP(37),
+
+    // ...
+
+    SCTP(132),
+
+    // ...
+
+    RESERVED(255),
+
+    DIVERT(258);
 
     private final int number;
 
@@ -76,6 +87,15 @@ public enum ProtocolType {
     public static ProtocolType createFrom(int protocol) {
         for (ProtocolType p : values()) {
             if (p.getNumber() == protocol) {
+                return p;
+            }
+        }
+        throw new IllegalArgumentException("No protocol found for " + protocol);
+    }
+
+    public static ProtocolType createFrom(String protocol) {
+        for (ProtocolType p : values()) {
+            if (p.name().equalsIgnoreCase(protocol)) {
                 return p;
             }
         }

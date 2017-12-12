@@ -38,6 +38,7 @@ import org.opennms.netmgt.flows.classification.matcher.Matcher;
 import org.opennms.netmgt.flows.classification.matcher.PortMatcher;
 import org.opennms.netmgt.flows.classification.matcher.ProtocolMatcher;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
 /**
@@ -130,5 +131,15 @@ public class Rule {
         }
 
         return new CombinedClassifier(name, matchers);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(getClass())
+            .add("name", name)
+            .add("ipAddress", ipAddress)
+            .add("port", port)
+            .add("protocol", protocol)
+            .toString();
     }
 }
