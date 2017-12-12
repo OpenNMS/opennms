@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,29 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.smoketest;
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-%>
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Help"/>
-    <jsp:param name="headTitle" value="Help"/>
-    <jsp:param name="breadcrumb" value="Help"/>
-</jsp:include>
+public class AboutPageIT extends OpenNMSSeleniumTestCase {
 
-<div class="col-md-4">
-    <jsp:include page="/includes/help-documentation.jsp" flush="false" />
-</div>
-<div class="col-md-4">
-    <jsp:include page="/includes/help-contact.jsp" flush="false" />
-</div>
-<div class="col-md-4">
-    <jsp:include page="/includes/help-software-management.jsp" flush="false" />
-</div>
+    @Before
+    public void setUp() throws Exception {
+        m_driver.get(getBaseUrl() + "opennms/about/index.jsp");
+    }
 
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+    @Test
+    public void hasAllPanels() throws Exception {
+        assertEquals(4, countElementsMatchingCss("h3.panel-title"));
+    }
+
+    @Test
+    public void hasContent() throws Exception {
+        assertNotNull(m_driver.findElement(By.xpath("//h3[text()='License and Copyright']")));
+        assertNotNull(m_driver.findElement(By.xpath("//th[text()='Version:']")));
+    }
+}

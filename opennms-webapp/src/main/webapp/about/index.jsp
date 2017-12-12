@@ -44,7 +44,7 @@
 
 <%
     boolean role = request.isUserInRole(Authentication.ROLE_ADMIN);
-    
+
     final DBUtils d = new DBUtils();
     String dbName;
     String dbVersion;
@@ -59,23 +59,22 @@
    	} finally {
    	  d.cleanUp();
    	}
-%> 
+%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="About" />
   <jsp:param name="headTitle" value="About" />
-  <jsp:param name="breadcrumb" value="<a href='support/index.htm'>Support</a>" />
   <jsp:param name="breadcrumb" value="About" />
 </jsp:include>
 
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title">OpenNMS Web Console</h3>
+      <h3 class="panel-title">Version Details</h3>
     </div>
 <table class="table table-condensed">
   <tr>
     <th>Version:</th>
-    <td><%=Vault.getProperty("version.display")%></td>
+    <td><a href="http://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html" target="_blank" title="Release Notes"><%=Vault.getProperty("version.display")%></a></td>
   </tr>
 
   <tr>
