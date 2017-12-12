@@ -39,7 +39,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.HttpHost;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

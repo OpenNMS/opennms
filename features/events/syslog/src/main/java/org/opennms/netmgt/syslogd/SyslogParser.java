@@ -29,7 +29,6 @@
 package org.opennms.netmgt.syslogd;
 
 import java.lang.reflect.Constructor;
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
@@ -41,11 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.time.ZonedDateTimeBuilder;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
-import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -33,8 +33,6 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;

@@ -35,19 +35,19 @@ import java.util.Objects;
 
 public class AndFilter<T> implements Filter<T> {
 
-	private final List<Filter> andFilters;
+	private final List<Filter<T>> andFilters;
 
-    public AndFilter(Filter... filters) {
+    public AndFilter(Filter<T>... filters) {
     	this(filters == null ? new ArrayList<>() : Arrays.asList(filters));
     }
     
-	public AndFilter(List<Filter> andFilters){
+	public AndFilter(List<Filter<T>> andFilters){
 		this.andFilters= Objects.requireNonNull(andFilters);
 	}
 
     @Override
     public boolean apply(T value) {
-		for(Filter f : andFilters) {
+		for(Filter<T> f : andFilters) {
 			if(! f.apply(value)) {
 				return false;
 			}

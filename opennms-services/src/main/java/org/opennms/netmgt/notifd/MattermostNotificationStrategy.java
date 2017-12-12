@@ -34,8 +34,6 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.opennms.netmgt.model.notifd.NotificationStrategy;
-
 /**
  * <p>MattermostNotificationStrategy class.</p>
  *

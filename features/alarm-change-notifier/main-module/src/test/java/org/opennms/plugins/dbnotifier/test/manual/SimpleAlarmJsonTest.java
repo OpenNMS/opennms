@@ -28,13 +28,7 @@
 
 package org.opennms.plugins.dbnotifier.test.manual;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

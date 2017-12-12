@@ -28,8 +28,6 @@
 
 package org.opennms.core.rpc.jms;
 
-import org.opennms.core.logging.Logging;
-import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.rpc.common.RpcStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

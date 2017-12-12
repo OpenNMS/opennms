@@ -34,7 +34,6 @@ import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.AttributeStatisticVisitor;
 import org.opennms.netmgt.model.AttributeVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;
-import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

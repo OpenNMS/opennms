@@ -29,7 +29,6 @@
 package org.opennms.netmgt.model;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.rrd.RrdRepository;

@@ -53,7 +53,7 @@ public class SimpleServiceLocator implements ServiceLocator {
 
     public void addService(Object service) {
         // for now we do it the simple way
-        for (Class eachInterface : service.getClass().getInterfaces()) {
+        for (Class<?> eachInterface : service.getClass().getInterfaces()) {
             services.putIfAbsent(eachInterface, new ArrayList<>());
             services.get(eachInterface).add(service);
         }

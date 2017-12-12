@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.joda.time.Duration;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

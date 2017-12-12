@@ -36,7 +36,6 @@ import java.util.Set;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
 

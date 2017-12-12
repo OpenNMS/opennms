@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.List;
-
 import org.opennms.netmgt.dao.api.ScanReportDao;
 import org.opennms.netmgt.model.ScanReport;
 
