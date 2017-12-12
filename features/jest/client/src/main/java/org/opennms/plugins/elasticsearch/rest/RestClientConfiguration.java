@@ -33,11 +33,17 @@ public class RestClientConfiguration {
     private String globalElasticUsername;
     private String globalElasticPassword;
     private String elasticUrl;
-    private int defaultMaxTotalConnectionsPerRoute;
-    private int maxTotalConnection;
-    private boolean nodeDiscovery;
-    private int nodeDiscoveryFrequency;
+    private Integer defaultMaxTotalConnectionsPerRoute;
+    private Integer maxTotalConnection;
+    private Boolean nodeDiscovery;
+    private Integer nodeDiscoveryFrequency;
     private String proxy;
+    private Integer connectionTimeout;
+    private Integer maxConnectionIdleTimeout;
+    private Boolean multithreaded;
+    private Integer readTimeout;
+    private Integer retries;
+    private boolean multiThreaded;
 
     public String getGlobalElasticUsername() {
         return globalElasticUsername;
@@ -63,7 +69,7 @@ public class RestClientConfiguration {
         this.elasticUrl = elasticUrl;
     }
 
-    public int getDefaultMaxTotalConnectionsPerRoute() {
+    public Integer getDefaultMaxTotalConnectionsPerRoute() {
         return defaultMaxTotalConnectionsPerRoute;
     }
 
@@ -71,7 +77,7 @@ public class RestClientConfiguration {
         this.defaultMaxTotalConnectionsPerRoute = defaultMaxTotalConnectionsPerRoute;
     }
 
-    public int getMaxTotalConnection() {
+    public Integer getMaxTotalConnection() {
         return maxTotalConnection;
     }
 
@@ -79,15 +85,19 @@ public class RestClientConfiguration {
         this.maxTotalConnection = maxTotalConnection;
     }
 
-    public boolean isNodeDiscovery() {
+    public Boolean isNodeDiscovery() {
         return nodeDiscovery;
+    }
+
+    public Boolean getNodeDiscovery() {
+        return this.nodeDiscovery;
     }
 
     public void setNodeDiscovery(boolean nodeDiscovery) {
         this.nodeDiscovery = nodeDiscovery;
     }
 
-    public int getNodeDiscoveryFrequency() {
+    public Integer getNodeDiscoveryFrequency() {
         return nodeDiscoveryFrequency;
     }
 
@@ -101,5 +111,53 @@ public class RestClientConfiguration {
 
     public void setProxy(String proxy) {
         this.proxy = proxy;
+    }
+
+    public Integer getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public Integer getMaxConnectionIdleTimeout() {
+        return maxConnectionIdleTimeout;
+    }
+
+    public Boolean isMultiThreaded() {
+        return multithreaded;
+    }
+
+    public Integer getReadTimeout() {
+        return readTimeout;
+    }
+
+    public Integer getRetries() {
+        return retries;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    public void setMaxConnectionIdleTimeout(int maxConnectionIdleTimeout) {
+        this.maxConnectionIdleTimeout = maxConnectionIdleTimeout;
+    }
+
+    public Boolean getMultiThreaded() {
+        return multithreaded;
+    }
+
+    public void setMultithreaded(boolean multithreaded) {
+        this.multithreaded = multithreaded;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+    public void setMultiThreaded(boolean multiThreaded) {
+        this.multiThreaded = multiThreaded;
     }
 }
