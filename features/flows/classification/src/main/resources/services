@@ -12540,7 +12540,6 @@ d-fence         8555/udp     # SYMAX D-FENCE
 d-fence         8555/tcp     # SYMAX D-FENCE
 #                           Thomas Geisel <tgeisel@symax.de> January 2003
 #               8556-8667   Unassigned
-natd            8668/divert # Network Address Translation
 #               8669-8732   Unassigned
 oap-admin       8567/tcp    # Object Access Protocol Administration
 oap-admin       8567/udp    # Object Access Protocol Administration
