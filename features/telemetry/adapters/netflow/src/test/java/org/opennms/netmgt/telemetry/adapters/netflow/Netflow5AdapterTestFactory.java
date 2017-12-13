@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,8 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.flows.classification.DefaultClassificationEngine;
+import org.opennms.netmgt.flows.classification.persistence.StaticRuleClassificationDAO;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
@@ -93,6 +96,7 @@ public class Netflow5AdapterTestFactory implements AdapterFactory {
             delegateFactory.setMetricRegistry(createMetricRegistry());
             delegateFactory.setInterfaceToNodeCache(interfaceToNodeCache);
             delegateFactory.setFlowRepository(createFlowRepository());
+            delegateFactory.setClassificationEngine(new DefaultClassificationEngine(() -> Collections.emptyList()));
         }
         return delegateFactory.createAdapter(protocol, properties);
     }

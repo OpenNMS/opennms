@@ -125,6 +125,7 @@
            <encoding>UTF-8</encoding>
            <nonFilteredFileExtensions>
              <nonFilteredFileExtension>raw</nonFilteredFileExtension>
+             <nonFilteredFileExtension>dat</nonFilteredFileExtension>
            </nonFilteredFileExtensions>
          </configuration>
       </plugin>

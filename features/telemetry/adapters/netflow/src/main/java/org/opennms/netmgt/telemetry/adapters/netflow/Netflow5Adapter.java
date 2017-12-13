@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.api.PersistenceException;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
@@ -105,6 +107,8 @@ public class Netflow5Adapter implements Adapter {
     private FlowRepository flowRepository;
 
     private final Netflow5Converter converter = new Netflow5Converter();
+
+    private ClassificationEngine classificationEngine;
 
     /**
      * Flows/second throughput
@@ -236,6 +240,10 @@ public class Netflow5Adapter implements Adapter {
         this.flowRepository = flowRepository;
     }
 
+    public void setClassificationEngine(ClassificationEngine classificationEngine) {
+        this.classificationEngine = classificationEngine;
+    }
+
     private NetflowPacket parse(TelemetryMessage message) {
         // Create NetflowPacket which delegates all calls to the byte array
         final NetflowPacket flowPacket = new NetflowPacket(message.getByteArray());
@@ -287,11 +295,15 @@ public class Netflow5Adapter implements Adapter {
                 // Metadata from message
                 document.setExporterAddress(sourceAddress);
                 document.setLocation(location);
+                document.setInitiator(isInitiator(document));
 
                 // Node data
                 getNodeInfoFromCache(location, sourceAddress).ifPresent(node -> document.setExporterNodeInfo(node));
                 getNodeInfoFromCache(location, document.getIpv4DestAddress()).ifPresent(node -> document.setDestNodeInfo(node));
                 getNodeInfoFromCache(location, document.getIpv4SourceAddress()).ifPresent(node -> document.setSourceNodeInfo(node));
+
+                // Apply Application mapping
+                document.setApplication(classificationEngine.classify(document));
             });
             return null;
         });
@@ -341,5 +353,19 @@ public class Netflow5Adapter implements Adapter {
                 LOG.error("Flow {} could not be persisted. Reason: {}", failedItem.getItem(), failedItem.getCause().getMessage(), failedItem.getCause());
             });
         }
+    }
+
+    // Determine if the provided flow is the initiator.
+    // Yes, this may not be 100% accurate, but is a very easy way of defining the direction of the flow in most cases.
+    protected static boolean isInitiator(NetflowDocument document) {
+        if (document.getSourcePort()  > document.getDestPort()) {
+            return true;
+        } else if (document.getSourcePort() == document.getDestPort()) {
+            // Tie breaker
+            final BigInteger sourceAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getIpv4SourceAddress()));
+            final BigInteger destAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getIpv4DestAddress()));
+            return sourceAddressAsInt.compareTo(destAddressAsInt) > 0;
+        }
+        return false;
     }
 }

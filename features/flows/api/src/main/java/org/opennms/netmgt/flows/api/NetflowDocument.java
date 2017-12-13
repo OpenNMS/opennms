@@ -85,6 +85,10 @@ public class NetflowDocument extends FlowDocument {
 
     private int destMask;
 
+    private String application;
+
+    private boolean initiator;
+
     private NodeInfo exporterNodeInfo;
     private NodeInfo sourceNodeInfo;
     private NodeInfo destNodeInfo;
@@ -327,5 +331,21 @@ public class NetflowDocument extends FlowDocument {
 
     public NodeInfo getDestNodeInfo() {
         return destNodeInfo;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    public boolean isInitiator() {
+        return initiator;
+    }
+
+    public void setInitiator(boolean initiator) {
+        this.initiator = initiator;
     }
 }

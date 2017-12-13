@@ -103,6 +103,12 @@
         },
         "dest_mask": {
           "type": "integer"
+        },
+        "initiator": {
+          "type": "boolean"
+        },
+        "application": {
+          "type": "keyword"
         }
       }
     }
