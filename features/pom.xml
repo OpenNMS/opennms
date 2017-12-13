@@ -117,8 +117,6 @@
     <!-- Data Choices -->
     <module>datachoices</module>
 
-    <module>kafka-offset-monitor</module>
-
     <!-- Other projects -->
     <module>geocoder</module>
     <module>geolocation</module>

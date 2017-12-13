@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.offset;
+package org.opennms.core.ipc.sink.kafka.offset;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -49,6 +49,7 @@ import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.protocol.types.Schema;
 import org.apache.kafka.common.protocol.types.Struct;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.opennms.core.ipc.sink.kafka.KafkaSinkConstants;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,9 +247,9 @@ public class KafkaOffsetProvider {
             }
             final String key = (String) keyAsObject;
 
-            if (key.length() > KafkaOffsetConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length()
-                    && key.startsWith(KafkaOffsetConstants.KAFKA_CONFIG_SYS_PROP_PREFIX)) {
-                final String kafkaConfigKey = key.substring(KafkaOffsetConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length());
+            if (key.length() > KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length()
+                    && key.startsWith(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX)) {
+                final String kafkaConfigKey = key.substring(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length());
                 kafkaConfig.put(kafkaConfigKey, entry.getValue());
             }
         }

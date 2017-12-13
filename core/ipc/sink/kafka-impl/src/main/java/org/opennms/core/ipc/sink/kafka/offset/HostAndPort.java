@@ -26,32 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.offset;
+package org.opennms.core.ipc.sink.kafka.offset;
 
-public interface KafkaOffsetConstants {
+public class HostAndPort {
 
-    static final String KAFKA_TOPIC_PREFIX = "Sink";
+    private String host;
+    private int port;
 
-    static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.sink.kafka";
+    public final static HostAndPort fromString(final String hostWithPort) {
 
-    static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
+        int i = hostWithPort.lastIndexOf(":");
+        if (i < 0 || (hostWithPort.length() == i)) {
+            return null;
+        }
+        String[] hostWithPortArray = { hostWithPort.substring(0, i), hostWithPort.substring(i + 1) };
 
-    static final String OFFSET = "offset";
+        HostAndPort hostAndPort = new HostAndPort();
+        hostAndPort.setHost(hostWithPortArray[0]);
+        hostAndPort.setPort(Integer.parseInt(hostWithPortArray[1]));
+        return hostAndPort;
 
-    static final String TOPIC = "topic";
+    }
 
-    static final String GROUP = "group";
+    public String getHost() {
+        return host;
+    }
 
-    static final String PARTITION = "partition";
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-    static final int TIMEOUT = 100000;
+    public int getPort() {
+        return port;
+    }
 
-    static final int BUFFERSIZE = 64 * 1024;
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-    static final int POLL_INTERVAL = 500;
-
-    static final String OFFSETS_TOPIC = "__consumer_offsets";
-    
-    static final String CLIENT_NAME = "OpenNMS-Kafka-Monitor";
+    @Override
+    public String toString() {
+        return "HostAndPort [host=" + host + ", port=" + port + "]";
+    }
 
 }

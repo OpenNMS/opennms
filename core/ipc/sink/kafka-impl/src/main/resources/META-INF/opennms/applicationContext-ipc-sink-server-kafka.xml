@@ -16,5 +16,8 @@
   <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.KafkaMessageConsumerManager" />
 
   <bean id="kafkaLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.kafka.KafkaLocalMessageDispatcherFactory" />
+  
+  <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.offset.KafkaOffsetProvider"
+		init-method="start" destroy-method="stop" />
 
 </beans>

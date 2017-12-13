@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.offset;
+package org.opennms.core.ipc.sink.kafka.offset;
 
 import java.util.Arrays;
 import java.util.Properties;

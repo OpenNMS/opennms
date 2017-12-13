@@ -26,47 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.offset;
+package org.opennms.core.ipc.sink.kafka.offset;
 
-public class HostAndPort {
+public interface KafkaOffsetConstants {
 
-    private String host;
-    private int port;
+    static final String OFFSET = "offset";
 
-    public final static HostAndPort fromString(final String hostWithPort) {
+    static final String TOPIC = "topic";
 
-        int i = hostWithPort.lastIndexOf(":");
-        if (i < 0 || (hostWithPort.length() == i)) {
-            return null;
-        }
-        String[] hostWithPortArray = { hostWithPort.substring(0, i), hostWithPort.substring(i + 1) };
+    static final String GROUP = "group";
 
-        HostAndPort hostAndPort = new HostAndPort();
-        hostAndPort.setHost(hostWithPortArray[0]);
-        hostAndPort.setPort(Integer.parseInt(hostWithPortArray[1]));
-        return hostAndPort;
+    static final String PARTITION = "partition";
 
-    }
+    static final int TIMEOUT = 100000;
 
-    public String getHost() {
-        return host;
-    }
+    static final int BUFFERSIZE = 64 * 1024;
 
-    public void setHost(String host) {
-        this.host = host;
-    }
+    static final int POLL_INTERVAL = 500;
 
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    @Override
-    public String toString() {
-        return "HostAndPort [host=" + host + ", port=" + port + "]";
-    }
+    static final String OFFSETS_TOPIC = "__consumer_offsets";
+    
+    static final String CLIENT_NAME = "OpenNMS-Kafka-Monitor";
 
 }

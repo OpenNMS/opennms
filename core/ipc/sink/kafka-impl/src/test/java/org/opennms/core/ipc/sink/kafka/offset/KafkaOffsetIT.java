@@ -26,13 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.offset;
+package org.opennms.core.ipc.sink.kafka.offset;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +40,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.ipc.sink.kafka.KafkaSinkConstants;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
+
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -64,9 +63,9 @@ public class KafkaOffsetIT {
 
     @Before
     public void setup() throws Exception {
-        System.setProperty(String.format("%sbootstrap.servers", KafkaOffsetConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
+        System.setProperty(String.format("%sbootstrap.servers", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
                 kafkaServer.getKafkaConnectString());
-        System.setProperty(String.format("%sauto.offset.reset", KafkaOffsetConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
+        System.setProperty(String.format("%sauto.offset.reset", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
                 "earliest");
         // offsetProvider needs system properties, so we set these manually insted of spring doing it for us
         offsetProvider = new KafkaOffsetProvider();
