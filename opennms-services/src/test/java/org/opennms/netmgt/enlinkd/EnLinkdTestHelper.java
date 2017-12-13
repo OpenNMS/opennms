@@ -276,42 +276,42 @@ public abstract class EnLinkdTestHelper {
         Set<BridgeForwardingTableEntry> bftE = new HashSet<BridgeForwardingTableEntry>();
 
         String[] macsonAport4= {
-                "00a2ee425191"
+                "a04aee425191"
         };
 
         String[] macsonAport5= {
-                "002699b52703",
-                "002699b52749"
+                "a05a99b52703",
+                "a05a99b52749"
         };
 
         String[] macsonAport52= {
-                "001101030104",
-                "002584f84401",
-                "000c29f49b80",
-                "6c9ced30816a",
-                "d4ca6d0e9976"
+                "a52a01030104",
+                "a52a84f84401",
+                "a52a29f49b80",
+                "a52aed30816a",
+                "a52a6d0e9976"
         };
 
         String[] macsonBport3= {
-                "001763010d4f"
+                "b03b63010d4f"
         };
 
         String[] macsonBport4= {
-                "000c427bfee3",
-                "000c42f213af",
-                "00176301050f"
+                "b04b427bfee3",
+                "b04b42f213af",
+                "b04b6301050f"
         };
         
         String[] macsonCport19 = {
-                "4c00822458d2"
+                "c19c822458d2"
         };
 
         String[] macsonCport24 = {
-                "000e83f6120a"
+                "c24c83f6120a"
         };
 
         String[] macsonEport23 = {
-                "0025454ac907"
+                "e23e454ac907"
         };
 
         String[] macsOnWirelessSegment = {
@@ -323,47 +323,47 @@ public abstract class EnLinkdTestHelper {
                 "001d454777dc",
                 "001d71d5e4e7",
                 "0021a4357254",
-                "c4641393f352",
-                "d4ca6d147c96",
-                "d4ca6d69c484",
-                "d4ca6d82ab08",
-                "d4ca6d88234f",
-                "d4ca6d954b3b",
-                "d4ca6da2d626",
-                "d4ca6ded84c8",
-                "d4ca6ded84d6",
-                "d4ca6dedd059",
-                "d4ca6df7f801",
-                "e48d8cf63372"
+                "00641393f352",
+                "00ca6d147c96",
+                "00ca6d69c484",
+                "00ca6d82ab08",
+                "00ca6d88234f",
+                "00ca6d954b3b",
+                "00ca6da2d626",
+                "00ca6ded84c8",
+                "00ca6ded84d6",
+                "00ca6dedd059",
+                "00ca6df7f801",
+                "008d8cf63372"
         };
 
         String[] forwardersABCD = {
-                "0022557fd894"      
+                "fabcd57fd894"      
         };
 
         String[] forwardersABD = {
-                "0012cf68f800",
-                "001763010792"
+                "fabd0f68f800",
+                "fabd03010792"
         };
 
         String[] forwardersBE = {
-                "00e0b1bd265e",
+                "fbe0b1bd265e",
         };
 
         String[] forwardersD = {
-                "00e0b1bd2f5e"
+                "fd00b1bd2f5e"
         };
 
         String[] forwardersE = {
-                "00e0b1bd2f5f",
-                "000c42db4e11"
+                "fe00b1bd2f5f",
+                "fe0042db4e11"
         };
 
-        String macA="5017ff5b2980";
-        String macB="00e0b1bd2f5c";
-        String macC="00e0b1bd2652";
-        String macD="0012cf5d2120";
-        String macE="0012cf3f4ee0";
+        String macA="aaaa005b2980";
+        String macB="bbbb00bd2f5c";
+        String macC="cccc00bd2652";
+        String macD="dddd005d2120";
+        String macE="eeee03f4ee0";
         
         public FiveSwitchTopology() {
             nodeA.setId(nodeAId);
