@@ -49,7 +49,9 @@ import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.protocol.types.Schema;
 import org.apache.kafka.common.protocol.types.Struct;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.kafka.KafkaSinkConstants;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +95,7 @@ public class KafkaOffsetProvider {
         @Override
         public void run() {
             try {
-
+                Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
                 consumer.subscribe(Arrays.asList(KafkaOffsetConstants.OFFSETS_TOPIC));
                 LOGGER.info("Connected to Kafka consumer offset topic");
                 Schema schema = new Schema(new Field("group", Schema.STRING),

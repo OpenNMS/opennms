@@ -557,8 +557,10 @@
       <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.9</bundle>
       <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
       <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_2.10/0.10.1.1_1</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/0.10.1.1_1</bundle>
+<!--       <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_2.10/0.10.1.1_1</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/0.10.1.1_1</bundle> -->
+      <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka_2.10/0.10.1.0$Bundle-Version=0.10.1.0&amp;Export-Package=*;-noimport:=true:version="0.10.1.0"</bundle>
+      <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-clients/0.10.1.0$Bundle-Version=0.10.1.0&amp;Export-Package=*;-noimport:=true:version="0.10.1.0"</bundle>
     </feature>
 
     <feature name='opennms-aws-sqs' description="OpenNMS :: Features :: AWS SQS" version="${project.version}">
