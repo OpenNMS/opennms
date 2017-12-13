@@ -37,9 +37,13 @@ import java.util.Set;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SharedSegment implements BridgeTopology{
     
+    private static final Logger LOG = LoggerFactory.getLogger(SharedSegment.class);
+
     public static List<BridgeBridgeLink> getBridgeBridgeLinks(SharedSegment segment) throws BridgeTopologyException {
         BridgePort designatedPort = segment.getDesignatedPort();
         OnmsNode designatedNode = new OnmsNode();
@@ -77,6 +81,40 @@ public class SharedSegment implements BridgeTopology{
         return maclinks;
     }
 
+    public static void remove(SharedSegment segment, Set<String> macs, Set<BridgePort> ports) {
+        segment.getBridgePortsOnSegment().removeAll(ports);
+        segment.getMacsOnSegment().removeAll(macs);
+    }
+    
+    public static Set<BridgeForwardingTableEntry> mergeAndGetForwarders(SharedSegment segment, Set<String> macs, Set<BridgePort> ports ) {
+        Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
+
+        for (String mac: segment.getMacsOnSegment()) {
+            if (macs.contains(mac)) {
+                continue;
+            }
+            for (BridgePort port: segment.getBridgePortsOnSegment()) {
+                forwarders.add(BridgeForwardingTableEntry.getFromBridgePort(port, mac));
+            }
+                
+        }
+        for (String mac: macs) {
+            if (segment.getMacsOnSegment().contains(mac)) {
+                continue;
+            }
+            for (BridgePort port: ports) {
+                forwarders.add(BridgeForwardingTableEntry.getFromBridgePort(port, mac));
+            }
+        }        
+        segment.merge(macs, ports);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("mergeAndGetForwarders: ->\n-{}", 
+              BridgeForwardingTableEntry.printTopology(forwarders));
+        }
+
+        return forwarders;
+    }
+    
     public static SharedSegment createFrom(BridgeMacLink link) throws BridgeTopologyException {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeMacLink(link));
@@ -111,7 +149,7 @@ public class SharedSegment implements BridgeTopology{
     
     public static SharedSegment createAndAddToBroadcastDomain(BroadcastDomain domain, 
             Set<BridgePort> ports, Set<String> macs, 
-            Integer designatedBridge) throws BridgeTopologyException {
+            Integer designatedBridge)  {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().addAll(ports);
         segment.getMacsOnSegment().addAll(macs);
@@ -151,10 +189,7 @@ public class SharedSegment implements BridgeTopology{
         
     }
                     
-    public boolean setDesignatedBridge(Integer designatedBridge) throws BridgeTopologyException {
-        if (designatedBridge == null) { 
-            throw new BridgeTopologyException("Designated Bridge NodeId cannot be null", this);
-        }
+    public boolean setDesignatedBridge(Integer designatedBridge) {
         m_designatedBridgeId = designatedBridge;
             return true;
     }
@@ -196,47 +231,11 @@ public class SharedSegment implements BridgeTopology{
         return nodes;
     }
 
-    public void retain(Set<String> macs, BridgePort dlink) throws BridgeTopologyException {
-        if (dlink == null) {
-            throw new BridgeTopologyException("SharedSegment: retain. BridgePort cannot be null", this);
-        }
-        if (macs == null) {
-            throw new BridgeTopologyException("SharedSegment: retain. macs cannot be null", this);
-        }
-        m_portsOnSegment.add(dlink);
+    public void merge(Set<String> macs, Set<BridgePort> ports) {
+        m_portsOnSegment.addAll(ports);
         m_macsOnSegment.retainAll(macs);
     }
-    
-    public void assign(Set<String> macs, BridgePort dlink) throws BridgeTopologyException {
-        if (dlink == null) {
-            throw new BridgeTopologyException("SharedSegment: assign. BridgePort cannot be null", this);
-        }
-        if (macs == null) {
-            throw new BridgeTopologyException("SharedSegment: assign. macs cannot be null", this);
-        }
-        m_portsOnSegment.add(dlink);
-        m_macsOnSegment = macs;
-    }
-
-    //FIXME what happens when i remove designated bridge?
-    //FIXME and also if the shared is empty
-    public boolean removeBridge(Integer bridgeId) throws BridgeTopologyException {
-        if (bridgeId == null ) {
-            return false;
-        }
-        if (m_portsOnSegment.isEmpty()) {
-            return false;
-        }
-        BridgePort bridgetoremove = getBridgePort(bridgeId);
-        if ( bridgetoremove == null ) {
-            return false;
-        }
-        if (m_designatedBridgeId != null && m_designatedBridgeId.intValue() == bridgeId.intValue()) {
-            m_designatedBridgeId = null;
-        }
-        return m_portsOnSegment.remove(bridgetoremove);
-    }
-        
+            
     public Set<String> getMacsOnSegment() {
         return m_macsOnSegment;
     }

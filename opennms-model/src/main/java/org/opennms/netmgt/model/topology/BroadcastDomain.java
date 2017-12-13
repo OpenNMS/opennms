@@ -317,7 +317,7 @@ public class BroadcastDomain implements BridgeTopology {
             }
         }
         m_topology = topology;
-
+        bridge.setRootPort(null);
     }
 
     public Set<BridgeForwardingTableEntry> calculateRootBFT() throws BridgeTopologyException {

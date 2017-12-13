@@ -176,6 +176,7 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
         bp.setBridgePort(port.getBridgePort());
         bp.setBridgePortIfIndex(port.getBridgePortIfIndex());
         bp.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
+        bp.setMacAddress(macAddress);
         bp.setVlan(port.getVlan());
         return bp;
     }
