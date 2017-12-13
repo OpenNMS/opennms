@@ -26,76 +26,61 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification;
+package org.opennms.netmgt.flows.classification.persistence;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.flows.classification.persistence.Protocol;
+import com.google.common.base.Preconditions;
 
-public class ClassificationRequest {
+public class Protocol {
+    private int decimal;
+    private String keyword;
+    private String description;
 
-    private int port;
-    private Protocol protocol;
-    private String ipAddress;
-    private String location;
-
-    public ClassificationRequest(String location, int port, String ipAddress, Protocol protocol) {
-        this.location = location;
-        this.port = port;
-        this.ipAddress = ipAddress;
-        this.protocol = protocol;
+    public Protocol(int decimal, String keyword, String description) {
+        Objects.requireNonNull(keyword);
+        Preconditions.checkArgument(decimal >= 0, "decimal must be >= 0");
+        this.decimal = decimal;
+        this.keyword = keyword;
+        this.description = description;
     }
 
-    public ClassificationRequest() {
-
+    public int getDecimal() {
+        return decimal;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setDecimal(int decimal) {
+        this.decimal = decimal;
     }
 
-    public int getPort() {
-        return port;
+    public String getKeyword() {
+        return keyword;
     }
 
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
-    public Protocol getProtocol() {
-        return protocol;
+    public String getDescription() {
+        return description;
     }
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ClassificationRequest that = (ClassificationRequest) o;
-        boolean equals = Objects.equals(location, that.location)
-                && Objects.equals(port, that.port)
-                && Objects.equals(protocol, that.protocol)
-                && Objects.equals(ipAddress, that.ipAddress);
-        return equals;
+        Protocol protocol = (Protocol) o;
+        return Objects.equals(decimal, protocol.decimal)
+                && Objects.equals(keyword, protocol.keyword)
+                && Objects.equals(description, protocol.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, port, protocol, ipAddress);
+        return Objects.hash(decimal, keyword, description);
     }
 }

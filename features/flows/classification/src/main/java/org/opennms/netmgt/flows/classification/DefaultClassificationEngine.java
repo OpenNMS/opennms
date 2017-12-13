@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.classification.classifier.Classifier;
 import org.opennms.netmgt.flows.classification.persistence.ClassificationRuleDAO;
-import org.opennms.netmgt.flows.classification.persistence.ProtocolType;
+import org.opennms.netmgt.flows.classification.persistence.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.Rule;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
@@ -91,7 +91,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
 
     protected static ClassificationRequest createClassificationRequest(NetflowDocument document) {
         final ClassificationRequest request = new ClassificationRequest();
-        request.setProtocol(ProtocolType.createFrom(document.getIpProtocol()));
+        request.setProtocol(Protocols.getProtocol(document.getIpProtocol()));
         request.setLocation(document.getLocation());
 
         // Decide whether to use source or dest address/port to determine application mapping

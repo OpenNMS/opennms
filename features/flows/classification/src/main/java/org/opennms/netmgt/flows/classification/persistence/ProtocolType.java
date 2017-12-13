@@ -28,77 +28,10 @@
 
 package org.opennms.netmgt.flows.classification.persistence;
 
-public enum ProtocolType {
-    HOPOPT(0),
-    ICMP(1),
-    IGMP(2),
-    GGP(3),
-    IP(4),
-    Stream(5),
-    TCP(6),
-    CBT(7),
-    EGP(8),
-    IGP(9),
-    BBN_RCC_MON(10),
-    NVP2(11),
-    PUP(12),
-    ARGUS(13),
-    EMCON(14),
-    XNET(15),
-    CHAOS(16),
-    UDP(17),
-    Multiplexing(18),
-    DCN_MEAS(19),
-    HMP(20),
-    PRM(21),
-    XNS_IDP(22),
-    TRUNK_1(23),
-    TRUNK_2(24),
-    LEAF_1(25),
-    LEAF_2(26),
-    RDP(27),
-    IRTP(28),
-    ISO_TP4(29),
-
-    // ...
-
-    DDP(37),
-
-    // ...
-
-    SCTP(132),
-
-    // ...
-
-    RESERVED(255),
-
-    DIVERT(258);
-
-    private final int number;
-
-    ProtocolType(int number) {
-        this.number = number;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public static ProtocolType createFrom(int protocol) {
-        for (ProtocolType p : values()) {
-            if (p.getNumber() == protocol) {
-                return p;
-            }
-        }
-        throw new IllegalArgumentException("No protocol found for " + protocol);
-    }
-
-    public static ProtocolType createFrom(String protocol) {
-        for (ProtocolType p : values()) {
-            if (p.name().equalsIgnoreCase(protocol)) {
-                return p;
-            }
-        }
-        throw new IllegalArgumentException("No protocol found for " + protocol);
-    }
+// Convenient interface to access often used protocols
+public interface ProtocolType {
+    Protocol ICMP = Protocols.getProtocol("icmp");
+    Protocol TCP = Protocols.getProtocol("tcp");
+    Protocol UDP = Protocols.getProtocol("udp");
+    Protocol DDP = Protocols.getProtocol("ddp");
 }

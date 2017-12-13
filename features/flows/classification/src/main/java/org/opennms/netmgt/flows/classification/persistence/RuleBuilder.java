@@ -59,8 +59,8 @@ public class RuleBuilder {
         return this;
     }
 
-    public RuleBuilder withProtocol(ProtocolType protocol) {
-        rule.setProtocol(protocol.name().toLowerCase());
+    public RuleBuilder withProtocol(Protocol protocol) {
+        rule.setProtocol(protocol.getKeyword().toLowerCase());
         return this;
     }
 

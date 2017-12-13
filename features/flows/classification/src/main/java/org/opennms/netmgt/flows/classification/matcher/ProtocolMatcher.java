@@ -29,18 +29,23 @@
 package org.opennms.netmgt.flows.classification.matcher;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.persistence.ProtocolType;
+import org.opennms.netmgt.flows.classification.persistence.Protocol;
+import org.opennms.netmgt.flows.classification.persistence.Protocols;
 
 public class ProtocolMatcher implements Matcher {
 
-    private final ProtocolType protocol;
+    private final Protocol protocol;
 
     public ProtocolMatcher(String protocol) {
-        this.protocol = ProtocolType.createFrom(protocol);
+        this.protocol = Protocols.getProtocol(protocol);
+    }
+
+    public ProtocolMatcher(int protocol) {
+        this.protocol = Protocols.getProtocol(protocol);
     }
 
     @Override
     public boolean matches(ClassificationRequest request) {
-        return this.protocol == request.getProtocol();
+        return this.protocol.getDecimal() == request.getProtocol().getDecimal();
     }
 }
