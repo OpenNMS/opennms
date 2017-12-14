@@ -51,7 +51,7 @@ public class TriggerPackage {
 
     @XmlAttribute
     public String getCategoryFilter() {
-        return categoryFilter;
+        return categoryFilter != null ? categoryFilter : ".*";
     }
 
     public void setCategoryFilter(final String categoryFilter) {
