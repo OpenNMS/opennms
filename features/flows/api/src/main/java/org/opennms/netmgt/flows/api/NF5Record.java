@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,16 +26,44 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow;
+package org.opennms.netmgt.flows.api;
 
-import org.junit.Assert;
-import org.junit.Test;
+public interface NF5Record {
 
-public class Netflow5AdapterFactoryTest {
+    String getSrcAddr();
 
-    @Test
-    public void verifyInitializing() {
-        Netflow5Adapter adapter = new Netflow5AdapterTestFactory().createAdapter();
-        Assert.assertNotNull(adapter);
-    }
+    String getDstAddr();
+
+    String getNextHop();
+
+    int getInput();
+
+    int getOutput();
+
+    long getDPkts();
+
+    long getDOctets();
+
+    long getFirst();
+
+    long getLast();
+
+    int getSrcPort();
+
+    int getDstPort();
+
+    int getTcpFlags();
+
+    int getProt();
+
+    int getSrcAs();
+
+    int getDstAs();
+
+    int getToS();
+
+    int getSrcMask();
+
+    int getDstMask();
+
 }

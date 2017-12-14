@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,39 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification;
+package org.opennms.netmgt.flows.elastic;
 
 import java.util.Objects;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class ThreadSafeClassificationEngine implements ClassificationEngine {
+import com.google.gson.annotations.SerializedName;
 
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
-
-    private final ClassificationEngine delegate;
-
-    public ThreadSafeClassificationEngine(ClassificationEngine delegate) {
-        this.delegate = Objects.requireNonNull(delegate);
-    }
-
-    @Override
-    public String classify(ClassificationRequest classificationRequest) {
-        lock.readLock().lock();
-        try {
-            return delegate.classify(classificationRequest);
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    @Override
-    public void reload() {
-        lock.writeLock().lock();
-        try {
-            delegate.reload();
-        } finally {
-            lock.writeLock().unlock();
-        }
-    }
+public enum NetflowVersion {
+    @SerializedName("Netflow v5")
+    V5,
+    @SerializedName("Netflow v9")
+    V9,
+    @SerializedName("IPFIX")
+    IPFIX;
 }

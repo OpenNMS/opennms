@@ -28,25 +28,24 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import static org.mockito.Mockito.mock;
+
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.api.IndexStrategy;
-import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.test.elastic.ExecutionTime;
+import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 
 import io.searchbox.client.JestClient;
 
@@ -80,29 +79,16 @@ public class ElasticFlowRepositoryRetryIT {
     );
 
     @Test
-    public void verifyFindAllSucceedsWhenServerBecomesAvailable() throws Exception {
+    public void verifyGetFlowCountSucceedsWhenServerBecomesAvailable() throws Exception {
         // Try getting data
-        apply((repository) -> repository.findAll(""));
-    }
-
-    @Test
-    public void verifyRawQuerySucceedsWhenServerBecomesAvailable() throws Exception {
-        // Try getting data
-        apply((repository) -> repository.rawQuery(""));
+        apply((repository) -> repository.getFlowCount(0, 1));
     }
 
     @Test
     public void verifySaveSucceedsWhenServerBecomesAvailable() throws Exception {
-        final List<NetflowDocument> documentList = new ArrayList<>();
-
-        final NetflowDocument document = new NetflowDocument();
-        document.setLocation("Default");
-        document.setExporterAddress("127.0.0.1");
-        document.setTimestamp(new Date().getTime());
-        documentList.add(document);
-
         // try persisting data
-        apply((repository) -> repository.save(documentList));
+        apply((repository) -> repository.persistNetFlow5Packets(Lists.newArrayList(FlowDocumentTest.getMockNetflow5Packet()),
+                FlowDocumentTest.getMockFlowSource()));
     }
 
     private void apply(FlowRepositoryConsumer consumer) throws Exception {
@@ -114,7 +100,9 @@ public class ElasticFlowRepositoryRetryIT {
             executionTime.resetStartTime();
             elasticServerRule.startServer();
 
-            final FlowRepository elasticFlowRepository = new InitializingFlowRepository(new ElasticFlowRepository(client, IndexStrategy.MONTHLY), client);
+            final DocumentEnricher documentEnricher = mock(DocumentEnricher.class);
+            final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
+                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher), client);
 
             consumer.accept(elasticFlowRepository);
 

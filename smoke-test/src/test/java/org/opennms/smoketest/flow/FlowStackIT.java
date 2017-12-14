@@ -32,37 +32,25 @@ import static com.jayway.awaitility.Awaitility.await;
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.netmgt.flows.api.NetflowDocument;
-import org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Converter;
-import org.opennms.netmgt.telemetry.adapters.netflow.v5.NetflowPacket;
+import org.opennms.netmgt.flows.rest.FlowRestService;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.test.system.api.NewTestEnvironment;
@@ -73,14 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.io.ByteStreams;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
-import io.searchbox.client.AbstractJestClient;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.JestResult;
@@ -93,14 +74,6 @@ public class FlowStackIT {
 
     private static Logger LOG = LoggerFactory.getLogger(FlowStackIT.class);
 
-    // TODO MVR duplicated from ClientFactory, should be merged or removed
-    private static final Gson gson =  new GsonBuilder()
-            .setDateFormat(AbstractJestClient.ELASTIC_SEARCH_DATE_FORMAT)
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create();
-
-    private static final String REST_URL = "rest/flows";
-
     private static int NETFLOW_LISTENER_UDP_PORT = 50000;
 
     private static final String TEMPLATE_NAME = "netflow";
@@ -110,6 +83,8 @@ public class FlowStackIT {
 
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
+
+    private FlowRestService flowRestService;
 
     private final TestEnvironment getTestEnvironment() {
         if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
@@ -147,88 +122,40 @@ public class FlowStackIT {
         final InetSocketAddress opennmsNetflowAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, NETFLOW_LISTENER_UDP_PORT, "udp");
         final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
 
+        // Proxy the REST service
+        flowRestService = JAXRSClientFactory.create(String.format("http://%s:%d/opennms/rest",
+                opennmsWebAddress.getHostString(), opennmsWebAddress.getPort()), FlowRestService.class, "admin", "admin", null);
+
         // Configure OpenNMS
         setupOnmsContainer(opennmsSshAddress);
+
+        // No flows should be present
+        assertEquals(Long.valueOf(0L), flowRestService.getFlowCount(0, System.currentTimeMillis()));
 
         // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl)
                 .multiThreaded(true)
                 .build());
-        final JestClient client = factory.getObject();
-        try {
-            // Read netflow 5 packet
+        try (final JestClient client = factory.getObject()) {
+            // Read Netflow 5 packet
            sendNetflowPacket(opennmsNetflowAdapterAddress);
 
             // Ensure that the template has been created
             verify(client, (jestClient) -> {
                 JestResult result = jestClient.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
-                if (result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null) {
-                    return true;
-                }
-                return false;
+                return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
             });
+
             // Verify directly at elastic that the flows have been created
             verify(client, jestClient -> {
-                SearchResult response = jestClient.execute(new Search.Builder("").addIndex("flow-*").build());
-                if (response.isSucceeded() && response.getTotal() == 2) {
-                    return true;
-                }
-                return false;
+                SearchResult response = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
+                return response.isSucceeded() && response.getTotal() == 2;
             });
-        } finally {
-            // JestClient 2.x does not support Autoclosable, so we close it manually.
-            // Can be removed when updated to a later version
-            if (client != null) {
-                client.shutdownClient();
-            }
-        }
 
-        // Verify via OpenNMS ReST API
-        final String flowRestUrl = "http://" + opennmsWebAddress.getHostString().toString() + ":" + opennmsWebAddress.getPort() + "/opennms/" + REST_URL;
-        final NetflowPacket netflowPacket = new NetflowPacket(ByteBuffer.wrap(getNetflowPacketContent()));
-        final List<NetflowDocument> documents = new Netflow5Converter().convert(netflowPacket);
-        documents.stream().forEach(d -> {
-            d.setLocation("Default");
-            d.setExporterAddress("127.0.0.1");
-        });
-        try (HttpClientWrapper restClient = createClientWrapper()) {
-            // Persist flow
-            HttpPut httpPut = new HttpPut(flowRestUrl);
-            httpPut.addHeader("content-type", "application/json");
-            httpPut.setEntity(new StringEntity(gson.toJson(documents)));
-            CloseableHttpResponse response = restClient.execute(httpPut);
-            assertEquals(202, response.getStatusLine().getStatusCode());
-
-            // Wait 5 seconds, because it takes a while before elastic returns the data
-            Thread.sleep(5000);
-
-            // Query flows
-            final HttpGet httpGet = new HttpGet(flowRestUrl);
-            httpGet.addHeader("accept", "application/json");
-            response = restClient.execute(httpGet);
-            assertEquals(200, response.getStatusLine().getStatusCode());
-
-            // Read response
-            final Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
-            }.getType();
-            List<NetflowDocument> netflowDocuments = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), listType);
-            assertEquals(4, netflowDocuments.size());
-
-            // Proxy query
-            final HttpPost httpPost = new HttpPost(flowRestUrl + "/proxy");
-            httpPost.addHeader("content-type", "application/json");
-            httpPost.addHeader("accept", "application/json");
-            httpPost.setEntity(new StringEntity("{}"));
-            response = restClient.execute(httpPost);
-            assertEquals(200, response.getStatusLine().getStatusCode());
-
-            // Verify response by checking that hits.hits exists
-            final String json = EntityUtils.toString(response.getEntity());
-            EntityUtils.consume(response.getEntity());
-            final JsonObject jsonRoot = gson.fromJson(json, JsonObject.class);
-            final JsonArray jsonArray = jsonRoot.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-            assertEquals(4, jsonArray.size());
+            // Verify the flow count via the REST API
+            with().pollInterval(15, SECONDS).await().atMost(1, MINUTES)
+                    .until(() -> flowRestService.getFlowCount(0, System.currentTimeMillis()), equalTo(2L));
         }
     }
 
@@ -274,7 +201,7 @@ public class FlowStackIT {
         }
     }
 
-    private static interface Block {
+    private interface Block {
 
         boolean test(JestClient client) throws Exception;
     }
@@ -294,12 +221,6 @@ public class FlowStackIT {
             }
             return false;
         });
-    }
-
-    private static HttpClientWrapper createClientWrapper() {
-        HttpClientWrapper wrapper = HttpClientWrapper.create();
-        wrapper.addBasicCredentials(OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME, OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD);
-        return wrapper;
     }
 
 }

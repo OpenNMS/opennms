@@ -26,36 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.elastic;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class NodeInfo {
-    private String foreignSource;
-    private String foreignId;
-    private List<String> categories;
+import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.plugins.elasticsearch.rest.FailedItem;
 
-    public void setForeignSource(String foreignSource) {
-        this.foreignSource = foreignSource;
+public class PersistenceException extends FlowException {
+
+    private List<FailedItem<FlowDocument>> failedItems = new ArrayList<>();
+
+    public PersistenceException(String message, List<FailedItem<FlowDocument>> failedItems) {
+        super(message);
+        this.failedItems = failedItems;
     }
 
-    public String getForeignSource() {
-        return foreignSource;
-    }
-
-    public void setForeignId(String foreignId) {
-        this.foreignId = foreignId;
-    }
-
-    public String getForeignId() {
-        return foreignId;
-    }
-
-    public List<String> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<String> categories) {
-        this.categories = categories;
+    public List<FailedItem<FlowDocument>> getFailedItems() {
+        return failedItems;
     }
 }

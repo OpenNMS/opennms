@@ -34,6 +34,7 @@ import static org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer.
 import java.io.IOException;
 
 import org.junit.Test;
+import org.opennms.core.test.xml.JsonTest;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -44,7 +45,7 @@ public class MergingTemplateLoaderTest {
     public void verifyMergingEmpty() throws IOException {
         final String merged = new MergingTemplateLoader(new DefaultTemplateLoader(), new IndexSettings()).load(TEMPLATE_RESOURCE);
         final String expected = new DefaultTemplateLoader().load(TEMPLATE_RESOURCE);
-        assertEquals(toJson(expected), toJson(merged)); // Use gson to verify, otherwise strings may be formatted, etc.
+        JsonTest.assertJsonEquals(expected, merged);
     }
 
     @Test
@@ -57,10 +58,7 @@ public class MergingTemplateLoaderTest {
 
         final String merged = new MergingTemplateLoader(new DefaultTemplateLoader(), IndexSettings).load(TEMPLATE_RESOURCE);
         final String expected = new DefaultTemplateLoader().load("/netflow-template-merged.json");
-        assertEquals(toJson(merged), toJson(expected)); // Use gson to verify, otherwise strings may be formatted, etc.
+        JsonTest.assertJsonEquals(expected, merged);
     }
-    
-    private static JsonElement toJson(String input) {
-        return new JsonParser().parse(input);
-    }
+
 }

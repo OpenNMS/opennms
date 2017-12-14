@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import org.opennms.netmgt.flows.api.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -33,27 +33,17 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.jest</groupId>
-      <artifactId>org.opennms.features.jest.client</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.classification</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>

@@ -35,10 +35,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.classification.classifier.Classifier;
 import org.opennms.netmgt.flows.classification.persistence.ClassificationRuleDAO;
-import org.opennms.netmgt.flows.classification.persistence.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.Rule;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
@@ -55,13 +53,6 @@ public class DefaultClassificationEngine implements ClassificationEngine {
 
     protected DefaultClassificationEngine(Supplier<List<Rule>> supplier) {
         this((ClassificationRuleDAO) () -> supplier.get());
-    }
-
-    @Override
-    public String classify(NetflowDocument document) {
-        final ClassificationRequest definition = createClassificationRequest(document);
-        final String classification = classify(definition);
-        return classification;
     }
 
     @Override
@@ -89,19 +80,4 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         return first.orElse(null);
     }
 
-    protected static ClassificationRequest createClassificationRequest(NetflowDocument document) {
-        final ClassificationRequest request = new ClassificationRequest();
-        request.setProtocol(Protocols.getProtocol(document.getIpProtocol()));
-        request.setLocation(document.getLocation());
-
-        // Decide whether to use source or dest address/port to determine application mapping
-        if (document.isInitiator()) {
-            request.setIpAddress(document.getIpv4DestAddress());
-            request.setPort(document.getDestPort());
-        } else {
-            request.setIpAddress(document.getIpv4SourceAddress());
-            request.setPort(document.getSourcePort());
-        }
-        return request;
-    }
 }

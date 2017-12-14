@@ -28,25 +28,13 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow;
 
-import java.math.BigInteger;
-import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.api.NetflowDocument;
-import org.opennms.netmgt.flows.api.NodeInfo;
-import org.opennms.netmgt.flows.api.PersistenceException;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
@@ -54,120 +42,32 @@ import org.opennms.netmgt.telemetry.adapters.netflow.v5.NetflowPacket;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 public class Netflow5Adapter implements Adapter {
 
-    // Key class, which is used to cache NodeInfo objects
-    private static class NodeInfoKey {
-
-        public final String location;
-
-        public final String ipAddress;
-
-        public NodeInfoKey(String location, String ipAddress) {
-            this.location = location;
-            this.ipAddress = ipAddress;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            final NodeInfoKey that = (NodeInfoKey) o;
-            boolean equals = Objects.equals(location, that.location)
-                    && Objects.equals(ipAddress, that.ipAddress);
-            return equals;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(location, ipAddress);
-        }
-    }
-
     private static final Logger LOG = LoggerFactory.getLogger(Netflow5Adapter.class);
 
-    private MetricRegistry metricRegistry;
-
-    private InterfaceToNodeCache interfaceToNodeCache;
-
-    private NodeDao nodeDao;
-
-    private TransactionOperations transactionOperations;
-
-    private FlowRepository flowRepository;
-
-    private final Netflow5Converter converter = new Netflow5Converter();
-
-    private ClassificationEngine classificationEngine;
-
-    /**
-     * Flows/second throughput
-     */
-    private Meter flowsPersistedMeter;
+    private final FlowRepository flowRepository;
 
     /**
      * Time taken to parse a log
      */
-    private Timer logParsingTimer;
+    private final Timer logParsingTimer;
 
     /**
-     * Time taken to convert and enrich the flows in a log
+     * Number of packets per log
      */
-    private Timer logEnrichementTimer;
+    private final Histogram packetsPerLogHistogram;
 
-    /**
-     * Time taken to perist the flows in alog
-     */
-    private Timer logPersistingTimer;
+    public Netflow5Adapter(MetricRegistry metricRegistry, FlowRepository flowRepository) {
+        this.flowRepository = Objects.requireNonNull(flowRepository);
 
-    /**
-     * Number of packets per log.
-     */
-    private Histogram packetsPerLogHistogram;
-
-    /**
-     * Number of flows per packet.
-     */
-    private Histogram flowsPerPacketHistogram;
-
-    // Caches NodeInfo data
-    private LoadingCache<NodeInfoKey, Optional<NodeInfo>> nodeInfoCache;
-
-    public void init() {
-        flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logParsingTimer = metricRegistry.timer("logParsing");
-        logEnrichementTimer = metricRegistry.timer("logEnrichment");
-        logPersistingTimer = metricRegistry.timer("logPersisting");
         packetsPerLogHistogram = metricRegistry.histogram("packetsPerLog");
-        flowsPerPacketHistogram = metricRegistry.histogram("flowsPerPacket");
-
-        // TODO MVR make this configurable, when it is actually an osgi-module
-        nodeInfoCache = CacheBuilder.newBuilder()
-                .maximumSize(1000)
-                .expireAfterWrite(300, TimeUnit.SECONDS) // 5 Minutes
-                .build(new CacheLoader<NodeInfoKey, Optional<NodeInfo>>() {
-                    @Override
-                    public Optional<NodeInfo> load(NodeInfoKey key) throws Exception {
-                        return getNodeInfo(key.location, key.ipAddress);
-                    }
-                });
-
-        // Verify initialized
-        Objects.requireNonNull(metricRegistry);
-        Objects.requireNonNull(interfaceToNodeCache);
-        Objects.requireNonNull(nodeDao);
-        Objects.requireNonNull(transactionOperations);
-        Objects.requireNonNull(flowRepository);
     }
 
     @Override
@@ -188,60 +88,19 @@ public class Netflow5Adapter implements Adapter {
                     flowPackets.add(flowPacket);
                 }
             }
-        }
-        packetsPerLogHistogram.update(flowPackets.size());
-
-        final List<NetflowDocument> flowDocuments;
-        try (Timer.Context ctx = logEnrichementTimer.time()) {
-            LOG.debug("Converting {} packets to flows.", flowPackets.size());
-            flowDocuments = flowPackets.stream()
-                    .map(pkts -> {
-                        final List<NetflowDocument> docs = convert(pkts);
-                        // Track the number of flows per packet
-                        flowsPerPacketHistogram.update(docs.size());
-                        return docs;
-                    })
-                    .flatMap(docs -> docs.stream())
-                    .collect(Collectors.toList());
-            LOG.debug("Enriching {} flows.", flowDocuments.size());
-            enrich(flowDocuments, messageLog);
+            packetsPerLogHistogram.update(flowPackets.size());
         }
 
-        try (Timer.Context ctx = logPersistingTimer.time()) {
-            LOG.debug("Persisting {}.", flowDocuments.size());
-            persist(flowDocuments);
-            flowsPersistedMeter.mark(flowDocuments.size());
-        } catch (Exception e) {
-            LOG.error("An error occurred while handling incoming flow packets: {}", e.getMessage(), e);
-            throw new RuntimeException(e);
+        try {
+            LOG.debug("Persisting {} packets.", flowPackets.size());
+            final FlowSource source = new FlowSource(messageLog.getLocation(), messageLog.getSourceAddress());
+            flowRepository.persistNetFlow5Packets(flowPackets, source);
+        } catch (FlowException ex) {
+            LOG.error("Failed to persist one or more packets: {}", ex.getMessage());
         }
 
-        LOG.debug("Completed processing {} telemetry messages into {} flows.",
-                messageLog.getMessageList().size(), flowDocuments.size());
-    }
-
-    public void setMetricRegistry(MetricRegistry metricRegistry) {
-        this.metricRegistry = metricRegistry;
-    }
-
-    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
-        this.interfaceToNodeCache = interfaceToNodeCache;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
-    }
-
-    public void setTransactionOperations(TransactionOperations transactionOperations) {
-        this.transactionOperations = transactionOperations;
-    }
-
-    public void setFlowRepository(FlowRepository flowRepository) {
-        this.flowRepository = flowRepository;
-    }
-
-    public void setClassificationEngine(ClassificationEngine classificationEngine) {
-        this.classificationEngine = classificationEngine;
+        LOG.debug("Completed processing {} telemetry messages.",
+                messageLog.getMessageList().size());
     }
 
     private NetflowPacket parse(TelemetryMessage message) {
@@ -268,104 +127,5 @@ public class Netflow5Adapter implements Adapter {
         }
 
         return flowPacket;
-    }
-
-    /**
-     * Converts the given flow packet to flows represented by a {@link NetflowDocument}.
-     *
-     * @param netflowPacket the packet to convert
-     * @return The flows of the packet
-     */
-    private List<NetflowDocument> convert(NetflowPacket netflowPacket) {
-        return converter.convert(netflowPacket);
-    }
-
-    private void enrich(final List<NetflowDocument> documents, final TelemetryMessageLog messageLog) {
-        enrich(documents, messageLog.getLocation(), messageLog.getSourceAddress());
-    }
-
-    protected void enrich(final List<NetflowDocument> documents, final String location, final String sourceAddress) {
-        if (documents.isEmpty()) {
-            LOG.debug("Nothing to enrich.");
-            return;
-        }
-
-        transactionOperations.execute(callback -> {
-            documents.stream().forEach(document -> {
-                // Metadata from message
-                document.setExporterAddress(sourceAddress);
-                document.setLocation(location);
-                document.setInitiator(isInitiator(document));
-
-                // Node data
-                getNodeInfoFromCache(location, sourceAddress).ifPresent(node -> document.setExporterNodeInfo(node));
-                getNodeInfoFromCache(location, document.getIpv4DestAddress()).ifPresent(node -> document.setDestNodeInfo(node));
-                getNodeInfoFromCache(location, document.getIpv4SourceAddress()).ifPresent(node -> document.setSourceNodeInfo(node));
-
-                // Apply Application mapping
-                document.setApplication(classificationEngine.classify(document));
-            });
-            return null;
-        });
-    }
-
-    private Optional<NodeInfo> getNodeInfoFromCache(String location, String ipAddress) {
-        final NodeInfoKey key = new NodeInfoKey(location, ipAddress);
-        try {
-            final Optional<NodeInfo> value = nodeInfoCache.get(key);
-            return value;
-        } catch (ExecutionException e) {
-            LOG.error("Error while retrieving NodeInfo from NodeInfoCache: {}.", e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Optional<NodeInfo> getNodeInfo(String location, String ipAddress) {
-        return getNodeInfo(location, InetAddressUtils.addr(ipAddress));
-    }
-
-    private Optional<NodeInfo> getNodeInfo(String location, InetAddress ipAddress) {
-        final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(location, ipAddress);
-        if (nodeId.isPresent()) {
-            final OnmsNode onmsNode = nodeDao.get(nodeId.get());
-
-            final NodeInfo nodeInfo = new NodeInfo();
-            nodeInfo.setForeignSource(onmsNode.getForeignSource());
-            nodeInfo.setForeignId(onmsNode.getForeignId());
-            nodeInfo.setCategories(onmsNode.getCategories().stream().map(c -> c.getName()).collect(Collectors.toList()));
-
-            return Optional.of(nodeInfo);
-        }
-        return Optional.empty();
-    }
-
-    private void persist(List<NetflowDocument> documents) throws Exception {
-        if (documents.isEmpty()) {
-            LOG.debug("Nothing to persist");
-            return;
-        }
-
-        try {
-            flowRepository.save(documents);
-        } catch (PersistenceException ex) {
-            LOG.error("Not all flows have been persisted: {}", ex.getMessage());
-            ex.getFailedItems().forEach(failedItem -> {
-                LOG.error("Flow {} could not be persisted. Reason: {}", failedItem.getItem(), failedItem.getCause().getMessage(), failedItem.getCause());
-            });
-        }
-    }
-
-    // Determine if the provided flow is the initiator.
-    // Yes, this may not be 100% accurate, but is a very easy way of defining the direction of the flow in most cases.
-    protected static boolean isInitiator(NetflowDocument document) {
-        if (document.getSourcePort()  > document.getDestPort()) {
-            return true;
-        } else if (document.getSourcePort() == document.getDestPort()) {
-            // Tie breaker
-            final BigInteger sourceAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getIpv4SourceAddress()));
-            final BigInteger destAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getIpv4DestAddress()));
-            return sourceAddressAsInt.compareTo(destAddressAsInt) > 0;
-        }
-        return false;
     }
 }

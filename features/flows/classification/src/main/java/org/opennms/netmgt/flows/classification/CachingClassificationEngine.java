@@ -28,14 +28,10 @@
 
 package org.opennms.netmgt.flows.classification;
 
-import static org.opennms.netmgt.flows.classification.DefaultClassificationEngine.createClassificationRequest;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
-import org.opennms.netmgt.flows.api.NetflowDocument;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -68,13 +64,6 @@ public class CachingClassificationEngine implements ClassificationEngine {
         } catch (ExecutionException e) {
             throw new RuntimeException("Error loading entry from cache", e);
         }
-    }
-
-    @Override
-    public String classify(NetflowDocument document) {
-        // Don't invoke delegate, otherwise it is not cached
-        final ClassificationRequest classificationRequest = createClassificationRequest(document);
-        return classify(classificationRequest);
     }
 
     @Override

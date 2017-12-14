@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.flows.api;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 public interface FlowRepository {
 
-    void save(List<NetflowDocument> document) throws FlowException;
+    void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException;
 
-    List<NetflowDocument> findAll(String query) throws FlowException;
+    CompletableFuture<Long> getFlowCount(long start, long end);
 
-    String rawQuery(String query) throws FlowException;
 }

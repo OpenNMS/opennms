@@ -29,25 +29,31 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.NF5Packet;
 import org.opennms.plugins.elasticsearch.rest.BulkResultWrapper;
 import org.opennms.plugins.elasticsearch.rest.FailedItem;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.api.IndexStrategy;
-import org.opennms.netmgt.flows.api.NetflowDocument;
-import org.opennms.netmgt.flows.api.PersistenceException;
-import org.opennms.netmgt.flows.api.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
+import io.searchbox.client.JestResultHandler;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
@@ -57,74 +63,144 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticFlowRepository.class);
 
+    private static final String TYPE = "netflow";
+
     private final JestClient client;
 
     private final IndexStrategy indexStrategy;
 
-    public ElasticFlowRepository(JestClient jestClient, IndexStrategy indexStrategy) {
+    private final DocumentEnricher documentEnricher;
+
+    private final Netflow5Converter converter = new Netflow5Converter();
+
+    /**
+     * Flows/second throughput
+     */
+    private final Meter flowsPersistedMeter;
+
+    /**
+     * Time taken to convert and enrich the flows in a log
+     */
+    private final Timer logEnrichementTimer;
+
+    /**
+     * Time taken to persist the flows in a log
+     */
+    private final Timer logPersistingTimer;
+
+
+    /**
+     * Number of flows in a log
+     */
+    private final Histogram flowsPerLog;
+
+
+    public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, DocumentEnricher documentEnricher) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
+        this.documentEnricher = Objects.requireNonNull(documentEnricher);
+
+        flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
+        logEnrichementTimer = metricRegistry.timer("logEnrichment");
+        logPersistingTimer = metricRegistry.timer("logPersisting");
+        flowsPerLog = metricRegistry.histogram("flowsPerLog");
     }
 
     @Override
-    public void save(List<NetflowDocument> flowDocuments) throws FlowException {
-        if (flowDocuments != null && !flowDocuments.isEmpty()) {
-            final String index = indexStrategy.getIndex(new Date());
-            final String type = "flow";
+    public void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException {
+        LOG.debug("Converting {} Netflow 5 packets from {} to flow documents.", packets.size(), source);
+        final List<FlowDocument> flowDocuments = packets.stream()
+                .map(converter::convert)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        enrichAndPersistFlows(flowDocuments, source);
+    }
 
-            if (flowDocuments != null && !flowDocuments.isEmpty()) {
-                final Bulk.Builder bulkBuilder = new Bulk.Builder();
-                for (NetflowDocument document : flowDocuments) {
-                    final Index.Builder indexBuilder = new Index.Builder(document)
-                            .index(index)
-                            .type(type);
-                    bulkBuilder.addAction(indexBuilder.build());
-                }
-                final Bulk bulk = bulkBuilder.build();
-                final BulkResultWrapper result = new BulkResultWrapper(executeRequest(bulk));
-                if (!result.isSucceeded()) {
-                    final List<FailedItem<NetflowDocument>> failedFlows = result.getFailedItems(flowDocuments);
-                    throw new PersistenceException(result.getErrorMessage(), failedFlows);
-                }
+    private void enrichAndPersistFlows(List<FlowDocument> flowDocuments, FlowSource source) throws FlowException {
+        // Track the number of flows per call
+        flowsPerLog.update(flowDocuments.size());
+
+        if (flowDocuments.isEmpty()) {
+            LOG.info("Received empty flows. Nothing to do.");
+            return;
+        }
+
+        LOG.debug("Enriching {} flow documents.", flowDocuments.size());
+        try (final Timer.Context ctx = logEnrichementTimer.time()) {
+            documentEnricher.enrich(flowDocuments, source);
+        }
+
+        LOG.debug("Persisting {} flow documents.", flowDocuments.size());
+        try (final Timer.Context ctx = logPersistingTimer.time()) {
+            final String index = indexStrategy.getIndex(new Date());
+
+            final Bulk.Builder bulkBuilder = new Bulk.Builder();
+            for (FlowDocument flowDocument : flowDocuments) {
+                final Index.Builder indexBuilder = new Index.Builder(flowDocument)
+                        .index(index)
+                        .type(TYPE);
+                bulkBuilder.addAction(indexBuilder.build());
             }
-        } else {
-            LOG.warn("Received empty or null flows. Nothing to do.");
+            final Bulk bulk = bulkBuilder.build();
+            final BulkResultWrapper result = new BulkResultWrapper(executeRequest(bulk));
+            if (!result.isSucceeded()) {
+                final List<FailedItem<FlowDocument>> failedFlows = result.getFailedItems(flowDocuments);
+                throw new PersistenceException(result.getErrorMessage(), failedFlows);
+            }
+
+            flowsPersistedMeter.mark(flowDocuments.size());
         }
     }
 
     @Override
-    public String rawQuery(String query) throws FlowException {
-        final SearchResult result = search(query);
-        return result.getJsonString();
-    }
-
-    @Override
-    public List<NetflowDocument> findAll(String query) throws FlowException {
-        final SearchResult result = search(query);
-        final List<SearchResult.Hit<NetflowDocument, Void>> hits = result.getHits(NetflowDocument.class);
-        final List<NetflowDocument> data = hits.stream().map(hit -> hit.source).collect(Collectors.toList());
-        return data;
+    public CompletableFuture<Long> getFlowCount(long start, long end) {
+        final String query = "{\n" +
+                "  \"size\": 0,\n" +
+                "  \"query\": {\n" +
+                "    \"bool\": {\n" +
+                "      \"filter\": [\n" +
+                "        {\n" +
+                "          \"range\": {\n" +
+                "            \"@timestamp\": {\n" +
+                String.format("              \"gte\": %d,\n", start) +
+                String.format("              \"lte\": %d,\n", end) +
+                "              \"format\": \"epoch_millis\"\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  }\n" +
+                "}\n";
+        return searchAsync(query).thenApply(SearchResult::getTotal);
     }
 
     private <T extends JestResult> T executeRequest(Action<T> clientRequest) throws FlowException {
         try {
-            T result = client.execute(clientRequest);
-            return result;
+            return client.execute(clientRequest);
         } catch (IOException ex) {
             LOG.error("An error occurred while executing the given request: {}", clientRequest, ex);
             throw new FlowException(ex.getMessage(), ex);
         }
     }
 
-    private SearchResult search(String query) throws FlowException {
-        final SearchResult result = executeRequest(new Search.Builder(query)
-                .addType("flow")
-                .ignoreUnavailable(true)
-                .build());
-        if (!result.isSucceeded()) {
-            LOG.error("Error reading flows. Query: {}, error message: {}", query, result.getErrorMessage());
-            throw new QueryException("Could not read flows from repository. " + result.getErrorMessage());
-        }
-        return result;
+    private CompletableFuture<SearchResult> searchAsync(String query) {
+        final CompletableFuture<SearchResult> future = new CompletableFuture<>();
+        client.executeAsync(new Search.Builder(query)
+                .addType(TYPE)
+                .build(), new JestResultHandler<SearchResult>() {
+
+            @Override
+            public void completed(SearchResult result) {
+                future.complete(result);
+            }
+
+            @Override
+            public void failed(Exception ex) {
+                future.completeExceptionally(ex);
+            }
+        });
+        return future;
     }
+
 }
