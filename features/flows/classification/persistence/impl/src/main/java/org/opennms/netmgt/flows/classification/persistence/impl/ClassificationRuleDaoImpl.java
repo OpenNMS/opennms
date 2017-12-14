@@ -26,10 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.persistence.impl;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
+import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
-public interface ClassificationRuleDao extends OnmsDao<Rule, Integer> {
+public class ClassificationRuleDaoImpl extends AbstractDaoHibernate<Rule, Integer> implements ClassificationRuleDao {
 
+    public ClassificationRuleDaoImpl() {
+        super(Rule.class);
+    }
 }

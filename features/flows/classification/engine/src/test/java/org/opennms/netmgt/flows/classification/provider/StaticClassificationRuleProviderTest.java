@@ -26,10 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.provider;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
+import static org.junit.Assert.*;
 
-public interface ClassificationRuleDao extends OnmsDao<Rule, Integer> {
+import java.io.IOException;
+
+import org.junit.Test;
+
+public class StaticClassificationRuleProviderTest {
+
+    @Test
+    public void verifyLoading() throws IOException {
+        new StaticClassificationRuleProvider().getRules();
+    }
 
 }

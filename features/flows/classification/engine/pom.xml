@@ -32,11 +32,5 @@
       <artifactId>org.opennms.features.flows.classification.persistence.api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features.flows.classification.persistence</groupId>
-      <artifactId>org.opennms.features.flows.classification.persistence.impl</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>

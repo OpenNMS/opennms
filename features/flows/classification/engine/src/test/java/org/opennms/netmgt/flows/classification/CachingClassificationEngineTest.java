@@ -30,7 +30,6 @@ package org.opennms.netmgt.flows.classification;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,7 +44,7 @@ public class CachingClassificationEngineTest {
     @Test
     public void verifyCaching() {
         // Create caching engine and spy o original engine
-        final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine((Supplier<List<Rule>>) () -> Lists.newArrayList(new Rule("TEST", "0-10000")));
+        final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(new Rule("TEST", "0-10000")));
         final ClassificationEngine classificationEngine = Mockito.spy(originalEngine);
         final ClassificationEngine cachingEngine = new CachingClassificationEngine(classificationEngine);
 
@@ -67,7 +66,7 @@ public class CachingClassificationEngineTest {
         final List<Rule> rules = new ArrayList<>();
 
         // Create caching engine and spy o original engine
-        final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine((Supplier<List<Rule>>) () -> rules);
+        final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine(() -> rules);
         final ClassificationEngine classificationEngine = Mockito.spy(originalEngine);
         final ClassificationEngine cachingEngine = new CachingClassificationEngine(classificationEngine);
 

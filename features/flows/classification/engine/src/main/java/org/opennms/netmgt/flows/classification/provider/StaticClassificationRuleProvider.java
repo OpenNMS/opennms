@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.impl;
+package org.opennms.netmgt.flows.classification.provider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,7 +42,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.slf4j.Logger;
@@ -50,17 +49,16 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
-
 // Provides all rules defined in https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt
 // NOTE: Empty rules (e.g. 24/udp # any private mail system) are ignored.
-public class StaticRuleClassificationDAO implements ClassificationRuleDao {
+public class StaticClassificationRuleProvider implements ClassificationRuleProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StaticRuleClassificationDAO.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StaticClassificationRuleProvider.class);
 
     private final List<Rule> rules = new ArrayList<>();
 
-    public StaticRuleClassificationDAO() throws IOException {
-        final InputStream inputStream = StaticRuleClassificationDAO.class.getResourceAsStream("/services");
+    public StaticClassificationRuleProvider() throws IOException {
+        final InputStream inputStream = getClass().getResourceAsStream("/services");
         final List<String> lines = readFromInputStream(inputStream);
 
         // key: service/port, value: list of protocols (e.g. tcp, udp)
@@ -121,7 +119,7 @@ public class StaticRuleClassificationDAO implements ClassificationRuleDao {
     }
 
     @Override
-    public List<Rule> findAll() {
+    public List<Rule> getRules() {
         return Collections.unmodifiableList(rules);
     }
 }

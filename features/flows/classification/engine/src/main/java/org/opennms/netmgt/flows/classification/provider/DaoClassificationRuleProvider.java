@@ -26,10 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.provider;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
+import java.util.List;
+import java.util.Objects;
 
-public interface ClassificationRuleDao extends OnmsDao<Rule, Integer> {
+import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
+public class DaoClassificationRuleProvider implements ClassificationRuleProvider {
+
+    private final ClassificationRuleDao dao;
+
+    public DaoClassificationRuleProvider(ClassificationRuleDao classificationRuleDao) {
+        this.dao = Objects.requireNonNull(classificationRuleDao);
+    }
+
+    @Override
+    public List<Rule> getRules() {
+        return dao.findAll();
+    }
 }

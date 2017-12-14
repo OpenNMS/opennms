@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.classification.classifier.Classifier;
@@ -42,26 +41,22 @@ import org.opennms.netmgt.flows.classification.matcher.IpMatcher;
 import org.opennms.netmgt.flows.classification.matcher.Matcher;
 import org.opennms.netmgt.flows.classification.matcher.PortMatcher;
 import org.opennms.netmgt.flows.classification.matcher.ProtocolMatcher;
-import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.provider.ClassificationRuleProvider;
 
 import com.google.common.base.Strings;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
-    private final ClassificationRuleDao ruleDAO;
+    private final ClassificationRuleProvider ruleProvider;
 
     private final List<Classifier> classifierList = new ArrayList<>();
 
     // This can be a DAO or similar in the future
-    public DefaultClassificationEngine(ClassificationRuleDao ruleDAO) {
-        this.ruleDAO = Objects.requireNonNull(ruleDAO);
+    public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider) {
+        this.ruleProvider = Objects.requireNonNull(ruleProvider);
         this.reload();
-    }
-
-    protected DefaultClassificationEngine(Supplier<List<Rule>> supplier) {
-        this((ClassificationRuleDao) () -> supplier.get());
     }
 
     @Override
@@ -74,7 +69,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     @Override
     public void reload() {
         classifierList.clear();
-        ruleDAO.findAll().forEach(rule -> {
+        ruleProvider.getRules().forEach(rule -> {
             final Classifier classifier = createClassifier(rule);
             if (!classifierList.contains(classifier)) {
                 classifierList.add(classifier);

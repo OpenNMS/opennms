@@ -14,7 +14,8 @@
   <context:annotation-config />
   <tx:annotation-driven />
 
-  <bean id="classificationDao" class="org.opennms.netmgt.flows.classification.persistence.impl.StaticRuleClassificationDAO">
+  <bean id="classificationDao" class="org.opennms.netmgt.flows.classification.persistence.impl.ClassificationRuleDaoImpl">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" ref="classificationDao" />
 

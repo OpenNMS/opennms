@@ -31,18 +31,16 @@ package org.opennms.netmgt.flows.classification;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
-import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
-import org.opennms.netmgt.flows.classification.persistence.impl.StaticRuleClassificationDAO;
+import org.opennms.netmgt.flows.classification.provider.ClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.provider.StaticClassificationRuleProvider;
 
 import com.google.common.collect.Lists;
 
@@ -51,7 +49,7 @@ public class DefaultClassificationEngineTest {
     @Test
     public void verifyRuleEngine() {
         // Define Rule set
-        DefaultClassificationEngine engine = new DefaultClassificationEngine((Supplier<List<Rule>>) () -> Lists.newArrayList(
+        DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> Lists.newArrayList(
                 new Rule("SSH", "22"),
                 new Rule("HTTP", "80"),
                 new Rule("HTTP_CUSTOM", "192.168.0.1", "80"),
@@ -81,7 +79,7 @@ public class DefaultClassificationEngineTest {
 
     @Test
     public void verifyIpRuleWins() {
-        final ClassificationEngine engine = new DefaultClassificationEngine((Supplier<List<Rule>>)() -> Lists.newArrayList(
+        final ClassificationEngine engine = new DefaultClassificationEngine(() -> Lists.newArrayList(
             new RuleBuilder().withName("HTTP").withPort(80).build(),
             new RuleBuilder().withName("XXX").withIpAddress("192.168.2.1").build()
         ));
@@ -92,8 +90,8 @@ public class DefaultClassificationEngineTest {
 
     @Test
     public void verifyStaticRules() throws IOException {
-        final ClassificationRuleDao classificationDAO = new StaticRuleClassificationDAO();
-        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(classificationDAO);
+        final ClassificationRuleProvider classificationRuleProvider = new StaticClassificationRuleProvider();
+        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(classificationRuleProvider);
 
         // Verify some port mappings
         assertEquals("rtmp", classificationEngine.classify(new ClassificationRequest("Default", 1, null, ProtocolType.DDP)));

@@ -10,4 +10,10 @@
   <artifactId>org.opennms.features.flows.classification.persistence.api</artifactId>
   <name>OpenNMS :: Features :: Flows :: Classification :: Persistence :: Api</name>
   <packaging>bundle</packaging>
+  <dependencies>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-dao-api</artifactId>
+      </dependency>
+  </dependencies>
 </project>

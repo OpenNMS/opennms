@@ -43,7 +43,7 @@ import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
+import org.opennms.netmgt.flows.classification.provider.ClassificationRuleProvider;
 
 public class ThreadSafeClassificationEngineTest {
 
@@ -61,7 +61,7 @@ public class ThreadSafeClassificationEngineTest {
     @Test
     public void verifyThreadSafety() throws InterruptedException, ExecutionException {
         // A reload will always put one rule in place, which simulates heavy loading
-        final ClassificationRuleDao classificationRuleDAO = () -> {
+        final ClassificationRuleProvider classificationRuleProvider = () -> {
             try {
                 Thread.sleep(DELAY_IN_MS);
             } catch (InterruptedException e) {
@@ -71,7 +71,7 @@ public class ThreadSafeClassificationEngineTest {
         };
 
         // Create a thread safe classification engine
-        final ClassificationEngine original = new DefaultClassificationEngine(classificationRuleDAO);
+        final ClassificationEngine original = new DefaultClassificationEngine(classificationRuleProvider);
         final ClassificationEngine classificationEngine = new ThreadSafeClassificationEngine(original);
 
         // Kick off the threads

@@ -2525,3 +2525,19 @@ CREATE VIEW node_outage_status AS
         WHERE outages.svcregainedeventid IS NULL
         GROUP BY events.nodeid) tmp
  RIGHT JOIN node ON tmp.nodeid = node.nodeid;
+
+--##################################################################
+--# Classification tables
+--##################################################################
+CREATE TABLE classification_rules (
+  id integer NOT NULL,
+  name TEXT NOT NULL,
+  ipaddress TEXT,
+  port TEXT,
+  protocol TEXT,
+  CONSTRAINT classification_rules_pkey PRIMARY KEY (id)
+);
+--# Sequence for the id column in classification_rules table
+--#          sequence, column, table
+--# install: ruleNxtId id classification_rules
+create sequence ruleNxtId minvalue 1;

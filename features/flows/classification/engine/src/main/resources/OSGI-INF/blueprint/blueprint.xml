@@ -14,9 +14,14 @@
     <!-- DAO -->
     <reference id="classificationRuleDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" availability="mandatory"/>
 
+    <!-- Rule Provicer -->
+    <bean id="classificationRuleProvider" class="org.opennms.netmgt.flows.classification.provider.DaoClassificationRuleProvider">
+        <argument ref="classificationRuleDao"/>
+    </bean>
+
     <!-- Classification Engine -->
     <bean id="defaultClassificationEngine" class="org.opennms.netmgt.flows.classification.DefaultClassificationEngine">
-        <argument ref="classificationRuleDao" />
+        <argument ref="classificationRuleProvider" />
     </bean>
     <bean id="cachingClassificationEngine" class="org.opennms.netmgt.flows.classification.CachingClassificationEngine">
         <argument ref="defaultClassificationEngine" />

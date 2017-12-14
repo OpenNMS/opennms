@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="mvrueden" id="22.0.0-classification-rules-table">
+    <createTable tableName="classification_rules">
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ipaddress" type="text"/>
+      <column name="port" type="text"/>
+      <column name="protocol" type="text"/>
+    </createTable>
+    <addPrimaryKey tableName="classification_rules" columnNames="id" constraintName="classification_rules_pkey" />
+  </changeSet>
+
+  <changeSet runOnChange="false" author="mvrueden" id="22.0.0-ruleNxtId">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'ruleNxtId'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="ruleNxtId" />
+    <rollback>
+      <dropSequence sequenceName="ruleNxtId" />
+    </rollback>
+  </changeSet>
+  
+</databaseChangeLog>

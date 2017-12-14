@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.flows.classification.persistence.api;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import com.google.common.base.MoreObjects;
 
 /**
@@ -36,11 +43,20 @@ import com.google.common.base.MoreObjects;
  *
  * @author mvrueden
  */
+@Table(name="classification_rules")
+@Entity
 public class Rule {
+
+    @Id
+    @SequenceGenerator(name="ruleSequence", sequenceName="ruleNxtId")
+    @GeneratedValue(generator="ruleSequence")
+    private Integer id;
+
     /**
      * The name to map to.
      * Must not be null.
      */
+    @Column(name="name", nullable=false)
     private String name;
 
     /**
@@ -48,6 +64,7 @@ public class Rule {
      * May contain wildcards, e.g. 192.168.1.*. 192.168.*.*.
      * May be null.
      */
+    @Column(name="ipaddress")
     private String ipAddress;
 
     /**
@@ -56,12 +73,14 @@ public class Rule {
      * 80,8980,8000-9000
      * Must always be provided.
      */
+    @Column(name="port")
     private String port;
 
     /**
      * The protocol to map.
      * May contain multiple values,e.g. 2,7,17
      */
+    @Column(name="protocol")
     private String protocol;
 
     public Rule() {
@@ -76,6 +95,14 @@ public class Rule {
 
     public Rule(String name, String port) {
         this(name, null, port);
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
