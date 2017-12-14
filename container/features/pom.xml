@@ -223,6 +223,7 @@
             <feature>dnsjava</feature>
             <feature>dropwizard-metrics</feature>
             <feature>fop</feature>
+            <feature>guava17</feature>
             <feature>guava</feature>
             <feature>hibernate36</feature>
             <feature>hibernate-validator41</feature>
@@ -240,6 +241,7 @@
             <feature>opennms-activemq-event-forwarder</feature>
             <feature>opennms-activemq-event-receiver</feature>
             -->
+            <feature>opennms-bootstrap</feature>
             <feature>opennms-bundle-refresher</feature>
             <feature>opennms-collection-api</feature>
             <feature>opennms-collection-commands</feature>
@@ -290,8 +292,10 @@
             <feature>org.json</feature>
             <feature>postgresql</feature>
             <feature>qpid</feature>
+            <feature>smack</feature>
             <feature>spring-security32</feature>
             <feature>spring-webflow</feature>
+            <feature>twitter4j</feature>
 
             <!-- Features from other OpenNMS repositories -->
             <feature>opennms-core</feature>
