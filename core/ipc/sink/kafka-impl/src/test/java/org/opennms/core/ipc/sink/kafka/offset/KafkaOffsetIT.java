@@ -28,14 +28,16 @@
 
 package org.opennms.core.ipc.sink.kafka.offset;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
-import org.hamcrest.collection.IsEmptyCollection;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,12 +48,11 @@ import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/applicationContext-test-ipc-sink-kafka-offset.xml" })
+        "classpath:/applicationContext-test-ipc-sink-kafka.xml" })
 @JUnitConfigurationEnvironment
 public class KafkaOffsetIT {
 
@@ -59,7 +60,6 @@ public class KafkaOffsetIT {
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
 
     private KafkaOffsetProvider offsetProvider;
-  
 
     @Before
     public void setup() throws Exception {
@@ -67,7 +67,7 @@ public class KafkaOffsetIT {
                 kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%sauto.offset.reset", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
                 "earliest");
-        // offsetProvider needs system properties, so we set these manually insted of spring doing it for us
+        // offsetProvider needs system properties
         offsetProvider = new KafkaOffsetProvider();
         offsetProvider.start();
     }
@@ -79,16 +79,30 @@ public class KafkaOffsetIT {
         kafkaConsumer.startConsumer();
         KafkaMessageProducer kafkaProducer = new KafkaMessageProducer(kafkaServer.getKafkaConnectString());
         kafkaProducer.produce();
-        Thread.sleep(30000);
-        List<KafkaOffset> kafkaOffsetMonitors = new ArrayList<>();
-        Map<String, KafkaOffset> map = offsetProvider.getNewConsumer().get("USER_TOPIC");
-        if (map != null) {
-            kafkaOffsetMonitors.addAll(map.values());
-        }
-        assertThat(kafkaOffsetMonitors, not(IsEmptyCollection.empty()));
+        await().atMost(30, SECONDS).pollDelay(5, SECONDS).pollInterval(5, SECONDS)
+                .until(matchGroupName(offsetProvider));
 
-/*        await().atMost(1, MINUTES).until(() -> groupName.contains(kafkaConsumer.getGroupName()));
-        assertTrue(groupName.contains(kafkaConsumer.getGroupName()));*/
+    }
+
+    @After
+    public void destroy() throws InterruptedException {
+        offsetProvider.stop();
+    }
+
+    public static Callable<Boolean> matchGroupName(KafkaOffsetProvider offsetProvider) {
+        return new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                List<KafkaOffset> kafkaOffsetMonitors = new ArrayList<>();
+                Map<String, KafkaOffset> map = offsetProvider.getNewConsumer().get("USER_TOPIC");
+                if (map != null) {
+                    kafkaOffsetMonitors.addAll(map.values());
+                }
+                List<String> groupNames = kafkaOffsetMonitors.stream().map(offset -> offset.getConsumerGroupName())
+                        .collect(Collectors.toList());
+                return groupNames.contains("OpenNMS");
+            }
+        };
     }
 
 }

@@ -110,6 +110,9 @@ public class KafkaOffsetProvider {
                                 try {
                                     Struct struct = (Struct) schema.read(key);
                                     String group = struct.getString(KafkaOffsetConstants.GROUP);
+                                    if ( !group.equals(SystemInfoUtils.getInstanceId())) {
+                                        continue;
+                                    }
                                     String topic = struct.getString(KafkaOffsetConstants.TOPIC);
                                     int partition = struct.getInt(KafkaOffsetConstants.PARTITION);
                                     SimpleConsumer con = getConsumer();

@@ -66,7 +66,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-kafka.xml"
+        "classpath:/applicationContext-test-ipc-sink-kafka.xml"
 })
 @JUnitConfigurationEnvironment
 public class HeartbeatSinkIT {

@@ -42,69 +42,69 @@ import org.slf4j.LoggerFactory;
 
 public class KafkaMessageConsumer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(KafkaMessageConsumer.class);
-	
-	private final String groupName = "user-group";
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaMessageConsumer.class);
 
-	private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final String groupName = "OpenNMS";
 
-	private String bootStrapServer;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	private KafkaMessageConsumerRunner consumerRunner;
+    private String bootStrapServer;
 
-	public KafkaMessageConsumer(String bootStrapServer) {
-		this.bootStrapServer = bootStrapServer;
-	}
+    private KafkaMessageConsumerRunner consumerRunner;
 
-	private class KafkaMessageConsumerRunner implements Runnable {
+    public KafkaMessageConsumer(String bootStrapServer) {
+        this.bootStrapServer = bootStrapServer;
+    }
 
-		private final AtomicBoolean closed = new AtomicBoolean(false);
-		private KafkaConsumer<String, String> consumer;
+    private class KafkaMessageConsumerRunner implements Runnable {
 
-		@Override
-		public void run() {
-			Properties props = new Properties();
-			props.put("bootstrap.servers", getBootStrapServer());
-			props.put("group.id", getGroupName());
-			props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-			props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-			props.put("enable.auto.commit", "true");
-			props.put("auto.commit.interval.ms", "1000");
+        private final AtomicBoolean closed = new AtomicBoolean(false);
+        private KafkaConsumer<String, String> consumer;
 
-			consumer = new KafkaConsumer<>(props);
-			consumer.subscribe(Arrays.asList("USER_TOPIC"));
-			while (!closed.get()) {
-				ConsumerRecords<String, String> records = consumer.poll(1000);
-				for (ConsumerRecord<String, String> record : records) {
-					LOGGER.info(record.value());
-				}
-			}
-		}
+        @Override
+        public void run() {
+            Properties props = new Properties();
+            props.put("bootstrap.servers", getBootStrapServer());
+            props.put("group.id", getGroupName());
+            props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+            props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+            props.put("enable.auto.commit", "true");
+            props.put("auto.commit.interval.ms", "1000");
+            consumer = new KafkaConsumer<>(props);
+            consumer.subscribe(Arrays.asList("USER_TOPIC"));
+            LOGGER.info("subscribed to USER_TOPIC");
+            while (!closed.get()) {
+                ConsumerRecords<String, String> records = consumer.poll(100);
+                for (ConsumerRecord<String, String> record : records) {
+                    LOGGER.info(record.value());
+                }
+            }
+        }
 
-		// Shutdown hook which can be called from a separate thread
-		public void shutdown() {
-			closed.set(true);
-			if (consumer != null) {
-				consumer.wakeup();
-			}
-		}
-	}
+        // Shutdown hook which can be called from a separate thread
+        public void shutdown() {
+            closed.set(true);
+            if (consumer != null) {
+                consumer.wakeup();
+            }
+        }
+    }
 
-	public String getBootStrapServer() {
-		return bootStrapServer;
-	}
+    public String getBootStrapServer() {
+        return bootStrapServer;
+    }
 
-	public void startConsumer() {
-		consumerRunner = new KafkaMessageConsumerRunner();
-		executor.execute(consumerRunner);
-	}
+    public void startConsumer() {
+        consumerRunner = new KafkaMessageConsumerRunner();
+        executor.execute(consumerRunner);
+    }
 
-	public void stopConsumer() {
-		consumerRunner.shutdown();
-	}
+    public void stopConsumer() {
+        consumerRunner.shutdown();
+    }
 
-	public String getGroupName() {
-		return groupName;
-	}
-	
+    public String getGroupName() {
+        return groupName;
+    }
+
 }
