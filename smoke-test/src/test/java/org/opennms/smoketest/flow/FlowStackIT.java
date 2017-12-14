@@ -162,13 +162,13 @@ public class FlowStackIT {
         final JestClient client = factory.getObject();
         try {
             // Read netflow 5 packet
-           sendNetflowPacket(opennmsNetflow5AdapterAddress, "/flows/netflow5.dat");
+           sendPacket(opennmsNetflow5AdapterAddress, "/flows/netflow5.dat");
 
             // Read netflow 9 packet
-            sendNetflowPacket(opennmsNetflow9AdapterAddress, "/flows/netflow9.dat");
+            sendPacket(opennmsNetflow9AdapterAddress, "/flows/netflow9.dat");
 
             // Read ipfix packet
-            sendNetflowPacket(opennmsIPFIXAdapterAddress, "/flows/ipfix.dat");
+            sendPacket(opennmsIPFIXAdapterAddress, "/flows/ipfix.dat");
 
             // Ensure that the template has been created
             verify(client, (jestClient) -> {
@@ -181,7 +181,9 @@ public class FlowStackIT {
             // Verify directly at elastic that the flows have been created
             verify(client, jestClient -> {
                 SearchResult response = jestClient.execute(new Search.Builder("").addIndex("flow-*").build());
-                if (response.isSucceeded() && response.getTotal() == 2) {
+                System.out.println(response.getTotal());
+                System.out.println(response.getJsonString());
+                if (response.isSucceeded() && response.getTotal() == 16) {
                     return true;
                 }
                 return false;
@@ -196,7 +198,7 @@ public class FlowStackIT {
 
         // Verify via OpenNMS ReST API
         final String flowRestUrl = "http://" + opennmsWebAddress.getHostString().toString() + ":" + opennmsWebAddress.getPort() + "/opennms/" + REST_URL;
-        final NetflowPacket netflow5Packet = new NetflowPacket(ByteBuffer.wrap(getNetflowPacketContent("/flows/netflow5.dat")));
+        final NetflowPacket netflow5Packet = new NetflowPacket(ByteBuffer.wrap(getPacketContent("/flows/netflow5.dat")));
         final List<NetflowDocument> documents = new Netflow5Adapter().convert(netflow5Packet);
         documents.stream().forEach(d -> {
             d.setLocation("Default");
@@ -223,7 +225,7 @@ public class FlowStackIT {
             final Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
             }.getType();
             List<NetflowDocument> netflowDocuments = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), listType);
-            assertEquals(4, netflowDocuments.size());
+            assertEquals(10, netflowDocuments.size()); // TODO: Should be 18 but is limited by ES paging for now
 
             // Proxy query
             final HttpPost httpPost = new HttpPost(flowRestUrl + "/proxy");
@@ -238,22 +240,20 @@ public class FlowStackIT {
             EntityUtils.consume(response.getEntity());
             final JsonObject jsonRoot = gson.fromJson(json, JsonObject.class);
             final JsonArray jsonArray = jsonRoot.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-            assertEquals(4, jsonArray.size());
+            assertEquals(10, jsonArray.size()); // TODO: Should be 18 but is limited by ES paging for now
         }
     }
 
-    private byte[] getNetflowPacketContent(final String filename) throws IOException {
+    private byte[] getPacketContent(final String filename) throws IOException {
         try (InputStream is = getClass().getResourceAsStream(filename)) {
-            final byte[] bytes = new byte[is.available()];
-            ByteStreams.readFully(is, bytes);
-            return bytes;
+            return ByteStreams.toByteArray(is);
         }
     }
 
-    // Sends a netflow Packet to the given destination address
-    private void sendNetflowPacket(final InetSocketAddress destinationAddress, final String filename) throws IOException {
-        byte[] bytes = getNetflowPacketContent(filename);
-        // now send to netflow 5 adapter
+    // Sends a Packet to the given destination address
+    private void sendPacket(final InetSocketAddress destinationAddress, final String filename) throws IOException {
+        byte[] bytes = getPacketContent(filename);
+        // now send to adapter
         try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
             final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length,
                     destinationAddress.getAddress(), destinationAddress.getPort());

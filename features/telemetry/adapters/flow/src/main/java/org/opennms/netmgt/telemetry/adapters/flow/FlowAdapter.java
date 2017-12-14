@@ -37,6 +37,7 @@ import org.bson.BsonValue;
 import org.bson.RawBsonDocument;
 import org.opennms.netmgt.flows.api.FlowType;
 import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.telemetry.adapters.AbstractFlowAdapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 
 public class FlowAdapter extends AbstractFlowAdapter<BsonDocument> {
@@ -89,6 +90,9 @@ public class FlowAdapter extends AbstractFlowAdapter<BsonDocument> {
     }
 
     private void convertNetflow9(final BsonDocument packet, final NetflowDocument document) {
+
+//        boolean swapped = get(packet, "elements", "DIRECTION", "v").map(BsonValue::asInt32).map(BsonInt32::getValue).orElse(0) == 1;
+
         // TODO: The nr of records in pkt is totally irrelevant
 //        document.setFlowRecords();
 
@@ -98,163 +102,170 @@ public class FlowAdapter extends AbstractFlowAdapter<BsonDocument> {
         // TODO: The seq nr is totally irrelevant
 //        document.setFlowSequenceNumber(netflowPacket.getFlowSequence());
 
-//        get(packet, "elements", "engineType").ifPresent(v -> {
-//            document.setEngineType(v.asInt32().getValue());
-//        });
-//
-//        // TODO: v5 samplingInterval is { method:2, interval:14} for real
-//        get(packet, "elements", "samplingInterval").ifPresent(v -> {
-//            // TODO: also use samplingMethod
-//            document.setSamplingInterval(v.asInt32().getValue());
-//        });
-//
-//        get(packet, "elements", "sourceIPv4Address").ifPresent(v -> {
-//            document.setIpv4SourceAddress(v.asString().getValue());
-//        });
-//        get(packet, "elements", "sourceTransportPort").ifPresent(v -> {
-//            document.setSourcePort(v.asInt32().getValue());
-//        });
-//
-//        get(packet, "elements", "destinationIPv4Address").ifPresent(v -> {
-//            document.setIpv4DestAddress(v.asString().getValue());
-//        });
-//        get(packet, "elements", "destinationTransportPort").ifPresent(v -> {
-//            document.setDestPort(v.asInt32().getValue());
-//        });
-//
-//        // TODO: Also bgpNextHopIPv4Address
-//        get(packet, "elements", "ipNextHopIPv4Address").ifPresent(v -> {
-//            document.setIpv4NextHopAddress(v.asString().getValue());
-//        });
-//
-//        get(packet, "elements", "ingressInterface").ifPresent(v -> {
-//            document.setInputSnmpInterfaceIndex(v.asInt32().getValue());
-//        });
-//        get(packet, "elements", "egressInterface").ifPresent(v -> {
-//            document.setOutputSnmpInterfaceIndex(v.asInt32().getValue());
-//        });
-//
-//        get(packet, "elements", "octetDeltaCount").ifPresent(v -> {
-//            document.setInBytes(v.asInt32().getValue());
-//        });
-//        get(packet, "elements", "packetDeltaCount").ifPresent(v -> {
-//            document.setInPackets(v.asInt32().getValue());
-//        });
-//
-//        // TODO: By flowStartSysUpTime, flowStart*, flowStartDelta*, flowDuration*, minFlowStart*,
-////        document.setFirst(record.getFirst());
-////        document.setLast(record.getLast());
-//
-//        get(packet, "elements", "tcpControlBits").ifPresent(v -> {
-//            document.setTcpFlags(v.asInt32().getValue());
-//        });
-//
-//        get(packet, "elements", "protocolIdentifier").ifPresent(v -> {
-//            document.setIpProtocol(v.asInt32().getValue());
-//        });
-//
-//        get(packet, "elements", "ipClassOfService").ifPresent(v -> {
-//            document.setTos(v.asInt32().getValue());
-//        });
-//
-//        get(packet, "elements", "bgpSourceAsNumber").ifPresent(v -> {
-//            document.setSourceAutonomousSystemNumber(v.asInt32().getValue());
-//        });
-//        get(packet, "elements", "bgpDestinationAsNumber").ifPresent(v -> {
-//            document.setDestAutonomousSystemNumber(v.asInt32().getValue());
-//        });
-//
-//        get(packet, "elements", "sourceIPv4PrefixLength").ifPresent(v -> {
-//            document.setSourceMask(v.asInt32().getValue());
-//        });
-//        get(packet, "elements", "destinationIPv4PrefixLength").ifPresent(v -> {
-//            document.setDestMask(v.asInt32().getValue());
-//        });
-    }
-
-    private void convertIpfix(final BsonDocument packet, final NetflowDocument document) {
-
-        // TODO: The nr of records in pkt is totally irrelevant
-//        document.setFlowRecords();
-
-        get(packet, "elements", "systemInitTimeMilliseconds").ifPresent(v -> {
-            document.setSysUptime(document.getTimestamp() - v.asInt32().getValue());
+        // TODO: ENGINE_ID
+        get(packet, "elements", "ENGINE_TYPE", "v").ifPresent(v -> {
+            document.setEngineType((int) v.asInt64().getValue());
         });
 
-        // TODO: The seq nr is totally irrelevant
-//        document.setFlowSequenceNumber(netflowPacket.getFlowSequence());
-
-        get(packet, "elements", "engineType").ifPresent(v -> {
-            document.setEngineType(v.asInt32().getValue());
-        });
-
-        // TODO: v5 samplingInterval is { method:2, interval:14} for real
-        get(packet, "elements", "samplingInterval").ifPresent(v -> {
+        // TODO: v5 samplingInterval is { method:2, interval:14} for real - SAMPLING_ALGORITHM
+        get(packet, "elements", "SAMPLING_INTERVAL", "v").ifPresent(v -> {
             // TODO: also use samplingMethod
-            document.setSamplingInterval(v.asInt32().getValue());
+            document.setSamplingInterval((int) v.asInt64().getValue());
         });
 
-        get(packet, "elements", "sourceIPv4Address").ifPresent(v -> {
+        // TODO: IPV6_SRC_ADDR
+        get(packet, "elements", "IPV4_SRC_ADDR", "v").ifPresent(v -> {
             document.setIpv4SourceAddress(v.asString().getValue());
         });
-        get(packet, "elements", "sourceTransportPort").ifPresent(v -> {
-            document.setSourcePort(v.asInt32().getValue());
+        get(packet, "elements", "L4_SRC_PORT", "v").ifPresent(v -> {
+            document.setSourcePort((int) v.asInt64().getValue());
         });
-
-        get(packet, "elements", "destinationIPv4Address").ifPresent(v -> {
+        get(packet, "elements", "IPV4_DST_ADDR", "v").ifPresent(v -> {
             document.setIpv4DestAddress(v.asString().getValue());
         });
-        get(packet, "elements", "destinationTransportPort").ifPresent(v -> {
-            document.setDestPort(v.asInt32().getValue());
+        get(packet, "elements", "L4_DST_PORT", "v").ifPresent(v -> {
+            document.setSourcePort((int) v.asInt64().getValue());
         });
 
-        // TODO: Also bgpNextHopIPv4Address
-        get(packet, "elements", "ipNextHopIPv4Address").ifPresent(v -> {
+        // TODO: Also BGP_IPV4_NEXT_HOP, IPV6_NEXT_HOP, BPG_IPV6_NEXT_HOP
+        // TODO: Next Hop and switched is strange?
+        get(packet, "elements", "IPV4_NEXT_HOP", "v").ifPresent(v -> {
             document.setIpv4NextHopAddress(v.asString().getValue());
         });
 
-        get(packet, "elements", "ingressInterface").ifPresent(v -> {
-            document.setInputSnmpInterfaceIndex(v.asInt32().getValue());
+        get(packet, "elements", "INPUT_SNMP", "v").ifPresent(v -> {
+            document.setInputSnmpInterfaceIndex((int) v.asInt64().getValue());
         });
-        get(packet, "elements", "egressInterface").ifPresent(v -> {
-            document.setOutputSnmpInterfaceIndex(v.asInt32().getValue());
+        get(packet, "elements", "OUTPUT_SNMP", "v").ifPresent(v -> {
+            document.setOutputSnmpInterfaceIndex((int) v.asInt64().getValue());
         });
-
-        get(packet, "elements", "octetDeltaCount").ifPresent(v -> {
-            document.setInBytes(v.asInt32().getValue());
+        get(packet, "elements", "IN_BYTES", "v").ifPresent(v -> {
+            document.setInBytes(v.asInt64().getValue());
         });
-        get(packet, "elements", "packetDeltaCount").ifPresent(v -> {
-            document.setInPackets(v.asInt32().getValue());
+        get(packet, "elements", "IN_PKTS", "v").ifPresent(v -> {
+            document.setInPackets(v.asInt64().getValue());
         });
 
         // TODO: By flowStartSysUpTime, flowStart*, flowStartDelta*, flowDuration*, minFlowStart*,
 //        document.setFirst(record.getFirst());
 //        document.setLast(record.getLast());
 
-        get(packet, "elements", "tcpControlBits").ifPresent(v -> {
-            document.setTcpFlags(v.asInt32().getValue());
+        get(packet, "elements", "TCP_FLAGS", "v").ifPresent(v -> {
+            document.setTcpFlags((int) v.asInt64().getValue());
         });
 
-        get(packet, "elements", "protocolIdentifier").ifPresent(v -> {
-            document.setIpProtocol(v.asInt32().getValue());
+        get(packet, "elements", "PROTOCOL", "v").ifPresent(v -> {
+            document.setIpProtocol((int) v.asInt64().getValue());
         });
 
-        get(packet, "elements", "ipClassOfService").ifPresent(v -> {
+        get(packet, "elements", "SRC_TOS", "v").ifPresent(v -> {
             document.setTos(v.asInt32().getValue());
         });
 
-        get(packet, "elements", "bgpSourceAsNumber").ifPresent(v -> {
-            document.setSourceAutonomousSystemNumber(v.asInt32().getValue());
+        get(packet, "elements", "SRC_AS", "v").ifPresent(v -> {
+            document.setSourceAutonomousSystemNumber((int) v.asInt64().getValue());
         });
-        get(packet, "elements", "bgpDestinationAsNumber").ifPresent(v -> {
-            document.setDestAutonomousSystemNumber(v.asInt32().getValue());
+        get(packet, "elements", "DST_AS", "v").ifPresent(v -> {
+            document.setDestAutonomousSystemNumber((int) v.asInt64().getValue());
         });
 
-        get(packet, "elements", "sourceIPv4PrefixLength").ifPresent(v -> {
-            document.setSourceMask(v.asInt32().getValue());
+        // TODO: IPV6_SRC_MASK
+        get(packet, "elements", "SRC_MASK", "v").ifPresent(v -> {
+            document.setSourceMask((int) v.asInt64().getValue());
         });
-        get(packet, "elements", "destinationIPv4PrefixLength").ifPresent(v -> {
-            document.setDestMask(v.asInt32().getValue());
+        // TODO: IPV6_DST_MASK
+        get(packet, "elements", "DST_MASK", "v").ifPresent(v -> {
+            document.setDestMask((int) v.asInt64().getValue());
+        });
+    }
+
+    private void convertIpfix(final BsonDocument packet, final NetflowDocument document) {
+
+//        boolean swapped = get(packet, "elements", "flowDirection", "v").map(BsonValue::asInt32).map(BsonInt32::getValue).orElse(0) == 1;
+
+        // TODO: The nr of records in pkt is totally irrelevant
+//        document.setFlowRecords();
+
+        get(packet, "elements", "systemInitTimeMilliseconds", "v", "epoch").ifPresent(v -> {
+            document.setSysUptime(document.getTimestamp() - v.asInt64().getValue());
+        });
+
+        // TODO: The seq nr is totally irrelevant
+//        document.setFlowSequenceNumber(netflowPacket.getFlowSequence());
+
+        get(packet, "elements", "engineType", "v").ifPresent(v -> {
+            document.setEngineType((int) v.asInt64().getValue());
+        });
+
+        // TODO: v5 samplingInterval is { method:2, interval:14} for real
+        get(packet, "elements", "samplingInterval", "v").ifPresent(v -> {
+            // TODO: also use samplingMethod
+            document.setSamplingInterval((int) v.asInt64().getValue());
+        });
+
+        get(packet, "elements", "sourceIPv4Address", "v").ifPresent(v -> {
+            document.setIpv4SourceAddress(v.asString().getValue());
+        });
+        get(packet, "elements", "sourceTransportPort", "v").ifPresent(v -> {
+            document.setSourcePort((int) v.asInt64().getValue());
+        });
+        get(packet, "elements", "destinationIPv4Address", "v").ifPresent(v -> {
+            document.setIpv4DestAddress(v.asString().getValue());
+        });
+        get(packet, "elements", "destinationTransportPort", "v").ifPresent(v -> {
+            document.setDestPort((int) v.asInt64().getValue());
+        });
+
+        // TODO: Also bgpNextHopIPv4Address
+        // TODO: Next Hop and switched is strange? On A -> B -> C, we are B - should we switch A and C?
+        get(packet, "elements", "ipNextHopIPv4Address", "v").ifPresent(v -> {
+            document.setIpv4NextHopAddress(v.asString().getValue());
+        });
+
+        get(packet, "elements", "ingressInterface", "v").ifPresent(v -> {
+            document.setInputSnmpInterfaceIndex((int) v.asInt64().getValue());
+        });
+        get(packet, "elements", "egressInterface", "v").ifPresent(v -> {
+            document.setOutputSnmpInterfaceIndex((int) v.asInt64().getValue());
+        });
+
+        // TODO: octetTotalCount, octetDeltaSumOfSquares, octetTotalSumOfSquares, initiatorOctets, responderOctets, layer2OctetDeltaCount, layer2OctetTotalCount, flowSelectedOctetDeltaCount, transportOctetDeltaCount
+        get(packet, "elements", "octetDeltaCount", "v").ifPresent(v -> {
+            document.setInBytes(v.asInt64().getValue());
+        });
+        // TODO: packetTotalCount, initiatorPackets, responderPackets, flowSelectedPacketDeltaCount, transportPacketDeltaCount
+        get(packet, "elements", "packetDeltaCount", "v").ifPresent(v -> {
+            document.setInPackets(v.asInt64().getValue());
+        });
+
+        // TODO: By flowStartSysUpTime, flowStart*, flowStartDelta*, flowDuration*, minFlowStart*,
+//        document.setFirst(record.getFirst());
+//        document.setLast(record.getLast());
+
+        get(packet, "elements", "tcpControlBits", "v").ifPresent(v -> {
+            document.setTcpFlags((int) v.asInt64().getValue());
+        });
+
+        get(packet, "elements", "protocolIdentifier", "v").ifPresent(v -> {
+            document.setIpProtocol((int) v.asInt64().getValue());
+        });
+
+        get(packet, "elements", "ipClassOfService", "v").ifPresent(v -> {
+            document.setTos((int) v.asInt64().getValue());
+        });
+
+        get(packet, "elements", "bgpSourceAsNumber", "v").ifPresent(v -> {
+            document.setSourceAutonomousSystemNumber((int) v.asInt64().getValue());
+        });
+        get(packet, "elements", "bgpDestinationAsNumber", "v").ifPresent(v -> {
+            document.setDestAutonomousSystemNumber((int) v.asInt64().getValue());
+        });
+
+        get(packet, "elements", "sourceIPv4PrefixLength", "v").ifPresent(v -> {
+            document.setSourceMask((int) v.asInt64().getValue());
+        });
+        get(packet, "elements", "destinationIPv4PrefixLength", "v").ifPresent(v -> {
+            document.setDestMask((int) v.asInt64().getValue());
         });
     }
 }

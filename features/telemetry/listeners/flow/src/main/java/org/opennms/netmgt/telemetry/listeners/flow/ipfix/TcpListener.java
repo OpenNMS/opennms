@@ -86,6 +86,7 @@ public class TcpListener implements Listener {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
+                                        LOG.debug("", cause);
                                         ctx.close();
                                     }
                                 });

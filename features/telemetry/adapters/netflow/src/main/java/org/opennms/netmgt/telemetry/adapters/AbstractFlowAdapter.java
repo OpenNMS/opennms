@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.flow;
+package org.opennms.netmgt.telemetry.adapters;
 
 import java.net.InetAddress;
 import java.util.LinkedList;

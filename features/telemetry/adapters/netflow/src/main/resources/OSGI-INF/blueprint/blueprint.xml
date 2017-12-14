@@ -26,7 +26,7 @@
 	<service ref="netflow5factory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.flow.AbstractFlowAdapter" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter" />
 		</service-properties>
 	</service>
 
