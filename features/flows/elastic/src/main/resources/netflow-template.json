@@ -758,8 +758,16 @@
                     "dynamic": true,
                     "type": "object",
                     "properties": {
+                        "application": {
+                            "type": "keyword",
+                            "norms": false
+                        },
                         "bytes": {
                             "type": "long"
+                        },
+                        "convo_key": {
+                            "type": "keyword",
+                            "norms": false
                         },
                         "direction": {
                             "type": "keyword",

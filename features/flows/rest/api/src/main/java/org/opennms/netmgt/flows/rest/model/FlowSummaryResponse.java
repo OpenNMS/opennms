@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,59 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.rest.model;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import com.google.common.collect.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-public interface FlowRepository {
+@XmlAccessorType(XmlAccessType.NONE)
+public class FlowSummaryResponse {
 
-    void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException;
+    @XmlAttribute(name="start")
+    private long start;
 
-    CompletableFuture<Long> getFlowCount(long start, long end);
+    @XmlAttribute(name="end")
+    private long end;
 
-    CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, long start, long end);
+    @XmlElement(name="headers")
+    private List<String> headers;
 
-    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long start, long end, long step);
+    @XmlElement(name="rows")
+    private List<List<Object>> rows;
 
-    CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, long start, long end);
+    public long getStart() {
+        return start;
+    }
 
-    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long start, long end, long step);
+    public void setStart(long start) {
+        this.start = start;
+    }
 
+    public long getEnd() {
+        return end;
+    }
+
+    public void setEnd(long end) {
+        this.end = end;
+    }
+
+    public List<String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<String> headers) {
+        this.headers = headers;
+    }
+
+    public List<List<Object>> getRows() {
+        return rows;
+    }
+
+    public void setRows(List<List<Object>> rows) {
+        this.rows = rows;
+    }
 }

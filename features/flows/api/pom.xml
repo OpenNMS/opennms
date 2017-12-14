@@ -28,10 +28,9 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features.jest</groupId>
-      <artifactId>org.opennms.features.jest.client</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guavaVersion}</version>
     </dependency>
   </dependencies>
 </project>

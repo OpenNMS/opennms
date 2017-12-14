@@ -76,6 +76,12 @@ public class FlowDocument {
     private Long bytes;
 
     /**
+     * Key used to group and identify conversations
+     */
+    @SerializedName("netflow.convo_key")
+    private String convoKey;
+
+    /**
      * Direction of the flow (egress vs ingress)
      */
     @SerializedName("netflow.direction")
@@ -330,6 +336,14 @@ public class FlowDocument {
 
     public void setBytes(Long bytes) {
         this.bytes = bytes;
+    }
+
+    public String getConvoKey() {
+        return convoKey;
+    }
+
+    public void setConvoKey(String convoKey) {
+        this.convoKey = convoKey;
     }
 
     public String getDirection() {

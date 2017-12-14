@@ -79,12 +79,6 @@ public class ElasticFlowRepositoryRetryIT {
     );
 
     @Test
-    public void verifyGetFlowCountSucceedsWhenServerBecomesAvailable() throws Exception {
-        // Try getting data
-        apply((repository) -> repository.getFlowCount(0, 1));
-    }
-
-    @Test
     public void verifySaveSucceedsWhenServerBecomesAvailable() throws Exception {
         // try persisting data
         apply((repository) -> repository.persistNetFlow5Packets(Lists.newArrayList(FlowDocumentTest.getMockNetflow5Packet()),

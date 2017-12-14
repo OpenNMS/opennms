@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.rest.model;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.io.IOException;
+import java.util.Arrays;
 
-import com.google.common.collect.Table;
+import org.junit.Test;
+import org.opennms.core.test.xml.JsonTest;
 
-public interface FlowRepository {
+import com.google.common.collect.Lists;
 
-    void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException;
+public class FlowSummaryResponseTest {
 
-    CompletableFuture<Long> getFlowCount(long start, long end);
+    @Test
+    public void testMarshalJson() throws IOException {
+        FlowSummaryResponse response = new FlowSummaryResponse();
+        response.setStart(1);
+        response.setEnd(100);
+        response.setHeaders(Lists.newArrayList("Application", "Bytes In", "Bytes Out"));
+        response.setRows(Arrays.asList(
+                Lists.newArrayList("SSH", 500L, 501L),
+                Lists.newArrayList("RDP", 400L, 401L)
+        ));
 
-    CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, long start, long end);
-
-    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long start, long end, long step);
-
-    CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, long start, long end);
-
-    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long start, long end, long step);
-
+        String responseString = JsonTest.marshalToJson(response);
+        JsonTest.assertJsonEquals("{\n" +
+                "  \"start\" : 1,\n" +
+                "  \"end\" : 100,\n" +
+                "  \"headers\" : [ \"Application\", \"Bytes In\", \"Bytes Out\" ],\n" +
+                "  \"rows\" : [ [ \"SSH\", 500, 501 ], [ \"RDP\", 400, 401 ] ]\n" +
+                "}", responseString);
+    }
 }
