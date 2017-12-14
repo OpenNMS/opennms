@@ -8,8 +8,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.flows</groupId>
   <artifactId>org.opennms.features.flows.classification</artifactId>
-  <name>OpenNMS :: Features :: Flows :: Classification</name>
-  <packaging>bundle</packaging>
+  <name>OpenNMS :: Features :: Flows :: Classification (Parent)</name>
+  <packaging>pom</packaging>
+  <modules>
+    <module>engine</module>
+    <module>persistence</module>
+  </modules>
   <build>
     <plugins>
       <plugin>
@@ -28,30 +32,12 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.lib</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.api</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

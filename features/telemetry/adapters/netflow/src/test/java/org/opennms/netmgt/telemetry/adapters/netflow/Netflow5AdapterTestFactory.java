@@ -50,7 +50,6 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.classification.DefaultClassificationEngine;
-import org.opennms.netmgt.flows.classification.persistence.StaticRuleClassificationDAO;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
