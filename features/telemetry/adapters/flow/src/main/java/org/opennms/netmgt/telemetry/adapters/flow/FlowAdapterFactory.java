@@ -31,22 +31,12 @@ package org.opennms.netmgt.telemetry.adapters.flow;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
-import org.opennms.netmgt.telemetry.adapters.AbstractFlowAdapter;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
-import org.springframework.transaction.support.TransactionOperations;
-
-import com.codahale.metrics.MetricRegistry;
 
 public class FlowAdapterFactory implements AdapterFactory {
-    private MetricRegistry metricRegistry;
-    private InterfaceToNodeCache interfaceToNodeCache;
-    private NodeDao nodeDao;
-    private TransactionOperations transactionOperations;
     private FlowRepository flowRepository;
 
     @Override
@@ -56,39 +46,13 @@ public class FlowAdapterFactory implements AdapterFactory {
 
     @Override
     public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
-        Objects.requireNonNull(interfaceToNodeCache);
-        Objects.requireNonNull(metricRegistry);
-        Objects.requireNonNull(nodeDao);
-        Objects.requireNonNull(transactionOperations);
         Objects.requireNonNull(flowRepository);
 
-        final AbstractFlowAdapter adapter = new FlowAdapter();
-        adapter.setInterfaceToNodeCache(interfaceToNodeCache);
-        adapter.setMetricRegistry(metricRegistry);
-        adapter.setNodeDao(nodeDao);
+        final FlowAdapter adapter = new FlowAdapter();
         adapter.setFlowRepository(flowRepository);
-        adapter.setTransactionOperations(transactionOperations);
         adapter.setProtocol(protocol);
 
-        adapter.init();
-
         return adapter;
-    }
-
-    public void setMetricRegistry(MetricRegistry metricRegistry) {
-        this.metricRegistry = metricRegistry;
-    }
-
-    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
-        this.interfaceToNodeCache = interfaceToNodeCache;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
-    }
-
-    public void setTransactionOperations(TransactionOperations transactionOperations) {
-        this.transactionOperations = transactionOperations;
     }
 
     public void setFlowRepository(FlowRepository flowRepository) {

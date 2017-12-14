@@ -28,19 +28,28 @@
 
 package org.opennms.netmgt.telemetry.adapters.flow;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.RawBsonDocument;
+import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowType;
 import org.opennms.netmgt.flows.api.NetflowDocument;
-import org.opennms.netmgt.telemetry.adapters.AbstractFlowAdapter;
+import org.opennms.netmgt.flows.api.PersistenceException;
+import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class FlowAdapter extends AbstractFlowAdapter<BsonDocument> {
+public class FlowAdapter implements Adapter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FlowAdapter.class);
 
     private static Optional<BsonValue> get(final BsonDocument doc, final String... path) {
         BsonValue value = doc;
@@ -54,13 +63,43 @@ public class FlowAdapter extends AbstractFlowAdapter<BsonDocument> {
         return Optional.of(value);
     }
 
+    private FlowRepository flowRepository;
+
     @Override
-    protected BsonDocument parse(final TelemetryMessage message) {
-        return new RawBsonDocument(message.getByteArray());
+    public void setProtocol(final Protocol protocol) {
+        // we do not need the protocol
     }
 
     @Override
-    protected List<NetflowDocument> convert(final BsonDocument packet) {
+    public void handleMessageLog(final TelemetryMessageLog messageLog) {
+        LOG.debug("Received {} telemetry messages", messageLog.getMessageList().size());
+
+        final List<NetflowDocument> documents = new ArrayList<>(messageLog.getMessageList().size());
+        for (final TelemetryMessage message : messageLog.getMessageList()) {
+            final NetflowDocument document = convert(new RawBsonDocument(message.getByteArray()));
+
+            // TODO: Enrich me
+
+            documents.add(document);
+        }
+
+        try {
+            this.flowRepository.save(documents);
+        } catch (final PersistenceException e) {
+            LOG.error("Not all flows have been persisted: {}", e.getMessage());
+            e.getFailedItems().forEach(failedItem -> {
+                LOG.error("Flow {} could not be persisted. Reason: {}", failedItem.getItem(), failedItem.getCause().getMessage(), failedItem.getCause());
+            });
+        } catch (final FlowException e) {
+            LOG.error("An error occurred while handling incoming flow packets: {}", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
+        LOG.debug("Completed processing {} telemetry messages into {} flows.",
+                messageLog.getMessageList().size(), documents.size());
+    }
+
+    private NetflowDocument convert(final BsonDocument packet) {
         final NetflowDocument document = new NetflowDocument();
 
         switch (get(packet, "version").get().asInt32().getValue()) {
@@ -86,7 +125,7 @@ public class FlowAdapter extends AbstractFlowAdapter<BsonDocument> {
         document.setTimestamp(get(packet, "exportTime").get().asTimestamp().getTime() * 1000);
         document.setVersion(get(packet, "version").get().asInt32().getValue());
 
-        return Collections.singletonList(document);
+        return document;
     }
 
     private void convertNetflow9(final BsonDocument packet, final NetflowDocument document) {
@@ -267,5 +306,9 @@ public class FlowAdapter extends AbstractFlowAdapter<BsonDocument> {
         get(packet, "elements", "destinationIPv4PrefixLength", "v").ifPresent(v -> {
             document.setDestMask((int) v.asInt64().getValue());
         });
+    }
+
+    public void setFlowRepository(FlowRepository flowRepository) {
+        this.flowRepository = flowRepository;
     }
 }

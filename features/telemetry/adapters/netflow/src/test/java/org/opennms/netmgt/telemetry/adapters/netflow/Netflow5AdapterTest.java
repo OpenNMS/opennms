@@ -42,14 +42,13 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.telemetry.adapters.AbstractFlowAdapter;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {Netflow5AdapterTestFactory.class})
 public class Netflow5AdapterTest {
 
-    private AbstractFlowAdapter netflow5Adapter;
+    private Netflow5Adapter netflow5Adapter;
 
     private NodeDao nodeDao;
 
