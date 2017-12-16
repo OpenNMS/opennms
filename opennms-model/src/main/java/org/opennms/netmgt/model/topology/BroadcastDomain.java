@@ -56,7 +56,7 @@ public class BroadcastDomain implements BridgeTopology {
                 m_forwarding.get(bridgeid).add(forward);
     }
 
-    public void addForwarders(Integer bridgeid, Set<BridgeForwardingTableEntry> forwarders) {
+    public void setForwarders(Integer bridgeid, Set<BridgeForwardingTableEntry> forwarders) {
             m_forwarding.put(bridgeid, forwarders);
     }
     

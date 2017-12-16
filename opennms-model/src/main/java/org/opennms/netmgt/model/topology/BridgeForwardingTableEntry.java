@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model.topology;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -179,6 +180,24 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
         bp.setMacAddress(macAddress);
         bp.setVlan(port.getVlan());
         return bp;
+    }
+        
+    public static Map<BridgePort,Set<String>> getThroughSet(Set<BridgeForwardingTableEntry> bft, Set<BridgePort> excluded) {
+        Map<BridgePort, Set<String>> throughSet= new HashMap<BridgePort, Set<String>>();
+        BFT: for (BridgeForwardingTableEntry link: bft) {
+            for (BridgePort exclude: excluded) {
+                if ((link.getNodeId() == exclude.getNodeId() 
+                    && link.getBridgePort() == exclude.getBridgePort()) 
+                    || link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
+                    continue BFT;
+                }
+            }
+            if (!throughSet.containsKey(BridgePort.getFromBridgeForwardingTableEntry(link))) {
+                throughSet.put(BridgePort.getFromBridgeForwardingTableEntry(link), new HashSet<String>());
+            }
+            throughSet.get(BridgePort.getFromBridgeForwardingTableEntry(link)).add(link.getMacAddress());
+        }
+        return throughSet;
     }
 
     

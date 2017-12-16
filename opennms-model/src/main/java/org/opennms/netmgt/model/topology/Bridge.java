@@ -99,6 +99,12 @@ public class Bridge implements BridgeTopology {
         return m_rootPort;
     }
 
+    public boolean isNewTopology() {
+        if (m_rootPort != null) {
+            return false;
+        }
+        return !m_isRootBridge;
+    }
     public void setRootPort(Integer rootPort) {
         m_rootPort = rootPort;
         m_isRootBridge = false;
