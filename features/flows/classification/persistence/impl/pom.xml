@@ -52,8 +52,8 @@
           <scope>test</scope>
       </dependency>
       <dependency>
-          <groupId>org.opennms.features.flows.classification</groupId>
-          <artifactId>org.opennms.features.flows.classification.engine</artifactId>
+          <groupId>org.opennms.features.flows.classification.engine</groupId>
+          <artifactId>org.opennms.features.flows.classification.engine.impl</artifactId>
           <version>${project.version}</version>
           <scope>test</scope>
       </dependency>

@@ -26,13 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification;
 
-// Convenient interface to access often used protocols
-public interface ProtocolType {
-    Protocol ICMP = Protocols.getProtocol("icmp");
-    Protocol TCP = Protocols.getProtocol("tcp");
-    Protocol UDP = Protocols.getProtocol("udp");
-    Protocol DDP = Protocols.getProtocol("ddp");
-    Protocol SCTP = Protocols.getProtocol("sctp");
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+
+public interface CsvRuleParser {
+    List<Rule> parse(InputStream inputStream) throws IOException;
 }

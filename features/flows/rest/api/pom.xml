@@ -15,6 +15,16 @@
       <groupId>javax.ws.rs</groupId>
       <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.features.flows.classification.engine</groupId>
+          <artifactId>org.opennms.features.flows.classification.engine.api</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.features.flows.classification.persistence</groupId>
+          <artifactId>org.opennms.features.flows.classification.persistence.api</artifactId>
+          <version>${project.version}</version>
+      </dependency>
 
     <!-- Test -->
     <dependency>

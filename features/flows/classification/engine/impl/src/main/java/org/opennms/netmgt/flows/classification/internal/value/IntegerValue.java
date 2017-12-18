@@ -26,13 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.internal.value;
 
-// Convenient interface to access often used protocols
-public interface ProtocolType {
-    Protocol ICMP = Protocols.getProtocol("icmp");
-    Protocol TCP = Protocols.getProtocol("tcp");
-    Protocol UDP = Protocols.getProtocol("udp");
-    Protocol DDP = Protocols.getProtocol("ddp");
-    Protocol SCTP = Protocols.getProtocol("sctp");
+public class IntegerValue {
+    private Integer value;
+
+    public IntegerValue(StringValue input) {
+        if (input == null || input.isNullOrEmpty()) {
+            this.value = null;
+        }
+        this.value = Integer.parseInt(input.getValue());
+    }
+
+    public boolean isNull() {
+        return value == null;
+    }
+
+    public int getValue() {
+        return value.intValue(); // Check before with isNull() otherwise NPE may be thrown
+    }
 }

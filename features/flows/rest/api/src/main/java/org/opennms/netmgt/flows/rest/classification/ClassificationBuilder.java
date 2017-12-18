@@ -26,13 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.rest.classification;
 
-// Convenient interface to access often used protocols
-public interface ProtocolType {
-    Protocol ICMP = Protocols.getProtocol("icmp");
-    Protocol TCP = Protocols.getProtocol("tcp");
-    Protocol UDP = Protocols.getProtocol("udp");
-    Protocol DDP = Protocols.getProtocol("ddp");
-    Protocol SCTP = Protocols.getProtocol("sctp");
+public class ClassificationBuilder {
+    private final ClassificationDTO classificationDTO = new ClassificationDTO();
+
+    public ClassificationBuilder withName(String name) {
+        this.classificationDTO.setName(name);
+        return this;
+    }
+
+    public ClassificationBuilder withProtocol(String protocol) {
+        this.classificationDTO.setProtocol(protocol);
+        return this;
+    }
+
+    public ClassificationBuilder withPort(String port) {
+        this.classificationDTO.setPort(port);
+        return this;
+    }
+
+    public ClassificationDTO build() {
+        return classificationDTO;
+    }
+
+    public static ClassificationBuilder classification() {
+        return new ClassificationBuilder();
+    }
 }

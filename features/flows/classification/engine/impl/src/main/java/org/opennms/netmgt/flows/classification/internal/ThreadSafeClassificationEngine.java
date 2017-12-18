@@ -26,13 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.internal;
 
-// Convenient interface to access often used protocols
-public interface ProtocolType {
-    Protocol ICMP = Protocols.getProtocol("icmp");
-    Protocol TCP = Protocols.getProtocol("tcp");
-    Protocol UDP = Protocols.getProtocol("udp");
-    Protocol DDP = Protocols.getProtocol("ddp");
-    Protocol SCTP = Protocols.getProtocol("sctp");
+import java.util.Objects;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.ClassificationRequest;
+
+public class ThreadSafeClassificationEngine implements ClassificationEngine {
+
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    private final ClassificationEngine delegate;
+
+    public ThreadSafeClassificationEngine(ClassificationEngine delegate) {
+        this.delegate = Objects.requireNonNull(delegate);
+    }
+
+    @Override
+    public String classify(ClassificationRequest classificationRequest) {
+        lock.readLock().lock();
+        try {
+            return delegate.classify(classificationRequest);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public void reload() {
+        lock.writeLock().lock();
+        try {
+            delegate.reload();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
 }

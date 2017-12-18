@@ -23,12 +23,12 @@
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
-        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'ruleNxtId'
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'rulenxtid'
       </sqlCheck>
     </preConditions>
-    <createSequence sequenceName="ruleNxtId" />
+    <createSequence sequenceName="rulenxtid" />
     <rollback>
-      <dropSequence sequenceName="ruleNxtId" />
+      <dropSequence sequenceName="rulenxtid" />
     </rollback>
   </changeSet>
   

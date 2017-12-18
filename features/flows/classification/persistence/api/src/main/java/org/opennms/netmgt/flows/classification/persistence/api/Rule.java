@@ -36,6 +36,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
 
 /**
  * A rule defines how a flow should be mapped.
@@ -135,6 +136,13 @@ public class Rule {
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    public boolean isValid() {
+        return !Strings.isNullOrEmpty(name)
+                && ! (Strings.isNullOrEmpty(port)
+                            &&  Strings.isNullOrEmpty(protocol)
+                            && Strings.isNullOrEmpty(ipAddress));
     }
 
     @Override

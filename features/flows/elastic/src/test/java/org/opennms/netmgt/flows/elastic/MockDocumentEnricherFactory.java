@@ -46,9 +46,9 @@ import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.DefaultClassificationEngine;
-import org.opennms.netmgt.flows.classification.provider.ClassificationRuleProvider;
-import org.opennms.netmgt.flows.classification.provider.StaticClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
+import org.opennms.netmgt.flows.classification.internal.provider.StaticClassificationRuleProvider;
 
 import com.codahale.metrics.MetricRegistry;
 

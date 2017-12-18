@@ -2539,5 +2539,5 @@ CREATE TABLE classification_rules (
 );
 --# Sequence for the id column in classification_rules table
 --#          sequence, column, table
---# install: ruleNxtId id classification_rules
-create sequence ruleNxtId minvalue 1;
+--# install: rulenxtid id classification_rules
+create sequence rulenxtid minvalue 1;

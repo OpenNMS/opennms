@@ -26,13 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.internal.provider;
 
-// Convenient interface to access often used protocols
-public interface ProtocolType {
-    Protocol ICMP = Protocols.getProtocol("icmp");
-    Protocol TCP = Protocols.getProtocol("tcp");
-    Protocol UDP = Protocols.getProtocol("udp");
-    Protocol DDP = Protocols.getProtocol("ddp");
-    Protocol SCTP = Protocols.getProtocol("sctp");
+import java.util.List;
+import java.util.Objects;
+
+import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+
+public class DaoClassificationRuleProvider implements ClassificationRuleProvider {
+
+    private final ClassificationRuleDao dao;
+
+    public DaoClassificationRuleProvider(ClassificationRuleDao classificationRuleDao) {
+        this.dao = Objects.requireNonNull(classificationRuleDao);
+    }
+
+    @Override
+    public List<Rule> getRules() {
+        return dao.findAll();
+    }
 }

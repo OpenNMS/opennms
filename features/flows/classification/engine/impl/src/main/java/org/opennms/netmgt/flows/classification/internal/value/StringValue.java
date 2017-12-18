@@ -26,13 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.internal.value;
 
-// Convenient interface to access often used protocols
-public interface ProtocolType {
-    Protocol ICMP = Protocols.getProtocol("icmp");
-    Protocol TCP = Protocols.getProtocol("tcp");
-    Protocol UDP = Protocols.getProtocol("udp");
-    Protocol DDP = Protocols.getProtocol("ddp");
-    Protocol SCTP = Protocols.getProtocol("sctp");
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class StringValue {
+    private final String input;
+
+    public StringValue(String input) {
+        this.input = input;
+    }
+
+    public boolean isWildcard() {
+        return input != null && input.contains("*");
+    }
+
+    public boolean isNull() {
+        return input == null;
+    }
+
+    public boolean isEmpty() {
+        return input != null && input.isEmpty();
+    }
+
+    public boolean isNullOrEmpty() {
+        return isNull() || isEmpty();
+    }
+
+    public boolean isRanged() {
+        if (!isNullOrEmpty()) {
+            return input.contains("-");
+        }
+        return false;
+    }
+
+    public String getValue() {
+        return input;
+    }
+
+    public List<StringValue> splitBy(String separator) {
+        return Arrays.stream(input.split(separator))
+                .map(segment -> segment.trim())
+                .filter(segment -> segment != null && segment.length() > 0)
+                .map(segment -> new StringValue(segment))
+                .collect(Collectors.toList());
+    }
 }

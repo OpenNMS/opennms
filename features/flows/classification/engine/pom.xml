@@ -8,34 +8,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.flows.classification</groupId>
   <artifactId>org.opennms.features.flows.classification.engine</artifactId>
-  <name>OpenNMS :: Features :: Flows :: Classification :: Engine</name>
-  <packaging>bundle</packaging>
-  <dependencies>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.lib</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.api</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.flows.classification.persistence</groupId>
-      <artifactId>org.opennms.features.flows.classification.persistence.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.dropwizard.metrics</groupId>
-      <artifactId>metrics-core</artifactId>
-      <version>${dropwizardMetricsVersion}</version>
-    </dependency>
-  </dependencies>
+  <name>OpenNMS :: Features :: Flows :: Classification :: Engine (Parent)</name>
+  <packaging>pom</packaging>
+  <modules>
+    <module>api</module>
+    <module>impl</module>
+  </modules>
 </project>

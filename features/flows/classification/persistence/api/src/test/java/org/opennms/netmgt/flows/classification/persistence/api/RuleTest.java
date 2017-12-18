@@ -28,11 +28,41 @@
 
 package org.opennms.netmgt.flows.classification.persistence.api;
 
-// Convenient interface to access often used protocols
-public interface ProtocolType {
-    Protocol ICMP = Protocols.getProtocol("icmp");
-    Protocol TCP = Protocols.getProtocol("tcp");
-    Protocol UDP = Protocols.getProtocol("udp");
-    Protocol DDP = Protocols.getProtocol("ddp");
-    Protocol SCTP = Protocols.getProtocol("sctp");
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
+
+public class RuleTest {
+
+    @Test
+    public void verifyMustHaveName() {
+        Rule rule = new Rule();
+        assertThat(rule.isValid(), is(false));
+
+        rule.setPort("80");
+        assertThat(rule.isValid(), is(false));
+
+        rule.setIpAddress("10.10.10.10");
+        assertThat(rule.isValid(), is(false));
+
+        rule.setProtocol("tcp");
+        assertThat(rule.isValid(), is(false));
+
+        rule.setId(5);
+        assertThat(rule.isValid(), is(false));
+
+        rule.setName("http");
+        assertThat(rule.isValid(), is(true));
+    }
+
+    @Test
+    public void verifyNameOnlyIsNotEnough() {
+        Rule rule = new Rule();
+        rule.setName("http");
+
+        assertThat(rule.isValid(), is(false));
+        rule.setProtocol("tcp");
+        assertThat(rule.isValid(), is(true));
+    }
 }

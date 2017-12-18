@@ -26,13 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.internal.provider;
 
-// Convenient interface to access often used protocols
-public interface ProtocolType {
-    Protocol ICMP = Protocols.getProtocol("icmp");
-    Protocol TCP = Protocols.getProtocol("tcp");
-    Protocol UDP = Protocols.getProtocol("udp");
-    Protocol DDP = Protocols.getProtocol("ddp");
-    Protocol SCTP = Protocols.getProtocol("sctp");
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.junit.Test;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+
+public class StaticClassificationRuleProviderTest {
+
+    @Test
+    public void verifyLoading() throws IOException {
+        final StaticClassificationRuleProvider staticClassificationRuleProvider = new StaticClassificationRuleProvider();
+        final List<Rule> rules = staticClassificationRuleProvider.getRules();
+        assertThat(rules, not(empty()));
+
+        Rule rule = staticClassificationRuleProvider.getRule("http", 80);
+        assertNotNull(rule);
+        assertThat(rule.getName(), equalToIgnoringCase("http"));
+        assertThat(rule.getPort(), is("80"));
+        assertThat(rule.getProtocol(), is("tcp,udp,sctp"));
+    }
+
 }

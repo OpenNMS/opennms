@@ -26,13 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.internal;
 
-// Convenient interface to access often used protocols
-public interface ProtocolType {
-    Protocol ICMP = Protocols.getProtocol("icmp");
-    Protocol TCP = Protocols.getProtocol("tcp");
-    Protocol UDP = Protocols.getProtocol("udp");
-    Protocol DDP = Protocols.getProtocol("ddp");
-    Protocol SCTP = Protocols.getProtocol("sctp");
+import java.util.Comparator;
+
+import org.opennms.netmgt.flows.classification.internal.classifier.Classifier;
+
+public class ClassificationSorter implements Comparator<Classifier> {
+
+    @Override
+    public int compare(Classifier o1, Classifier o2) {
+        if (o1.getPriority() == o2.getPriority()) {
+            return -1 * Boolean.compare(o1.hasIpMatcher(), o2.hasIpMatcher());
+        }
+        return -1 * Integer.compare(o1.getPriority(), o2.getPriority());
+    }
 }
