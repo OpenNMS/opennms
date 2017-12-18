@@ -67,9 +67,11 @@ public class ServiceBasedStrategyResolver implements StrategyResolver {
 	}
 	
 	public void onUnbind(SnmpStrategy operation, Map<String, String> props) {
-		String key = props.get("implementation");
-		if (key != null) {
-			m_strategies.remove(key);
+		if (props != null) {
+			String key = props.get("implementation");
+			if (key != null) {
+				m_strategies.remove(key);
+			}
 		}
 	}
 
