@@ -101,6 +101,7 @@ public class JUnitKafkaServer extends ExternalResource {
         properties.put("log.dir", "target/kafka-log");
         properties.put("port", String.valueOf(kafkaPort.get()));
         properties.put("zookeeper.connect", zkServer.getConnectString());
+        properties.put("listeners", "PLAINTEXT://" + "localhost:" + String.valueOf(kafkaPort.get()));
 
         System.err.println("Kafka server properties: " + properties);
         kafkaConfig = new KafkaConfig(properties);
