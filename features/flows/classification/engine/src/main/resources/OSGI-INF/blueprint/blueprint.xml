@@ -20,8 +20,13 @@
     </bean>
 
     <!-- Classification Engine -->
+    <bean id="useStaticRules" class="java.lang.System" factory-method="getProperty">
+        <argument value="org.opennms.features.flows.classification.useStaticRules"/>
+        <argument value="true"/>
+    </bean>
     <bean id="defaultClassificationEngine" class="org.opennms.netmgt.flows.classification.DefaultClassificationEngine">
         <argument ref="classificationRuleProvider" />
+        <argument ref="useStaticRules"/>
     </bean>
     <bean id="cachingClassificationEngine" class="org.opennms.netmgt.flows.classification.CachingClassificationEngine">
         <argument ref="defaultClassificationEngine" />

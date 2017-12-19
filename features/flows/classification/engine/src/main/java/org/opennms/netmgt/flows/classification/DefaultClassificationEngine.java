@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.flows.classification;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,18 +45,25 @@ import org.opennms.netmgt.flows.classification.matcher.ProtocolMatcher;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.provider.ClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.provider.StaticClassificationRuleProvider;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
     private final ClassificationRuleProvider ruleProvider;
-
     private final List<Classifier> classifierList = new ArrayList<>();
+    private final boolean useStaticRules;
 
     // This can be a DAO or similar in the future
     public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider) {
+        this(ruleProvider, false);
+    }
+
+    public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider, boolean useStaticRules) {
         this.ruleProvider = Objects.requireNonNull(ruleProvider);
+        this.useStaticRules = useStaticRules;
         this.reload();
     }
 
@@ -76,6 +84,22 @@ public class DefaultClassificationEngine implements ClassificationEngine {
             }
         });
         Collections.sort(classifierList, new ClassificationSorter());
+
+        // For now we just apply static rules at the end.
+        // This ensures that user-defined rules are loaded first
+        if (useStaticRules) {
+            try {
+                new StaticClassificationRuleProvider().getRules()
+                    .forEach(rule -> {
+                        final Classifier classifier = createClassifier(rule);
+                        if (!classifierList.contains(classifier)) {
+                            classifierList.add(classifier);
+                        }
+                    });
+            } catch (IOException e) {
+                LoggerFactory.getLogger(getClass()).error("Could not load static rules {}", e.getMessage(), e);
+            }
+        }
     }
 
     @Override
