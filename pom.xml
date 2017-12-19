@@ -1266,6 +1266,7 @@
     <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>
+    <bsonVersion>3.5.0</bsonVersion>
     <camelVersion>2.19.1</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
@@ -3024,6 +3025,11 @@
         <groupId>bsh</groupId>
         <artifactId>bsh</artifactId>
         <version>1.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>bson</artifactId>
+        <version>${bsonVersion}</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>

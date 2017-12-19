@@ -343,6 +343,7 @@
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
             <feature>opennms-telemetry-collection</feature>
+            <feature>opennms-telemetry-flow</feature>
             <feature>opennms-telemetry-jti</feature>
             <feature>opennms-telemetry-nxos</feature>
 

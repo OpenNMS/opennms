@@ -22,6 +22,7 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>org.opennms.netmgt.telemetry.listeners.udp,*</Import-Package>
+            <Import-Package>org.opennms.netmgt.telemetry.listeners.flow,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

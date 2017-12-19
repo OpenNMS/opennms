@@ -13,6 +13,7 @@
   <modules>
     <module>api</module>
     <module>collection</module>
+    <module>flow</module>
     <module>jti</module>
     <module>netflow</module>
     <module>nxos</module>

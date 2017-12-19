@@ -61,7 +61,7 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.flows.api.NetflowDocument;
-import org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Converter;
+import org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter;
 import org.opennms.netmgt.telemetry.adapters.netflow.v5.NetflowPacket;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
@@ -101,7 +101,9 @@ public class FlowStackIT {
 
     private static final String REST_URL = "rest/flows";
 
-    private static int NETFLOW_LISTENER_UDP_PORT = 50000;
+    private static int NETFLOW5_LISTENER_UDP_PORT = 50000;
+    private static int NETFLOW9_LISTENER_UDP_PORT = 50001;
+    private static int IPFIX_LISTENER_UDP_PORT = 50002;
 
     private static final String TEMPLATE_NAME = "netflow";
 
@@ -144,7 +146,9 @@ public class FlowStackIT {
         final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_5, 9200, "tcp");
         final InetSocketAddress opennmsWebAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8980);
         final InetSocketAddress opennmsSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101);
-        final InetSocketAddress opennmsNetflowAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, NETFLOW_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress opennmsNetflow5AdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, NETFLOW5_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress opennmsNetflow9AdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, NETFLOW9_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress opennmsIPFIXAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, IPFIX_LISTENER_UDP_PORT, "udp");
         final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
 
         // Configure OpenNMS
@@ -158,7 +162,13 @@ public class FlowStackIT {
         final JestClient client = factory.getObject();
         try {
             // Read netflow 5 packet
-           sendNetflowPacket(opennmsNetflowAdapterAddress);
+           sendPacket(opennmsNetflow5AdapterAddress, "/flows/netflow5.dat");
+
+            // Read netflow 9 packet
+            sendPacket(opennmsNetflow9AdapterAddress, "/flows/netflow9.dat");
+
+            // Read ipfix packet
+            sendPacket(opennmsIPFIXAdapterAddress, "/flows/ipfix.dat");
 
             // Ensure that the template has been created
             verify(client, (jestClient) -> {
@@ -171,7 +181,9 @@ public class FlowStackIT {
             // Verify directly at elastic that the flows have been created
             verify(client, jestClient -> {
                 SearchResult response = jestClient.execute(new Search.Builder("").addIndex("flow-*").build());
-                if (response.isSucceeded() && response.getTotal() == 2) {
+                System.out.println(response.getTotal());
+                System.out.println(response.getJsonString());
+                if (response.isSucceeded() && response.getTotal() == 16) {
                     return true;
                 }
                 return false;
@@ -186,8 +198,8 @@ public class FlowStackIT {
 
         // Verify via OpenNMS ReST API
         final String flowRestUrl = "http://" + opennmsWebAddress.getHostString().toString() + ":" + opennmsWebAddress.getPort() + "/opennms/" + REST_URL;
-        final NetflowPacket netflowPacket = new NetflowPacket(ByteBuffer.wrap(getNetflowPacketContent()));
-        final List<NetflowDocument> documents = new Netflow5Converter().convert(netflowPacket);
+        final NetflowPacket netflow5Packet = new NetflowPacket(ByteBuffer.wrap(getPacketContent("/flows/netflow5.dat")));
+        final List<NetflowDocument> documents = new Netflow5Adapter().convert(netflow5Packet);
         documents.stream().forEach(d -> {
             d.setLocation("Default");
             d.setExporterAddress("127.0.0.1");
@@ -213,7 +225,7 @@ public class FlowStackIT {
             final Type listType = new TypeToken<ArrayList<NetflowDocument>>() {
             }.getType();
             List<NetflowDocument> netflowDocuments = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), listType);
-            assertEquals(4, netflowDocuments.size());
+            assertEquals(10, netflowDocuments.size()); // TODO: Should be 18 but is limited by ES paging for now
 
             // Proxy query
             final HttpPost httpPost = new HttpPost(flowRestUrl + "/proxy");
@@ -228,22 +240,20 @@ public class FlowStackIT {
             EntityUtils.consume(response.getEntity());
             final JsonObject jsonRoot = gson.fromJson(json, JsonObject.class);
             final JsonArray jsonArray = jsonRoot.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-            assertEquals(4, jsonArray.size());
+            assertEquals(10, jsonArray.size()); // TODO: Should be 18 but is limited by ES paging for now
         }
     }
 
-    private byte[] getNetflowPacketContent() throws IOException {
-        try (InputStream is = getClass().getResourceAsStream("/flows/netflow5.dat")) {
-            final byte[] bytes = new byte[is.available()];
-            ByteStreams.readFully(is, bytes);
-            return bytes;
+    private byte[] getPacketContent(final String filename) throws IOException {
+        try (InputStream is = getClass().getResourceAsStream(filename)) {
+            return ByteStreams.toByteArray(is);
         }
     }
 
-    // Sends a netflow Packet to the given destination address
-    private void sendNetflowPacket(InetSocketAddress destinationAddress) throws IOException {
-        byte[] bytes = getNetflowPacketContent();
-        // now send to netflow 5 adapter
+    // Sends a Packet to the given destination address
+    private void sendPacket(final InetSocketAddress destinationAddress, final String filename) throws IOException {
+        byte[] bytes = getPacketContent(filename);
+        // now send to adapter
         try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
             final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length,
                     destinationAddress.getAddress(), destinationAddress.getPort());
@@ -253,7 +263,7 @@ public class FlowStackIT {
 
     // Configures the elastic bundle and also installs the flows feature to expose a NetflowRepository.
     // This is required, otherwise persisting does not work, as no FlowRepository implementation exists.
-    private void setupOnmsContainer(InetSocketAddress opennmsSshAddress) throws Exception {
+    private void setupOnmsContainer(final InetSocketAddress opennmsSshAddress) throws Exception {
         try (final SshClient sshClient = new SshClient(opennmsSshAddress, "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
 

@@ -1,0 +1,23 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
+
+
+	<bean id="flowAdapterFactory" class="org.opennms.netmgt.telemetry.adapters.flow.FlowAdapterFactory">
+		<property name="flowRepository" ref="flowRepository" />
+	</bean>
+	<service ref="flowAdapterFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.flow.FlowAdapter" />
+		</service-properties>
+	</service>
+</blueprint>
