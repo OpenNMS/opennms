@@ -276,7 +276,7 @@ public class Netflow5Adapter implements Adapter {
      * @param netflowPacket the packet to convert
      * @return The flows of the packet
      */
-    private List<NetflowDocument> convert(NetflowPacket netflowPacket) {
+    public List<NetflowDocument> convert(NetflowPacket netflowPacket) {
         return converter.convert(netflowPacket);
     }
 
