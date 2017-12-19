@@ -164,6 +164,7 @@ public class SyslogMessageTest {
             final SyslogMessage message = parser.parse();
             LOG.debug("message = {}", message);
             final Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, ZonedDateTimeBuilder.getBestYearForMonth(Calendar.MARCH));
             cal.set(Calendar.MONTH, Calendar.MARCH);
             cal.set(Calendar.DAY_OF_MONTH, 14);
             cal.set(Calendar.HOUR_OF_DAY, 17);

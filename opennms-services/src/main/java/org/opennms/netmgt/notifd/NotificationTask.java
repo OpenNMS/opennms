@@ -37,7 +37,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.Executor;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
@@ -60,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * notificationCommands.xml by:
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  */
-public class NotificationTask extends Thread {
+public class NotificationTask implements Runnable {
     
     private static final Logger LOG = LoggerFactory.getLogger(NotificationTask.class);
     
@@ -98,6 +101,8 @@ public class NotificationTask extends Thread {
 
     private final UserManager m_userManager;
 
+    private final Executor m_executor;
+
     /**
      * Constructor, initializes some information
      *
@@ -109,13 +114,13 @@ public class NotificationTask extends Thread {
      * @param siblings a {@link java.util.List} object.
      * @param autoNotify a {@link java.lang.String} object.
      */
-    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List<NotificationTask> siblings, String autoNotify) {
+    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List<NotificationTask> siblings, String autoNotify, Executor executor) {
         m_notificationManager = notificationManager;
         m_userManager = userManager;
         m_sendTime = sendTime;
         m_params = new HashMap<String, String>(someParams);
         m_autoNotify = autoNotify;
-
+        m_executor = Objects.requireNonNull(executor);
     }
 
     /**
@@ -225,6 +230,8 @@ public class NotificationTask extends Thread {
      */
     @Override
     public void run() {
+        Logging.putPrefix(Notifd.getLoggingCategory());
+
         boolean outstanding = false;
         try {
             outstanding = getNotificationManager().noticeOutstanding(m_notifyId);
@@ -388,10 +395,12 @@ public class NotificationTask extends Thread {
     /**
      * <p>start</p>
      */
-    @Override
     public synchronized void start() {
+        if (m_started) {
+            throw new IllegalArgumentException("Notification was already started!");
+        }
         m_started = true;
-        super.start();
+        m_executor.execute(this);
     }
 
     /**
