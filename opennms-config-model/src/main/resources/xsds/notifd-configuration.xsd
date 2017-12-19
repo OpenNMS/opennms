@@ -54,7 +54,9 @@
       
       <attribute name="email-address-command" type="string" use="optional" default="javaEmail"/>
 
-		<attribute name="numeric-skip-resolution-prefix" type="boolean" use="optional" default="false"/>
+      <attribute name="numeric-skip-resolution-prefix" type="boolean" use="optional" default="false"/>
+
+      <attribute name="max-threads" type="nonNegativeInteger" use="optional" default="100"/>
     </complexType>
   </element>
 
