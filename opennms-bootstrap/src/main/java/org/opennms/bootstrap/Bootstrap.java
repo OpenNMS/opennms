@@ -284,7 +284,7 @@ public abstract class Bootstrap {
     protected static List<File> getPropertiesFiles(File opennmsHome) {
         final File etc = new File(opennmsHome, "etc");
         final List<File> propertiesFiles = new ArrayList<>();
-        propertiesFiles.add(VERSION_PROPERTIES.toFile());
+        propertiesFiles.add(opennmsHome.toPath().resolve(VERSION_PROPERTIES).toFile());
         propertiesFiles.add(new File(etc, BOOT_PROPERTIES_NAME));
         propertiesFiles.add(new File(etc, RRD_PROPERTIES_NAME));
         propertiesFiles.add(new File(etc, LIBRARY_PROPERTIES_NAME));
