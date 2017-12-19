@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,43 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow;
+package org.opennms.netmgt.flows.elastic;
 
-import java.util.ArrayList;
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {Netflow5AdapterTestFactory.class})
-public class Netflow5AdapterTest {
+import com.google.common.collect.Lists;
 
-    private Netflow5Adapter netflow5Adapter;
+public class DocumentEnricherTest {
 
-    private NodeDao nodeDao;
-
-    private InterfaceToNodeCache interfaceToNodeCache;
-
+    private DocumentEnricher enricher;
     private AtomicInteger nodeDaoGetCounter;
 
     @Before
     public void setUp() {
-        final Netflow5AdapterTestFactory factory = new Netflow5AdapterTestFactory();
-        netflow5Adapter = factory.createAdapter();
-
-        nodeDao = factory.getNodeDao();
-        interfaceToNodeCache = factory.getInterfaceToNodeCache();
+        final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
+        enricher = factory.getEnricher();
+        final NodeDao nodeDao = factory.getNodeDao();
+        final InterfaceToNodeCache interfaceToNodeCache = factory.getInterfaceToNodeCache();
         nodeDaoGetCounter = factory.getNodeDaoGetCounter();
 
         interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.1"), 1);
@@ -76,27 +67,30 @@ public class Netflow5AdapterTest {
 
     @Test
     public void verifyCacheUsage() {
-        final List<NetflowDocument> documents = new ArrayList<>();
+        final List<FlowDocument> documents = Lists.newArrayList();
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.2"));
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.3"));
-        netflow5Adapter.enrich(documents, "Default", "127.0.0.1");
+        enricher.enrich(documents, new FlowSource("Default", "127.0.0.1"));
 
-        Assert.assertEquals(3, nodeDaoGetCounter.get());
+        // get is also called for each save, so we account for those as well
+        assertEquals(6, nodeDaoGetCounter.get());
     }
 
-    private NetflowDocument createFlowDocument(String sourceIp, String destIp) {
-        final NetflowDocument document = new NetflowDocument();
-        document.setIpv4SourceAddress(sourceIp);
-        document.setIpv4DestAddress(destIp);
+    private static FlowDocument createFlowDocument(String sourceIp, String destIp) {
+        final FlowDocument document = new FlowDocument();
+        document.setSrcAddr(sourceIp);
+        document.setSrcPort(510);
+        document.setDstAddr(destIp);
+        document.setDstPort(80);
+        document.setProtocol(6); // TCP
         return document;
     }
 
-    private OnmsNode createOnmsNode(int nodeId, String foreignSource) {
-        OnmsNode node = new OnmsNode();
+    private static OnmsNode createOnmsNode(int nodeId, String foreignSource) {
+        final OnmsNode node = new OnmsNode();
         node.setId(nodeId);
         node.setForeignSource(foreignSource);
         node.setForeignId(nodeId + "");
         return node;
     }
-
 }

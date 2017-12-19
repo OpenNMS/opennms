@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,27 +28,22 @@
 
 package org.opennms.netmgt.flows.api;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
 
-/**
- * Defines a strategy on how to define the index when persisting.
- */
-public enum IndexStrategy {
-    YEARLY(new SimpleDateFormat("yyyy")),
-    MONTHLY(new SimpleDateFormat("yyyy-MM")),
-    DAILY(new SimpleDateFormat("yyyy-MM-dd")),
-    HOURLY(new SimpleDateFormat("yyyy-MM-dd-HH"));
+public class FlowSource {
+    private final String location;
+    private final String sourceAddress;
 
-    private final DateFormat dateFormat;
-
-    IndexStrategy(DateFormat dateFormat) {
-        this.dateFormat = Objects.requireNonNull(dateFormat);
+    public FlowSource(String location, String sourceAddress) {
+        this.location = Objects.requireNonNull(location);
+        this.sourceAddress = Objects.requireNonNull(sourceAddress);
     }
 
-    public String getIndex(Date date) {
-        return "flow-" + dateFormat.format(date);
+    public String getLocation() {
+        return location;
+    }
+
+    public String getSourceAddress() {
+        return sourceAddress;
     }
 }

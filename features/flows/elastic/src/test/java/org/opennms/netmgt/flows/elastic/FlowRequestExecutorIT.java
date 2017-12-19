@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,11 +45,11 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.api.IndexStrategy;
 import org.opennms.plugins.elasticsearch.rest.OnmsJestClient;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -61,7 +61,7 @@ public class FlowRequestExecutorIT {
     public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Test
-    public void verifyKeepsTryingIndefinetly() throws ExecutionException, IOException {
+    public void verifyKeepsTryingIndefinetly() throws ExecutionException {
         final ExecutorService executorService = Executors.newFixedThreadPool(1);
         final AtomicLong startTime = new AtomicLong(0);
 
@@ -76,13 +76,15 @@ public class FlowRequestExecutorIT {
             try {
                 startTime.set(System.currentTimeMillis());
                 try {
-                    final ElasticFlowRepository repository = new ElasticFlowRepository(client, IndexStrategy.MONTHLY);
-                    repository.findAll(""); // should never finish
-                    Assert.fail("The execution of findAll() should not have finished. Failing.");
+                    final DocumentEnricher documentEnricher = mock(DocumentEnricher.class);
+                    final ElasticFlowRepository repository = new ElasticFlowRepository(new MetricRegistry(),
+                            client, IndexStrategy.MONTHLY, documentEnricher);
+                    repository.persistNetFlow5Packets(Lists.newArrayList(FlowDocumentTest.getMockNetflow5Packet()), FlowDocumentTest.getMockFlowSource());
+                    Assert.fail("The execution of persistNetFlow5Packets() should not have finished. Failing.");
                 } finally {
                     client.close();
                 }
-            } catch (IOException | FlowException e) {
+            } catch (Exception e) {
                 throw Throwables.propagate(e);
             }
         };

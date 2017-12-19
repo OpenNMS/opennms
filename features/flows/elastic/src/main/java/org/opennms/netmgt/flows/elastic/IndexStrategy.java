@@ -26,13 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.elastic;
 
-public interface FlowType {
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
 
-    String NETFLOW_5 = "Netflow v5";
+/**
+ * Defines a strategy on how to define the index when persisting.
+ */
+public enum IndexStrategy {
+    YEARLY(new SimpleDateFormat("yyyy")),
+    MONTHLY(new SimpleDateFormat("yyyy-MM")),
+    DAILY(new SimpleDateFormat("yyyy-MM-dd")),
+    HOURLY(new SimpleDateFormat("yyyy-MM-dd-HH"));
 
-    String NETFLOW_9 = "Netflow v9";
+    private final DateFormat dateFormat;
 
-    String IPFIX = "IPFIX";
+    IndexStrategy(DateFormat dateFormat) {
+        this.dateFormat = Objects.requireNonNull(dateFormat);
+    }
+
+    public String getIndex(Date date) {
+        return "netflow-" + dateFormat.format(date);
+    }
 }

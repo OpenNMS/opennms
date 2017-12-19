@@ -12,10 +12,8 @@
   <name>OpenNMS :: Features :: Flows :: ReST :: API</name>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>cxf-dependencies</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
   </dependencies>
 </project>
