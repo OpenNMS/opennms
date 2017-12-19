@@ -35,14 +35,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.opennms.netmgt.flows.api.NetflowDocument;
 import org.opennms.netmgt.flows.classification.classifier.Classifier;
 import org.opennms.netmgt.flows.classification.classifier.CombinedClassifier;
 import org.opennms.netmgt.flows.classification.matcher.IpMatcher;
 import org.opennms.netmgt.flows.classification.matcher.Matcher;
 import org.opennms.netmgt.flows.classification.matcher.PortMatcher;
 import org.opennms.netmgt.flows.classification.matcher.ProtocolMatcher;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.provider.ClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.provider.StaticClassificationRuleProvider;
@@ -65,13 +63,6 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         this.ruleProvider = Objects.requireNonNull(ruleProvider);
         this.useStaticRules = useStaticRules;
         this.reload();
-    }
-
-    @Override
-    public String classify(NetflowDocument document) {
-        final ClassificationRequest definition = createClassificationRequest(document);
-        final String classification = classify(definition);
-        return classification;
     }
 
     @Override
@@ -129,19 +120,4 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         return new CombinedClassifier(rule.getName(), matchers);
     }
 
-    protected static ClassificationRequest createClassificationRequest(NetflowDocument document) {
-        final ClassificationRequest request = new ClassificationRequest();
-        request.setProtocol(Protocols.getProtocol(document.getIpProtocol()));
-        request.setLocation(document.getLocation());
-
-        // Decide whether to use source or dest address/port to determine application mapping
-        if (document.isInitiator()) {
-            request.setIpAddress(document.getIpv4DestAddress());
-            request.setPort(document.getDestPort());
-        } else {
-            request.setIpAddress(document.getIpv4SourceAddress());
-            request.setPort(document.getSourcePort());
-        }
-        return request;
-    }
 }

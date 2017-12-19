@@ -34,7 +34,6 @@ import java.util.Objects;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
@@ -44,11 +43,7 @@ import com.codahale.metrics.MetricRegistry;
 
 public class Netflow5AdapterFactory implements AdapterFactory {
     private MetricRegistry metricRegistry;
-    private InterfaceToNodeCache interfaceToNodeCache;
-    private NodeDao nodeDao;
-    private TransactionOperations transactionOperations;
     private FlowRepository flowRepository;
-    private ClassificationEngine classificationEngine;
 
     @Override
     public Class<? extends Adapter> getAdapterClass() {
@@ -57,48 +52,17 @@ public class Netflow5AdapterFactory implements AdapterFactory {
 
     @Override
     public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
-        Objects.requireNonNull(interfaceToNodeCache);
         Objects.requireNonNull(metricRegistry);
-        Objects.requireNonNull(nodeDao);
-        Objects.requireNonNull(transactionOperations);
         Objects.requireNonNull(flowRepository);
-        Objects.requireNonNull(classificationEngine);
 
-        final Netflow5Adapter adapter = new Netflow5Adapter();
-        adapter.setInterfaceToNodeCache(interfaceToNodeCache);
-        adapter.setMetricRegistry(metricRegistry);
-        adapter.setNodeDao(nodeDao);
-        adapter.setFlowRepository(flowRepository);
-        adapter.setTransactionOperations(transactionOperations);
-        adapter.setClassificationEngine(classificationEngine);
-        adapter.setProtocol(protocol);
-
-        adapter.init();
-
-        return adapter;
+        return new Netflow5Adapter(metricRegistry, flowRepository);
     }
 
     public void setMetricRegistry(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
     }
 
-    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
-        this.interfaceToNodeCache = interfaceToNodeCache;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
-    }
-
-    public void setTransactionOperations(TransactionOperations transactionOperations) {
-        this.transactionOperations = transactionOperations;
-    }
-
     public void setFlowRepository(FlowRepository flowRepository) {
         this.flowRepository = flowRepository;
-    }
-
-    public void setClassificationEngine(ClassificationEngine classificationEngine) {
-        this.classificationEngine = classificationEngine;
     }
 }

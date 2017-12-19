@@ -28,12 +28,8 @@
 
 package org.opennms.netmgt.flows.classification;
 
-import org.opennms.netmgt.flows.api.NetflowDocument;
-
 public interface ClassificationEngine {
     String classify(ClassificationRequest classificationRequest);
-
-    String classify(NetflowDocument document);
 
     void reload();
 }

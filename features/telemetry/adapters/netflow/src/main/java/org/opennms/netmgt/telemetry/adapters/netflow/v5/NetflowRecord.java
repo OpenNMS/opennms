@@ -30,7 +30,9 @@ package org.opennms.netmgt.telemetry.adapters.netflow.v5;
 
 import java.nio.ByteBuffer;
 
-public class NetflowRecord {
+import org.opennms.netmgt.flows.api.NF5Record;
+
+public class NetflowRecord implements NF5Record {
 
     private final String srcAddr;
     private final String dstAddr;
@@ -107,74 +109,92 @@ public class NetflowRecord {
         this.dstMask = Utils.getShort(45, 45, data, offset);
     }
 
+    @Override
     public String getSrcAddr() {
         return srcAddr;
     }
 
+    @Override
     public String getDstAddr() {
         return dstAddr;
     }
 
+    @Override
     public String getNextHop() {
         return nextHop;
     }
 
+    @Override
     public int getInput() {
         return input;
     }
 
+    @Override
     public int getOutput() {
         return output;
     }
 
+    @Override
     public long getDPkts() {
         return dPkts;
     }
 
+    @Override
     public long getDOctets() {
         return dOctets;
     }
 
+    @Override
     public long getFirst() {
         return first;
     }
 
+    @Override
     public long getLast() {
         return last;
     }
 
+    @Override
     public int getSrcPort() {
         return srcPort;
     }
 
+    @Override
     public int getDstPort() {
         return dstPort;
     }
 
+    @Override
     public int getTcpFlags() {
         return tcpFlags;
     }
 
+    @Override
     public int getProt() {
         return prot;
     }
 
+    @Override
     public int getSrcAs() {
         return srcAs;
     }
 
+    @Override
     public int getDstAs() {
         return dstAs;
     }
 
+    @Override
     public int getToS() {
         return toS;
     }
 
+    @Override
     public int getSrcMask() {
         return srcMask;
     }
 
+    @Override
     public int getDstMask() {
         return dstMask;
     }

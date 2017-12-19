@@ -26,7 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.elastic;
+
+import org.opennms.netmgt.flows.api.FlowException;
 
 public class QueryException extends FlowException {
     public QueryException(String message) {

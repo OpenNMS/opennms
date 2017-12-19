@@ -31,16 +31,15 @@ package org.opennms.netmgt.flows.elastic;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.api.IndexStrategy;
-import org.opennms.netmgt.flows.api.NetflowDocument;
-import org.opennms.netmgt.flows.api.PersistenceException;
 
+import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.Lists;
@@ -65,15 +64,19 @@ public class ElasticFlowRepositoryIT {
                             .withHeader("Content-Type", "application/json")
                             .withBody(ERROR_RESPONSE)));
 
+        final DocumentEnricher documentEnricher = mock(DocumentEnricher.class);
+
         // Verify exception is thrown
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
         try (JestClient client = factory.getObject()) {
-            final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(client, IndexStrategy.MONTHLY);
+            final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
+                    client, IndexStrategy.MONTHLY, documentEnricher);
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty
-            elasticFlowRepository.save(Lists.newArrayList(new NetflowDocument()));
+            elasticFlowRepository.persistNetFlow5Packets(Lists.newArrayList(FlowDocumentTest.getMockNetflow5Packet()), FlowDocumentTest.getMockFlowSource());
         }
     }
+
 }

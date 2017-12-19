@@ -26,39 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification;
+package org.opennms.netmgt.flows.elastic;
 
-import java.util.Objects;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.List;
 
-public class ThreadSafeClassificationEngine implements ClassificationEngine {
+import com.google.gson.annotations.SerializedName;
 
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+public class NodeDocument {
+    @SerializedName("foreign_source")
+    private String foreignSource;
 
-    private final ClassificationEngine delegate;
+    @SerializedName("foreign_id")
+    private String foreignId;
 
-    public ThreadSafeClassificationEngine(ClassificationEngine delegate) {
-        this.delegate = Objects.requireNonNull(delegate);
+    @SerializedName("node_id")
+    private Integer nodeId;
+
+    @SerializedName("categories")
+    private List<String> categories;
+
+    public void setForeignSource(String foreignSource) {
+        this.foreignSource = foreignSource;
     }
 
-    @Override
-    public String classify(ClassificationRequest classificationRequest) {
-        lock.readLock().lock();
-        try {
-            return delegate.classify(classificationRequest);
-        } finally {
-            lock.readLock().unlock();
-        }
+    public String getForeignSource() {
+        return foreignSource;
     }
 
-    @Override
-    public void reload() {
-        lock.writeLock().lock();
-        try {
-            delegate.reload();
-        } finally {
-            lock.writeLock().unlock();
-        }
+    public void setForeignId(String foreignId) {
+        this.foreignId = foreignId;
+    }
+
+    public String getForeignId() {
+        return foreignId;
+    }
+
+    public Integer getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 }

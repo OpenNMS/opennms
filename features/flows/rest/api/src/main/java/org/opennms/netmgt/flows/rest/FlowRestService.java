@@ -28,29 +28,15 @@
 
 package org.opennms.netmgt.flows.rest;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.QueryParam;
 
 @Path("flows")
 public interface FlowRestService {
 
-    @POST
-    @Path("/proxy")
-    Response proxySearch(String query);
-
     @GET
-    Response getFlows();
+    @Path("count")
+    Long getFlowCount(@QueryParam("start") long start, @QueryParam("end") long end) throws Exception;
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    Response getFlows(String query);
-
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    Response saveFlows(String input);
 }

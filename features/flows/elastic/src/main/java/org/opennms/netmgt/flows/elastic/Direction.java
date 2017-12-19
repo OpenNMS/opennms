@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,37 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.elastic;
 
-public abstract class FlowDocument {
+import java.util.Objects;
 
-    private String location;
+import com.google.gson.annotations.SerializedName;
 
-    private String exporterAddress;
+public enum Direction {
+    @SerializedName("ingress")
+    INGRESS("ingress"),
+    @SerializedName("egress")
+    EGRESS("egress");
 
-    private String flowType;
+    private final String value;
 
-    public String getLocation() {
-        return this.location;
+    private Direction(String value) {
+        this.value = Objects.requireNonNull(value);
     }
 
-    public String getExporterAddress() {
-        return this.exporterAddress;
-    }
-
-    public String getFlowType() {
-        return flowType;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public void setExporterAddress(String exporterAddress) {
-        this.exporterAddress = exporterAddress;
-    }
-
-    public void setFlowType(String flowType) {
-        this.flowType = flowType;
+    public String getValue() {
+        return value;
     }
 }

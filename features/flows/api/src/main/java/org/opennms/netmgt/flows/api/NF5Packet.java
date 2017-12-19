@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,21 +28,30 @@
 
 package org.opennms.netmgt.flows.api;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.plugins.elasticsearch.rest.FailedItem;
+public interface NF5Packet {
 
-public class PersistenceException extends FlowException {
+    int getSize();
 
-    private List<FailedItem<NetflowDocument>> failedItems = new ArrayList<>();
+    int getVersion();
 
-    public PersistenceException(String message, List<FailedItem<NetflowDocument>> failedItems) {
-        super(message);
-        this.failedItems = failedItems;
-    }
+    int getCount();
 
-    public List<FailedItem<NetflowDocument>> getFailedItems() {
-        return failedItems;
-    }
+    long getSysUptime();
+
+    long getUnixSecs();
+
+    long getUnixNSecs();
+
+    long getFlowSequence();
+
+    int getEngineType();
+
+    int getEngineId();
+
+    int getSamplingInterval();
+
+    List<? extends NF5Record> getRecords();
+
 }

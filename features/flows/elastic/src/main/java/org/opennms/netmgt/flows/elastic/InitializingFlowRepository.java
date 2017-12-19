@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.api.NetflowDocument;
+import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.NF5Packet;
 import org.opennms.netmgt.flows.elastic.template.IndexSettings;
 
 import io.searchbox.client.JestClient;
@@ -57,21 +59,15 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public void save(List<NetflowDocument> document) throws FlowException {
+    public void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException {
         ensureInitialized();
-        delegate.save(document);
+        delegate.persistNetFlow5Packets(packets, source);
     }
 
     @Override
-    public List<NetflowDocument> findAll(String query) throws FlowException {
+    public CompletableFuture<Long> getFlowCount(long start, long end) {
         ensureInitialized();
-        return delegate.findAll(query);
-    }
-
-    @Override
-    public String rawQuery(String query) throws FlowException {
-        ensureInitialized();
-        return delegate.rawQuery(query);
+        return delegate.getFlowCount(start, end);
     }
 
     private void ensureInitialized() {
