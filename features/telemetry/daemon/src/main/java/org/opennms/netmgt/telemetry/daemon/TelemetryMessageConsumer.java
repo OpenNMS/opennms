@@ -28,6 +28,12 @@
 
 package org.opennms.netmgt.telemetry.daemon;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import javax.annotation.PostConstruct;
+
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
@@ -39,18 +45,7 @@ import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.ApplicationContext;
-
-import javax.annotation.PostConstruct;
-
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
@@ -95,7 +90,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
                 try {
                     adapter.handleMessageLog(messageLog);
                 } catch (RuntimeException e) {
-                    LOG.warn("Adapter: {} failed to handle message log: {}. Skipping.", adapter, messageLog);
+                    LOG.warn("Adapter: {} failed to handle message log: {}. Skipping.", adapter, messageLog, e);
                     continue;
                 }
             }

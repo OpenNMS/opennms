@@ -1266,13 +1266,14 @@
     <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>
+    <bsonVersion>3.5.0</bsonVersion>
     <camelVersion>2.19.1</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
-    <commonsCsvVersion>1.1</commonsCsvVersion>
+    <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
@@ -1343,6 +1344,7 @@
     <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.0.0-ONMS</osgiJaxRsVersion>
+    <opencsvVersion>2.3</opencsvVersion>
     <quartzVersion>2.2.3</quartzVersion>
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
@@ -3026,6 +3028,11 @@
         <version>1.3.0</version>
       </dependency>
       <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>bson</artifactId>
+        <version>${bsonVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>2.2.2</version>
@@ -3108,6 +3115,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
         <version>1.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-csv</artifactId>
+        <version>${commonsCsvVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -3368,6 +3380,11 @@
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-visualization</artifactId>
         <version>${jungVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.opencsv</groupId>
+        <artifactId>opencsv</artifactId>
+        <version>${opencsvVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.easymock</groupId>

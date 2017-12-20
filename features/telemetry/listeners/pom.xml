@@ -12,6 +12,7 @@
   <name>OpenNMS :: Features :: Telemetry :: Listeners</name>
   <modules>
     <module>api</module>
+    <module>flow</module>
     <module>udp</module>
   </modules>
 </project>
