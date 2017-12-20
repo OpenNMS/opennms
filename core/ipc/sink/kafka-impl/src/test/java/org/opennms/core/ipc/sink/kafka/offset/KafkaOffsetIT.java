@@ -94,7 +94,7 @@ public class KafkaOffsetIT {
             @Override
             public Boolean call() {
                 List<KafkaOffset> kafkaOffsetMonitors = new ArrayList<>();
-                Map<String, KafkaOffset> map = offsetProvider.getNewConsumer().get("USER_TOPIC");
+                Map<String, KafkaOffset> map = offsetProvider.getConsumerOffsetMap().get("USER_TOPIC");
                 if (map != null) {
                     kafkaOffsetMonitors.addAll(map.values());
                 }

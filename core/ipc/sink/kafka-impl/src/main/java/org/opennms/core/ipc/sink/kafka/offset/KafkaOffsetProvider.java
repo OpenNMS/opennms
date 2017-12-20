@@ -26,6 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+/**
+ * Copyright 2016 Symantec Corporation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the “License”); 
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Most of the functionality of this code has been derived from 
+ * https://github.com/srotya/kafka-lag-monitor 
+ * 
+ */
+
 package org.opennms.core.ipc.sink.kafka.offset;
 
 import java.nio.ByteBuffer;
@@ -123,7 +145,7 @@ public class KafkaOffsetProvider {
                                     long lag = realOffset - consumerOffset;
                                     KafkaOffset mon = new KafkaOffset(group, topic, partition, realOffset,
                                             consumerOffset, lag);
-                                    LOGGER.info("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
+                                    LOGGER.debug("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
                                             partition, consumerOffset, realOffset, lag);
                                     Map<String, KafkaOffset> map = consumerOffsetMap.get(topic);
                                     if (map == null) {
@@ -186,7 +208,7 @@ public class KafkaOffsetProvider {
         return consumer;
     }
 
-    public Map<String, Map<String, KafkaOffset>> getNewConsumer() {
+    public Map<String, Map<String, KafkaOffset>> getConsumerOffsetMap() {
         return consumerOffsetMap;
     }
 
