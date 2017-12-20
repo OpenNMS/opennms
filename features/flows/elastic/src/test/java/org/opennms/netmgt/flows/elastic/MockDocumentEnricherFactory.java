@@ -47,8 +47,8 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.DefaultClassificationEngine;
-import org.opennms.netmgt.flows.classification.persistence.ClassificationRuleDAO;
-import org.opennms.netmgt.flows.classification.persistence.StaticRuleClassificationDAO;
+import org.opennms.netmgt.flows.classification.provider.ClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.provider.StaticClassificationRuleProvider;
 
 public class MockDocumentEnricherFactory {
 
@@ -69,13 +69,13 @@ public class MockDocumentEnricherFactory {
         assetRecordDao = new MockAssetRecordDao();
         categoryDao = new MockCategoryDao();
 
-        final ClassificationRuleDAO rulesDao;
+        final ClassificationRuleProvider rulesProvider;
         try {
-            rulesDao = new StaticRuleClassificationDAO();
+            rulesProvider = new StaticClassificationRuleProvider();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(rulesDao);
+        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(rulesProvider);
         enricher = new DocumentEnricher(nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine);
 
         // Required for mock node dao
