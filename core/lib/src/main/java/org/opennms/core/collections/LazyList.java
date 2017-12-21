@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.core.collections;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -45,7 +45,7 @@ public class LazyList<E> implements List<E> {
     /**
      * <p>Constructor for LazyList.</p>
      *
-     * @param loader a {@link org.opennms.core.utils.LazyList.Loader} object.
+     * @param loader a {@link org.opennms.core.collections.LazyList.Loader} object.
      */
     public LazyList(Loader<E> loader) {
         m_loader = loader;
