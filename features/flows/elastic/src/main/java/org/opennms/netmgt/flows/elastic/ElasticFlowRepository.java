@@ -58,6 +58,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 
 import io.searchbox.action.Action;
@@ -217,7 +218,7 @@ public class ElasticFlowRepository implements FlowRepository {
         final String query = searchQueryProvider.getSeriesFromTopNQuery(topN, start, end, step, groupByTerm);
         return searchAsync(query).thenApply(res -> {
             // Build a table using the search results
-            final Table<Directional<String>, Long, Double> results = HashBasedTable.create();
+            final ImmutableTable.Builder<Directional<String>, Long, Double> results = ImmutableTable.builder();
             final MetricAggregation aggs = res.getAggregations();
             final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
             for (TermsAggregation.Entry groupedByBucket : groupedBy.getBuckets()) {
@@ -225,15 +226,24 @@ public class ElasticFlowRepository implements FlowRepository {
                 for (DateHistogramAggregation.DateHistogram dateHistogram : bytesAggs.getBuckets()) {
                     final Long time = dateHistogram.getTime();
                     final TermsAggregation directionAgg = dateHistogram.getTermsAggregation("direction");
+
+                    // Make sure we have values for both directions, since we may only have one bucket returned here
+                    Double bytesWhenInitiator = Double.NaN;
+                    Double bytesWhenNotInitiator = Double.NaN;
                     for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
                         final boolean isInitiator = Boolean.valueOf(directionBucket.getKeyAsString());
                         final SumAggregation sumAgg = directionBucket.getSumAggregation("total_bytes");
-                        final Double sum = sumAgg.getSum();
-                        results.put(new Directional<>(groupedByBucket.getKey(), isInitiator), time, sum);
+                        if (isInitiator) {
+                            bytesWhenInitiator = sumAgg.getSum();
+                        } else {
+                            bytesWhenNotInitiator = sumAgg.getSum();
+                        }
                     }
+                    results.put(new Directional<>(groupedByBucket.getKey(), true), time, bytesWhenInitiator);
+                    results.put(new Directional<>(groupedByBucket.getKey(), false), time, bytesWhenNotInitiator);
                 }
             }
-            return results;
+            return results.build();
         });
     }
 
@@ -316,7 +326,7 @@ public class ElasticFlowRepository implements FlowRepository {
      * in missing cells with NaN values.
      */
     private static <T> Table<Directional<T>, Long, Double> mapTable(Table<Directional<String>, Long, Double> source, Function<String, T> fn) {
-        final Table<Directional<T>, Long, Double> target = HashBasedTable.create();
+        final ImmutableTable.Builder<Directional<T>, Long, Double> target = ImmutableTable.builder();
         final Set<Long> columnKeys = source.columnKeySet();
         for (Directional<String> sourceRowKey : source.rowKeySet()) {
             final Directional<T> targetRowKey = new Directional<>(fn.apply(sourceRowKey.getValue()), sourceRowKey.isSource());
@@ -328,6 +338,6 @@ public class ElasticFlowRepository implements FlowRepository {
                 target.put(targetRowKey, columnKey, value);
             }
         }
-        return target;
+        return target.build();
     }
 }
