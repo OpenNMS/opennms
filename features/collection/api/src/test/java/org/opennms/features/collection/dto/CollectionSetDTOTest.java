@@ -66,7 +66,7 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
             {
                 getCollectionSetWithAllResourceTypes(),
                 "<collection-set status=\"SUCCEEDED\" timestamp=\"" + StringUtils.iso8601OffsetString(new Date(0), ZoneId.systemDefault(), ChronoUnit.SECONDS) + "\">\n" + 
-                "   <agent type=\"0\" store-by-fs=\"false\" node-id=\"0\" sys-up-time=\"0\"/>\n" +
+                "   <agent store-by-fs=\"false\" node-id=\"0\" sys-up-time=\"0\"/>\n" +
                 "   <collection-resource>\n" +
                 "      <node-level-resource node-id=\"1\"/>\n" +
                 "      <numeric-attribute group=\"ucd-sysstat\" name=\"CpuRawIdle\" type=\"gauge\" value=\"99\"/>\n" +
@@ -99,7 +99,7 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
             {
                 getCollectionSetWithAllNumberTypes(),
                 "<collection-set status=\"SUCCEEDED\" timestamp=\"" + StringUtils.iso8601OffsetString(new Date(0), ZoneId.systemDefault(), ChronoUnit.SECONDS) + "\">\n" +
-                        "   <agent type=\"0\" store-by-fs=\"false\" node-id=\"0\" sys-up-time=\"0\"/>\n" +
+                        "   <agent store-by-fs=\"false\" node-id=\"0\" sys-up-time=\"0\"/>\n" +
                         "   <collection-resource>\n" +
                         "      <node-level-resource node-id=\"1\"/>\n" +
                         "      <numeric-attribute group=\"double\" name=\"zero\" type=\"gauge\" value=\"0\"/>\n" +

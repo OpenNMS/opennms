@@ -29,7 +29,10 @@
 package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -39,7 +42,6 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.poller.support.InetNetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +53,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultCollectionAgent extends InetNetworkInterface implements SnmpCollectionAgent {
+public class DefaultCollectionAgent implements SnmpCollectionAgent {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultCollectionAgent.class);
 
     /**
@@ -101,7 +103,6 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     }
 
     private DefaultCollectionAgent(final CollectionAgentService agentService, final String location) {
-        super(null);
         m_agentService = agentService;
         m_storageResourcePath = agentService.getStorageResourcePath();
         m_locationName = location;
@@ -118,6 +119,68 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     @Override
     public InetAddress getAddress() {
         return m_inetAddress;
+    }
+
+    /**
+     * The map of attributes for this interface.
+     */
+    private transient Map<String, Object> m_properties;
+
+    @Override
+    public final Set<String> getAttributeNames() {
+        return m_properties != null ? m_properties.keySet() : Collections.emptySet();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <P>
+     * This method is used to return the object that is associated with the
+     * property name. This is very similar to the java.util.Map get() method,
+     * but requires that the lookup be performed using a String name. The object
+     * may be of any instance that the monitor previous stored.
+     * </P>
+     *
+     * <P>
+     * If there is no matching object for the property key, then a null pointer
+     * is returned to the application.
+     * </P>
+     * @exception java.lang.IllegalArgumentException
+     *                Thrown if the passed key is empty or null.
+     * @see java.util.Map#get(java.lang.Object)
+     */
+    @Override
+    public final synchronized <V> V getAttribute(String property) {
+        Object rc = null;
+        if (m_properties != null)
+            rc = m_properties.get(property);
+
+        // Can't avoid this unchecked cast
+        @SuppressWarnings("unchecked")
+        V retval = (V)rc;
+        return retval;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <P>
+     * This method is used to associate an object value with a textual key. If a
+     * previous value was associated with the key then the old value is returned
+     * to the caller. This is identical to the behavior defined by the
+     * java.util.Map put() method. The only restriction is that the key must be
+     * a java string instance.
+     * </P>
+     * @exception java.lang.IllegalArgumentException
+     *                Thrown if the property name is empty or null.
+     * @see java.util.Map#put(java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public final synchronized Object setAttribute(String property, Object value) {
+        if (m_properties == null)
+            m_properties = new HashMap<String, Object>();
+
+        return m_properties.put(property, value);
     }
 
     /* (non-Javadoc)
