@@ -141,6 +141,20 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.10]
+==== Release Meridian-2016.1.10
+
+Release 2016.1.10 is an update to 2016.1.9 that provides a few bug fixes.
+
+The codename for 2016.1.10 is _Waterman Butterfly_.
+
+===== Bug
+
+* host with single quote in the name breaks UI menu items (Issue http://issues.opennms.org/browse/NMS-6616[NMS-6616])
+* IOActive: Reflected Cross-site Scripting in userGroupView/roles roleDescr and Other Parameters (Issue http://issues.opennms.org/browse/NMS-9673[NMS-9673])
+* IOActive: Reflected Cross-site Scripting in admin/thresholds/index.htm filterField and Other Parameters (Issue http://issues.opennms.org/browse/NMS-9674[NMS-9674])
+* The EXE installer of the remote poller on Windows is not working (Issue http://issues.opennms.org/browse/NMS-9721[NMS-9721])
+
 [releasenotes-changelog-Meridian-2016.1.9]
 ==== Release Meridian-2016.1.9
 
