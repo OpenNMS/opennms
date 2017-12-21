@@ -174,6 +174,30 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.3]
+==== Release Meridian-2017.1.3
+
+Release 2017.1.3 is an update to OpenNMS Meridian 2017.1.2.  It is primarily a security and bug fix release.
+
+The codename for 2017.1.3 is _Ferro meridian_.
+
+===== Bug
+
+* Privilege Escalation Bug with Grafana Plugin  (Issue http://issues.opennms.org/browse/NMS-8093[NMS-8093])
+* IOActive: Cross-Site Scripting in createFavorite filter Parameter (Issue http://issues.opennms.org/browse/NMS-9670[NMS-9670])
+* IOActive: Reflected Cross-site Scripting in userGroupView/roles roleDescr and Other Parameters (Issue http://issues.opennms.org/browse/NMS-9673[NMS-9673])
+* IOActive: Reflected Cross-site Scripting in admin/thresholds/index.htm filterField and Other Parameters (Issue http://issues.opennms.org/browse/NMS-9674[NMS-9674])
+* HEAD requests to static resources in the UI don't work (Issue http://issues.opennms.org/browse/NMS-9689[NMS-9689])
+* The EXE installer of the remote poller on Windows is not working (Issue http://issues.opennms.org/browse/NMS-9721[NMS-9721])
+* IllegalStateException in OnmsVaadinContainer (Issue http://issues.opennms.org/browse/NMS-9742[NMS-9742])
+* Karaf snmp:show-config command lists value of timeout for retries (Issue http://issues.opennms.org/browse/NMS-9745[NMS-9745])
+* The content of the clone foreign source definition dialog is misleading (Issue http://issues.opennms.org/browse/NMS-9749[NMS-9749])
+* Relative path reference to version.properties (Issue http://issues.opennms.org/browse/NMS-9767[NMS-9767])
+
+===== Enhancement
+
+* Authentication proxy support (Issue http://issues.opennms.org/browse/NMS-9739[NMS-9739])
+
 [releasenotes-changelog-Meridian-2017.1.2]
 ==== Release Meridian-2017.1.2
 
