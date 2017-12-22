@@ -78,6 +78,9 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import kafka.api.PartitionOffsetRequestInfo;
@@ -104,6 +107,12 @@ public class KafkaOffsetProvider {
     private static final Map<String, SimpleConsumer> consumerMap = new HashMap<String, SimpleConsumer>();
 
     private Map<String, Map<String, KafkaOffset>> consumerOffsetMap = new ConcurrentHashMap<>();
+
+    private Map<String, Long> consumerLagMap = new ConcurrentHashMap<>();
+
+    private MetricRegistry metrics = new MetricRegistry();
+
+    private JmxReporter reporter = null;
 
     private class KafkaOffsetConsumerRunner implements Runnable {
 
@@ -148,6 +157,19 @@ public class KafkaOffsetProvider {
                                     LOGGER.debug("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
                                             partition, consumerOffset, realOffset, lag);
                                     Map<String, KafkaOffset> map = consumerOffsetMap.get(topic);
+
+                                    if (!consumerLagMap.containsKey(topic + partition)) {
+                                        consumerLagMap.put(topic + partition, lag);
+                                        metrics.register(topic + partition, new Gauge<Long>() {
+                                            @Override
+                                            public Long getValue() {
+                                                return consumerLagMap.get(topic + partition);
+
+                                            }
+                                        });
+                                    }
+                                    consumerLagMap.put(topic + partition, lag);
+
                                     if (map == null) {
                                         map = new ConcurrentHashMap<>();
                                         consumerOffsetMap.put(topic, map);
@@ -281,10 +303,13 @@ public class KafkaOffsetProvider {
             }
         }
         consumerRunner = new KafkaOffsetConsumerRunner();
+        reporter = JmxReporter.forRegistry(metrics).build();
+        reporter.start();
         executor.execute(consumerRunner);
     }
 
     public void stop() throws InterruptedException {
+        reporter.stop();
         consumerRunner.shutdown();
         closeConnection();
     }
