@@ -33,7 +33,6 @@ Operator Instruction::
     A set of instructions for an operator to respond appropriately to an event of this type.
 Alarm Data::
     If this field is provided for an event, {opennms-product-name} will create, update, or clear *alarms* for events of that type according to the alarm-data specifics.
-    For more about alarms and how they relate to events, see <<alarms-introduction>>.
 
 [[ga-events-sources-of-events]]
 === Sources of Events
