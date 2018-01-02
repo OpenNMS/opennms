@@ -78,7 +78,7 @@ The default foreign source defines a `scan-interval` of `1d`, which will cause a
 * s: Seconds
 * ms: Milliseconds
 
-For example, to rescan every 6 days and 53 minutes, you would set the `scan-interval` to `7d 53m`.
+For example, to rescan every 6 days and 53 minutes, you would set the `scan-interval` to `6d 53m`.
 
 Don't forget, for the new scan interval to take effect, you will need to import the requisition one more time so that the foreign source becomes active.
 
