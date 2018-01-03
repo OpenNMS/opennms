@@ -554,7 +554,6 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
-    @SuppressWarnings("deprecation")
     private NodeLinkBridge convertFromModel(String mac,
             SharedSegment segment, String port) {
         final NodeLinkBridge linknode = new NodeLinkBridge();
@@ -583,8 +582,6 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                                    rembridgePortIfIndex));
             remlinknode.setBridgeRemoteVlan(link.getVlan());
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
-            linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(segment.getCreateTime()));
-            linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(segment.getPollTime()));
         }
                 
         Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();
@@ -665,7 +662,6 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
-    @SuppressWarnings("deprecation")
     private BridgeLinkNode convertFromModel(int nodeid, SharedSegment segment) {
         final BridgeLinkNode linknode = new BridgeLinkNode();
         for (BridgePort link : segment.getBridgePortsOnSegment()) {
@@ -703,8 +699,6 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                                    rembridgePortIfIndex));
             remlinknode.setBridgeRemoteVlan(link.getVlan());
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
-            linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(segment.getCreateTime()));
-            linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(segment.getPollTime()));
         }
 
         Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();
