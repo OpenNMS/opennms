@@ -1,3 +1,13 @@
+opennms (21.0.2-1) stable; urgency=high
+
+  * New major stable release.  It contains some UI security fixes, other bug fixes,
+    and a few small enhancements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/21.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Dec 2017 10:00:00 -0500
+
 opennms (21.0.1-1) stable; urgency=medium
 
   * New major stable release.  It contains a few enhancements but is primarily a

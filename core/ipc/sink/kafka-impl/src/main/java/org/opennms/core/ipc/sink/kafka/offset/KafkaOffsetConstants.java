@@ -26,24 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.client.rpc;
+package org.opennms.core.ipc.sink.kafka.offset;
 
-import org.opennms.core.xml.JaxbClassObjectAdapter;
-import org.opennms.netmgt.config.pagesequence.PageSequence;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
+public interface KafkaOffsetConstants {
 
-/**
- * Generic {@link JaxbClassObjectAdapter} that includes types that are known
- * to be used by poller attributes.
- *
- * Specifying the types avoid class-path scanning which can be problematic
- * in OSGi environments.
- *
- * @author jwhite
- */
-public class PollerClassObjectAdapter extends JaxbClassObjectAdapter {
+    static final String OFFSET = "offset";
 
-    public PollerClassObjectAdapter() {
-        super(SnmpAgentConfig.class, PageSequence.class);
-    }
+    static final String TOPIC = "topic";
+
+    static final String GROUP = "group";
+
+    static final String PARTITION = "partition";
+
+    static final int TIMEOUT = 100000;
+
+    static final int BUFFERSIZE = 64 * 1024;
+
+    static final int POLL_INTERVAL = 500;
+
+    static final String OFFSETS_TOPIC = "__consumer_offsets";
+    
+    static final String CLIENT_NAME = "OpenNMS-Kafka-Monitor";
+
 }

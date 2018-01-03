@@ -33,7 +33,6 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.common.aws.sqs.AmazonSQSManager;
 import org.opennms.core.rpc.camel.CamelRpcServerRouteManager;

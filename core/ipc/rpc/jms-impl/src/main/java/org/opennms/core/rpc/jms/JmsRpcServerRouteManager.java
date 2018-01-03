@@ -30,7 +30,6 @@ package org.opennms.core.rpc.jms;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
-import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsEndpoint;
 import org.opennms.core.camel.JmsQueueNameFactory;

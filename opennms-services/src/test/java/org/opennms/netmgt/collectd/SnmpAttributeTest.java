@@ -142,7 +142,6 @@ public class SnmpAttributeTest {
     }
 
     @Ignore
-    @SuppressWarnings("unchecked")
     private void testPersisting(String matchValue, SnmpValue snmpValue) throws Exception {
         OnmsNode node = new OnmsNode();
         node.setId(3);

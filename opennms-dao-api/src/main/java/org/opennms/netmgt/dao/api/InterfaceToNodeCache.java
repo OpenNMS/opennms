@@ -29,7 +29,6 @@
 package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
-import java.util.Iterator;
 import java.util.Optional;
 
 public interface InterfaceToNodeCache {

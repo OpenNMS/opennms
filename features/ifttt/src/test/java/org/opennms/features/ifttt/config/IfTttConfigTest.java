@@ -31,6 +31,8 @@ package org.opennms.features.ifttt.config;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
@@ -199,6 +201,19 @@ public class IfTttConfigTest extends XmlTestNoCastor<IfTttConfig> {
                         null
                 }
         });
+    }
+
+    @Test
+    public void testUnsetCategoryFilter() {
+        TriggerPackage triggerPackage = new TriggerPackage();
+        Assert.assertEquals(".*", triggerPackage.getCategoryFilter());
+    }
+
+    @Test
+    public void testSetCategoryFilter() {
+        TriggerPackage triggerPackage = new TriggerPackage();
+        triggerPackage.setCategoryFilter("foo|bar");
+        Assert.assertEquals("foo|bar", triggerPackage.getCategoryFilter());
     }
 }
 

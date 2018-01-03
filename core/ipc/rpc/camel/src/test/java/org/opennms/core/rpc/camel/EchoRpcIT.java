@@ -37,15 +37,10 @@ import static org.junit.Assert.fail;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
-import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultExchange;
-import org.apache.camel.impl.SimpleRegistry;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RequestRejectedException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
@@ -56,18 +51,9 @@ import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.rpc.echo.MyEchoException;
 import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 public abstract class EchoRpcIT {
 

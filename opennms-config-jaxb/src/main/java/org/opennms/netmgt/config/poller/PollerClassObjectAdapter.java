@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.config.poller;
 
-import junit.framework.TestCase;
+import org.opennms.core.xml.JaxbClassObjectAdapter;
+import org.opennms.netmgt.config.pagesequence.PageSequence;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
-public class PassiveStatusTest extends TestCase {
+/**
+ * Generic {@link JaxbClassObjectAdapter} that includes types that are known
+ * to be used by poller attributes.
+ *
+ * Specifying the types avoid class-path scanning which can be problematic
+ * in OSGi environments.
+ *
+ * @author jwhite
+ */
+public class PollerClassObjectAdapter extends JaxbClassObjectAdapter {
 
-    /*
-     * Test method for 'org.opennms.netmgt.config.PassiveStatus.equals(Object)'
-     */
-    public void testEqualsObject() {
-        PassiveStatusKey ps = new PassiveStatusKey("node1", "1.1.1.1", "ICMP");
-        PassiveStatusKey ps2 = new PassiveStatusKey("node1", "2.1.1.1", "HTTP");
-        PassiveStatusKey ps3 = new PassiveStatusKey("node1", "1.1.1.1", "ICMP");
-        
-        assertEquals(ps, ps3);
-        assertFalse(ps.equals(ps2));
-        assertFalse(ps2.equals(ps3));
-
-
+    public PollerClassObjectAdapter() {
+        super(SnmpAgentConfig.class, PageSequence.class);
     }
-
 }

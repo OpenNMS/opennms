@@ -32,8 +32,6 @@
 package org.opennms.netmgt.telemetry.ipc;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
-import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 
 public final class TelemetryProtos {
   private TelemetryProtos() {}

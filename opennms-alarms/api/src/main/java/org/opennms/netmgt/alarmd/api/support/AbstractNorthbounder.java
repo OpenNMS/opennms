@@ -30,8 +30,6 @@ package org.opennms.netmgt.alarmd.api.support;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;

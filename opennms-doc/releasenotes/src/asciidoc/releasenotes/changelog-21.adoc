@@ -2,6 +2,42 @@
 
 === Changelog
 
+[[releasenotes-changelog-21.0.2]]
+
+==== Release 21.0.2
+
+Release 21.0.2 is the latest stable release of OpenNMS.
+It contains some UI security fixes, other bug fixes, and a few small enhancements.
+For a high-level overview of what's changed in OpenNMS 21, see link:https://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
+
+The codename for 21.0.2 is _link:http://bladerunner.wikia.com/wiki/Voight-Kampff_machine[Voight-Kampff]_.
+
+===== Bug
+
+* host with single quote in the name breaks UI menu items (Issue http://issues.opennms.org/browse/NMS-6616[NMS-6616])
+* IOActive: Cross-Site Scripting in createFavorite filter Parameter (Issue http://issues.opennms.org/browse/NMS-9670[NMS-9670])
+* IOActive: Reflected Cross-site Scripting in userGroupView/roles roleDescr and Other Parameters (Issue http://issues.opennms.org/browse/NMS-9673[NMS-9673])
+* IOActive: Reflected Cross-site Scripting in admin/thresholds/index.htm filterField and Other Parameters (Issue http://issues.opennms.org/browse/NMS-9674[NMS-9674])
+* Powered Off VMware VMs Removed from Requisition with importVMAll=true (Issue http://issues.opennms.org/browse/NMS-9681[NMS-9681])
+* HEAD requests to static resources in the UI don't work (Issue http://issues.opennms.org/browse/NMS-9689[NMS-9689])
+* The EXE installer of the remote poller on Windows is not working (Issue http://issues.opennms.org/browse/NMS-9721[NMS-9721])
+* IllegalStateException in OnmsVaadinContainer (Issue http://issues.opennms.org/browse/NMS-9742[NMS-9742])
+* Karaf snmp:show-config command lists value of timeout for retries (Issue http://issues.opennms.org/browse/NMS-9745[NMS-9745])
+* Data-collection (Non-SNMP) broken on Minion (Issue http://issues.opennms.org/browse/NMS-9748[NMS-9748])
+* The content of the clone foreign source definition dialog is misleading (Issue http://issues.opennms.org/browse/NMS-9749[NMS-9749])
+* Intermittent startup failures in Minion due to missing org.apache.xerces.parsers bundle (Issue http://issues.opennms.org/browse/NMS-9751[NMS-9751])
+* Users with the MINION role cannot write to Telemetryd queues (Issue http://issues.opennms.org/browse/NMS-9752[NMS-9752])
+* Minion intermittently connects to localhost instead of configured broker (Issue http://issues.opennms.org/browse/NMS-9753[NMS-9753])
+* Relative path reference to version.properties (Issue http://issues.opennms.org/browse/NMS-9767[NMS-9767])
+* Attribute categoryFilter missing in default ifttt-config.xml (Issue http://issues.opennms.org/browse/NMS-9781[NMS-9781])
+
+===== Enhancement
+
+* Authentication proxy support (Issue http://issues.opennms.org/browse/NMS-9739[NMS-9739])
+* Jexl Measurements API enhancements (Issue http://issues.opennms.org/browse/NMS-9743[NMS-9743])
+* provide Poller-test documentation (Issue http://issues.opennms.org/browse/NMS-9768[NMS-9768])
+
+
 [[releasenotes-changelog-21.0.1]]
 
 ==== Release 21.0.1

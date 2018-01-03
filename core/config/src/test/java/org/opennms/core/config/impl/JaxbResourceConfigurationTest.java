@@ -37,9 +37,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;

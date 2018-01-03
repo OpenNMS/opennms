@@ -34,8 +34,6 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-
 import java.util.HashMap;
 import java.util.Map;
 
