@@ -48,7 +48,7 @@ public abstract class ConfigUtils {
     @SuppressWarnings("unchecked")
     public static <T> T assertNotEmpty(final T value, final String name) throws IllegalArgumentException {
         final T check = value instanceof String? (T)normalizeString((String) value) : value;
-        assertNotNull(value, name);
+        assertNotNull(check, name);
         return check;
     }
 
@@ -58,8 +58,9 @@ public abstract class ConfigUtils {
     }
 
     public static String normalizeAndTrimString(final String value) {
-        if (value == null) return null;
-        return normalizeString(value).trim();
+        final String ret = normalizeString(value);
+        if (ret == null) return null;
+        return ret.trim();
     }
 
     public static String normalizeAndInternString(final String value) {
@@ -82,6 +83,7 @@ public abstract class ConfigUtils {
         return value;
     }
 
+    @SuppressWarnings("unlikely-arg-type")
     public static <K,T> T assertOnlyContains(final T value, final Collection<K> in, final String name) {
         if (value == null) return value;
         if (value instanceof String) {
