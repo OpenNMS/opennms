@@ -54,7 +54,6 @@ import org.opennms.core.test.TestContextAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -119,7 +118,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
     private CollectionSpecification m_collectionSpecification;
 
-    private CollectionAgent m_collectionAgent;
+    private SnmpCollectionAgent m_collectionAgent;
 
     private SnmpAgentConfig m_agentConfig;
 
@@ -177,7 +176,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
-        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_collectionAgent = DefaultSnmpCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
         m_agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.getLocalHostAddress());
     }
 

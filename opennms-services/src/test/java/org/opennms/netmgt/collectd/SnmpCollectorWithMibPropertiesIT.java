@@ -49,7 +49,6 @@ import org.opennms.core.test.TestContextAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -118,7 +117,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
     private CollectionSpecification m_collectionSpecification;
 
     /** The collection agent. */
-    private CollectionAgent m_collectionAgent;
+    private SnmpCollectionAgent m_collectionAgent;
 
     /** The RRD strategy. */
     private RrdStrategy<?, ?> m_rrdStrategy;
@@ -178,7 +177,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
-        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_collectionAgent = DefaultSnmpCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
 
     /**

@@ -28,67 +28,49 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.net.InetAddress;
+import java.util.Set;
 
-import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
- * <p>CollectionAgentService interface.</p>
- *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
-public interface CollectionAgentService {
+public interface SnmpCollectionAgentService extends CollectionAgentService {
 
     /**
-     * <p>getHostAddress</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getHostAddress();
-
-    /**
-     * <p>getForeignSource</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getForeignSource();
-
-    /**
-     * <p>getForeignId</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getForeignId();
-
-    /**
-     * <p>getLocationName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getLocationName();
-
-    ResourcePath getStorageResourcePath();
-
-    /**
-     * <p>getNodeId</p>
+     * <p>getIfIndex</p>
      *
      * @return a int.
      */
-    int getNodeId();
+    int getIfIndex();
 
     /**
-     * <p>getNodeLabel</p>
+     * <p>getSysObjectId</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    String getNodeLabel();
+    String getSysObjectId();
 
     /**
-     * <p>getInetAddress</p>
+     * <p>getIsSnmpPrimary</p>
      *
-     * @return a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.model.PrimaryType} object.
      */
-    InetAddress getInetAddress();
+    PrimaryType getIsSnmpPrimary();
+
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
+    SnmpAgentConfig getAgentConfig();
+
+    /**
+     * <p>getSnmpInterfaceData</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
+    Set<SnmpIfData> getSnmpInterfaceData();
 
 }
