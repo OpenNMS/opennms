@@ -383,7 +383,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                        m_domain.calculateRootBFT()),
                   BridgeForwardingTable.create(
                        electedRoot, 
-                       rootBft),0);
+                       rootBft));
                 m_domain.hierarchySetUp(electedRoot);
            }
         } else {
@@ -438,7 +438,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                          xBridgeId);
                 }
                 goDown(rootft, BridgeForwardingTable.create(m_domain.getBridge(xBridgeId), 
-                                   new HashSet<BridgeForwardingTableEntry>(m_notYetParsedBFTMap.remove(xBridgeId))),0);
+                                   new HashSet<BridgeForwardingTableEntry>(m_notYetParsedBFTMap.remove(xBridgeId))));
                 parsed.add(xBridgeId);
             } catch (BridgeTopologyException e) {
                 LOG.warn("calculate: {}, topology:\n{}", 
@@ -462,7 +462,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     }
          
     private boolean goDown(BridgeForwardingTable bridgeUpFT,  
-            BridgeForwardingTable bridgeFT, Integer level) {
+            BridgeForwardingTable bridgeFT) {
         
         BridgeSimpleConnection upsimpleconn = 
                 new BridgeSimpleConnection(bridgeUpFT, 
@@ -487,10 +487,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                      bridgeFT.getBridge().getRootPort());
         }
     
-        return goDown(upsimpleconn, level);
+        return goDown(upsimpleconn, new HashSet<String>(), 0);
     }        
     
-    private boolean goDown(BridgeSimpleConnection upsimpleconn, Integer level) {
+    private boolean goDown(BridgeSimpleConnection upsimpleconn, Set<String> throughSetMac, Integer level) {
 
         if (++level == 30) {
             LOG.warn("goDown: level: {}, bridge:[{}], too many iteration on topology exiting.....",
@@ -511,6 +511,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                         level,
                         upsimpleconn.getSecond().getNodeId(),
                         upSegment.printTopology());
+        }
+        
+        for (Set<String> excluded: upsimpleconn.getExcluded().values()) {
+            throughSetMac.addAll(excluded);
         }
 
         Map<BridgePort, List<BridgeSimpleConnection>> splitted = new HashMap<BridgePort, List<BridgeSimpleConnection>>();
@@ -578,6 +582,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 bridgeMaybeDownSC = bridgesimpleconn;
                 continue;
             }
+            
             // curbridgeOnUpSegment is a leaf of bridge
             if (bridgesimpleconn.getFirstBridgePort().getBridgePort() == bridgesimpleconn.getFirst().getBridge().getRootPort()
                     && bridgesimpleconn.getSecondBridgePort().getBridgePort() != upsimpleconn.getSecond().getBridge().getRootPort()) {
@@ -601,21 +606,33 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 splitted.get(bridgesimpleconn.getSecondBridgePort()).add(bridgesimpleconn);
                 continue;
             }
+
+            // both on upSegment
+            for (Set<String> excluded: bridgesimpleconn.getExcluded().values()) {
+                throughSetMac.addAll(excluded);
+            }
             merged.add(bridgesimpleconn);
         } // end of loop on up segment bridges
         
         if (bridgeMaybeDownSC != null) {
-            return goDown(bridgeMaybeDownSC, level);
+            return goDown(bridgeMaybeDownSC, throughSetMac, level);
         }
 
+ 
+        
         Map<BridgePort, Set<String>> troughSet = upsimpleconn.getTroughSet();
         for (BridgePort port : splitted.keySet()) {
             troughSet.remove(port);
             Set<BridgePort> ports = new HashSet<BridgePort>();
             Set<String> macs = null;
-            Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
             for (BridgeSimpleConnection simpleconn : splitted.get(port)) {
-                forwarders.addAll(simpleconn.getForwarders());
+               Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
+               for (BridgeForwardingTableEntry forward: simpleconn.getForwarders()) {
+                    if (throughSetMac.contains(forward.getMacAddress())) {
+                        continue;
+                    }
+                    forwarders.add(forward);
+                }
                 ports.addAll(simpleconn.getSimpleConnectionPorts());
                 if (macs == null) {
                     macs = new HashSet<String>(
@@ -637,7 +654,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 }
             }
         }
-        
         SharedSegment.merge(m_domain, upSegment,
                             upsimpleconn.getSimpleConnectionMacs(),
                             upsimpleconn.getSimpleConnectionPorts(),

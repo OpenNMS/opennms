@@ -29,7 +29,6 @@
 package org.opennms.netmgt.model.topology;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -85,9 +84,6 @@ public class SharedSegment implements BridgeTopology{
         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeMacLink(link));
         segment.getMacsOnSegment().add(link.getMacAddress());
         segment.setDesignatedBridge(link.getNode().getId());
-        segment.setCreateTime(link.getBridgeMacLinkCreateTime());
-        segment.setPollTime(link.getBridgeMacLinkLastPollTime());
-        
         return segment;
     }
 
@@ -96,9 +92,6 @@ public class SharedSegment implements BridgeTopology{
         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
         segment.getBridgePortsOnSegment().add(BridgePort.getFromDesignatedBridgeBridgeLink(link));
         segment.setDesignatedBridge(link.getDesignatedNode().getId());
-        segment.setCreateTime(link.getBridgeBridgeLinkCreateTime());
-        segment.setPollTime(link.getBridgeBridgeLinkLastPollTime());
-
         return segment;
     }
     
@@ -117,7 +110,7 @@ public class SharedSegment implements BridgeTopology{
                 }
                updated.add(forward);
             }
-            domain.setForwarders(port.getNodeId(), updated);
+            upSegment.setForwarders(port.getNodeId(), updated);
         }
 
         //Add macs from forwarders
@@ -144,7 +137,7 @@ public class SharedSegment implements BridgeTopology{
                 }
                 updated.add(forward);
             }
-            domain.setForwarders(port.getNodeId(), updated);
+            upSegment.setForwarders(port.getNodeId(), updated);
         }
         for (String mac: forfpmacs.keySet()) {
             if (forfpmacs.get(mac).intValue() >= upSegment.getBridgePortsOnSegment().size()) {
@@ -160,7 +153,7 @@ public class SharedSegment implements BridgeTopology{
         domain.getSharedSegments().add(segment);
         //add forwarders
         for (BridgeForwardingTableEntry forward: forwarders) {
-            domain.addForwarding(forward);
+            segment.addForwarding(forward);
         }
         return segment;
     }
@@ -171,7 +164,7 @@ public class SharedSegment implements BridgeTopology{
         segment.getBridgePortsOnSegment().addAll(ports);
         segment.getMacsOnSegment().retainAll(macs);
         for (BridgeForwardingTableEntry forward: forwarders) {
-            domain.addForwarding(forward);
+            segment.addForwarding(forward);
         }
     }
 
@@ -189,32 +182,41 @@ public class SharedSegment implements BridgeTopology{
                 
     }
     
-    Integer m_designatedBridgeId;
-    Set<String> m_macsOnSegment = new HashSet<String>();
-    Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
-    Date m_createTime;
-    Date m_pollTime;
+    private Integer m_designatedBridgeId;
+    private Set<String> m_macsOnSegment = new HashSet<String>();
+    private Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
+    private Map<Integer,Set<BridgeForwardingTableEntry>> m_forwarding = new HashMap<Integer,Set<BridgeForwardingTableEntry>>();
+
+    public void addForwarding(BridgeForwardingTableEntry forward) {
+        Integer bridgeid = forward.getNodeId();
+        if (bridgeid == null) {
+            return;
+        }
+        if (!m_forwarding.containsKey(bridgeid)) {
+            m_forwarding.put(bridgeid, new HashSet<BridgeForwardingTableEntry>());
+        }
+        m_forwarding.get(bridgeid).add(forward);
+    }
     
-    public Date getCreateTime() {
-        return m_createTime;
+    public void setForwarding(Map<Integer,Set<BridgeForwardingTableEntry>> forwarding) {
+        m_forwarding = forwarding;
+    }
+    
+    public void setForwarders(Integer bridgeid, Set<BridgeForwardingTableEntry> forwarders) {
+        m_forwarding.put(bridgeid, forwarders);
     }
 
-    public void setCreateTime(Date createTime) {
-        m_createTime = createTime;
+    public Map<Integer,Set<BridgeForwardingTableEntry>> getForwarding() {
+        return m_forwarding;
     }
 
-    public Date getPollTime() {
-        return m_pollTime;
+    public Set<BridgeForwardingTableEntry> getForwarders(Integer bridgeId) {
+        if (m_forwarding.containsKey(bridgeId)) {
+            return m_forwarding.get(bridgeId);
+        }
+        return new HashSet<BridgeForwardingTableEntry>();
     }
 
-    public void setPollTime(Date pollTime) {
-        m_pollTime = pollTime;
-    }
-
-    private SharedSegment() {
-        
-    }
-                    
     public boolean setDesignatedBridge(Integer designatedBridge) {
         m_designatedBridgeId = designatedBridge;
             return true;
@@ -304,7 +306,15 @@ public class SharedSegment implements BridgeTopology{
             strbfr.append("\n");
         }
         strbfr.append("        -> macs:");
-        strbfr.append(getMacsOnSegment());        
+        strbfr.append(getMacsOnSegment());
+        for (Set<BridgeForwardingTableEntry> bfteset: m_forwarding.values()) {
+            for (BridgeForwardingTableEntry bfte:bfteset) {
+                strbfr.append("\n");
+                strbfr.append("        -> forwarder: ");
+                strbfr.append(bfte.printTopology());
+            }
+        }
+
         return strbfr.toString();    	
     }
 

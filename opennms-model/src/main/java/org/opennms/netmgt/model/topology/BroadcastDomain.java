@@ -42,50 +42,41 @@ public class BroadcastDomain implements BridgeTopology {
     volatile Set<Bridge> m_bridges = new HashSet<Bridge>();
 
     volatile List<SharedSegment> m_topology = new ArrayList<SharedSegment>();    
-    
-    volatile Map<Integer,Set<BridgeForwardingTableEntry>> m_forwarding = new HashMap<Integer,Set<BridgeForwardingTableEntry>>();
-
-    public void addForwarding(BridgeForwardingTableEntry forward) {
-                Integer bridgeid = forward.getNodeId();
-                if (bridgeid == null) {
-                    return;
-                }
-                if (!m_forwarding.containsKey(bridgeid)) {
-                    m_forwarding.put(bridgeid, new HashSet<BridgeForwardingTableEntry>());
-                }
-                m_forwarding.get(bridgeid).add(forward);
-    }
-
-    public void setForwarders(Integer bridgeid, Set<BridgeForwardingTableEntry> forwarders) {
-            m_forwarding.put(bridgeid, forwarders);
-    }
-    
+        
     public Set<BridgeForwardingTableEntry> getForwarders(Integer bridgeId) {
-        if (m_forwarding.containsKey(bridgeId)) {
-            return m_forwarding.get(bridgeId);
+        Set<BridgeForwardingTableEntry>  forwarders = new HashSet<BridgeForwardingTableEntry>();
+        for (SharedSegment segment: m_topology) {
+            forwarders.addAll(segment.getForwarders(bridgeId));
         }
-        return new HashSet<BridgeForwardingTableEntry>();
+        return forwarders;
     }
     
     public void cleanForwarders() {
-        Map<Integer, Set<BridgeForwardingTableEntry>> forwadingMap=new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
-        for (Integer bridgeId: m_forwarding.keySet()) {
-            Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
-            for (BridgeForwardingTableEntry forward: m_forwarding.get(bridgeId)) {
-                if (getMacsOnDomain().contains(forward.getMacAddress()))
+        for (SharedSegment segment: m_topology) {
+            Map<Integer, Set<BridgeForwardingTableEntry>> forwardingMap=new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
+            Map<Integer,Set<BridgeForwardingTableEntry>> oldforwardingMap = segment.getForwarding();
+            for (Integer bridgeId: oldforwardingMap.keySet()) {
+                Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
+                for (BridgeForwardingTableEntry forward: oldforwardingMap.get(bridgeId)) {
+                    if (getMacsOnDomain().contains(forward.getMacAddress())) {
+                        continue;
+                    }
+                    forwarders.add(forward);
+                }
+                if (forwarders.isEmpty()) {
                     continue;
-                forwarders.add(forward);
+                }
+                forwardingMap.put(bridgeId, forwarders);
             }
-            if (forwarders.isEmpty())
-                continue;
-            forwadingMap.put(bridgeId, forwarders);
+            segment.setForwarding(forwardingMap);
         }
-        m_forwarding = forwadingMap;
     }
     
     public void clearTopology() {
-        m_forwarding.clear();
         m_topology.clear();
+        for (Bridge bridge: m_bridges) {
+            bridge.setRootPort(null);
+        }
     }
     
     public boolean isEmpty() {
@@ -262,7 +253,6 @@ public class BroadcastDomain implements BridgeTopology {
             m_topology.clear();
             return;
         }
-        m_forwarding.remove(bridge.getNodeId());
         SharedSegment topsegment = null;
         if (bridge.isRootBridge()) {
             for (SharedSegment segment: getSharedSegments(bridge.getNodeId())) {
@@ -304,6 +294,7 @@ public class BroadcastDomain implements BridgeTopology {
         List<SharedSegment> topology = new ArrayList<SharedSegment>();
  
         for (SharedSegment segment: m_topology) {
+            segment.getForwarding().remove(bridge.getNodeId());
             if (segment.getBridgeIdsOnSegment().contains(bridge.getNodeId())) { 
                 for (BridgePort port: segment.getBridgePortsOnSegment()) {
                     if ( port.getNodeId().intValue() == bridge.getNodeId().intValue()) {
@@ -322,8 +313,9 @@ public class BroadcastDomain implements BridgeTopology {
 
     public Set<BridgeForwardingTableEntry> calculateRootBFT() throws BridgeTopologyException {
     	Bridge root = getRootBridge();
-    	if (root == null)
-    		return null;
+    	if (root == null) {
+    	    return null;
+    	}
     	return calculateBFT(root);
     }
     
@@ -332,22 +324,26 @@ public class BroadcastDomain implements BridgeTopology {
         Map<Integer,BridgePort> portifindexmap = new HashMap<Integer, BridgePort>();
         Integer bridgeId = bridge.getNodeId();
         Set<BridgeForwardingTableEntry> links = new HashSet<BridgeForwardingTableEntry>();
+        
         for (SharedSegment segment: getSharedSegments(bridgeId)) {
             BridgePort bridgeport = segment.getBridgePort(bridgeId);
             portifindexmap.put(bridgeport.getBridgePort(), bridgeport);
 
         }
+        
         synchronized (m_topology) {
-            for (SharedSegment segment: m_topology) { //ConcurrentModificationException NMS-9557
+            for (SharedSegment segment: m_topology) { //FIXME ConcurrentModificationException NMS-9557
                 
-                Set<String> macs = segment.getMacsOnSegment();
-                
-                if (macs == null || macs.isEmpty())
+                Set<String> macs = segment.getMacsOnSegment();                
+                if (macs.isEmpty()) {
                     continue;
+                }
                 Integer bridgeport = goUp(segment,bridge,0);
-                if (!bft.containsKey(bridgeport))
+                if (!bft.containsKey(bridgeport)) {
                     bft.put(bridgeport, new HashSet<String>());
+                }
                 bft.get(bridgeport).addAll(macs);
+                links.addAll(segment.getForwarders(bridgeId));
            }
         }
             
@@ -366,8 +362,6 @@ public class BroadcastDomain implements BridgeTopology {
                 links.add(link);
             }
         }
-        if (m_forwarding.containsKey(bridgeId))
-            links.addAll(m_forwarding.get(bridgeId));
         return links;
     }
     
@@ -422,13 +416,6 @@ public class BroadcastDomain implements BridgeTopology {
     	    }
     	}
         strbfr.append("\n");
-        for (Set<BridgeForwardingTableEntry> bfteset: m_forwarding.values()) {
-            for (BridgeForwardingTableEntry bfte:bfteset) {
-                strbfr.append("forwarder: ");
-                strbfr.append(bfte.printTopology());
-                strbfr.append("\n");
-            }
-        }
         strbfr.append("------broadcast domain-----");
     	return strbfr.toString();
     }

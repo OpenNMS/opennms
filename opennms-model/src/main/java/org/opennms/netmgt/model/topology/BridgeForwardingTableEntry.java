@@ -292,7 +292,7 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
     public String printTopology() {
         StringBuffer strbfr = new StringBuffer();
 
-        strbfr.append("bft entry:[");
+        strbfr.append("[");
         strbfr.append(getMacAddress());
         strbfr.append(", bridge:[");
         strbfr.append(getNodeId());

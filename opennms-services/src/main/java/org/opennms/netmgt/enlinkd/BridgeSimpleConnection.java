@@ -426,6 +426,12 @@ public class BridgeSimpleConnection implements BridgeTopology {
         return ports;
     }
 
+    public Map<BridgePort,Set<String>> getExcluded() {
+        Set<BridgePort> excluded = new HashSet<BridgePort>();
+        excluded.add(m_xyPort);
+        return BridgeForwardingTableEntry.getThroughSet(m_xBridge.getBFTEntries(),excluded);
+    }
+     
     public Map<BridgePort,Set<String>> getTroughSet() {
         Set<BridgePort> excluded = new HashSet<BridgePort>();
         excluded.add(m_yxPort);
