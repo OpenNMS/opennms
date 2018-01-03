@@ -115,13 +115,6 @@ public interface CollectionAgent {
     String getHostAddress();
 
     /**
-     * <p>setSavedIfCount</p>
-     *
-     * @param ifCount a int.
-     */
-    void setSavedIfCount(int ifCount);
-
-    /**
      * <p>getNodeId</p>
      *
      * @return a int.
@@ -157,13 +150,6 @@ public interface CollectionAgent {
     String getLocationName();
 
     ResourcePath getStorageResourcePath();
-    
-    /**
-     * <p>getSysObjectId</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getSysObjectId();
 
     /**
      * <p>getSavedSysUpTime</p>

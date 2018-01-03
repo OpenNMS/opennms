@@ -49,14 +49,7 @@ public interface CollectionAgentService {
      * @return a {@link java.lang.String} object.
      */
     public abstract String getHostAddress();
-    
-    /**
-     * <p>isStoreByForeignSource</p>
-     * 
-     * @return a {@link java.lang.Boolean} object.
-     */
-    public abstract Boolean isStoreByForeignSource();
-    
+
     /**
      * <p>getForeignSource</p>
      *

@@ -79,9 +79,6 @@ public class CollectionAgentDTO implements CollectionAgent {
     @XmlAttribute(name = "storage-resource-path")
     private String storageResourcePath;
 
-    @XmlAttribute(name = "sys-object-id")
-    private String sysObjectId;
-
     @XmlAttribute(name = "sys-up-time")
     private long sysUpTime;
 
@@ -100,7 +97,6 @@ public class CollectionAgentDTO implements CollectionAgent {
         foreignId = agent.getForeignId();
         location = agent.getLocationName();
         setStorageResourcePath(agent.getStorageResourcePath());
-        sysObjectId = agent.getSysObjectId();
         sysUpTime = agent.getSavedSysUpTime();
     }
 
@@ -162,11 +158,6 @@ public class CollectionAgentDTO implements CollectionAgent {
     }
 
     @Override
-    public void setSavedIfCount(int ifCount) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getNodeId() {
         return nodeId;
     }
@@ -221,15 +212,6 @@ public class CollectionAgentDTO implements CollectionAgent {
     }
 
     @Override
-    public String getSysObjectId() {
-        return sysObjectId;
-    }
-
-    public void setSysObjectId(String sysObjectId) {
-        this.sysObjectId = sysObjectId;
-    }
-
-    @Override
     public long getSavedSysUpTime() {
         return sysUpTime;
     }
@@ -245,14 +227,14 @@ public class CollectionAgentDTO implements CollectionAgent {
                 + "nodeId=%d, nodeLabel=%s, foreignSource=%s, foreignId=%s, location=%s, storageDir=%s, "
                 + "sysObjectId=%s, sysUpTime=%d]",
                 attributes, address != null ? InetAddrUtils.str(address) : null, storeByForeignSource,
-                nodeId, nodeLabel, foreignSource, foreignId, location, storageResourcePath, sysObjectId, sysUpTime);
+                nodeId, nodeLabel, foreignSource, foreignId, location, storageResourcePath, sysUpTime);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(attributes, address, storeByForeignSource,
                 nodeId, nodeLabel, foreignSource, foreignId, location,
-                storageResourcePath, sysObjectId, sysUpTime);
+                storageResourcePath, sysUpTime);
     }
 
     @Override
@@ -274,7 +256,6 @@ public class CollectionAgentDTO implements CollectionAgent {
                 Objects.equals(this.foreignId, other.foreignId) &&
                 Objects.equals(this.location, other.location) &&
                 Objects.equals(this.storageResourcePath, other.storageResourcePath) &&
-                Objects.equals(this.sysObjectId, other.sysObjectId) &&
                 Objects.equals(this.sysUpTime, other.sysUpTime);
     }
 }

@@ -325,7 +325,6 @@ class CollectableService implements ReadyRunnable {
             Logging.putThreadContext("nodeLabel", m_agent.getNodeLabel());
             Logging.putThreadContext("foreignSource", m_agent.getForeignSource());
             Logging.putThreadContext("foreignId", m_agent.getForeignId());
-            Logging.putThreadContext("sysObjectId", m_agent.getSysObjectId());
             doRun();
         });
     }
