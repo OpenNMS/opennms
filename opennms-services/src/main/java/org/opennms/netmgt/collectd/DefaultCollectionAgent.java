@@ -77,8 +77,14 @@ public class DefaultCollectionAgent implements SnmpCollectionAgent {
         return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr), location);
     }
 
-    // miscellaneous junk?
+    /**
+     * Used to check for new interfaces
+     */
     private int m_ifCount = -1;
+
+    /**
+     * Used to track system restarts
+     */
     private long m_sysUpTime = -1;
 
     // fixed attributes
