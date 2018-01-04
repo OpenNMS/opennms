@@ -121,6 +121,12 @@
         <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.5" instance="diskIOIndex" alias="diskIOReads"    type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.6" instance="diskIOIndex" alias="diskIOWrites"   type="counter" />
       </group>
+	
+      <group name="ucd-diskio-util" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.9"  instance="diskIOIndex" alias="diskIOLA1"      type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.10" instance="diskIOIndex" alias="diskIOLA5"      type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.11" instance="diskIOIndex" alias="diskIOLA15"     type="integer" />
+      </group>
 
       <!-- lmsensors MIBs -->
       <group name="lmsensors-temp" ifType="all">
