@@ -475,7 +475,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
-        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
 
         topology.checkwithshared(nodeAbd);
         assertEquals(0, nodeAbd.getForwarders(topology.nodeAId).size());
@@ -612,7 +612,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
         
@@ -713,7 +713,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 
@@ -816,7 +816,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertNotNull(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getBridge(nodeB.getId()));
         assertNotNull(nodeAbd.getBridge(nodeC.getId()));
-        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+        BroadcastDomain.hierarchySetUp(nodeAbd,nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridge());
         topology.check(nodeAbd);
 

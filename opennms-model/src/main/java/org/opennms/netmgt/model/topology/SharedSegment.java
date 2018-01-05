@@ -174,6 +174,9 @@ public class SharedSegment implements BridgeTopology{
         segment.getMacsOnSegment().addAll(macs);
         segment.setDesignatedBridge(port.getNodeId());
         domain.getSharedSegments().add(segment);
+        for (SharedSegment dsegment: domain.getSharedSegments()) {
+            dsegment.cleanForwarders(macs);
+        }        
         return segment;
     }
         
@@ -186,6 +189,24 @@ public class SharedSegment implements BridgeTopology{
     private Set<String> m_macsOnSegment = new HashSet<String>();
     private Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
     private Map<Integer,Set<BridgeForwardingTableEntry>> m_forwarding = new HashMap<Integer,Set<BridgeForwardingTableEntry>>();
+
+    public void cleanForwarders(Set<String> macs) {
+        Map<Integer, Set<BridgeForwardingTableEntry>> forwardingMap=new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
+        for (Integer bridgeId: m_forwarding.keySet()) {
+            Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
+            for (BridgeForwardingTableEntry forward: m_forwarding.get(bridgeId)) {
+                if (macs.contains(forward.getMacAddress())) {
+                    continue;
+                }
+                forwarders.add(forward);
+            }
+            if (forwarders.isEmpty()) {
+                continue;
+            }
+            forwardingMap.put(bridgeId, forwarders);
+        }
+        m_forwarding = forwardingMap;
+    }
 
     public void addForwarding(BridgeForwardingTableEntry forward) {
         Integer bridgeid = forward.getNodeId();

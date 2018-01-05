@@ -229,9 +229,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         
 
         LOG.info("reconcileTopologyForDeleteNode: node:[{}], start: save topology for domain",nodeId);
-        synchronized (domain) {
-            domain.removeBridge(nodeId);
-        }
+        BroadcastDomain.removeBridge(domain,nodeId);
         store(domain,now);
         LOG.info("reconcileTopologyForDeleteNode: node:[{}], end: save topology for domain",nodeId);
         

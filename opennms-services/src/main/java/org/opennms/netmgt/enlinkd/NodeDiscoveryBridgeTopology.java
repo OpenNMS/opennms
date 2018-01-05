@@ -45,6 +45,11 @@ import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.opennms.netmgt.model.topology.BroadcastDomain.calculateBFT;
+import static org.opennms.netmgt.model.topology.BroadcastDomain.calculateRootBFT;
+import static org.opennms.netmgt.model.topology.BroadcastDomain.hierarchySetUp;
+import static org.opennms.netmgt.model.topology.BroadcastDomain.clearTopologyForBridge;
+import static org.opennms.netmgt.model.topology.BroadcastDomain.electRootBridge;
 
 public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
@@ -298,7 +303,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         return "NodeDiscoveryBridgeTopology";
     }
 
-    private Bridge getElectedRootBridge() {
+    private Bridge getRootBridge() {
         // no spanning tree root?
         // why I'm here?
         // not root bridge defined (this mean no calculation yet done...
@@ -307,7 +312,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         Bridge elected = null;
         for (Integer bridgeid : m_notYetParsedBFTMap.keySet()) {
             Bridge bridge = m_domain.getBridge(bridgeid);
-            LOG.debug("getElectedRootBridge: bridge [{}]: max bft size \"{}\" in topology",
+            LOG.debug("getRootBridge: bridge [{}]: max bft size \"{}\" in topology",
                       bridge.getNodeId(),
                       m_notYetParsedBFTMap.get(bridgeid).size());
             if (size < m_notYetParsedBFTMap.get(bridgeid).size()) {
@@ -317,13 +322,13 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
         if (elected != null) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getElectedRootBridge: bridge [{}]: elected root with max bft size \"{}\" in topology",
+                LOG.debug("getRootBridge: bridge [{}]: elected root with max bft size \"{}\" in topology",
                           elected.getNodeId(), size);
             }
         } else {
             elected = m_domain.getBridges().iterator().next();
             if (LOG.isDebugEnabled()) {
-        	LOG.debug("getElectedRootBridge: bridge [{}] elected first bridge in topology", 
+        	LOG.debug("getRootBridge: bridge [{}] elected first bridge in topology", 
                        elected.getNodeId());
             }
         }
@@ -332,14 +337,14 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         
     }
 
-    private BridgeForwardingTable electRootBridge() throws BridgeTopologyException {
-        Bridge electedRoot = m_domain.electRootBridge();
+    private BridgeForwardingTable calculateRootBridge() throws BridgeTopologyException {
+        Bridge electedRoot = electRootBridge(m_domain);
         Bridge rootBridge = m_domain.getRootBridge();
         if (electedRoot == null) {
             if (rootBridge != null) {
                 electedRoot = rootBridge;
             } else {
-                electedRoot = getElectedRootBridge();
+                electedRoot = getRootBridge();
             }
         }
         if (electedRoot.getNodeId() == null) {
@@ -354,14 +359,14 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 LOG.debug("calculate: bridge:[{}] -> elected is [root] with no updated bft,",
             		electedRoot.printTopology());
             }
-            rootBft = m_domain.calculateRootBFT();
+            rootBft = calculateRootBFT(m_domain);
         } else if ( rootBft != null ) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("calculate: bridge:[{}] elected has updated bft",
                      electedRoot.getNodeId());
             }
             if (!electedRoot.isNewTopology()) {
-                m_domain.clearTopologyForBridge(electedRoot.getNodeId());
+                clearTopologyForBridge(m_domain,electedRoot.getNodeId());
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("calculate: {} cleared topology: ->\n{}",
                           electedRoot.printTopology(),
@@ -380,17 +385,17 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 goDown(
                   BridgeForwardingTable.create(
                        m_domain.getRootBridge(), 
-                       m_domain.calculateRootBFT()),
+                       calculateRootBFT(m_domain)),
                   BridgeForwardingTable.create(
                        electedRoot, 
                        rootBft));
-                m_domain.hierarchySetUp(electedRoot);
+                hierarchySetUp(m_domain,electedRoot);
            }
         } else {
            LOG.debug("calculate: bridge:[{}] elected is new [root], no updated bft",
                      electedRoot.getNodeId());
-           m_domain.hierarchySetUp(electedRoot);
-           rootBft = m_domain.calculateRootBFT();
+           hierarchySetUp(m_domain,electedRoot);
+           rootBft = calculateRootBFT(m_domain);
         }
         for (Integer bridgeId: m_notYetParsedBFTMap.keySet()) {
             if (m_domain.getBridge(bridgeId).isNewTopology()) {
@@ -400,7 +405,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 }
                 continue;
             }
-            m_domain.clearTopologyForBridge(bridgeId);
+            clearTopologyForBridge(m_domain,bridgeId);
             
             if (LOG.isDebugEnabled()) {
                 LOG.debug("calculate: cleaned topology for bridge: [{}] -> \n{}", 
@@ -421,7 +426,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         Set<Integer> parsed=new HashSet<Integer>();
         BridgeForwardingTable rootft;
         try {
-            rootft = electRootBridge();
+            rootft = calculateRootBridge();
         } catch (BridgeTopologyException e) {
             LOG.error("calculate: {}, topology:\n{}",
                       e.getMessage(),
@@ -447,13 +452,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                           e);
                 continue;
             }
-        }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("calculate: topology before cleaning forwarders: ->\n{}.", 
-                 m_domain.printTopology());
-        }
-        m_domain.cleanForwarders();
-        
+        }        
         if (LOG.isInfoEnabled()) {
             LOG.info("calculate: topology calculation end: ->\n{}.", 
                  m_domain.printTopology());
@@ -537,7 +536,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             try {
                 bridgesimpleconn = new BridgeSimpleConnection(
                                                               BridgeForwardingTable.create(curbridge,
-                                                                                           m_domain.calculateBFT(curbridge)),
+                                                                                           calculateBFT(m_domain,curbridge)),
                                                               upsimpleconn.getSecond());
             } catch (BridgeTopologyException e) {
                 LOG.warn("goDown: level: {}. {} topology:\n{}", level,

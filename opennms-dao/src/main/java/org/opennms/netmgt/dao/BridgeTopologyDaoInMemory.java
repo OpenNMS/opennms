@@ -334,7 +334,7 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
         
         for (SharedSegment segment : bblsegments) {
             for (BroadcastDomain cdomain: domains) {
-                if (cdomain.loadTopologyEntry(segment)) {
+                if (BroadcastDomain.loadTopologyEntry(cdomain,segment)) {
                     break;
                 }
             }
@@ -342,7 +342,7 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
 
         for (SharedSegment segment : bmlsegments) {
             for (BroadcastDomain cdomain: domains) {
-                if (cdomain.loadTopologyEntry(segment)) {
+                if (BroadcastDomain.loadTopologyEntry(cdomain,segment)) {
                     break;
                 }
             }
