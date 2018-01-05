@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.core;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;

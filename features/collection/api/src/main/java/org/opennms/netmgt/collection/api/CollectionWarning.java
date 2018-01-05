@@ -26,9 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
-
-import org.opennms.netmgt.collection.api.CollectionException;
+package org.opennms.netmgt.collection.api;
 
 /**
  * <p>CollectionWarning class.</p>

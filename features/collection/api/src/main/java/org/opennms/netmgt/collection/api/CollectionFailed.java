@@ -26,10 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
-
-import org.opennms.netmgt.collection.api.CollectionException;
-import org.opennms.netmgt.collection.api.CollectionStatus;
+package org.opennms.netmgt.collection.api;
 
 /**
  * <p>CollectionFailed class.</p>

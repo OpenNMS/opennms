@@ -26,12 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.core;
 
 import java.net.InetAddress;
 import java.util.Properties;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.CollectionAgentService;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -91,7 +92,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
         m_ifaceDao = ifaceDao;
     }
 
-    final OnmsIpInterface getIpInterface() {
+    protected final OnmsIpInterface getIpInterface() {
         return m_ifaceDao.load(m_ifaceId);
     }
 

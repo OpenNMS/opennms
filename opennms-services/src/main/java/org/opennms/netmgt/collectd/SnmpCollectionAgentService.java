@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Set;
 
+import org.opennms.netmgt.collection.api.CollectionAgentService;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
