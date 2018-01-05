@@ -38,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.io.IOUtils;
@@ -91,7 +92,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     /**
      * This member is set to true if the configuration file has been loaded.
      */
-    private static volatile boolean s_loaded = false;
+    private static AtomicBoolean s_loaded = new AtomicBoolean(false);
 
     private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
     private final Lock m_readLock = m_globalLock.updateLock();
@@ -145,13 +146,13 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     public static synchronized void init() throws IOException {
-        if (!s_loaded) {
+        if (!s_loaded.get()) {
             final File cfgFile = getFile();
             LOG.debug("init: config file path: {}", cfgFile.getPath());
             final FileSystemResource resource = new FileSystemResource(cfgFile);
 
             s_singleton = new SnmpPeerFactory(resource);
-            s_loaded = true;
+            s_loaded.set(true);
         }
     }
 
@@ -161,7 +162,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @exception java.io.IOException Thrown if the specified config file cannot be read
      */
     public static synchronized SnmpPeerFactory getInstance() {
-        if (!s_loaded) {
+        if (!s_loaded.get()) {
             try {
                 init();
             } catch (final IOException e) {
@@ -179,7 +180,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     public static synchronized void setInstance(final SnmpPeerFactory singleton) {
         LOG.debug("setting new singleton instance {}", singleton);
         s_singleton = singleton;
-        s_loaded = true;
+        s_loaded.set(true);
     }
 
     public static synchronized File getFile() throws IOException {
@@ -201,7 +202,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         // if the file changed then we need to reload the config
         if (oldFile == null || s_configFile == null || !oldFile.equals(s_configFile)) {
             s_singleton = null;
-            s_loaded = false;
+            s_loaded.set(false);
         }
     }
 

@@ -325,11 +325,6 @@ public class StressCommand implements Action {
         }
 
         @Override
-        public int getType() {
-            return 0;
-        }
-
-        @Override
         public InetAddress getAddress() {
             return null;
         }
