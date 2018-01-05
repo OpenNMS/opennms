@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,24 +28,38 @@
 
 package org.opennms.netmgt.flows.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 
-import com.google.common.collect.Table;
+/**
+ * Total bytes in/out related to some entity.
+ */
+public class TrafficSummary<T> {
 
-public interface FlowRepository {
+    private final T entity;
+    private long bytesIn;
+    private long bytesOut;
 
-    void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException;
+    public TrafficSummary(T entity) {
+        this.entity = Objects.requireNonNull(entity);
+    }
 
-    CompletableFuture<Long> getFlowCount(long start, long end);
+    public T getEntity() {
+        return entity;
+    }
 
-    CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, long start, long end);
+    public long getBytesIn() {
+        return bytesIn;
+    }
 
-    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long start, long end, long step);
+    public void setBytesIn(long bytesIn) {
+        this.bytesIn = bytesIn;
+    }
 
-    CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, long start, long end);
+    public long getBytesOut() {
+        return bytesOut;
+    }
 
-    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long start, long end, long step);
-
+    public void setBytesOut(long bytesOut) {
+        this.bytesOut = bytesOut;
+    }
 }

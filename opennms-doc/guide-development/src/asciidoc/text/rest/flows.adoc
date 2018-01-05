@@ -1,0 +1,177 @@
+==== Flow API
+
+The _Flow API_ can be used to retrieve summary statistics and time series data derived from persisted flows.
+
+NOTE: Unless specific otherwise, all unit of time are expressed in milliseconds.
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                      | Description
+| `/flows/count`                | Retrieve the number of flows available
+| `/flows/applications`         | Retrieve traffic summary statistics for the top N applications
+| `/flows/applications/series`  | Retrieve time series metrics for the top N applications
+| `/flows/conversations`        | Retrieve traffic summary statistics for the top N conversations
+| `/flows/conversations/series` | Retrieve time series metrics for the top N conversations
+|===
+
+All of the endpoints support the following query string parameters to control the time range:
+
+[options="header"]
+|===
+| name               | default   | comment
+| start              | -14400000 | Timestamp in milliseconds.
+
+                                   If > 0, the timestamp is relative to the UNIX epoch (January 1st 1970 00:00:00 AM).
+
+                                   If < 0, the timestamp is relative to the `end` option (i.e.: default value is 4 hours ago).
+| end                | 0         | Timestamp in milliseconds. If \<= 0, the effective value will be the current timestamp.
+|===
+
+The `applications` and `conversations` endpoints also support:
+
+[options="header"]
+|===
+| name               | default   | comment
+| N                  | 10        | Number of top entries (determined by total bytes transferred) to return
+|===
+
+The `series` endpoints also support:
+
+[options="header"]
+|===
+| name               | default   | comment
+| step               | 300000    | Requested time interval between rows.
+|===
+
+====== Examples
+
+
+.Retrieve the number of flows persisted in the last 4 hours
+[source,bash]
+----
+curl -u admin:admin http://localhost:8980/opennms/rest/flows/count
+----
+
+.Response
+[source,javascript]
+----
+915
+----
+
+.Retrieve traffic summary for top 10 applications in the last 4 hours
+[source,bash]
+----
+curl -u admin:admin http://localhost:8980/opennms/rest/flows/applications
+----
+
+.Response
+[source,javascript]
+----
+{
+	"start": 1513788044417,
+	"end": 1513802444417,
+	"headers": ["Application", "Bytes In", "Bytes Out"],
+	"rows": [
+		["https", 48789, 136626],
+		["http", 12430, 5265]
+	]
+}
+----
+
+.Retrieve traffic summary for top 10 conversations in the last 4 hours
+[source,bash]
+----
+curl -u admin:admin http://localhost:8980/opennms/rest/flows/conversations
+----
+
+.Response
+[source,javascript]
+----
+{
+	"start": 1513788228224,
+	"end": 1513802628224,
+	"headers": ["Location", "Protocol", "Source IP", "Source Port", "Dest. IP", "Dest. Port", "Bytes In", "Bytes Out"],
+	"rows": [
+		["Default", 17, "10.0.2.15", 33816, "172.217.0.66", 443, 12166, 117297],
+		["Default", 17, "10.0.2.15", 32966, "172.217.0.70", 443, 5042, 107542],
+		["Default", 17, "10.0.2.15", 54087, "172.217.0.67", 443, 55393, 5781],
+		["Default", 17, "10.0.2.15", 58046, "172.217.0.70", 443, 4284, 46986],
+		["Default", 6, "10.0.2.15", 39300, "69.172.216.58", 80, 969, 48178],
+		["Default", 17, "10.0.2.15", 48691, "64.233.176.154", 443, 8187, 39847],
+		["Default", 17, "10.0.2.15", 39933, "172.217.0.65", 443, 1158, 33913],
+		["Default", 17, "10.0.2.15", 60751, "216.58.218.4", 443, 5504, 24957],
+		["Default", 17, "10.0.2.15", 51972, "172.217.0.65", 443, 2666, 22556],
+		["Default", 6, "10.0.2.15", 46644, "31.13.65.7", 443, 459, 16952]
+	]
+}
+----
+
+.Retrieve time series data for top 10 applications in the last 4 hours
+[source,bash]
+----
+curl -u admin:admin http://localhost:8980/opennms/rest/flows/applications/series
+----
+
+.Response
+[source,javascript]
+----
+{
+	"start": 1513788266685,
+	"end": 1513802666685,
+	"labels": ["https (In)", "domain (Out)", "ntp (In)", "mdns (Out)", "http (In)", "https (Out)", "domain (In)", "http (Out)", "ssdp (In)", "ntp (Out)"],
+	"timestamps": [1513802100000, 1513802400000],
+	"columns": [
+		[23108.0, 683184.0],
+		["NaN", 63412.0],
+		["NaN", 76.0],
+		["NaN", 272.0],
+		[11529.0, 62707.0],
+		[111495.0, 1.1526612E7],
+		["NaN", 8953.0],
+		[4787.0, 142743.0],
+		["NaN", 800.0],
+		["NaN", 76.0]
+	]
+}
+----
+
+.Retrieve time series data for top 10 conversations in the last 4 hours
+[source,bash]
+----
+curl -u admin:admin http://localhost:8980/opennms/rest/flows/conversations/series
+----
+
+.Response
+[source,javascript]
+----
+{
+	"start": 1513802714442,
+	"end": 1513802714442,
+	"labels": ["10.0.2.15:59986 <-> 173.194.191.106:443 (In)", "10.0.2.15:41129 <-> 24.156.131.81:443 (Out)", "10.0.2.15:33836 <-> 192.175.120.170:80 (In)", "10.0.2.15:56286 <-> 64.71.249.82:443 (Out)", "10.0.2.15:57529 <-> 74.125.21.93:443 (Out)", "10.0.2.15:59057 <-> 74.125.159.74:443 (In)", "10.0.2.15:47720 <-> 172.217.4.14:443 (In)", "10.0.2.15:45944 <-> 172.217.12.99:443 (Out)", "10.0.2.15:55906 <-> 64.71.249.15:443 (In)", "10.0.2.15:40093 <-> 24.156.131.14:443 (In)", "10.0.2.15:57529 <-> 74.125.21.93:443 (In)", "10.0.2.15:59057 <-> 74.125.159.74:443 (Out)", "10.0.2.15:41129 <-> 24.156.131.81:443 (In)", "10.0.2.15:55906 <-> 64.71.249.15:443 (Out)", "10.0.2.15:59986 <-> 173.194.191.106:443 (Out)", "10.0.2.15:40093 <-> 24.156.131.14:443 (Out)", "10.0.2.15:45944 <-> 172.217.12.99:443 (In)", "10.0.2.15:47720 <-> 172.217.4.14:443 (Out)", "10.0.2.15:33836 <-> 192.175.120.170:80 (Out)", "10.0.2.15:56286 <-> 64.71.249.82:443 (In)"],
+	"timestamps": [1513802400000, 1513802700000],
+	"columns": [
+		[9197.0, "NaN"],
+		[545961.0, "NaN"],
+		["NaN", 15421.0],
+		[210421.0, "NaN"],
+		[1915032.0, "NaN"],
+		[49137.0, "NaN"],
+		[19907.0, "NaN"],
+		[615044.0, "NaN"],
+		[26239.0, "NaN"],
+		[12004.0, "NaN"],
+		[99573.0, "NaN"],
+		[2307878.0, "NaN"],
+		[16042.0, "NaN"],
+		[1291225.0, "NaN"],
+		[1967621.0, "NaN"],
+		[490934.0, "NaN"],
+		[37866.0, "NaN"],
+		[570895.0, "NaN"],
+		["NaN", 5966940.0],
+		[8086.0, "NaN"]
+	]
+}
+----

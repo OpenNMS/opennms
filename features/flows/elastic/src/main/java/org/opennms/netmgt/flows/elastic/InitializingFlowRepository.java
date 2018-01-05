@@ -29,17 +29,27 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.NF5Packet;
+import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.template.IndexSettings;
+
+import com.google.common.collect.Table;
 
 import io.searchbox.client.JestClient;
 
+/**
+ * This {@link FlowRepository} wrapper will ensure that the repository has
+ * been initialized before any *write* calls are made to the given delegate.
+ */
 public class InitializingFlowRepository implements FlowRepository {
 
     private final ElasticFlowRepositoryInitializer initializer;
@@ -66,8 +76,27 @@ public class InitializingFlowRepository implements FlowRepository {
 
     @Override
     public CompletableFuture<Long> getFlowCount(long start, long end) {
-        ensureInitialized();
         return delegate.getFlowCount(start, end);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, long start, long end) {
+        return delegate.getTopNApplications(N, start, end);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long start, long end, long step) {
+        return delegate.getTopNApplicationsSeries(N, start, end, step);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, long start, long end) {
+        return delegate.getTopNConversations(N, start, end);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long start, long end, long step) {
+        return delegate.getTopNConversationsSeries(N, start, end, step);
     }
 
     private void ensureInitialized() {
@@ -75,4 +104,5 @@ public class InitializingFlowRepository implements FlowRepository {
             initializer.initialize();
         }
     }
+
 }

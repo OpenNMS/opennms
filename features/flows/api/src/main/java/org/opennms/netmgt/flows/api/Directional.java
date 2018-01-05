@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,24 +28,47 @@
 
 package org.opennms.netmgt.flows.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 
-import com.google.common.collect.Table;
+/**
+ * Used to associate some object with a direction.
+ */
+public class Directional<T> {
+    private final T value;
+    private final boolean isSource;
 
-public interface FlowRepository {
+    public Directional(T value, boolean isSource) {
+        this.value = Objects.requireNonNull(value);
+        this.isSource = isSource;
+    }
 
-    void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException;
+    public T getValue() {
+        return value;
+    }
 
-    CompletableFuture<Long> getFlowCount(long start, long end);
+    public boolean isSource() {
+        return isSource;
+    }
 
-    CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, long start, long end);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Directional<?> that = (Directional<?>) o;
+        return isSource == that.isSource &&
+                Objects.equals(value, that.value);
+    }
 
-    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long start, long end, long step);
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, isSource);
+    }
 
-    CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, long start, long end);
-
-    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long start, long end, long step);
-
+    @Override
+    public String toString() {
+        return "Directional{" +
+                "value=" + value +
+                ", isSource=" + isSource +
+                '}';
+    }
 }

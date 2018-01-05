@@ -110,6 +110,9 @@ public class DocumentEnricher {
                 document.setDstLocality(isPrivateAddress(document.getDstAddr()) ? Locality.PRIVATE : Locality.PUBLIC);
                 document.setFlowLocality(Locality.PUBLIC.equals(document.getDstLocality()) || Locality.PUBLIC.equals(document.getSrcLocality()) ? Locality.PUBLIC : Locality.PRIVATE);
 
+                // Conversation tagging
+                document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
+
                 // Apply Application mapping
                 document.setApplication(classificationEngine.classify(createClassificationRequest(document)));
             });

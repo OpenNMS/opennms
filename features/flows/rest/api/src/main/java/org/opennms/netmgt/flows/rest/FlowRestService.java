@@ -28,15 +28,67 @@
 
 package org.opennms.netmgt.flows.rest;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
+import org.opennms.netmgt.flows.rest.model.FlowSeriesResponse;
+import org.opennms.netmgt.flows.rest.model.FlowSummaryResponse;
 
 @Path("flows")
 public interface FlowRestService {
 
+    String DEFAULT_START_MS = "-14400000"; // 4 hours in millis
+    String DEFAULT_END_MS = "0"; // Resolves to "now" when queried
+    String DEFAULT_STEP_MS = "300000"; // 5 minutes
+    String DEFAULT_TOP_N = "10";
+
     @GET
     @Path("count")
-    Long getFlowCount(@QueryParam("start") long start, @QueryParam("end") long end) throws Exception;
+    Long getFlowCount(
+            @DefaultValue(DEFAULT_START_MS) @QueryParam("start") final long start,
+            @DefaultValue(DEFAULT_END_MS) @QueryParam("end") final long end
+    );
+
+    @GET
+    @Path("applications/series")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSeriesResponse getTopNApplicationSeries(
+            @DefaultValue(DEFAULT_START_MS) @QueryParam("start") final long start,
+            @DefaultValue(DEFAULT_END_MS) @QueryParam("end") final long end,
+            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N
+    );
+
+    @GET
+    @Path("applications")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSummaryResponse getTopNApplications(
+            @DefaultValue(DEFAULT_START_MS) @QueryParam("start") final long start,
+            @DefaultValue(DEFAULT_END_MS) @QueryParam("end") final long end,
+            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N
+    );
+
+    @GET
+    @Path("conversations")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSummaryResponse getTopNConversations(
+            @DefaultValue(DEFAULT_START_MS) @QueryParam("start") final long start,
+            @DefaultValue(DEFAULT_END_MS) @QueryParam("end") final long end,
+            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N
+    );
+
+    @GET
+    @Path("conversations/series")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSeriesResponse getTopNConversationsSeries(
+            @DefaultValue(DEFAULT_START_MS) @QueryParam("start") final long start,
+            @DefaultValue(DEFAULT_END_MS) @QueryParam("end") final long end,
+            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N
+    );
 
 }

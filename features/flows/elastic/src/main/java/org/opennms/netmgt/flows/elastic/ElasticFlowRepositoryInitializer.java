@@ -58,7 +58,7 @@ public class ElasticFlowRepositoryInitializer {
     private final JestClient client;
     private final TemplateLoader templateLoader;
 
-    protected ElasticFlowRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
+    public ElasticFlowRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(client);
         this.templateLoader = new CachingTemplateLoader(
                 new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings));

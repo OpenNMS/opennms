@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.elastic;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import com.google.common.collect.Table;
+public class FlowBuilder {
 
-public interface FlowRepository {
+    private final List<FlowDocument> flows = new ArrayList<>();
 
-    void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException;
+    public FlowBuilder withFlow(Date date, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
+        final FlowDocument flow = new FlowDocument();
+        flow.setTimestamp(date.getTime());
+        flow.setSrcAddr(sourceIp);
+        flow.setSrcPort(sourcePort);
+        flow.setDstAddr(destIp);
+        flow.setDstPort(destPort);
+        flow.setBytes(numBytes);
+        flow.setProtocol(6); // TCP
+        flows.add(flow);
+        return this;
+    }
 
-    CompletableFuture<Long> getFlowCount(long start, long end);
-
-    CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, long start, long end);
-
-    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long start, long end, long step);
-
-    CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, long start, long end);
-
-    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long start, long end, long step);
-
+    public List<FlowDocument> build() {
+        return flows;
+    }
 }
