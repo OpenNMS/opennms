@@ -27,6 +27,11 @@
             <comments>The group things escalate to</comments>
             <user>brozow</user>           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>
         </group>
+        <group>
+            <name>SingleUserGroup</name>
+            <comments>A group with a single user</comments>
+            <user>brozow</user>
+        </group>
     </groups>
     <roles>
       <role name="oncall" supervisor="admin" description="oncall role" membership-group="All">           <schedule name="brozow" type="weekly">               <time day="sunday" begins="09:00:00" ends="17:00:00"/>
