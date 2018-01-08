@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config rrdRepository="/home/chandra/dev/opennms/target/opennms-22.0.0-SNAPSHOT/share/rrd/snmp/">
+   <jmx-collection name="kafka-offset">
+      <rrd step="300">
+         <rra>RRA:AVERAGE:0.5:1:2016</rra>
+         <rra>RRA:AVERAGE:0.5:12:1488</rra>
+         <rra>RRA:AVERAGE:0.5:288:366</rra>
+         <rra>RRA:MAX:0.5:288:366</rra>
+         <rra>RRA:MIN:0.5:288:366</rra>
+      </rrd>
+      <mbeans>
+         <mbean name="metrics.OpenNMS.Sink.Heartbeat" objectname="metrics:name=OpenNMS.Sink.Heartbeat">
+            <attrib name="Value" alias="0Value" type="gauge"/>
+         </mbean>
+         <mbean name="metrics.OpenNMS.Sink.Trap" objectname="metrics:name=OpenNMS.Sink.Trap">
+            <attrib name="Value" alias="1Value" type="gauge"/>
+         </mbean>
+      </mbeans>
+   </jmx-collection>
+</jmx-datacollection-config>
+
+

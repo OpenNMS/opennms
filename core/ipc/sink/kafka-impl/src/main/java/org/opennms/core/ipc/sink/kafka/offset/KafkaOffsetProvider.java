@@ -106,7 +106,7 @@ public class KafkaOffsetProvider {
 
     private static final Map<String, SimpleConsumer> consumerMap = new HashMap<String, SimpleConsumer>();
 
-    private Map<String, Map<String, KafkaOffset>> consumerOffsetMap = new ConcurrentHashMap<>();
+    private Map<String, Map<Integer, KafkaOffset>> consumerOffsetMap = new ConcurrentHashMap<>();
 
     private Map<String, Long> consumerLagMap = new ConcurrentHashMap<>();
 
@@ -156,25 +156,28 @@ public class KafkaOffsetProvider {
                                             consumerOffset, lag);
                                     LOGGER.debug("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
                                             partition, consumerOffset, realOffset, lag);
-                                    Map<String, KafkaOffset> map = consumerOffsetMap.get(topic);
 
-                                    if (!consumerLagMap.containsKey(topic + partition)) {
-                                        consumerLagMap.put(topic + partition, lag);
-                                        metrics.register(topic + partition, new Gauge<Long>() {
-                                            @Override
-                                            public Long getValue() {
-                                                return consumerLagMap.get(topic + partition);
-
-                                            }
-                                        });
-                                    }
-                                    consumerLagMap.put(topic + partition, lag);
+                                    Map<Integer, KafkaOffset> map = consumerOffsetMap.get(topic);
 
                                     if (map == null) {
                                         map = new ConcurrentHashMap<>();
                                         consumerOffsetMap.put(topic, map);
+                                        metrics.register(topic, new Gauge<Long>() {
+                                            @Override
+                                            public Long getValue() {
+                                                return consumerLagMap.get(topic);
+
+                                            }
+                                        });
                                     }
-                                    map.put(group + "%" + partition, mon);
+                                    map.put(partition, mon);
+                                    long sumOfLag = 0;
+                                    for (KafkaOffset offset : map.values()) {
+                                        sumOfLag += offset.getLag();
+                                    }
+                                    LOGGER.debug(" Total lag for topic {} is {} ", topic, sumOfLag);
+
+                                    consumerLagMap.put(topic, sumOfLag);
 
                                 } catch (Exception e) {
                                     LOGGER.error("Exception while getting offset", e);
@@ -230,7 +233,7 @@ public class KafkaOffsetProvider {
         return consumer;
     }
 
-    public Map<String, Map<String, KafkaOffset>> getConsumerOffsetMap() {
+    public Map<String, Map<Integer, KafkaOffset>> getConsumerOffsetMap() {
         return consumerOffsetMap;
     }
 
