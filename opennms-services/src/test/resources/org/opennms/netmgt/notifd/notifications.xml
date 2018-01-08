@@ -124,4 +124,12 @@
         <text-message>Notification '%noticeid%'</text-message>
         <subject>notification '%noticeid%'</subject>
     </notification>
+    <notification name="notification concurrency test" status="on">
+        <uei>uei.opennms.org/test/notificationConcurrencyTest</uei>
+        <description>Test for notification concurrency</description>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>LockThread</destinationPath>
+        <text-message>Notification '%noticeid%'</text-message>
+        <subject>notification '%noticeid%'</subject>
+    </notification>
 </notifications>
