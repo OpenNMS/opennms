@@ -457,7 +457,7 @@ public class BridgeSimpleConnection implements BridgeTopology {
             }
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("getForwarders: ->\n-{}", 
+            LOG.debug("getForwarders: ->\n{}", 
               BridgeForwardingTableEntry.printTopology(forwarders));
         }
         return forwarders;
