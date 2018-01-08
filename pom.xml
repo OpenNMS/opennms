@@ -1316,6 +1316,8 @@
     <log4j2Version>2.8.2</log4j2Version>
     <mapstructVersion>1.2.0.CR1</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
+    <minionKarafVersion>4.0.5</minionKarafVersion>
+    <mockitoVersion>1.10.19</mockitoVersion>
     <netty4Version>4.1.9.Final</netty4Version>
     <newtsVersion>1.4.3</newtsVersion>
     <paxExamVersion>4.11.0</paxExamVersion>
@@ -3693,7 +3695,13 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
-        <version>1.10.19</version>
+	<version>${mockitoVersion}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+	<version>${mockitoVersion}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
