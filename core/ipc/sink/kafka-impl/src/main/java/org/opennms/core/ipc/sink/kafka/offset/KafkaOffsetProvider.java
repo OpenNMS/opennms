@@ -110,7 +110,7 @@ public class KafkaOffsetProvider {
 
     private Map<String, Long> consumerLagMap = new ConcurrentHashMap<>();
 
-    private MetricRegistry metrics = new MetricRegistry();
+    private MetricRegistry  kafkaOffsetMetrics = new MetricRegistry();
 
     private JmxReporter reporter = null;
 
@@ -162,7 +162,7 @@ public class KafkaOffsetProvider {
                                     if (map == null) {
                                         map = new ConcurrentHashMap<>();
                                         consumerOffsetMap.put(topic, map);
-                                        metrics.register(topic, new Gauge<Long>() {
+                                        kafkaOffsetMetrics.register(MetricRegistry.name(topic, "lag"), new Gauge<Long>() {
                                             @Override
                                             public Long getValue() {
                                                 return consumerLagMap.get(topic);
@@ -171,13 +171,13 @@ public class KafkaOffsetProvider {
                                         });
                                     }
                                     map.put(partition, mon);
-                                    long sumOfLag = 0;
+                                    long totalLag = 0;
                                     for (KafkaOffset offset : map.values()) {
-                                        sumOfLag += offset.getLag();
+                                        totalLag += offset.getLag();
                                     }
-                                    LOGGER.debug(" Total lag for topic {} is {} ", topic, sumOfLag);
+                                    LOGGER.debug(" Total lag for topic {} is {} ", topic, totalLag);
 
-                                    consumerLagMap.put(topic, sumOfLag);
+                                    consumerLagMap.put(topic, totalLag);
 
                                 } catch (Exception e) {
                                     LOGGER.error("Exception while getting offset", e);
@@ -306,7 +306,7 @@ public class KafkaOffsetProvider {
             }
         }
         consumerRunner = new KafkaOffsetConsumerRunner();
-        reporter = JmxReporter.forRegistry(metrics).build();
+        reporter = JmxReporter.forRegistry(kafkaOffsetMetrics).build();
         reporter.start();
         executor.execute(consumerRunner);
     }
