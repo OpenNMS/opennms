@@ -306,7 +306,8 @@ public class KafkaOffsetProvider {
             }
         }
         consumerRunner = new KafkaOffsetConsumerRunner();
-        reporter = JmxReporter.forRegistry(kafkaOffsetMetrics).build();
+        reporter = JmxReporter.forRegistry(kafkaOffsetMetrics).inDomain("org.opennms.core.ipc.sink.kafka").build();
+
         reporter.start();
         executor.execute(consumerRunner);
     }

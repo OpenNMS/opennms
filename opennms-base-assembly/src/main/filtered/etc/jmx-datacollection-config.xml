@@ -30,10 +30,10 @@
             <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
          </mbean>
 
-         <mbean name="OpenNMS Sink Heartbeat Kafka Lag" objectname="metrics:name=OpenNMS.Sink.Heartbeat.lag">
-            <attrib name="Value" alias="HearbeatLag" type="gauge"/>
+         <mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" objectname="org.opennms.core.ipc.sink.kafka:name=OpenNMS.Sink.Heartbeat.lag">
+            <attrib name="Value" alias="HeartbeatLag" type="gauge"/>
          </mbean>
-         <mbean name="OpenNMS Sink Trap Kafka Lag" objectname="metrics:name=OpenNMS.Sink.Trap.lag">
+         <mbean name="org.opennms.core.ipc.sink.kafka.trap" objectname="org.opennms.core.ipc.sink.kafka:name=OpenNMS.Sink.Trap.lag">
             <attrib name="Value" alias="TrapLag" type="gauge"/>
          </mbean>
 
