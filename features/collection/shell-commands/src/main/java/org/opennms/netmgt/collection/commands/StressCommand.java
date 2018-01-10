@@ -355,11 +355,6 @@ public class StressCommand implements Action {
         }
 
         @Override
-        public void setSavedIfCount(int ifCount) {
-            // pass
-        }
-
-        @Override
         public int getNodeId() {
             return nodeId;
         }
@@ -400,11 +395,6 @@ public class StressCommand implements Action {
             }
 
             return dir;
-        }
-
-        @Override
-        public String getSysObjectId() {
-            return null;
         }
 
         @Override

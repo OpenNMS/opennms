@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
-
-import org.opennms.netmgt.collection.api.CollectionException;
+package org.opennms.netmgt.collection.api;
 
 /**
- * <p>CollectionWarning class.</p>
+ * This exception should be thrown by a {@link ServiceCollector} when
+ * collection fails, but should not trigger a status change (resulting
+ * in an alarm) for target service.
  *
- * @author ranger
- * @version $Id: $
+ * For example, collection may fail if the OpenNMS system is in the process
+ * of shutting down, and required components are not available.
+ *
+ * @author jesse
  */
-public class CollectionWarning extends CollectionException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3828799913299413271L;
+public class CollectionUnknown extends CollectionException {
 
-    /**
-     * <p>Constructor for CollectionWarning.</p>
-     *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     */
-    public CollectionWarning(String message, Throwable cause) {
+    private static final long serialVersionUID = 5630156328994222706L;
+
+    public CollectionUnknown(String message, Throwable cause) {
         super(message, cause);
     }
 

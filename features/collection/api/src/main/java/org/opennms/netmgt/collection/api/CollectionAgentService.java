@@ -26,14 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.api;
 
 import java.net.InetAddress;
-import java.util.Set;
 
-import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
  * <p>CollectionAgentService interface.</p>
@@ -48,93 +45,50 @@ public interface CollectionAgentService {
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getHostAddress();
-    
-    /**
-     * <p>isStoreByForeignSource</p>
-     * 
-     * @return a {@link java.lang.Boolean} object.
-     */
-    public abstract Boolean isStoreByForeignSource();
-    
+    String getHostAddress();
+
     /**
      * <p>getForeignSource</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getForeignSource();
+    String getForeignSource();
 
     /**
      * <p>getForeignId</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getForeignId();
+    String getForeignId();
 
     /**
      * <p>getLocationName</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getLocationName();
+    String getLocationName();
 
-    public abstract ResourcePath getStorageResourcePath();
-
+    ResourcePath getStorageResourcePath();
 
     /**
      * <p>getNodeId</p>
      *
      * @return a int.
      */
-    public abstract int getNodeId();
+    int getNodeId();
 
     /**
      * <p>getNodeLabel</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getNodeLabel();
+    String getNodeLabel();
 
-    /**
-     * <p>getIfIndex</p>
-     *
-     * @return a int.
-     */
-    public abstract int getIfIndex();
-
-    /**
-     * <p>getSysObjectId</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public abstract String getSysObjectId();
-
-    /**
-     * <p>getIsSnmpPrimary</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.PrimaryType} object.
-     */
-    public abstract PrimaryType getIsSnmpPrimary();
-    
-    /**
-     * <p>getAgentConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
-     */
-    public abstract SnmpAgentConfig getAgentConfig();
-
-    /**
-     * <p>getSnmpInterfaceData</p>
-     *
-     * @return a {@link java.util.Set} object.
-     */
-    public abstract Set<SnmpIfData> getSnmpInterfaceData();
-    
     /**
      * <p>getInetAddress</p>
      *
      * @return a {@link java.net.InetAddress} object.
      */
-    public abstract InetAddress getInetAddress();
+    InetAddress getInetAddress();
 
 }

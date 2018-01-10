@@ -21,7 +21,7 @@
   </bean>
 
   <!-- Duplicated from the collectd context -->
-  <bean id="collectionAgentFactory" class="org.opennms.netmgt.collectd.DefaultCollectionAgentFactory" />
+  <bean id="collectionAgentFactory" class="org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory" />
 
   <bean id="daemon" class="org.opennms.netmgt.telemetry.daemon.Telemetryd" />
 

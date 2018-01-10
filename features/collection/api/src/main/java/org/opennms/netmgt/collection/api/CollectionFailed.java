@@ -26,26 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
-
-import org.opennms.netmgt.collection.api.CollectionException;
+package org.opennms.netmgt.collection.api;
 
 /**
- * <p>CollectionTimedOut class.</p>
+ * <p>CollectionFailed class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public class CollectionTimedOut extends CollectionException {
+public class CollectionFailed extends CollectionException {
 
-    private static final long serialVersionUID = 7277882701768744179L;
+    private static final long serialVersionUID = -2747731839450801809L;
 
-    /**
-     * <p>Constructor for CollectionTimedOut.</p>
-     *
-     * @param message a {@link java.lang.String} object.
-     */
-    public CollectionTimedOut(String message) {
-        super(message);
+    public CollectionFailed(CollectionStatus status) {
+        super("Collection failed for an unknown reason (status " + status + ".  Please review previous logs for this thread for details.  You can also open up an enhancement bug report (include your logs) to request that failure messages are logged for this type of error.");
     }
+
 }

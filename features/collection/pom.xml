@@ -14,6 +14,7 @@
     <module>api</module>
     <module>client-rpc</module>
     <module>collectors</module>
+    <module>core</module>
     <module>persistence-rrd</module>
     <module>persistence-tcp</module>
     <module>shell-commands</module>

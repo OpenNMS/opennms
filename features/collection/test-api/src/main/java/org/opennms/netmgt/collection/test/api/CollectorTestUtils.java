@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.test.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,6 +46,8 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.client.rpc.CollectorClientRpcModule;
 import org.opennms.netmgt.collection.client.rpc.LocationAwareCollectorClientImpl;
+import org.opennms.netmgt.collection.core.CollectionSpecification;
+import org.opennms.netmgt.collection.core.DefaultCollectdInstrumentation;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.config.collectd.Filter;
@@ -59,7 +61,7 @@ import org.opennms.test.FileAnticipator;
 
 public abstract class CollectorTestUtils {
 
-    static LocationAwareCollectorClient createLocationAwareCollectorClient() {
+    public static LocationAwareCollectorClient createLocationAwareCollectorClient() {
         final DefaultServiceCollectorRegistry serviceCollectorRegistry = new DefaultServiceCollectorRegistry();
         final CollectorClientRpcModule collectorClientRpcModule = new CollectorClientRpcModule();
         collectorClientRpcModule.setServiceCollectorRegistry(serviceCollectorRegistry);
@@ -72,7 +74,7 @@ public abstract class CollectorTestUtils {
         return locationAwareCollectorClient;
     }
 
-    static CollectionSpecification createCollectionSpec(String svcName, ServiceCollector svcCollector, String collectionName) {
+    public static CollectionSpecification createCollectionSpec(String svcName, ServiceCollector svcCollector, String collectionName) {
         Package pkg = new Package();
         Filter filter = new Filter();
         filter.setContent("IPADDR IPLIKE *.*.*.*");

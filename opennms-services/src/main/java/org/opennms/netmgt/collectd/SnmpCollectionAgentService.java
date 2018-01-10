@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,21 +28,50 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.collection.api.CollectionException;
-import org.opennms.netmgt.collection.api.CollectionStatus;
+import java.util.Set;
+
+import org.opennms.netmgt.collection.api.CollectionAgentService;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
- * <p>CollectionFailed class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class CollectionFailed extends CollectionException {
+public interface SnmpCollectionAgentService extends CollectionAgentService {
 
-    private static final long serialVersionUID = -2747731839450801809L;
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a int.
+     */
+    int getIfIndex();
 
-    public CollectionFailed(CollectionStatus status) {
-        super("Collection failed for an unknown reason (status " + status + ".  Please review previous logs for this thread for details.  You can also open up an enhancement bug report (include your logs) to request that failure messages are logged for this type of error.");
-    }
+    /**
+     * <p>getSysObjectId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getSysObjectId();
+
+    /**
+     * <p>getIsSnmpPrimary</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PrimaryType} object.
+     */
+    PrimaryType getIsSnmpPrimary();
+
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
+    SnmpAgentConfig getAgentConfig();
+
+    /**
+     * <p>getSnmpInterfaceData</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
+    Set<SnmpIfData> getSnmpInterfaceData();
 
 }
