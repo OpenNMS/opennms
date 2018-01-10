@@ -29,8 +29,10 @@
 package org.opennms.features.vaadin.nodemaps.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,6 +80,31 @@ public class NodeMapComponentTest {
         entries.remove(1);
         component.showNodes(entries);
         assertEquals(0, state.nodes.size());
+    }
+
+    @Test
+    public void testStateNotUpdatedWhenNodesAreUnchanged() {
+        final NodeMapState state = new NodeMapState();
+        final NodeMapComponent component = new NodeMapComponent() {
+            private static final long serialVersionUID = 1L;
+            public NodeMapState getState() {
+                return state;
+            }
+        };
+
+        Map<Integer,MapNode> entries = new HashMap<>();
+        entries.put(1, createMapNode(1, "Foo", 3f, 4f));
+        entries.put(2, createMapNode(2, "Bar", 6f, 7f));
+        component.showNodes(entries);
+        List<MapNode> stateNodes = state.nodes;
+        assertEquals(2, state.nodes.size());
+
+        // Now recreate the entries using new objects and update the component
+        entries = new HashMap<>();
+        entries.put(1, createMapNode(1, "Foo", 3f, 4f));
+        entries.put(2, createMapNode(2, "Bar", 6f, 7f));
+        component.showNodes(entries);
+        assertSame("An update with the same entries should not update the underlying array.", stateNodes, state.nodes);
     }
 
     private MapNode createMapNode(int nodeId, String nodeLabel, float longitude, float latitude) {
