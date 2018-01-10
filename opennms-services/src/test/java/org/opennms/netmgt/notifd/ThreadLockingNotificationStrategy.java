@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.notifd;
 
-/**
- * <p>OnmsOutageCalendar class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class OnmsOutageCalendar {
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
+import org.opennms.netmgt.model.notifd.Argument;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
+import org.opennms.test.ThreadLocker;
+
+public class ThreadLockingNotificationStrategy implements NotificationStrategy {
+
+    private static final ThreadLocker threadLocker = new ThreadLocker();
+    private static final AtomicLong notificationsSent = new AtomicLong();
+
+    @Override
+    public int send(List<Argument> arguments) {
+        threadLocker.park();
+        notificationsSent.incrementAndGet();
+        return 0;
+    }
+
+    public static ThreadLocker getThreadLocker() {
+        return threadLocker;
+    }
+
+    public static long getNotificationsSent() {
+        return notificationsSent.get();
+    }
 }

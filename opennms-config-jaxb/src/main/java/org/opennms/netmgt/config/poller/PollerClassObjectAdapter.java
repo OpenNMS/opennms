@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.poller;
+
+import org.opennms.core.xml.JaxbClassObjectAdapter;
+import org.opennms.netmgt.config.pagesequence.PageSequence;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
- * <p>ScheduledOutagesDao interface.</p>
+ * Generic {@link JaxbClassObjectAdapter} that includes types that are known
+ * to be used by poller attributes.
  *
- * @author ranger
- * @version $Id: $
+ * Specifying the types avoid class-path scanning which can be problematic
+ * in OSGi environments.
+ *
+ * @author jwhite
  */
-public interface ScheduledOutagesDao {
+public class PollerClassObjectAdapter extends JaxbClassObjectAdapter {
 
-	/**
-	 * <p>get</p>
-	 *
-	 * @param outageName a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.netmgt.collectd.OnmsOutageCalendar} object.
-	 */
-	public abstract OnmsOutageCalendar get(String outageName);
-
+    public PollerClassObjectAdapter() {
+        super(SnmpAgentConfig.class, PageSequence.class);
+    }
 }

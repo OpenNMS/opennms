@@ -47,7 +47,6 @@ public class CollectionAgentDTOTest extends XmlTestNoCastor<CollectionAgentDTO> 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
         CollectionAgentDTO collectionAgentDTO = new CollectionAgentDTO();
-        collectionAgentDTO.setType(42);
         collectionAgentDTO.setAddress(InetAddressUtils.getInetAddress("192.168.1.1"));
         collectionAgentDTO.setAttribute("k1", "v1");
         collectionAgentDTO.setStoreByForeignSource(true);
@@ -63,7 +62,7 @@ public class CollectionAgentDTOTest extends XmlTestNoCastor<CollectionAgentDTO> 
         return Arrays.asList(new Object[][] {
             {
                 collectionAgentDTO,
-                "<agent type=\"42\" address=\"192.168.1.1\" store-by-fs=\"true\" node-id=\"99\" node-label=\"switch\" foreign-source=\"fs\" foreign-id=\"fid\" location=\"HQ\" storage-resource-path=\"tmp/foo\" sys-object-id=\".1.3.6\" sys-up-time=\"149\">\n" +
+                "<agent address=\"192.168.1.1\" store-by-fs=\"true\" node-id=\"99\" node-label=\"switch\" foreign-source=\"fs\" foreign-id=\"fid\" location=\"HQ\" storage-resource-path=\"tmp/foo\" sys-object-id=\".1.3.6\" sys-up-time=\"149\">\n" +
                 "   <attribute key=\"k1\"><![CDATA[v1]]></attribute>\n" +
                 "</agent>"
             }

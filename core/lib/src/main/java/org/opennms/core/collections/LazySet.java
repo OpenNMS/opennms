@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.core.collections;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -48,7 +48,7 @@ public class LazySet<E> extends JdbcSet<E> {
 	/**
 	 * <p>Constructor for LazySet.</p>
 	 *
-	 * @param loader a {@link org.opennms.core.utils.LazySet.Loader} object.
+	 * @param loader a {@link org.opennms.core.collections.LazySet.Loader} object.
 	 */
 	public LazySet(Loader<E> loader) {
 		m_loader = loader;

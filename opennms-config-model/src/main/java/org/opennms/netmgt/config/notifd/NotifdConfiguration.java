@@ -51,7 +51,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("notifd-configuration.xsd")
 public class NotifdConfiguration implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_PAGES_SENT = "SELECT * FROM notifications";
     private static final String DEFAULT_NEXT_NOTIFID = "SELECT nextval('notifynxtid')";
@@ -62,6 +62,7 @@ public class NotifdConfiguration implements Serializable {
     private static final String DEFAULT_ACKNOWLEDGEID_SQL = "SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?";
     private static final String DEFAULT_ACKNOWLEDGE_UPDATE_SQL = "UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?";
     private static final String DEFAULT_EMAIL_ADDRESS_COMMAND = "javaEmail";
+    private static final Integer DEFAULT_MAX_THREADS = 100;
 
     @XmlAttribute(name = "status", required = true)
     private String m_status;
@@ -98,6 +99,9 @@ public class NotifdConfiguration implements Serializable {
 
     @XmlAttribute(name = "numeric-skip-resolution-prefix")
     private Boolean m_numericSkipResolutionPrefix;
+
+    @XmlAttribute(name = "max-threads")
+    private Integer m_maxThreads;
 
     @XmlElement(name = "auto-acknowledge-alarm")
     private AutoAcknowledgeAlarm m_autoAcknowledgeAlarm;
@@ -209,6 +213,14 @@ public class NotifdConfiguration implements Serializable {
         m_numericSkipResolutionPrefix = prefix;
     }
 
+    public Integer getMaxThreads() {
+        return m_maxThreads != null ? m_maxThreads : DEFAULT_MAX_THREADS;
+    }
+
+    public void setMaxThreads(Integer maxThreads) {
+        m_maxThreads = maxThreads;
+    }
+
     public Optional<AutoAcknowledgeAlarm> getAutoAcknowledgeAlarm() {
         return Optional.ofNullable(m_autoAcknowledgeAlarm);
     }
@@ -275,7 +287,8 @@ public class NotifdConfiguration implements Serializable {
                             m_acknowledgeUpdateSql, 
                             m_matchAll, 
                             m_emailAddressCommand, 
-                            m_numericSkipResolutionPrefix, 
+                            m_numericSkipResolutionPrefix,
+                            m_maxThreads,
                             m_autoAcknowledgeAlarm, 
                             m_autoAcknowledges, 
                             m_queues, 
@@ -302,6 +315,7 @@ public class NotifdConfiguration implements Serializable {
                     && Objects.equals(this.m_matchAll, that.m_matchAll)
                     && Objects.equals(this.m_emailAddressCommand, that.m_emailAddressCommand)
                     && Objects.equals(this.m_numericSkipResolutionPrefix, that.m_numericSkipResolutionPrefix)
+                    && Objects.equals(this.m_maxThreads, that.m_maxThreads)
                     && Objects.equals(this.m_autoAcknowledgeAlarm, that.m_autoAcknowledgeAlarm)
                     && Objects.equals(this.m_autoAcknowledges, that.m_autoAcknowledges)
                     && Objects.equals(this.m_queues, that.m_queues)

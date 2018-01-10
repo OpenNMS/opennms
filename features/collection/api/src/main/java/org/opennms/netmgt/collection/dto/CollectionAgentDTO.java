@@ -51,9 +51,6 @@ import org.opennms.netmgt.snmp.InetAddrUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CollectionAgentDTO implements CollectionAgent {
 
-    @XmlAttribute(name = "type")
-    private int type;
-
     @XmlElement(name = "attribute")
     private List<CollectionAttributeDTO> attributes = new ArrayList<>();
 
@@ -95,7 +92,6 @@ public class CollectionAgentDTO implements CollectionAgent {
         for (String attribute : agent.getAttributeNames()) {
             setAttribute(attribute, agent.getAttribute(attribute));
         }
-        type = agent.getType();
         address = agent.getAddress();
         storeByForeignSource = agent.isStoreByForeignSource();
         nodeId = agent.getNodeId();
@@ -106,15 +102,6 @@ public class CollectionAgentDTO implements CollectionAgent {
         setStorageResourcePath(agent.getStorageResourcePath());
         sysObjectId = agent.getSysObjectId();
         sysUpTime = agent.getSavedSysUpTime();
-    }
-
-    @Override
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     @Override
@@ -254,16 +241,16 @@ public class CollectionAgentDTO implements CollectionAgent {
 
     @Override
     public String toString() {
-        return String.format("CollectionAgentDTO[type=%d, attributes=%s, address=%s, storeByForeignSource=%s, "
+        return String.format("CollectionAgentDTO[attributes=%s, address=%s, storeByForeignSource=%s, "
                 + "nodeId=%d, nodeLabel=%s, foreignSource=%s, foreignId=%s, location=%s, storageDir=%s, "
                 + "sysObjectId=%s, sysUpTime=%d]",
-                type, attributes, address != null ? InetAddrUtils.str(address) : null, storeByForeignSource,
+                attributes, address != null ? InetAddrUtils.str(address) : null, storeByForeignSource,
                 nodeId, nodeLabel, foreignSource, foreignId, location, storageResourcePath, sysObjectId, sysUpTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, attributes, address, storeByForeignSource,
+        return Objects.hash(attributes, address, storeByForeignSource,
                 nodeId, nodeLabel, foreignSource, foreignId, location,
                 storageResourcePath, sysObjectId, sysUpTime);
     }
@@ -278,8 +265,7 @@ public class CollectionAgentDTO implements CollectionAgent {
             return false;
         }
         CollectionAgentDTO other = (CollectionAgentDTO) obj;
-        return Objects.equals(this.type, other.type) &&
-                Objects.equals(this.attributes, other.attributes) &&
+        return Objects.equals(this.attributes, other.attributes) &&
                 Objects.equals(this.address, other.address) &&
                 Objects.equals(this.storeByForeignSource, other.storeByForeignSource) &&
                 Objects.equals(this.nodeId, other.nodeId) &&

@@ -301,16 +301,12 @@ public class Collectd extends AbstractServiceDaemon implements
 
             @Override
             public void run() {
-                Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            scheduleExistingInterfaces();
-                        } finally {
-                            setSchedulingCompleted(true);
-                        }
+                Logging.withPrefix(LOG4J_CATEGORY, () -> {
+                    try {
+                        scheduleExistingInterfaces();
+                    } finally {
+                        setSchedulingCompleted(true);
                     }
-                    
                 });
             }
         };
@@ -318,17 +314,14 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     private void createScheduler() {
-        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
-            @Override
-            public void run() {
-                // Create a scheduler
-                try {
-                    LOG.debug("init: Creating collectd scheduler");
-                    setScheduler(new LegacyScheduler("Collectd", m_collectdConfigFactory.getCollectdConfig().getThreads()));
-                } catch (final RuntimeException e) {
-                    LOG.error("init: Failed to create collectd scheduler", e);
-                    throw e;
-                }
+        Logging.withPrefix(LOG4J_CATEGORY, () -> {
+            // Create a scheduler
+            try {
+                LOG.debug("init: Creating collectd scheduler");
+                setScheduler(new LegacyScheduler("Collectd", m_collectdConfigFactory.getCollectdConfig().getThreads()));
+            } catch (final RuntimeException e) {
+                LOG.error("init: Failed to create collectd scheduler", e);
+                throw e;
             }
         });
     }
@@ -690,23 +683,14 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     @Override
     public void onEvent(final Event event) {
-
-        Logging.withPrefix(getName(), new Runnable() {
-
-            @Override
-            public void run() {
-                m_transTemplate.execute(new TransactionCallbackWithoutResult() {
-
-                    @Override
-                    public void doInTransactionWithoutResult(TransactionStatus status) {
-                        onEventInTransaction(event);
-                    }
-
-                });
-            }
-
+        Logging.withPrefix(getName(), () -> {
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    onEventInTransaction(event);
+                }
+            });
         });
-
     }
 
     private void onEventInTransaction(Event event) {

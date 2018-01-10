@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,49 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.passive;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
+import org.opennms.netmgt.passive.PassiveStatusKey;
 
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import junit.framework.TestCase;
 
-/**
- * <p>ScheduledOutagesDaoImpl class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(ScheduledOutagesDaoImpl.class);
-	
-	/**
-	 * <p>Constructor for ScheduledOutagesDaoImpl.</p>
-	 */
-	public ScheduledOutagesDaoImpl() {
-		loadScheduledOutagesConfigFactory();
-	}
-	
-	private void loadScheduledOutagesConfigFactory() {
-	    // Load up the configuration for the scheduled outages.
-	    try {
-	        PollOutagesConfigFactory.reload();
-	    } catch (IOException ex) {
-	        LOG.error("init: Failed to load poll-outage configuration", ex);
-	        throw new UndeclaredThrowableException(ex);
-	    }
-	}
+public class PassiveStatusTest extends TestCase {
 
-	/** {@inheritDoc} */
-        @Override
-	public OnmsOutageCalendar get(String outageName) {
-		return new OnmsOutageCalendar();
-	}
-	
-	
-	
+    /*
+     * Test method for 'org.opennms.netmgt.config.PassiveStatus.equals(Object)'
+     */
+    public void testEqualsObject() {
+        PassiveStatusKey ps = new PassiveStatusKey("node1", "1.1.1.1", "ICMP");
+        PassiveStatusKey ps2 = new PassiveStatusKey("node1", "2.1.1.1", "HTTP");
+        PassiveStatusKey ps3 = new PassiveStatusKey("node1", "1.1.1.1", "ICMP");
+        
+        assertEquals(ps, ps3);
+        assertFalse(ps.equals(ps2));
+        assertFalse(ps2.equals(ps3));
+
+
+    }
 
 }

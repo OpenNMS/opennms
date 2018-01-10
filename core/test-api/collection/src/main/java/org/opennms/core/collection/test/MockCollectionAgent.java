@@ -85,14 +85,6 @@ public class MockCollectionAgent implements CollectionAgent {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.NetworkInterface#getType()
-     */
-    @Override
-    public int getType() {
-        return 0;
-    }
-
-    /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.NetworkInterface#getAddress()
      */
     @Override
