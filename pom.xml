@@ -1317,6 +1317,7 @@
     <jnaVersion>4.4.0</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
+    <jsonVersion>20171018</jsonVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <karafVersion>4.1.2</karafVersion>
     <felixVersion>3.0.0</felixVersion>
