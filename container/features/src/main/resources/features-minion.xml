@@ -6,7 +6,7 @@
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
     <!-- OpenNMS Features -->
-    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
     <!-- TODO: Maybe this is already defined somewhere else -->
     <feature name="minion-core-api" description="OpenNMS :: Minion :: Core :: API" version="${project.version}">
