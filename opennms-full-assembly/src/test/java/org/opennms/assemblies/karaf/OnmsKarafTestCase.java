@@ -30,23 +30,12 @@ package org.opennms.assemblies.karaf;
 
 import static org.ops4j.pax.exam.CoreOptions.maven;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
 import org.opennms.core.test.karaf.KarafTestCase;
 import org.ops4j.pax.exam.options.MavenUrlReference;
 
 /**
- * @deprecated This test base class doesn't work because our Karaf 
- * container artifact:
- * 
- * mvn:org.opennms.container/org.opennms.container.karaf/${version}/tar.gz
- * 
- * isn't packaged with a top-level product directory like the Apache Karaf
- * tar.gz artifacts are.
+ * This base class uses the OpenNMS-modified Karaf container
+ * from container/karaf instead of a vanilla Karaf container.
  */
 public class OnmsKarafTestCase extends KarafTestCase {
 
@@ -60,29 +49,5 @@ public class OnmsKarafTestCase extends KarafTestCase {
 				.artifactId("org.opennms.container.karaf")
 				.type("tar.gz")
 				.version("22.0.0-SNAPSHOT");
-	}
-
-	/**
-	 * Fetch the OpenNMS system classpath from our modified custom.properties file.
-	 */
-	@Override
-	protected String[] getSystemPackages() {
-		Properties customProperties = new Properties();
-		try {
-			customProperties.load(new FileInputStream("../container/karaf/src/main/filtered-resources/etc/custom.properties"));
-		} catch (IOException e) {
-			System.err.println("Unexpected error while trying to load system properties");
-			e.printStackTrace();
-			return new String[0];
-		}
-
-		String classpath =  customProperties.getProperty("org.osgi.framework.system.packages.extra");
-		System.out.println("System classpath: " + classpath);
-		return Arrays.stream(classpath.split(","))
-			// Remove all of the version constraints
-			.map(s -> {
-				return s.replaceAll(";.*$", "");
-			})
-			.collect(Collectors.toList()).toArray(new String[0]);
 	}
 }
