@@ -1292,6 +1292,7 @@
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
+    <jsonVersion>20171018</jsonVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <karafVersion>2.4.3</karafVersion>
     <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
