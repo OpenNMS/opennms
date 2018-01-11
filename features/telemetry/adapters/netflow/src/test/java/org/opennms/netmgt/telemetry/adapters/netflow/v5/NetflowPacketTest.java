@@ -82,6 +82,7 @@ public class NetflowPacketTest {
             assertThat(flowPacket.getRecord(0).getDstAs(), is(0));
             assertThat(flowPacket.getRecord(0).getSrcMask(), is(0));
             assertThat(flowPacket.getRecord(0).getDstMask(), is(0));
+            assertThat(flowPacket.getRecord(0).isEgress(), is(false));
 
             // Verify Flow Record 1
             assertThat(flowPacket.getRecord(1).getSrcAddr(), is("10.0.2.15"));
@@ -102,6 +103,7 @@ public class NetflowPacketTest {
             assertThat(flowPacket.getRecord(1).getDstAs(), is(0));
             assertThat(flowPacket.getRecord(1).getSrcMask(), is(0));
             assertThat(flowPacket.getRecord(1).getDstMask(), is(0));
+            assertThat(flowPacket.getRecord(1).isEgress(), is(true));
         });
     }
 
@@ -155,6 +157,7 @@ public class NetflowPacketTest {
             assertThat(flowPacket.getRecord(29).getDstAs(), is(0));
             assertThat(flowPacket.getRecord(29).getSrcMask(), is(0));
             assertThat(flowPacket.getRecord(29).getDstMask(), is(0));
+            assertThat(flowPacket.getRecord(29).isEgress(), is(false));
         });
     }
 
@@ -196,6 +199,7 @@ public class NetflowPacketTest {
             assertThat(flowPacket.getRecord(28).getDstAs(), is(64496));
             assertThat(flowPacket.getRecord(28).getSrcMask(), is(19));
             assertThat(flowPacket.getRecord(28).getDstMask(), is(24));
+            assertThat(flowPacket.getRecord(28).isEgress(), is(false));
         });
     }
 
@@ -249,6 +253,7 @@ public class NetflowPacketTest {
         assertThat(netflowPacket.getRecord(0).getDstAs(), is(65536 - 1)); // 2^16-1
         assertThat(netflowPacket.getRecord(0).getSrcMask(), is(255)); // 2^8-1
         assertThat(netflowPacket.getRecord(0).getDstMask(), is(255)); // 2^8-1
+        assertThat(netflowPacket.getRecord(0).isEgress(), is(false));
     }
 
     public void execute(String resource, Consumer<NetflowPacket> consumer) {

@@ -56,8 +56,8 @@ public class Netflow5Converter {
                     final long timestampMs = packet.getUnixSecs() * 1000L + packet.getUnixNSecs() / 1000L / 1000L;
                     document.setTimestamp(timestampMs);
 
-                    // Netflow 5 is only captured on ingress
-                    document.setDirection(Direction.INGRESS.getValue());
+                    // Ingress vs egress
+                    document.setDirection(record.isEgress() ? Direction.EGRESS.getValue() : Direction.INGRESS.getValue());
 
                     // All Netflow 5 flows are IPv4
                     document.setIpProtocolVersion(FlowDocument.IPV4_PROTOCOL_VERSION);

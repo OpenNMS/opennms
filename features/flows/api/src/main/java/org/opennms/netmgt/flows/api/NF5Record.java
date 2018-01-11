@@ -66,4 +66,6 @@ public interface NF5Record {
 
     int getDstMask();
 
+    boolean isEgress();
+
 }
