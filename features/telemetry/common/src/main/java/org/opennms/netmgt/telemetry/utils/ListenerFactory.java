@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.utils;
 
+import java.lang.reflect.Constructor;
+
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.ListenerDefinition;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-
-import java.lang.reflect.Constructor;
 
 public class ListenerFactory {
 
@@ -48,7 +48,7 @@ public class ListenerFactory {
             listenerInstance = ctor.newInstance();
         } catch (Exception e) {
             throw new RuntimeException(String.format("Failed to instantiate listener with class name '%s'.",
-                    listenerDef.getClassName(), e));
+                    listenerDef.getClassName()), e);
         }
 
         // Cast
