@@ -82,15 +82,20 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
         packet.content().getRecords().forEach(record -> {
             final ByteBuffer buffer = serialize(this.protocol, record);
 
-            // Build the message to dispatch via the Sink API
+            // Build the message to dispatch
             final TelemetryMessage msg = new TelemetryMessage(packet.sender(), buffer);
 
             // Dispatch and retain a reference to the packet
             // in the case that we are sharing the underlying byte array
             final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
 
-            // TODO: Handle future result and drop connection if dispatching fails
-            future.join();
+            // Pass exception if dispatching fails
+            future.handle((result, ex) -> {
+                if (ex != null) {
+                    ctx.fireExceptionCaught(ex);
+                }
+                return result;
+            });
         });
     }
 

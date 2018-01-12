@@ -28,127 +28,20 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.netflow9;
 
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
-import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.netmgt.telemetry.listeners.api.Listener;
-import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.flow.PacketHandler;
+import org.opennms.netmgt.telemetry.listeners.flow.AbstractUdpListener;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.DatagramChannel;
-import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.util.concurrent.ScheduledFuture;
+import io.netty.channel.ChannelHandler;
 
-public class UdpListener implements Listener {
-    private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
+public class UdpListener extends AbstractUdpListener {
 
-    public final static long HOUSEKEEPING_INTERVAL = 60000;
-
-    private String name;
-
-    private String bindHost = "::";
-    private int bindPort = 4738;
-
-    private Duration templateTimeout = Duration.ofMinutes(30);
-
-    private AsyncDispatcher<TelemetryMessage> dispatcher;
-
-    private EventLoopGroup bossGroup;
-    private ChannelFuture socketFuture;
-
-    private UdpSession session;
-    private ScheduledFuture<?> housekeepingFuture;
-
-    public void start() throws InterruptedException {
-        this.session = new UdpSession(this.templateTimeout);
-
-        this.bossGroup = new NioEventLoopGroup();
-
-        this.housekeepingFuture = this.bossGroup.scheduleAtFixedRate(this.session::doHousekeeping, HOUSEKEEPING_INTERVAL, HOUSEKEEPING_INTERVAL, TimeUnit.MILLISECONDS);
-
-        this.socketFuture = new Bootstrap()
-                .group(this.bossGroup)
-                .channel(NioDatagramChannel.class)
-                .option(ChannelOption.SO_REUSEADDR, true)
-                .handler(new ChannelInitializer<DatagramChannel>() {
-                    @Override
-                    protected void initChannel(final DatagramChannel ch) throws Exception {
-                        ch.pipeline()
-                                .addLast(new UdpPacketDecoder(UdpListener.this.session))
-                                .addLast(new PacketHandler(Protocol.NETFLOW9, UdpListener.this.dispatcher))
-                                .addLast(new ChannelInboundHandlerAdapter() {
-                                    @Override
-                                    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-                                        LOG.warn("Invalid packet: {}", cause.getMessage());
-                                        LOG.debug("", cause);
-                                        UdpListener.this.session.drop(ch.remoteAddress(), ch.localAddress());
-                                    }
-                                });
-                    }
-                })
-                .bind(this.bindHost, this.bindPort)
-                .sync();
-    }
-
-    public void stop() throws InterruptedException {
-        LOG.info("Closing channel...");
-        socketFuture.channel().close().sync();
-
-        this.housekeepingFuture.cancel(false);
-
-        LOG.info("Closing boss group...");
-        bossGroup.shutdownGracefully().sync();
+    protected UdpListener() {
+        super(Protocol.NETFLOW9);
     }
 
     @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getBindHost() {
-        return this.bindHost;
-    }
-
-    public void setBindHost(final String bindHost) {
-        this.bindHost = bindHost;
-    }
-
-    public int getBindPort() {
-        return this.bindPort;
-    }
-
-    public void setBindPort(final int bindPort) {
-        this.bindPort = bindPort;
-    }
-
-    public Duration getTemplateTimeout() {
-        return this.templateTimeout;
-    }
-
-    public void setTemplateTimeout(final Duration templateTimeout) {
-        this.templateTimeout = templateTimeout;
-    }
-
-    @Override
-    public void setDispatcher(final AsyncDispatcher<TelemetryMessage> dispatcher) {
-        this.dispatcher = dispatcher;
+    protected ChannelHandler buildDecoder(UdpSession session) {
+        return new UdpPacketDecoder(session);
     }
 }
