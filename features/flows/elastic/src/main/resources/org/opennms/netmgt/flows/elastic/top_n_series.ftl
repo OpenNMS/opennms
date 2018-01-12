@@ -27,9 +27,15 @@
       },
       "aggs": {
         "bytes_over_time": {
-          "date_histogram": {
-            "field": "@timestamp",
-            "interval": "${step?long?c}ms"
+          "proportional_sum": {
+            "fields": [
+              "netflow.first_switched",
+              "netflow.last_switched",
+              "netflow.bytes"
+            ],
+            "interval": "${step?long?c}ms",
+            "start": ${start?long?c},
+            "end": ${end?long?c}
           },
           "aggs": {
             "direction": {
