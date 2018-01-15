@@ -52,6 +52,7 @@ public class NetflowRecord implements NF5Record {
     private final short toS;
     private final short srcMask;
     private final short dstMask;
+    private final boolean egress;
 
     public NetflowRecord(ByteBuffer data, int offset) {
         // src_addr: Source IP ADdress
@@ -107,6 +108,9 @@ public class NetflowRecord implements NF5Record {
 
         // Destination address prefix mask bits
         this.dstMask = Utils.getShort(45, 45, data, offset);
+
+        // 2nd bit of padding is set to 0x08 when this is an egress flow
+        this.egress = Utils.getShort(47, 47, data, offset) == 0x08;
     }
 
     @Override
@@ -197,5 +201,10 @@ public class NetflowRecord implements NF5Record {
     @Override
     public int getDstMask() {
         return dstMask;
+    }
+
+    @Override
+    public boolean isEgress() {
+        return egress;
     }
 }
