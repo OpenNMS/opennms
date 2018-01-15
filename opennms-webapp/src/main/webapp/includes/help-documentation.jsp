@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.opennms.core.resource.Vault" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -55,21 +55,21 @@
             <table class="table">
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://docs.opennms.org/opennms/releases/latest/guide-install/guide-install.html"
+                            href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-install/guide-install.html"
                             target="_blank" class="btn btn-default" role="button"
                             style="width: 100%">Installation Guide</a></td>
                     <td style="border-top: none;">OpenNMS can be installed several operating systems and can be deployed for several scenarios with different technologies. Have a look in the Installation Guide to find instructions to deploy and maintain your OpenNMS instance.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://docs.opennms.org/opennms/releases/latest/guide-user/guide-user.html"
+                            href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-user/guide-user.html"
                             target="_blank" class="btn btn-default" role="button"
                             style="width: 100%">Users Guide</a></td>
                     <td style="border-top: none;">OpenNMS users tend to have a broad network monitoring skill set. This User Guide contains an overview of concepts and explains how to use OpenNMS for day-to-day monitoring.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html"
+                            href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-development/guide-development.html"
                             target="_blank" class="btn btn-default" role="button"
                             style="width: 100%">Developers Guide</a></td>
                     <td style="border-top: none;">Developers can extend and improve the OpenNMS platform. The Developers Guide is a good starting point for extending OpenNMS and using the ReST APIs for integration.</td>
