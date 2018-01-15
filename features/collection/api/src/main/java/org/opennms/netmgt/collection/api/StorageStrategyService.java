@@ -42,14 +42,11 @@ public interface StorageStrategyService {
      */
     public SnmpAgentConfig getAgentConfig();
 
-    /*
+    /**
      * This method is used on StorageStrategy implementation when the resource index is associated to a
      * physical interface like frame relay resources. OpenNMS always track changes on ifTable so, make SNMP
      * queries on this table is redundant, and implementations of CollectionAgent know ifTable content always.
      * This method give interface information from a specific ifIndex.
-     */
-    /**
-     * <p>getSnmpInterfaceLabel</p>
      *
      * @param ifIndex a int.
      * @return a {@link java.lang.String} object.

@@ -59,7 +59,7 @@ public class CollectorResponseDTOTest extends XmlTestNoCastor<CollectorResponseD
                 response,
                 "<collector-response>\n" + 
                 "   <collection-set status=\"SUCCEEDED\" timestamp=\"" + StringUtils.iso8601OffsetString(new Date(0), ZoneId.systemDefault(), ChronoUnit.SECONDS) + "\">\n" + 
-                "      <agent type=\"0\" node-id=\"0\" sys-up-time=\"0\"/>\n" + 
+                "      <agent node-id=\"0\" sys-up-time=\"0\"/>\n" + 
                 "   </collection-set>\n" + 
                 "</collector-response>"
             }

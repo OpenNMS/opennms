@@ -140,11 +140,9 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     }
 
     private AttributeGroup getGroup(final AttributeGroupType groupType) {
-        AttributeGroup group = m_groups.get(groupType);
-        if (group == null) {
-            group = new SnmpAttributeGroup(this, groupType);
-            m_groups.put(groupType, group);
-        }
+        AttributeGroup group = m_groups.computeIfAbsent(groupType, g -> {
+            return new SnmpAttributeGroup(this, g);
+        });
         return group;
     }
 

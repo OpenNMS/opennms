@@ -28,18 +28,14 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.core.DefaultCollectionAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.poller.support.InetNetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,13 +47,8 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultCollectionAgent extends InetNetworkInterface implements SnmpCollectionAgent {
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultCollectionAgent.class);
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6694654071513990997L;
+public class DefaultSnmpCollectionAgent extends DefaultCollectionAgent implements SnmpCollectionAgent {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultSnmpCollectionAgent.class);
 
     /**
      * <p>create</p>
@@ -68,96 +59,42 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
      * @return a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public static SnmpCollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
-        return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr));
+        return new DefaultSnmpCollectionAgent(DefaultSnmpCollectionAgentService.create(ifaceId, ifaceDao, transMgr));
     }
 
     public static SnmpCollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr, final String location) {
-        return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr), location);
+        return new DefaultSnmpCollectionAgent(DefaultSnmpCollectionAgentService.create(ifaceId, ifaceDao, transMgr), location);
     }
 
-    // miscellaneous junk?
+    /**
+     * Used to check for new interfaces
+     */
     private int m_ifCount = -1;
-    private long m_sysUpTime = -1;
-
-    // fixed attributes
-    private final int m_nodeId;
-    private final InetAddress m_inetAddress;
 
     // cached attributes
     private int m_ifIndex = -1;
     private PrimaryType m_isSnmpPrimary = null;
     private String m_sysObjId = null;
-    private String m_foreignSource = null;
-    private String m_foreignId = null;
-    private String m_locationName = null;
-    private String m_nodeLabel = null;
-    private ResourcePath m_storageResourcePath = null;
-    
-    private CollectionAgentService m_agentService;
     private Set<SnmpIfData> m_snmpIfData;
 
-    private DefaultCollectionAgent(final CollectionAgentService agentService) {
+    private DefaultSnmpCollectionAgent(final SnmpCollectionAgentService agentService) {
         this(agentService, null);
     }
 
-    private DefaultCollectionAgent(final CollectionAgentService agentService, final String location) {
-        super(null);
-        m_agentService = agentService;
-        m_storageResourcePath = agentService.getStorageResourcePath();
-        m_locationName = location;
+    protected DefaultSnmpCollectionAgent(final SnmpCollectionAgentService agentService, final String location) {
+        super(agentService, location);
 
         if (Boolean.getBoolean("org.opennms.netmgt.collectd.DefaultCollectionAgent.loadSnmpDataOnInit")) {
             getSnmpInterfaceData();
         }
-
-        m_inetAddress = m_agentService.getInetAddress();
-        m_nodeId = m_agentService.getNodeId();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public InetAddress getAddress() {
-        return m_inetAddress;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#isStoreByForeignSource()
-     */
-    /**
-     * <p>isStoreByForeignSource</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
-    @Override
-    public Boolean isStoreByForeignSource() {
-        return ResourceTypeUtils.isStoreByForeignSource();
-    }
-    
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getHostAddress()
-     */
-    /**
-     * <p>getHostAddress</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getHostAddress() {
-        return InetAddressUtils.str(getAddress());
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#setSavedIfCount(int)
-     */
     /** {@inheritDoc} */
     @Override
     public void setSavedIfCount(final int ifCount) {
         m_ifCount = ifCount;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getSavedIfCount()
-     */
     /**
      * <p>getSavedIfCount</p>
      *
@@ -168,91 +105,14 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
         return m_ifCount;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getNodeId()
-     */
-    /**
-     * <p>getNodeId</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getNodeId() {
-        return m_nodeId; 
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getNodeLabel()
-     */
-    /**
-     * <p>getNodeLabel</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getNodeLabel() {
-        if (m_nodeLabel == null) {
-            m_nodeLabel = m_agentService.getNodeLabel();
-        }
-        return m_nodeLabel;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getForeignSource()
-     */
-    /**
-     * <p>getForeignSource</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getForeignSource() {
-        if (m_foreignSource == null) {
-            m_foreignSource = m_agentService.getForeignSource();
-        }
-        return m_foreignSource;
-    }
- 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getForeignId()
-     */
-    /**
-     * <p>getForeignId</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getForeignId() {
-        if (m_foreignId == null) {
-            m_foreignId = m_agentService.getForeignId();
-        }
-        return m_foreignId;
-    }
-
-    @Override
-    public String getLocationName() {
-        if (m_locationName == null) {
-            m_locationName = m_agentService.getLocationName();
-        }
-        return m_locationName;
-    }
-
-    @Override
-    public ResourcePath getStorageResourcePath() {
-        return m_storageResourcePath;
-    }
-
     private int getIfIndex() {
         if (m_ifIndex == -1) {
-            m_ifIndex = m_agentService.getIfIndex();
+            m_ifIndex = ((SnmpCollectionAgentService)m_agentService).getIfIndex();
         }
         return m_ifIndex;
         
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getSysObjectId()
-     */
     /**
      * <p>getSysObjectId</p>
      *
@@ -261,7 +121,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     @Override
     public String getSysObjectId() {
         if (m_sysObjId == null) {
-            m_sysObjId = m_agentService.getSysObjectId();
+            m_sysObjId = ((SnmpCollectionAgentService)m_agentService).getSysObjectId();
             // Intern the string value to save RAM
             m_sysObjId = (m_sysObjId == null ? null : m_sysObjId.intern());
         }
@@ -270,13 +130,14 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
 
     private PrimaryType getIsSnmpPrimary() {
         if (m_isSnmpPrimary == null) {
-            m_isSnmpPrimary = m_agentService.getIsSnmpPrimary();
+            m_isSnmpPrimary = ((SnmpCollectionAgentService)m_agentService).getIsSnmpPrimary();
         }
         return m_isSnmpPrimary;
         
     }
 
-    private void logCompletion() {
+    @Override
+    protected void logCompletion() {
         LOG.debug("initialize: initialization completed: nodeid = {}, address = {}, primaryIfIndex = {}, isSnmpPrimary = {}, sysoid = {}", getNodeId(), getHostAddress(), getIfIndex(), getIsSnmpPrimary(), getSysObjectId());
     }
 
@@ -288,7 +149,8 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
         }
     }
 
-    private void logCollectionParms() {
+    @Override
+    protected void logCollectionParms() {
         LOG.debug("initialize: db retrieval info: nodeid = {}, address = {}, primaryIfIndex = {}, isSnmpPrimary = {}, sysoid = {}", getNodeId(), getHostAddress(), getIfIndex(), getIsSnmpPrimary(), getSysObjectId());
     }
 
@@ -310,9 +172,6 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#validateAgent()
-     */
     /**
      * <p>validateAgent</p>
      * @throws CollectionInitializationException 
@@ -326,19 +185,6 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
         logCompletion();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#toString()
-     */
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String toString() {
-        return "Agent[nodeid = "+getNodeId()+" ipaddr= "+getHostAddress()+']';
-    }
-
     @Override
     public SnmpAgentConfig getAgentConfig() {
         return SnmpPeerFactory.getInstance().getAgentConfig(getAddress(), getLocationName());
@@ -346,15 +192,12 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     
     private Set<SnmpIfData> getSnmpInterfaceData() {
         if (m_snmpIfData == null) {
-            m_snmpIfData = m_agentService.getSnmpInterfaceData();
+            m_snmpIfData = ((SnmpCollectionAgentService)m_agentService).getSnmpInterfaceData();
         }
         return m_snmpIfData;
         
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getSnmpInterfaceInfo(org.opennms.netmgt.collectd.IfResourceType)
-     */
     /** {@inheritDoc} */
     @Override
     public Set<IfInfo> getSnmpInterfaceInfo(final IfResourceType type) {
@@ -376,22 +219,6 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
                 return ifData.getLabelForRRD();
         }
         return null;
-    }
-
-    /**
-     * <p>getSavedSysUpTime</p>
-     *
-     * @return a long.
-     */
-    @Override
-    public long getSavedSysUpTime() {
-        return m_sysUpTime;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setSavedSysUpTime(final long sysUpTime) {
-        m_sysUpTime = sysUpTime;
     }
 
 }

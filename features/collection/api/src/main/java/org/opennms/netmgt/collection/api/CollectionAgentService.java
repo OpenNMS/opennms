@@ -26,49 +26,69 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.api;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
- * <p>ScheduledOutagesDaoImpl class.</p>
+ * <p>CollectionAgentService interface.</p>
  *
- * @author ranger
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(ScheduledOutagesDaoImpl.class);
-	
-	/**
-	 * <p>Constructor for ScheduledOutagesDaoImpl.</p>
-	 */
-	public ScheduledOutagesDaoImpl() {
-		loadScheduledOutagesConfigFactory();
-	}
-	
-	private void loadScheduledOutagesConfigFactory() {
-	    // Load up the configuration for the scheduled outages.
-	    try {
-	        PollOutagesConfigFactory.reload();
-	    } catch (IOException ex) {
-	        LOG.error("init: Failed to load poll-outage configuration", ex);
-	        throw new UndeclaredThrowableException(ex);
-	    }
-	}
+public interface CollectionAgentService {
 
-	/** {@inheritDoc} */
-        @Override
-	public OnmsOutageCalendar get(String outageName) {
-		return new OnmsOutageCalendar();
-	}
-	
-	
-	
+    /**
+     * <p>getHostAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getHostAddress();
+
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getForeignSource();
+
+    /**
+     * <p>getForeignId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getForeignId();
+
+    /**
+     * <p>getLocationName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getLocationName();
+
+    ResourcePath getStorageResourcePath();
+
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
+    int getNodeId();
+
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getNodeLabel();
+
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
+    InetAddress getInetAddress();
 
 }

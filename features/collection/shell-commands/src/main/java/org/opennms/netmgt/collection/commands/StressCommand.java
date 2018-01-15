@@ -325,11 +325,6 @@ public class StressCommand implements Action {
         }
 
         @Override
-        public int getType() {
-            return 0;
-        }
-
-        @Override
         public InetAddress getAddress() {
             return null;
         }
@@ -357,11 +352,6 @@ public class StressCommand implements Action {
         @Override
         public String getHostAddress() {
             return null;
-        }
-
-        @Override
-        public void setSavedIfCount(int ifCount) {
-            // pass
         }
 
         @Override
@@ -405,11 +395,6 @@ public class StressCommand implements Action {
             }
 
             return dir;
-        }
-
-        @Override
-        public String getSysObjectId() {
-            return null;
         }
 
         @Override
