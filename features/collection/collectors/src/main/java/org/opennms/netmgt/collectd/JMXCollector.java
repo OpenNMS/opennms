@@ -30,6 +30,8 @@ package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +39,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.management.ObjectName;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AlphaNumeric;
@@ -48,7 +52,9 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.collection.support.NumericAttributeUtils;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
@@ -240,6 +246,7 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
         // Metrics collected from JMX are currently modeled as node level resources,
         // but live in a sub-directory set to the service name
         final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId(), collDir);
+        final NodeLevelResource parentResource = new NodeLevelResource(agent.getNodeId());
 
         // Used to gather the results
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
@@ -258,34 +265,52 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
             final DefaultJmxCollector jmxCollector = new DefaultJmxCollector();
             jmxCollector.collect(config, mBeanServer, new JmxSampleProcessor() {
                 @Override
-                public void process(JmxAttributeSample attributeSample) {
-                    final String objectName = attributeSample.getMbean().getObjectname();
+                public void process(JmxAttributeSample attributeSample, ObjectName objectName) {
+                    final String mbeanObjectName = attributeSample.getMbean().getObjectname();
                     final String attributeName = attributeSample.getCollectedAttribute().getName();
-
-                    final String dsKey = objectName + "|" + attributeName;
+                    final String dsKey = mbeanObjectName + "|" + attributeName;
                     final JMXDataSource ds = nodeInfo.getDsMap().get(dsKey);
                     if (ds == null) {
                         LOG.info("Could not find datasource for {}. Skipping.", dsKey);
                         return;
                     }
-                    addNumericAttributeToCollectionSet(ds, attributeSample);
+
+                    if (attributeSample.getMbean().getKeyfield() != null) {
+                        final String parsedObjectName = objectName.getCanonicalName();
+                        final Resource resource = new DeferredGenericTypeResource(nodeResource,
+                                attributeSample.getMbean().getKeyfield(), parsedObjectName);
+                        addNumericAttributeToCollectionSet(ds, attributeSample, resource);
+                    } else {
+                        addNumericAttributeToCollectionSet(ds, attributeSample, nodeResource);
+                    }
                 }
 
                 @Override
-                public void process(JmxCompositeSample compositeSample) {
-                    final String objectName = compositeSample.getMbean().getObjectname();
+                public void process(JmxCompositeSample compositeSample, ObjectName objectName) {
+                    final String mbeanObjectName = compositeSample.getMbean().getObjectname();
                     final String attributeName = compositeSample.getCollectedAttribute().getName();
 
-                    final String dsKey = objectName + "|" + attributeName + "|" + compositeSample.getCompositeKey();
+                    final String dsKey = mbeanObjectName + "|" + attributeName + "|"
+                            + compositeSample.getCompositeKey();
                     final JMXDataSource ds = nodeInfo.getDsMap().get(dsKey);
                     if (ds == null) {
                         LOG.info("Could not find datasource for {}. Skipping.", dsKey);
                         return;
                     }
-                    addNumericAttributeToCollectionSet(ds, compositeSample);
+
+                    if (compositeSample.getMbean().getKeyfield() != null) {
+                        final String parsedObjectName = objectName.getCanonicalName();
+                        final Resource resource = new DeferredGenericTypeResource(parentResource,
+                                compositeSample.getMbean().getKeyfield(), parsedObjectName);
+                        addNumericAttributeToCollectionSet(ds, compositeSample, resource);
+                    } else {
+                        addNumericAttributeToCollectionSet(ds, compositeSample, nodeResource);
+                    }
+
                 }
 
-                private void addNumericAttributeToCollectionSet(JMXDataSource ds, AbstractJmxSample sample) {
+                private void addNumericAttributeToCollectionSet(JMXDataSource ds, AbstractJmxSample sample,
+                        Resource resource) {
                     final String groupName = fixGroupName(JmxUtils.getGroupName(stringMap, sample.getMbean()));
 
                     // Only numeric data comes back from JMX in data collection
@@ -300,7 +325,8 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
                     metricId = metricId.concat(ds.getName());
                     metricId = "JMX_".concat(metricId);
 
-                    collectionSetBuilder.withIdentifiedNumericAttribute(nodeResource, groupName, ds.getName(), value, ds.getType(), metricId);
+                    collectionSetBuilder.withIdentifiedNumericAttribute(resource, groupName, ds.getName(), value,
+                            ds.getType(), metricId);
                 }
             });
         } catch (final Exception e) {
