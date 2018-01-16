@@ -26,49 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.filter.api;
 
 import java.util.Objects;
 
-/**
- * Used to associate some object with a direction.
- */
-public class Directional<T> {
-    private final T value;
-    private final boolean isIngress;
+public class SnmpInterfaceIdFilter implements Filter {
 
-    public Directional(T value, boolean isIngress) {
-        this.value = Objects.requireNonNull(value);
-        this.isIngress = isIngress;
+    private final int snmpInterfaceId;
+
+    public SnmpInterfaceIdFilter(int snmpInterfaceId) {
+        this.snmpInterfaceId = snmpInterfaceId;
     }
 
-    public T getValue() {
-        return value;
+    public int getSnmpInterfaceId() {
+        return snmpInterfaceId;
     }
 
-    public boolean isIngress() {
-        return isIngress;
+    @Override
+    public <T> T visit(FilterVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Directional<?> that = (Directional<?>) o;
-        return isIngress == that.isIngress &&
-                Objects.equals(value, that.value);
+        SnmpInterfaceIdFilter that = (SnmpInterfaceIdFilter) o;
+        return snmpInterfaceId == that.snmpInterfaceId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, isIngress);
-    }
-
-    @Override
-    public String toString() {
-        return "Directional{" +
-                "value=" + value +
-                ",ingress=" + isIngress +
-                '}';
+        return Objects.hash(snmpInterfaceId);
     }
 }

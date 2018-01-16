@@ -30,22 +30,46 @@ package org.opennms.netmgt.flows.rest.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
+import org.opennms.netmgt.flows.filter.api.Filter;
+import org.opennms.netmgt.flows.filter.api.NodeCriteria;
+import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
+import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.rest.FlowRestService;
+import org.opennms.netmgt.flows.rest.model.FlowNodeDetails;
+import org.opennms.netmgt.flows.rest.model.FlowNodeSummary;
+import org.opennms.netmgt.flows.rest.model.FlowSeriesColumn;
 import org.opennms.netmgt.flows.rest.model.FlowSeriesResponse;
+import org.opennms.netmgt.flows.rest.model.FlowSnmpInterface;
 import org.opennms.netmgt.flows.rest.model.FlowSummaryResponse;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
@@ -53,98 +77,211 @@ import com.google.common.collect.Table;
 public class FlowRestServiceImpl implements FlowRestService {
 
     private final FlowRepository flowRepository;
+    private final NodeDao nodeDao;
+    private final SnmpInterfaceDao snmpInterfaceDao;
+    private final TransactionOperations transactionOperations;
 
-    public FlowRestServiceImpl(FlowRepository flowRepository) {
+    public FlowRestServiceImpl(FlowRepository flowRepository, NodeDao nodeDao,
+                               SnmpInterfaceDao snmpInterfaceDao, TransactionOperations transactionOperations) {
         this.flowRepository = Objects.requireNonNull(flowRepository);
+        this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
+        this.transactionOperations = Objects.requireNonNull(transactionOperations);
     }
 
     @Override
-    public Long getFlowCount(long start, long end) {
-        final long effectiveEnd = getEffectiveEnd(end);
-        final long effectiveStart = getEffectiveStart(start, effectiveEnd);
-        return waitForFuture(flowRepository.getFlowCount(effectiveStart, effectiveEnd));
+    public Long getFlowCount(UriInfo uriInfo) {
+        return waitForFuture(flowRepository.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
     }
 
     @Override
-    public FlowSeriesResponse getTopNApplicationSeries(long start, long end, long step, int N) {
-        final long effectiveEnd = getEffectiveEnd(end);
-        final long effectiveStart = getEffectiveStart(start, effectiveEnd);
+    public List<FlowNodeSummary> getFlowExporters(int limit, UriInfo uriInfo) {
+        final Set<Integer> nodeIds = waitForFuture(flowRepository.getExportersWithFlows(limit,
+                getFiltersFromQueryString(uriInfo.getQueryParameters())));
+        return transactionOperations.execute(status -> nodeIds.stream()
+                .map(nodeDao::get)
+                .filter(Objects::nonNull)
+                .map(n -> new FlowNodeSummary(n.getId(),
+                        n.getForeignId(), n.getForeignSource(), n.getLabel(),
+                        n.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList())))
+                .sorted(Comparator.comparingInt(FlowNodeSummary::getId))
+                .collect(Collectors.toList()));
+    }
 
-        final CompletableFuture<FlowSeriesResponse> future = flowRepository.getTopNApplicationsSeries(N, effectiveStart,
-                effectiveEnd, step).thenApply(res -> {
-            final FlowSeriesResponse response = new FlowSeriesResponse();
-            response.setStart(effectiveStart);
-            response.setEnd(effectiveEnd);
-            response.setLabels(res.rowKeySet().stream()
-                    .map((d) -> String.format("%s (%s)", d.getValue(), d.isSource() ? "In" : "Out"))
-                    .collect(Collectors.toList()));
-            populateResponseFromTable(res, response);
-            return response;
+    @Override
+    public FlowNodeDetails getFlowExporter(String nodeCriteria, int limit, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        // Always filter for the exporter node
+        filters.add(new ExporterNodeFilter(new NodeCriteria(nodeCriteria)));
+        // Retrieve all the matching SNMP interface ids
+        final Set<Integer> snmpInterfaceIds = waitForFuture(flowRepository.getSnmpInterfaceIdsWithFlows(limit, filters));
+        // Build up the node details
+        final FlowNodeDetails nodeDetails = transactionOperations.execute(status -> {
+            final OnmsNode node = nodeDao.get(nodeCriteria);
+            if (node == null) {
+                // No matching node
+                return null;
+            }
+
+            final List<FlowSnmpInterface> flowSnmpInterfaces = snmpInterfaceIds.stream().map(ifIndex -> {
+                final FlowSnmpInterface flowSnmpInterface = new FlowSnmpInterface(ifIndex);
+                flowSnmpInterface.setIfIndex(ifIndex);
+                final OnmsSnmpInterface snmpInterface = snmpInterfaceDao.findByNodeIdAndIfIndex(node.getId(), ifIndex);
+                if (snmpInterface != null) {
+                    // Set the ifName and ifDescr if we found a match in the database
+                    flowSnmpInterface.setIfName(snmpInterface.getIfName());
+                    flowSnmpInterface.setIfDescr(snmpInterface.getIfDescr());
+                }
+                return flowSnmpInterface;
+            }).collect(Collectors.toList());
+
+            return new FlowNodeDetails(node.getId(), flowSnmpInterfaces);
         });
-        return waitForFuture(future);
+        if (nodeDetails == null) {
+            throw new BadRequestException("No such node " + nodeCriteria);
+        }
+        return nodeDetails;
     }
 
     @Override
-    public FlowSummaryResponse getTopNApplications(long start, long end, int N) {
-        final long effectiveEnd = getEffectiveEnd(end);
-        final long effectiveStart = getEffectiveStart(start, effectiveEnd);
+    public FlowSummaryResponse getTopNApplications(int N, boolean includeOther, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
 
-        final CompletableFuture<FlowSummaryResponse> future = flowRepository.getTopNApplications(N, effectiveStart, effectiveEnd).thenApply(res -> {
-            final FlowSummaryResponse response = new FlowSummaryResponse();
-            response.setStart(effectiveStart);
-            response.setEnd(effectiveEnd);
-            response.setHeaders(Lists.newArrayList("Application", "Bytes In", "Bytes Out"));
-            response.setRows(res.stream()
-                    .map(sum -> Arrays.asList((Object)sum.getEntity(), sum.getBytesIn(), sum.getBytesOut()))
-                    .collect(Collectors.toList()));
-            return response;
-        });
-        return waitForFuture(future);
+        final List<TrafficSummary<String>> summary =
+                waitForFuture(flowRepository.getTopNApplications(N, includeOther, filters));
+
+        final FlowSummaryResponse response = new FlowSummaryResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+        response.setHeaders(Lists.newArrayList("Application", "Bytes In", "Bytes Out"));
+        response.setRows(summary.stream()
+                .map(sum -> Arrays.asList((Object)sum.getEntity(), sum.getBytesIn(), sum.getBytesOut()))
+                .collect(Collectors.toList()));
+        return response;
     }
 
     @Override
-    public FlowSummaryResponse getTopNConversations(long start, long end, int N) {
-        final long effectiveEnd = getEffectiveEnd(end);
-        final long effectiveStart = getEffectiveStart(start, effectiveEnd);
+    public FlowSeriesResponse getTopNApplicationSeries(long step, int N, boolean includeOther, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+        final Table<Directional<String>, Long, Double> series =
+                waitForFuture(flowRepository.getTopNApplicationsSeries(N, step, includeOther, filters));
 
-        final CompletableFuture<FlowSummaryResponse> future = flowRepository.getTopNConversations(N, effectiveStart, effectiveEnd).thenApply(res -> {
-            final FlowSummaryResponse response = new FlowSummaryResponse();
-            response.setStart(effectiveStart);
-            response.setEnd(effectiveEnd);
-            response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source IP", "Source Port", "Dest. IP", "Dest. Port", "Bytes In", "Bytes Out"));
-            response.setRows(res.stream()
-                    .map(sum -> {
-                        final ConversationKey key = sum.getEntity();
-                        return Lists.newArrayList((Object)key.getLocation(), key.getProtocol(),
-                                key.getSrcIp(), key.getSrcPort(), key.getDstIp(), key.getDstPort(),
-                                sum.getBytesIn(), sum.getBytesOut());
-                    })
-                    .collect(Collectors.toList()));
-            return response;
-        });
-        return waitForFuture(future);
+        final FlowSeriesResponse response = new FlowSeriesResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+        response.setColumns(series.rowKeySet().stream()
+                .map(d -> {
+                    final FlowSeriesColumn column = new FlowSeriesColumn();
+                    column.setLabel(d.getValue());
+                    column.setIngress(d.isIngress());
+                    return column;
+                })
+                .collect(Collectors.toList()));
+        populateResponseFromTable(series, response);
+        return response;
     }
 
     @Override
-    public FlowSeriesResponse getTopNConversationsSeries(long start, long end, long step, int N) {
-        final long effectiveEnd = getEffectiveEnd(end);
-        final long effectiveStart = getEffectiveStart(start, effectiveEnd);
+    public FlowSummaryResponse getTopNConversations(int N, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
 
-        final CompletableFuture<FlowSeriesResponse> future = flowRepository.getTopNConversationsSeries(N, effectiveStart, effectiveEnd, step).thenApply(res -> {
-            final FlowSeriesResponse response = new FlowSeriesResponse();
-            response.setStart(effectiveEnd);
-            response.setEnd(effectiveEnd);
-            response.setLabels(res.rowKeySet().stream()
-                    .map((d) -> {
-                        final ConversationKey key = d.getValue();
-                        return String.format("%s:%d <-> %s:%d (%s)", key.getSrcIp(), key.getSrcPort(),
-                                key.getDstIp(), key.getDstPort(), d.isSource() ? "In" : "Out");
-                    })
-                    .collect(Collectors.toList()));
-            populateResponseFromTable(res, response);
-            return response;
-        });
-        return waitForFuture(future);
+        final List<TrafficSummary<ConversationKey>> summary =
+                waitForFuture(flowRepository.getTopNConversations(N, filters));
+
+        final FlowSummaryResponse response = new FlowSummaryResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+        response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source IP", "Source Port",
+                "Dest. IP", "Dest. Port", "Bytes In", "Bytes Out"));
+        response.setRows(summary.stream()
+                .map(sum -> {
+                    final ConversationKey key = sum.getEntity();
+                    return Lists.newArrayList((Object)key.getLocation(), key.getProtocol(),
+                            key.getSrcIp(), key.getSrcPort(), key.getDstIp(), key.getDstPort(),
+                            sum.getBytesIn(), sum.getBytesOut());
+                })
+                .collect(Collectors.toList()));
+        return response;
+    }
+
+    @Override
+    public FlowSeriesResponse getTopNConversationsSeries(long step, int N, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+        final Table<Directional<ConversationKey>, Long, Double> series =
+                waitForFuture(flowRepository.getTopNConversationsSeries(N, step, filters));
+
+        final FlowSeriesResponse response = new FlowSeriesResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+        response.setColumns(series.rowKeySet().stream()
+                .map(d -> {
+                    final ConversationKey key = d.getValue();
+                    final FlowSeriesColumn column = new FlowSeriesColumn();
+                    column.setLabel(String.format("%s:%d <-> %s:%d", key.getSrcIp(), key.getSrcPort(),
+                            key.getDstIp(), key.getDstPort()));
+                    column.setIngress(d.isIngress());
+                    return column;
+                })
+                .collect(Collectors.toList()));
+        populateResponseFromTable(series, response);
+        return response;
+    }
+
+    protected static List<Filter> getFiltersFromQueryString(MultivaluedMap<String, String> queryParams) {
+        final List<Filter> filters = new ArrayList<>();
+
+        final String start = queryParams.getFirst("start");
+        long startMs;
+        if (start != null) {
+            startMs = Long.parseLong(start);
+        } else {
+            // 4 hours ago
+            startMs = -TimeUnit.HOURS.toMillis(4);
+        }
+
+        final String end = queryParams.getFirst("end");
+        long endMs;
+        if (end != null) {
+            endMs = Long.parseLong(end);
+        } else {
+            // Now
+            endMs = System.currentTimeMillis();
+        }
+        endMs = getEffectiveEnd(endMs);
+        startMs = getEffectiveStart(startMs, endMs);
+        filters.add(new TimeRangeFilter(startMs, endMs));
+
+        final String ifIndexStr = queryParams.getFirst("ifIndex");
+        if (ifIndexStr != null) {
+            int ifIndex = Integer.parseInt(ifIndexStr);
+            filters.add(new SnmpInterfaceIdFilter(ifIndex));
+        }
+
+        final String exporterNodeCriteria = queryParams.getFirst("exporterNode");
+        if (exporterNodeCriteria != null) {
+            try {
+                filters.add(new ExporterNodeFilter(new NodeCriteria(exporterNodeCriteria)));
+            } catch (IllegalArgumentException e) {
+                throw new BadRequestException("Invalid node criteria: " + exporterNodeCriteria);
+            }
+        }
+
+        return filters;
+    }
+
+    private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
+        final Optional<TimeRangeFilter> filter = filters.stream()
+                .filter(f -> f instanceof TimeRangeFilter)
+                .map(f -> (TimeRangeFilter)f)
+                .findFirst();
+        if (!filter.isPresent()) {
+            throw new BadRequestException("Time range is required.");
+        }
+        return filter.get();
     }
 
     private static long getEffectiveStart(long start, long effectiveEnd) {
@@ -155,31 +292,9 @@ public class FlowRestServiceImpl implements FlowRestService {
         return effectiveStart;
     }
 
-    public static long getEffectiveEnd(long end) {
+    private static long getEffectiveEnd(long end) {
         // If end is not strictly positive, use the current timestamp
         return end > 0 ? end : new Date().getTime();
-    }
-
-    private static void populateResponseFromTable(Table<?, Long, Double> table, FlowSeriesResponse response) {
-        final List<Long> timestamps = table.columnKeySet().stream()
-                .sorted(Comparator.naturalOrder())
-                .collect(Collectors.toList());
-
-        final List<List<Double>> columns = new LinkedList<>();
-        for (Object rowKey : table.rowKeySet()) {
-            final List<Double> column = new ArrayList<>(timestamps.size());
-            for (Long ts : timestamps) {
-                Double val = table.get(rowKey, ts);
-                if (val == null) {
-                    val = Double.NaN;
-                }
-                column.add(val);
-            }
-            columns.add(column);
-        }
-
-        response.setTimestamps(timestamps);
-        response.setColumns(columns);
     }
 
     private static <T> T waitForFuture(CompletableFuture<T> future) {
@@ -189,4 +304,27 @@ public class FlowRestServiceImpl implements FlowRestService {
             throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
         }
     }
+
+    private static void populateResponseFromTable(Table<?, Long, Double> table, FlowSeriesResponse response) {
+        final List<Long> timestamps = table.columnKeySet().stream()
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
+
+        final List<List<Double>> values = new LinkedList<>();
+        for (Object rowKey : table.rowKeySet()) {
+            final List<Double> column = new ArrayList<>(timestamps.size());
+            for (Long ts : timestamps) {
+                Double val = table.get(rowKey, ts);
+                if (val == null) {
+                    val = Double.NaN;
+                }
+                column.add(val);
+            }
+            values.add(column);
+        }
+
+        response.setTimestamps(timestamps);
+        response.setValues(values);
+    }
+
 }

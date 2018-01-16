@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,68 +28,39 @@
 
 package org.opennms.netmgt.flows.rest.model;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class FlowSeriesResponse {
+public class FlowSeriesColumn {
 
-    @XmlAttribute(name="start")
-    private long start;
+    @XmlAttribute(name="label")
+    private String label;
 
-    @XmlAttribute(name="end")
-    private long end;
+    @XmlAttribute(name="ingress")
+    private boolean ingress;
 
-    @XmlElement(name="columns")
-    private List<FlowSeriesColumn> columns;
+    public FlowSeriesColumn() { }
 
-    @XmlElement(name="timestamps")
-    private List<Long> timestamps;
-
-    @XmlElement(name="values")
-    private List<List<Double>> values;
-
-    public long getStart() {
-        return start;
+    public FlowSeriesColumn(String label, boolean ingress) {
+        this.label = label;
+        this.ingress = ingress;
     }
 
-    public void setStart(long start) {
-        this.start = start;
+    public String getLabel() {
+        return label;
     }
 
-    public long getEnd() {
-        return end;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public void setEnd(long end) {
-        this.end = end;
+    public boolean isIngress() {
+        return ingress;
     }
 
-    public List<FlowSeriesColumn> getColumns() {
-        return columns;
-    }
-
-    public void setColumns(List<FlowSeriesColumn> columns) {
-        this.columns = columns;
-    }
-
-    public List<Long> getTimestamps() {
-        return timestamps;
-    }
-
-    public void setTimestamps(List<Long> timestamps) {
-        this.timestamps = timestamps;
-    }
-
-    public List<List<Double>> getValues() {
-        return values;
-    }
-
-    public void setValues(List<List<Double>> values) {
-        this.values = values;
+    public void setIngress(boolean ingress) {
+        this.ingress = ingress;
     }
 }

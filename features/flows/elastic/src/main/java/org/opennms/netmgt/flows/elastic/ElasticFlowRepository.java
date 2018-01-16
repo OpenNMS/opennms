@@ -32,10 +32,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -48,6 +49,8 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.NF5Packet;
 import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.filter.api.Filter;
+import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.plugins.elasticsearch.rest.BulkResultWrapper;
 import org.opennms.plugins.elasticsearch.rest.FailedItem;
 import org.slf4j.Logger;
@@ -57,8 +60,8 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
 import io.searchbox.action.Action;
@@ -69,12 +72,13 @@ import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
-import io.searchbox.core.search.aggregation.DateHistogramAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
-import io.searchbox.core.search.aggregation.SumAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 
 public class ElasticFlowRepository implements FlowRepository {
+
+    public static final String OTHER_APPLICATION_NAME = "Other";
+    public static final String UNKNOWN_APPLICATION_NAME = "Unknown";
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticFlowRepository.class);
 
@@ -105,12 +109,10 @@ public class ElasticFlowRepository implements FlowRepository {
      */
     private final Timer logPersistingTimer;
 
-
     /**
      * Number of flows in a log
      */
     private final Histogram flowsPerLog;
-
 
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, DocumentEnricher documentEnricher) {
         this.client = Objects.requireNonNull(jestClient);
@@ -170,24 +172,53 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<Long> getFlowCount(long start, long end) {
-        final String query = searchQueryProvider.getFlowCountQuery(start, end);
+    public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
+        final String query = searchQueryProvider.getFlowCountQuery(filters);
         return searchAsync(query).thenApply(SearchResult::getTotal);
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, long start, long end) {
-        return getTotalBytesFromTopN(N, start, end, "netflow.application");
+    public CompletableFuture<Set<Integer>> getExportersWithFlows(int limit, List<Filter> filters) {
+        final String query = searchQueryProvider.getUniqueNodeExporters(limit, filters);
+        return searchAsync(query).thenApply(res -> res.getAggregations().getTermsAggregation("criterias")
+                .getBuckets()
+                .stream()
+                .map(e -> Integer.parseInt(e.getKey()))
+                .collect(Collectors.toSet()));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long start, long end, long step) {
-        return getSeriesFromTopN(N, start, end, step, "netflow.application").thenApply((res) -> mapTable(res, s -> s));
+    public CompletableFuture<Set<Integer>> getSnmpInterfaceIdsWithFlows(int limit, List<Filter> filters) {
+        final String query = searchQueryProvider.getUniqueSnmpInterfaces(limit, filters);
+        return searchAsync(query).thenApply(res -> {
+            final Set<Integer> interfaces = Sets.newHashSet();
+            res.getAggregations().getTermsAggregation("input_snmp").getBuckets()
+                    .stream()
+                    .map(TermsAggregation.Entry::getKey)
+                    .map(Integer::valueOf)
+                    .forEach(interfaces::add);
+            res.getAggregations().getTermsAggregation("output_snmp").getBuckets()
+                    .stream()
+                    .map(TermsAggregation.Entry::getKey)
+                    .map(Integer::valueOf)
+                    .forEach(interfaces::add);
+            return interfaces;
+        });
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, long start, long end) {
-        return getTotalBytesFromTopN(N, start, end, "netflow.convo_key").thenApply((res) -> res.stream()
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters) {
+        return getTotalBytesFromTopN(N, "netflow.application", "netflow.direction", UNKNOWN_APPLICATION_NAME, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+        return getSeriesFromTopN(N, step, "netflow.application", "netflow.direction", UNKNOWN_APPLICATION_NAME, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters) {
+        return getTotalBytesFromTopN(N, "netflow.convo_key", "netflow.initiator", null, false, filters).thenApply((res) -> res.stream()
                 .map(summary -> {
                     // Map the strings to the corresponding conversation keys
                     final TrafficSummary<ConversationKey> out = new TrafficSummary<>(ConversationKeyUtils.fromJsonString(summary.getEntity()));
@@ -199,97 +230,186 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long start, long end, long step) {
-        return getSeriesFromTopN(N, start, end, step, "netflow.convo_key").thenApply((res) -> mapTable(res, ConversationKeyUtils::fromJsonString));
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
+        return getSeriesFromTopN(N, step, "netflow.convo_key", "netflow.initiator", null, false, filters).thenApply((res) -> mapTable(res, ConversationKeyUtils::fromJsonString));
     }
 
-    private CompletableFuture<List<String>> getTopN(int N, long start, long end, String groupByTerm) {
+    private CompletableFuture<List<String>> getTopN(int N, String groupByTerm, String keyForMissingTerm, List<Filter> filters) {
         // Increase the multiplier for increased accuracy
         // See https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html#_size
         final int multiplier = 2;
-        final String query = searchQueryProvider.getTopNQuery(multiplier*N, start, end, groupByTerm);
+        final String query = searchQueryProvider.getTopNQuery(multiplier*N, groupByTerm, keyForMissingTerm, filters);
         return searchAsync(query).thenApply(res -> res.getAggregations().getTermsAggregation("grouped_by").getBuckets().stream()
                 .map(TermsAggregation.Entry::getKey)
                 .limit(N)
                 .collect(Collectors.toList()));
     }
 
-    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFromTopN(List<String> topN, long start, long end, long step, String groupByTerm) {
-        final String query = searchQueryProvider.getSeriesFromTopNQuery(topN, start, end, step, groupByTerm);
-        return searchAsync(query).thenApply(res -> {
-            // Build a table using the search results
-            final ImmutableTable.Builder<Directional<String>, Long, Double> results = ImmutableTable.builder();
-            final MetricAggregation aggs = res.getAggregations();
-            final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
-            for (TermsAggregation.Entry groupedByBucket : groupedBy.getBuckets()) {
-                final DateHistogramAggregation bytesAggs = groupedByBucket.getDateHistogramAggregation("bytes_over_time");
-                for (DateHistogramAggregation.DateHistogram dateHistogram : bytesAggs.getBuckets()) {
-                    final Long time = dateHistogram.getTime();
-                    final TermsAggregation directionAgg = dateHistogram.getTermsAggregation("direction");
+    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFromTopN(List<String> topN, long step, String groupByTerm,
+                                                                                          String directionTerm, String keyForMissingTerm,
+                                                                                          boolean includeOther, List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+        final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, timeRangeFilter.getStart(),
+                timeRangeFilter.getEnd(), groupByTerm, directionTerm, filters);
+        final ImmutableTable.Builder<Directional<String>, Long, Double> builder = ImmutableTable.builder();
+        CompletableFuture<Void> seriesFuture = searchAsync(seriesFromTopNQuery)
+                .thenApply(res -> {
+                    toTable(builder, res);
+                    return null;
+                });
 
-                    // Make sure we have values for both directions, since we may only have one bucket returned here
-                    Double bytesWhenInitiator = Double.NaN;
-                    Double bytesWhenNotInitiator = Double.NaN;
-                    for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
-                        final boolean isInitiator = Boolean.valueOf(directionBucket.getKeyAsString());
-                        final SumAggregation sumAgg = directionBucket.getSumAggregation("total_bytes");
-                        if (isInitiator) {
-                            bytesWhenInitiator = sumAgg.getSum();
-                        } else {
-                            bytesWhenNotInitiator = sumAgg.getSum();
-                        }
+        final boolean missingTermIncludedInTopN = keyForMissingTerm != null && topN.contains(keyForMissingTerm);
+        if (missingTermIncludedInTopN) {
+            // We also need to query for items with a missing term, this will require a separate query
+            final String seriesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step,
+                    timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, directionTerm, keyForMissingTerm, filters);
+            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromMissingQuery), (ignored,res) -> {
+                toTable(builder, res);
+                return null;
+            });
+        }
+
+        if (includeOther) {
+            // We also want to gather series for terms not part of the Top N
+            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step,
+                    timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, directionTerm, missingTermIncludedInTopN, filters);
+            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery), (ignored,res) -> {
+                final MetricAggregation aggs = res.getAggregations();
+                final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+                for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
+                    final boolean isIngress = isIngress(directionBucket);
+                    final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
+                    for (ProportionalSumAggregation.DateHistogram dateHistogram : sumAgg.getBuckets()) {
+                        builder.put(new Directional<>(OTHER_APPLICATION_NAME, isIngress), dateHistogram.getTime(), dateHistogram.getValue());
                     }
-                    results.put(new Directional<>(groupedByBucket.getKey(), true), time, bytesWhenInitiator);
-                    results.put(new Directional<>(groupedByBucket.getKey(), false), time, bytesWhenNotInitiator);
+                }
+                return null;
+            });
+        }
+
+        return seriesFuture.thenApply(ignored -> builder.build());
+    }
+
+    private static void toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResult res) {
+        final MetricAggregation aggs = res.getAggregations();
+        final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
+            final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");
+            for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
+                final boolean isIngress = isIngress(directionBucket);
+                final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
+                for (ProportionalSumAggregation.DateHistogram dateHistogram : sumAgg.getBuckets()) {
+                    builder.put(new Directional<>(bucket.getKey(), isIngress), dateHistogram.getTime(), dateHistogram.getValue());
                 }
             }
-            return results.build();
-        });
+        }
     }
 
-    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFromTopN(int N, long start, long end, long step,
-                                                                                          String groupByTerm) {
-        return getTopN(N, start, end, groupByTerm)
-                .thenCompose((topN) -> getSeriesFromTopN(topN, start, end, step, groupByTerm));
+    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFromTopN(int N, long step, String groupByTerm, String directionTerm,
+                                                                                          String keyForMissingTerm, boolean includeOther,
+                                                                                          List<Filter> filters) {
+        return getTopN(N, groupByTerm, keyForMissingTerm, filters)
+                .thenCompose((topN) -> getSeriesFromTopN(topN, step, groupByTerm, directionTerm, keyForMissingTerm, includeOther, filters));
     }
 
-    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(List<String> topN, long start, long end, String groupByTerm) {
-        final String query = searchQueryProvider.getTotalBytesFromTopNQuery(topN, start, end, groupByTerm);
-        return searchAsync(query).thenApply(res -> {
-            // Build the traffic summaries from the search results
-            final Map<String, TrafficSummary<String>> summaries = new HashMap<>();
-            final MetricAggregation aggs = res.getAggregations();
-            final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
-            for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
-                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(bucket.getKey());
-                final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");
+    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(List<String> topN, String groupByTerm,
+                                                                                  String directionTerm, String keyForMissingTerm,
+                                                                                  boolean includeOther, List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+        final long start = timeRangeFilter.getStart();
+        // Remove 1 from the end to make sure we have a single bucket
+        final long end = Math.max(timeRangeFilter.getStart(), timeRangeFilter.getEnd() - 1);
+        // A single step
+        final long step = timeRangeFilter.getEnd() - timeRangeFilter.getStart();
+        final String bytesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, start, end, groupByTerm, directionTerm, filters);
+        CompletableFuture<Map<String, TrafficSummary<String>>> summariesFuture = searchAsync(bytesFromTopNQuery)
+                .thenApply(ElasticFlowRepository::toTrafficSummaries);
+
+        final boolean missingTermIncludedInTopN = keyForMissingTerm != null && topN.contains(keyForMissingTerm);
+        if (missingTermIncludedInTopN) {
+            // We also need to query for items with a missing term, this will require a separate query
+            final String bytesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step, start, end,
+                    groupByTerm, directionTerm, keyForMissingTerm, filters);
+            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromMissingQuery), (summaries,results) -> {
+                summaries.putAll(toTrafficSummaries(results));
+                return summaries;
+            });
+        }
+
+        if (includeOther) {
+            // We also want to tally up traffic from other elements not part of the Top N
+            final String bytesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step, start, end,
+                    groupByTerm, directionTerm, missingTermIncludedInTopN, filters);
+            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery), (summaries,results) -> {
+                final MetricAggregation aggs = results.getAggregations();
+                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_APPLICATION_NAME);
+                final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
                 for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
-                    final boolean isInitiator = Boolean.valueOf(directionBucket.getKeyAsString());
-                    final SumAggregation sumAgg = directionBucket.getSumAggregation("total_bytes");
-                    final Double sum = sumAgg.getSum();
-                    if (!isInitiator) {
+                    final boolean isIngress = isIngress(directionBucket);
+                    final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
+                    final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
+                    // There should only be a single bucket here
+                    if (sumBuckets.size() != 1) {
+                        throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
+                    }
+                    final Double sum = sumBuckets.iterator().next().getValue();
+                    if (!isIngress) {
                         trafficSummary.setBytesOut(sum.longValue());
                     } else {
                         trafficSummary.setBytesIn(sum.longValue());
                     }
                 }
-                summaries.put(bucket.getKey(), trafficSummary);
-            }
+                summaries.put(OTHER_APPLICATION_NAME, trafficSummary);
+                return summaries;
+            });
+        }
+
+        return summariesFuture.thenApply(summaries -> {
             // Now build a list in the same order as the given top N list
             final List<TrafficSummary<String>> topNRes = new ArrayList<>(topN.size());
             for (String topNEntry : topN) {
-                final TrafficSummary<String> summary = summaries.get(topNEntry);
+                final TrafficSummary<String> summary = summaries.remove(topNEntry);
                 if (summary != null) {
                     topNRes.add(summary);
                 }
             }
+            // Append any remaining elements
+            topNRes.addAll(summaries.values());
             return topNRes;
         });
     }
 
-    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(int N, long start, long end, String groupByTerm) {
-        return getTopN(N, start, end, groupByTerm)
-                .thenCompose((topN) -> getTotalBytesFromTopN(topN, start, end, groupByTerm));
+    private static Map<String, TrafficSummary<String>> toTrafficSummaries(SearchResult res) {
+        // Build the traffic summaries from the search results
+        final Map<String, TrafficSummary<String>> summaries = new LinkedHashMap<>();
+        final MetricAggregation aggs = res.getAggregations();
+        final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
+            final TrafficSummary<String> trafficSummary = new TrafficSummary<>(bucket.getKey());
+            final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");
+            for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
+                final boolean isIngress = isIngress(directionBucket);
+                final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
+                final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
+                // There should only be a single bucket here
+                if (sumBuckets.size() != 1) {
+                    throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
+                }
+                final Double sum = sumBuckets.iterator().next().getValue();
+                if (!isIngress) {
+                    trafficSummary.setBytesOut(sum.longValue());
+                } else {
+                    trafficSummary.setBytesIn(sum.longValue());
+                }
+            }
+            summaries.put(bucket.getKey(), trafficSummary);
+        }
+        return summaries;
+    }
+
+    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(int N, String groupByTerm, String directionTerm, String keyForMissingTerm, boolean includeOther, List<Filter> filters) {
+        return getTopN(N, groupByTerm, keyForMissingTerm, filters)
+                .thenCompose((topN) -> getTotalBytesFromTopN(topN, groupByTerm, directionTerm, keyForMissingTerm, includeOther, filters));
     }
 
     private <T extends JestResult> T executeRequest(Action<T> clientRequest) throws FlowException {
@@ -335,7 +455,7 @@ public class ElasticFlowRepository implements FlowRepository {
         final ImmutableTable.Builder<Directional<T>, Long, Double> target = ImmutableTable.builder();
         final Set<Long> columnKeys = source.columnKeySet();
         for (Directional<String> sourceRowKey : source.rowKeySet()) {
-            final Directional<T> targetRowKey = new Directional<>(fn.apply(sourceRowKey.getValue()), sourceRowKey.isSource());
+            final Directional<T> targetRowKey = new Directional<>(fn.apply(sourceRowKey.getValue()), sourceRowKey.isIngress());
             for (Long columnKey : columnKeys) {
                 Double value = source.get(sourceRowKey, columnKey);
                 if (value == null) {
@@ -345,5 +465,26 @@ public class ElasticFlowRepository implements FlowRepository {
             }
         }
         return target.build();
+    }
+
+    private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
+        final Optional<TimeRangeFilter> filter = filters.stream()
+                .filter(f -> f instanceof TimeRangeFilter)
+                .map(f -> (TimeRangeFilter)f)
+                .findFirst();
+        if (!filter.isPresent()) {
+            throw new IllegalArgumentException("Time range is required.");
+        }
+        return filter.get();
+    }
+
+    private static boolean isIngress(TermsAggregation.Entry entry) {
+        if (Direction.INGRESS.getValue().equalsIgnoreCase(entry.getKeyAsString())) {
+            return true;
+        } else if (Direction.EGRESS.getValue().equalsIgnoreCase(entry.getKeyAsString())) {
+            return false;
+        } else {
+            return Boolean.valueOf(entry.getKeyAsString());
+        }
     }
 }

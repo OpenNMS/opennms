@@ -26,70 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.rest.model;
+package org.opennms.netmgt.flows.filter.api;
 
-import java.util.List;
+import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+public class TimeRangeFilter implements Filter {
+    private final long start;
+    private final long end;
 
-@XmlAccessorType(XmlAccessType.NONE)
-public class FlowSeriesResponse {
-
-    @XmlAttribute(name="start")
-    private long start;
-
-    @XmlAttribute(name="end")
-    private long end;
-
-    @XmlElement(name="columns")
-    private List<FlowSeriesColumn> columns;
-
-    @XmlElement(name="timestamps")
-    private List<Long> timestamps;
-
-    @XmlElement(name="values")
-    private List<List<Double>> values;
+    public TimeRangeFilter(long start, long end) {
+        this.start = start;
+        this.end = end;
+    }
 
     public long getStart() {
         return start;
-    }
-
-    public void setStart(long start) {
-        this.start = start;
     }
 
     public long getEnd() {
         return end;
     }
 
-    public void setEnd(long end) {
-        this.end = end;
+    @Override
+    public <T> T visit(FilterVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
-    public List<FlowSeriesColumn> getColumns() {
-        return columns;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeRangeFilter that = (TimeRangeFilter) o;
+        return start == that.start &&
+                end == that.end;
     }
 
-    public void setColumns(List<FlowSeriesColumn> columns) {
-        this.columns = columns;
-    }
-
-    public List<Long> getTimestamps() {
-        return timestamps;
-    }
-
-    public void setTimestamps(List<Long> timestamps) {
-        this.timestamps = timestamps;
-    }
-
-    public List<List<Double>> getValues() {
-        return values;
-    }
-
-    public void setValues(List<List<Double>> values) {
-        this.values = values;
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, end);
     }
 }

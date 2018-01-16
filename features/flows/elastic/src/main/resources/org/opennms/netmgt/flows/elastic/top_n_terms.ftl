@@ -3,15 +3,7 @@
   "query": {
     "bool": {
       "filter": [
-        {
-          "range": {
-            "@timestamp": {
-              "gte": ${start?long?c},
-              "lte": ${end?long?c},
-              "format": "epoch_millis"
-            }
-          }
-        }
+        <#list filters as filter>${filter}<#sep>,</#list>
       ]
     }
   },
@@ -19,6 +11,7 @@
     "grouped_by": {
       "terms": {
         "field": "${groupByTerm?json_string}",
+        <#if keyForMissingTerm?has_content>"missing": "${keyForMissingTerm?json_string}",</#if>
         "size": ${N?long?c},
         "order": {
           "total_bytes": "desc"

@@ -44,15 +44,14 @@ import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.netmgt.flows.rest.FlowRestService;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.utils.RestClient;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
@@ -84,7 +83,7 @@ public class FlowStackIT {
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
-    private FlowRestService flowRestService;
+    private RestClient restClient;
 
     private final TestEnvironment getTestEnvironment() {
         if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
@@ -123,14 +122,13 @@ public class FlowStackIT {
         final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
 
         // Proxy the REST service
-        flowRestService = JAXRSClientFactory.create(String.format("http://%s:%d/opennms/rest",
-                opennmsWebAddress.getHostString(), opennmsWebAddress.getPort()), FlowRestService.class, "admin", "admin", null);
+        restClient = new RestClient(opennmsWebAddress);
 
         // Configure OpenNMS
         setupOnmsContainer(opennmsSshAddress);
 
         // No flows should be present
-        assertEquals(Long.valueOf(0L), flowRestService.getFlowCount(0, System.currentTimeMillis()));
+        assertEquals(Long.valueOf(0L), restClient.getFlowCount(0L, System.currentTimeMillis()));
 
         // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
@@ -155,7 +153,7 @@ public class FlowStackIT {
 
             // Verify the flow count via the REST API
             with().pollInterval(15, SECONDS).await().atMost(1, MINUTES)
-                    .until(() -> flowRestService.getFlowCount(0, System.currentTimeMillis()), equalTo(2L));
+                    .until(() -> restClient.getFlowCount(0L, System.currentTimeMillis()), equalTo(2L));
         }
     }
 

@@ -38,13 +38,14 @@ public class FlowBuilder {
 
     private NodeDocument exporterNode;
     private Integer snmpInterfaceId;
-    private boolean initiator = false;
     private String application = null;
+    private Direction direction = Direction.INGRESS;
 
-    public FlowBuilder withExporter(String fs, String fid) {
+    public FlowBuilder withExporter(String fs, String fid, int nodeId) {
         exporterNode = new NodeDocument();
         exporterNode.setForeignSource(fs);
         exporterNode.setForeignId(fid);
+        exporterNode.setNodeId(nodeId);
         return this;
     }
 
@@ -53,13 +54,13 @@ public class FlowBuilder {
         return this;
     }
 
-    public FlowBuilder withInitiator(boolean initiator) {
-        this.initiator = initiator;
+    public FlowBuilder withApplication(String application) {
+        this.application = application;
         return this;
     }
 
-    public FlowBuilder withApplication(String application) {
-        this.application = application;
+    public FlowBuilder withDirection(Direction direction) {
+        this.direction = direction;
         return this;
     }
 
@@ -83,8 +84,8 @@ public class FlowBuilder {
         }
         flow.setInputSnmp(snmpInterfaceId);
         flow.setOutputSnmp(snmpInterfaceId);
-        flow.setInitiator(initiator);
         flow.setApplication(application);
+        flow.setDirection(direction.getValue());
         flows.add(flow);
         return this;
     }
