@@ -102,12 +102,12 @@ public class AssetBuilder {
     }
 
     public AssetBuilder withLatitude(String latitude) {
-        assetRecord.getGeolocation().setLatitude(Float.parseFloat(latitude));
+        assetRecord.getGeolocation().setLatitude(Double.parseDouble(latitude));
         return this;
     }
 
     public AssetBuilder withLongitude(String longitude) {
-        assetRecord.getGeolocation().setLongitude(Float.parseFloat(longitude));
+        assetRecord.getGeolocation().setLongitude(Double.parseDouble(longitude));
         return this;
     }
 
