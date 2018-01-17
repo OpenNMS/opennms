@@ -50,17 +50,6 @@ public class Coordinates implements Serializable {
         setCoordinates(longitude, latitude);
     }
 
-    public static Float[] splitCommaSeparatedFloats(final String coordinateString) throws GeocoderException {
-        final String[] separated = coordinateString.split(",");
-        final Float[] coordinates;
-        try {
-            coordinates = new Float[] { Float.valueOf(separated[0]), Float.valueOf(separated[1]) };
-        } catch (final NumberFormatException e) {
-            throw new GeocoderException("Failed to parse coordinate string '" + coordinateString + "'", e);
-        }
-        return coordinates;
-    }
-
     public static Double[] splitCommaSeparatedDoubles(final String coordinateString) throws GeocoderException {
         final String[] separated = coordinateString.split(",");
         final Double[] coordinates;
@@ -92,20 +81,12 @@ public class Coordinates implements Serializable {
         m_latitude = Float.valueOf(latitude).doubleValue();
     }
 
-    public float getLongitude() {
-        return m_longitude == null? 0f : m_longitude.floatValue();
+    public double getLongitude() {
+        return m_longitude == null ? 0.0 : m_longitude.doubleValue();
     }
 
-    public float getLatitude() {
-        return m_latitude == null? 0f : m_latitude.floatValue();
-    }
-
-    public double getLatitudeAsDouble() {
-        return m_latitude;
-    }
-
-    public double getLongitudeAsDouble() {
-        return m_longitude;
+    public double getLatitude() {
+        return m_latitude == null ? 0.0 : m_latitude.doubleValue();
     }
 
     @Override
