@@ -42,6 +42,7 @@ import java.net.InetSocketAddress;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -67,6 +68,7 @@ import io.searchbox.core.SearchResult;
  *
  * @author jwhite
  */
+@Ignore("TODO: FIXME")
 public class AlarmElasticsearch5IT {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmElasticsearch5IT.class);
 
