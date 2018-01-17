@@ -109,7 +109,7 @@ public class AlarmElasticsearch5IT {
         // Now wait until the alarm is available in ES
         with().pollInterval(5, SECONDS).await().atMost(2, MINUTES)
                 .until(() -> getNumberOfAlarmsInEsWithUei(esRestAddr, EventConstants.IMPORT_FAILED_UEI),
-                        equalTo(1));
+                        equalTo(1L));
     }
 
     private static void installElasticsearchFeaturesOnOpenNMS(InetSocketAddress opennmsSshAddr) throws Exception {
@@ -137,7 +137,7 @@ public class AlarmElasticsearch5IT {
         }
     }
 
-    private static int getNumberOfAlarmsInEsWithUei(InetSocketAddress esHttpAddr, String uei) throws IOException {
+    private static Long getNumberOfAlarmsInEsWithUei(InetSocketAddress esHttpAddr, String uei) throws IOException {
         JestClient client = null;
         try {
             JestClientFactory factory = new JestClientFactory();
