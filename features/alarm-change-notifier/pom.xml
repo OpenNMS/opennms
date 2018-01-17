@@ -28,14 +28,12 @@
     <!-- <log4j2Version>2.1</log4j2Version> -->
     <!-- <junitVersion>4.10</junitVersion> -->
 
-    <!-- <pgjdbc-ng-version>0.6.osgi</pgjdbc-ng-version> -->
-    <pgjdbc-ng-version>0.6.osgi-wrap</pgjdbc-ng-version>
+    <pgjdbc-ng-version>0.7.1</pgjdbc-ng-version>
 
     <json-simpleVersion>1.1.1</json-simpleVersion>
   </properties>
 
   <modules>
-    <module>rewrap-jdbc-ng</module>
     <module>pg-jdbc-utils</module>
     <module>main-module</module>
     <module>product-descriptor</module>
