@@ -547,10 +547,8 @@ public class FilterParserTest {
 		gl.setCity("asset-city_"+id);
 		gl.setZip	("asset-zip_"+id);
 		gl.setState("asset-state_"+id); 
-		Float lat= Float.valueOf("0");
-		gl.setLatitude(lat);
-		Float lng= Float.valueOf("0");
-		gl.setLongitude(lng);
+		gl.setLatitude(0d);
+		gl.setLongitude(0d);
 
 		//assetRecord
 		assetRecord.setRegion("asset-region_"+id);

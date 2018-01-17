@@ -46,8 +46,8 @@ public class OnmsGeolocation implements Serializable {
     private String m_state;
     private String m_zip;
     private String m_country;
-    private Float m_longitude;
-    private Float m_latitude;
+    private Double m_longitude;
+    private Double m_latitude;
 
     /**
      *--# address1         : Address of geographical location of asset, line 1.
@@ -168,11 +168,11 @@ public class OnmsGeolocation implements Serializable {
      * @return
      */
     @Column(name="longitude")
-    public Float getLongitude() {
+    public Double getLongitude() {
         return m_longitude;
     }
 
-    public void setLongitude(final Float longitude) {
+    public void setLongitude(final Double longitude) {
         m_longitude = longitude;
     }
 
@@ -181,11 +181,11 @@ public class OnmsGeolocation implements Serializable {
      * @return
      */
     @Column(name="latitude")
-    public Float getLatitude() {
+    public Double getLatitude() {
         return m_latitude;
     }
 
-    public void setLatitude(final Float latitude) {
+    public void setLatitude(final Double latitude) {
         m_latitude = latitude;
     }
 
