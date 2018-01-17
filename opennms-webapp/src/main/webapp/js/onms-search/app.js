@@ -50,10 +50,11 @@ angular.module('onms-search', [
   $scope.getKscReports = function(criteria) {
     return $http({
       url: 'rest/ksc',
-      method: 'GET',
-      params: { label: criteria, comparator: 'contains' }
+      method: 'GET'
     }).then(function(response) {
-      return response.data.kscReport;
+        return response.data.kscReport.filter(function(report) {
+            return report.label.indexOf(criteria) !== -1
+        });
     });
   };
 
