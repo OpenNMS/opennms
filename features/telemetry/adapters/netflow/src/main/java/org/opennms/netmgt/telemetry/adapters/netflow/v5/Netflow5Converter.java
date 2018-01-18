@@ -26,22 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
+package org.opennms.netmgt.telemetry.adapters.netflow.v5;
 
-import org.opennms.netmgt.telemetry.listeners.flow.AbstractUdpListener;
-import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
-import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import io.netty.channel.ChannelHandler;
+import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.adapters.netflow.v5.proto.NetflowPacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class UdpListener extends AbstractUdpListener {
+public class Netflow5Converter implements Converter<NetflowPacket> {
 
-    public UdpListener() {
-        super(Protocol.IPFIX);
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(Netflow5Converter.class);
 
     @Override
-    protected ChannelHandler buildDecoder(UdpSession session) {
-        return new UdpPacketDecoder(session);
+    public List<Flow> convert(final NetflowPacket packet) {
+        if (packet == null) {
+            LOG.debug("Nothing to convert.");
+            return Collections.emptyList();
+        }
+        return packet.getRecords().stream()
+                .map(record -> new Netflow5Flow(packet, record))
+                .collect(Collectors.toList());
     }
 }

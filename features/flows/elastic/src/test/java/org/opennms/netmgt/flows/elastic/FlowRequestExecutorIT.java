@@ -79,7 +79,7 @@ public class FlowRequestExecutorIT {
                     final DocumentEnricher documentEnricher = mock(DocumentEnricher.class);
                     final ElasticFlowRepository repository = new ElasticFlowRepository(new MetricRegistry(),
                             client, IndexStrategy.MONTHLY, documentEnricher);
-                    repository.persistNetFlow5Packets(Lists.newArrayList(FlowDocumentTest.getMockNetflow5Packet()), FlowDocumentTest.getMockFlowSource());
+                    repository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource(), new FlowDocumentTest.NopConverter());
                     Assert.fail("The execution of persistNetFlow5Packets() should not have finished. Failing.");
                 } finally {
                     client.close();

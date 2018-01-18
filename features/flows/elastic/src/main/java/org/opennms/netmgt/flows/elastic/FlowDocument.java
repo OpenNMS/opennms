@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import org.opennms.netmgt.flows.api.Flow;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -35,8 +37,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class FlowDocument {
     private static final int DOCUMENT_VERSION = 1;
-    public static final int IPV4_PROTOCOL_VERSION = 4;
-    public static final int IPV6_PROTOCOL_VERSION = 6;
 
     /**
      * Flow timestamp in milliseconds.
@@ -85,7 +85,7 @@ public class FlowDocument {
      * Direction of the flow (egress vs ingress)
      */
     @SerializedName("netflow.direction")
-    private String direction;
+    private Direction direction;
 
     /**
      * Destination address.
@@ -161,7 +161,7 @@ public class FlowDocument {
      * of the conversation.
      */
     @SerializedName("netflow.initiator")
-    private boolean initiator;
+    private Boolean initiator;
 
     /**
      * SNMP ifIndex
@@ -270,7 +270,7 @@ public class FlowDocument {
      * VLAN Name.
      */
     @SerializedName("netflow.vlan")
-    private String vlan;
+    private Integer vlan;
 
     /**
      * Destination node details.
@@ -346,11 +346,11 @@ public class FlowDocument {
         this.convoKey = convoKey;
     }
 
-    public String getDirection() {
+    public Direction getDirection() {
         return direction;
     }
 
-    public void setDirection(String direction) {
+    public void setDirection(Direction direction) {
         this.direction = direction;
     }
 
@@ -386,11 +386,11 @@ public class FlowDocument {
         this.dstMaskLen = dstMaskLen;
     }
 
-    public int getDstPort() {
+    public Integer getDstPort() {
         return dstPort;
     }
 
-    public void setDstPort(int dstPort) {
+    public void setDstPort(Integer dstPort) {
         this.dstPort = dstPort;
     }
 
@@ -442,11 +442,11 @@ public class FlowDocument {
         this.flowSeqNum = flowSeqNum;
     }
 
-    public boolean isInitiator() {
+    public Boolean isInitiator() {
         return initiator;
     }
 
-    public void setInitiator(boolean initiator) {
+    public void setInitiator(Boolean initiator) {
         this.initiator = initiator;
     }
 
@@ -586,11 +586,11 @@ public class FlowDocument {
         this.netflowVersion = netflowVersion;
     }
 
-    public String getVlan() {
+    public Integer getVlan() {
         return vlan;
     }
 
-    public void setVlan(String vlan) {
+    public void setVlan(Integer vlan) {
         this.vlan = vlan;
     }
 
@@ -618,4 +618,38 @@ public class FlowDocument {
         this.nodeSrc = nodeSrc;
     }
 
+    public static FlowDocument from(final Flow flow) {
+        final FlowDocument doc = new FlowDocument();
+        doc.setTimestamp(flow.getTimestamp());
+        doc.setBytes(flow.getBytes());
+        doc.setDirection(Direction.from(flow.getDirection()));
+        doc.setDstAddr(flow.getDstAddr());
+        doc.setDstAs(flow.getDstAs());
+        doc.setDstMaskLen(flow.getDstMaskLen());
+        doc.setDstPort(flow.getDstPort());
+        doc.setEngineId(flow.getEngineId());
+        doc.setEngineType(flow.getEngineType());
+        doc.setFirstSwitched(flow.getFirstSwitched());
+        doc.setFlowRecords(flow.getFlowRecords());
+        doc.setFlowSeqNum(flow.getFlowSeqNum());
+        doc.setInputSnmp(flow.getInputSnmp());
+        doc.setIpProtocolVersion(flow.getIpProtocolVersion());
+        doc.setLastSwitched(flow.getLastSwitched());
+        doc.setNextHop(flow.getNextHop());
+        doc.setOutputSnmp(flow.getOutputSnmp());
+        doc.setPackets(flow.getPackets());
+        doc.setProtocol(flow.getProtocol());
+        doc.setSamplingAlgorithm(flow.getSamplingAlgorithm());
+        doc.setSamplingInterval(flow.getSamplingInterval());
+        doc.setSrcAddr(flow.getSrcAddr());
+        doc.setSrcAs(flow.getSrcAs());
+        doc.setSrcMaskLen(flow.getSrcMaskLen());
+        doc.setSrcPort(flow.getSrcPort());
+        doc.setTcpFlags(flow.getTcpFlags());
+        doc.setTos(flow.getTos());
+        doc.setNetflowVersion(NetflowVersion.from(flow.getNetflowVersion()));
+        doc.setVlan(flow.getVlan());
+
+        return doc;
+    }
 }

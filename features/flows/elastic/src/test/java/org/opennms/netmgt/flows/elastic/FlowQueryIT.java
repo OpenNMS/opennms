@@ -165,7 +165,7 @@ public class FlowQueryIT {
                 .withFlow(new Date(10), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
                 .withFlow(new Date(10), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
                 .build();
-        flowRepository.enrichAndPersistFlows(flows, new FlowSource("test", "127.0.0.1"));
+        flowRepository.enrichAndPersistFlows(flows.stream(), new FlowSource("test", "127.0.0.1"));
 
         // Retrieve all the flows we just persisted
         await().atMost(30, TimeUnit.SECONDS).until(() -> flowRepository.getFlowCount(0, System.currentTimeMillis()).get(), equalTo(Long.valueOf(flows.size())));

@@ -25,7 +25,7 @@
          <parameter key="port" value="8877"/>
      </listener>
 
-     <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter">
+     <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter">
      </adapter>
   </protocol>
 

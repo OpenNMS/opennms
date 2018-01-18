@@ -40,13 +40,14 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.api.NF5Packet;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.plugins.elasticsearch.rest.BulkResultWrapper;
 import org.opennms.plugins.elasticsearch.rest.FailedItem;
@@ -57,7 +58,6 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 
@@ -85,8 +85,6 @@ public class ElasticFlowRepository implements FlowRepository {
     private final IndexStrategy indexStrategy;
 
     private final DocumentEnricher documentEnricher;
-
-    private final Netflow5Converter converter = new Netflow5Converter();
 
     private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
 
@@ -124,16 +122,19 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException {
-        LOG.debug("Converting {} Netflow 5 packets from {} to flow documents.", packets.size(), source);
-        final List<FlowDocument> flowDocuments = packets.stream()
+    public <P> void persist(final Collection<? extends P> packets, final FlowSource source, final Converter<P> converter) throws FlowException {
+        LOG.debug("Converting {} flow packets from {} to flow documents.", packets.size(), source);
+        final Stream<FlowDocument> documents = packets.stream()
                 .map(converter::convert)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        enrichAndPersistFlows(flowDocuments, source);
+                .map(FlowDocument::from);
+        enrichAndPersistFlows(documents, source);
     }
 
-    public void enrichAndPersistFlows(List<FlowDocument> flowDocuments, FlowSource source) throws FlowException {
+    public void enrichAndPersistFlows(final Stream<FlowDocument> documents, FlowSource source) throws FlowException {
+        // TODO: Use streams here?
+        List<FlowDocument> flowDocuments = documents.collect(Collectors.toList());
+
         // Track the number of flows per call
         flowsPerLog.update(flowDocuments.size());
 

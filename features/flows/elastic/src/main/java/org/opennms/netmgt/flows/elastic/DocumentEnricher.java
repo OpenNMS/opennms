@@ -102,19 +102,35 @@ public class DocumentEnricher {
 
                 // Node data
                 getNodeInfoFromCache(source.getLocation(), source.getSourceAddress()).ifPresent(document::setNodeExporter);
-                getNodeInfoFromCache(source.getLocation(), document.getDstAddr()).ifPresent(document::setNodeDst);
-                getNodeInfoFromCache(source.getLocation(), document.getSrcAddr()).ifPresent(document::setNodeSrc);
+                if (document.getDstAddr() != null) {
+                    getNodeInfoFromCache(source.getLocation(), document.getDstAddr()).ifPresent(document::setNodeDst);
+                }
+                if (document.getSrcAddr() != null) {
+                    getNodeInfoFromCache(source.getLocation(), document.getSrcAddr()).ifPresent(document::setNodeSrc);
+                }
 
                 // Locality
-                document.setSrcLocality(isPrivateAddress(document.getSrcAddr()) ? Locality.PRIVATE : Locality.PUBLIC);
-                document.setDstLocality(isPrivateAddress(document.getDstAddr()) ? Locality.PRIVATE : Locality.PUBLIC);
-                document.setFlowLocality(Locality.PUBLIC.equals(document.getDstLocality()) || Locality.PUBLIC.equals(document.getSrcLocality()) ? Locality.PUBLIC : Locality.PRIVATE);
+                if (document.getSrcAddr() != null) {
+                    document.setSrcLocality(isPrivateAddress(document.getSrcAddr()) ? Locality.PRIVATE : Locality.PUBLIC);
+                }
+                if (document.getDstAddr() != null) {
+                    document.setDstLocality(isPrivateAddress(document.getDstAddr()) ? Locality.PRIVATE : Locality.PUBLIC);
+                }
+
+                if (Locality.PUBLIC.equals(document.getDstLocality()) || Locality.PUBLIC.equals(document.getSrcLocality())) {
+                    document.setFlowLocality(Locality.PUBLIC);
+                } else if (Locality.PRIVATE.equals(document.getDstLocality()) || Locality.PRIVATE.equals(document.getSrcLocality())) {
+                    document.setFlowLocality(Locality.PRIVATE);
+                }
 
                 // Conversation tagging
                 document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
 
                 // Apply Application mapping
-                document.setApplication(classificationEngine.classify(createClassificationRequest(document)));
+                final ClassificationRequest classificationRequest = createClassificationRequest(document);
+                if (classificationRequest != null) {
+                    document.setApplication(classificationEngine.classify(classificationRequest));
+                }
             });
             return null;
         });
@@ -175,8 +191,8 @@ public class DocumentEnricher {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             final NodeInfoKey that = (NodeInfoKey) o;
-            return Objects.equals(location, that.location)
-                    && Objects.equals(ipAddress, that.ipAddress);
+            return Objects.equals(location, that.location) &&
+                   Objects.equals(ipAddress, that.ipAddress);
         }
 
         @Override
@@ -187,19 +203,34 @@ public class DocumentEnricher {
 
     // Determine if the provided flow is the initiator.
     // Yes, this may not be 100% accurate, but is a very easy way of defining the direction of the flow in most cases.
-    protected static boolean isInitiator(FlowDocument document) {
-        if (document.getSrcPort()  > document.getDstPort()) {
-            return true;
-        } else if (document.getSrcPort() == document.getDstPort()) {
-            // Tie breaker
-            final BigInteger sourceAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getSrcAddr()));
-            final BigInteger destAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getDstAddr()));
-            return sourceAddressAsInt.compareTo(destAddressAsInt) > 0;
+    protected static Boolean isInitiator(FlowDocument document) {
+        if (document.getSrcPort() != null && document.getDstPort() != null) {
+            if (document.getSrcPort() > document.getDstPort()) {
+                return true;
+            } else if (document.getSrcPort() < document.getDstPort()) {
+                return false;
+            }
         }
-        return false;
+
+        // Tie breaker
+        if (document.getSrcAddr() != null && document.getDstAddr() != null) {
+            final BigInteger srcAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getSrcAddr()));
+            final BigInteger dstAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getDstAddr()));
+            if (srcAddressAsInt.compareTo(dstAddressAsInt) > 0) {
+                return true;
+            } else if (srcAddressAsInt.compareTo(dstAddressAsInt) < 0) {
+                return false;
+            }
+        }
+
+        return null;
     }
 
     protected static ClassificationRequest createClassificationRequest(FlowDocument document) {
+        if (document.isInitiator() == null) {
+            return null;
+        }
+
         final ClassificationRequest request = new ClassificationRequest();
         request.setProtocol(Protocols.getProtocol(document.getProtocol()));
         request.setLocation(document.getLocation());

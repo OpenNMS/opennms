@@ -55,6 +55,10 @@
       <artifactId>metrics-core</artifactId>
       <version>${dropwizardMetricsVersion}</version>
     </dependency>
+     <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>bson</artifactId>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

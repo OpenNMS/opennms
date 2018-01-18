@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
+import java.util.Collections;
 import java.util.List;
 
-public interface NF5Packet {
+import org.bson.BsonDocument;
+import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.netmgt.flows.api.Flow;
 
-    int getSize();
+public class IpfixConverter implements Converter<BsonDocument> {
 
-    int getVersion();
-
-    int getCount();
-
-    long getSysUptime();
-
-    long getUnixSecs();
-
-    long getUnixNSecs();
-
-    long getFlowSequence();
-
-    int getEngineType();
-
-    int getEngineId();
-
-    int getSamplingInterval();
-
-    List<? extends NF5Record> getRecords();
-
+    @Override
+    public List<Flow> convert(final BsonDocument packet) {
+        return Collections.singletonList(new IpfixFlow(packet));
+    }
 }

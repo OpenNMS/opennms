@@ -26,22 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
+package org.opennms.netmgt.telemetry.adapters.netflow.v9;
 
-import org.opennms.netmgt.telemetry.listeners.flow.AbstractUdpListener;
-import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
-import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
+import java.util.Map;
+import java.util.Objects;
 
-import io.netty.channel.ChannelHandler;
+import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.telemetry.adapters.api.Adapter;
+import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
 
-public class UdpListener extends AbstractUdpListener {
+import com.codahale.metrics.MetricRegistry;
 
-    public UdpListener() {
-        super(Protocol.IPFIX);
+public class Netflow9AdapterFactory implements AdapterFactory {
+    private MetricRegistry metricRegistry;
+    private FlowRepository flowRepository;
+
+    @Override
+    public Class<? extends Adapter> getAdapterClass() {
+        return Netflow9Adapter.class;
     }
 
     @Override
-    protected ChannelHandler buildDecoder(UdpSession session) {
-        return new UdpPacketDecoder(session);
+    public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
+        Objects.requireNonNull(metricRegistry);
+        Objects.requireNonNull(flowRepository);
+
+        return new Netflow9Adapter(metricRegistry, flowRepository);
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+    }
+
+    public void setFlowRepository(FlowRepository flowRepository) {
+        this.flowRepository = flowRepository;
     }
 }

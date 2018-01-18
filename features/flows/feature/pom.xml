@@ -56,6 +56,10 @@
       <version>${guavaVersion}</version>
     </dependency>
     <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>bson</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.jest</groupId>
       <artifactId>opennms-jest</artifactId>
       <version>${project.version}</version>

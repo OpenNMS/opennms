@@ -35,22 +35,21 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.opennms.core.test.xml.JsonTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.api.NF5Packet;
-import org.opennms.netmgt.flows.api.NF5Record;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -83,32 +82,33 @@ public class FlowDocumentTest {
     }
 
     @Test
-    public void verifyEffectiveNetflow5Document() throws IOException {
-        // Convert
-        final Netflow5Converter converter = new Netflow5Converter();
-        final List<FlowDocument> documents = converter.convert(getMockNetflow5Packet());
+    public void verifyEffectiveDocument() throws IOException {
+        final FlowDocument document = FlowDocument.from(getMockFlow());
+        document.setSrcAddr("192.168.1.2");
+        document.setDstAddr("192.168.2.2");
+        final List<FlowDocument> documents = Collections.singletonList(document);
 
         // Enrich
         enricher.enrich(documents, getMockFlowSource());
 
         // Serialize
         assertThat(documents, hasSize(1));
-        final FlowDocument document = documents.get(0);
-        String actualJson = gson.toJson(document);
+        final String actualJson = gson.toJson(document);
 
         // Verify
         final String expectedJson = Resources.toString(Resources.getResource("flow-document-netflow5.json"), StandardCharsets.UTF_8);
         JsonTest.assertJsonEquals(expectedJson, actualJson);
     }
 
-    public static NF5Packet getMockNetflow5Packet() {
-        final NF5Packet packet = mock(NF5Packet.class);
-        final NF5Record record = mock(NF5Record.class);
-        when(record.getSrcAddr()).thenReturn("192.168.1.2");
-        when(record.getDstAddr()).thenReturn("192.168.2.2");
-        final List<? extends NF5Record> records = Lists.newArrayList(record);
-        Mockito.doReturn(records).when(packet).getRecords();
-        return packet;
+    public static Flow getMockFlow() {
+        final Flow flow = mock(Flow.class);
+        when(flow.getNetflowVersion()).thenReturn(Flow.NetflowVersion.V5);
+        when(flow.getDirection()).thenReturn(Flow.Direction.INGRESS);
+        when(flow.getIpProtocolVersion()).thenReturn(4);
+        when(flow.getSrcAddr()).thenReturn("192.168.1.2");
+        when(flow.getDstAddr()).thenReturn("192.168.2.2");
+        when(flow.getVlan()).thenReturn(null);
+        return flow;
     }
 
     public static FlowSource getMockFlowSource() {
@@ -130,4 +130,11 @@ public class FlowDocumentTest {
         return node;
     }
 
+
+    public static class NopConverter implements Converter<Flow> {
+        @Override
+        public List<Flow> convert(final Flow packet) {
+            return Collections.singletonList(packet);
+        }
+    }
 }

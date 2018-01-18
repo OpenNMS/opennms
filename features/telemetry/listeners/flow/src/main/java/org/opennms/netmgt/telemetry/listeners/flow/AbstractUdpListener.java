@@ -60,8 +60,8 @@ public abstract class AbstractUdpListener implements Listener {
 
     private String name;
 
-    private String bindHost = "::";
-    private int bindPort = 4738;
+    private String host = "::";
+    private int port = 4738;
 
     private Duration templateTimeout = Duration.ofMinutes(30);
 
@@ -106,7 +106,7 @@ public abstract class AbstractUdpListener implements Listener {
                                 });
                     }
                 })
-                .bind(this.bindHost, this.bindPort)
+                .bind(this.host, this.port)
                 .sync();
     }
 
@@ -130,20 +130,20 @@ public abstract class AbstractUdpListener implements Listener {
         this.name = name;
     }
 
-    public String getBindHost() {
-        return this.bindHost;
+    public String getHost() {
+        return this.host;
     }
 
-    public void setBindHost(final String bindHost) {
-        this.bindHost = bindHost;
+    public void setHost(final String host) {
+        this.host = host;
     }
 
-    public int getBindPort() {
-        return this.bindPort;
+    public int getPort() {
+        return this.port;
     }
 
-    public void setBindPort(final int bindPort) {
-        this.bindPort = bindPort;
+    public void setPort(final int port) {
+        this.port = port;
     }
 
     public Duration getTemplateTimeout() {

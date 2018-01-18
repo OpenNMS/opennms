@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.v5;
+package org.opennms.netmgt.telemetry.adapters.netflow.v5.proto;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;

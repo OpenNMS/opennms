@@ -26,22 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
+package org.opennms.netmgt.telemetry.adapters.netflow.v9;
 
-import org.opennms.netmgt.telemetry.listeners.flow.AbstractUdpListener;
-import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
-import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
+import java.util.Collections;
+import java.util.List;
 
-import io.netty.channel.ChannelHandler;
+import org.bson.BsonDocument;
+import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.netmgt.flows.api.Flow;
 
-public class UdpListener extends AbstractUdpListener {
-
-    public UdpListener() {
-        super(Protocol.IPFIX);
-    }
+public class Netflow9Converter implements Converter<BsonDocument> {
 
     @Override
-    protected ChannelHandler buildDecoder(UdpSession session) {
-        return new UdpPacketDecoder(session);
+    public List<Flow> convert(final BsonDocument packet) {
+        return Collections.singletonList(new Netflow9Flow(packet));
     }
 }

@@ -28,23 +28,27 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import java.util.Objects;
+import org.opennms.netmgt.flows.api.Flow;
 
 import com.google.gson.annotations.SerializedName;
 
 public enum Direction {
     @SerializedName("ingress")
-    INGRESS("ingress"),
+    INGRESS,
     @SerializedName("egress")
-    EGRESS("egress");
+    EGRESS;
 
-    private final String value;
+    public static Direction from(Flow.Direction direction) {
+        if (direction == null) return null;
 
-    private Direction(String value) {
-        this.value = Objects.requireNonNull(value);
+        switch (direction) {
+            case INGRESS:
+                return INGRESS;
+            case EGRESS:
+                return EGRESS;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
-    public String getValue() {
-        return value;
-    }
 }

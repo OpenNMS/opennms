@@ -36,7 +36,7 @@ import com.google.common.collect.Table;
 
 public interface FlowRepository {
 
-    void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException;
+    <P> void persist(Collection<? extends P> packets, FlowSource source, Converter<P> converter) throws FlowException;
 
     CompletableFuture<Long> getFlowCount(long start, long end);
 

@@ -45,6 +45,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
 public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
@@ -60,14 +61,19 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
     */
 
     public final Header header;
-    public final List<FlowSet<?>> sets;
+
+    public final List<FlowSet<TemplateRecord>> templateSets;
+    public final List<FlowSet<OptionsTemplateRecord>> optionTemplateSets;
+    public final List<FlowSet<DataRecord>> dataSets;
 
     public Packet(final TemplateManager templateManager,
                   final Header header,
                   final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
-        final List<FlowSet<?>> sets = new LinkedList<>();
+        final List<FlowSet<TemplateRecord>> templateSets = new LinkedList<>();
+        final List<FlowSet<OptionsTemplateRecord>> optionTemplateSets = new LinkedList<>();
+        final List<FlowSet<DataRecord>> dataSets = new LinkedList<>();
         while(buffer.hasRemaining()) {
             // We ignore header.counter here, because different exporters interpret it as flowset count or record count
 
@@ -75,7 +81,6 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
             final FlowSetHeader flowSetHeader = new FlowSetHeader(headerBuffer);
 
             final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, flowSetHeader.length - FlowSetHeader.SIZE);
-            final FlowSet<?> set;
             switch (flowSetHeader.getType()) {
                 case TEMPLATE_FLOWSET: {
                     final FlowSet<TemplateRecord> templateSet = new FlowSet<>(flowSetHeader, TemplateRecord.parser(), payloadBuffer);
@@ -102,7 +107,7 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
                         }
                     }
 
-                    set = templateSet;
+                    templateSets.add(templateSet);
                     break;
                 }
 
@@ -119,7 +124,7 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
                                         .build());
                     }
 
-                    set = optionsTemplateSet;
+                    optionTemplateSets.add(optionsTemplateSet);
                     break;
                 }
 
@@ -127,7 +132,10 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
                     final TemplateManager.TemplateResolver templateResolver = templateManager.getResolver(header.sourceId);
                     final Template template = templateResolver.lookup(flowSetHeader.flowSetId)
                             .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", flowSetHeader.flowSetId));
-                    set = new FlowSet<>(flowSetHeader, DataRecord.parser(template, templateResolver), payloadBuffer);
+
+                    final FlowSet<DataRecord> dataSet = new FlowSet<>(flowSetHeader, DataRecord.parser(template, templateResolver), payloadBuffer);
+
+                    dataSets.add(dataSet);
                     break;
                 }
 
@@ -135,30 +143,45 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
                     throw new InvalidPacketException(buffer, "Invalid Set ID: %d", flowSetHeader.flowSetId);
                 }
             }
-
-            sets.add(set);
         }
-        this.sets = Collections.unmodifiableList(sets);
+
+        this.templateSets = Collections.unmodifiableList(templateSets);
+        this.optionTemplateSets = Collections.unmodifiableList(optionTemplateSets);
+        this.dataSets = Collections.unmodifiableList(dataSets);
     }
 
     @Override
     public Iterator<FlowSet<?>> iterator() {
-        return this.sets.iterator();
+        return Iterators.concat(this.templateSets.iterator(),
+                                this.optionTemplateSets.iterator(),
+                                this.dataSets.iterator());
     }
 
     @Override
     public Stream<RecordProvider.Record> getRecords() {
-        return this.sets.stream()
-                .filter(s -> s.header.getType() == FlowSetHeader.Type.DATA_FLOWSET)
-                .flatMap(s -> ((FlowSet<DataRecord>) s).records.stream())
-                .map(r -> new RecordProvider.Record(this.header.sourceId, this.header.unixSecs, r.template.scopeFieldsCount, Iterables.transform(r.fields, f -> f.value)));
+        final int recordCount = this.dataSets.stream()
+                .mapToInt(s -> s.records.size())
+                .sum();
+
+        return this.dataSets.stream()
+                .flatMap(s -> s.records.stream())
+                .map(r -> new RecordProvider.Record(
+                        this.header.sourceId,
+                        this.header.unixSecs,
+                        r.template.scopeFieldsCount,
+                        recordCount,
+                        this.header.sequenceNumber,
+                        Iterables.transform(r.fields, f -> f.value)
+                ));
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", header)
-                .add("sets", sets)
+                .add("templateSets", this.templateSets)
+                .add("optionTemplateSets", this.optionTemplateSets)
+                .add("dataTemplateSets", this.dataSets)
                 .toString();
     }
 }
