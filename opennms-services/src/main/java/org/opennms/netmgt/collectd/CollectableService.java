@@ -52,7 +52,6 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.core.CollectionSpecification;
-import org.opennms.netmgt.collection.core.DefaultCollectionAgent;
 import org.opennms.netmgt.collection.support.AttributeGroupWrapper;
 import org.opennms.netmgt.collection.support.CollectionAttributeWrapper;
 import org.opennms.netmgt.collection.support.CollectionResourceWrapper;
@@ -160,7 +159,7 @@ class CollectableService implements ReadyRunnable {
             Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr,
             PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) throws CollectionInitializationException {
 
-        m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
+        m_agent = DefaultSnmpCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
@@ -624,7 +623,7 @@ class CollectableService implements ReadyRunnable {
 
     private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
         m_spec.release(m_agent);
-        m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
+        m_agent = DefaultSnmpCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);
         m_spec.initialize(m_agent);
     }
