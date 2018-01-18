@@ -33,7 +33,9 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>
+              javassist.util.proxy,
               javax.sql,
+              org.hibernate.proxy,
 
               <!-- From mvn:org.hibernate/hibernate-validator -->
               org.hibernate.validator,
