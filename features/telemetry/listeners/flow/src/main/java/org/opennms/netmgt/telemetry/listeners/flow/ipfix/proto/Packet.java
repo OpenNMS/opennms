@@ -44,6 +44,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
 public final class Packet implements Iterable<Set<?>>, RecordProvider {
@@ -63,20 +64,25 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
     */
 
     public final Header header;
-    public final List<Set<?>> sets;
+
+    public final List<Set<TemplateRecord>> templateSets;
+    public final List<Set<OptionsTemplateRecord>> optionTemplateSets;
+    public final List<Set<DataRecord>> dataSets;
 
     public Packet(final TemplateManager templateManager,
                   final Header header,
                   final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
-        final List<Set<?>> sets = new LinkedList<>();
+        final List<Set<TemplateRecord>> templateSets = new LinkedList<>();
+        final List<Set<OptionsTemplateRecord>> optionTemplateSets = new LinkedList<>();
+        final List<Set<DataRecord>> dataSets = new LinkedList<>();
+
         while (buffer.hasRemaining()) {
             final ByteBuffer headerBuffer = BufferUtils.slice(buffer, SetHeader.SIZE);
             final SetHeader setHeader = new SetHeader(headerBuffer);
 
             final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, setHeader.length - SetHeader.SIZE);
-            final Set<?> set;
             switch (setHeader.getType()) {
                 case TEMPLATE_SET: {
                     final Set<TemplateRecord> templateSet = new Set<>(setHeader, TemplateRecord.parser(), payloadBuffer);
@@ -103,7 +109,7 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                         }
                     }
 
-                    set = templateSet;
+                    templateSets.add(templateSet);
                     break;
                 }
 
@@ -133,7 +139,7 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                         }
                     }
 
-                    set = optionsTemplateSet;
+                    optionTemplateSets.add(optionsTemplateSet);
                     break;
                 }
 
@@ -142,7 +148,9 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                     final Template template = templateResolver.lookup(setHeader.setId)
                                 .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", setHeader.setId));
 
-                    set = new Set<>(setHeader, DataRecord.parser(template, templateResolver), payloadBuffer);
+                    final Set<DataRecord> dataSet = new Set<>(setHeader, DataRecord.parser(template, templateResolver), payloadBuffer);
+
+                    dataSets.add(dataSet);
                     break;
                 }
 
@@ -150,30 +158,45 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                     throw new InvalidPacketException(buffer, "Invalid Set ID: %d", setHeader.setId);
                 }
             }
-
-            sets.add(set);
         }
-        this.sets = Collections.unmodifiableList(sets);
+
+        this.templateSets = Collections.unmodifiableList(templateSets);
+        this.optionTemplateSets = Collections.unmodifiableList(optionTemplateSets);
+        this.dataSets = Collections.unmodifiableList(dataSets);
     }
 
     @Override
     public Iterator<Set<?>> iterator() {
-        return this.sets.iterator();
+        return Iterators.concat(this.templateSets.iterator(),
+                                this.optionTemplateSets.iterator(),
+                                this.dataSets.iterator());
     }
 
     @Override
     public Stream<RecordProvider.Record> getRecords() {
-        return this.sets.stream()
-                .filter(s -> s.header.getType() == SetHeader.Type.DATA_SET)
-                .flatMap(s -> ((Set<DataRecord>) s).records.stream())
-                .map(r -> new RecordProvider.Record(this.header.observationDomainId, this.header.exportTime, r.template.scopeFieldsCount, Iterables.transform(r.fields, f -> f.value)));
+        final int recordCount = this.dataSets.stream()
+                .mapToInt(s -> s.records.size())
+                .sum();
+
+        return this.dataSets.stream()
+                .flatMap(s -> s.records.stream())
+                .map(r -> new RecordProvider.Record(
+                        this.header.observationDomainId,
+                        this.header.exportTime,
+                        r.template.scopeFieldsCount,
+                        recordCount,
+                        this.header.sequenceNumber,
+                        Iterables.transform(r.fields, f -> f.value)
+                ));
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("header", header)
-                .add("sets", sets)
+                .add("header", this.header)
+                .add("templateSets", this.templateSets)
+                .add("optionTemplateSets", this.optionTemplateSets)
+                .add("dataTemplateSets", this.dataSets)
                 .toString();
     }
 }

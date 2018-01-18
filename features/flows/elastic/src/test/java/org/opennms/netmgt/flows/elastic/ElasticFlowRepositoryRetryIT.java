@@ -81,8 +81,9 @@ public class ElasticFlowRepositoryRetryIT {
     @Test
     public void verifySaveSucceedsWhenServerBecomesAvailable() throws Exception {
         // try persisting data
-        apply((repository) -> repository.persistNetFlow5Packets(Lists.newArrayList(FlowDocumentTest.getMockNetflow5Packet()),
-                FlowDocumentTest.getMockFlowSource()));
+        apply((repository) -> repository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()),
+                FlowDocumentTest.getMockFlowSource(),
+                new FlowDocumentTest.NopConverter()));
     }
 
     private void apply(FlowRepositoryConsumer consumer) throws Exception {

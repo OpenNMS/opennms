@@ -70,6 +70,10 @@ public class ConversationKeyUtils {
     }
 
     public static String getConvoKeyAsJsonString(FlowDocument document) {
+        if (document.isInitiator() == null) {
+            return null;
+        }
+
         final ConversationKey convoKey = document.isInitiator() ? egressKeyFor(document) : ingressKeyFor(document);
         return toJsonString(convoKey);
     }

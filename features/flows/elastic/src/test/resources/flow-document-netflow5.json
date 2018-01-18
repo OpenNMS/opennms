@@ -25,6 +25,7 @@
   "netflow.packets": 0,
   "netflow.protocol": 0,
   "netflow.sampling_interval": 0,
+  "netflow.sampling_algorithm": 0,
   "netflow.src_addr": "192.168.1.2",
   "netflow.src_as": 0,
   "netflow.src_locality": "private",

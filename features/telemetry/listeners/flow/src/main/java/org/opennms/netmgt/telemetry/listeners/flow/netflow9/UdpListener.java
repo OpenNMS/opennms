@@ -36,7 +36,7 @@ import io.netty.channel.ChannelHandler;
 
 public class UdpListener extends AbstractUdpListener {
 
-    protected UdpListener() {
+    public UdpListener() {
         super(Protocol.NETFLOW9);
     }
 

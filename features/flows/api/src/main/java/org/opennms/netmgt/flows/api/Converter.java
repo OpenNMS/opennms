@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,44 +28,8 @@
 
 package org.opennms.netmgt.flows.api;
 
-public interface NF5Record {
+import java.util.List;
 
-    String getSrcAddr();
-
-    String getDstAddr();
-
-    String getNextHop();
-
-    int getInput();
-
-    int getOutput();
-
-    long getDPkts();
-
-    long getDOctets();
-
-    long getFirst();
-
-    long getLast();
-
-    int getSrcPort();
-
-    int getDstPort();
-
-    int getTcpFlags();
-
-    int getProt();
-
-    int getSrcAs();
-
-    int getDstAs();
-
-    int getToS();
-
-    int getSrcMask();
-
-    int getDstMask();
-
-    boolean isEgress();
-
+public interface Converter<P> {
+    List<Flow> convert(P packet);
 }

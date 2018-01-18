@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import java.util.Objects;
+import org.opennms.netmgt.flows.api.Flow;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -39,4 +39,19 @@ public enum NetflowVersion {
     V9,
     @SerializedName("IPFIX")
     IPFIX;
+
+    public static NetflowVersion from(Flow.NetflowVersion version) {
+        if (version == null) return null;
+
+        switch (version) {
+            case V5:
+                return V5;
+            case V9:
+                return V9;
+            case IPFIX:
+                return IPFIX;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
 }

@@ -110,6 +110,9 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
             writer.writeTimestamp("exportTime", new BsonTimestamp(record.exportTime << 32));
             writer.writeInt32("scoped", record.scopeFieldCount);
 
+            writer.writeInt32("recordCount", record.recordCount);
+            writer.writeInt64("sequenceNumber", record.sequenceNumber);
+
             writer.writeStartDocument("elements");
 
             final FlowBuilderVisitor visitor = new FlowBuilderVisitor(writer);

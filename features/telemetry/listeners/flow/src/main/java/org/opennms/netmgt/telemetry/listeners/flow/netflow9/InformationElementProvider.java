@@ -59,8 +59,8 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 13, UnsignedValue::parserWith8Bit, "DST_MASK", Optional.empty());
         adder.add(Protocol.NETFLOW9, 14, UnsignedValue::parserWith64Bit, "OUTPUT_SNMP", Semantics.IDENTIFIER);
         adder.add(Protocol.NETFLOW9, 15, IPv4AddressValue::parser, "IPV4_NEXT_HOP", Semantics.DEFAULT);
-        adder.add(Protocol.NETFLOW9, 16, UnsignedValue::parserWith64Bit, "SRC_AS", Optional.empty());
-        adder.add(Protocol.NETFLOW9, 17, UnsignedValue::parserWith64Bit, "DST_AS", Optional.empty());
+        adder.add(Protocol.NETFLOW9, 16, UnsignedValue::parserWith32Bit, "SRC_AS", Optional.empty());
+        adder.add(Protocol.NETFLOW9, 17, UnsignedValue::parserWith32Bit, "DST_AS", Optional.empty());
         adder.add(Protocol.NETFLOW9, 18, IPv4AddressValue::parser, "BGP_IPV4_NEXT_HOP", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 19, UnsignedValue::parserWith64Bit, "MUL_DST_PKTS", Semantics.DELTA_COUNTER);
         adder.add(Protocol.NETFLOW9, 20, UnsignedValue::parserWith64Bit, "MUL_DST_BYTES", Semantics.DELTA_COUNTER);

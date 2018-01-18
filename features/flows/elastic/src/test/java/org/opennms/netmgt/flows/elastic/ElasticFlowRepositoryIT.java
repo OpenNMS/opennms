@@ -75,7 +75,7 @@ public class ElasticFlowRepositoryIT {
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty
-            elasticFlowRepository.persistNetFlow5Packets(Lists.newArrayList(FlowDocumentTest.getMockNetflow5Packet()), FlowDocumentTest.getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource(), new FlowDocumentTest.NopConverter());
         }
     }
 
