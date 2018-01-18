@@ -28,24 +28,31 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.network.IPAddress;
+import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -352,5 +359,29 @@ public class JdbcFilterDaoIT implements InitializingBean {
 
         // Just make sure this one doesn't hurl
         m_dao.getInterfaceWithServiceStatement("serviceName == 'DiskUsage-/foo/bar'");
+    }
+
+    // Verifies that if a bunch of interfaces exists, checking if an ip address is valid should be faster
+    // than retrieving all interfaces.
+    // See HZN-1161 for more details.
+    @Test
+    public void verifyPerformance() {
+        // Create a bunch of interfaces
+        final OnmsNode node1 = m_populator.getNode1();
+        final IPAddressRange ipAddresses = new IPAddressRange("10.10.0.0", "10.10.255.255");
+        final Iterator<IPAddress> iterator = ipAddresses.iterator();
+        while (iterator.hasNext()) {
+            IPAddress address = iterator.next();
+            OnmsIpInterface ipInterface = new OnmsIpInterface();
+            ipInterface.setNode(node1);
+            ipInterface.setIpAddress(address.toInetAddress());
+            m_interfaceDao.save(ipInterface);
+        }
+        final int numberOfInterfaces = m_interfaceDao.countAll();
+        assertThat(numberOfInterfaces, greaterThan(255 * 255));
+
+        // verify
+        assertThat(m_dao.getActiveIPAddressList("IPADDR != '0.0.0.0'"), Matchers.hasSize(numberOfInterfaces));
+        assertThat(m_dao.isValid("10.10.0.1", "IPADDR != '0.0.0.0'"), is(true));
     }
 }
