@@ -1,5 +1,7 @@
 [[release-21-changelog]]
 
+=== Changelog
+
 [[releasenotes-changelog-21.0.3]]
 
 ==== Release 21.0.3
@@ -26,8 +28,6 @@ The codename for 21.0.3 is _link:https://bladerunner.wikia.com/wiki/Roy_Batty[Ro
 ===== Enhancement
 
 * Bump AsciiDoc dependencies to 1.5.6 (Issue http://issues.opennms.org/browse/NMS-9808[NMS-9808])
-
-=== Changelog
 
 [[releasenotes-changelog-21.0.2]]
 
