@@ -174,7 +174,26 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.4]
+
+==== Release Meridian-2017.1.4
+
+Release 2017.1.4 is an update to OpenNMS Meridian 2017.1.3.  It is primarily a bug fix release.
+
+The codename for 2017.1.4 is _Tenerife meridian_.
+
+===== Bug
+
+* Notification storm causes JVM crash with: Native memory allocation (mmap) failed (Issue http://issues.opennms.org/browse/NMS-9766[NMS-9766])
+* The typeahead widget for KSC Report Search on front page is not working (Issue http://issues.opennms.org/browse/NMS-9776[NMS-9776])
+* The geographical maps on large installations is unusable (Issue http://issues.opennms.org/browse/NMS-9777[NMS-9777])
+* Cannot create user groups through the WebUI (NPE) (Issue http://issues.opennms.org/browse/NMS-9785[NMS-9785])
+* Broken Link in Admin guide to Alarm Introduction (Issue http://issues.opennms.org/browse/NMS-9802[NMS-9802])
+* Wrong syntax for automatic rescanning in admin guide (Issue http://issues.opennms.org/browse/NMS-9803[NMS-9803])
+* Geocoordinates truncated to 5 decimal places (Issue http://issues.opennms.org/browse/HZN-1219[HZN-1219])
+
 [releasenotes-changelog-Meridian-2017.1.3]
+
 ==== Release Meridian-2017.1.3
 
 Release 2017.1.3 is an update to OpenNMS Meridian 2017.1.2.  It is primarily a security and bug fix release.
@@ -199,6 +218,7 @@ The codename for 2017.1.3 is _Ferro meridian_.
 * Authentication proxy support (Issue http://issues.opennms.org/browse/NMS-9739[NMS-9739])
 
 [releasenotes-changelog-Meridian-2017.1.2]
+
 ==== Release Meridian-2017.1.2
 
 Release 2017.1.2 is the third release of OpenNMS Meridian 2017.  It is primarily a security and bug fix release.
@@ -230,6 +250,7 @@ The codename for 2017.1.2 is _Kraków meridian_.
 * ES REST plugin not doing preemptive basic auth (Issue http://issues.opennms.org/browse/NMS-9699[NMS-9699])
 
 [releasenotes-changelog-Meridian-2017.1.1]
+
 ==== Release Meridian-2017.1.1
 
 Release 2017.1.1 is the second release of OpenNMS Meridian 2017.  It contains a number of security and bug fixes and a few small enhancements.
@@ -255,6 +276,7 @@ The codename for 2017.1.1 is _Meridian of Monte Mario_.
 * Check/add support for PostgreSQL 10 (Issue http://issues.opennms.org/browse/NMS-9679[NMS-9679])
 
 [releasenotes-changelog-Meridian-2017.1.0]
+
 ==== Release Meridian-2017.1.0
 
 Release 2017.1.0 is the first release of OpenNMS Meridian 2017.  It is based on OpenNMS Horizon 19, plus a number of other bug fixes and changes that went into Horizon 20.
