@@ -61,6 +61,11 @@ public class OnmsExperimentalFeaturesKarafIT extends KarafTestCase {
 	}
 
 	@Test
+	public void testInstallFeatureOpennmsActivemqComponent() {
+		installFeature("opennms-activemq-component");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+	@Test
 	public void testInstallFeatureOpennmsDiscovery() {
 		installFeature("opennms-discovery");
 		System.out.println(executeCommand("feature:list -i"));

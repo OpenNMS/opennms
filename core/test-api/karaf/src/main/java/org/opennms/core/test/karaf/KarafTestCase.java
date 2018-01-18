@@ -47,6 +47,7 @@ import java.net.URI;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -326,6 +327,15 @@ public abstract class KarafTestCase {
         try {
             LOG.info("Installing feature {}", featureName);
             featuresService.installFeature(featureName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void installFeature(String featureName, EnumSet<FeaturesService.Option> options) {
+        try {
+            LOG.info("Installing feature {}", featureName);
+            featuresService.installFeature(featureName, options);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

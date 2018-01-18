@@ -233,6 +233,7 @@
             <feature>jrobin</feature>
             <feature>json-lib</feature>
             <feature>lmax-disruptor</feature>
+            <feature>opennms-activemq-pool</feature>
             <feature>opennms-bootstrap</feature>
             <feature>opennms-bundle-refresher</feature>
             <feature>opennms-collection-api</feature>
@@ -286,8 +287,6 @@
             <feature>twitter4j</feature>
 
             <!-- Features from other OpenNMS repositories -->
-            <feature>opennms-core</feature>
-            <feature>opennms-core-web</feature>
             <feature>opennms-jaas-login-module</feature>
             <feature>dashlet-alarms</feature>
             <feature>dashlet-bsm</feature>
@@ -329,6 +328,7 @@
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
             <feature>opennms-telemetry-collection</feature>
+            <feature>opennms-telemetry-daemon</feature>
             <feature>opennms-telemetry-jti</feature>
             <feature>opennms-telemetry-nxos</feature>
 
