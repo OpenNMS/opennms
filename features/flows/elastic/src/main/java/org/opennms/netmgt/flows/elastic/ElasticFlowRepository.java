@@ -303,16 +303,22 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private CompletableFuture<SearchResult> searchAsync(String query) {
         LOG.debug("Executing asynchronous query: {}", query);
-        final CompletableFuture<SearchResult> future = new CompletableFuture<>();
-        client.executeAsync(new Search.Builder(query)
+        return executeAsync(new Search.Builder(query)
                 .addType(TYPE)
-                .build(), new JestResultHandler<SearchResult>() {
+                .build());
+    }
 
+    private <T extends JestResult> CompletableFuture<T> executeAsync(Action<T> action) {
+        final CompletableFuture<T> future = new CompletableFuture<>();
+        client.executeAsync(action, new JestResultHandler<T>() {
             @Override
-            public void completed(SearchResult result) {
-                future.complete(result);
+            public void completed(T result) {
+                if (!result.isSucceeded()) {
+                    future.completeExceptionally(new Exception(result.getErrorMessage()));
+                } else {
+                    future.complete(result);
+                }
             }
-
             @Override
             public void failed(Exception ex) {
                 future.completeExceptionally(ex);

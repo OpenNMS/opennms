@@ -46,6 +46,7 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
+import org.opennms.elasticsearch.plugin.DriftPlugin;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
@@ -73,6 +74,7 @@ public class FlowQueryIT {
                     .withSetting("http.type", "netty4")
                     .withSetting("transport.type", "netty4")
                     .withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
+                    .withPlugins(DriftPlugin.class)
     );
 
     private ElasticFlowRepository flowRepository;

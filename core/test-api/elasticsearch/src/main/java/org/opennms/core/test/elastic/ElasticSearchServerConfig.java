@@ -28,6 +28,9 @@
 
 package org.opennms.core.test.elastic;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import org.elasticsearch.cluster.ClusterName;
@@ -35,6 +38,7 @@ import org.elasticsearch.common.network.NetworkModule;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.node.Node;
+import org.elasticsearch.plugins.Plugin;
 
 public class ElasticSearchServerConfig {
 
@@ -44,6 +48,7 @@ public class ElasticSearchServerConfig {
     private long startDelay; // in ms
     private boolean manualStartup;
     private boolean keepElasticHomeAfterShutdown;
+    private List<Class<? extends Plugin>> plugins = new ArrayList<>();
 
     public ElasticSearchServerConfig withDefaults() {
         withNodeName("testNode");
@@ -86,9 +91,26 @@ public class ElasticSearchServerConfig {
         return this;
     }
 
-    public ElasticSearchServerConfig withSetting(String key, Object value) {
+    public ElasticSearchServerConfig withSetting(String key, String value) {
         Objects.requireNonNull(key);
         builder.put(key, value);
+        return this;
+    }
+
+    public ElasticSearchServerConfig withSetting(String key, boolean value) {
+        Objects.requireNonNull(key);
+        builder.put(key, value);
+        return this;
+    }
+
+    public ElasticSearchServerConfig withSetting(String key, int value) {
+        Objects.requireNonNull(key);
+        builder.put(key, value);
+        return this;
+    }
+
+    public ElasticSearchServerConfig withPlugins(Class<? extends Plugin>... plugins) {
+        this.plugins.addAll(Arrays.asList(plugins));
         return this;
     }
 
@@ -129,6 +151,10 @@ public class ElasticSearchServerConfig {
 
     public String getHomeDirectory() {
         return builder.get(Environment.PATH_HOME_SETTING.getKey());
+    }
+
+    public List<Class<? extends Plugin>> getPlugins() {
+        return plugins;
     }
 
     public Settings build() {
