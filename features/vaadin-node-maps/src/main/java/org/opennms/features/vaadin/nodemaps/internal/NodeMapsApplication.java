@@ -121,7 +121,7 @@ import com.vaadin.ui.VerticalSplitPanel;
 })
 public class NodeMapsApplication extends UI {
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
-    private static final int REFRESH_INTERVAL = 5 * 1000;
+    private static final int REFRESH_INTERVAL = Integer.getInteger("org.opennms.features.nodemaps.refresh", 30*1000);
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 

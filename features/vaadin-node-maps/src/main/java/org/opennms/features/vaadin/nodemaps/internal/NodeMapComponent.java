@@ -148,6 +148,14 @@ public class NodeMapComponent extends AbstractComponent implements GeoAssetProvi
 
     public void showNodes(final Map<Integer, MapNode> nodeEntries) {
         LOG.info("Updating map node list: {} entries.", nodeEntries.size());
+        final List<MapNode> nodeEntryList = new ArrayList<>(nodeEntries.values());
+        if (getState().nodes != null &&
+                nodeEntryList.containsAll(getState().nodes) &&
+                getState().nodes.containsAll(nodeEntryList)) {
+            LOG.info("Skipping update. Map node list is unchanged.");
+            return;
+        }
+
         getState().nodes = new ArrayList<>(nodeEntries.values());
         LOG.info("Finished updating map node list.");
     }
