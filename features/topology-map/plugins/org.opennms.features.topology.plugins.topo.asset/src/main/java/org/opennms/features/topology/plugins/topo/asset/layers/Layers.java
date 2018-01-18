@@ -201,7 +201,7 @@ public enum Layers {
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> {
-                Float latitude = node.getAssetRecord().getGeolocation().getLatitude();
+                Double latitude = node.getAssetRecord().getGeolocation().getLatitude();
                 return latitude == null ? null : latitude.toString();
             };
         }
@@ -228,7 +228,7 @@ public enum Layers {
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> {
-                Float longitude = node.getAssetRecord().getGeolocation().getLongitude();
+                Double longitude = node.getAssetRecord().getGeolocation().getLongitude();
                 return longitude == null ? null : longitude.toString();
             };
         }

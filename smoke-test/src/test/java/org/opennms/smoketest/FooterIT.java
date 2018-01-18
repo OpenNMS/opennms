@@ -1,9 +1,8 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,10 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.smoketest;
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-<%@page language="java" contentType="text/html" session="true"  %>
+import org.junit.Before;
+import org.junit.Test;
 
-<c:redirect url="/support/about.jsp" />
+public class FooterIT extends OpenNMSSeleniumTestCase {
+
+    @Before
+    public void setUp() throws Exception {
+        m_driver.get(getBaseUrl() + "opennms/login.jsp");
+    }
+
+    @Test
+    public void verifyDisplayVersionForLoggedInUser() throws Exception {
+        assertNotNull(findElementByXpath("//*[@id=\"footer\"]/p"));
+        assertNotNull(findElementByXpath("//*[@id=\"footer\"]/p[contains(.,'Version')]"));
+    }
+
+    @Test
+    public void verifyDoNotDisplayVersionForAnonymous() throws Exception {
+        final String adminMenuName = "name=nav-admin-top";
+        clickMenuItem(adminMenuName, "Log Out", "j_spring_security_logout");
+        assertNotNull(findElementByXpath("//*[@id=\"footer\"]/p[not(contains(.,'Version'))]"));
+    }
+}

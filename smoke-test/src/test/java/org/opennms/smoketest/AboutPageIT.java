@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.geolocation.api;
+package org.opennms.smoketest;
 
-public class Coordinates {
-    private double longitude;
-    private double latitude;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
-    public Coordinates(double longitude, double latitude) {
-        this.longitude = longitude;
-        this.latitude = latitude;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class AboutPageIT extends OpenNMSSeleniumTestCase {
+
+    @Before
+    public void setUp() throws Exception {
+        m_driver.get(getBaseUrl() + "opennms/about/index.jsp");
     }
 
-    public double getLatitude() {
-        return latitude;
+    @Test
+    public void hasAllPanels() throws Exception {
+        assertEquals(4, countElementsMatchingCss("h3.panel-title"));
     }
 
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    @Test
+    public void hasContent() throws Exception {
+        assertNotNull(m_driver.findElement(By.xpath("//h3[text()='License and Copyright']")));
+        assertNotNull(m_driver.findElement(By.xpath("//th[text()='Version:']")));
     }
 }
