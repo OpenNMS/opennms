@@ -2,6 +2,33 @@
 
 === Changelog
 
+[[releasenotes-changelog-21.0.3]]
+
+==== Release 21.0.3
+
+Release 21.0.3 is the latest stable release of OpenNMS.
+It contains mostly small bug fixes.
+For a high-level overview of what's changed in OpenNMS 21, see link:https://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
+
+The codename for 21.0.3 is _link:https://bladerunner.wikia.com/wiki/Roy_Batty[Roy Batty]_.
+
+===== Bug
+
+* Fedora 25 / 26 repo definitions identify as Fedora 24 (Issue http://issues.opennms.org/browse/NMS-9731[NMS-9731])
+* Notification storm causes JVM crash with: Native memory allocation (mmap) failed (Issue http://issues.opennms.org/browse/NMS-9766[NMS-9766])
+* The typeahead widget for KSC Report Search on front page is not working (Issue http://issues.opennms.org/browse/NMS-9776[NMS-9776])
+* The geographical maps on large installations is unusable (Issue http://issues.opennms.org/browse/NMS-9777[NMS-9777])
+* Cannot create user groups through the WebUI (NPE) (Issue http://issues.opennms.org/browse/NMS-9785[NMS-9785])
+* Broken Link in Admin guide to Alarm Introduction (Issue http://issues.opennms.org/browse/NMS-9802[NMS-9802])
+* Wrong syntax for automatic rescanning in admin guide (Issue http://issues.opennms.org/browse/NMS-9803[NMS-9803])
+* No fc27 RPMs exist (Issue http://issues.opennms.org/browse/NMS-9812[NMS-9812])
+* alarm-change-notifier feature fails to install due to missing dependencies (Issue http://issues.opennms.org/browse/NMS-9818[NMS-9818])
+* Geocoordinates truncated to 5 decimal places (Issue http://issues.opennms.org/browse/HZN-1219[HZN-1219])
+
+===== Enhancement
+
+* Bump AsciiDoc dependencies to 1.5.6 (Issue http://issues.opennms.org/browse/NMS-9808[NMS-9808])
+
 [[releasenotes-changelog-21.0.2]]
 
 ==== Release 21.0.2
