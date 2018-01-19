@@ -55,13 +55,15 @@ public class InterfaceSnmpByIfIndexResourceType implements OnmsResourceType {
 
     private final InterfaceSnmpResourceType m_interfaceSnmpResourceType;
 
+    public static final String TYPE_NAME = "interfaceSnmpByIfIndex";
+
     protected InterfaceSnmpByIfIndexResourceType(InterfaceSnmpResourceType interfaceSnmpResourceType) {
         m_interfaceSnmpResourceType = Objects.requireNonNull(interfaceSnmpResourceType);
     }
 
     @Override
     public String getName() {
-        return "interfaceSnmpByIfIndex";
+        return TYPE_NAME;
     }
 
     @Override
