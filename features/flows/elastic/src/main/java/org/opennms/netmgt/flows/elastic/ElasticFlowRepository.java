@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.elastic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -235,6 +236,11 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     private CompletableFuture<List<String>> getTopN(int N, String groupByTerm, String keyForMissingTerm, List<Filter> filters) {
+        if (N < 1) {
+            // Avoid a query and return an empty list
+            return CompletableFuture.completedFuture(Collections.emptyList());
+        }
+
         // Increase the multiplier for increased accuracy
         // See https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html#_size
         final int multiplier = 2;
@@ -249,14 +255,20 @@ public class ElasticFlowRepository implements FlowRepository {
                                                                                           String directionTerm, String keyForMissingTerm,
                                                                                           boolean includeOther, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-        final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, timeRangeFilter.getStart(),
-                timeRangeFilter.getEnd(), groupByTerm, directionTerm, filters);
         final ImmutableTable.Builder<Directional<String>, Long, Double> builder = ImmutableTable.builder();
-        CompletableFuture<Void> seriesFuture = searchAsync(seriesFromTopNQuery)
-                .thenApply(res -> {
-                    toTable(builder, res);
-                    return null;
-                });
+        CompletableFuture<Void> seriesFuture;
+        if (topN.size() < 1) {
+            // If there are no entries, skip the query
+            seriesFuture = CompletableFuture.completedFuture(null);
+        } else {
+            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, timeRangeFilter.getStart(),
+                    timeRangeFilter.getEnd(), groupByTerm, directionTerm, filters);
+            seriesFuture = searchAsync(seriesFromTopNQuery)
+                    .thenApply(res -> {
+                        toTable(builder, res);
+                        return null;
+                    });
+        }
 
         final boolean missingTermIncludedInTopN = keyForMissingTerm != null && topN.contains(keyForMissingTerm);
         if (missingTermIncludedInTopN) {
@@ -321,9 +333,15 @@ public class ElasticFlowRepository implements FlowRepository {
         final long end = Math.max(timeRangeFilter.getStart(), timeRangeFilter.getEnd() - 1);
         // A single step
         final long step = timeRangeFilter.getEnd() - timeRangeFilter.getStart();
-        final String bytesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, start, end, groupByTerm, directionTerm, filters);
-        CompletableFuture<Map<String, TrafficSummary<String>>> summariesFuture = searchAsync(bytesFromTopNQuery)
-                .thenApply(ElasticFlowRepository::toTrafficSummaries);
+
+        CompletableFuture<Map<String, TrafficSummary<String>>> summariesFuture;
+        if (topN.size() < 1) {
+            // If there are no entries, skip the query
+            summariesFuture = CompletableFuture.completedFuture(new LinkedHashMap<>());
+        } else {
+            final String bytesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, start, end, groupByTerm, directionTerm, filters);
+            summariesFuture = searchAsync(bytesFromTopNQuery).thenApply(ElasticFlowRepository::toTrafficSummaries);
+        }
 
         final boolean missingTermIncludedInTopN = keyForMissingTerm != null && topN.contains(keyForMissingTerm);
         if (missingTermIncludedInTopN) {

@@ -166,6 +166,19 @@ public class FlowQueryIT {
         assertThat(other.getEntity(), equalTo("Other"));
         assertThat(other.getBytesIn(), equalTo(210L));
         assertThat(other.getBytesOut(), equalTo(200L));
+
+        // Now set N to zero
+        appTrafficSummary = flowRepository.getTopNApplications(0, false, getFilters()).get();
+        assertThat(appTrafficSummary, hasSize(0));
+
+        // N=0, but include other
+        appTrafficSummary = flowRepository.getTopNApplications(0, true, getFilters()).get();
+        assertThat(appTrafficSummary, hasSize(1));
+
+        other = appTrafficSummary.get(0);
+        assertThat(other.getEntity(), equalTo("Other"));
+        assertThat(other.getBytesIn(), equalTo(420L));
+        assertThat(other.getBytesOut(), equalTo(2300L));
     }
 
     @Test
