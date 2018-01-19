@@ -108,7 +108,6 @@ public class DefaultJmxCollector implements JmxCollector {
                 final Collection<ObjectName> objectNames = getObjectNames(concreteConnection, eachMbean.getObjectname());
                 for (ObjectName eachObjectName : objectNames) {
                     logger.debug("Collecting ObjectName {}", eachObjectName);
-
                     boolean collect = canBeCollected(concreteConnection, eachObjectName, eachMbean.getKeyfield(), eachMbean.getExclude());
                     if (collect) {
                         List<String> attributeNames = extractAttributeNames(eachMbean);

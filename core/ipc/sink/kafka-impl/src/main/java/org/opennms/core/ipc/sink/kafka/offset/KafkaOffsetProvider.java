@@ -162,7 +162,7 @@ public class KafkaOffsetProvider {
                                     if (map == null) {
                                         map = new ConcurrentHashMap<>();
                                         consumerOffsetMap.put(topic, map);
-                                        kafkaOffsetMetrics.register(MetricRegistry.name(topic, "lag"), new Gauge<Long>() {
+                                        kafkaOffsetMetrics.register(MetricRegistry.name(topic, "Lag"), new Gauge<Long>() {
                                             @Override
                                             public Long getValue() {
                                                 return consumerLagMap.get(topic);

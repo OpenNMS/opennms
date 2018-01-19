@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <resource-types>
-    <resourceType name="kafka-lag" label="Kafka Lag"
-                  resourceLabel="${kafkaLag}">
+    <resourceType name="kafkaLag" label="Kafka Lag"
+                  resourceLabel="${index}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy">
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+		   <parameter key="sibling-column-name" value="name" />
       </storageStrategy>
     </resourceType>
 </resource-types>

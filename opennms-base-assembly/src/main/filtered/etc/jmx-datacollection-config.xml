@@ -30,7 +30,7 @@
             <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
          </mbean>
 
-         <mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" keyfield="kafka-lag" objectname="org.opennms.core.ipc.sink.kafka:name=OpenNMS.Sink.*.lag">
+         <mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" keyfield="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=OpenNMS.Sink.*.Lag">
             <attrib name="Value" alias="Lag" type="gauge"/>
          </mbean>
 

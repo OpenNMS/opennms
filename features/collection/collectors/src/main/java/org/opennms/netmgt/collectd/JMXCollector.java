@@ -30,10 +30,9 @@ package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -246,6 +245,7 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
         // Metrics collected from JMX are currently modeled as node level resources,
         // but live in a sub-directory set to the service name
         final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId(), collDir);
+        // This parent resource used for generic resource
         final NodeLevelResource parentResource = new NodeLevelResource(agent.getNodeId());
 
         // Used to gather the results
@@ -275,11 +275,13 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
                         return;
                     }
 
-                    if (attributeSample.getMbean().getKeyfield() != null) {
+                    String keyField = attributeSample.getMbean().getKeyfield();
+                    if (keyField != null) {
                         final String parsedObjectName = objectName.getCanonicalName();
-                        final Resource resource = new DeferredGenericTypeResource(nodeResource,
-                                attributeSample.getMbean().getKeyfield(), parsedObjectName);
+                        final Resource resource = new DeferredGenericTypeResource(nodeResource, keyField,
+                                parsedObjectName);
                         addNumericAttributeToCollectionSet(ds, attributeSample, resource);
+                        addStringAttributesToCollectionSet(ds, attributeSample, resource, objectName);
                     } else {
                         addNumericAttributeToCollectionSet(ds, attributeSample, nodeResource);
                     }
@@ -297,16 +299,32 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
                         LOG.info("Could not find datasource for {}. Skipping.", dsKey);
                         return;
                     }
-
-                    if (compositeSample.getMbean().getKeyfield() != null) {
+                    String keyField = compositeSample.getMbean().getKeyfield();
+                    if (keyField != null) {
                         final String parsedObjectName = objectName.getCanonicalName();
-                        final Resource resource = new DeferredGenericTypeResource(parentResource,
-                                compositeSample.getMbean().getKeyfield(), parsedObjectName);
+                        final Resource resource = new DeferredGenericTypeResource(parentResource, keyField,
+                                parsedObjectName);
+
                         addNumericAttributeToCollectionSet(ds, compositeSample, resource);
+
+                        addStringAttributesToCollectionSet(ds, compositeSample, resource, objectName);
                     } else {
                         addNumericAttributeToCollectionSet(ds, compositeSample, nodeResource);
                     }
 
+                }
+
+                private void addStringAttributesToCollectionSet(JMXDataSource ds, AbstractJmxSample sample,
+                        Resource resource, ObjectName objectName) {
+
+                    final String groupName = fixGroupName(JmxUtils.getGroupName(stringMap, sample.getMbean()));
+                    final String domain = objectName.getDomain();
+                    final Hashtable<String, String> properties = objectName.getKeyPropertyList();
+                    properties.forEach(
+                            (key, value) -> collectionSetBuilder.withStringAttribute(resource, groupName, key, value));
+                    if (domain != null) {
+                        collectionSetBuilder.withStringAttribute(resource, groupName, "domain", objectName.getDomain());
+                    }
                 }
 
                 private void addNumericAttributeToCollectionSet(JMXDataSource ds, AbstractJmxSample sample,
