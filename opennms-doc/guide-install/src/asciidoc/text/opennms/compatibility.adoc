@@ -3,8 +3,11 @@
 
 This version of {opennms-product-name} {opennms-version} is compatible with
 
-[options="header, autowidth"]
-|===
-| Java | PostgreSQL | Newts | Cassandra     | Grafana  | AMQP | Elasticsearch | Kafka
-| 8    | 9.3+       | 1.4.3 | 1.2, 2.x, 3.0 | 3.x, 4.x | 1.0  | 2.X, 5.X      | 0.10
-|===
+* Java: 8
+* PostgreSQL: 9.3+
+* Newt: 1.4.3
+* Cassandra: 1.2, 2.x, 3.0
+* Grafana: 3.x, 4.x
+* AMQP: 1.0
+* Elasticsearch: 2.x, 5.x
+* Kafka: 0.10
