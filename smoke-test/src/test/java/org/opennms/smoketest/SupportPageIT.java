@@ -28,9 +28,12 @@
 
 package org.opennms.smoketest;
 
+import static org.hamcrest.Matchers.is;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -87,25 +90,20 @@ public class SupportPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAboutPage() throws Exception {
-        final WebElement about = m_driver.findElement(By.linkText("About the OpenNMS Web Console"));
-        assertNotNull(about);
-        about.click();
+        clickElement(By.linkText("About the OpenNMS Web Console"));
         assertNotNull(m_driver.findElement(By.xpath("//h3[text()='License and Copyright']")));
         assertNotNull(m_driver.findElement(By.xpath("//th[text()='Version:']")));
     }
     
-    @Test
-    public void testSystemReport() throws Exception {
-        final WebElement generate = m_driver.findElement(By.linkText("Generate a System Report"));
-        assertNotNull(generate);
-        generate.click();
-        // checkboxes are selected by default
-        final WebElement allCheckbox = m_driver.findElement(By.cssSelector("input[type=checkbox][name=all]"));
-        assertNotNull(allCheckbox);
-        assertTrue(m_driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected());
+    public void testSystemReport() {
+        clickElement(By.linkText("Generate System Report"));
+
+        final By javaCheckbox = By.cssSelector("input[type=checkbox][name=plugins][value=Java]");
+        assertThat(m_driver.findElement(javaCheckbox).isSelected(), is(true));
+
         // deselect the "all" checkbox
-        allCheckbox.click();
-        assertFalse(m_driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected());
+        clickElement(By.cssSelector("input[type=checkbox][name=all]"));
+        assertThat(m_driver.findElement(javaCheckbox).isSelected(), is(false));
     }
 
 }

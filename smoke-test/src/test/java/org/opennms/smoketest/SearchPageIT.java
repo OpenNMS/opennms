@@ -76,16 +76,16 @@ public class SearchPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllLinks() throws InterruptedException {
-        findElementByLink("All nodes").click();
+        clickElement(By.linkText("All nodes"));
         findElementByXpath("//h3//span[text()='Nodes']");
 
         searchPage();
-        findElementByLink("All nodes and their interfaces").click();
+        clickElement(By.linkText("All nodes and their interfaces"));
         findElementByXpath("//h3[text()='Nodes and their interfaces']");
         findElementByLink("Hide interfaces");
 
         searchPage();
-        findElementByLink("All nodes with asset info").click();
+        clickElement(By.linkText("All nodes with asset info"));
         findElementByXpath("//h3[text()='Assets']");
     }
 

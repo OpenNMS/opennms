@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +117,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         for (final String[] entry : m_adminPageEntries) {
             LOG.debug("clicking: '{}', expecting: '{}'", entry[0], entry[1]);
             adminPage();
-            findElementByLink(entry[0]).click();
+            clickElement(By.linkText(entry[0]));
             findElementByXpath(entry[1]);
         }
     }

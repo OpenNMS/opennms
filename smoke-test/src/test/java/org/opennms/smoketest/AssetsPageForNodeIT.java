@@ -99,11 +99,11 @@ public class AssetsPageForNodeIT extends OpenNMSSeleniumTestCase {
      */
     @Test
     public void testAssetPage() throws Exception {
-        findElementByLink("Asset Info").click();
+        clickElement(By.linkText("Asset Info"));
         Alert alert = m_driver.switchTo().alert();
         alert.accept();
 
-        final String descriptionXpath = "(//input[@ng-model='asset[field.model]'])[1]";
+        final String descriptionXpath = "//input[@id='description']";
         waitForElement(By.xpath(descriptionXpath));
         WebElement description = findElementByXpath(descriptionXpath);
         Assert.assertNotNull(description);

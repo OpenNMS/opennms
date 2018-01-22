@@ -61,8 +61,9 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumTestCase {
             m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SeleniumTestGroup:localhost");
 
             // VERIFY
-            findElementByLink("Resource Graphs").click();
-            findElementByXpath("//button[contains(text(), \"Graph All\")]").click();
+            clickElement(By.xpath("//div[@id='content']//a[text()=\"Resource Graphs\"]"));
+            clickElement(By.xpath("//form//button[@ng-click='graphAll()']"));
+            waitForElement(By.id("graph-results"));
             Assert.assertTrue("There should be graphs visible, but could not find any", !m_driver.findElements(By.xpath("//div[@id='graph-results']//img")).isEmpty());
         } finally {
             // CLEANUP
@@ -122,14 +123,14 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumTestCase {
 
             // VERIFY
             // Go to the resources page
-            findElementByLink("Resource Graphs").click();
+            clickElement(By.xpath("//div[@id='content']//a[text()='Resource Graphs']"));
 
             // Verify Title/Link
-            WebElement title = findElementByXpath("//h4/strong/a[text()='TestMachine1']");
+            final WebElement title = waitForElement(By.xpath("//h4/strong/a[text()='TestMachine1']"));
             Assert.assertNotNull(title);
 
             // There are no RRD/JRB/Newts data, so it should show the default banner.
-            WebElement banner = findElementByXpath("//h1[text()='There are no resources for this node']");
+            WebElement banner = waitForElement(By.xpath("//h1[text()='There are no resources for this node']"));
             Assert.assertNotNull(banner);
         } finally {
             // CLEANUP

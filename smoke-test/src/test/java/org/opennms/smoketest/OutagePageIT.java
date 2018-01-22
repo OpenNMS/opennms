@@ -56,14 +56,14 @@ public class OutagePageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllLinks() throws InterruptedException {
-        findElementByLink("Current outages").click();
+        clickElement(By.linkText("Current outages"));
         findElementByXpath("//button[contains(@class, 'active') and contains(@onclick, 'current')]");
         findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'resolved')]");
         findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'both')]");
         findElementByLink("Interface");
 
         outagePage();
-        findElementByLink("All outages").click();
+        clickElement(By.linkText("All outages"));
         findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'current')]");
         findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'resolved')]");
         findElementByXpath("//button[contains(@class, 'active') and contains(@onclick, 'both')]");

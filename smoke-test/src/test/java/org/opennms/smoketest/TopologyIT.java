@@ -236,7 +236,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public void close() {
-            testCase.findElementByXpath("//div[@class='v-window-closebox']").click();
+            testCase.clickElement(By.xpath("//div[@class='v-window-closebox']"));
         }
     }
 
@@ -255,7 +255,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
          * Closes the context menu without clicking on an item
          */
         public void close() {
-            testCase.m_driver.findElement(By.id("TopologyComponent")).click();
+            testCase.clickElement(By.id("TopologyComponent"));
         }
 
         public void click(String... menuPath) {
@@ -263,7 +263,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 try {
                     testCase.setImplicitWait(1, TimeUnit.SECONDS);
                     for (String eachPath : menuPath) {
-                        testCase.findElementByXpath("//*[@class='v-context-menu-container']//*[@class='v-context-menu']//*[text()='" + eachPath + "']").click();
+                        testCase.clickElement(By.xpath("//*[@class='v-context-menu-container']//*[@class='v-context-menu']//*[text()='" + eachPath + "']"));
                     }
                     waitForTransition();
                 } finally {
@@ -309,8 +309,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         public void click(String label) {
             try {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                WebElement element = testCase.findElementByXpath("//*[@id='breadcrumbs']//*[contains(text(), '" + label + "')]");
-                element.click();
+                testCase.clickElement(By.xpath("//*[@id='breadcrumbs']//*[contains(text(), '" + label + "')]"));
                 waitForTransition();
             } finally {
                 testCase.setImplicitWait();
@@ -364,9 +363,14 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             // Wait for the "View" menu to be clickable before returning control to the test in order
             // to make sure that the page is fully loaded
             testCase.wait.until(ExpectedConditions.elementToBeClickable(getCriteriaForMenubarElement("View")));
-            return this;
+            return this.waitForLoadingToComplete();
         }
  
+        public TopologyUIPage waitForLoadingToComplete() {
+            testCase.waitForClose(By.xpath("//div[contains(@class, 'v-loading-indicator')]"));
+            return this;
+        }
+
         public TopologyUIPage clickOnMenuItemsWithLabels(String... labels) {
             resetMenu();
             Actions actions = new Actions(testCase.m_driver);
@@ -384,13 +388,15 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                     throw e;
                 }
             }
-            return this;
+            // Wait to give the menu a chance to update
+            waitForTransition();
+            return this.waitForLoadingToComplete();
         }
 
         public TopologyUIPage selectLayout(Layout layout) {
             clickOnMenuItemsWithLabels("View", layout.getLabel());
             waitForTransition();
-            return this;
+            return this.waitForLoadingToComplete();
         }
 
         public TopologyUIPage selectTopologyProvider(TopologyProvider topologyProvider) {
@@ -399,7 +405,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 clickOnMenuItemsWithLabels("View", topologyProvider.getLabel());
                 waitForTransition(); // we have to wait for the UI to re-settle
-                return this;
+                return this.waitForLoadingToComplete();
             } finally {
                 testCase.setImplicitWait();
             }
@@ -415,19 +421,19 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 LOG.info("setAutomaticRefresh: refresh is already {}", enabled ? "enabled" : "disabled");
                 resetMenu(); // ensure menu is reset, otherwise test may fail
             }
-            return this;
+            return this.waitForLoadingToComplete();
         }
 
         public TopologyUIPage refreshNow() {
-            testCase.findElementById("refreshNow").click();
+            testCase.clickElement(By.id("refreshNow"));
             waitForTransition();
-            return this;
+            return this.waitForLoadingToComplete();
         }
 
         public TopologyUIPage showEntireMap() {
             getShowEntireMapElement().click();
             waitForTransition();
-            return this;
+            return this.waitForLoadingToComplete();
         }
 
         public TopologyUISearchResults search(String query) {
@@ -495,7 +501,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 }
                 waitForTransition();
             }
-            return this;
+            return this.waitForLoadingToComplete();
         }
 
         /**
@@ -531,8 +537,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             try {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 openLayerSelectionComponent();
-                WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
-                layerElement.click();
+                testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']")).click();
                 waitForTransition();
             } finally {
                 testCase.setImplicitWait();
@@ -563,7 +568,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         private void openLayerSelectionComponent() {
             if (!isLayoutComponentVisible()) {
-                testCase.findElementById("layerToggleButton").click();
+                testCase.clickElement(By.id("layerToggleButton"));
             }
         }
 
@@ -625,7 +630,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             clearFocus();
             try {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                testCase.findElementById("defaultFocusBtn").click();
+                testCase.clickElement(By.id("defaultFocusBtn"));
                 waitForTransition();
             } finally {
                 testCase.setImplicitWait();
@@ -719,7 +724,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public TopologyUIPage selectItemThatContains(String substring) {
-            ui.testCase.findElementByXpath(String.format(XPATH, substring)).click();
+            ui.testCase.clickElement(By.xpath(String.format(XPATH, substring)));
             waitForTransition();
             return ui;
         }

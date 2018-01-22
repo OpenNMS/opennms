@@ -60,11 +60,11 @@ public class UserIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testSubmitWithWrongPassword() throws InterruptedException {
-        m_driver.findElement(By.linkText("Change Password")).click();
+        clickElement(By.xpath("//div[@id='content']//a[text()='Change Password']"));
         enterText(By.cssSelector("input[type=password][name=oldpass]"), "12345");
         enterText(By.cssSelector("input[type=password][name=pass1]"), "23456");
         enterText(By.cssSelector("input[type=password][name=pass2]"), "34567");
-        m_driver.findElement(By.cssSelector("button[type=submit]")).click();
+        clickElement(By.cssSelector("button[type=submit]"));
 
         try {
             final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
@@ -78,45 +78,45 @@ public class UserIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testUsersAndGroups() throws Exception {
         adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
-        findElementByLink("Add new user").click();
+        clickElement(By.linkText("Configure Users, Groups and On-Call Roles"));
+        clickElement(By.linkText("Configure Users"));
+        clickElement(By.linkText("Add new user"));
 
         enterText(By.id("userID"), USER_NAME);
         enterText(By.id("pass1"), "SmokeTestPassword");
         enterText(By.id("pass2"), "SmokeTestPassword");
-        findElementByXpath("//button[@type='submit' and text()='OK']").click();
+        clickElement(By.xpath("//button[@type='submit' and text()='OK']"));
 
-        findElementById("saveUserButton").click();
+        clickElement(By.id("saveUserButton"));
         findElementById("users(" + USER_NAME + ").doDetails");
 
         adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Groups").click();
-        findElementByLink("Add new group").click();
+        clickElement(By.linkText("Configure Users, Groups and On-Call Roles"));
+        clickElement(By.linkText("Configure Groups"));
+        clickElement(By.linkText("Add new group"));
 
         enterText(By.id("groupName"), GROUP_NAME);
         enterText(By.id("groupComment"), "Test");
-        findElementByXpath("//button[@type='submit' and text()='OK']").click();
+        clickElement(By.xpath("//button[@type='submit' and text()='OK']"));
 
         final Select select = new Select(findElementByName("availableUsers"));
         select.selectByVisibleText(USER_NAME);
-        findElementById("users.doAdd").click();
+        clickElement(By.id("users.doAdd"));
 
-        findElementByName("finish").click();
+        clickElement(By.name("finish"));
 
-        findElementByLink(GROUP_NAME).click();
+        clickElement(By.linkText(GROUP_NAME));
         m_driver.findElement(By.xpath("//h2[text()='Details for Group: " + GROUP_NAME + "']"));
 
-        findElementByLink("Group List").click();
-        findElementById(GROUP_NAME + ".doDelete").click();
+        clickElement(By.linkText("Group List"));
+        clickElement(By.id(GROUP_NAME + ".doDelete"));
         handleAlert("Are you sure you want to delete the group " + GROUP_NAME + "?");
         assertElementDoesNotExist(By.id(GROUP_NAME));
 
-        findElementByLink("Users and Groups").click();
-        findElementByLink("Configure Users").click();
+        clickElement(By.linkText("Users and Groups"));
+        clickElement(By.linkText("Configure Users"));
         findElementById("user-" + USER_NAME);
-        findElementById("users(" + USER_NAME + ").doDelete").click();
+        clickElement(By.id("users(" + USER_NAME + ").doDelete"));
         handleAlert("Are you sure you want to delete the user " + USER_NAME + "?");
         assertElementDoesNotExist(By.id(USER_NAME));
     }

@@ -55,7 +55,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
 
     private void gotoPage() {
         adminPage();
-        findElementByLink("Configure SNMP Community Names by IP Address").click();
+        clickElement(By.linkText("Configure SNMP Community Names by IP Address"));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         // v2c
         new Select(findElementByName("version")).selectByVisibleText("v2c");
         enterText(By.name("ipAddress"), "1.1.1.1");
-        findElementByName("getConfig").click();
+        clickElement(By.name("getConfig"));
 
         assertEquals("", findElementByName("ipAddress").getAttribute("value"));
         assertEquals("v2c", findElementByName("version").getAttribute("value"));
@@ -110,10 +110,10 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         new Select(findElementByName("privProtocol")).selectByVisibleText("DES");
         enterText(By.name("authPassPhrase"), "authMe!");
         enterText(By.name("privPassPhrase"), "privMe!");
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
 
         enterText(By.name("ipAddress"), "1.2.3.4");
-        findElementByName("getConfig").click();
+        clickElement(By.name("getConfig"));
 
         // give the page time to rearrange the DOM before checking things
         Thread.sleep(1000);
@@ -225,7 +225,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         gotoPage();
         enterText(By.name("firstIPAddress"), "1234");
         enterText(By.name("lastIPAddress"), "");
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
 
         String alertText = handleAlert();
         assertEquals("1234 is not a valid IP address!", alertText);
@@ -234,7 +234,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         gotoPage();
         enterText(By.name("firstIPAddress"), "1.1.1.1");
         enterText(By.name("lastIPAddress"), "abc");
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
 
         alertText = handleAlert();
         assertEquals("abc is not a valid IP address!", alertText);
@@ -243,7 +243,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         gotoPage();
         enterText(By.name("firstIPAddress"), "1.1.1.1");
         enterText(By.name("lastIPAddress"), "");
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
 
         alertText = handleAlert();
         assertNull(alertText);
@@ -253,7 +253,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         gotoPage();
         enterText(By.name("firstIPAddress"), "1.1.1.1");
         enterText(By.name("lastIPAddress"), "1.1.1.2");
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
 
         alertText = handleAlert();
         assertNull(alertText);
@@ -265,7 +265,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
      */
     @Test
     public void testCancelButton() {
-        findElementByName("cancelButton").click();
+        clickElement(By.name("cancelButton"));
         // this takes you to the admin page
         findElementByXpath("//h3[text()='OpenNMS System']");
         assertTrue(m_driver.getCurrentUrl().endsWith("/admin/index.jsp"));
@@ -280,7 +280,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         enterText(By.name("firstIPAddress"), "1.1.1.1");
         setChecked(By.id("sendEventOption"));
         setUnchecked(By.id("saveLocallyOption"));
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
         String alertText = handleAlert();
         assertNull(alertText);
         assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
@@ -290,7 +290,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         enterText(By.name("firstIPAddress"), "1.1.1.1");
         setUnchecked(By.id("sendEventOption"));
         setChecked(By.id("saveLocallyOption"));
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
         alertText = handleAlert();
         assertNull(alertText);
         assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
@@ -300,7 +300,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         enterText(By.name("firstIPAddress"), "1.1.1.1");
         setChecked(By.id("sendEventOption"));
         setChecked(By.id("saveLocallyOption"));
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
         alertText = handleAlert();
         assertNull(alertText);
         assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
@@ -310,14 +310,14 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         enterText(By.name("firstIPAddress"), "1.1.1.1");
         setUnchecked(By.id("sendEventOption"));
         setUnchecked(By.id("saveLocallyOption"));
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
         alertText = handleAlert();
         assertNotNull(alertText);
         assertEquals("You must select either 'Send Event' or 'Save Locally'. It is possible to select both options.", alertText);
     }
 
     private void validate (final String errorMessageTemplate, final String fieldName, final String fieldLabel, final String fieldValue, final Boolean success) {
-        findElementByName("saveConfig").click();
+        clickElement(By.name("saveConfig"));
         String alertText = handleAlert();
         if (success) {
             // if we expect this page to succeed, we should have no alert text, and we should find the finish text

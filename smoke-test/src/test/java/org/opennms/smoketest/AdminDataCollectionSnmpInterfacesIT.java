@@ -123,8 +123,8 @@ public class AdminDataCollectionSnmpInterfacesIT extends OpenNMSSeleniumTestCase
      */
     @Test
     public void canRenderPage() throws Exception {
-        findElementByLink("Admin").click();
-        findElementByLink("Configure SNMP Data Collection per Interface").click();
+        clickElement(By.linkText("Admin"));
+        clickElement(By.linkText("Configure SNMP Data Collection per Interface"));
         // 5 columns: ifIndex, ifType, ifDescr, ifName, ifAlias
         List<WebElement> interfaces = m_driver.findElements(By.cssSelector("onms-interfaces-config td.ng-binding"));
         Assert.assertNotNull(interfaces);

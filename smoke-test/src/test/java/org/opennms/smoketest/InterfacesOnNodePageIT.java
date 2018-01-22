@@ -135,7 +135,7 @@ public class InterfacesOnNodePageIT extends OpenNMSSeleniumTestCase {
         Assert.assertEquals("test-machine1.local", elements.get(1).getText());
 
         // Click on SNMP Interfaces Tab
-        findElementByLink("SNMP Interfaces").click();
+        clickElement(By.linkText("SNMP Interfaces"));
 
         // Verify SNMP Interfaces
         elements = m_driver.findElements(By.cssSelector("div.tab-pane.ng-scope.active td.ng-binding"));

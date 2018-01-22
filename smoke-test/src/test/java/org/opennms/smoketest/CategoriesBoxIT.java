@@ -30,6 +30,7 @@ package org.opennms.smoketest;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 
@@ -43,7 +44,7 @@ public class CategoriesBoxIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testCategoryLink() throws Exception {
         // Hit the default "Network Interfaces" link on the startpage
-        findElementByLink("Network Interfaces").click();
+        clickElement(By.linkText("Network Interfaces"));
         // check for correct url...
         wait.until(ExpectedConditions.urlContains("/opennms/rtc/category.jsp"));
         // ...and header cell

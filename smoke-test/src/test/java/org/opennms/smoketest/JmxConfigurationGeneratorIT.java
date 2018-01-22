@@ -53,8 +53,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
          * Somehow normal links cause a vaadin exception. This test verifies that no exception
          * is thrown when clicking the Header links
          */
-        WebElement element = findElementByLink("1. Service Configuration");
-        element.click();
+        clickElement(By.linkText("1. Service Configuration"));
 
         Collection<WebElement> errorPopups = m_driver.findElements(By.cssSelector("div[class=\"v-errormessage\"]"));
         // sometimes empty v-errormessage divs are present, we have to filter them out
@@ -71,16 +70,16 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         configureJMXConnection(true);
 
         selectNodeByName("Pool (opennms)", false);
-        findElementById("next").click();
+        clickElement(By.id("next"));
 
         // configuration summary
         wait.until(pageContainsText("collectd-configuration.xml"));
 
         // backwards
-        findElementById("previous").click();
+        clickElement(By.id("previous"));
         wait.until(pageContainsText(MBEANS_VIEW_TREE_WAIT_NAME));
 
-        findElementById("previous").click();
+        clickElement(By.id("previous"));
         wait.until(pageContainsText("Skip JVM MBeans"));
     }
 
@@ -94,11 +93,11 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         selectNodeByName("Code Cache", true);
 
         // go to last page
-        findElementById("next").click();
+        clickElement(By.id("next"));
         wait.until(pageContainsText("collectd-configuration.xml"));
 
         // switch to jmx-datacollection-config.xml tab
-        findElementByXpath("//div[text()='jmx-datacollection-config.xml']").click();
+        clickElement(By.xpath("//div[text()='jmx-datacollection-config.xml']"));
         wait.until(pageContainsText("JMXMP protocol."));
 
         // verify output
@@ -117,7 +116,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         final boolean selected = waitForElement(By.xpath(skipDefaultVMxpath)).isSelected();
         LOG.debug("skipDefaultVM selected: {}", selected);
         if (selected != skipDefaultVM) {
-            waitForElement(By.xpath(skipDefaultVMxpath)).click();
+            clickElement(By.xpath(skipDefaultVMxpath));
         }
 
         // configure authentication
@@ -149,7 +148,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
             setVaadinValue("authenticatePassword", "admin");
 
             // go to next page
-            waitForElement(By.id("next")).click();
+            clickElement(By.id("next"));
 
             try {
                 setImplicitWait(1, TimeUnit.SECONDS);
@@ -203,7 +202,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         final String deselectXpath = "//div[@id='PID_VAADIN_CM']//div[text()='deselect']";
         final String selectXpath = "//div[@id='PID_VAADIN_CM']//div[text()='select']";
 
-        findElementByXpath(treeNodeXpath).click();
+        clickElement(By.xpath(treeNodeXpath));
 
         // F**king Vaadin redraws the *entire* tree with new DOM so it turns out the new
         // PooledDataSource span usually isn't there yet after the last click, even if
@@ -216,7 +215,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(deselectXpath)));
 
         // deselect/select Element depending on the value of select.
-        findElementByXpath(select ? selectXpath : deselectXpath).click();
+        clickElement(By.xpath(select ? selectXpath : deselectXpath));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("previous")));
     }
 

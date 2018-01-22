@@ -28,16 +28,26 @@
 
 package org.opennms.smoketest;
 
+import java.util.concurrent.TimeUnit;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ReportsPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         reportsPage();
+        setImplicitWait(10, TimeUnit.SECONDS);
+    }
+
+    @After
+    public void resetTimer() {
+        setImplicitWait();
     }
 
     @Test
@@ -54,17 +64,17 @@ public class ReportsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllLinks() throws Exception {
-        findElementByLink("Resource Graphs").click();
+        clickElement(By.xpath("//div[@id='content']//a[text()='Resource Graphs']"));
         findElementByXpath("//label[contains(text()[normalize-space()], 'Standard Resource')]");
         findElementByXpath("//h3[text()='Network Performance Data']");
 
         reportsPage();
-        findElementByLink("KSC Performance, Nodes, Domains").click();
+        clickElement(By.linkText("KSC Performance, Nodes, Domains"));
         findElementByXpath("//h3[text()='Customized Reports']");
         findElementByXpath("//h3[text()='Descriptions']");
 
         reportsPage();
-        findElementByLink("Database Reports").click();
+        clickElement(By.xpath("//div[@id='content']//a[text()='Database Reports']"));
         findElementByXpath("//h3[text()='Database Reports']");
         findElementByXpath("//h3[text()='Descriptions']");
         findElementByLink("List reports");
@@ -72,7 +82,7 @@ public class ReportsPageIT extends OpenNMSSeleniumTestCase {
         findElementByLink("Manage the batch report schedule");
 
         reportsPage();
-        findElementByLink("Statistics Reports").click();
+        clickElement(By.linkText("Statistics Reports"));
         findElementByXpath("//h3[text()='Statistics Report List']");
     }
 

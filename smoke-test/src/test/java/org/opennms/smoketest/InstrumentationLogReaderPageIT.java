@@ -41,28 +41,28 @@ public class InstrumentationLogReaderPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         adminPage();
-        findElementByLink("Instrumentation Log Reader").click();
+        clickElement(By.linkText("Instrumentation Log Reader"));
     }
 
     @Test
     public void testInstrumentationLogReaderPage() throws Exception {
         enterText(By.name("searchString"), "test");
         assertEquals("test", findElementByName("searchString").getAttribute("value"));
-        findElementByXpath("//button[@type='submit' and text()='Submit']").click();
-        findElementByXpath("//button[@type='submit' and text()='Reset']").click();
+        clickElement(By.xpath("//button[@type='submit' and text()='Submit']"));
+        clickElement(By.xpath("//button[@type='submit' and text()='Reset']"));
         assertEquals("", findElementByName("searchString").getAttribute("value"));
     }
 
     @Test
     public void testSortingLinks() throws InterruptedException {
-        findElementByLink("Collections").click();
-        findElementByXpath("//a[text()='Collections ^']").click();
-        findElementByXpath("//a[text()='Collections v']").click();
-        findElementByLink("Average Successful Collection Time").click();
-        findElementByXpath("//a[text()='Average Successful Collection Time ^']").click();
-        findElementByXpath("//a[text()='Average Successful Collection Time v']").click();
-        findElementByLink("Average Persistence Time").click();
-        findElementByXpath("//a[text()='Average Persistence Time ^']").click();
-        findElementByXpath("//a[text()='Average Persistence Time v']").click();
+        clickElement(By.linkText("Collections"));
+        clickElement(By.xpath("//a[text()='Collections ^']"));
+        clickElement(By.xpath("//a[text()='Collections v']"));
+        clickElement(By.linkText("Average Successful Collection Time"));
+        clickElement(By.xpath("//a[text()='Average Successful Collection Time ^']"));
+        clickElement(By.xpath("//a[text()='Average Successful Collection Time v']"));
+        clickElement(By.linkText("Average Persistence Time"));
+        clickElement(By.xpath("//a[text()='Average Persistence Time ^']"));
+        clickElement(By.xpath("//a[text()='Average Persistence Time v']"));
     }
 }

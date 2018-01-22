@@ -114,39 +114,39 @@ public class KSCEditorIT extends OpenNMSSeleniumTestCase {
 
     protected void createReport() throws Exception {
         // create a new report
-        clickElementByXpath("//button[text()='Create New']");
+        clickElement(By.xpath("//button[text()='Create New']"));
 
         // set the title
         enterText(By.name("report_title"), "Smoke Test Report 1");
 
         // add the ICMP graph
-        clickElementByXpath("//button[text()='Add New Graph']");
+        clickElement(By.xpath("//button[text()='Add New Graph']"));
 
         // select the first subresource (TestMachine1)
-        clickElementByName("subresource:Node:TestMachine1");
-        clickElementByXpath("//button[text()='View Child Resource']");
+        clickElement(By.name("subresource:Node:TestMachine1"));
+        clickElement(By.xpath("//button[text()='View Child Resource']"));
 
         // select the first subresource (127.0.0.1)
-        clickElementByName("subresource:Response Time:127.0.0.1");
-        clickElementByXpath("//button[text()='View Child Resource']");
+        clickElement(By.name("subresource:Response Time:127.0.0.1"));
+        clickElement(By.xpath("//button[text()='View Child Resource']"));
 
         // choose the resource
-        clickElementByXpath("//button[text()='Choose this resource']");
+        clickElement(By.xpath("//button[text()='Choose this resource']"));
 
         // name the graph
         enterText(By.name("title"), "Smoke Test Graph Title 1");
 
         // finish up
-        clickElementByXpath("//button[text()='Done with edits to this graph']");
-        clickElementByXpath("//button[text()='Save Report']");
+        clickElement(By.xpath("//button[text()='Done with edits to this graph']"));
+        clickElement(By.xpath("//button[text()='Save Report']"));
 
         assertEquals("Smoke Test Report 1", findElementByName("report:Smoke Test Report 1").getText());        
 
         // view the report to confirm it's right
         waitForElement(By.name("report:Smoke Test Report 1"));
         Thread.sleep(100);
-        clickElementByName("report:Smoke Test Report 1");
-        clickElementByXpath("//button[text()='View']");
+        clickElement(By.name("report:Smoke Test Report 1"));
+        clickElement(By.xpath("//button[text()='View']"));
         findElementByXpath("//h3[text()='Custom View: Smoke Test Report 1']");
         findElementByXpath("//div[contains(@class, 'graph-container')]");
         findElementByXpath("//img[contains(@class, 'graphImg')]");
@@ -154,8 +154,8 @@ public class KSCEditorIT extends OpenNMSSeleniumTestCase {
 
     protected void editExistingReport() throws Exception {
         // edit report 0 (should be the Smoke Test Report 1 from b_test*)
-        clickElementByName("report:Smoke Test Report 1");
-        clickElementByXpath("//button[text()='Customize']");
+        clickElement(By.name("report:Smoke Test Report 1"));
+        clickElement(By.xpath("//button[text()='Customize']"));
 
         // check that the defaults are set as expected
         assertFalse(findElementByName("show_timespan").isSelected());
@@ -165,8 +165,8 @@ public class KSCEditorIT extends OpenNMSSeleniumTestCase {
 
         // change graphs per line to 3, check "show timespan" and "show graphtype", and change the title
         gpl.selectByVisibleText("3");
-        clickElementByName("show_timespan");
-        clickElementByName("show_graphtype");
+        clickElement(By.name("show_timespan"));
+        clickElement(By.name("show_graphtype"));
         enterText(By.name("report_title"), "Smoke Test Report Uno");
 
         // now confirm that the checkboxes got checked
@@ -174,7 +174,7 @@ public class KSCEditorIT extends OpenNMSSeleniumTestCase {
         assertTrue(findElementByName("show_graphtype").isSelected());
 
         // modify the graph and give it a new title
-        clickElementByXpath("//button[text()='Modify']");
+        clickElement(By.xpath("//button[text()='Modify']"));
         enterText(By.name("title"), "Smoke Test Graph Title I");
 
         // update the timespan
@@ -182,25 +182,17 @@ public class KSCEditorIT extends OpenNMSSeleniumTestCase {
         timespan.selectByVisibleText("3 month");
 
         // then finish modifying the graph
-        clickElementByXpath("//button[text()='Done with edits to this graph']");
+        clickElement(By.xpath("//button[text()='Done with edits to this graph']"));
 
         // then finish modifying the report
-        clickElementByXpath("//button[text()='Save Report']");
+        clickElement(By.xpath("//button[text()='Save Report']"));
     }
 
     protected void deleteExistingReport() throws Exception {
         // edit report 0 (should be the Smoke Test Report 1 from b_test*)
-        clickElementByName("report:Smoke Test Report Uno");
-        clickElementByXpath("//button[text()='Delete']");
+        clickElement(By.name("report:Smoke Test Report Uno"));
+        clickElement(By.xpath("//button[text()='Delete']"));
         assertElementDoesNotExist(By.name("report:Smoke Test Report Uno"));
-    }
-
-    private void clickElementByName(final String name) {
-        findElementByName(name).click();
-    }
-
-    private void clickElementByXpath(final String xpath) {
-        findElementByXpath(xpath).click();
     }
 
     private void createRequisition() throws Exception {

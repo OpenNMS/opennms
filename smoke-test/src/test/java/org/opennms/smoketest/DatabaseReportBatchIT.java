@@ -31,6 +31,7 @@ package org.opennms.smoketest;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,17 +48,22 @@ public class DatabaseReportBatchIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void before() {
+        setImplicitWait(10, TimeUnit.SECONDS);
         reportsPage();
-        findElementByLink("Database Reports").click();
-        findElementByLink("List reports").click();
+        clickElement(By.xpath("//div[@class='panel-body']//a[contains(text(), 'Database Reports')]"));
+        clickElement(By.xpath("//div[@class='panel-body']//a[contains(text(), 'List reports')]"));
+        //clickElement(By.linkText("Database Reports"));
+        //clickElement(By.linkText("List reports"));
+    }
 
-        // we do not want to wait 2 minutes, we only want to wait n seconds
-        m_driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    @After
+    public void after() {
+        setImplicitWait();
     }
 
     @Test
     public void testDeliver() {
-        findElementByXpath("//td[@class=\"o-report-deliver\"]/a").click();
+        clickElement(By.xpath("//td[@class=\"o-report-deliver\"]/a"));
         List<WebElement> elements = m_driver.findElements(By.xpath("//h3[contains(text(), 'Error')]"));
         Assert.assertEquals(0, elements.size());
     }
@@ -65,7 +71,7 @@ public class DatabaseReportBatchIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testSchedule() {
-        findElementByXpath("//td[@class=\"o-report-schedule\"]/a").click();
+        clickElement(By.xpath("//td[@class=\"o-report-schedule\"]/a"));
         List<WebElement> elements = m_driver.findElements(By.xpath("//h3[contains(text(), 'Error')]"));
         Assert.assertEquals(0, elements.size());
     }

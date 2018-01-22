@@ -61,7 +61,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
         }
 
         public TopologyIT.TopologyUIPage viewInTopology() {
-            testCase.m_driver.findElement(By.linkText("View in Topology")).click();
+            testCase.clickElement(By.linkText("View in Topology"));
             final TopologyIT.TopologyUIPage topologyUIPage = new TopologyIT.TopologyUIPage(testCase, testCase.getBaseUrl());
             topologyUIPage.open();
             return topologyUIPage;

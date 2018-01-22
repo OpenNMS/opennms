@@ -96,7 +96,7 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllLinks() throws InterruptedException {
-        findElementByLink("Show interfaces").click();
+        clickElement(By.linkText("Show interfaces"));
         findElementByXpath("//h3[text()='Nodes and their interfaces']");
         findElementByLink("Hide interfaces");
     }
@@ -121,21 +121,21 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
                             "TestMachine loc2node2"));
 
         // Check switching to first location
-        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Pittsboro']").click();
+        clickElement(By.xpath("//select[@id='monitoringLocation']//option[text()='Pittsboro']"));
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='Pittsboro' and @selected]");
         assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
                    containsInAnyOrder("TestMachine loc1node1",
                                       "TestMachine loc1node2"));
 
         // Check switching to second location
-        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Fulda']").click();
+        clickElement(By.xpath("//select[@id='monitoringLocation']//option[text()='Fulda']"));
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='Fulda' and @selected]");
         assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
                    containsInAnyOrder("TestMachine loc2node1",
                                       "TestMachine loc2node2"));
 
         // Check switching to unfiltered
-        findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations']").click();
+        clickElement(By.xpath("//select[@id='monitoringLocation']//option[text()='All locations']"));
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations' and @selected]");
         assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
                    hasItems("TestMachine loc1node1",

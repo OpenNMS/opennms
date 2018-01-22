@@ -91,28 +91,29 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllLinks() throws InterruptedException{
-        findElementByLink("All alarms (summary)").click();
+        clickElement(By.linkText("All alarms (summary)"));
         findElementByXpath("//a[@title='Show acknowledged alarm(s)']");
-        assertElementDoesNotExist(By.cssSelector("//table//th//a[text()='First Event Time']"));
+        //assertElementDoesNotExist(By.cssSelector("//table//th//a[text()='First Event Time']"));
+        assertElementDoesNotExist(By.xpath("//table//th//a[text()='First Event Time']"));
 
         alarmsPage();
-        findElementByLink("All alarms (detail)").click();
+        clickElement(By.linkText("All alarms (detail)"));
         findElementByXpath("//a[@title='Show acknowledged alarm(s)']");
         findElementByLink("First Event Time");
 
         alarmsPage();
-        findElementByLink("Advanced Search").click();
+        clickElement(By.linkText("Advanced Search"));
         findElementByName("msgsub");
         findElementByName("iplike");
     }
 
     @Test
     public void testAlarmLink() throws Exception {
-        findElementByLink("All alarms (summary)").click();
+        clickElement(By.linkText("All alarms (summary)"));
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[contains(@href,'alarm/detail.htm')]")));
 
-        findElementByXpath("//a[contains(@href,'alarm/detail.htm')]").click();
+        clickElement(By.xpath("//a[contains(@href,'alarm/detail.htm')]"));
         findElementByXpath("//tr[@class]//th[text()='Severity']");
     }
 

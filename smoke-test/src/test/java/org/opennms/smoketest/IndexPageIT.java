@@ -38,11 +38,10 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
 
 /**
  * The Test Class for the Index Page.
@@ -106,9 +105,9 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
         // try every 5 seconds, for 120 seconds, until the service on 127.0.0.2 has been detected as "down", or fail afterwards
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(m_driver, 120).until(new Predicate<WebDriver>() {
+            new WebDriverWait(m_driver, 120).until(new ExpectedCondition<Boolean>() {
                 @Override
-                public boolean apply(@Nullable WebDriver input) {
+                public Boolean apply(@Nullable WebDriver input) {
                     // refresh page
                     input.get(getBaseUrl() + "opennms/index.jsp");
 

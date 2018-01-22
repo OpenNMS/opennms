@@ -275,7 +275,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public void delete(String serviceName, boolean withConfirmDialog) {
-            findDeleteButton(testCase, serviceName).click();
+            clickDeleteButton(testCase, serviceName);
             if (withConfirmDialog) { // we remove the parent element first, the confirm dialog must be present
                 testCase.clickElement(By.id("confirmationDialog.button.ok"));
             }
@@ -292,6 +292,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public void reloadDaemon() {
             testCase.clickElement(By.id("reloadButton"));
+            testCase.waitForClose(By.xpath("//div[contains(@class, 'v-Notification')]"));
         }
 
         public void filter(String filter) {
@@ -712,6 +713,10 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private static WebElement findDeleteButton(OpenNMSSeleniumTestCase testCase, String serviceName) {
         return testCase.findElementById("deleteButton-" + serviceName);
+    }
+
+    private static void clickDeleteButton(OpenNMSSeleniumTestCase testCase, String serviceName) {
+        testCase.clickElement(By.id("deleteButton-" + serviceName));
     }
 
     private void verifyElementNotPresent(String text) {

@@ -66,24 +66,24 @@ public class NotificationsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllLinks() throws InterruptedException {
-        findElementByLink("Your outstanding notices").click();
+        clickElement(By.linkText("Your outstanding notices"));
         findElementByXpath("//span[@class='label label-default' and contains(text(), 'admin was notified')]");
         findElementByLink("[Remove all]");
-        findElementByLink("Sent Time");
+        findElementByXpath("//table//a[text()='Responder']");
         findElementByXpath("//button[@type='button' and text()='Acknowledge Notices']");
 
         notificationsPage();
-        findElementByLink("All outstanding notices").click();
+        clickElement(By.linkText("All outstanding notices"));
         findElementByXpath("//p//strong[text()='outstanding']");
         findElementByLink("[Show acknowledged]");
-        findElementByLink("Respond Time");
+        findElementByXpath("//table//a[text()='Responder']");
         assertElementDoesNotHaveText(By.xpath("//span[@class='label label-default']"), "admin was notified [-]");
 
         notificationsPage();
-        findElementByLink("All acknowledged notices").click();
+        clickElement(By.linkText("All acknowledged notices"));
         findElementByXpath("//p//strong[text()='acknowledged']");
         findElementByLink("[Show outstanding]");
-        findElementByLink("Respond Time");
+        findElementByXpath("//table//a[text()='Responder']");
         assertElementDoesNotHaveText(By.xpath("//span[@class='label label-default']"), "admin was notified [-]");
     }
 
