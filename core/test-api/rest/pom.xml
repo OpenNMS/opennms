@@ -80,5 +80,9 @@
       <artifactId>json</artifactId>
       <version>${jsonVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web-assets</artifactId>
+    </dependency>
   </dependencies>
 </project>

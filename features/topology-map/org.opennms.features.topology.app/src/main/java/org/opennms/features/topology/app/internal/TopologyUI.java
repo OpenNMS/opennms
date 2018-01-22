@@ -113,7 +113,6 @@ import com.github.wolfie.refresher.Refresher;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.vaadin.annotations.PreserveOnRefresh;
-import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.data.Property;
@@ -145,9 +144,6 @@ import com.vaadin.ui.Window;
 @Theme("topo_default")
 @Title("OpenNMS Topology Map")
 @PreserveOnRefresh
-@StyleSheet(value = {
-        "theme://ionicons/css/ionicons.css"
-})
 public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {

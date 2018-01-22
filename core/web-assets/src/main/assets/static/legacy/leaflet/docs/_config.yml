@@ -1,0 +1,8 @@
+exclude: [build, debug, node_modules, spec, src, CNAME, Jakefile.js, reference-tpl.html, CHANGELOG.md, README.md, LICENSE, DOCS-TODO.md]
+
+markdown: kramdown
+
+kramdown:
+  entity_output: as_input
+
+latest_leaflet_version: 1.0.2

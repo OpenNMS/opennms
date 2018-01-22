@@ -41,10 +41,10 @@
 	<jsp:param name="location" value="admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Configure SNMP by IP" />
-	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/ipv6.js'></script>" />
-	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>" />
-	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>" />
-	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>" />
+</jsp:include>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="ipaddress-js" />
 </jsp:include>
 
 <script type="text/javascript">

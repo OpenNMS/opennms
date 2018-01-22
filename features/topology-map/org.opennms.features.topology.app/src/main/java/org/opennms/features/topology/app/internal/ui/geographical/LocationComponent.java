@@ -31,17 +31,13 @@ package org.opennms.features.topology.app.internal.ui.geographical;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.vaadin.annotations.JavaScript;
-import com.vaadin.annotations.StyleSheet;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 
 @JavaScript({
-        "theme://leaflet/leaflet-src.js",
-        "theme://js/location-component_connector.js"
+    "theme://../opennms/assets/location-component_connector.vaadin.js"
 })
-@StyleSheet(
-        "theme://leaflet/leaflet.css"
-)
 public class LocationComponent extends AbstractJavaScriptComponent {
+    private static final long serialVersionUID = 1L;
 
     public LocationComponent(LocationConfiguration configuration, String uniqueId) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(uniqueId), "The uniqueId must not be null or empty");

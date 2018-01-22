@@ -1,0 +1,31 @@
+<div>
+<!-- Alejandro Galue (agalue@opennms.org) -->
+
+<div class="modal-header">
+  <h3 class="modal-title">Policy</h3>
+</div>
+
+<div class="modal-body">
+  <form name="policyForm">
+    <div class="form-group" ng-class="{ 'has-error' : policyForm.name.$invalid }">
+      <label class="control-label" for="name">Name</label>
+      <input class="form-control" type="text" id="name" name="name" placeholder="Policy Name" ng-model="policy.name" required></input>
+      <p ng-show="policyForm.name.$invalid" class="help-block">A non empty name is required.</p>
+    </div>
+    <div class="form-group" ng-class="{ 'has-error' : policyForm.clazz.$invalid }">
+      <label class="control-label" for="clazz">Class</label>
+      <input class="form-control" type="text" id="clazz" name="clazz" placeholder="Implementation Class (choose one from the list)" ng-model="policy.class" typeahead-min-length="0" typeahead-editable="false" typeahead-on-select="updatePolicyParameters($item)" uib-typeahead="policy.class as policy.name for policy in availablePolicies | filter:$viewValue" required></input>
+      <p ng-show="policyForm.clazz.$invalid" class="help-block">A valid class name is required.</p>
+    </div>
+    <ng-form name="paramForm" ng-repeat="parameter in policy.parameter" ng-include="getTemplate(parameter)">
+    </ng-form>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" id="add-policy-parameter" ng-click="addParameter()" ng-disabled="policyForm.clazz.$invalid">Add Parameter</button>
+  <button type="button" class="btn btn-primary" id="save-policy" ng-click="save()" ng-disabled="policyForm.$invalid">Save</button>
+  <button type="button" class="btn btn-default" id="cancel=policy" ng-click="cancel()">Cancel</button>
+</div>
+
+</div>

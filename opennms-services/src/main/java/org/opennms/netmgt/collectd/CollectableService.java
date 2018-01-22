@@ -35,6 +35,7 @@ import java.util.Date;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
+import org.opennms.netmgt.collectd.DefaultSnmpCollectionAgent;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;

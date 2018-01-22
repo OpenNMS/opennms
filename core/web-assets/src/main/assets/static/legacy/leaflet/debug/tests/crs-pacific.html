@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet debug page</title>
+
+	<link rel="stylesheet" href="../../dist/leaflet.css" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="../css/screen.css" />
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+</head>
+<body>
+
+	<div id="map"></div>
+	<button id="populate">Populate with 10 markers</button>
+
+	<script type="text/javascript">
+
+
+//     L.CRS.EPSG3857.Pacific = L.extend({}, L.CRS.EPSG3857, {
+//         wrapLng: [0, 360],
+//     });
+
+    var map = L.map('map', {
+// 	    crs: L.CRS.EPSG3857.Pacific
+    });
+
+    var positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+    }).addTo(map);
+
+    L.marker([0, 179]).addTo(map);
+    L.marker([0, 181]).addTo(map);
+    L.marker([0, 183]).addTo(map);
+    L.marker([0, 185]).addTo(map);
+    L.marker([0, 187]).addTo(map);
+    L.marker([0, 189]).addTo(map);
+
+    map.fitWorld();
+	</script>
+</body>
+</html>

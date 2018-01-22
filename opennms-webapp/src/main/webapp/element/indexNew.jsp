@@ -35,14 +35,10 @@
 	<jsp:param name="title" value="Node List" />
 	<jsp:param name="headTitle" value="Node List" />
 	<jsp:param name="breadcrumb" value="Node List" />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
+</jsp:include>
 
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-node.js"></script>' />
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="node-elementList" />
 </jsp:include>
 
 <!-- NMS-7099: Add custom javascripts AFTER the header was included -->
@@ -76,6 +72,6 @@
 }
 </style>
 
-<ng-include src="'element/main.html'"></ng-include>
+<onms-node-list></onms-node-list>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
