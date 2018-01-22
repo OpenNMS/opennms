@@ -301,7 +301,7 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
                     }
                     String keyField = compositeSample.getMbean().getKeyfield();
                     if (keyField != null) {
-                        final String parsedObjectName = objectName.getCanonicalName();
+                        final String parsedObjectName = fixGroupName(objectName.getCanonicalName());
                         final Resource resource = new DeferredGenericTypeResource(parentResource, keyField,
                                 parsedObjectName);
 

@@ -57,7 +57,7 @@ public class GenericTypeResource extends DeferredGenericTypeResource {
     }
 
     protected static String sanitizeInstance(String instance) {
-        return instance.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_").replaceAll("=", "_");
+        return instance.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_");
     }
 
     public ResourceType getResourceType() {
