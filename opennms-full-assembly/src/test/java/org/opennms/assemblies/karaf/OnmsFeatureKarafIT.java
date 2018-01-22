@@ -416,19 +416,8 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
-	public void testInstallFeatureOpennmsDiscovery() {
-		installFeature("opennms-discovery");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	public void testInstallFeatureOpennmsEventsApi() {
 		installFeature("opennms-events-api");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
-	@Ignore("OSGi dependency problems: org.apache.activemq.broker")
-	public void testInstallFeatureOpennmsEventsDaemon() {
-		installFeature("opennms-events-daemon");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
@@ -532,12 +521,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
-	@Ignore("OSGi dependency problems: org.opennms.rancid")
-	public void testInstallFeatureOpennmsReporting() {
-		installFeature("opennms-reporting");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	public void testInstallFeatureOpennmsRrdApi() {
 		installFeature("opennms-rrd-api");
 		System.out.println(executeCommand("feature:list -i"));
@@ -606,12 +589,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Ignore("OSGi dependency problems: javax.persistence")
 	public void testInstallFeatureOpennmsVmware() {
 		installFeature("opennms-vmware");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
-	@Ignore("Experimental feature")
-	public void testInstallFeatureOpennmsWebapp() {
-		installFeature("opennms-webapp");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test

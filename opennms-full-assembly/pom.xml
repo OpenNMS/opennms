@@ -273,7 +273,7 @@
               <goal>features-add-to-repository</goal>
             </goals>
             <configuration>
-              <karafVersion>DONT_USE_STANDARD_FEATURES</karafVersion>
+              <karafVersion>${karafVersion}</karafVersion>
               <descriptors>
                 <!-- 
                   All of these feature files need to be added to the featuresRepositories parameter in the
@@ -384,6 +384,30 @@
               <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>
           </execution>
+          <!-- Create an experimental repo so that it can be used in integration tests -->
+          <execution>
+            <id>features-add-to-repository-experimental</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>features-add-to-repository</goal>
+            </goals>
+            <configuration>
+              <karafVersion>${karafVersion}</karafVersion>
+              <descriptors>
+                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</descriptor>
+                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
+                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/experimental</descriptor>
+              </descriptors>
+              <features>
+                <!-- Experimental features that are not included in OpenNMS -->
+                <feature>opennms-discovery</feature>
+                <feature>opennms-events-daemon</feature>
+                <feature>opennms-reporting</feature>
+                <feature>opennms-webapp</feature>
+              </features>
+              <repository>${project.build.directory}/experimental-repo</repository>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -425,6 +449,9 @@
               <filesets> 
                 <fileset> 
                   <directory>${project.build.directory}/opennms-repo</directory>
+                </fileset> 
+                <fileset> 
+                  <directory>${project.build.directory}/experimental-repo</directory>
                 </fileset> 
                 <fileset> 
                   <directory>${project.build.directory}/minion-core-repo</directory>
