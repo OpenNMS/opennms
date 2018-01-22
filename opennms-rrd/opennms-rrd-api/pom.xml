@@ -21,13 +21,13 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <!--
-              Manually add org.springframework.beans.factory.config to the import list since the
-              org/opennms/netmgt/rrd/rrd-configuration.xml resource needs it.
-              
-              Add all optional imports of RRD strategies to the import list as well.
+              Add all optional imports of RRD strategies to the import list.
             -->
             <Import-Package>
-              org.springframework.beans.factory.config;version="[4.2,4.3)",
+              org.springframework.beans;version="[4.2,4.3)",
+              org.springframework.beans.factory;version="[4.2,4.3)",
+              org.springframework.cglib.core;version="[4.2,4.3)",
+              org.springframework.cglib.proxy;version="[4.2,4.3)",
               org.opennms.netmgt.rrd.jrobin;resolution:=optional,
               org.opennms.netmgt.rrd.rrdtool;resolution:=optional,
               org.opennms.netmgt.rrd.tcp;resolution:=optional,
@@ -53,11 +53,6 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
     </dependency>
   </dependencies>

@@ -32,6 +32,65 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>
+              javax.sql,
+
+              <!-- From mvn:org.hibernate/hibernate-validator -->
+              org.hibernate.validator,
+              org.hibernate.validator.constraints,
+              org.hibernate.validator.messageinterpolation,
+              org.hibernate.validator.resourceloading,
+
+              <!-- From mvn:org.hibernate/hibernate-validator-annotation-processor -->
+              org.hibernate.validator.ap,
+              org.hibernate.validator.ap.checks,
+              org.hibernate.validator.ap.util,
+
+              <!-- From mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance -->
+              org.aopalliance.aop,
+
+              <!-- From mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop -->
+              org.springframework.aop;version="[4.2,4.3)",
+              org.springframework.aop.aspectj;version="[4.2,4.3)",
+              org.springframework.aop.aspectj.annotation;version="[4.2,4.3)",
+              org.springframework.aop.aspectj.autoproxy;version="[4.2,4.3)",
+              org.springframework.aop.config;version="[4.2,4.3)",
+              org.springframework.aop.framework;version="[4.2,4.3)",
+              org.springframework.aop.framework.adapter;version="[4.2,4.3)",
+              org.springframework.aop.framework.autoproxy;version="[4.2,4.3)",
+              org.springframework.aop.framework.autoproxy.target;version="[4.2,4.3)",
+              org.springframework.aop.interceptor;version="[4.2,4.3)",
+              org.springframework.aop.scope;version="[4.2,4.3)",
+              org.springframework.aop.support;version="[4.2,4.3)",
+              org.springframework.aop.target;version="[4.2,4.3)",
+
+              <!-- From mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context -->
+              org.springframework.cache.annotation;version="[4.2,4.3)",
+
+              <!-- Required for Spring annotation scanning -->
+              org.springframework.context.annotation;version="[4.2,4.3)",
+              javax.xml.bind.annotation,
+              javax.xml.bind.annotation.adapters,
+              org.hibernate.annotations,
+              org.codehaus.jackson.annotate,
+              org.codehaus.jackson.map.annotate,
+
+              <!-- OpenNMS dependencies -->
+              org.opennms.core.utils,
+              org.opennms.netmgt.poller,
+              org.opennms.netmgt.collection.persistence.rrd,
+              <!-- Needed by resourceDao for org.opennms.protocols.xml.collector.XmlStorageStrategy -->
+              org.opennms.protocols.xml.collector,
+              !${org.opennms.rrd.strategyClass},
+
+              *
+            </Import-Package>
+
+            <!-- Launch the Spring contexts when this bundle is loaded in OSGi -->
+            <Spring-Context>
+              META-INF/opennms/applicationContext-dao.xml,
+              META-INF/opennms/applicationContext-dao-osgi.xml
+            </Spring-Context>
           </instructions>
         </configuration>
       </plugin>

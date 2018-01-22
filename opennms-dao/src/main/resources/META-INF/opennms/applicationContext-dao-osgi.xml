@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:osgi="http://www.springframework.org/schema/osgi"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+">
+
+  <!-- Import the ServiceRegistry service into Spring -->
+  <osgi:reference id="serviceRegistry" interface="org.opennms.core.soa.ServiceRegistry"/>
+
+  <!-- Import applicationContext-commonConfigs.xml beans -->
+  <osgi:reference id="collectdConfig" interface="org.opennms.netmgt.config.api.CollectdConfigFactory"/>
+  <osgi:reference id="databaseSchemaConfigFactory" interface="org.opennms.netmgt.config.api.DatabaseSchemaConfig"/>
+  <osgi:reference id="onmsServerConfig" interface="org.opennms.netmgt.config.api.OpennmsServerConfig"/>
+  <osgi:reference id="resourceTypesDao" interface="org.opennms.netmgt.config.api.ResourceTypesDao"/>
+
+  <!-- Use a dummy RrdStrategy -->
+  <bean id="basicRrdStrategy" class="org.opennms.netmgt.rrd.NullRrdStrategy"/>
+
+</beans>
