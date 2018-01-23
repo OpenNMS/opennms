@@ -943,7 +943,9 @@ public abstract class NotificationManager {
 
             final ResultSet results = statement.executeQuery();
             d.watch(results);
-            results.next();
+            if (!results.next()) {
+                throw new SQLException("No serviceID found for service with serviceName: " + service);
+            }
 
             serviceID = results.getInt(1);
 
