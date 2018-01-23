@@ -32,6 +32,11 @@ import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -46,24 +51,33 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.ImmutableMap;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -79,10 +93,16 @@ public class NotificationManagerIT implements InitializingBean {
 	@Autowired
 	private DataSource m_dataSource;
 
-	@Autowired
+    @Autowired
+    private EventDao m_eventDao;
+
+    @Autowired
 	private MonitoringLocationDao m_locationDao;
 
-	@Autowired
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+
+    @Autowired
 	private NodeDao m_nodeDao;
 
 	@Autowired
@@ -412,7 +432,76 @@ public class NotificationManagerIT implements InitializingBean {
                 "(nodelabel=='node 1') | (nodelabel=='node 2')",
                 false);
     }
-    
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void canMatchEventParametersWhenAcknowledgingNotices() throws IOException, SQLException {
+        // Insert some event in the database with a few event parameters
+        OnmsEvent dbEvent = new OnmsEvent();
+        dbEvent.setDistPoller(m_distPollerDao.whoami());
+        dbEvent.setEventUei(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI);
+        dbEvent.setEventCreateTime(new Date());
+        dbEvent.setEventLog("Y");
+        dbEvent.setEventDisplay("Y");
+        dbEvent.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+        dbEvent.setEventSource("test");
+        dbEvent.setEventTime(new Date());
+        dbEvent.setEventParameters(Arrays.asList(
+                new OnmsEventParameter(dbEvent, "some-parameter", "some-specific-value", "string"),
+                new OnmsEventParameter(dbEvent, "some-other-parameter", "some-other-specific-value", "string")
+        ));
+        m_eventDao.save(dbEvent);
+        m_eventDao.flush();
+
+        // Create some notification referencing the event we just created
+        Notification notification = new Notification();
+        Map<String, String> params = new ImmutableMap.Builder<String, String>()
+                .put(NotificationManager.PARAM_TEXT_MSG, "some text message")
+                .put("eventUEI", dbEvent.getEventUei())
+                .put("eventID", Integer.toString(dbEvent.getId()))
+                .build();
+        m_notificationManager.insertNotice(1, params, "q1", notification);
+
+        final String[] matchList = new String[] {"parm[some-parameter]", "parm[#2]"};
+
+        // Verify that we're able to match the the notice when we have the same parameters set
+        Event e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-parameter", "some-specific-value")
+                .addParam("some-other-parameter", "some-other-specific-value")
+                .getEvent();
+        Collection<Integer> eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, matchList);
+        assertEquals(1, eventIds.size());
+        assertEquals(dbEvent.getId(), eventIds.iterator().next());
+
+        // It should not match when either of the event parameters are different
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-parameter", "!some-specific-value")
+                .addParam("some-other-parameter", "some-other-specific-value")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, matchList);
+        assertEquals(0, eventIds.size());
+
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-parameter", "some-specific-value")
+                .addParam("some-other-parameter", "!some-other-specific-value")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, matchList);
+        assertEquals(0, eventIds.size());
+
+        // It should not match when either of the event parameters are missing
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-other-parameter", "some-other-specific-value")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, matchList);
+        assertEquals(0, eventIds.size());
+
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-parameter", "some-specific-value")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, matchList);
+        assertEquals(0, eventIds.size());
+    }
+
     private void doTestNodeInterfaceServiceWithRule(String description, int nodeId, String intf, String svc, String rule, boolean matches) {
         Notification notif = new Notification();
         notif.setName("a notification");
