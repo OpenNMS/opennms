@@ -277,7 +277,7 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
 
                     String keyField = attributeSample.getMbean().getKeyfield();
                     if (keyField != null) {
-                        final String parsedObjectName = objectName.getCanonicalName();
+                        final String parsedObjectName = fixGroupName(objectName.getCanonicalName());
                         final Resource resource = new DeferredGenericTypeResource(nodeResource, keyField,
                                 parsedObjectName);
                         addNumericAttributeToCollectionSet(ds, attributeSample, resource);
@@ -304,9 +304,7 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
                         final String parsedObjectName = fixGroupName(objectName.getCanonicalName());
                         final Resource resource = new DeferredGenericTypeResource(parentResource, keyField,
                                 parsedObjectName);
-
                         addNumericAttributeToCollectionSet(ds, compositeSample, resource);
-
                         addStringAttributesToCollectionSet(ds, compositeSample, resource, objectName);
                     } else {
                         addNumericAttributeToCollectionSet(ds, compositeSample, nodeResource);
