@@ -175,7 +175,7 @@
                 </comp-attrib>
             </mbean>
 
-         <mbean name="JVM GarbageCollector" keyfield="jvm" objectname="java.lang:type=GarbageCollector,name=*">
+         <mbean name="JVM GarbageCollector" resource-type="jvm" objectname="java.lang:type=GarbageCollector,name=*">
             <attrib name="CollectionCount" alias="MSCCollCnt" type="counter"/>
             <attrib name="CollectionTime" alias="MSCCollTime" type="counter"/>
          </mbean>

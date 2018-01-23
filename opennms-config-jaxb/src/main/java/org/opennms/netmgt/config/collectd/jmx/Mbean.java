@@ -58,6 +58,9 @@ public class Mbean implements java.io.Serializable {
     @XmlAttribute(name="key-alias")
     private String _keyAlias;
 
+    @XmlAttribute(name="resource-type")
+    private String resourceType;
+
     @XmlElement(name="attrib")
     private java.util.List<Attrib> _attribList = new java.util.ArrayList<>();
 
@@ -90,7 +93,8 @@ public class Mbean implements java.io.Serializable {
                     && Objects.equals(_keyAlias, temp._keyAlias)
                     && Objects.equals(_attribList, temp._attribList)
                     && Objects.equals(_includeMbeanList, temp._includeMbeanList)
-                    && Objects.equals(_compAttribList, temp._compAttribList);
+                    && Objects.equals(_compAttribList, temp._compAttribList)
+                    && Objects.equals(resourceType, temp.resourceType);
             return equals;
         }
         return false;
@@ -149,7 +153,7 @@ public class Mbean implements java.io.Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(_name, _objectname, _keyfield, _exclude, _keyAlias, _attribList, _includeMbeanList, _compAttribList);
+        return Objects.hash(_name, _objectname, _keyfield, _exclude, _keyAlias, _attribList, _includeMbeanList, _compAttribList, resourceType);
     }
 
     public void setAttribCollection(final java.util.List<Attrib> attribList) {
@@ -183,6 +187,14 @@ public class Mbean implements java.io.Serializable {
 
     public void setObjectname(final String objectname) {
         this._objectname = objectname;
+    }
+
+    public String getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
     }
 
     public void clearAttribs() {

@@ -79,11 +79,11 @@ collection:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collect
 
 ===== Generic Resource Type
 
-In order to support wildcard (*) objectname, JMX collector supports generic resource types.
+In order to support wildcard (*) in objectname, JMX collector supports generic resource types.
 Two changes needed to jmx configuration for this to work.
 
-* Include a custom resource type in `etc/resource-types.d/`
-for ex: there is already a jmx-resource.xml which defines a custom resource for kafka lag
+* Create a custom resource type in `etc/resource-types.d/`
+for ex: there is already a definition in `jmx-resource.xml` which defines a custom resource for kafka lag
 
 [source, xml]
 ----
@@ -97,11 +97,11 @@ for ex: there is already a jmx-resource.xml which defines a custom resource for 
     </resourceType>
 </resource-types>
 ----
-* Match the resourceType name as keyfield in mbean definition
+* Match the resourceType name as `resource-type` in mbean definition
 
 [source, xml]
 ----
-<mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" keyfield="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=OpenNMS.Sink.*.Lag">
+<mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" resource-type="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=OpenNMS.Sink.*.Lag">
    <attrib name="Value" alias="Lag" type="gauge"/>
 </mbean>
 ----

@@ -275,10 +275,10 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
                         return;
                     }
 
-                    String keyField = attributeSample.getMbean().getKeyfield();
-                    if (keyField != null) {
+                    String resourceType = attributeSample.getMbean().getResourceType();
+                    if (resourceType != null) {
                         final String parsedObjectName = fixGroupName(objectName.getCanonicalName());
-                        final Resource resource = new DeferredGenericTypeResource(nodeResource, keyField,
+                        final Resource resource = new DeferredGenericTypeResource(parentResource, resourceType,
                                 parsedObjectName);
                         addNumericAttributeToCollectionSet(ds, attributeSample, resource);
                         addStringAttributesToCollectionSet(ds, attributeSample, resource, objectName);
@@ -299,10 +299,10 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
                         LOG.info("Could not find datasource for {}. Skipping.", dsKey);
                         return;
                     }
-                    String keyField = compositeSample.getMbean().getKeyfield();
-                    if (keyField != null) {
+                    String resourceType = compositeSample.getMbean().getResourceType();
+                    if (resourceType != null) {
                         final String parsedObjectName = fixGroupName(objectName.getCanonicalName());
-                        final Resource resource = new DeferredGenericTypeResource(parentResource, keyField,
+                        final Resource resource = new DeferredGenericTypeResource(parentResource, resourceType,
                                 parsedObjectName);
                         addNumericAttributeToCollectionSet(ds, compositeSample, resource);
                         addStringAttributesToCollectionSet(ds, compositeSample, resource, objectName);
