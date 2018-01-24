@@ -1296,8 +1296,8 @@
     <groovyVersion>2.4.5</groovyVersion>
     <guavaVersion>18.0</guavaVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
-    <gwtVersion>2.6.1</gwtVersion>
-    <gwtPluginVersion>2.6.1</gwtPluginVersion>
+    <gwtVersion>2.8.2</gwtVersion>
+    <gwtPluginVersion>2.8.2</gwtPluginVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>
     <httpcoreVersion>4.4.4</httpcoreVersion>

@@ -86,11 +86,23 @@
                         <groupId>com.google.gwt</groupId>
                         <artifactId>gwt-dev</artifactId>
                         <version>${gwtVersion}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>commons-logging</groupId>
+                                <artifactId>commons-logging</artifactId>
+                            </exclusion>
+                        </exclusions>
                     </dependency>
                     <dependency>
                         <groupId>com.google.gwt</groupId>
                         <artifactId>gwt-user</artifactId>
                         <version>${gwtVersion}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>commons-logging</groupId>
+                                <artifactId>commons-logging</artifactId>
+                            </exclusion>
+                        </exclusions>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -277,13 +289,25 @@
 		    <artifactId>gwt-test-utils</artifactId>
 		    <version>0.47</version>
 		    <scope>test</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>commons-logging</groupId>
+                            <artifactId>commons-logging</artifactId>
+                        </exclusion>
+                    </exclusions>
 		</dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
-			<version>${gwtVersion}</version>
-			<scope>test</scope>
-        </dependency>
+                <dependency>
+                    <groupId>com.google.gwt</groupId>
+                    <artifactId>gwt-servlet</artifactId>
+                    <version>${gwtVersion}</version>
+                    <scope>test</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>commons-logging</groupId>
+                            <artifactId>commons-logging</artifactId>
+                        </exclusion>
+                    </exclusions>
+               </dependency>
     </dependencies>
 
 </project>
