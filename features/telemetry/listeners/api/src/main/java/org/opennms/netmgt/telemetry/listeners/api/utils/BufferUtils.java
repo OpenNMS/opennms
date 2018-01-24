@@ -91,6 +91,12 @@ public class BufferUtils {
                 | ((buffer.get() & 0xFF) << 0);
     }
 
+    public static int uint24(final ByteBuffer buffer) {
+        return ((buffer.get() & 0xFF) << 16)
+                | ((buffer.get() & 0xFF) << 8)
+                | ((buffer.get() & 0xFF) << 0);
+    }
+
     public static long uint32(final ByteBuffer buffer) {
         return ((buffer.get() & 0xFFL) << 24)
                 | ((buffer.get() & 0xFFL) << 16)
