@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;

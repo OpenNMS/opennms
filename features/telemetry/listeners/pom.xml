@@ -13,6 +13,7 @@
   <modules>
     <module>api</module>
     <module>flow</module>
+    <module>sflow</module>
     <module>udp</module>
   </modules>
 </project>

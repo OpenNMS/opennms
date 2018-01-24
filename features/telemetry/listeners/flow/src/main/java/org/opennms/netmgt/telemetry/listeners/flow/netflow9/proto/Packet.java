@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.SetHeader;

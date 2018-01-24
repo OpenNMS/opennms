@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.slice;
 
 import java.nio.ByteBuffer;
 

@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -37,7 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;

@@ -41,7 +41,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.junit.Test;
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;

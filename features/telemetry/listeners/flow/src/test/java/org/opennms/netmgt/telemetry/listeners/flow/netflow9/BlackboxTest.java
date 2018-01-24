@@ -42,7 +42,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;

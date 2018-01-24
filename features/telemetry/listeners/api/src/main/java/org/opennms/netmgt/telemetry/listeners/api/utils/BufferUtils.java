@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow;
+package org.opennms.netmgt.telemetry.listeners.api.utils;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
