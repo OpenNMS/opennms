@@ -46,6 +46,18 @@
 		</service-properties>
 	</service>
 
+	<!-- SFlow Factory and Adapter -->
+	<bean id="sflowFactory" class="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapterFactory">
+		<property name="metricRegistry" ref="flowAdapterMetricRegistry"/>
+		<property name="flowRepository" ref="flowRepository" />
+	</bean>
+	<service ref="sflowFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter" />
+		</service-properties>
+	</service>
+
 	<!-- Metrics -->
 	<bean id="flowAdapterMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 	<bean id="flowAdapterMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">

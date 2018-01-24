@@ -50,6 +50,15 @@
     </adapter>
   </protocol>
 
+  <protocol name="SFlow" description="Listener for SFlow UDP packets" enabled="false">
+    <listener name="SFlow-UDP-6343" class-name="org.opennms.netmgt.telemetry.listeners.sflow.Listener">
+      <parameter key="port" value="6343"/>
+    </listener>
+
+    <adapter name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter">
+    </adapter>
+  </protocol>
+
   <protocol name="NXOS" description="Cisco NX-OS Telemetry" enabled="false">
     <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
       <parameter key="port" value="50001"/>

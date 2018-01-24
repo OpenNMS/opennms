@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow;
+package org.opennms.netmgt.telemetry.listeners.api.utils;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -50,6 +50,10 @@ public class BufferUtils {
         result.limit(size);
 
         return result;
+    }
+
+    public static float sfloat(final ByteBuffer buffer) {
+        return Float.intBitsToFloat(buffer.get() ^ buffer.get() << 8 ^ buffer.get() << 16 ^ buffer.get() << 24);
     }
 
     public static UnsignedLong uint(final ByteBuffer buffer, final int octets) {
@@ -91,6 +95,12 @@ public class BufferUtils {
                 | ((buffer.get() & 0xFF) << 0);
     }
 
+    public static int uint24(final ByteBuffer buffer) {
+        return ((buffer.get() & 0xFF) << 16)
+                | ((buffer.get() & 0xFF) << 8)
+                | ((buffer.get() & 0xFF) << 0);
+    }
+
     public static long uint32(final ByteBuffer buffer) {
         return ((buffer.get() & 0xFFL) << 24)
                 | ((buffer.get() & 0xFFL) << 16)
@@ -109,10 +119,51 @@ public class BufferUtils {
                 | ((buffer.get() & 0xFFL) << 0));
     }
 
+    public static Integer sint8(final ByteBuffer buffer) {
+        return Integer.valueOf(
+                (buffer.get() & 0xFF) << 0);
+    }
+
+    public static Integer sint16(final ByteBuffer buffer) {
+        return Integer.valueOf(
+                ((buffer.get() & 0xFF) << 8) |
+                        ((buffer.get() & 0xFF) << 0));
+    }
+
+    public static Integer sint24(final ByteBuffer buffer) {
+        return Integer.valueOf(
+                ((buffer.get() & 0xFF) << 16) |
+                        ((buffer.get() & 0xFF) << 8) |
+                        ((buffer.get() & 0xFF) << 0));
+    }
+
+    public static Integer sint32(final ByteBuffer buffer) {
+        return Integer.valueOf(
+                ((buffer.get() & 0xFF) << 24) |
+                        ((buffer.get() & 0xFF) << 16) |
+                        ((buffer.get() & 0xFF) << 8) |
+                        ((buffer.get() & 0xFF) << 0));
+    }
+
+    public static Long sint64(final ByteBuffer buffer) {
+        return Long.valueOf(
+                ((buffer.get() & 0xFFL) << 56) |
+                        ((buffer.get() & 0xFFL) << 48) |
+                        ((buffer.get() & 0xFFL) << 40) |
+                        ((buffer.get() & 0xFFL) << 32) |
+                        ((buffer.get() & 0xFFL) << 24) |
+                        ((buffer.get() & 0xFFL) << 16) |
+                        ((buffer.get() & 0xFFL) << 8) |
+                        ((buffer.get() & 0xFFL) << 0));
+    }
+
     public static byte[] bytes(final ByteBuffer buffer, final int size) {
         final byte[] result = new byte[size];
         buffer.get(result);
         return result;
     }
 
+    public static void skip(final ByteBuffer buffer, final int size) {
+        buffer.position(buffer.position() + size);
+    }
 }

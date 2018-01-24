@@ -36,6 +36,7 @@ public interface Flow {
         V5,
         V9,
         IPFIX,
+        SFLOW,
     }
 
     enum Direction {
