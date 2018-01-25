@@ -78,6 +78,9 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import kafka.api.PartitionOffsetRequestInfo;
@@ -103,7 +106,13 @@ public class KafkaOffsetProvider {
 
     private static final Map<String, SimpleConsumer> consumerMap = new HashMap<String, SimpleConsumer>();
 
-    private Map<String, Map<String, KafkaOffset>> consumerOffsetMap = new ConcurrentHashMap<>();
+    private Map<String, Map<Integer, KafkaOffset>> consumerOffsetMap = new ConcurrentHashMap<>();
+
+    private Map<String, Long> consumerLagMap = new ConcurrentHashMap<>();
+
+    private MetricRegistry  kafkaOffsetMetrics = new MetricRegistry();
+
+    private JmxReporter reporter = null;
 
     private class KafkaOffsetConsumerRunner implements Runnable {
 
@@ -147,12 +156,28 @@ public class KafkaOffsetProvider {
                                             consumerOffset, lag);
                                     LOGGER.debug("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
                                             partition, consumerOffset, realOffset, lag);
-                                    Map<String, KafkaOffset> map = consumerOffsetMap.get(topic);
+
+                                    Map<Integer, KafkaOffset> map = consumerOffsetMap.get(topic);
+
                                     if (map == null) {
                                         map = new ConcurrentHashMap<>();
                                         consumerOffsetMap.put(topic, map);
+                                        kafkaOffsetMetrics.register(MetricRegistry.name(topic, "Lag"), new Gauge<Long>() {
+                                            @Override
+                                            public Long getValue() {
+                                                return consumerLagMap.get(topic);
+
+                                            }
+                                        });
                                     }
-                                    map.put(group + "%" + partition, mon);
+                                    map.put(partition, mon);
+                                    long totalLag = 0;
+                                    for (KafkaOffset offset : map.values()) {
+                                        totalLag += offset.getLag();
+                                    }
+                                    LOGGER.debug(" Total lag for topic {} is {} ", topic, totalLag);
+
+                                    consumerLagMap.put(topic, totalLag);
 
                                 } catch (Exception e) {
                                     LOGGER.error("Exception while getting offset", e);
@@ -208,7 +233,7 @@ public class KafkaOffsetProvider {
         return consumer;
     }
 
-    public Map<String, Map<String, KafkaOffset>> getConsumerOffsetMap() {
+    public Map<String, Map<Integer, KafkaOffset>> getConsumerOffsetMap() {
         return consumerOffsetMap;
     }
 
@@ -281,10 +306,14 @@ public class KafkaOffsetProvider {
             }
         }
         consumerRunner = new KafkaOffsetConsumerRunner();
+        reporter = JmxReporter.forRegistry(kafkaOffsetMetrics).inDomain("org.opennms.core.ipc.sink.kafka").build();
+
+        reporter.start();
         executor.execute(consumerRunner);
     }
 
     public void stop() throws InterruptedException {
+        reporter.stop();
         consumerRunner.shutdown();
         closeConnection();
     }
