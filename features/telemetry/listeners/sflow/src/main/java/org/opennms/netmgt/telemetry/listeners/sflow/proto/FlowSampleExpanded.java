@@ -29,12 +29,11 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+
+import com.google.common.base.MoreObjects;
 
 /* Format of a single expanded flow sample */
 /* opaque = sample_data; enterprise = 0; format = 3 */
@@ -85,7 +84,7 @@ public class FlowSampleExpanded implements SampleData {
     private final InterfaceExpanded input;
     private final InterfaceExpanded output;
 
-    private final List<FlowRecord> flowRecords;
+    private final Array<FlowRecord> flowRecords;
 
     public FlowSampleExpanded(final ByteBuffer buffer) throws InvalidPacketException {
         this.sequenceNumber = BufferUtils.uint32(buffer);
@@ -99,10 +98,20 @@ public class FlowSampleExpanded implements SampleData {
         this.input = new InterfaceExpanded(buffer);
         this.output = new InterfaceExpanded(buffer);
 
-        final List<FlowRecord> flowRecords = new ArrayList<>();
-        while (buffer.hasRemaining()) {
-            flowRecords.add(new FlowRecord(buffer));
-        }
-        this.flowRecords = Collections.unmodifiableList(flowRecords);
+        this.flowRecords = new Array(buffer, FlowRecord::new);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("sequenceNumber", sequenceNumber)
+                .add("sourceId", sourceId)
+                .add("samplingRate", samplingRate)
+                .add("samplePool", samplePool)
+                .add("drops", drops)
+                .add("input", input)
+                .add("output", output)
+                .add("flowRecords", flowRecords)
+                .toString();
     }
 }

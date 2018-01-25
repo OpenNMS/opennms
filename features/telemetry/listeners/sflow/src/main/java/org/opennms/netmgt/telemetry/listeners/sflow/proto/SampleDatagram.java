@@ -87,12 +87,11 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+
+import com.google.common.base.MoreObjects;
 
 public class SampleDatagram {
     public final static long VERSION = 5;
@@ -106,7 +105,7 @@ public class SampleDatagram {
     public final long subAgentId;
     public final long sequenceNumber;
     public final long uptime;
-    public final List<SampleRecord> samples;
+    public final Array<SampleRecord> samples;
 
     public SampleDatagram(final ByteBuffer buffer) throws InvalidPacketException {
         this.version = BufferUtils.uint32(buffer);
@@ -145,12 +144,19 @@ public class SampleDatagram {
         this.sequenceNumber = BufferUtils.uint32(buffer);
         this.uptime = BufferUtils.uint32(buffer);
 
-        final List<SampleRecord> samples = new ArrayList<>();
-        while (buffer.hasRemaining()) {
-            samples.add(new SampleRecord(buffer));
-        }
-        this.samples = Collections.unmodifiableList(samples);
+        this.samples = new Array(buffer, SampleRecord::new);
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("version", version)
+                .add("agentAddress", agentAddress)
+                .add("subAgentId", subAgentId)
+                .add("sequenceNumber", sequenceNumber)
+                .add("uptime", uptime)
+                .add("samples", samples)
+                .toString();
+    }
 }
 

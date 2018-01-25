@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.sflow.proto;
+package org.opennms.netmgt.telemetry.listeners.sflow;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.sflow.proto.SampleDatagram;
 
-public class OpaqueList<T> extends Opaque<List<T>> {
-    public OpaqueList(final ByteBuffer buffer,
-                      final Parser<T> elementParser) throws InvalidPacketException {
-        super(buffer, OpaqueList.parser(elementParser));
-    }
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.DefaultAddressedEnvelope;
+import io.netty.channel.socket.DatagramPacket;
+import io.netty.handler.codec.MessageToMessageDecoder;
 
-    private static <T> Parser<List<T>> parser(final Parser<T> elementParser) {
-        return buffer -> {
-            final List<T> elements = new ArrayList<>();
+public class UdpPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
-            while (buffer.remaining() >= 4) {
-                elements.add(elementParser.parse(buffer));
-            }
+    @Override
+    protected void decode(final ChannelHandlerContext ctx, final DatagramPacket msg, final List<Object> out) throws Exception {
+        final ByteBuffer buffer = msg.content().nioBuffer();
 
-            return Collections.unmodifiableList(elements);
-        };
+        System.out.println(buffer);
+        final SampleDatagram packet = new SampleDatagram(buffer);
+        System.out.println(packet);
+
+        out.add(new DefaultAddressedEnvelope<>(packet, msg.recipient(), msg.sender()));
     }
 }

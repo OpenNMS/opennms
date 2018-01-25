@@ -41,6 +41,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 public class DataSource {
 
     public enum Type {
@@ -69,5 +71,13 @@ public class DataSource {
     public DataSource(final ByteBuffer buffer) throws InvalidPacketException {
         this.type = Type.from(buffer);
         this.index = BufferUtils.uint24(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("type", type)
+                .add("index", index)
+                .toString();
     }
 }

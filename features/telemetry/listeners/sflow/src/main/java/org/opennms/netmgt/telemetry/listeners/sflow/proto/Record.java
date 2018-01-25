@@ -35,7 +35,10 @@ import java.util.Map;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 // The data_format uniquely identifies the format of an opaque structure in
@@ -49,19 +52,21 @@ import com.google.common.base.Objects;
 
 public class Record<T> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Record.class);
+
     public static class DataFormat {
         private final int enterpriseNumber;
         private final int formatNumber;
 
-        public DataFormat(final int enterpriseNumber, final int formatNumber) {
+        private DataFormat(final int enterpriseNumber, final int formatNumber) {
             this.enterpriseNumber = enterpriseNumber;
             this.formatNumber = formatNumber;
         }
 
         public DataFormat(final ByteBuffer buffer) throws InvalidPacketException {
             final long dataFormat = BufferUtils.uint32(buffer);
-            this.enterpriseNumber = (int)(dataFormat >> 12 & (2^20-1));
-            this.formatNumber = (int)(dataFormat & (2^12-1));
+            this.enterpriseNumber = (int)(dataFormat >> 12 & (2<<20)-1);
+            this.formatNumber = (int)(dataFormat & (2<<12)-1);
         }
 
         @Override
@@ -77,15 +82,45 @@ public class Record<T> {
         public int hashCode() {
             return Objects.hashCode(enterpriseNumber, formatNumber);
         }
+
+        public static DataFormat from(final int formatNumber) {
+            return new DataFormat(0, formatNumber);
+        }
+
+        public static DataFormat from(final int enterpriseNumber, final int formatNumber) {
+            return new DataFormat(enterpriseNumber, formatNumber);
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("enterpriseNumber", enterpriseNumber)
+                    .add("formatNumber", formatNumber)
+                    .toString();
+        }
     }
 
     public final DataFormat dataFormat;
-    public final OpaqueList<T> data;
+    public final Opaque<T> data;
 
     public Record(final ByteBuffer buffer, final Map<DataFormat, Opaque.Parser<T>> dataFormats) throws InvalidPacketException {
         this.dataFormat = new DataFormat(buffer);
 
-        final Opaque.Parser<T> parser = dataFormats.get(this.dataFormat); // TODO: Handle unknown
-        this.data = new OpaqueList<>(buffer, parser);
+        final Opaque.Parser<T> parser = dataFormats.get(this.dataFormat);
+        if (parser != null) {
+            this.data = new Opaque(buffer, parser);
+
+        } else {
+            LOG.debug("Unknown record type: {}:{}", dataFormat.enterpriseNumber, dataFormat.formatNumber);
+            this.data = new Opaque(buffer, Opaque::parseUnknown);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("dataFormat", dataFormat)
+                .add("data", data)
+                .toString();
     }
 }

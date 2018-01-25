@@ -29,12 +29,11 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+
+import com.google.common.base.MoreObjects;
 
 /* Format of a single expanded counter sample */
 /* opaque = sample_data; enterprise = 0; format = 4 */
@@ -59,16 +58,21 @@ public class CountersSampleExpanded implements SampleData {
     private final long sequenceNumber;
     private final DataSourceExpanded sourceId;
 
-    private final List<CounterRecord> counters;
+    private final Array<CounterRecord> counters;
 
     public CountersSampleExpanded(final ByteBuffer buffer) throws InvalidPacketException {
         this.sequenceNumber = BufferUtils.uint32(buffer);
         this.sourceId = new DataSourceExpanded(buffer);
 
-        final List<CounterRecord> counters = new ArrayList<>();
-        while (buffer.hasRemaining()) {
-            counters.add(new CounterRecord(buffer));
-        }
-        this.counters = Collections.unmodifiableList(counters);
+        this.counters = new Array(buffer, CounterRecord::new);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("sequenceNumber", sequenceNumber)
+                .add("sourceId", sourceId)
+                .add("counters", counters)
+                .toString();
     }
 }

@@ -29,10 +29,11 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+
+import com.google.common.collect.ImmutableMap;
 
 
 // struct counter_record {
@@ -42,11 +43,8 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 // }
 
 public class CounterRecord extends Record<CounterData> {
-    private static Map<DataFormat, Opaque.Parser<CounterData>> counterDataFormats = new HashMap<>();
-
-    static {
-        counterDataFormats.put(new DataFormat(0, 1), FlowSample::new);
-    }
+    private static Map<DataFormat, Opaque.Parser<CounterData>> counterDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<CounterData>>builder()
+            .build();
 
     public CounterRecord(ByteBuffer buffer) throws InvalidPacketException {
         super(buffer, counterDataFormats);

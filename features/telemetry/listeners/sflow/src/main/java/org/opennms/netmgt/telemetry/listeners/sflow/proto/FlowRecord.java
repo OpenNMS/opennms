@@ -29,10 +29,11 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+
+import com.google.common.collect.ImmutableMap;
 
 // struct flow_record {
 //   data_format flow_format;         /* The format of sflow_data */
@@ -41,11 +42,8 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 // }
 
 public class FlowRecord extends Record<FlowData> {
-    private static Map<Record.DataFormat, Opaque.Parser<FlowData>> flowDataFormats = new HashMap<>();
-
-    static {
-        flowDataFormats.put(new Record.DataFormat(0, 1), FlowSample::new);
-    }
+    private static Map<DataFormat, Opaque.Parser<FlowData>> flowDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<FlowData>>builder()
+            .build();
 
     public FlowRecord(ByteBuffer buffer) throws InvalidPacketException {
         super(buffer, flowDataFormats);

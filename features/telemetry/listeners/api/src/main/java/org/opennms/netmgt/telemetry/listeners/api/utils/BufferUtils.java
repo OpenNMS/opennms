@@ -121,4 +121,7 @@ public class BufferUtils {
         return result;
     }
 
+    public static void skip(final ByteBuffer buffer, final int size) {
+        buffer.position(buffer.position() + size);
+    }
 }

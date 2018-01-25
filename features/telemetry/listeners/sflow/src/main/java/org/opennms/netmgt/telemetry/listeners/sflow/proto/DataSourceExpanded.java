@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 public class DataSourceExpanded {
     public final long sourceIdType;
     public final long sourceIdIndex;
@@ -40,5 +42,13 @@ public class DataSourceExpanded {
     public DataSourceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
         this.sourceIdType = BufferUtils.uint32(buffer);
         this.sourceIdIndex = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("sourceIdType", sourceIdType)
+                .add("sourceIdIndex", sourceIdIndex)
+                .toString();
     }
 }

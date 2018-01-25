@@ -29,10 +29,11 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+
+import com.google.common.collect.ImmutableMap;
 
 /* Format of a sample datagram */
 
@@ -43,14 +44,12 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 // }
 
 public class SampleRecord extends Record<SampleData> {
-    private static Map<DataFormat, Opaque.Parser<SampleData>> sampleDataFormats = new HashMap<>();
-
-    static {
-        sampleDataFormats.put(new DataFormat(0, 1), FlowSample::new);
-        sampleDataFormats.put(new DataFormat(0, 2), CountersSample::new);
-        sampleDataFormats.put(new DataFormat(0, 3), FlowSampleExpanded::new);
-        sampleDataFormats.put(new DataFormat(0, 4), CountersSampleExpanded::new);
-    }
+    private static Map<DataFormat, Opaque.Parser<SampleData>> sampleDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<SampleData>>builder()
+            .put(DataFormat.from(1), FlowSample::new)
+            .put(DataFormat.from(2), CountersSample::new)
+            .put(DataFormat.from(3), FlowSampleExpanded::new)
+            .put(DataFormat.from(4), CountersSampleExpanded::new)
+            .build();
 
     public SampleRecord(ByteBuffer buffer) throws InvalidPacketException {
         super(buffer, sampleDataFormats);

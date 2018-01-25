@@ -124,13 +124,23 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 public class Interface {
     public final long format;
     public final long value;
 
     public Interface(final ByteBuffer buffer) throws InvalidPacketException {
         long l = BufferUtils.uint32(buffer);
-        this.format = l >> 30 & (2^2-1);
-        this.value = l & (2^30-1);
+        this.format = l >> 30 & (2<<2)-1;
+        this.value = l & (2<<30)-1;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("format", format)
+                .add("value", value)
+                .toString();
     }
 }

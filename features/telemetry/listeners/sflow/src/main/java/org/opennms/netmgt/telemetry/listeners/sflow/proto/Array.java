@@ -29,41 +29,40 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public class Opaque<T> {
-
+public class Array<T> {
     @FunctionalInterface
     public interface Parser<T> {
         T parse(final ByteBuffer buffer) throws InvalidPacketException;
     }
 
-    public final long length;
-    public final T value;
+    public final long size;
+    public final List<T> values;
 
-    public Opaque(final ByteBuffer buffer, final Parser<T> parser) throws InvalidPacketException {
-        this.length = BufferUtils.uint32(buffer);
-        this.value = parser.parse(BufferUtils.slice(buffer, (int) this.length));
+    public Array(final ByteBuffer buffer,
+                 final Array.Parser<? extends T> parser) throws InvalidPacketException {
+        this.size = BufferUtils.uint32(buffer);
 
-        // Skip over optional padding
-        BufferUtils.skip(buffer, (int) this.length % 4);
+        final List<T> values = new ArrayList<>((int) this.size);
+        for (int i = 0; i < this.size; i++) {
+            values.add(parser.parse(buffer));
+        }
+        this.values = Collections.unmodifiableList(values);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("length", length)
-                .add("value", value)
+                .add("size", size)
+                .add("values", values)
                 .toString();
-    }
-
-    public static <T> T parseUnknown(final ByteBuffer buffer) throws InvalidPacketException {
-        // This will consume the whole buffer and always returns null
-        buffer.position(buffer.limit());
-        return null;
     }
 }

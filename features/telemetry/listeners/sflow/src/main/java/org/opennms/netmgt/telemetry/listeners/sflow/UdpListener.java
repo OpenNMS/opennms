@@ -52,7 +52,7 @@ public class UdpListener implements Listener {
     private String name;
 
     private String host = "::";
-    private int port = 4738;
+    private int port = 6343;
 
     private AsyncDispatcher<TelemetryMessage> dispatcher;
 
@@ -73,9 +73,12 @@ public class UdpListener implements Listener {
                     @Override
                     protected void initChannel(final DatagramChannel ch) throws Exception {
                         ch.pipeline()
+                                .addLast(new UdpPacketDecoder())
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+                                        cause.printStackTrace();
+
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
                                         LOG.debug("", cause);
                                     }
@@ -123,5 +126,15 @@ public class UdpListener implements Listener {
     @Override
     public void setDispatcher(final AsyncDispatcher<TelemetryMessage> dispatcher) {
         this.dispatcher = dispatcher;
+    }
+
+    public static void main(final String... args) throws Exception {
+        final UdpListener l = new UdpListener();
+        l.setName("test");
+        l.start();
+
+        while (true) {
+            Thread.sleep(1000);
+        }
     }
 }
