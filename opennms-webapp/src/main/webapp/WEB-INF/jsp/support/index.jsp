@@ -146,7 +146,7 @@ session="true"
         	Your newest tickets are listed below.  For a complete list, log in to the
         	<a href="<c:out value="${results.RTUrl}" />">OpenNMS support portal</a>.
         </p>
-        
+
         <table>
         <c:forEach var="ticket" items="${results.latestTickets}">
           <tr>
@@ -217,11 +217,11 @@ session="true"
   <div class="panel-body">
     <span id="online-documentation" style="display:none;">
     <ul class="list-unstyled">
-      <li><a href="http://docs.opennms.org/opennms/releases/latest/guide-install/guide-install.html">Installation Guide</a></li>
-      <li><a href="http://docs.opennms.org/opennms/releases/latest/guide-user/guide-user.html">Users Guide</a></li>
-      <li><a href="http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html">Administrators Guide</a></li>
-      <li><a href="http://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html">Developers Guide</a></li>
-      <li><a href="http://www.opennms.org/wiki/">Online Wiki Documentation</a></li>
+      <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-install/guide-install.html">Installation Guide</a></li>
+      <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-user/guide-user.html">Users Guide</a></li>
+      <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html">Administrators Guide</a></li>
+      <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html">Developers Guide</a></li>
+      <li><a href="https://www.opennms.org/wiki/">Online Wiki Documentation</a></li>
     </ul>
     </span>
     <span id="offline-documentation" style="display:none;">
@@ -230,7 +230,7 @@ session="true"
       <li><a href="docs/guide-user/index.html">Users Guide</a></li>
       <li><a href="docs/guide-admin/index.html">Administrators Guide</a></li>
       <li><a href="docs/guide-development/index.html">Developers Guide</a></li>
-      <li><a href="http://www.opennms.org/wiki/">Online Wiki Documentation</a></li>
+      <li><a href="https://www.opennms.org/wiki/">Online Wiki Documentation</a></li>
     </ul>
     </span>
   </div>
@@ -243,7 +243,7 @@ session="true"
   <div class="panel-body">
     <ul class="list-unstyled">
       <li><a href="admin/support/systemReport.htm">Generate a System Report</a></li>
-      <li><a href="http://issues.opennms.org/">Open a Bug or Enhancement Request</a></li>
+      <li><a href="https://issues.opennms.org/">Open a Bug or Enhancement Request</a></li>
       <li><a href="irc://irc.freenode.net/%23opennms">Chat with Developers on IRC</a></li>
     </ul>
   </div>
