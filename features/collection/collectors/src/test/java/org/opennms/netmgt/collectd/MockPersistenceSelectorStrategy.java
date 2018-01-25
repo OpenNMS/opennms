@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,28 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx;
+package org.opennms.netmgt.collectd;
 
-import javax.management.ObjectName;
+import java.util.List;
 
-import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
-import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.Parameter;
+import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 
-/**
- * Processes collected JMX Samples.
- */
-public interface JmxSampleProcessor {
-    /**
-     * Callback method for each collected MBean Attribute.
-     *
-     * @param attributeSample The collected sample.
-     */
-    void process(JmxAttributeSample attributeSample, ObjectName objectName);
+public class MockPersistenceSelectorStrategy implements PersistenceSelectorStrategy {
 
-    /**
-     * Callback method for each collected Composite Member.
-     *
-     * @param compositeSample The collected sample.
-     */
-    void process(JmxCompositeSample compositeSample, ObjectName objectName);
+    @Override
+    public boolean shouldPersist(CollectionResource resource) {
+        return false;
+    }
+
+    @Override
+    public void setParameters(List<Parameter> parameterCollection) {
+        // pass
+    }
+
 }

@@ -29,6 +29,11 @@
             <attrib name="TaskQueuePendingCount" alias="ONMSPollerTskQPCnt" type="gauge"/>
             <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
          </mbean>
+
+         <mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" resource-type="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=OpenNMS.Sink.*.Lag">
+            <attrib name="Value" alias="Lag" type="gauge"/>
+         </mbean>
+
          <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
             <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
          </mbean>

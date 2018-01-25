@@ -14,8 +14,6 @@
     <jackson2Version>2.6.6</jackson2Version>
     <jestVersion>5.3.3</jestVersion>
     <karafVersion>4.1.2</karafVersion>
-    <nodeVersion>v6.10.2</nodeVersion>
-    <npmVersion>3.10.10</npmVersion>
     <test.fork.count>1</test.fork.count>
   </properties>
   <build>
@@ -27,42 +25,6 @@
     </testResources>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>com.github.eirslett</groupId>
-          <artifactId>frontend-maven-plugin</artifactId>
-          <version>${frontendPluginVersion}</version>
-          <configuration>
-            <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
-            <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
-            <installDirectory>${java.io.tmpdir}/node-smoke-${project.version}</installDirectory>
-          </configuration>
-          <executions>
-            <execution>
-              <id>install-node-and-npm</id>
-              <goals><goal>install-node-and-npm</goal></goals>
-              <configuration>
-                <nodeVersion>${nodeVersion}</nodeVersion>
-                <npmVersion>${npmVersion}</npmVersion>
-              </configuration>
-            </execution>
-            <execution>
-              <id>install-node-dependencies</id>
-              <goals><goal>npm</goal></goals>
-              <phase>none</phase>
-              <configuration>
-                <arguments>install</arguments>
-              </configuration>
-            </execution>
-            <execution>
-              <id>run-tests</id>
-              <goals><goal>npm</goal></goals>
-              <phase>none</phase>
-              <configuration>
-                <arguments>test</arguments>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
@@ -156,46 +118,6 @@
       </plugin>
     </plugins>
   </build>
-  <!--
-  <profiles>
-    <profile>
-      <id>enable-skipITs-false</id>
-      <activation>
-        <property><name>skipITs</name><value>false</value></property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <executions>
-              <execution><id>install-node-dependencies</id><phase>verify</phase></execution>
-              <execution><id>run-tests</id><phase>verify</phase></execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>enable-smoke-true</id>
-      <activation>
-        <property><name>smoke</name><value>true</value></property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <executions>
-              <execution><id>install-node-dependencies</id><phase>verify</phase></execution>
-              <execution><id>run-tests</id><phase>verify</phase></execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-  -->
   <dependencyManagement>
     <dependencies>
       <dependency>

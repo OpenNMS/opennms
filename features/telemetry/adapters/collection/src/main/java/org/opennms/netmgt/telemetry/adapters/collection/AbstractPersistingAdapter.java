@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.telemetry.adapters.collection;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
@@ -37,16 +44,16 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
+import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.config.api.Package;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
-import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Optional;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public abstract class AbstractPersistingAdapter implements Adapter {
     private final Logger LOG = LoggerFactory.getLogger(AbstractPersistingAdapter.class);
@@ -60,6 +67,27 @@ public abstract class AbstractPersistingAdapter implements Adapter {
     private PersisterFactory persisterFactory;
 
     private Protocol protocol;
+
+    private final LoadingCache<CacheKey, Optional<Package>> cache = CacheBuilder.newBuilder()
+            .maximumSize(Long.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.maximumSize", 1000))
+            .expireAfterWrite(Long.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.expireAfterWrite", 120), TimeUnit.SECONDS)
+            .build(new CacheLoader<CacheKey, Optional<Package>>() {
+                @Override
+                public Optional<Package> load(CacheKey key) {
+                    for (Package pkg : protocol.getPackages()) {
+                        final String filterRule = pkg.getFilterRule();
+                        if (filterRule == null) {
+                            // No filter specified, always match
+                            return Optional.of(pkg);
+                        }
+                        // NOTE: The location of the host address is not taken into account.
+                        if (filterDao.isValid(key.getHostAddress(), pkg.getFilterRule())) {
+                            return Optional.of(pkg);
+                        }
+                    }
+                    return Optional.empty();
+                }
+            });
 
     /**
      * Build a collection set from the given message.
@@ -120,21 +148,13 @@ public abstract class AbstractPersistingAdapter implements Adapter {
     }
 
     private Package getPackageFor(Protocol protocol, CollectionAgent agent) {
-        for (Package pkg : protocol.getPackages()) {
-            final String filterRule = pkg.getFilterRule();
-            if (filterRule == null) {
-                // No filter specified, always match
-                return pkg;
-            }
-            // TODO: This is really inefficient, since it actually retrieves *all*
-            // IP addresses that match the filter, and then checks of the given address
-            // is in the set. See HZN-1161.
-            // NOTE: The location of the host address is not taken into account.
-            if (filterDao.isValid(agent.getHostAddress(), filterRule)) {
-                return pkg;
-            }
+        try {
+            Optional<Package> value = cache.get(new CacheKey(protocol.getName(), agent.getHostAddress()));
+            return value.orElse(null);
+        } catch (ExecutionException e) {
+            LOG.error("Error while retrieving package from Cache: {}.", e.getMessage(), e);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
 	public void setFilterDao(FilterDao filterDao) {
@@ -145,4 +165,36 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 		this.persisterFactory = persisterFactory;
 	}
 
+    private static class CacheKey {
+        private String protocol;
+        private String hostAddress;
+
+        public CacheKey(String protocol, String hostAddress) {
+            this.protocol = Objects.requireNonNull(protocol);
+            this.hostAddress = Objects.requireNonNull(hostAddress);
+        }
+
+        public String getProtocol() {
+            return protocol;
+        }
+
+        public String getHostAddress() {
+            return hostAddress;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(hostAddress, protocol);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final CacheKey cacheKey = (CacheKey) o;
+            final boolean equals = Objects.equals(hostAddress, cacheKey.hostAddress)
+                    && Objects.equals(protocol, cacheKey.protocol);
+            return equals;
+        }
+    }
 }

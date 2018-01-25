@@ -1,6 +1,15 @@
+opennms (21.0.3-1) stable; urgency=low
+
+  * New minor stable release.  It contains mostly small bug fixes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/21.0.3/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 18 Jan 2018 13:30:00 -0500
+
 opennms (21.0.2-1) stable; urgency=high
 
-  * New major stable release.  It contains some UI security fixes, other bug fixes,
+  * New minor stable release.  It contains some UI security fixes, other bug fixes,
     and a few small enhancements.
     
     For details on what has changed, see:
@@ -10,7 +19,7 @@ opennms (21.0.2-1) stable; urgency=high
 
 opennms (21.0.1-1) stable; urgency=medium
 
-  * New major stable release.  It contains a few enhancements but is primarily a
+  * New minor stable release.  It contains a few enhancements but is primarily a
     bugfix release, including a fix for the rendering issue in the topology UI
     and other Vaadin-based UI elements.
     

@@ -228,7 +228,10 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resourceType = new NodeSnmpResourceType(m_resourceStorageDao);
         resourceTypes.put(resourceType.getName(), resourceType);
 
-        resourceType = new InterfaceSnmpResourceType(m_resourceStorageDao);
+        InterfaceSnmpResourceType intfResourceType = new InterfaceSnmpResourceType(m_resourceStorageDao);
+        resourceTypes.put(intfResourceType.getName(), intfResourceType);
+
+        resourceType = new InterfaceSnmpByIfIndexResourceType(intfResourceType);
         resourceTypes.put(resourceType.getName(), resourceType);
 
         resourceType = new ResponseTimeResourceType(m_resourceStorageDao, m_ipInterfaceDao);

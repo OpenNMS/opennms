@@ -108,7 +108,6 @@ public class DefaultJmxCollector implements JmxCollector {
                 final Collection<ObjectName> objectNames = getObjectNames(concreteConnection, eachMbean.getObjectname());
                 for (ObjectName eachObjectName : objectNames) {
                     logger.debug("Collecting ObjectName {}", eachObjectName);
-
                     boolean collect = canBeCollected(concreteConnection, eachObjectName, eachMbean.getKeyfield(), eachMbean.getExclude());
                     if (collect) {
                         List<String> attributeNames = extractAttributeNames(eachMbean);
@@ -120,12 +119,12 @@ public class DefaultJmxCollector implements JmxCollector {
                                 for (CompMember eachCompositeMember : getCompositeMembers(eachMbean, eachAttribute.getName())) {
                                     JmxCompositeSample sample = new JmxCompositeSample(eachMbean, eachAttribute, compositeData, eachCompositeMember);
                                     logger.debug("Collected sample {}", sample);
-                                    sampleProcessor.process(sample);
+                                    sampleProcessor.process(sample, eachObjectName);
                                 }
                             } else {
                                 JmxAttributeSample sample = new JmxAttributeSample(eachMbean, eachAttribute);
                                 logger.debug("Collected sample {}", sample);
-                                sampleProcessor.process(sample);
+                                sampleProcessor.process(sample, eachObjectName);
                             }
                         }
                     } else {
@@ -139,6 +138,7 @@ public class DefaultJmxCollector implements JmxCollector {
             logger.error("Could not communicate with MBeanServer", e);
         }
     }
+
 
     /**
      * Checks if a given objectName can be collected.
