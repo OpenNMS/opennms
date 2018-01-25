@@ -43,6 +43,7 @@
                 <exclude>WEB-INF/applicationContext-svclayer.xml</exclude>
               </excludes>
             </overlay>
+	    <!-- HZN-1232: Disable remote poller UI
             <overlay>
               <groupId>org.opennms.features</groupId>
               <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
@@ -51,6 +52,7 @@
                 <exclude>includes/footer.jsp</exclude>
               </excludes>
             </overlay>
+            -->
             <overlay>
               <groupId>org.opennms.features.ncs</groupId>
               <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
@@ -206,12 +208,14 @@
       <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <!-- HZN-1232: Disable remote poller UI
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>org.opennms.container.servlet</artifactId>
