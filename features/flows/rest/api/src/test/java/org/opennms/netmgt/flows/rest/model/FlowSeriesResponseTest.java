@@ -43,9 +43,9 @@ public class FlowSeriesResponseTest {
         FlowSeriesResponse response = new FlowSeriesResponse();
         response.setStart(1);
         response.setEnd(100);
-        response.setLabels(Lists.newArrayList("SSH (In)", "SSH (Out)"));
+        response.setColumns(Lists.newArrayList(new FlowSeriesColumn("SSH", true) , new FlowSeriesColumn("SSH", false)));
         response.setTimestamps(Arrays.asList(1L, 10L, 100L));
-        response.setColumns(Arrays.asList(
+        response.setValues(Arrays.asList(
                 Lists.newArrayList(1d, 1d, 1d),
                 Lists.newArrayList(2d, 2d, 2d)
         ));
@@ -54,9 +54,15 @@ public class FlowSeriesResponseTest {
         JsonTest.assertJsonEquals("{\n" +
                 "  \"start\" : 1,\n" +
                 "  \"end\" : 100,\n" +
-                "  \"labels\" : [ \"SSH (In)\", \"SSH (Out)\"],\n" +
+                "  \"columns\" : [ {\n" +
+                "    \"label\" : \"SSH\",\n" +
+                "    \"ingress\" : true\n" +
+                "  }, {\n" +
+                "    \"label\" : \"SSH\",\n" +
+                "    \"ingress\" : false\n" +
+                "  } ]," +
                 "  \"timestamps\" : [ 1, 10, 100 ],\n" +
-                "  \"columns\" : [ [ 1.0, 1.0, 1.0 ], [ 2.0, 2.0, 2.0 ] ]\n" +
+                "  \"values\" : [ [ 1.0, 1.0, 1.0 ], [ 2.0, 2.0, 2.0 ] ]" +
                 "}", responseString);
     }
 }

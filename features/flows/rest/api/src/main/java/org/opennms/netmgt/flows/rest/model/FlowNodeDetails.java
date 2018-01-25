@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,64 +32,26 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class FlowSeriesResponse {
+public class FlowNodeDetails extends FlowNodeSummary {
 
-    @XmlAttribute(name="start")
-    private long start;
+    @XmlElement(name="interface")
+    private List<FlowSnmpInterface> interfaces;
 
-    @XmlAttribute(name="end")
-    private long end;
+    public FlowNodeDetails() { }
 
-    @XmlElement(name="columns")
-    private List<FlowSeriesColumn> columns;
-
-    @XmlElement(name="timestamps")
-    private List<Long> timestamps;
-
-    @XmlElement(name="values")
-    private List<List<Double>> values;
-
-    public long getStart() {
-        return start;
+    public FlowNodeDetails(int id, List<FlowSnmpInterface> interfaces) {
+        setId(id);
+        this.interfaces = interfaces;
     }
 
-    public void setStart(long start) {
-        this.start = start;
+    public List<FlowSnmpInterface> getInterfaces() {
+        return interfaces;
     }
 
-    public long getEnd() {
-        return end;
-    }
-
-    public void setEnd(long end) {
-        this.end = end;
-    }
-
-    public List<FlowSeriesColumn> getColumns() {
-        return columns;
-    }
-
-    public void setColumns(List<FlowSeriesColumn> columns) {
-        this.columns = columns;
-    }
-
-    public List<Long> getTimestamps() {
-        return timestamps;
-    }
-
-    public void setTimestamps(List<Long> timestamps) {
-        this.timestamps = timestamps;
-    }
-
-    public List<List<Double>> getValues() {
-        return values;
-    }
-
-    public void setValues(List<List<Double>> values) {
-        this.values = values;
+    public void setInterfaces(List<FlowSnmpInterface> interfaces) {
+        this.interfaces = interfaces;
     }
 }

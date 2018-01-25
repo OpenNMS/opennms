@@ -8,17 +8,23 @@ NOTE: Unless specific otherwise, all unit of time are expressed in milliseconds.
 
 [options="header", cols="5,10"]
 |===
-| Resource                      | Description
-| `/flows/count`                | Retrieve the number of flows available
-| `/flows/applications`         | Retrieve traffic summary statistics for the top N applications
-| `/flows/applications/series`  | Retrieve time series metrics for the top N applications
-| `/flows/conversations`        | Retrieve traffic summary statistics for the top N conversations
-| `/flows/conversations/series` | Retrieve time series metrics for the top N conversations
+| Resource                          | Description
+| `/flows/count`                    | Retrieve the number of flows available
+| `/flows/exporters`                | Retrieve basic information for the exporter nodes that have flows available
+| `/flows/exporters/{nodeCriteria}` | Retrieve detailed information about a specific exporter node
+| `/flows/applications`             | Retrieve traffic summary statistics for the top N applications
+| `/flows/applications/series`      | Retrieve time series metrics for the top N applications
+| `/flows/conversations`            | Retrieve traffic summary statistics for the top N conversations
+| `/flows/conversations/series`     | Retrieve time series metrics for the top N conversations
 |===
 
-All of the endpoints support the following query string parameters to control the time range:
+All of the endpoints support the following query string parameters to help filter the results:
 
-[options="header"]
+
+NOTE: The given filters are combined using a logical `AND`.
+There is no support for using `OR` logic, or combinations thereof.
+
+
 |===
 | name               | default   | comment
 | start              | -14400000 | Timestamp in milliseconds.
@@ -27,6 +33,29 @@ All of the endpoints support the following query string parameters to control th
 
                                    If < 0, the timestamp is relative to the `end` option (i.e.: default value is 4 hours ago).
 | end                | 0         | Timestamp in milliseconds. If \<= 0, the effective value will be the current timestamp.
+| ifIndex            | (none)    | Filter for flows that came in through the given SNMP interface.
+| exporterNode       | (none)    | Filter for flows that came where exported by the given node.
+
+                                   Support either node id (integer) i.e. 1, or foreign source and foreign id lookups i.e. FS:FID.
+|===
+
+The `exporters` endpoints also support:
+
+|===
+| name               | default   | comment
+| limit              | 10        | Limits the number of exporters (for summary queries) or the number of interfaces (for detailed queries) returned.
+
+                                   In a case where the elements are truncated, those with the most flows will be returned.
+|===
+
+The `applications` endpoints also support:
+
+[options="header"]
+|===
+| name               | default   | comment
+| N                  | 10        | Number of top entries (determined by total bytes transferred) to return
+| includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
+                                   the bytes transferred for the flows that fall outside of the Top N.
 |===
 
 The `applications` and `conversations` endpoints also support:
@@ -108,70 +137,99 @@ curl -u admin:admin http://localhost:8980/opennms/rest/flows/conversations
 }
 ----
 
-.Retrieve time series data for top 10 applications in the last 4 hours
+.Retrieve time series data for top 3 applications in the last 4 hours
 [source,bash]
 ----
-curl -u admin:admin http://localhost:8980/opennms/rest/flows/applications/series
+curl -u admin:admin http://localhost:8980/opennms/rest/flows/applications/series?N=3&includeOther=true&step=3600000
 ----
 
 .Response
 [source,javascript]
 ----
 {
-	"start": 1513788266685,
-	"end": 1513802666685,
-	"labels": ["https (In)", "domain (Out)", "ntp (In)", "mdns (Out)", "http (In)", "https (Out)", "domain (In)", "http (Out)", "ssdp (In)", "ntp (Out)"],
-	"timestamps": [1513802100000, 1513802400000],
-	"columns": [
-		[23108.0, 683184.0],
-		["NaN", 63412.0],
-		["NaN", 76.0],
-		["NaN", 272.0],
-		[11529.0, 62707.0],
-		[111495.0, 1.1526612E7],
-		["NaN", 8953.0],
-		[4787.0, 142743.0],
-		["NaN", 800.0],
-		["NaN", 76.0]
-	]
+    "start": 1516292071742,
+    "end": 1516306471742,
+    "columns": [
+        {
+            "label": "domain",
+            "ingress": true
+        },
+        {
+            "label": "https",
+            "ingress": true
+        },
+        {
+            "label": "http",
+            "ingress": true
+        },
+        {
+            "label": "Other",
+            "ingress": true
+        }
+    ],
+    "timestamps": [
+        1516291200000,
+        1516294800000,
+        1516298400000
+    ],
+    "values": [
+        [9725, 12962, 9725],
+        [70665, 125044, 70585],
+        [10937,13141,10929],
+        [1976,2508,2615]
+    ]
 }
 ----
 
-.Retrieve time series data for top 10 conversations in the last 4 hours
+.Retrieve time series data for top 3 conversations in the last 4 hours
 [source,bash]
 ----
-curl -u admin:admin http://localhost:8980/opennms/rest/flows/conversations/series
+curl -u admin:admin http://localhost:8980/opennms/rest/flows/conversations/series?N=3&step=3600000
 ----
 
 .Response
 [source,javascript]
 ----
 {
-	"start": 1513802714442,
-	"end": 1513802714442,
-	"labels": ["10.0.2.15:59986 <-> 173.194.191.106:443 (In)", "10.0.2.15:41129 <-> 24.156.131.81:443 (Out)", "10.0.2.15:33836 <-> 192.175.120.170:80 (In)", "10.0.2.15:56286 <-> 64.71.249.82:443 (Out)", "10.0.2.15:57529 <-> 74.125.21.93:443 (Out)", "10.0.2.15:59057 <-> 74.125.159.74:443 (In)", "10.0.2.15:47720 <-> 172.217.4.14:443 (In)", "10.0.2.15:45944 <-> 172.217.12.99:443 (Out)", "10.0.2.15:55906 <-> 64.71.249.15:443 (In)", "10.0.2.15:40093 <-> 24.156.131.14:443 (In)", "10.0.2.15:57529 <-> 74.125.21.93:443 (In)", "10.0.2.15:59057 <-> 74.125.159.74:443 (Out)", "10.0.2.15:41129 <-> 24.156.131.81:443 (In)", "10.0.2.15:55906 <-> 64.71.249.15:443 (Out)", "10.0.2.15:59986 <-> 173.194.191.106:443 (Out)", "10.0.2.15:40093 <-> 24.156.131.14:443 (Out)", "10.0.2.15:45944 <-> 172.217.12.99:443 (In)", "10.0.2.15:47720 <-> 172.217.4.14:443 (Out)", "10.0.2.15:33836 <-> 192.175.120.170:80 (Out)", "10.0.2.15:56286 <-> 64.71.249.82:443 (In)"],
-	"timestamps": [1513802400000, 1513802700000],
-	"columns": [
-		[9197.0, "NaN"],
-		[545961.0, "NaN"],
-		["NaN", 15421.0],
-		[210421.0, "NaN"],
-		[1915032.0, "NaN"],
-		[49137.0, "NaN"],
-		[19907.0, "NaN"],
-		[615044.0, "NaN"],
-		[26239.0, "NaN"],
-		[12004.0, "NaN"],
-		[99573.0, "NaN"],
-		[2307878.0, "NaN"],
-		[16042.0, "NaN"],
-		[1291225.0, "NaN"],
-		[1967621.0, "NaN"],
-		[490934.0, "NaN"],
-		[37866.0, "NaN"],
-		[570895.0, "NaN"],
-		["NaN", 5966940.0],
-		[8086.0, "NaN"]
-	]
+    "start": 1516292150407,
+    "end": 1516306550407,
+    "columns": [
+        {
+            "label": "10.0.2.15:55056 <-> 152.19.134.142:443",
+            "ingress": false
+        },
+        {
+            "label": "10.0.2.15:55056 <-> 152.19.134.142:443",
+            "ingress": true
+        },
+        {
+            "label": "10.0.2.15:55058 <-> 152.19.134.142:443",
+            "ingress": false
+        },
+        {
+            "label": "10.0.2.15:55058 <-> 152.19.134.142:443",
+            "ingress": true
+        },
+        {
+            "label": "10.0.2.2:61470 <-> 10.0.2.15:8980",
+            "ingress": false
+        },
+        {
+            "label": "10.0.2.2:61470 <-> 10.0.2.15:8980",
+            "ingress": true
+        }
+    ],
+    "timestamps": [
+        1516294800000,
+        1516298400000
+    ],
+    "values": [
+        [17116,"NaN"],
+        [1426,"NaN"],
+        [20395,"NaN",
+        [1455,"NaN"],
+        ["NaN",5917],
+        ["NaN",2739]
+    ]
 }
 ----

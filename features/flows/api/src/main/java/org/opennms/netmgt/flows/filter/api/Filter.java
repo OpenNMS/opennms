@@ -26,49 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.filter.api;
 
-import java.util.Objects;
+public interface Filter {
 
-/**
- * Used to associate some object with a direction.
- */
-public class Directional<T> {
-    private final T value;
-    private final boolean isIngress;
-
-    public Directional(T value, boolean isIngress) {
-        this.value = Objects.requireNonNull(value);
-        this.isIngress = isIngress;
-    }
-
-    public T getValue() {
-        return value;
-    }
-
-    public boolean isIngress() {
-        return isIngress;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Directional<?> that = (Directional<?>) o;
-        return isIngress == that.isIngress &&
-                Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value, isIngress);
-    }
-
-    @Override
-    public String toString() {
-        return "Directional{" +
-                "value=" + value +
-                ",ingress=" + isIngress +
-                '}';
-    }
+    <T> T visit(FilterVisitor<T> visitor);
 }

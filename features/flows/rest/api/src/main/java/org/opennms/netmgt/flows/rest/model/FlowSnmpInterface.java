@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,68 +28,56 @@
 
 package org.opennms.netmgt.flows.rest.model;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class FlowSeriesResponse {
+public class FlowSnmpInterface {
 
-    @XmlAttribute(name="start")
-    private long start;
+    @XmlAttribute(name="index")
+    private Integer ifIndex;
 
-    @XmlAttribute(name="end")
-    private long end;
+    @XmlAttribute(name="name")
+    private String ifName;
 
-    @XmlElement(name="columns")
-    private List<FlowSeriesColumn> columns;
+    @XmlAttribute(name="descr")
+    private String ifDescr;
 
-    @XmlElement(name="timestamps")
-    private List<Long> timestamps;
+    public FlowSnmpInterface() { }
 
-    @XmlElement(name="values")
-    private List<List<Double>> values;
-
-    public long getStart() {
-        return start;
+    public FlowSnmpInterface(Integer ifIndex) {
+        this.ifIndex = ifIndex;
     }
 
-    public void setStart(long start) {
-        this.start = start;
+    public FlowSnmpInterface(Integer ifIndex, String ifName, String ifAlias, String ifDescr) {
+        this.ifIndex = ifIndex;
+        this.ifName = ifName;
+        this.ifDescr = ifDescr;
     }
 
-    public long getEnd() {
-        return end;
+    public Integer getIfIndex() {
+        return ifIndex;
     }
 
-    public void setEnd(long end) {
-        this.end = end;
+    public void setIfIndex(Integer ifIndex) {
+        this.ifIndex = ifIndex;
     }
 
-    public List<FlowSeriesColumn> getColumns() {
-        return columns;
+    public String getIfName() {
+        return ifName;
     }
 
-    public void setColumns(List<FlowSeriesColumn> columns) {
-        this.columns = columns;
+    public void setIfName(String ifName) {
+        this.ifName = ifName;
     }
 
-    public List<Long> getTimestamps() {
-        return timestamps;
+    public String getIfDescr() {
+        return ifDescr;
     }
 
-    public void setTimestamps(List<Long> timestamps) {
-        this.timestamps = timestamps;
+    public void setIfDescr(String ifDescr) {
+        this.ifDescr = ifDescr;
     }
 
-    public List<List<Double>> getValues() {
-        return values;
-    }
-
-    public void setValues(List<List<Double>> values) {
-        this.values = values;
-    }
 }
