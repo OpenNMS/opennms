@@ -33,6 +33,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
 import java.util.ArrayList;
@@ -45,6 +50,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opennms.core.profiler.Timer;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -351,6 +357,44 @@ public class BsmdIT {
         m_bsmd.setEventConfDao(eventConfDao);
         m_bsmd.setVerifyReductionKeys(true);
         m_bsmd.start();
+    }
+
+    @Test
+    public void verifyNoDaoLookupsWhenNoRulesAreDefined() throws Exception {
+        // Mock the DAO
+        AlarmDao alarmDao = mock(AlarmDao.class);
+        m_bsmd.setAlarmDao(alarmDao);
+
+        // Start up without any business services
+        m_bsmd.start();
+
+        // Create the alarm
+        OnmsAlarm alarm = createAlarm();
+        m_alarmDao.save(alarm);
+
+        // Send alarm created event
+        EventBuilder ebldr = new EventBuilder(EventConstants.ALARM_CREATED_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
+        m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
+
+        // The AlarmDAO should not have any lookups
+        verify(alarmDao, never()).get(anyObject());
+
+        // Now let's add a rule
+        createBusinessService("svc");
+
+        // Reload the daemon
+        ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+        m_eventMgr.sendNow(ebldr.getEvent());
+
+        // Send alarm updated event
+        ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
+        m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
+
+        // The AlarmDAO should have a single lookup
+        verify(alarmDao, times(1)).get(anyObject());
     }
 
     private OnmsAlarm createAlarm() {
