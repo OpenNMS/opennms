@@ -32,6 +32,13 @@ import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -43,27 +50,38 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.ImmutableMap;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -79,10 +97,16 @@ public class NotificationManagerIT implements InitializingBean {
 	@Autowired
 	private DataSource m_dataSource;
 
-	@Autowired
+    @Autowired
+    private EventDao m_eventDao;
+
+    @Autowired
 	private MonitoringLocationDao m_locationDao;
 
-	@Autowired
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+
+    @Autowired
 	private NodeDao m_nodeDao;
 
 	@Autowired
@@ -100,6 +124,9 @@ public class NotificationManagerIT implements InitializingBean {
     private NotificationManagerImpl m_notificationManager;
     private NotifdConfigManager m_configManager;
 
+    private OnmsNode node1;
+    private OnmsIpInterface ipInterfaceOnNode1;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -116,7 +143,7 @@ public class NotificationManagerIT implements InitializingBean {
         FilterDaoFactory.setInstance(jdbcFilterDao);
 
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
-        m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
+        m_notificationManager = new NotificationManagerIT.NotificationManagerImpl(m_configManager, m_dataSource);
 
         OnmsNode node;
         OnmsIpInterface ipInterface;
@@ -133,50 +160,55 @@ public class NotificationManagerIT implements InitializingBean {
         m_categoryDao.save(category4);
         m_categoryDao.flush();
 
-        // node 1
+        serviceType = new OnmsServiceType("ICMP");
+        m_serviceTypeDao.save(serviceType);
+
         serviceType = new OnmsServiceType("HTTP");
         m_serviceTypeDao.save(serviceType);
 
-		node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 1");
-		node.addCategory(category1);
-		node.addCategory(category2);
-		node.addCategory(category3);
-		
-		ipInterface = new OnmsIpInterface(addr("192.168.1.1"), node);
+        // node 1
+        node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 1");
+        node.addCategory(category1);
+        node.addCategory(category2);
+        node.addCategory(category3);
+        node1 = node;
+
+        ipInterface = new OnmsIpInterface(addr("192.168.1.1"), node);
+        ipInterfaceOnNode1 = ipInterface;
         service = new OnmsMonitoredService(ipInterface, serviceType);
-		m_nodeDao.save(node);
+        m_nodeDao.save(node);
 
         // node 2
         node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 2");
-		node.addCategory(category1);
-		node.addCategory(category2);
-		node.addCategory(category4);
-		m_nodeDao.save(node);
-        
+        node.addCategory(category1);
+        node.addCategory(category2);
+        node.addCategory(category4);
+        m_nodeDao.save(node);
+
         ipInterface = new OnmsIpInterface(addr("192.168.1.1"), node);
         m_ipInterfaceDao.save(ipInterface);
         service = new OnmsMonitoredService(ipInterface, serviceType);
         m_serviceDao.save(service);
-        
+
         ipInterface = new OnmsIpInterface(addr("0.0.0.0"), node);
         m_ipInterfaceDao.save(ipInterface);
-        
+
         // node 3
         node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 3");
         m_nodeDao.save(node);
-        
+
         ipInterface = new OnmsIpInterface(addr("192.168.1.2"), node);
         m_ipInterfaceDao.save(ipInterface);
         service = new OnmsMonitoredService(ipInterface, serviceType);
         m_serviceDao.save(service);
-        
+
         // node 4 has an interface, but no services
         node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 4");
         m_nodeDao.save(node);
 
         ipInterface = new OnmsIpInterface(addr("192.168.1.3"), node);
         m_ipInterfaceDao.save(ipInterface);
-        
+
         // node 5 has no interfaces
         node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 5");
         m_nodeDao.save(node);
@@ -412,7 +444,116 @@ public class NotificationManagerIT implements InitializingBean {
                 "(nodelabel=='node 1') | (nodelabel=='node 2')",
                 false);
     }
-    
+
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void canMatchEventParametersWhenAcknowledgingNotices() throws IOException, SQLException {
+        // Insert some event in the database with a few event parameters
+        OnmsEvent dbEvent = new OnmsEvent();
+        dbEvent.setDistPoller(m_distPollerDao.whoami());
+        dbEvent.setEventUei(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI);
+        dbEvent.setEventCreateTime(new Date());
+        dbEvent.setEventLog("Y");
+        dbEvent.setEventDisplay("Y");
+        dbEvent.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+        dbEvent.setEventSource("test");
+        dbEvent.setEventTime(new Date());
+        dbEvent.setNode(node1);
+        dbEvent.setEventParameters(Arrays.asList(
+                new OnmsEventParameter(dbEvent, "some-parameter", "some-specific-value", "string"),
+                new OnmsEventParameter(dbEvent, "some-other-parameter", "some-other-specific-value", "string")
+        ));
+        m_eventDao.save(dbEvent);
+        m_eventDao.flush();
+
+        // Create some notification referencing the event we just created
+        Notification notification = new Notification();
+        Map<String, String> params = new ImmutableMap.Builder<String, String>()
+                .put(NotificationManager.PARAM_TEXT_MSG, "some text message")
+                .put(NotificationManager.PARAM_NODE, node1.getNodeId())
+                .put(NotificationManager.PARAM_INTERFACE, InetAddressUtils.toIpAddrString(ipInterfaceOnNode1.getIpAddress()))
+                .put(NotificationManager.PARAM_SERVICE, "ICMP")
+                .put("eventUEI", dbEvent.getEventUei())
+                .put("eventID", Integer.toString(dbEvent.getId()))
+                .build();
+        m_notificationManager.insertNotice(1, params, "q1", notification);
+
+        final String[] parmMatchList = new String[] {"parm[some-parameter]", "parm[#2]"};
+
+        // Verify that we're able to match the the notice when we have the same parameters set
+        Event e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-parameter", "some-specific-value")
+                .addParam("some-other-parameter", "some-other-specific-value")
+                .getEvent();
+        Collection<Integer> eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(1, eventIds.size());
+        assertEquals(dbEvent.getId(), eventIds.iterator().next());
+        unacknowledgeAllNotices();
+
+        // It should not match when either of the event parameters are different
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-parameter", "!some-specific-value")
+                .addParam("some-other-parameter", "some-other-specific-value")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(0, eventIds.size());
+        unacknowledgeAllNotices();
+
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-parameter", "some-specific-value")
+                .addParam("some-other-parameter", "!some-other-specific-value")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(0, eventIds.size());
+        unacknowledgeAllNotices();
+
+        // It should not match when either of the event parameters are missing
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-other-parameter", "some-other-specific-value")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(0, eventIds.size());
+        unacknowledgeAllNotices();
+
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .addParam("some-parameter", "some-specific-value")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(0, eventIds.size());
+        unacknowledgeAllNotices();
+
+        // Now try matching on other fields without any event parameters
+        final String[] fieldMatchList = new String[] {"nodeid", "interfaceid", "serviceid"};
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .setNodeid(node1.getId())
+                .setInterface(ipInterfaceOnNode1.getIpAddress())
+                .setService("ICMP")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, fieldMatchList);
+        assertEquals(1, eventIds.size());
+        unacknowledgeAllNotices();
+
+        // Expect no match if we set different values responsive event
+        e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
+                .setNodeid(node1.getId() + 1)
+                .setInterface(InetAddressUtils.UNPINGABLE_ADDRESS)
+                .setService("HTTP")
+                .getEvent();
+        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, fieldMatchList);
+        assertEquals(0, eventIds.size());
+        unacknowledgeAllNotices();
+    }
+
+    private void unacknowledgeAllNotices() throws SQLException {
+        final DBUtils dbUtils = new DBUtils(getClass());
+        Connection connection = m_dataSource.getConnection();
+        dbUtils.watch(connection);
+        PreparedStatement statement = connection.prepareStatement("update notifications set answeredby = null, respondtime = null");
+        dbUtils.watch(statement);
+        statement.execute();
+    }
+
     private void doTestNodeInterfaceServiceWithRule(String description, int nodeId, String intf, String svc, String rule, boolean matches) {
         Notification notif = new Notification();
         notif.setName("a notification");
