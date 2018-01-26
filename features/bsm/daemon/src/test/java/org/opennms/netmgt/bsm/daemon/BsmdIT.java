@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.daemon;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -235,9 +236,7 @@ public class BsmdIT {
         // verify reload of business services works when event is send
         BusinessServiceEntity businessService2 = createBusinessService("service2");
         Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
-        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
-        m_eventMgr.sendNow(ebldr.getEvent());
+        reloadBsmd();
         Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
     }
 
@@ -367,6 +366,8 @@ public class BsmdIT {
 
         // Start up without any business services
         m_bsmd.start();
+        assertThat("Alarm polling should be disabled where there are no services.",
+                m_bsmd.isAlarmPolling(), equalTo(false));
 
         // Create the alarm
         OnmsAlarm alarm = createAlarm();
@@ -384,9 +385,9 @@ public class BsmdIT {
         createBusinessService("svc");
 
         // Reload the daemon
-        ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
-        m_eventMgr.sendNow(ebldr.getEvent());
+        reloadBsmd();
+        assertThat("Alarm polling should be enabled when there are 1+ services.",
+                m_bsmd.isAlarmPolling(), equalTo(true));
 
         // Send alarm updated event
         ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "test");
@@ -395,6 +396,12 @@ public class BsmdIT {
 
         // The AlarmDAO should have a single lookup
         verify(alarmDao, times(1)).get(anyObject());
+
+        // Clear all of the BSs and reload
+        deleteAllBusinessServices();
+        reloadBsmd();
+        assertThat("Alarm polling should be disabled where there are no services.",
+                m_bsmd.isAlarmPolling(), equalTo(false));
     }
 
     private OnmsAlarm createAlarm() {
@@ -425,6 +432,17 @@ public class BsmdIT {
         m_businessServiceDao.flush();
 
         return bs;
+    }
+
+    private void deleteAllBusinessServices() {
+        m_businessServiceDao.findAll().forEach(bs -> m_businessServiceDao.delete(bs));
+        m_businessServiceDao.flush();
+    }
+
+    private void reloadBsmd() {
+        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+        m_eventMgr.sendNow(ebldr.getEvent());
     }
 
     private BusinessServiceEntity createSimpleBusinessService() {

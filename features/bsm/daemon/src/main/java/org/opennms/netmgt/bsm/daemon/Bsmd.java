@@ -157,7 +157,17 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                 }
             }
         }, pollInterval, pollInterval, TimeUnit.SECONDS);
+    }
 
+    private void stopAlarmPolling() {
+        if (m_alarmPoller != null) {
+            m_alarmPoller.shutdown();
+            m_alarmPoller = null;
+        }
+    }
+
+    protected boolean isAlarmPolling() {
+        return m_alarmPoller != null;
     }
 
     protected long getPollInterval() {
@@ -200,8 +210,12 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             }
         });
 
-        if (m_hasBusinessServicesDefined && m_alarmPoller == null) {
+        // Enable/disable polling for alarms based on whether or not
+        // we have any business services
+        if (m_hasBusinessServicesDefined && !isAlarmPolling()) {
             startAlarmPolling();
+        } else if (!m_hasBusinessServicesDefined && isAlarmPolling()) {
+            stopAlarmPolling();
         }
     }
 
@@ -378,9 +392,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     @Override
     public void destroy() throws Exception {
         LOG.info("Stopping bsmd...");
-        if (m_alarmPoller != null) {
-            m_alarmPoller.shutdown();
-        }
+        stopAlarmPolling();
     }
 
     public void setAlarmDao(AlarmDao alarmDao) {
