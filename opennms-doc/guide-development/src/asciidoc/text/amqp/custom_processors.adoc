@@ -31,7 +31,7 @@ public class MyEventProcessor implements Processor {
 }
 ----
 
-In order to use the processor, package it as a bundle, and expose it to the OSGi service registiry using:
+In order to use the processor, package it as a bundle, and expose it to the OSGi service registry using:
 
 [source,xml]
 ----
