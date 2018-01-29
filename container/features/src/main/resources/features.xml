@@ -18,8 +18,11 @@
     <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/1.0.1/xml/features</repository>
 
     <feature name="opennms-amqp-event-forwarder" description="OpenNMS :: Features :: AMQP :: Event Forwarder" version="${project.version}">
+      <conditional>
+        <condition>aries-blueprint</condition>
+        <feature>camel-blueprint</feature>
+      </conditional>
       <feature>camel-core</feature>
-      <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <feature>guava</feature>
@@ -32,8 +35,11 @@
     </feature>
 
     <feature name="opennms-amqp-event-receiver" description="OpenNMS :: Features :: AMQP :: Event Receiver" version="${project.version}">
+      <conditional>
+        <condition>aries-blueprint</condition>
+        <feature>camel-blueprint</feature>
+      </conditional>
       <feature>camel-core</feature>
-      <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <feature>guava</feature>
@@ -46,8 +52,11 @@
     </feature>
 
     <feature name="opennms-amqp-alarm-northbounder" description="OpenNMS :: Features :: AMQP :: Alarm Northbounder" version="${project.version}">
+      <conditional>
+        <condition>aries-blueprint</condition>
+        <feature>camel-blueprint</feature>
+      </conditional>
       <feature>camel-core</feature>
-      <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
 
@@ -604,13 +613,33 @@
     </feature>
 
     <feature name="opennms-core-ipc-sink-camel" description="OpenNMS :: Core :: IPC :: Sink :: Camel Impl." version="${project.version}">
+      <feature>camel-jms</feature>
+
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-core-camel</feature>
       <feature>opennms-dao-api</feature>
       <feature>minion-core-api</feature>
-      <feature>camel-blueprint</feature>
-      <feature>camel-jms</feature>
+
+      <conditional>
+        <condition>aries-blueprint</condition>
+        <feature>camel-blueprint</feature>
+      </conditional>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-sink-camel-gemini" description="OpenNMS :: Core :: IPC :: Sink :: Camel Impl. (Gemini)" version="${project.version}">
+      <feature>camel-jms</feature>
+
+      <feature>opennms-core-ipc-sink-api</feature>
+      <feature>opennms-core-camel</feature>
+      <feature>opennms-dao-api</feature>
+      <feature>minion-core-api</feature>
+
+      <conditional>
+        <condition>gemini-blueprint</condition>
+        <feature>camel-spring</feature>
+      </conditional>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}/jar/no-blueprint</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-sink-kafka" description="OpenNMS :: Core :: IPC :: Sink :: Kafka Impl." version="${project.version}">
@@ -618,6 +647,13 @@
       <feature>opennms-kafka</feature>
       <feature>opennms-core-camel</feature>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.kafka-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-sink-kafka-gemini" description="OpenNMS :: Core :: IPC :: Sink :: Kafka Impl. (Gemini)" version="${project.version}">
+      <feature>opennms-core-ipc-sink-api</feature>
+      <feature>opennms-kafka</feature>
+      <feature>opennms-core-camel</feature>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.kafka-impl/${project.version}/jar/no-blueprint</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-sink-aws-sqs" description="OpenNMS :: Core :: IPC :: Sink :: AWS SQS Impl." version="${project.version}">
@@ -628,8 +664,19 @@
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.aws-sqs-impl/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-core-ipc-sink-aws-sqs-gemini" description="OpenNMS :: Core :: IPC :: Sink :: AWS SQS Impl. (Gemini)" version="${project.version}">
+      <feature>guava</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
+      <feature>opennms-aws-sqs</feature>
+      <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.aws-sqs/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.aws-sqs-impl/${project.version}/jar/no-blueprint</bundle>
+    </feature>
+
     <feature name="opennms-core-ipc-rpc-api" description="OpenNMS :: Core :: IPC :: RPC :: API" version="${project.version}">
-      <feature>camel-blueprint</feature>
+      <conditional>
+        <condition>aries-blueprint</condition>
+        <feature>camel-blueprint</feature>
+      </conditional>
       <feature>camel-jms</feature>
       <feature>org.json</feature>
       <feature>javax.mail</feature>
@@ -649,11 +696,34 @@
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.jms-impl/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-core-ipc-rpc-jms-gemini" description="OpenNMS :: Core :: IPC :: RPC :: JMS Impl. (Gemini)" version="${project.version}">
+      <feature>opennms-core-ipc-rpc-api</feature>
+      <feature>opennms-dao-api</feature>
+      <conditional>
+        <condition>gemini-blueprint</condition>
+        <feature>camel-spring</feature>
+      </conditional>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.jms-impl/${project.version}/jar/no-blueprint</bundle>
+    </feature>
+
     <feature name="opennms-core-ipc-rpc-aws-sqs" description="OpenNMS :: Core :: IPC :: RPC :: AWQ SQS Impl." version="${project.version}">
       <feature>opennms-aws-sqs</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
+      <feature>opennms-dao-api</feature>
       <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.aws-sqs/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.aws-sqs-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-rpc-aws-sqs-gemini" description="OpenNMS :: Core :: IPC :: RPC :: AWQ SQS Impl. (Gemini)" version="${project.version}">
+      <feature>opennms-aws-sqs</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
+      <feature>opennms-dao-api</feature>
+      <conditional>
+        <condition>gemini-blueprint</condition>
+        <feature>camel-spring</feature>
+      </conditional>
+      <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.aws-sqs/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.aws-sqs-impl/${project.version}/jar/no-blueprint</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-rpc-commands" description="OpenNMS :: Core :: IPC :: RPC :: Shell Commands" version="${project.version}">
@@ -884,14 +954,20 @@
     </feature>
 
     <feature name="opennms-syslogd-listener-javanet" description="OpenNMS :: Syslogd :: Listener :: java.net" version="${project.version}">
-      <feature>camel-blueprint</feature>
+      <conditional>
+        <condition>aries-blueprint</condition>
+        <feature>camel-blueprint</feature>
+      </conditional>
       <feature>opennms-syslogd</feature>
 
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-javanet</bundle>
     </feature>
 
     <feature name="opennms-syslogd-listener-camel-netty" description="OpenNMS :: Syslogd :: Listener :: camel-netty" version="${project.version}">
-      <feature>camel-blueprint</feature>
+      <conditional>
+        <condition>aries-blueprint</condition>
+        <feature>camel-blueprint</feature>
+      </conditional>
       <feature>opennms-syslogd</feature>
 
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-camel-netty</bundle>
@@ -926,8 +1002,11 @@
     </feature>
 
     <feature name="eif-adapter" version="${project.version}" description="OpenNMS :: Features :: EIF Adapter">
+        <conditional>
+          <condition>aries-blueprint</condition>
+          <feature>camel-blueprint</feature>
+        </conditional>
         <feature>camel-core</feature>
-        <feature>camel-blueprint</feature>
         <feature>camel-netty4</feature>
         <feature>opennms-core-camel</feature>
         <feature>opennms-collection-api</feature>
@@ -1112,8 +1191,6 @@
 
     <feature name="opennms-telemetry-daemon" description="OpenNMS :: Telemetry :: Daemon" version="${project.version}">
       <feature>camel-netty4</feature>
-      <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
-      <feature>camel-spring</feature>
 
       <feature>opennms-core-daemon</feature>
       <feature>opennms-core-ipc-sink-api</feature>
@@ -1132,12 +1209,20 @@
     </feature>
 
     <feature name="opennms-telemetry-jti" description="OpenNMS :: Telemetry :: JTI" version="${project.version}">
+      <conditional>
+        <condition>gemini-blueprint</condition>
+        <feature>opennms-dao</feature>
+      </conditional>
       <feature>opennms-telemetry-collection</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.jti/${project.version}</bundle>
     </feature>
     
     <feature name="opennms-telemetry-nxos" description="OpenNMS :: Telemetry :: NX-OS" version="${project.version}">
+      <conditional>
+        <condition>gemini-blueprint</condition>
+        <feature>opennms-dao</feature>
+      </conditional>
       <feature>opennms-telemetry-collection</feature>
       <!-- Use a newer version of Google Protobuf -->
       <bundle>mvn:com.google.protobuf/protobuf-java/3.4.0</bundle>

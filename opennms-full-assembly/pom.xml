@@ -355,6 +355,8 @@
                 <feature>wrap</feature>
                 <feature>wrapper</feature>
 
+                <feature>camel-spring</feature>
+
                 <!-- Karaf Spring features -->
                 <feature>spring/3.1.4.RELEASE</feature>
                 <feature>spring/3.2.18.RELEASE_1</feature>
