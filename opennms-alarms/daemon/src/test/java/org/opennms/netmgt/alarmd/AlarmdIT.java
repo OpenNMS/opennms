@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.alarmd;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -101,6 +104,11 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         @Override
         public void start() throws NorthbounderException {
             m_startCalled = true;
+        }
+
+        @Override
+        public boolean isReady() {
+            return true;
         }
 
         @Override
@@ -313,7 +321,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event was null, aborting"));
         try {
-            m_alarmd.getPersister().persist(null);
+            m_alarmd.getPersister().persist(null, true);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -323,7 +331,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     @Test
     public void testNorthbounder() throws Exception {
         assertTrue(m_northbounder.isInitialized());
-        assertTrue(m_northbounder.getAlarms().isEmpty());
+        assertThat(m_northbounder.getAlarms(), hasSize(0));
 
         final EventBuilder bldr = new EventBuilder("testNoLogmsg", "AlarmdTest");
         bldr.setAlarmData(new AlarmData());
@@ -336,7 +344,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         sendNodeDownEvent("%nodeid%", node);
 
         final List<NorthboundAlarm> alarms = m_northbounder.getAlarms();
-        assertTrue(alarms.size() > 0);
+        assertThat(alarms, hasSize(greaterThan(0)));
     }
     
 
@@ -348,7 +356,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(bldr.getEvent());
+            m_alarmd.getPersister().persist(bldr.getEvent(), false);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -360,7 +368,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         EventBuilder bldr = new EventBuilder("testNoAlarmData", "AlarmdTest");
         bldr.setLogMessage(null);
 
-        m_alarmd.getPersister().persist(bldr.getEvent());
+        m_alarmd.getPersister().persist(bldr.getEvent(), false);
     }
 
     @Test
@@ -372,7 +380,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(bldr.getEvent());
+            m_alarmd.getPersister().persist(bldr.getEvent(), false);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }

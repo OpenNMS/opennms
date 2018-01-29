@@ -126,6 +126,11 @@ public class BSFNorthbounderManager implements InitializingBean, Northbounder, D
         // There is no need to do something here. Only the reload method will be implemented
     }
 
+    @Override
+    public boolean isReady() {
+        return false;
+    }
+
     /**
      * On alarm.
      *

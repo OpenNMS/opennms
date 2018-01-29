@@ -28,8 +28,15 @@
 
 package org.opennms.netmgt.alarmd;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
@@ -60,7 +67,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @version $Id: $
  */
 @EventListener(name=Alarmd.NAME, logPrefix="alarmd")
-public class Alarmd implements SpringServiceDaemon, DisposableBean, ThreadAwareEventListener {
+public class Alarmd implements SpringServiceDaemon, ThreadAwareEventListener {
     private static final Logger LOG = LoggerFactory.getLogger(Alarmd.class);
 
     /** Constant <code>NAME="Alarmd"</code> */
@@ -68,7 +75,9 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean, ThreadAwareE
 
     protected static final Integer THREADS = Integer.getInteger("org.opennms.alarmd.threads", 4);
 
-    private List<Northbounder> m_northboundInterfaces;
+    private List<Northbounder> m_northboundInterfaces = new ArrayList<>();
+
+    private volatile boolean m_hasActiveAlarmNbis = false;
 
     private AlarmPersister m_persister;
 
@@ -86,20 +95,21 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean, ThreadAwareE
      */
     @EventHandler(uei = EventHandler.ALL_UEIS)
     public void onEvent(Event e) {
-    	
     	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
            handleReloadEvent(e);
            return;
     	}
-    	
-        final OnmsAlarm alarm = m_persister.persist(e);
-        
-        if (alarm != null) {
+
+    	// If there are 1+ NBIs we need to invoke, make sure the alarm
+        // object that is returned is eagerly loaded (and avoid any
+        // LazyInitializationExceptions). Otherwise, we can save resources
+        // by not having to load these fields.
+        final OnmsAlarm alarm = m_persister.persist(e, m_hasActiveAlarmNbis);
+
+        if (alarm != null && m_hasActiveAlarmNbis) {
             forwardAlarmToNbis(alarm);
         }
-        
     }
-
 
     /**
      * Forwards the alarms to the current set of NBIs.
@@ -180,38 +190,6 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean, ThreadAwareE
     }
 
     /**
-     * 
-     * TODO: use onInit() instead
-     * <p>afterPropertiesSet</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (getNorthboundInterfaces() != null) {
-            for (final Northbounder nb : getNorthboundInterfaces()) {
-                LOG.debug("afterPropertiesSet: starting {}", nb.getName());
-                nb.start();
-            }
-        }
-    }
-
-    /**
-     * <p>destroy</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    @Override
-    public void destroy() throws Exception {
-        if (getNorthboundInterfaces() != null) {
-            for (final Northbounder nb : getNorthboundInterfaces()) {
-                LOG.debug("destroy: stopping {}", nb.getName());
-                nb.stop();
-            }
-        }
-    }
-
-    /**
      * <p>getName</p>
      *
      * @return a {@link java.lang.String} object.
@@ -220,37 +198,60 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean, ThreadAwareE
         return NAME;
     }
 
-    /**
-     * <p>start</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @Override
-    public void start() throws Exception {
+    public void start() {
+        // pass
     }
 
-    // TODO This seems to be redundant as this is also being executed through afterPropertiesSet
-    public void onNorthbounderRegistered(final Northbounder northbounder, final Map<String,String> properties) {
+    @Override
+    public void afterPropertiesSet()  {
+        // pass
+    }
+
+    @Override
+    public synchronized void destroy() {
+        // On shutdown, stop all of the NBIs
+        m_northboundInterfaces.forEach(nb -> {
+            LOG.debug("destroy: stopping {}", nb.getName());
+            nb.stop();
+        });
+    }
+
+    public synchronized void onNorthbounderRegistered(final Northbounder northbounder, final Map<String,String> properties) {
         LOG.debug("onNorthbounderRegistered: starting {}", northbounder.getName());
         northbounder.start();
+        m_northboundInterfaces.add(northbounder);
+        onNorthboundersChanged();
     }
 
-    // TODO The following is not working, which is why the destroy method was implemented.
-    public void onNorthbounderUnregistered(final Northbounder northbounder, final Map<String,String> properties) {
+    public synchronized void onNorthbounderUnregistered(final Northbounder northbounder, final Map<String,String> properties) {
         LOG.debug("onNorthbounderUnregistered: stopping {}", northbounder.getName());
         northbounder.stop();
-    }
-    
-    public List<Northbounder> getNorthboundInterfaces() {
-        return m_northboundInterfaces;
+        m_northboundInterfaces.remove(northbounder);
+        onNorthboundersChanged();
     }
 
-    public void setNorthboundInterfaces(List<Northbounder> northboundInterfaces) {
+    private void onNorthboundersChanged() {
+        final long numNbisActive = m_northboundInterfaces.stream()
+                .filter(Northbounder::isReady)
+                .count();
+        m_hasActiveAlarmNbis = numNbisActive > 0;
+        LOG.debug("handleNorthboundersChanged: {} out of {} NBIs are currently active.",
+                numNbisActive, m_northboundInterfaces.size());
+    }
+
+    public synchronized List<Northbounder> getNorthboundInterfaces() {
+        return Collections.unmodifiableList(m_northboundInterfaces);
+    }
+
+    public synchronized void setNorthboundInterfaces(List<Northbounder> northboundInterfaces) {
         m_northboundInterfaces = northboundInterfaces;
+        onNorthboundersChanged();
     }
 
     @Override
     public int getNumThreads() {
         return THREADS;
     }
+
 }

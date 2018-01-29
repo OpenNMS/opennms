@@ -81,6 +81,11 @@ public class AbstractNorthbounderTest {
             return m_accepting;
         }
 
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
         /* (non-Javadoc)
          * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#forwardAlarms(java.util.List)
          */
