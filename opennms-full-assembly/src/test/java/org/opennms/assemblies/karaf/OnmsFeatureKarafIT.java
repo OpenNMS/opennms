@@ -459,11 +459,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
-	public void testInstallFeatureQpid() {
-		installFeature("qpid");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	public void testInstallFeatureSpringSecurity32() {
 		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("spring-security32");
