@@ -56,15 +56,6 @@ public class WebAppListener implements ServletContextListener {
 
             m_servletContext.log("contextInitialized");
 
-            // log4j class instances will leak into the OSGi classloader so we
-            // need to tell log4j to ignore the thread context loader and to use
-            // the same classloader for all classloading.
-            //
-            // @see https://issues.apache.org/jira/browse/FELIX-2108
-            // @see http://www.mail-archive.com/announcements@jakarta.apache.org/msg00110.html
-            //
-            System.setProperty("log4j.ignoreTCL", "true");
-
             final String root = karafRoot.getAbsolutePath();
             m_servletContext.log("Root: " + root);
             System.setProperty("karaf.home", root);
