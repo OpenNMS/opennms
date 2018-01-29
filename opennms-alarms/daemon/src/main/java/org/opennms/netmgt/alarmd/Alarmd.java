@@ -38,6 +38,7 @@ import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.events.api.ThreadAwareEventListener;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -59,12 +60,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @version $Id: $
  */
 @EventListener(name=Alarmd.NAME, logPrefix="alarmd")
-public class Alarmd implements SpringServiceDaemon, DisposableBean {
+public class Alarmd implements SpringServiceDaemon, DisposableBean, ThreadAwareEventListener {
     private static final Logger LOG = LoggerFactory.getLogger(Alarmd.class);
 
     /** Constant <code>NAME="Alarmd"</code> */
     public static final String NAME = "Alarmd";
-    
+
+    protected static final Integer THREADS = Integer.getInteger("org.opennms.alarmd.threads", 4);
+
     private List<Northbounder> m_northboundInterfaces;
 
     private AlarmPersister m_persister;
@@ -74,9 +77,10 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
-    //Get all events
     /**
-     * <p>onEvent</p>
+     * Listens for all events.
+     *
+     * This method is thread-safe.
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
@@ -88,19 +92,31 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
            return;
     	}
     	
-        OnmsAlarm alarm = m_persister.persist(e);
+        final OnmsAlarm alarm = m_persister.persist(e);
         
         if (alarm != null) {
-        	NorthboundAlarm a = new NorthboundAlarm(alarm);
-
-            for (Northbounder nbi : m_northboundInterfaces) {
-                nbi.onAlarm(a);
-            }
+            forwardAlarmToNbis(alarm);
         }
         
     }
 
-    private void handleReloadEvent(Event e) {
+
+    /**
+     * Forwards the alarms to the current set of NBIs.
+     *
+     * This method is synchronized since the event handler is multi-threaded
+     * and the NBIs are not necessarily thread safe.
+     *
+     * @param alarm the alarm to forward
+     */
+    private synchronized void forwardAlarmToNbis(OnmsAlarm alarm) {
+        NorthboundAlarm a = new NorthboundAlarm(alarm);
+        for (Northbounder nbi : m_northboundInterfaces) {
+            nbi.onAlarm(a);
+        }
+    }
+
+    private synchronized void handleReloadEvent(Event e) {
         LOG.info("Received reload configuration event: {}", e);
 
         //Currently, Alarmd has no configuration... I'm sure this will change soon.
@@ -233,4 +249,8 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
         m_northboundInterfaces = northboundInterfaces;
     }
 
+    @Override
+    public int getNumThreads() {
+        return THREADS;
+    }
 }
