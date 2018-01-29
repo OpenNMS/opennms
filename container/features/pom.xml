@@ -279,7 +279,6 @@
 
             <feature>org.json</feature>
             <feature>postgresql</feature>
-            <feature>qpid</feature>
             <feature>spring-security32</feature>
             <feature>spring-webflow</feature>
 
