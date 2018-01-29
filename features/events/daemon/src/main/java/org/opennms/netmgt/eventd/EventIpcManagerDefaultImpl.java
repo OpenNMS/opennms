@@ -52,6 +52,7 @@ import org.opennms.netmgt.events.api.EventIpcBroadcaster;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.events.api.ThreadAwareEventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -149,10 +150,15 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
          */
         EventListenerExecutor(EventListener listener, Integer handlerQueueLength) {
             m_listener = listener;
-            // You could also do Executors.newSingleThreadExecutor() here
+
+            int numThreads = 1;
+            if (m_listener instanceof ThreadAwareEventListener) {
+                numThreads = ((ThreadAwareEventListener)m_listener).getNumThreads();
+            }
+
             m_delegateThread = new ThreadPoolExecutor(
-                    1,
-                    1,
+                    numThreads,
+                    numThreads,
                     0L,
                     TimeUnit.MILLISECONDS,
                     handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(handlerQueueLength),
@@ -160,7 +166,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                     // is used for all events that this listener handles. Therefore, if Notifd
                     // registers for an event then all logs for handling that event will end up
                     // inside notifd.log.
-                    new LogPreservingThreadFactory(m_listener.getName(), 1),
+                    new LogPreservingThreadFactory(m_listener.getName(), numThreads),
                     new RejectedExecutionHandler() {
                         @Override
                         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
