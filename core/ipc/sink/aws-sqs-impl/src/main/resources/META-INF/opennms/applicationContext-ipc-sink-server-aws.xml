@@ -20,9 +20,13 @@
   </bean>
 
   <bean id="awsMessageConsumerManager" class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSMessageConsumerManager">
-  	<property name="awsSqsManager" ref="awsSqsManager"/>
+    <property name="awsSqsManager" ref="awsSqsManager"/>
   </bean>
 
+  <onmsgi:service ref="awsMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
+
   <bean id="awsLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.aws.sqs.AmazonSQSLocalMessageDispatcherFactory" />
+
+  <onmsgi:service ref="awsLocalMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
 
 </beans>
