@@ -93,7 +93,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     /** {@inheritDoc} 
      * @return */
     @Override
-    public OnmsAlarm persist(Event event) {
+    public OnmsAlarm persist(Event event, boolean eagerlyLoadAlarm) {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
         }
@@ -110,7 +110,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         try {
             locks.forEach(Lock::lock);
             // Process the alarm inside a transaction
-            alarmAndEvent = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event));
+            alarmAndEvent = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event, eagerlyLoadAlarm));
         } finally {
             locks.forEach(Lock::unlock);
         }
@@ -121,7 +121,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarmAndEvent.getAlarm();
     }
 
-    private OnmsAlarmAndLifecycleEvent addOrReduceEventAsAlarm(Event event) {
+    private OnmsAlarmAndLifecycleEvent addOrReduceEventAsAlarm(Event event, boolean eagerlyLoadAlarm) {
         // 2012-03-11 pbrane: for some reason when we get here the event from the DB doesn't have the LogMsg (in my tests anyway)
         OnmsEvent e = m_eventDao.get(event.getDbid());
         Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm.");
@@ -157,14 +157,16 @@ public class AlarmPersisterImpl implements AlarmPersister {
             ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, Alarmd.NAME);
         }
 
-        // Load fields which are known to be used by the NBIs
-        if (alarm.getServiceType() != null) {
-            alarm.getServiceType().getName(); // To avoid potential LazyInitializationException when dealing with NorthboundAlarm
+        if (eagerlyLoadAlarm) {
+            // Load fields which are known to be used by the NBIs
+            if (alarm.getServiceType() != null) {
+                alarm.getServiceType().getName(); // To avoid potential LazyInitializationException when dealing with NorthboundAlarm
+            }
+            if (alarm.getNodeId() != null) {
+                alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
+            }
+            Hibernate.initialize(alarm.getEventParameters());
         }
-        if (alarm.getNodeId() != null) {
-            alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
-        }
-        Hibernate.initialize(alarm.getEventParameters());
 
         ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
         ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
