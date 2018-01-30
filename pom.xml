@@ -1365,7 +1365,7 @@
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
 
-    <!-- moved here from opennms-pluginmanger -->
+    <!-- change to match which version of opennms-pluginmanger you want to run -->
     <pluginmanagerVersion>1.0.6</pluginmanagerVersion>
     <licencemanagerVersion>1.0.6</licencemanagerVersion>
     <featuremanagerVersion>1.0.6</featuremanagerVersion>
