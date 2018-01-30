@@ -47,7 +47,7 @@ public enum Direction {
             case EGRESS:
                 return EGRESS;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unknown direction: " + direction.name());
         }
     }
 

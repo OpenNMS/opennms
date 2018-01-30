@@ -51,7 +51,7 @@ public enum NetflowVersion {
             case IPFIX:
                 return IPFIX;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unknown protocol version: " + version.name());
         }
     }
 }

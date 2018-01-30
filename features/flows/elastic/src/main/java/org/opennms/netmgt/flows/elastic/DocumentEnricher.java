@@ -136,12 +136,13 @@ public class DocumentEnricher {
                 }
 
                 // Conversation tagging
-                document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
+                if (document.isInitiator() != null) {
+                    document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
+                }
 
                 // Apply Application mapping
-                final ClassificationRequest classificationRequest = createClassificationRequest(document);
-                if (classificationRequest != null) {
-                    document.setApplication(classificationEngine.classify(classificationRequest));
+                if (document.isInitiator() != null) {
+                    document.setApplication(classificationEngine.classify(createClassificationRequest(document)));
                 }
             });
             return null;
@@ -241,10 +242,6 @@ public class DocumentEnricher {
     }
 
     protected static ClassificationRequest createClassificationRequest(FlowDocument document) {
-        if (document.isInitiator() == null) {
-            return null;
-        }
-
         final ClassificationRequest request = new ClassificationRequest();
         request.setProtocol(Protocols.getProtocol(document.getProtocol()));
         request.setLocation(document.getLocation());
