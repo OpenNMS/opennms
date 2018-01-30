@@ -29,11 +29,13 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.UnsignedInteger;
 
 // struct counters_sample {
 //   unsigned int sequence_number;   /* Incremented with each counter sample
@@ -52,7 +54,7 @@ import com.google.common.base.MoreObjects;
 
 public class CountersSample implements SampleData {
 
-    private final long sequenceNumber;
+    private final UnsignedInteger sequenceNumber;
     private final DataSource sourceId;
 
     private final Array<CounterRecord> counters;
@@ -61,7 +63,7 @@ public class CountersSample implements SampleData {
         this.sequenceNumber = BufferUtils.uint32(buffer);
         this.sourceId = new DataSource(buffer);
 
-        this.counters = new Array(buffer, CounterRecord::new);
+        this.counters = new Array(buffer, Optional.empty(), CounterRecord::new);
     }
 
     @Override

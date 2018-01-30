@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
@@ -42,15 +43,17 @@ public class Opaque<T> {
         T parse(final ByteBuffer buffer) throws InvalidPacketException;
     }
 
-    public final long length;
+    public final int length;
     public final T value;
 
-    public Opaque(final ByteBuffer buffer, final Parser<T> parser) throws InvalidPacketException {
-        this.length = BufferUtils.uint32(buffer);
-        this.value = parser.parse(BufferUtils.slice(buffer, (int) this.length));
+    public Opaque(final ByteBuffer buffer,
+                  final Optional<Integer> length,
+                  final Parser<T> parser) throws InvalidPacketException {
+        this.length = length.orElseGet(() -> BufferUtils.uint32(buffer).intValue());
+        this.value = parser.parse(BufferUtils.slice(buffer, this.length));
 
         // Skip over optional padding
-        BufferUtils.skip(buffer, (int) this.length % 4);
+        BufferUtils.skip(buffer, this.length % 4);
     }
 
     @Override
@@ -65,5 +68,9 @@ public class Opaque<T> {
         // This will consume the whole buffer and always returns null
         buffer.position(buffer.limit());
         return null;
+    }
+
+    public static byte[] parseBytes(final ByteBuffer buffer) throws InvalidPacketException {
+        return BufferUtils.bytes(buffer, buffer.remaining());
     }
 }

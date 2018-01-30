@@ -131,7 +131,7 @@ public class Interface {
     public final long value;
 
     public Interface(final ByteBuffer buffer) throws InvalidPacketException {
-        long l = BufferUtils.uint32(buffer);
+        final long l = BufferUtils.uint32(buffer).longValue();
         this.format = l >> 30 & (2<<2)-1;
         this.value = l & (2<<30)-1;
     }

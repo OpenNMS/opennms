@@ -34,10 +34,11 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.UnsignedInteger;
 
 public class InterfaceExpanded {
-    public final long format;
-    public final long value;
+    public final UnsignedInteger format;
+    public final UnsignedInteger value;
 
     public InterfaceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
         this.format = BufferUtils.uint32(buffer);

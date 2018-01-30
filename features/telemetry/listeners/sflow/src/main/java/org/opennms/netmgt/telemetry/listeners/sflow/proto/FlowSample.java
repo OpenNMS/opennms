@@ -29,11 +29,13 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.UnsignedInteger;
 
 // struct flow_sample {
 //   unsigned int sequence_number;  /* Incremented with each flow sample
@@ -70,13 +72,13 @@ import com.google.common.base.MoreObjects;
 
 public class FlowSample implements SampleData {
 
-    private final long sequenceNumber;
+    private final UnsignedInteger sequenceNumber;
     private final DataSource sourceId;
 
-    private final long samplingRate;
-    private final long samplePool;
+    private final UnsignedInteger samplingRate;
+    private final UnsignedInteger samplePool;
 
-    private final long drops;
+    private final UnsignedInteger drops;
 
     private final Interface input;
     private final Interface output;
@@ -95,7 +97,7 @@ public class FlowSample implements SampleData {
         this.input = new Interface(buffer);
         this.output = new Interface(buffer);
 
-        this.flowRecords = new Array(buffer, FlowRecord::new);
+        this.flowRecords = new Array(buffer, Optional.empty(), FlowRecord::new);
     }
 
     @Override

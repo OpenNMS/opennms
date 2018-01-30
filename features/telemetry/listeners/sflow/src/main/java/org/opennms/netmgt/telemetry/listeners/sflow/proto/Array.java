@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
@@ -44,14 +45,16 @@ public class Array<T> {
         T parse(final ByteBuffer buffer) throws InvalidPacketException;
     }
 
-    public final long size;
+    public final int size;
     public final List<T> values;
 
     public Array(final ByteBuffer buffer,
+                 final Optional<Integer> size,
                  final Array.Parser<? extends T> parser) throws InvalidPacketException {
-        this.size = BufferUtils.uint32(buffer);
 
-        final List<T> values = new ArrayList<>((int) this.size);
+        this.size = size.orElseGet(() ->  BufferUtils.uint32(buffer).intValue());
+
+        final List<T> values = new ArrayList<>(this.size);
         for (int i = 0; i < this.size; i++) {
             values.add(parser.parse(buffer));
         }

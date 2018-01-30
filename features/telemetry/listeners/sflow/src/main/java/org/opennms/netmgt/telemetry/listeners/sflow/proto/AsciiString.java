@@ -29,27 +29,27 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.primitives.UnsignedInteger;
+import com.google.common.base.Charsets;
 
-public class DataSourceExpanded {
-    public final UnsignedInteger sourceIdType;
-    public final UnsignedInteger sourceIdIndex;
+public class AsciiString {
+    public final int length;
+    public final String value;
 
-    public DataSourceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
-        this.sourceIdType = BufferUtils.uint32(buffer);
-        this.sourceIdIndex = BufferUtils.uint32(buffer);
-    }
+    public AsciiString(final ByteBuffer buffer,
+                       final Optional<Integer> maxLength) throws InvalidPacketException {
+        this.length = BufferUtils.uint32(buffer).intValue();
+        if (maxLength.isPresent() && this.length > maxLength.get()) {
+            throw new InvalidPacketException(buffer, "String to long: {} > {}", length, maxLength.get());
+        }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("sourceIdType", sourceIdType)
-                .add("sourceIdIndex", sourceIdIndex)
-                .toString();
+        this.value = new String(BufferUtils.bytes(buffer, this.length), Charsets.US_ASCII);
+
+        // Skip over optional padding
+        BufferUtils.skip(buffer, this.length % 4);
     }
 }

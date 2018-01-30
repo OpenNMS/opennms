@@ -87,24 +87,26 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.UnsignedInteger;
 
 public class SampleDatagram {
-    public final static long VERSION = 5;
+    public final static UnsignedInteger VERSION = UnsignedInteger.valueOf(5);
 
     public final static int ADDRESS_TYPE_UNKNOWN = 0;
     public final static int ADDRESS_TYPE_IPV4 = 1;
     public final static int ADDRESS_TYPE_IPV6 = 2;
 
-    public final long version;
+    public final UnsignedInteger version;
     public final InetAddress agentAddress;
-    public final long subAgentId;
-    public final long sequenceNumber;
-    public final long uptime;
+    public final UnsignedInteger subAgentId;
+    public final UnsignedInteger sequenceNumber;
+    public final UnsignedInteger uptime;
     public final Array<SampleRecord> samples;
 
     public SampleDatagram(final ByteBuffer buffer) throws InvalidPacketException {
@@ -113,7 +115,7 @@ public class SampleDatagram {
             throw new InvalidPacketException(buffer, "Invalid version number: 0x%04X", this.version);
         }
 
-        int addressType = (int) BufferUtils.uint32(buffer);
+        int addressType = BufferUtils.uint32(buffer).intValue();
         switch (addressType) {
             case ADDRESS_TYPE_UNKNOWN: {
                 this.agentAddress = null;
@@ -144,7 +146,7 @@ public class SampleDatagram {
         this.sequenceNumber = BufferUtils.uint32(buffer);
         this.uptime = BufferUtils.uint32(buffer);
 
-        this.samples = new Array(buffer, SampleRecord::new);
+        this.samples = new Array(buffer, Optional.empty(), SampleRecord::new);
     }
 
     @Override

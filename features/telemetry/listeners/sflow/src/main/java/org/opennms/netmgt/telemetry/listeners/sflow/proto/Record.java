@@ -32,6 +32,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
@@ -64,9 +65,9 @@ public class Record<T> {
         }
 
         public DataFormat(final ByteBuffer buffer) throws InvalidPacketException {
-            final long dataFormat = BufferUtils.uint32(buffer);
-            this.enterpriseNumber = (int)(dataFormat >> 12 & (2<<20)-1);
-            this.formatNumber = (int)(dataFormat & (2<<12)-1);
+            final int dataFormat = BufferUtils.uint32(buffer).intValue();
+            this.enterpriseNumber = (dataFormat >> 12 & (2<<20)-1);
+            this.formatNumber = (dataFormat & (2<<12)-1);
         }
 
         @Override
@@ -108,11 +109,11 @@ public class Record<T> {
 
         final Opaque.Parser<T> parser = dataFormats.get(this.dataFormat);
         if (parser != null) {
-            this.data = new Opaque(buffer, parser);
+            this.data = new Opaque(buffer, Optional.empty(), parser);
 
         } else {
             LOG.debug("Unknown record type: {}:{}", dataFormat.enterpriseNumber, dataFormat.formatNumber);
-            this.data = new Opaque(buffer, Opaque::parseUnknown);
+            this.data = new Opaque(buffer, Optional.empty(), Opaque::parseUnknown);
         }
     }
 

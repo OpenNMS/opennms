@@ -42,6 +42,7 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.UnsignedInteger;
 
 public class DataSource {
 
@@ -51,7 +52,7 @@ public class DataSource {
         ENT_PHYSICAL_ENTRY;
 
         public static Type from(final ByteBuffer buffer) throws InvalidPacketException {
-            final int type = BufferUtils.uint8(buffer);
+            final int type = BufferUtils.uint8(buffer).intValue();
             switch (type) {
                 case 0:
                     return IF_INDEX;
@@ -66,7 +67,7 @@ public class DataSource {
     }
 
     public final Type type;
-    public final int index;
+    public final UnsignedInteger index;
 
     public DataSource(final ByteBuffer buffer) throws InvalidPacketException {
         this.type = Type.from(buffer);
