@@ -23,7 +23,6 @@
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <feature>guava</feature>
-      <feature>qpid</feature>
 
       <feature>opennms-core-camel</feature>
       <feature>opennms-dao-api</feature>
@@ -38,7 +37,6 @@
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <feature>guava</feature>
-      <feature>qpid</feature>
 
       <feature>opennms-core-camel</feature>
       <feature>opennms-dao-api</feature>
@@ -52,7 +50,6 @@
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
-      <feature>qpid</feature>
 
       <feature>opennms-core-camel</feature>
       <!-- TODO -->
@@ -330,12 +327,6 @@
       <feature>pax-jdbc-spec</feature>
       <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
-    </feature>
-
-    <feature name="qpid" description="Apache :: Qpid" version="0.32_3">
-      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
-      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.qpid/0.32_3</bundle>
     </feature>
 
     <feature name="rate-limited-logger" description="Rate Limited Logger" version="${rateLimitedLoggerVersion}">

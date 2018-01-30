@@ -629,12 +629,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("postgresql");
 		System.out.println(executeCommand("feature:list -i"));
 	}
-	@Test
-	public void testInstallFeatureQpid() {
-		installFeature("qpid");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	public void testInstallFeatureQuartz() {
 		installFeature("quartz");
 		System.out.println(executeCommand("feature:list -i"));
