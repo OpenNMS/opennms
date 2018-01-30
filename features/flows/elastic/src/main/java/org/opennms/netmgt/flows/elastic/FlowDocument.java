@@ -270,7 +270,7 @@ public class FlowDocument {
      * VLAN Name.
      */
     @SerializedName("netflow.vlan")
-    private Integer vlan;
+    private String vlan;
 
     /**
      * Destination node details.
@@ -586,11 +586,11 @@ public class FlowDocument {
         this.netflowVersion = netflowVersion;
     }
 
-    public Integer getVlan() {
+    public String getVlan() {
         return vlan;
     }
 
-    public void setVlan(Integer vlan) {
+    public void setVlan(String vlan) {
         this.vlan = vlan;
     }
 
@@ -648,7 +648,7 @@ public class FlowDocument {
         doc.setTcpFlags(flow.getTcpFlags());
         doc.setTos(flow.getTos());
         doc.setNetflowVersion(NetflowVersion.from(flow.getNetflowVersion()));
-        doc.setVlan(flow.getVlan());
+        doc.setVlan(Integer.toUnsignedString(flow.getVlan()));
 
         return doc;
     }
