@@ -151,7 +151,7 @@ public class NxosTelemetryIT {
 
                 String message = EntityUtils.toString(response.getEntity());
                 LOG.info(message);
-                if (message.contains("rrdFile=\"loadavg")) {
+                if (message.contains("rrdFile=\"load_avg_1min")) {
                     return true;
                 } else {
                     return false;

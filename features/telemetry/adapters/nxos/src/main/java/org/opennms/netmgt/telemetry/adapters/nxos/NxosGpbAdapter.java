@@ -31,7 +31,6 @@ package org.opennms.netmgt.telemetry.adapters.nxos;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -115,6 +114,7 @@ public class NxosGpbAdapter extends AbstractPersistingAdapter {
     
         final TelemetryBis.Telemetry msg = tryParsingTelemetryMessage(message.getByteArray());
 
+        
         CollectionAgent agent = null;
         try {
             LOG.debug(" node id from nxos buffer = {}", msg.getNodeIdStr());
@@ -134,7 +134,11 @@ public class NxosGpbAdapter extends AbstractPersistingAdapter {
             agent = transactionTemplate.execute(new TransactionCallback<CollectionAgent>() {
                 @Override
                 public CollectionAgent doInTransaction(TransactionStatus status) {
-                    final OnmsNode node = Iterables.getFirst(nodeDao.findByLabel(msg.getNodeIdStr()), null);
+                    OnmsNode node = Iterables.getFirst(nodeDao.findByLabelForLocation(msg.getNodeIdStr(), messageLog.getLocation()), null);
+                    if (node == null) {
+                        // If there is no matching label , Try matching with foreignId
+                        node = Iterables.getFirst(nodeDao.findByForeignIdForLocation(msg.getNodeIdStr(), messageLog.getLocation()), null);
+                    }
                     if (node != null) {
                         final OnmsIpInterface primaryInterface = node.getPrimaryInterface();
                         return collectionAgentFactory.createCollectionAgent(primaryInterface);
@@ -145,7 +149,7 @@ public class NxosGpbAdapter extends AbstractPersistingAdapter {
         }
 
         if (agent == null) {
-            LOG.warn("Unable to find node and inteface for system id: {}", msg.getNodeIdStr());
+            LOG.warn("Unable to find node and interface for system id: {}", msg.getNodeIdStr());
             return Optional.empty();
         }
 

@@ -262,6 +262,9 @@ public class JtiTelemetryIT {
                         .ge("createTime", startOfTest).toCriteria()), notNullValue());
 
         assertNotNull(onmsNode);
+        onmsNode.setForeignSource("foreignSource");
+        onmsNode.setForeignId("nexus9k");
+        nodeDao.save(onmsNode);
 
         if (isMinion) {
             assertThat(onmsNode.getLocation().getLocationName(), is("MINION"));

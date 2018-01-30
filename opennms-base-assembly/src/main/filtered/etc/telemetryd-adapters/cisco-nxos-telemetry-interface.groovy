@@ -69,23 +69,38 @@ class CollectionSetGenerator {
         log.debug("Generating collection set for message: {}", telemetryMsg)
         // build the node-level resource
         NodeLevelResource nodeLevelResource = new NodeLevelResource(agent.getNodeId())
-        int loadavg = 0;
-        //Get loadavg from the message
-        List<TelemetryField> fieldList = telemetryMsg.getDataGpbkvList();
-        for ( TelemetryField field : fieldList) {
-            if (field.getName().equals("loadavg")) {
-                loadavg = field.getUint32Value();
+                Double load_avg_1min = null;
+        String _load_avg_1min = null;
+        Long collectionId = null;
+        if (!telemetryMsg.getDataGpbkvList().isEmpty()) {
+            if (!telemetryMsg.getDataGpbkvList().get(0).getFieldsList().isEmpty()
+                    && telemetryMsg.getDataGpbkvList().get(0).getFieldsList().size() >= 2) {
+                if (!telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().isEmpty()) {
+                    if (!telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().get(0).getFieldsList()
+                            .isEmpty()) {
+                        if (telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().get(0).getFieldsList()
+                                .get(0).getName().equals("load_avg_1min")) {
+                            _load_avg_1min = telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().get(0)
+                                    .getFieldsList().get(0).getStringValue();
+                            load_avg_1min = Double.valueOf(_load_avg_1min);
+                        }
+                    }
+                }
             }
         }
-        // Store the loadavg
-        builder.withNumericAttribute(nodeLevelResource, "stats", "loadavg", loadavg, AttributeType.GAUGE);
+        if (load_avg_1min == null) {
+            collectionId = telemetryMsg.getCollectionId();
+            builder.withStringAttribute(nodeLevelResource, "stats", "collectionId", collectionId.toString());
+        } else {
+            builder.withNumericAttribute(nodeLevelResource, "stats", "load_avg_1min", load_avg_1min, AttributeType.GAUGE);
+        }
     }
 }
 
 // The following variables are passed in as globals from the adapter:
 // agent: the agent (or node) against which the metrics will be associated
 // builder: a reference to a CollectionSetBuilder to which the resources/metrics should be added
-// msg: the message from which to extract the metrics
+// telemetryMsg: the message from which to extract the metrics
 
 TelemetryBis.Telemetry telemetryMsg = msg
 
