@@ -500,9 +500,9 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     private static boolean isIngress(TermsAggregation.Entry entry) {
-        if (Direction.INGRESS.getValue().equalsIgnoreCase(entry.getKeyAsString())) {
+        if (Direction.INGRESS.name().equalsIgnoreCase(entry.getKeyAsString())) {
             return true;
-        } else if (Direction.EGRESS.getValue().equalsIgnoreCase(entry.getKeyAsString())) {
+        } else if (Direction.EGRESS.name().equalsIgnoreCase(entry.getKeyAsString())) {
             return false;
         } else {
             return Boolean.valueOf(entry.getKeyAsString());

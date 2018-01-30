@@ -85,7 +85,7 @@ public class FlowBuilder {
         flow.setInputSnmp(snmpInterfaceId);
         flow.setOutputSnmp(snmpInterfaceId);
         flow.setApplication(application);
-        flow.setDirection(direction.getValue());
+        flow.setDirection(direction);
         flows.add(flow);
         return this;
     }
