@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Converter;
@@ -100,7 +99,12 @@ public class ElasticFlowRepository implements FlowRepository {
     private final Meter flowsPersistedMeter;
 
     /**
-     * Time taken to convert and enrich the flows in a log
+     * Time taken to convert the flows in a log
+     */
+    private final Timer logConversionTimer;
+
+    /**
+     * Time taken to enrich the flows in a log
      */
     private final Timer logEnrichementTimer;
 
@@ -120,6 +124,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
+        logConversionTimer = metricRegistry.timer("logConversion");
         logEnrichementTimer = metricRegistry.timer("logEnrichment");
         logPersistingTimer = metricRegistry.timer("logPersisting");
         flowsPerLog = metricRegistry.histogram("flowsPerLog");
@@ -128,17 +133,19 @@ public class ElasticFlowRepository implements FlowRepository {
     @Override
     public <P> void persist(final Collection<? extends P> packets, final FlowSource source, final Converter<P> converter) throws FlowException {
         LOG.debug("Converting {} flow packets from {} to flow documents.", packets.size(), source);
-        final Stream<FlowDocument> documents = packets.stream()
-                .map(converter::convert)
-                .flatMap(Collection::stream)
-                .map(FlowDocument::from);
+        final List<FlowDocument> documents;
+        try (final Timer.Context ctx = logConversionTimer.time()) {
+            documents = packets.stream()
+                    .map(converter::convert)
+                    .flatMap(Collection::stream)
+                    .map(FlowDocument::from)
+                    .collect(Collectors.toList());
+        }
+
         enrichAndPersistFlows(documents, source);
     }
 
-    public void enrichAndPersistFlows(final Stream<FlowDocument> documents, FlowSource source) throws FlowException {
-        // TODO: Use streams here?
-        List<FlowDocument> flowDocuments = documents.collect(Collectors.toList());
-
+    public void enrichAndPersistFlows(final List<FlowDocument> flowDocuments, FlowSource source) throws FlowException {
         // Track the number of flows per call
         flowsPerLog.update(flowDocuments.size());
 
