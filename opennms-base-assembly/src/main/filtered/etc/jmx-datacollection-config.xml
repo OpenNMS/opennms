@@ -353,23 +353,23 @@
             <attrib name="FiveMinuteRate" alias="FlowLogPerst5m" type="gauge"/>
          </mbean>
          <mbean name="org.opennms.netmgt.telemetry.adapters.netflow.packetsPerLog" objectname="org.opennms.netmgt.telemetry.adapters.netflow:name=packetsPerLog">
-            <attrib name="50thPercentile" alias="NF5PktsPerLog50" type="gauge"/>
-            <attrib name="75thPercentile" alias="NF5PktsPerLog75" type="gauge"/>
-            <attrib name="95thPercentile" alias="NF5PktsPerLog95" type="gauge"/>
-            <attrib name="98thPercentile" alias="NF5PktsPerLog98" type="gauge"/>
-            <attrib name="99thPercentile" alias="NF5PktsPerLog99" type="gauge"/>
-            <attrib name="999thPercentile" alias="NF5PktsPerLog999" type="gauge"/>
-            <attrib name="Count" alias="NF5PktsPerLogCnt" type="counter"/>
+            <attrib name="50thPercentile" alias="FlowPktsPerLog50" type="gauge"/>
+            <attrib name="75thPercentile" alias="FlowPktsPerLog75" type="gauge"/>
+            <attrib name="95thPercentile" alias="FlowPktsPerLog95" type="gauge"/>
+            <attrib name="98thPercentile" alias="FlowPktsPerLog98" type="gauge"/>
+            <attrib name="99thPercentile" alias="FlowPktsPerLog99" type="gauge"/>
+            <attrib name="999thPercentile" alias="FlowPktsPerLog999" type="gauge"/>
+            <attrib name="Count" alias="FlowPktsPerLogCnt" type="counter"/>
          </mbean>
          <mbean name="org.opennms.netmgt.telemetry.adapters.netflow.logParsing" objectname="org.opennms.netmgt.telemetry.adapters.netflow:name=logParsing">
-            <attrib name="50thPercentile" alias="NF5LogParse50" type="gauge"/>
-            <attrib name="75thPercentile" alias="NF5LogParse75" type="gauge"/>
-            <attrib name="95thPercentile" alias="NF5LogParse95" type="gauge"/>
-            <attrib name="98thPercentile" alias="NF5LogParse98" type="gauge"/>
-            <attrib name="99thPercentile" alias="NF5LogParse99" type="gauge"/>
-            <attrib name="999thPercentile" alias="NF5LogParse999" type="gauge"/>
-            <attrib name="OneMinuteRate" alias="NF5LogParse1m" type="gauge"/>
-            <attrib name="FiveMinuteRate" alias="NF5LogParse5m" type="gauge"/>
+            <attrib name="50thPercentile" alias="FlowLogParse50" type="gauge"/>
+            <attrib name="75thPercentile" alias="FlowLogParse75" type="gauge"/>
+            <attrib name="95thPercentile" alias="FlowLogParse95" type="gauge"/>
+            <attrib name="98thPercentile" alias="FlowLogParse98" type="gauge"/>
+            <attrib name="99thPercentile" alias="FlowLogParse99" type="gauge"/>
+            <attrib name="999thPercentile" alias="FlowLogParse999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="FlowLogParse1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="FlowLogParse5m" type="gauge"/>
          </mbean>
       </mbeans>
    </jmx-collection>
