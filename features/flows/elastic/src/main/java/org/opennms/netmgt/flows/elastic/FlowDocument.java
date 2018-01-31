@@ -648,7 +648,7 @@ public class FlowDocument {
         doc.setTcpFlags(flow.getTcpFlags());
         doc.setTos(flow.getTos());
         doc.setNetflowVersion(NetflowVersion.from(flow.getNetflowVersion()));
-        doc.setVlan(Integer.toUnsignedString(flow.getVlan()));
+        doc.setVlan(flow.getVlan() != null ? Integer.toUnsignedString(flow.getVlan()) : null);
 
         return doc;
     }
