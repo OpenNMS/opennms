@@ -62,7 +62,7 @@ public class RestClientFactory {
 	private static final Logger LOG = LoggerFactory.getLogger(RestClientFactory.class);
 
 	private final JestClientFactory factory;
-	private final HttpClientConfig.Builder configBuilder;
+	private HttpClientConfig config;
 
 	private AtomicInteger m_socketTimeout = new AtomicInteger(0);
 	private AtomicInteger m_timeout = new AtomicInteger(0);
@@ -135,7 +135,7 @@ public class RestClientFactory {
 
 		// If multiple URLs are specified in a comma-separated string, split them up
 		final List<String> targetHosts = Arrays.asList(elasticSearchURL.split(","));
-		configBuilder = new HttpClientConfig.Builder(targetHosts).multiThreaded(true);
+		final HttpClientConfig.Builder configBuilder = new HttpClientConfig.Builder(targetHosts).multiThreaded(true);
 		if (!Strings.isNullOrEmpty(esusername) && !Strings.isNullOrEmpty(espassword)) {
 			final URL targetUrl = new URL(targetHosts.get(0));
 
@@ -147,9 +147,11 @@ public class RestClientFactory {
 			configBuilder.defaultCredentials(esusername, espassword);
 			configBuilder.setPreemptiveAuth(new HttpHost(targetUrl.getHost(), targetUrl.getPort(), targetUrl.getProtocol()));
 		}
+		config = configBuilder.build();
 
 		factory = new JestClientFactory();
-		factory.setHttpClientConfig(configBuilder.build());
+
+		factory.setHttpClientConfig(config);
 
 	}
 
@@ -181,7 +183,8 @@ public class RestClientFactory {
 	 */
 	public void setSocketTimeout(int timeout) {
 		m_socketTimeout.set(timeout);
-		factory.setHttpClientConfig(configBuilder.readTimeout(timeout).build());
+		config = new HttpClientConfig.Builder(config).readTimeout(timeout).build();
+		factory.setHttpClientConfig(config);
 	}
 
 	public int getTimeout() {
@@ -199,7 +202,8 @@ public class RestClientFactory {
 	 */
 	public void setTimeout(int timeout) {
 		m_timeout.set(timeout);
-		factory.setHttpClientConfig(configBuilder.connTimeout(timeout).build());
+		config = new HttpClientConfig.Builder(config).connTimeout(timeout).build();
+		factory.setHttpClientConfig(config);
 	}
 
 	public JestClient getJestClient(){
