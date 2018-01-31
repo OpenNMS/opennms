@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.adapters.nxos;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -114,7 +115,6 @@ public class NxosGpbAdapter extends AbstractPersistingAdapter {
     
         final TelemetryBis.Telemetry msg = tryParsingTelemetryMessage(message.getByteArray());
 
-        
         CollectionAgent agent = null;
         try {
             LOG.debug(" node id from nxos buffer = {}", msg.getNodeIdStr());
@@ -166,9 +166,9 @@ public class NxosGpbAdapter extends AbstractPersistingAdapter {
         try {
             return TelemetryBis.Telemetry.parseFrom(bs, s_registry);
         } catch (InvalidProtocolBufferException e) {
-            byte[] offsetBytes = new byte[bs.length - 6];
-            System.arraycopy(bs, 6, offsetBytes, 0, offsetBytes.length);
-            return TelemetryBis.Telemetry.parseFrom(offsetBytes, s_registry);
+            // Attempt with offset 6
+            ByteBuffer buf = ByteBuffer.wrap(bs, 6, bs.length - 6);
+            return TelemetryBis.Telemetry.parseFrom(buf, s_registry);
         }
 
     }

@@ -3,13 +3,17 @@ package org.opennms.smoketest.minion;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.http.HttpHost;
@@ -25,9 +29,19 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.utils.DaoUtils;
+import org.opennms.smoketest.utils.HibernateDaoFactory;
+import org.opennms.smoketest.utils.RestClient;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
@@ -39,7 +53,7 @@ import com.google.common.io.Resources;
 
 public class NxosTelemetryIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JtiTelemetryIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NxosTelemetryIT.class);
     public static final String SENDER_IP = "192.168.1.1";
 
     private static TestEnvironment m_testEnvironment;
@@ -85,17 +99,15 @@ public class NxosTelemetryIT {
 
         Date startOfTest = new Date();
 
-        OnmsNode onmsNode = JtiTelemetryIT.sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, false,
-                startOfTest);
-
+        OnmsNode onmsNode = addRequisition(opennmsHttp, false, startOfTest);
         final InetSocketAddress opennmsUdp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
-
         sendNxosTelemetryMessage(opennmsUdp);
 
         await().atMost(30, SECONDS).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
                 .until(matchRrdFileFromNodeResource(onmsNode.getId()));
 
     }
+
 
     @Test
     public void verifyNxosTelemetryOnMinion() throws Exception {
@@ -115,11 +127,8 @@ public class NxosTelemetryIT {
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
         }
 
-        OnmsNode onmsNode = JtiTelemetryIT.sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, true,
-                startOfTest);
-
+        OnmsNode onmsNode = addRequisition(opennmsHttp, true, startOfTest);
         final InetSocketAddress minionUdp = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 50000, "udp");
-
         sendNxosTelemetryMessage(minionUdp);
 
         await().atMost(2, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS)
@@ -159,6 +168,47 @@ public class NxosTelemetryIT {
 
             }
         };
+    }
+
+    public static OnmsNode addRequisition(InetSocketAddress opennmsHttp, boolean isMinion, Date startOfTest) {
+
+        RestClient client = new RestClient(opennmsHttp);
+        Requisition requisition = new Requisition("telemetry");
+        List<RequisitionInterface> interfaces = new ArrayList<>();
+        RequisitionInterface requisitionInterface = new RequisitionInterface();
+        requisitionInterface.setIpAddr("192.168.0.1");
+        requisitionInterface.setManaged(true);
+        requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
+        interfaces.add(requisitionInterface);
+        RequisitionNode node = new RequisitionNode();
+        String label = "nexus9k";
+        node.setNodeLabel(label);
+        node.setForeignId("nxos");
+        node.setInterfaces(interfaces);
+        if (isMinion) {
+            // For a requisition, foreignId needs to be unique, change foreignId
+            node.setLocation("MINION");
+            node.setForeignId("nexus9k");
+            // Change label so that node matches with foreignId
+            label = "nxos";
+            node.setNodeLabel(label);
+        }
+        requisition.insertNode(node);
+        client.addOrReplaceRequisition(requisition);
+        client.importRequisition("telemetry");
+
+        InetSocketAddress pgsql = m_testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
+        HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
+        NodeDao nodeDao = daoFactory.getDao(NodeDaoHibernate.class);
+
+        final OnmsNode onmsNode = await().atMost(3, MINUTES).pollInterval(30, SECONDS)
+                .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class)
+                        .ge("createTime", startOfTest).eq("label", label).toCriteria()), notNullValue());
+
+        assertNotNull(onmsNode);
+
+        return onmsNode;
+
     }
 
 }

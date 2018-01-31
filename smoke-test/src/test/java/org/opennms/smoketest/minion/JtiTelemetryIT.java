@@ -218,6 +218,7 @@ public class JtiTelemetryIT {
         };
     }
 
+
     public static OnmsNode sendnewSuspectEvent(Executor executor, InetSocketAddress opennmsHttp,
             TestEnvironment m_testEnvironment, boolean isMinion, Date startOfTest)
             throws ClientProtocolException, IOException {
@@ -262,9 +263,6 @@ public class JtiTelemetryIT {
                         .ge("createTime", startOfTest).toCriteria()), notNullValue());
 
         assertNotNull(onmsNode);
-        onmsNode.setForeignSource("foreignSource");
-        onmsNode.setForeignId("nexus9k");
-        nodeDao.save(onmsNode);
 
         if (isMinion) {
             assertThat(onmsNode.getLocation().getLocationName(), is("MINION"));

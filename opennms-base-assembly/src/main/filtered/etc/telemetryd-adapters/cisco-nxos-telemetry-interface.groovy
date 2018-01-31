@@ -69,8 +69,8 @@ class CollectionSetGenerator {
         log.debug("Generating collection set for message: {}", telemetryMsg)
         // build the node-level resource
         NodeLevelResource nodeLevelResource = new NodeLevelResource(agent.getNodeId())
-                Double load_avg_1min = null;
-        String _load_avg_1min = null;
+        Double load_avg_1min = null;
+        String load_avg_str= null;
         Long collectionId = null;
         if (!telemetryMsg.getDataGpbkvList().isEmpty()) {
             if (!telemetryMsg.getDataGpbkvList().get(0).getFieldsList().isEmpty()
@@ -80,9 +80,9 @@ class CollectionSetGenerator {
                             .isEmpty()) {
                         if (telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().get(0).getFieldsList()
                                 .get(0).getName().equals("load_avg_1min")) {
-                            _load_avg_1min = telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().get(0)
+                            load_avg_str = telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().get(0)
                                     .getFieldsList().get(0).getStringValue();
-                            load_avg_1min = Double.valueOf(_load_avg_1min);
+                            load_avg_1min = Double.valueOf(load_avg_str);
                         }
                     }
                 }
