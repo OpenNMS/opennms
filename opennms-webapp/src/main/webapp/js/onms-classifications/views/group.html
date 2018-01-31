@@ -1,0 +1,94 @@
+<div class="panel-body">
+    <div class="navbar-form navbar-right">
+        <div class="input-group" role="group" style="padding-right: 50px" ng-show="group.ruleCount > 0">
+            <span class="input-group-addon"><i class="fa fa-search"/></span>
+            <input type="text"
+                   ng-model="query.search"
+                   ng-change="refresh()"
+                   placeholder="search..."
+                   class="form-control" />
+            <div class="input-group-btn">
+                <button class="btn btn-default" title="Clear search" ng-click="clearSearch()" ng-show="query.search"><i class="fa fa-close"/></button>
+            </div>
+
+        </div>
+
+        <div class="btn-group" role="group">
+            <button class="btn btn-default" ng-click="refresh()" title="Refresh list"><i class="fa fa-refresh"></i></button>
+        </div>
+        <div class="btn-group" role="group" ng-show="!group.readOnly">
+            <button class="btn btn-default" ng-click="addRule()" title="Add new classification rule"><i class="fa fa-plus"></i></button>
+            <button ng-show="rules.length > 0"
+                    class="btn btn-default"
+                    mwl-confirm
+                    title="Delete rules"
+                    message="Do you want to delete all {{group.name}} rules?"
+                    on-confirm="deleteAllRules()"
+                    placement="left"
+                    confirm-button-type="danger"
+                    confirm-text="Yes"
+                    cancel-text="No"><i class="fa fa-trash-o"></i></button>
+        </div>
+        <div class="btn-group" role="group" ng-show="!group.readOnly">
+            <button class="btn btn-default" ng-click="importRules()" title="Import classification rules from CSV"><i class="fa fa-upload"></i></button>
+            <a href="{{csv_link}}" ng-show="csv_link">
+                <button class="btn btn-default" title="Export classification rules as CSV" >
+                    <i class="fa fa-download"></i>
+                </button>
+            </a>
+        </div>
+    </div>
+    <div class="row" ng-show="rules.length == 0"><div class="col-sm-12"><pre>No rules defined.</pre></div></div>
+    <pagination model="query" ng-show="rules.length > 0" position="bottom" on-change="refresh">
+        <table class="table table-bordered table-striped">
+            <tbody>
+            <tr>
+                <th class="col-md-1 text-nowrap">
+                    <a ng-click="changeOrderBy('position')">Position</a>
+                    <i ng-show="query.orderBy === 'position' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'position' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-3 text-nowrap">
+                    <a ng-click="changeOrderBy('name')">Application</a>
+                    <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-3 text-nowrap">
+                    <a ng-click="changeOrderBy('ipAddress')">IP Address</a>
+                    <i ng-show="query.orderBy === 'ipAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'ipAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-2 text-nowrap">
+                    <a ng-click="changeOrderBy('port')">Port</a>
+                    <i ng-show="query.orderBy === 'port' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'port' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-2 text-nowrap">
+                    <a ng-click="changeOrderBy('protocol')">Protocol</a>
+                    <i ng-show="query.orderBy === 'protocol' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'protocol' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-1">
+                    Actions
+                </th>
+            </tr>
+
+            <tr ng-repeat="rule in rules">
+                <td class="text-nowwrap">{{rule['position']}}</td>
+                <td class="text-nowrap">{{rule['name']}}</td>
+                <td class="text-nowrap">{{rule['ipAddress']}}</td>
+                <td class="text-nowrap">{{rule['port']}}</td>
+                <td class="text-nowrap">
+                    <span ng-repeat="protocol in rule.protocols" class="label label-default" style="margin-right: 5px;">{{protocol}}</span>
+                </td>
+                <td>
+                    <div ng-show="rule.group.readOnly === false" class="pull-right">
+                        <button class="btn btn-sm btn-default" ng-click="editRule(rule)" title="edit rule"><i class="fa fa-edit"></i></button>
+                        <button class="btn btn-sm btn-default" ng-click="deleteRule(rule)" title="delete rule"><i class="fa fa-trash-o"></i></button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </pagination>
+</div>

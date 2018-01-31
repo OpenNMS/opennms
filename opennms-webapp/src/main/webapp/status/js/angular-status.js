@@ -16,7 +16,7 @@
         return list;
     };
 
-    angular.module(MODULE_NAME, [ 'angular-loading-bar', 'ngRoute', 'ngResource', 'ui.checkbox', 'ui.bootstrap', 'onms.elementList' ])
+    angular.module(MODULE_NAME, [ 'angular-loading-bar', 'ngRoute', 'ngResource', 'ui.checkbox', 'ui.bootstrap', 'onms.elementList', 'onms.pagination' ])
         .filter('severity', function() {
             return function(input) {
                 input = input || '';
@@ -49,16 +49,6 @@
                         $scope.severity = {};
                     }
                 }
-            }
-        })
-        .directive('pagination', function() {
-            return {
-                restrict: 'E',
-                scope: {
-                    query: '=model',
-                },
-                transclude: true,
-                templateUrl: 'status/template/pagination-toolbar.html',
             }
         })
 
