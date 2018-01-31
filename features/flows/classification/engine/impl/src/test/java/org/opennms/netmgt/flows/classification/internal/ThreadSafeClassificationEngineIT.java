@@ -46,7 +46,7 @@ import org.junit.rules.Timeout;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
 
-public class ThreadSafeClassificationEngineTest {
+public class ThreadSafeClassificationEngineIT {
 
     private static final int NUMBER_OF_THREADS = 10;
 

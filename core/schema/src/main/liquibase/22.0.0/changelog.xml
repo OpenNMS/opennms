@@ -4,7 +4,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
-  <changeSet author="mvrueden" id="22.0.0-classification-rules-table">
+  <changeSet author="mvrueden" id="22.0.0-classification-tables">
     <createTable tableName="classification_rules">
       <column name="id" type="integer">
         <constraints nullable="false"/>
@@ -15,8 +15,36 @@
       <column name="ipaddress" type="text"/>
       <column name="port" type="text"/>
       <column name="protocol" type="text"/>
+      <column name="position" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="groupid" type="integer">
+        <constraints nullable="false" />
+      </column>
     </createTable>
+    <addUniqueConstraint tableName="classification_rules" columnNames="ipaddress,port,protocol,groupid" />
     <addPrimaryKey tableName="classification_rules" columnNames="id" constraintName="classification_rules_pkey" />
+
+    <createTable tableName="classification_groups">
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="text"/>
+      <column name="readonly" type="boolean"/>
+      <column name="enabled" type="boolean"/>
+      <column name="priority" type="integer">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="classification_groups" columnNames="id" constraintName="classification_groups_pkey" />
+    <addUniqueConstraint tableName="classification_groups" columnNames="name" />
+    <addForeignKeyConstraint constraintName="fk_classification_rules_groupid"
+                             baseTableName="classification_rules" baseColumnNames="groupid"
+                             referencedTableName="classification_groups" referencedColumnNames="id"
+                             deleteCascade="true"/>
   </changeSet>
 
   <changeSet runOnChange="false" author="mvrueden" id="22.0.0-ruleNxtId">
@@ -31,5 +59,4 @@
       <dropSequence sequenceName="rulenxtid" />
     </rollback>
   </changeSet>
-  
 </databaseChangeLog>

@@ -30,8 +30,11 @@ package org.opennms.netmgt.flows.classification.persistence.api;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -79,10 +82,22 @@ public class Rule {
 
     /**
      * The protocol to map.
-     * May contain multiple values,e.g. 2,7,17
+     * May contain multiple values,e.g. 2,7,17 or tcp,udp
      */
     @Column(name="protocol")
     private String protocol;
+
+    @ManyToOne(optional=false, fetch= FetchType.LAZY)
+    @JoinColumn(name="groupId")
+    private Group group;
+
+    /**
+     * The position of the rule within it's group.
+     * Global order must consider group.priority as well.
+     * See {@link RuleComparator}.
+     */
+    @Column(name="position", nullable = false)
+    private int position;
 
     public Rule() {
         
@@ -138,11 +153,20 @@ public class Rule {
         this.protocol = protocol;
     }
 
-    public boolean isValid() {
-        return !Strings.isNullOrEmpty(name)
-                && ! (Strings.isNullOrEmpty(port)
-                            &&  Strings.isNullOrEmpty(protocol)
-                            && Strings.isNullOrEmpty(ipAddress));
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     @Override
@@ -152,6 +176,31 @@ public class Rule {
             .add("ipAddress", ipAddress)
             .add("port", port)
             .add("protocol", protocol)
+            .add("group", group)
             .toString();
+    }
+
+    public boolean hasProtocolDefinition() {
+        return !Strings.isNullOrEmpty(getProtocol());
+    }
+
+    public boolean hasIpAddressDefinition() {
+        return !Strings.isNullOrEmpty(getIpAddress());
+    }
+
+    public boolean hasPortDefinition() {
+        return !Strings.isNullOrEmpty(getPort());
+    }
+
+    public boolean hasDefinition() {
+        return hasProtocolDefinition() || hasIpAddressDefinition() || hasPortDefinition();
+    }
+
+    public int calculatePriority() {
+        int priority = 0;
+        if (hasPortDefinition()) priority++;
+        if (hasIpAddressDefinition()) priority++;
+        if (hasProtocolDefinition()) priority++;
+        return priority;
     }
 }

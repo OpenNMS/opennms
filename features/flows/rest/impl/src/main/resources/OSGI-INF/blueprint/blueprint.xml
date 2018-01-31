@@ -13,9 +13,7 @@
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
-    <reference id="classificationDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" availability="mandatory"/>
-    <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory"/>
-    <reference id="csvRuleParser" interface="org.opennms.netmgt.flows.classification.CsvRuleParser" availability="mandatory"/>
+    <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.ClassificationService" availability="mandatory"/>
 
     <bean id="flowRestService" class="org.opennms.netmgt.flows.rest.internal.FlowRestServiceImpl">
         <argument ref="flowRepository" />
@@ -31,14 +29,17 @@
     </service>
 
     <bean id="classificationRestService" class="org.opennms.netmgt.flows.rest.internal.classification.ClassificationRestServiceImpl">
-        <argument ref="classificationDao" />
-        <argument ref="classificationEngine" />
-        <argument ref="csvRuleParser" />
-        <argument ref="transactionOperations" />
+        <argument ref="classificationService" />
     </bean>
-    <service interface="org.opennms.netmgt.flows.rest.classification.ClassificationRestService" ref="classificationRestService" >
+    <service interface="org.opennms.netmgt.flows.rest.classification.ClassificationRestService" ref="classificationRestService">
         <service-properties>
             <entry key="application-path" value="/rest" />
         </service-properties>
+    </service>
+    <service interface="javax.ws.rs.ext.ExceptionMapper">
+        <bean class="org.opennms.netmgt.flows.rest.internal.classification.ClassificationExceptionMapper"/>
+    </service>
+    <service interface="javax.ws.rs.ext.ExceptionMapper">
+        <bean class="org.opennms.netmgt.flows.rest.internal.classification.CSVImportExceptionMapper"/>
     </service>
 </blueprint>

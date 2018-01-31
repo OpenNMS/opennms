@@ -11,8 +11,9 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <!-- DAO -->
     <reference id="classificationRuleDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" availability="mandatory"/>
+    <reference id="classificationGroupDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao" availability="mandatory"/>
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
     <!-- Rule Provider -->
     <bean id="classificationRuleProvider" class="org.opennms.netmgt.flows.classification.internal.provider.DaoClassificationRuleProvider">
@@ -20,13 +21,8 @@
     </bean>
 
     <!-- Classification Engine -->
-    <bean id="useStaticRules" class="java.lang.System" factory-method="getProperty">
-        <argument value="org.opennms.features.flows.classification.useStaticRules"/>
-        <argument value="true"/>
-    </bean>
     <bean id="defaultClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine">
         <argument ref="classificationRuleProvider" />
-        <argument ref="useStaticRules"/>
     </bean>
     <bean id="timingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.TimingClassificationEngine">
         <argument ref="classificationMetricRegistry"/>
@@ -39,12 +35,6 @@
     <bean id="threadSafeClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.ThreadSafeClassificationEngine">
         <argument ref="cachingClassificationEngine" />
     </bean>
-
-    <!-- Expose Classification Engine -->
-    <service interface="org.opennms.netmgt.flows.classification.ClassificationEngine" ref="threadSafeClassificationEngine"/>
-    <service interface="org.opennms.netmgt.flows.classification.CsvRuleParser">
-        <bean class="org.opennms.netmgt.flows.classification.internal.provider.CsvRuleParserImpl"/>
-    </service>
 
     <!-- Metrics -->
     <bean id="classificationMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
@@ -59,5 +49,16 @@
           factory-method="build"
           init-method="start"
           destroy-method="stop" />
+
+    <!-- Expose Services -->
+    <service interface="org.opennms.netmgt.flows.classification.ClassificationEngine" ref="threadSafeClassificationEngine"/>
+    <service interface="org.opennms.netmgt.flows.classification.ClassificationService">
+        <bean class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationService">
+            <argument ref="classificationRuleDao"/>
+            <argument ref="classificationGroupDao"/>
+            <argument ref="threadSafeClassificationEngine"/>
+            <argument ref="transactionOperations"/>
+        </bean>
+    </service>
 
 </blueprint>

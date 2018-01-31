@@ -82,6 +82,7 @@
 	<include file="foundation-2017/changelog.xml"/>
 	<include file="21.0.0/changelog.xml"/>
 	<include file="22.0.0/changelog.xml"/>
+	<include file="22.0.0/changelog-insert-rules.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.internal;
+package org.opennms.netmgt.flows.rest.classification;
 
-import java.util.Comparator;
+public class ErrorDTO {
+    private String message;
+    private String context;
+    private String key;
 
-import org.opennms.netmgt.flows.classification.internal.classifier.Classifier;
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-public class ClassificationSorter implements Comparator<Classifier> {
+    public String getMessage() {
+        return message;
+    }
 
-    @Override
-    public int compare(Classifier o1, Classifier o2) {
-        if (o1.getPriority() == o2.getPriority()) {
-            return -1 * Boolean.compare(o1.hasIpMatcher(), o2.hasIpMatcher());
-        }
-        return -1 * Integer.compare(o1.getPriority(), o2.getPriority());
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
     }
 }

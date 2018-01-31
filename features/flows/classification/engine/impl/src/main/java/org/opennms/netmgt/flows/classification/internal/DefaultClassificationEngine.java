@@ -28,40 +28,31 @@
 
 package org.opennms.netmgt.flows.classification.internal;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.internal.classifier.Classifier;
 import org.opennms.netmgt.flows.classification.internal.classifier.CombinedClassifier;
-import org.opennms.netmgt.flows.classification.internal.provider.StaticClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleComparator;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
     private final List<List<Classifier>> classifierPortList = new ArrayList<>();
-    private final ClassificationSorter classificationSorter = new ClassificationSorter();
+    private final Comparator<Rule> ruleComparator = new RuleComparator();
     private final ClassificationRuleProvider ruleProvider;
-    private final boolean useStaticRules;
 
-    // This can be a DAO or similar in the future
     public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider) {
-        this(ruleProvider, false);
-    }
-
-    public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider, boolean useStaticRules) {
         this.ruleProvider = Objects.requireNonNull(ruleProvider);
-        this.useStaticRules = useStaticRules;
         this.reload();
     }
 
@@ -69,17 +60,6 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     public void reload() {
         final List<Rule> rules = new ArrayList<>();
         rules.addAll(ruleProvider.getRules());
-
-        // For now we just apply static rules at the end.
-        // This ensures that user-defined rules are loaded first
-        if (useStaticRules) {
-            try {
-                rules.addAll(new StaticClassificationRuleProvider().getRules());
-            } catch (IOException e) {
-                LoggerFactory.getLogger(getClass()).error("Could not load static rules {}", e.getMessage(), e);
-            }
-
-        }
         createClassifiers(rules);
     }
 
@@ -98,35 +78,42 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     }
 
     private void createClassifiers(final List<Rule> rules) {
-        classifierPortList.clear();
+        final List<List<Rule>> rulePortList = new ArrayList<>();
 
         // Initialize each element
         for (int i=0; i<65536; i++) {
-            classifierPortList.add(new ArrayList<>());
+            rulePortList.add(new ArrayList<>());
         }
 
-        // Create classifiers and bind them to a port
-        final List<Classifier> anyPortClassifier = new ArrayList<>();
+        // Bind each rule to a port
+        final List<Rule> anyPortRule = new ArrayList<>();
         for (Rule eachRule : rules) {
-            final Classifier classifier = new CombinedClassifier(eachRule);
-            if (!Strings.isNullOrEmpty(eachRule.getPort())) {
+            if (eachRule.hasPortDefinition()) {
                 for (Integer eachPort : new PortValue(eachRule.getPort()).getPorts()) {
-                    classifierPortList.get(eachPort).add(classifier);
+                    rulePortList.get(eachPort).add(eachRule);
                 }
             } else {
-                anyPortClassifier.add(classifier);
+                anyPortRule.add(eachRule);
             }
         }
 
         // Bind classifiers to ANY port
-        for (final List<Classifier> classifiers : classifierPortList) {
-            classifiers.addAll(anyPortClassifier);
+        for (final List<Rule> theRules : rulePortList) {
+            theRules.addAll(anyPortRule);
         }
 
-        // Finally sort
-        for (int i=0; i<classifierPortList.size(); i++) {
-            final List<Classifier> classifiers = classifierPortList.get(i);
-            Collections.sort(classifiers, classificationSorter);
+        // Sort rules
+        for (int i=0; i<rulePortList.size(); i++) {
+            final List<Rule> portRules = rulePortList.get(i);
+            Collections.sort(portRules, ruleComparator);
+        }
+
+        // Finally create classifiers
+        classifierPortList.clear();
+        for (int i=0; i<rulePortList.size(); i++) {
+            final List<Rule> portRules = rulePortList.get(i);
+            final List<Classifier> classifiers = portRules.stream().map(CombinedClassifier::new).collect(Collectors.toList());
+            classifierPortList.set(i, classifiers);
         }
     }
 

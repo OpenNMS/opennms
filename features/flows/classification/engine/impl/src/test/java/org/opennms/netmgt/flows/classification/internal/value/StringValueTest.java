@@ -42,7 +42,7 @@ public class StringValueTest {
         StringValue value = new StringValue("test");
         assertThat(value.getValue(), is("test"));
         assertThat(value.isRanged(), is(false));
-        assertThat(value.isWildcard(), is(false));
+        assertThat(value.hasWildcard(), is(false));
         assertThat(value.isNull(), is(false));
         assertThat(value.isEmpty(), is(false));
         assertThat(value.isNullOrEmpty(), is(false));
@@ -51,7 +51,7 @@ public class StringValueTest {
         value = new StringValue("");
         assertThat(value.getValue(), is(""));
         assertThat(value.isRanged(), is(false));
-        assertThat(value.isWildcard(), is(false));
+        assertThat(value.hasWildcard(), is(false));
         assertThat(value.isNull(), is(false));
         assertThat(value.isEmpty(), is(true));
         assertThat(value.isNullOrEmpty(), is(true));
@@ -60,7 +60,7 @@ public class StringValueTest {
         value = new StringValue(null);
         assertThat(value.getValue(), nullValue());
         assertThat(value.isRanged(), is(false));
-        assertThat(value.isWildcard(), is(false));
+        assertThat(value.hasWildcard(), is(false));
         assertThat(value.isNull(), is(true));
         assertThat(value.isEmpty(), is(false));
         assertThat(value.isNullOrEmpty(), is(true));
@@ -69,7 +69,7 @@ public class StringValueTest {
         value = new StringValue("test*");
         assertThat(value.getValue(), is("test*"));
         assertThat(value.isRanged(), is(false));
-        assertThat(value.isWildcard(), is(true));
+        assertThat(value.hasWildcard(), is(true));
         assertThat(value.isNull(), is(false));
         assertThat(value.isEmpty(), is(false));
         assertThat(value.isNullOrEmpty(), is(false));
@@ -78,7 +78,7 @@ public class StringValueTest {
         value = new StringValue("80-100");
         assertThat(value.getValue(), is("80-100"));
         assertThat(value.isRanged(), is(true));
-        assertThat(value.isWildcard(), is(false));
+        assertThat(value.hasWildcard(), is(false));
         assertThat(value.isNull(), is(false));
         assertThat(value.isEmpty(), is(false));
         assertThat(value.isNullOrEmpty(), is(false));

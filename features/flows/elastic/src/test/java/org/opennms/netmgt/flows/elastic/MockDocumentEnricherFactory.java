@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -46,9 +45,10 @@ import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
-import org.opennms.netmgt.flows.classification.internal.provider.StaticClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
+
+import com.google.common.collect.Lists;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -71,13 +71,10 @@ public class MockDocumentEnricherFactory {
         assetRecordDao = new MockAssetRecordDao();
         categoryDao = new MockCategoryDao();
 
-        final ClassificationRuleProvider rulesProvider;
-        try {
-            rulesProvider = new StaticClassificationRuleProvider();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(rulesProvider);
+        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
+                new RuleBuilder().withName("http").withPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withPort("443").withProtocol("tcp,udp").build()
+        ));
         enricher = new DocumentEnricher(new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine);
 
         // Required for mock node dao

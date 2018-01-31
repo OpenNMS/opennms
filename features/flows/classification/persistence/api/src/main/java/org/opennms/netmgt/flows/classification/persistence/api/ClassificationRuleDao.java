@@ -28,8 +28,15 @@
 
 package org.opennms.netmgt.flows.classification.persistence.api;
 
+import java.util.List;
+
 import org.opennms.netmgt.dao.api.OnmsDao;
 
 public interface ClassificationRuleDao extends OnmsDao<Rule, Integer> {
 
+    List<Rule> findAllEnabledRules();
+
+    Rule findByDefinition(Rule rule, Group group);
+
+    List<Rule> findByDefinition(Rule http);
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.internal.provider;
+package org.opennms.netmgt.flows.classification.csv;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.junit.Test;
+import org.opennms.netmgt.flows.classification.error.Error;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
-public class StaticClassificationRuleProviderTest {
+public class CsvImportResult {
 
-    @Test
-    public void verifyLoading() throws IOException {
-        final StaticClassificationRuleProvider staticClassificationRuleProvider = new StaticClassificationRuleProvider();
-        final List<Rule> rules = staticClassificationRuleProvider.getRules();
-        assertThat(rules, not(empty()));
+    final Map<Long, Error> errorMap = new HashMap<>();
+    final List<Rule> rules = new ArrayList<>();
+    private Error error;
 
-        Rule rule = staticClassificationRuleProvider.getRule("http", 80);
-        assertNotNull(rule);
-        assertThat(rule.getName(), equalToIgnoringCase("http"));
-        assertThat(rule.getPort(), is("80"));
-        assertThat(rule.getProtocol(), is("tcp,udp,sctp"));
+    public void markError(long rowNumber, Error error) {
+        errorMap.put(rowNumber, error);
     }
 
+    public boolean hasError(long rowNumber) {
+        return errorMap.containsKey(rowNumber);
+    }
+
+    public void setError(Error error) {
+        this.error = error;
+    }
+
+    public void markSuccess(Rule rule) {
+        rules.add(rule);
+    }
+
+    public List<Rule> getRules() {
+        return rules;
+    }
+
+    public boolean isSuccess() {
+        return error == null && errorMap.isEmpty();
+    }
+
+    public Error getError() {
+        return error;
+    }
+
+    public Map<Long, Error> getErrorMap() {
+        return errorMap;
+    }
 }

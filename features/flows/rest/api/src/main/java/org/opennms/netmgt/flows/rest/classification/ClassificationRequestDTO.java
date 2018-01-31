@@ -32,9 +32,9 @@ public class ClassificationRequestDTO {
 
     private String ipAddress;
 
-    private int port;
+    private String port;
 
-    private int protocol;
+    private String protocol;
 
     public String getIpAddress() {
         return ipAddress;
@@ -44,19 +44,19 @@ public class ClassificationRequestDTO {
         this.ipAddress = ipAddress;
     }
 
-    public int getPort() {
+    public String getPort() {
         return port;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public int getProtocol() {
+    public String getProtocol() {
         return protocol;
     }
 
-    public void setProtocol(int protocol) {
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 }

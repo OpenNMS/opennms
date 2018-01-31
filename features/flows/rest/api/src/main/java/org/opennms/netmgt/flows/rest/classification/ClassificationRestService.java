@@ -38,8 +38,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 @Path("classifications")
 @Produces(MediaType.APPLICATION_JSON)
@@ -47,34 +49,55 @@ import javax.ws.rs.core.Response;
 public interface ClassificationRestService {
 
     @GET
-    Response getClassifications();
+    @Produces({MediaType.APPLICATION_JSON})
+    Response getRules(@Context final UriInfo uriInfo);
 
     @GET
     @Path("{id}")
-    Response getClassification(@PathParam("id") int id);
+    Response getRule(@PathParam("id") int id);
 
     @POST
-    Response saveClassification(ClassificationDTO classificationDTO);
-
-    @POST
-    @Consumes("text/comma-separated-values")
-    Response importClassifications(InputStream inputStream);
+    Response saveRule(RuleDTO ruleDTO);
 
     @DELETE
-    Response deleteClassifications();
+    Response deleteRules(@Context final UriInfo uriInfo);
 
     @DELETE
     @Path("{id}")
-    Response deleteClassification(@PathParam("id") int id);
+    Response deleteRule(@PathParam("id") int id);
 
     @PUT
     @Path("{id}")
-    Response updateClassification(@PathParam("id") int id, ClassificationDTO newValue);
+    Response updateRule(@PathParam("id") int id, RuleDTO newValue);
 
     @POST
-    @Path("check")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Path("classify")
     Response classify(ClassificationRequestDTO classificationRequestDTO);
+
+    @GET
+    @Path("groups")
+    Response getGroups(@Context final UriInfo uriInfo);
+
+    @GET
+    @Path("groups/{id}")
+    Response getGroup(@PathParam("id") int groupId);
+
+    @DELETE
+    @Path("groups/{id}")
+    Response deleteGroup(int groupId);
+
+    @PUT
+    @Path("groups/{id}")
+    Response updateGroup(@PathParam("id") int id, GroupDTO newValue);
+
+    @POST
+    @Consumes("text/comma-separated-values")
+    Response importRules(@Context UriInfo uriInfo, InputStream inputStream);
+
+    @GET
+    @Path("groups/{id}")
+    @Produces("text/comma-separated-values")
+    Response exportRules(@PathParam("id") int groupId);
 
     @GET
     @Path("protocols")

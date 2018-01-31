@@ -39,7 +39,7 @@ public class PortValue {
 
     public PortValue(String input) {
         final StringValue portValue = new StringValue(input);
-        if (portValue.isWildcard()) {
+        if (portValue.hasWildcard()) {
             throw new IllegalArgumentException("Wildcards not supported");
         }
         final List<StringValue> portValues = portValue.splitBy(",");

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,31 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.rest.classification;
+package org.opennms.netmgt.flows.rest.internal.classification;
 
-public class ClassificationBuilder {
-    private final ClassificationDTO classificationDTO = new ClassificationDTO();
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-    public ClassificationBuilder withName(String name) {
-        this.classificationDTO.setName(name);
-        return this;
-    }
+import org.opennms.netmgt.flows.classification.exception.ClassificationException;
 
-    public ClassificationBuilder withProtocol(String protocol) {
-        this.classificationDTO.setProtocol(protocol);
-        return this;
-    }
+@Provider
+public class ClassificationExceptionMapper implements ExceptionMapper<ClassificationException> {
 
-    public ClassificationBuilder withPort(String port) {
-        this.classificationDTO.setPort(port);
-        return this;
-    }
-
-    public ClassificationDTO build() {
-        return classificationDTO;
-    }
-
-    public static ClassificationBuilder classification() {
-        return new ClassificationBuilder();
+    @Override
+    public Response toResponse(ClassificationException exception) {
+        return ErrorResponseUtils.createResponse(exception.getError());
     }
 }

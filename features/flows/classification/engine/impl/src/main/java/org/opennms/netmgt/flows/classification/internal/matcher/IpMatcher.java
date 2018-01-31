@@ -42,9 +42,12 @@ public class IpMatcher implements Matcher {
 
     @Override
     public boolean matches(ClassificationRequest request) {
-        if (!value.isWildcard()) {
-            return value.getValue().equals(request.getIpAddress());
+        if (value.isWildcard()) {
+            return true;
         }
-        return IPLike.matches(request.getIpAddress(), value.getValue());
+        if (value.hasWildcard()) {
+            return IPLike.matches(request.getIpAddress(), value.getValue());
+        }
+        return value.getValue().equals(request.getIpAddress());
     }
 }

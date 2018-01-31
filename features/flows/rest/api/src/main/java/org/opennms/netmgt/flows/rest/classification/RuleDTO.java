@@ -28,16 +28,30 @@
 
 package org.opennms.netmgt.flows.rest.classification;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-public class ClassificationDTO {
+import com.google.common.collect.Lists;
+
+public class RuleDTO {
+    private Integer id;
     private String name;
-
     private String ipAddress;
-
     private String port;
+    private GroupDTO group;
+    private Integer position;
+    private List<String> protocols = new ArrayList<>();
 
-    private String protocol;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
@@ -63,27 +77,58 @@ public class ClassificationDTO {
         this.port = port;
     }
 
-    public String getProtocol() {
-        return protocol;
+    public void setProtocol(String protocol) {
+        if (protocol == null) {
+            setProtocols(Lists.newArrayList());
+        } else {
+            setProtocols(Arrays.stream(protocol.split(","))
+                    .map(segment -> segment.trim())
+                    .filter(segment -> segment != null && segment.length() > 0)
+                    .sorted()
+                    .collect(Collectors.toList()));
+        }
     }
 
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
+    public List<String> getProtocols() {
+        return protocols;
+    }
+
+    public void setProtocols(List<String> protocols) {
+        this.protocols = protocols;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setGroup(GroupDTO group) {
+        this.group = group;
+    }
+
+    public GroupDTO getGroup() {
+        return group;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final ClassificationDTO that = (ClassificationDTO) o;
-        return Objects.equals(name, that.name)
+        final RuleDTO that = (RuleDTO) o;
+        return Objects.equals(id, that.id)
+                && Objects.equals(name, that.name)
                 && Objects.equals(ipAddress, that.ipAddress)
                 && Objects.equals(port, that.port)
-                && Objects.equals(protocol, that.protocol);
+                && Objects.equals(protocols, that.protocols)
+                && Objects.equals(group, that.group)
+                && Objects.equals(position, that.position);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, ipAddress, port, protocol);
+        return Objects.hash(id, name, ipAddress, port, protocols, group, position);
     }
 }

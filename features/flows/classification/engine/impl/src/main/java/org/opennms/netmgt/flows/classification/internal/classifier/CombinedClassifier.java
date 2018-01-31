@@ -38,29 +38,24 @@ import org.opennms.netmgt.flows.classification.internal.matcher.PortMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.ProtocolMatcher;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
-import com.google.common.base.Strings;
-
 public class CombinedClassifier implements Classifier {
 
-    private final List<Matcher> matchers = new ArrayList<>();
+    private final List<Matcher> matchers;
     private final String application;
 
     public CombinedClassifier(Rule rule) {
-        if (!Strings.isNullOrEmpty(rule.getProtocol())) {
+        final List<Matcher> matchers = new ArrayList<>();
+        if (rule.hasProtocolDefinition()) {
             matchers.add(new ProtocolMatcher(rule.getProtocol()));
         }
-        if (!Strings.isNullOrEmpty(rule.getIpAddress())) {
+        if (rule.hasIpAddressDefinition()) {
             matchers.add(new IpMatcher(rule.getIpAddress()));
         }
-        if (!Strings.isNullOrEmpty(rule.getPort())) {
+        if (rule.hasPortDefinition()) {
             matchers.add(new PortMatcher(rule.getPort()));
         }
         this.application = rule.getName();
-    }
-
-    @Override
-    public int getPriority() {
-        return matchers.size();
+        this.matchers = matchers;
     }
 
     @Override
@@ -73,10 +68,5 @@ public class CombinedClassifier implements Classifier {
             }
         }
         return application;
-    }
-
-    @Override
-    public boolean hasIpMatcher() {
-        return matchers.stream().anyMatch(m -> m instanceof IpMatcher);
     }
 }

@@ -28,8 +28,13 @@
 
 package org.opennms.netmgt.flows.classification.persistence.impl;
 
+import java.util.List;
+import java.util.Objects;
+
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
+import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class ClassificationRuleDaoImpl extends AbstractDaoHibernate<Rule, Integer> implements ClassificationRuleDao {
@@ -37,4 +42,59 @@ public class ClassificationRuleDaoImpl extends AbstractDaoHibernate<Rule, Intege
     public ClassificationRuleDaoImpl() {
         super(Rule.class);
     }
+
+    @Override
+    public List<Rule> findAllEnabledRules() {
+        return findMatching(
+                new CriteriaBuilder(Rule.class)
+                    .alias("group", "group")
+                    .eq("group.enabled", true)
+                    .toCriteria());
+    }
+
+    @Override
+    public Rule findByDefinition(Rule rule, Group group) {
+        Objects.requireNonNull(rule);
+        Objects.requireNonNull(group);
+        CriteriaBuilder criteriaBuilder = createCriteriaBuilderDefinition(rule);
+        criteriaBuilder.alias("group", "group");
+        criteriaBuilder.eq("group.id", group.getId());
+        // Exclude me, otherwise it will always at least return the rule
+        if (rule.getId() != null) {
+            criteriaBuilder.not().eq("id", rule.getId());
+        }
+        final List<Rule> matchingRules = findMatching(criteriaBuilder.toCriteria());
+        return matchingRules.isEmpty() ? null : matchingRules.get(0);
+    }
+
+    @Override
+    public List<Rule> findByDefinition(Rule rule) {
+        Objects.requireNonNull(rule);
+        final CriteriaBuilder builder = createCriteriaBuilderDefinition(rule);
+        final List<Rule> matchingRules = findMatching(builder.toCriteria());
+        return matchingRules;
+    }
+
+    private static CriteriaBuilder createCriteriaBuilderDefinition(Rule rule) {
+        final CriteriaBuilder builder = new CriteriaBuilder(Rule.class);
+        if (rule.hasIpAddressDefinition()) {
+            builder.ilike("ipAddress", rule.getIpAddress());
+        } else {
+            builder.isNull("ipAddress");
+        }
+
+        if (rule.hasProtocolDefinition()) {
+            builder.ilike("protocol", rule.getProtocol());
+        } else {
+            builder.isNull("protocol");
+        }
+
+        if (rule.hasPortDefinition()) {
+            builder.ilike("port", rule.getPort());
+        } else {
+            builder.isNull("port");
+        }
+        return builder;
+    }
+
 }

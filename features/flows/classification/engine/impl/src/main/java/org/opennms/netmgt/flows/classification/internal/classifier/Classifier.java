@@ -31,9 +31,5 @@ package org.opennms.netmgt.flows.classification.internal.classifier;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 
 public interface Classifier {
-    int getPriority();
-
     String classify(ClassificationRequest classificationRequest);
-
-    boolean hasIpMatcher();
 }

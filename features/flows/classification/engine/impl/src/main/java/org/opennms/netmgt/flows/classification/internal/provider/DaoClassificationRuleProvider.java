@@ -45,6 +45,6 @@ public class DaoClassificationRuleProvider implements ClassificationRuleProvider
 
     @Override
     public List<Rule> getRules() {
-        return dao.findAll();
+        return dao.findAllEnabledRules();
     }
 }

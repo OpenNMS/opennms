@@ -28,21 +28,23 @@
 
 package org.opennms.netmgt.flows.classification.persistence.impl;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
-import java.util.List;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
+import org.opennms.netmgt.flows.classification.persistence.api.Group;
+import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
+import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
-import org.opennms.netmgt.flows.classification.internal.provider.StaticClassificationRuleProvider;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -57,50 +59,81 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"})
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
+@JUnitTemporaryDatabase
+@Transactional
 public class ClassificationRuleDaoIT {
 
     @Autowired
-    private ClassificationRuleDao classificationDao;
+    private ClassificationRuleDao ruleDao;
+
+    @Autowired
+    private ClassificationGroupDao groupDao;
+
+    private Group customGroup;
+
+    private Group staticGroup;
 
     @Before
     public void before() {
+        this.customGroup = new GroupBuilder().withName(Groups.USER_DEFINED).build();
+        this.staticGroup = new GroupBuilder().withName(Groups.SYSTEM_DEFINED).build();
+        groupDao.save(customGroup);
+        groupDao.save(staticGroup);
+    }
+
+    @After
+    public void after() {
+        groupDao.findAll().forEach(group -> groupDao.delete(group));
     }
 
     @Test
-    @Transactional
     public void verifyCRUD() {
         // Nothing created yet
-        assertEquals(0, classificationDao.countAll());
+        assertEquals(0, ruleDao.countAll());
 
         // Create dummy
         final Rule rule = new RuleBuilder()
                 .withName("HTTP")
                 .withIpAddress("127.0.0.1")
                 .withPort("80,8080")
-                .withProtocol("tcp").build();
+                .withProtocol("tcp")
+                .withGroup(customGroup)
+                .build();
 
         // create and verify creation
-        classificationDao.saveOrUpdate(rule);
-        assertEquals(1, classificationDao.countAll());
+        ruleDao.saveOrUpdate(rule);
+        assertEquals(1, ruleDao.countAll());
 
         // Update
         rule.setName("HTTP2");
-        classificationDao.update(rule);
-        assertEquals(1, classificationDao.countAll());
-        assertEquals("HTTP2", classificationDao.get(rule.getId()).getName());
+        ruleDao.update(rule);
+        assertEquals(1, ruleDao.countAll());
+        assertEquals("HTTP2", ruleDao.get(rule.getId()).getName());
+        assertEquals(Groups.USER_DEFINED, ruleDao.get(rule.getId()).getGroup().getName());
 
         // Delete
-        classificationDao.delete(rule);
-        assertEquals(0, classificationDao.countAll());
+        rule.getGroup().removeRule(rule);
+        ruleDao.delete(rule);
+        assertEquals(0, ruleDao.countAll());
     }
 
     @Test
-    @Transactional
-    public void verifyPersistStaticRules() throws IOException {
-        final List<Rule> rules = new StaticClassificationRuleProvider().getRules();
-        rules.forEach(rule -> classificationDao.save(rule));
-        assertEquals(rules.size(), classificationDao.countAll());
-    }
+    public void verifyFetchingOnlyEnabledRules() {
+        // Create a bunch of rules
+        ruleDao.save(new RuleBuilder().withName("Rule 1").withPort(1000).withGroup(staticGroup).build());
+        ruleDao.save(new RuleBuilder().withName("Rule 2").withPort(1000).withGroup(customGroup).build());
 
+        // Verify creation
+        assertThat(ruleDao.findAllEnabledRules(), hasSize(2));
+
+        // Disable group
+        staticGroup.setEnabled(false);
+        groupDao.saveOrUpdate(staticGroup);
+        assertThat(ruleDao.findAllEnabledRules(), hasSize(1));
+
+        // Disable yet another group
+        customGroup.setEnabled(false);
+        groupDao.saveOrUpdate(customGroup);
+        assertThat(ruleDao.findAllEnabledRules(), hasSize(0));
+    }
 }

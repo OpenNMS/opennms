@@ -2529,14 +2529,30 @@ CREATE VIEW node_outage_status AS
 --##################################################################
 --# Classification tables
 --##################################################################
+CREATE TABLE classification_groups (
+  id integer not null,
+  name text not null,
+  readonly boolean,
+  enabled boolean,
+  priority integer not null,
+  description text,
+  CONSTRAINT classification_groups_pkey PRIMARY KEY (id)
+);
+ALTER TABLE classification_groups ADD CONSTRAINT classification_groups_name_key UNIQUE (name);
+
 CREATE TABLE classification_rules (
   id integer NOT NULL,
   name TEXT NOT NULL,
   ipaddress TEXT,
   port TEXT,
   protocol TEXT,
-  CONSTRAINT classification_rules_pkey PRIMARY KEY (id)
+  position integer not null,
+  groupid integer NOT NULL,
+  CONSTRAINT classification_rules_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_classification_rules_groupid FOREIGN KEY (groupId) REFERENCES classification_groups (id) ON DELETE CASCADE
 );
+ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_definition_key UNIQUE (ipaddress,port,protocol,groupid);
+
 --# Sequence for the id column in classification_rules table
 --#          sequence, column, table
 --# install: rulenxtid id classification_rules

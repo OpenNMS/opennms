@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification;
+package org.opennms.netmgt.flows.rest.classification;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+public class CsvImportErrorDTO {
+    private ErrorDTO error;
+    private Map<Long, ErrorDTO> errors = new HashMap<>();
+    private boolean success;
 
-public interface CsvRuleParser {
-    List<Rule> parse(InputStream inputStream) throws IOException;
+    public ErrorDTO getError() {
+        return error;
+    }
+
+    public void setError(ErrorDTO error) {
+        this.error = error;
+    }
+
+    public Map<Long, ErrorDTO> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(Map<Long, ErrorDTO> errors) {
+        this.errors = errors;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public void addError(Long rowNumber, ErrorDTO errorDTO) {
+        errors.put(rowNumber, errorDTO);
+    }
 }

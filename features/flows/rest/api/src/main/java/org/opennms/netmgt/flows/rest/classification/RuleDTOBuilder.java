@@ -26,43 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.rest.classification;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+public class RuleDTOBuilder {
+    private final RuleDTO ruleDTO = new RuleDTO();
 
-import org.junit.Test;
-
-public class RuleTest {
-
-    @Test
-    public void verifyMustHaveName() {
-        Rule rule = new Rule();
-        assertThat(rule.isValid(), is(false));
-
-        rule.setPort("80");
-        assertThat(rule.isValid(), is(false));
-
-        rule.setIpAddress("10.10.10.10");
-        assertThat(rule.isValid(), is(false));
-
-        rule.setProtocol("tcp");
-        assertThat(rule.isValid(), is(false));
-
-        rule.setId(5);
-        assertThat(rule.isValid(), is(false));
-
-        rule.setName("http");
-        assertThat(rule.isValid(), is(true));
+    public RuleDTOBuilder withName(String name) {
+        this.ruleDTO.setName(name);
+        return this;
     }
 
-    @Test
-    public void verifyNameOnlyIsNotEnough() {
-        Rule rule = new Rule();
-        rule.setName("http");
+    public RuleDTOBuilder withProtocol(String protocol) {
+        this.ruleDTO.setProtocol(protocol);
+        return this;
+    }
 
-        assertThat(rule.isValid(), is(false));
-        rule.setProtocol("tcp");
-        assertThat(rule.isValid(), is(true));
+    public RuleDTOBuilder withPort(String port) {
+        this.ruleDTO.setPort(port);
+        return this;
+    }
+
+    public RuleDTO build() {
+        return ruleDTO;
     }
 }

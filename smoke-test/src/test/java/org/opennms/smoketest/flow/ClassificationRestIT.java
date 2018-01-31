@@ -32,16 +32,17 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.opennms.netmgt.flows.rest.classification.ClassificationBuilder.classification;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.flows.rest.classification.ClassificationDTO;
+import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
+import org.opennms.netmgt.flows.rest.classification.RuleDTO;
+import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 
 import io.restassured.RestAssured;
@@ -55,21 +56,30 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
         RestAssured.port = getServerHttpPort();
         RestAssured.basePath = "/opennms/rest/classifications";
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+        setEnabled(1, true);
+        setEnabled(2, true);
     }
 
     @After
     public void tearDown() {
-        given().delete();
+        given().param("groupId", "2").delete();
         RestAssured.reset();
     }
 
     @Test
     public void verifyCRUD() {
-        // Nothing there yet
-        given().get().then().assertThat().statusCode(204); // no content
+        // Verify GET Rules
+        given().get().then().assertThat().statusCode(200); // 200 because "system defined" rules are enabled
 
-        // POST one rule
-        final ClassificationDTO httpRule = classification().withName("http").withPort("80,8080").withProtocol("tcp,udp").build();
+        // Verify GET Groups (system-defined and user-defined rules should be there)
+        given().get("/groups").then().assertThat().statusCode(200).body("", hasSize(2));
+
+        // Disable "system-defined" rules
+        setEnabled(1, false);
+        given().get().then().assertThat().statusCode(204); // 204 because "system-defined" rules are disabled
+
+        // POST (create) a rule
+        final RuleDTO httpRule = builder().withName("http").withPort("80,8080").withProtocol("tcp,udp").build();
         String header = given().contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(httpRule)
@@ -78,19 +88,23 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
         final String[] split = header.split("/");
         int classificationId = Integer.parseInt(split[split.length - 1]);
 
-        // Verify Creation of 1st element
-        final ClassificationDTO receivedHttpRule = given().get("" + classificationId)
+        // Verify Creation of rule
+        final RuleDTO receivedHttpRule = given().get("" + classificationId)
                 .then().log().body(true)
                 .assertThat()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
-                .extract().response().as(ClassificationDTO.class);
-        assertEquals(httpRule, receivedHttpRule);
+                .extract().response().as(RuleDTO.class);
+        assertThat(receivedHttpRule.getId(), is(classificationId));
+        assertThat(receivedHttpRule.getName(), is(httpRule.getName()));
+        assertThat(receivedHttpRule.getIpAddress(), is(httpRule.getIpAddress()));
+        assertThat(receivedHttpRule.getProtocols(), is(httpRule.getProtocols()));
+        assertThat(receivedHttpRule.getGroup().getName(), is(Groups.USER_DEFINED));
 
         // Post another rule
         given().contentType(ContentType.JSON)
             .accept(ContentType.JSON)
-            .body(classification().withName("https").withPort("443").withProtocol("tcp").build())
+            .body(builder().withName("https").withPort("443").withProtocol("tcp").build())
             .post().then().assertThat().statusCode(201); // created
 
         // Verify creation worked
@@ -110,23 +124,28 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
         receivedHttpRule.setIpAddress("127.0.0.1");
         given().contentType(ContentType.JSON)
                 .body(receivedHttpRule)
+                .log().all()
                 .put(Integer.toString(classificationId))
                 .then().assertThat()
+                .log().all()
                 .statusCode(200);
 
         // Verify update worked
-        final ClassificationDTO updatedRule = given().get(Integer.toString(classificationId))
+        final RuleDTO updatedRule = given().get(Integer.toString(classificationId))
                 .then()
                     .log().body(true)
                 .assertThat()
                     .contentType(ContentType.JSON)
                     .statusCode(200)
-                .extract().response().as(ClassificationDTO.class);
-        assertEquals(receivedHttpRule, updatedRule);
+                .extract().response().as(RuleDTO.class);
+        assertThat(updatedRule.getId(), is(classificationId));
+        assertThat(updatedRule.getName(), is(receivedHttpRule.getName()));
+        assertThat(updatedRule.getIpAddress(), is(receivedHttpRule.getIpAddress()));
+        assertThat(updatedRule.getProtocols(), is(receivedHttpRule.getProtocols()));
+        assertThat(updatedRule.getGroup().getName(), is(Groups.USER_DEFINED));
 
         // Delete 1st rule
-        given().delete(Integer.toString(classificationId))
-                .then().statusCode(200);
+        given().delete(Integer.toString(classificationId)).then().statusCode(204);
 
         // Verify deleted
         given().get()
@@ -137,13 +156,15 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                     .statusCode(200)
                     .body("", hasSize(1));
 
-        // Delete ALL
-        given().delete().then().assertThat().statusCode(200);
+        // DELETE group
+        given().param("groupId", "2").delete()
+                .then().statusCode(204);
 
-        // Verify deleted
-        given().get()
-                .then().log().body(true)
-                .assertThat().statusCode(204);
+        // Verify Group deleted
+        given().get().then().statusCode(204);
+
+        // Verify DELETE ALL is not allowed
+        given().delete().then().assertThat().statusCode(400);
     }
 
     @Test
@@ -157,70 +178,76 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void verifyDeleteNonExisting() {
-        given().delete("10").then().statusCode(404);
+        given().delete("-1").then().statusCode(404);
     }
 
     @Test
     public void verifyUpdateNonExisting() {
         given().contentType(ContentType.JSON)
                 .body("{}")
-                .put("1000")
+                .put("-1")
                 .then().assertThat()
                 .statusCode(404);
     }
 
     @Test
     public void verifyGetNonExisting() {
-        given().get("10").then().statusCode(404);
+        given().get("-1").then().statusCode(404);
+    }
+
+    @Test
+    public void verifyDisableGroup() {
+        given().contentType(ContentType.JSON)
+                .body("{ \"name\": \"system-defined\", \"readOnly\": true, \"enabled\": false }")
+                .put("groups/1")
+                .then().assertThat()
+                .statusCode(200);
     }
 
     @Test
     public void verifyClassify() {
         final ClassificationRequestDTO request = new ClassificationRequestDTO();
         request.setIpAddress("10.0.0.1");
-        request.setPort(24005);
-        request.setProtocol(6);
-        final String application = given().basePath("/opennms/rest/classifications")
+        request.setPort("24005");
+        request.setProtocol("tcp");
+        final String application = given()
                 .contentType(ContentType.JSON)
                 .body(request)
-                .post("check")
+                .post("classify")
                 .then()
                 .assertThat()
                     .statusCode(200)
                     .extract().body().asString();
-        assertThat(application, equalTo("med-ci"));
+        assertThat(application, equalTo("{\"classification\":\"med-ci\"}"));
 
-        request.setPort(50000);
-        given().basePath("/opennms/rest/classifications")
-                .contentType(ContentType.JSON)
-                .body(request).post("check")
+        request.setPort("50000");
+        given().contentType(ContentType.JSON)
+                .body(request).post("classify")
                 .then().assertThat().statusCode(204);
     }
 
     @Test
     public void verifyClassifyEmpty() {
-        given().basePath("/opennms/rest/classifications")
-                .contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
                 .body("{}")
-                .post("check")
+                .post("classify")
                 .then().assertThat()
-                .statusCode(204);
+                .statusCode(400);
     }
 
     @Test
     public void verifyImport() {
         // IMPORT
-        final String importCsv = "service,port,protocol\nmagic-ulf-protocol,1337,tcp";
+        final String importCsv = "name;ipAddress;port;protocol\nmagic-ulf;;1337;tcp";
         given().contentType("text/comma-separated-values")
                 .body(importCsv)
                 .post()
                 .then()
-                    .log().body(true)
-                .assertThat()
-                    .statusCode(200);
+                .assertThat().statusCode(204);
 
         // verify rule
         given()
+            .param("groupFilter", "2")
             .get()
                 .then()
                     .log().body(true)
@@ -228,10 +255,10 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                     .statusCode(200)
                     .contentType(ContentType.JSON)
                     .body("", hasSize(1))
-                    .body("[0].name", equalTo("magic-ulf-protocol"))
+                    .body("[0].name", equalTo("magic-ulf"))
                     .body("[0].ipAddress", nullValue())
                     .body("[0].port", equalTo("1337"))
-                    .body("[0].protocol", equalTo("tcp"));
+                    .body("[0].protocols[0]", equalTo("tcp"));
     }
 
     @Test
@@ -248,6 +275,20 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                 .body("[6].keyword", equalTo("TCP"))
                 .body("[6].description", equalTo("Transmission Control"))
                 .body("", hasSize(147));
+    }
+
+
+    // Enable/disable given group
+    private void setEnabled(int groupId, boolean enabled) {
+        given().contentType(ContentType.JSON)
+                .body("{\"enabled\": " + enabled + "}")
+                .put("/groups/" + groupId).then()
+                .log().all()
+                .assertThat().statusCode(200);
+    }
+
+    private static RuleDTOBuilder builder() {
+        return new RuleDTOBuilder();
     }
 
 }

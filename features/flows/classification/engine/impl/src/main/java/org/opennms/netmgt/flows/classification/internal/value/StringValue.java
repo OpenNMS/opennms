@@ -39,8 +39,12 @@ public class StringValue {
         this.input = input;
     }
 
-    public boolean isWildcard() {
+    public boolean hasWildcard() {
         return input != null && input.contains("*");
+    }
+
+    public boolean isWildcard() {
+        return "*".equals(input);
     }
 
     public boolean isNull() {

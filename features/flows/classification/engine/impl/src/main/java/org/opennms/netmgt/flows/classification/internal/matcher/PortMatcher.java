@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.classification.internal.matcher;
 
-
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 
