@@ -264,7 +264,7 @@ class IpfixFlow implements Flow {
 
     @Override
     public NetflowVersion getNetflowVersion() {
-        return NetflowVersion.V9;
+        return NetflowVersion.IPFIX;
     }
 
     @Override
