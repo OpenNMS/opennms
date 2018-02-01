@@ -816,6 +816,12 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>org.opennms.plugin.licencemanager</artifactId>
+      <version>${licencemanagerVersion}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <!-- 
