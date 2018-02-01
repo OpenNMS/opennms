@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,7 +64,7 @@ public class DeferredGenericTypeResource extends AbstractResource {
         m_node = Objects.requireNonNull(node, "node argument");
         m_resourceTypeName = Objects.requireNonNull(resourceTypeName, "resourceTypeName argument");
         m_fallbackResourceTypeName = fallbackResourceTypeName;
-        m_instance = GenericTypeResource.sanitizeInstance(Objects.requireNonNull(instance, "instance argument"));
+        m_instance = Objects.requireNonNull(instance, "instance argument");
     }
 
     @Override

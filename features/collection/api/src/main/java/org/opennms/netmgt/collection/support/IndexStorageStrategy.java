@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.Parameter;
 import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.model.ResourcePath;
 
 public class IndexStorageStrategy implements StorageStrategy {
@@ -65,7 +66,7 @@ public class IndexStorageStrategy implements StorageStrategy {
     @Override
     public String getResourceNameFromIndex(CollectionResource resource) {
         // Use the instance value as the name of the resource
-        return resource.getInstance();
+        return GenericTypeResource.sanitizeInstance(resource.getInstance());
     }
 
     /** {@inheritDoc} */
