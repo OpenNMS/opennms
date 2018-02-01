@@ -31,46 +31,42 @@ package org.opennms.netmgt.telemetry.adapters.nxos;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.json.JSONObject;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.adapters.collection.CollectionSetWithAgent;
-import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.protobuf.ExtensionRegistry;
-
 /**
- * The Class NxosGpbAdapter.
+ * The Class NxosJsonAdapter.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NxosGpbAdapter extends AbstractNxosAdapter {
+public class NxosJsonAdapter extends AbstractNxosAdapter {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(NxosGpbAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NxosJsonAdapter.class);
 
-    /** The Constant extension registry. */
-    private static final ExtensionRegistry s_registry = ExtensionRegistry.newInstance();
-
-    static {
-        TelemetryBis.registerAllExtensions(s_registry);
-    }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.telemetry.adapters.nxos.AbstractNxosAdapter#handleMessage(org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage, org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog)
+     * @see org.opennms.netmgt.telemetry.adapters.collection.AbstractPersistingAdapter#handleMessage(org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage, org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog)
      */
     @Override
     public Optional<CollectionSetWithAgent> handleMessage(TelemetryMessage message, TelemetryMessageLog messageLog) throws Exception {
+        final String jsonText = new String(Arrays.copyOfRange(message.getByteArray(), 6, message.getByteArray().length));
+        LOG.debug("Received JSON message: {}", jsonText);
 
-        final TelemetryBis.Telemetry msg = TelemetryBis.Telemetry.parseFrom(Arrays.copyOfRange(message.getByteArray(), 6, message.getByteArray().length), s_registry);
-
-        CollectionAgent agent = getCollectionAgent(messageLog, msg.getNodeIdStr());
+        final JSONObject json = new JSONObject(jsonText);
+        final String nodeIdStr = json.getString("node_id_str");
+        final CollectionAgent agent = getCollectionAgent(messageLog, nodeIdStr);
 
         if (agent == null) {
-            LOG.warn("Unable to find node and inteface for system id: {}", msg.getNodeIdStr());
+            LOG.warn("Unable to find node and inteface for system id: {}", nodeIdStr);
             return Optional.empty();
         }
-        return getCollectionSetWithAgent(agent, msg);
+        return getCollectionSetWithAgent(agent, json);
     }
 
 }

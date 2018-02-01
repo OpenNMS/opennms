@@ -9,7 +9,8 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-	<bean id="nxosAdapterFactory" class="org.opennms.netmgt.telemetry.adapters.nxos.NxosAdapterFactory">
+
+	<bean id="nxosGpbAdapterFactory" class="org.opennms.netmgt.telemetry.adapters.nxos.NxosAdapterFactory">
 		<argument ref="blueprintBundleContext" />
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
@@ -19,10 +20,27 @@
 		<property name="persisterFactory" ref="persisterFactory" />
 	</bean>
 
-	<service id="nxosFactoryService" ref="nxosAdapterFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+	<service id="nxosGbpFactoryService" ref="nxosGpbAdapterFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
 			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter" />
+		</service-properties>
+	</service>
+
+	<bean id="nxosJsonAdapterFactory" class="org.opennms.netmgt.telemetry.adapters.nxos.NxosJsonAdapterFactory">
+		<argument ref="blueprintBundleContext" />
+		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="transactionTemplate" ref="transactionTemplate" />
+		<property name="filterDao" ref="filterDao" />
+		<property name="persisterFactory" ref="persisterFactory" />
+	</bean>
+
+	<service id="nxosJsonFactoryService" ref="nxosJsonAdapterFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.nxos.NxosJsonAdapter" />
 		</service-properties>
 	</service>
 
