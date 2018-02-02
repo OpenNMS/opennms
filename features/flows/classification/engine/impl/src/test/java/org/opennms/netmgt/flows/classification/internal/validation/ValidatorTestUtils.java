@@ -37,7 +37,7 @@ import org.opennms.netmgt.flows.classification.exception.ClassificationException
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class ValidatorTestUtils {
-    protected static interface Block {
+    protected interface Block {
         void execute();
     }
 
@@ -60,7 +60,7 @@ public class ValidatorTestUtils {
                 fail("Expected validation to fail, but succeeded");
             }
         } catch (ClassificationException ex) {
-            assertThat(expectedError, is(ex.getError()));
+            assertThat(ex.getError(), is(expectedError));
         }
     }
 }

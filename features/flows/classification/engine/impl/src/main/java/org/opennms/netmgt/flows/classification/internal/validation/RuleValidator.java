@@ -44,8 +44,6 @@ import com.google.common.base.Strings;
 
 public class RuleValidator {
 
-    private static final Pattern PROTOCOL_PATTERN = Pattern.compile("^[a-z]+[,a-z]*$", Pattern.CASE_INSENSITIVE);
-
     private static final Pattern PORT_PATTERN = Pattern.compile("^\\d+((-|,)\\d+)*$");
 
     public void validate(Rule rule) throws InvalidRuleException {
@@ -79,10 +77,6 @@ public class RuleValidator {
     protected static void validateProtocol(String protocol) throws InvalidRuleException {
         if (Strings.isNullOrEmpty(protocol)){
             throw new InvalidRuleException(Errors.RULE_PROTOCOL_IS_REQUIRED);
-        }
-        final Matcher matcher = PROTOCOL_PATTERN.matcher(protocol);
-        if (!matcher.matches()) {
-            throw new InvalidRuleException(Errors.RULE_PROTOCOL_DEFINITION_INVALID);
         }
         // Verify protocol actually exists
         for (StringValue eachProtocol : new StringValue(protocol).splitBy(",")) {

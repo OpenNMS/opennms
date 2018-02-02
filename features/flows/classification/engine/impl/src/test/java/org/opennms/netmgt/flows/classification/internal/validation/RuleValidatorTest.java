@@ -32,8 +32,11 @@ import static org.opennms.netmgt.flows.classification.internal.validation.Valida
 
 import org.junit.Test;
 import org.opennms.netmgt.flows.classification.error.Errors;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
+import org.slf4j.LoggerFactory;
 
 public class RuleValidatorTest {
 
@@ -65,13 +68,20 @@ public class RuleValidatorTest {
         // Fail
         verify(() -> RuleValidator.validateProtocol(""), Errors.RULE_PROTOCOL_IS_REQUIRED);
         verify(() -> RuleValidator.validateProtocol(null), Errors.RULE_PROTOCOL_IS_REQUIRED);
-        verify(() -> RuleValidator.validateProtocol("1234,1234"), Errors.RULE_PROTOCOL_DEFINITION_INVALID);
         verify(() -> RuleValidator.validateProtocol("xxxx"), Errors.RULE_PROTOCOL_DOES_NOT_EXIST);
 
         // Succeed
         verify(() -> RuleValidator.validateProtocol("tcp"));
         verify(() -> RuleValidator.validateProtocol("tcp,udp"));
         verify(() -> RuleValidator.validateProtocol("TCP,uDp"));
+
+        // Verify all existing protocols
+        for (Protocol eachProtocol : Protocols.getProtocols()) {
+            if (!"".equals(eachProtocol.getKeyword())) {
+                LoggerFactory.getLogger(getClass()).info("Verifying protocol {}", eachProtocol.getKeyword());
+                verify(() -> RuleValidator.validateProtocol(eachProtocol.getKeyword()));
+            }
+        }
     }
 
     @Test

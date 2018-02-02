@@ -35,7 +35,6 @@ public interface Errors {
     Error GROUP_DUPLICATE_RULE = new Error(ErrorContext.Name, "rule.duplicate", "A rule with the same definition already exists");
     Error RULE_NO_DEFINITIONS = new Error(ErrorContext.Entity, "rule.nodefinitions", "You must provide at least one definition for port, ip address or protocol");
 
-    Error RULE_PROTOCOL_DEFINITION_INVALID = new Error(ErrorContext.Protocol, "rule.protocol.invalid", "Please provide the name of the protocol, e.g. \"tcp\". Multiple values are allowed, e.g. \"udp,tcp\"");
     Error RULE_PROTOCOL_DOES_NOT_EXIST = new Error(ErrorContext.Protocol, "rule.protocol.doesnotexist", "The defined protocol ''{0}'' does not exist");
     Error RULE_PROTOCOL_IS_REQUIRED = new Error(ErrorContext.Protocol, "rule.protocol.required", "Protocol is required");
 
