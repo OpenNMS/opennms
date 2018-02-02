@@ -128,7 +128,13 @@ public class NxosTelemetryIT {
 
     private void sendNxosTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
 
-        byte[] nxosOutBytes = Resources.toByteArray(Resources.getResource("telemetry/cisco-nxos-proto.raw"));
+        // This is necessary as cisco-nxos-proto.raw is not a real telemetry payload obtained from an NXOS device
+        byte[] nxosHeader = new byte[6];
+        byte[] nxosPayload = Resources.toByteArray(Resources.getResource("telemetry/cisco-nxos-proto.raw"));
+        byte[] nxosOutBytes = new byte[nxosHeader.length + nxosPayload.length];
+        System.arraycopy(nxosHeader, 0, nxosOutBytes, 0, nxosHeader.length);
+        System.arraycopy(nxosPayload, 0, nxosOutBytes, nxosHeader.length, nxosPayload.length);
+
         DatagramPacket packet = new DatagramPacket(nxosOutBytes, nxosOutBytes.length, udpAddress);
 
         try (DatagramSocket socket = new DatagramSocket()) {
