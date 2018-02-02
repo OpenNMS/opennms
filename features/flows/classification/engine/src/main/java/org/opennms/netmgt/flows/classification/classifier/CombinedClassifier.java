@@ -28,28 +28,34 @@
 
 package org.opennms.netmgt.flows.classification.classifier;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.matcher.IpMatcher;
 import org.opennms.netmgt.flows.classification.matcher.Matcher;
+import org.opennms.netmgt.flows.classification.matcher.PortMatcher;
+import org.opennms.netmgt.flows.classification.matcher.ProtocolMatcher;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+
+import com.google.common.base.Strings;
 
 public class CombinedClassifier implements Classifier {
 
-    private final List<Matcher> matchers;
+    private final List<Matcher> matchers = new ArrayList<>();
     private final String application;
 
-    public CombinedClassifier(String application, Matcher... matchers) {
-        this(application, Arrays.asList(matchers));
-    }
-
-    public CombinedClassifier(String application, List<Matcher> matchers) {
-        if (matchers == null || matchers.size() == 0) {
-            throw new IllegalArgumentException("At least 1 matcher should be provided, but received null or 0");
+    public CombinedClassifier(Rule rule) {
+        if (!Strings.isNullOrEmpty(rule.getProtocol())) {
+            matchers.add(new ProtocolMatcher(rule.getProtocol()));
         }
-        this.matchers = matchers;
-        this.application = application;
+        if (!Strings.isNullOrEmpty(rule.getIpAddress())) {
+            matchers.add(new IpMatcher(rule.getIpAddress()));
+        }
+        if (!Strings.isNullOrEmpty(rule.getPort())) {
+            matchers.add(new PortMatcher(rule.getPort()));
+        }
+        this.application = rule.getName();
     }
 
     @Override

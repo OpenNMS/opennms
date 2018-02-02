@@ -31,19 +31,18 @@ package org.opennms.netmgt.flows.classification;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.flows.classification.classifier.Classifier;
 import org.opennms.netmgt.flows.classification.classifier.CombinedClassifier;
-import org.opennms.netmgt.flows.classification.matcher.IpMatcher;
-import org.opennms.netmgt.flows.classification.matcher.Matcher;
-import org.opennms.netmgt.flows.classification.matcher.PortMatcher;
-import org.opennms.netmgt.flows.classification.matcher.ProtocolMatcher;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.provider.ClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.provider.StaticClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.value.PortValue;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
@@ -51,7 +50,7 @@ import com.google.common.base.Strings;
 public class DefaultClassificationEngine implements ClassificationEngine {
 
     private final ClassificationRuleProvider ruleProvider;
-    private final List<Classifier> classifierList = new ArrayList<>();
+    private final Map<Integer, List<Classifier>> classifierPortMap = new HashMap<>();
     private final boolean useStaticRules;
 
     // This can be a DAO or similar in the future
@@ -67,35 +66,26 @@ public class DefaultClassificationEngine implements ClassificationEngine {
 
     @Override
     public void reload() {
-        classifierList.clear();
-        ruleProvider.getRules().forEach(rule -> {
-            final Classifier classifier = createClassifier(rule);
-            if (!classifierList.contains(classifier)) {
-                classifierList.add(classifier);
-            }
-        });
-        Collections.sort(classifierList, new ClassificationSorter());
+        final List<Rule> rules = new ArrayList<>();
+        rules.addAll(ruleProvider.getRules());
 
         // For now we just apply static rules at the end.
         // This ensures that user-defined rules are loaded first
         if (useStaticRules) {
             try {
-                new StaticClassificationRuleProvider().getRules()
-                    .forEach(rule -> {
-                        final Classifier classifier = createClassifier(rule);
-                        if (!classifierList.contains(classifier)) {
-                            classifierList.add(classifier);
-                        }
-                    });
+                rules.addAll(new StaticClassificationRuleProvider().getRules());
             } catch (IOException e) {
                 LoggerFactory.getLogger(getClass()).error("Could not load static rules {}", e.getMessage(), e);
             }
+
         }
+        createClassifiers(rules);
     }
 
     @Override
     public String classify(ClassificationRequest classificationRequest) {
-        final Optional<String> first = classifierList.stream()
+        final List<Classifier> filteredClassifiers = getClassifiers(classificationRequest);
+        final Optional<String> first = filteredClassifiers.stream()
                 .map(classifier -> classifier.classify(classificationRequest))
                 .filter(classifier -> classifier != null)
                 .findFirst();
@@ -106,18 +96,32 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         return first.orElse(null);
     }
 
-    private static Classifier createClassifier(Rule rule) {
-        final List<Matcher> matchers = new ArrayList<>();
-        if (!Strings.isNullOrEmpty(rule.getProtocol())) {
-            matchers.add(new ProtocolMatcher(rule.getProtocol()));
+    private void createClassifiers(final List<Rule> rules) {
+        classifierPortMap.clear();
+        classifierPortMap.put(null, new ArrayList<>()); // Values for ANY port
+
+        // Create classifiers and bind them to a port
+        for (Rule eachRule : rules) {
+            final Classifier classifier = new CombinedClassifier(eachRule);
+            if (!Strings.isNullOrEmpty(eachRule.getPort())) {
+                for (Integer eachPort : new PortValue(eachRule.getPort()).getPorts()) {
+                    classifierPortMap.putIfAbsent(eachPort, new ArrayList<>());
+                    classifierPortMap.get(eachPort).add(classifier);
+                }
+            } else {
+                classifierPortMap.get(null).add(classifier);
+            }
         }
-        if (!Strings.isNullOrEmpty(rule.getIpAddress())) {
-            matchers.add(new IpMatcher(rule.getIpAddress()));
-        }
-        if (!Strings.isNullOrEmpty(rule.getPort())) {
-            matchers.add(new PortMatcher(rule.getPort()));
-        }
-        return new CombinedClassifier(rule.getName(), matchers);
     }
 
+    private List<Classifier> getClassifiers(ClassificationRequest request) {
+        // Get classifiers for the given port
+        final List<Classifier> classifiers = classifierPortMap.getOrDefault(request.getPort(), new ArrayList<>());
+        // Add all classifiers, which match to ANY port
+        classifiers.addAll(classifierPortMap.getOrDefault(null, new ArrayList<>()));
+        if (classifiers.size() > 1) {
+            Collections.sort(classifiers, new ClassificationSorter());
+        }
+        return classifiers;
+    }
 }

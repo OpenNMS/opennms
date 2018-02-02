@@ -50,6 +50,8 @@ import org.opennms.netmgt.flows.classification.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.provider.ClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.provider.StaticClassificationRuleProvider;
 
+import com.codahale.metrics.MetricRegistry;
+
 public class MockDocumentEnricherFactory {
 
     private final NodeDao nodeDao;
@@ -76,7 +78,7 @@ public class MockDocumentEnricherFactory {
             throw new RuntimeException(e);
         }
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(rulesProvider);
-        enricher = new DocumentEnricher(nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine);
+        enricher = new DocumentEnricher(new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine);
 
         // Required for mock node dao
         addServiceRegistry(nodeDao);

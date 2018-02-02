@@ -77,6 +77,7 @@
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
     <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
     <bean id="documentEnricher" class="org.opennms.netmgt.flows.elastic.DocumentEnricher">
+        <argument ref="flowRepositoryMetricRegistry" />
         <argument ref="classificationEngine" />
         <argument ref="nodeDao" />
         <argument ref="interfaceToNodeCache" />

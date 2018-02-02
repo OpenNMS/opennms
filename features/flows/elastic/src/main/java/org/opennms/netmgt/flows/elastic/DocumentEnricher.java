@@ -50,6 +50,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -68,7 +71,9 @@ public class DocumentEnricher {
     // Caches NodeDocument data
     private final LoadingCache<NodeInfoKey, Optional<NodeDocument>> nodeInfoCache;
 
-    public DocumentEnricher(NodeDao nodeDao, InterfaceToNodeCache interfaceToNodeCache,
+    private final Timer nodeLoadTimer;
+
+    public DocumentEnricher(MetricRegistry metricRegistry, NodeDao nodeDao, InterfaceToNodeCache interfaceToNodeCache,
                             TransactionOperations transactionOperations, ClassificationEngine classificationEngine) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
@@ -79,12 +84,19 @@ public class DocumentEnricher {
         nodeInfoCache = CacheBuilder.newBuilder()
                 .maximumSize(1000)
                 .expireAfterWrite(300, TimeUnit.SECONDS) // 5 Minutes
+                .recordStats()
                 .build(new CacheLoader<NodeInfoKey, Optional<NodeDocument>>() {
                     @Override
                     public Optional<NodeDocument> load(NodeInfoKey key) {
                         return getNodeInfo(key.location, key.ipAddress);
                     }
                 });
+        this.nodeLoadTimer = metricRegistry.timer("nodeLoadTime");
+
+        // Expose cache statistics
+        metricRegistry.register(MetricRegistry.name("cache.nodes.evictionCount"),       (Gauge) () -> nodeInfoCache.stats().evictionCount());
+        metricRegistry.register(MetricRegistry.name("cache.nodes.hitRate"),             (Gauge) () -> nodeInfoCache.stats().hitRate());
+        metricRegistry.register(MetricRegistry.name("cache.nodes.loadExceptionCount"),  (Gauge) () -> nodeInfoCache.stats().loadExceptionCount());
     }
 
     public void enrich(final List<FlowDocument> documents, final FlowSource source) {
@@ -142,17 +154,19 @@ public class DocumentEnricher {
     private Optional<NodeDocument> getNodeInfo(String location, InetAddress ipAddress) {
         final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(location, ipAddress);
         if (nodeId.isPresent()) {
-            final OnmsNode onmsNode = nodeDao.get(nodeId.get());
-            if (onmsNode != null) {
-                final NodeDocument nodeInfo = new NodeDocument();
-                nodeInfo.setForeignSource(onmsNode.getForeignSource());
-                nodeInfo.setForeignId(onmsNode.getForeignId());
-                nodeInfo.setNodeId(nodeId.get());
-                nodeInfo.setCategories(onmsNode.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+            try (Timer.Context ctx = nodeLoadTimer.time()) {
+                final OnmsNode onmsNode = nodeDao.get(nodeId.get());
+                if (onmsNode != null) {
+                    final NodeDocument nodeInfo = new NodeDocument();
+                    nodeInfo.setForeignSource(onmsNode.getForeignSource());
+                    nodeInfo.setForeignId(onmsNode.getForeignId());
+                    nodeInfo.setNodeId(nodeId.get());
+                    nodeInfo.setCategories(onmsNode.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList()));
 
-                return Optional.of(nodeInfo);
-            } else {
-                LOG.warn("Node with id: {} at location: {} with IP address: {} is in the interface to node cache, but wasn't found in the database.");
+                    return Optional.of(nodeInfo);
+                } else {
+                    LOG.warn("Node with id: {} at location: {} with IP address: {} is in the interface to node cache, but wasn't found in the database.");
+                }
             }
         }
         return Optional.empty();
