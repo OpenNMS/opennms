@@ -357,6 +357,7 @@
 
                 <!-- Karaf Spring features -->
                 <feature>spring/3.1.4.RELEASE</feature>
+                <feature>spring/3.2.18.RELEASE_1</feature>
                 <feature>spring/4.0.7.RELEASE_3</feature>
                 <feature>spring-jms/4.0.7.RELEASE_3</feature>
                 <feature>spring/4.1.9.RELEASE_1</feature>
@@ -400,6 +401,7 @@
               </descriptors>
               <features>
                 <!-- Experimental features that are not included in OpenNMS -->
+                <feature>opennms-activemq-component</feature>
                 <feature>opennms-discovery</feature>
                 <feature>opennms-events-daemon</feature>
                 <feature>opennms-reporting</feature>

@@ -106,6 +106,8 @@
       <feature>opennms-config</feature>
       <feature>opennms-config-jaxb</feature>
       <feature>opennms-core-web</feature>
+      <!-- System classpath dependency of opennms-vmware -->
+      <feature>opennms-provisioning</feature>
       <feature>opennms-vmware</feature>
       <feature>opennms-xml-collector</feature>
       <feature>wmi-integration</feature>
