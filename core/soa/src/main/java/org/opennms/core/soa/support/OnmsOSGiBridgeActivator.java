@@ -71,6 +71,9 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
         m_bundleContext.set(bundleContext);
 
         // register for ONMS registrations to forward registrations to OSGi service registry
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Adding {} registration hook to {}", this.toString(), m_registry.toString());
+        }
         getRegistry().addRegistrationHook(this, true);
 
         // register service listener for export osgi services to forward to ONMS registry
@@ -91,14 +94,25 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 
     @Override
     public void stop(final BundleContext bundleContext) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Shutting down {} with services:", this.toString());
+            for (Map.Entry<Registration, ServiceRegistration<?>> entry : m_onmsRegistration2osgiRegistrationMap.entrySet()) {
+                LOG.debug("    {}", Arrays.toString(entry.getKey().getProvidedInterfaces()));
+            }
+        }
         m_bundleContext.set(null);
-        // TODO unregister services form both registries with the osgi container stops
+        // TODO unregister services from both registries when the osgi container stops
     }
 
     @Override
     public void registrationAdded(final Registration onmsRegistration) {
         final Map<String, String> onmsProperties = onmsRegistration.getProperties() == null ? Collections.<String,String>emptyMap() : onmsRegistration.getProperties();
-        if (OSGI_SOURCE.equals(onmsProperties.get(REGISTRATION_SOURCE))) return;
+        if (OSGI_SOURCE.equals(onmsProperties.get(REGISTRATION_SOURCE))) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Skipping OSGi service registration for service with 'osgi' source: {}", Arrays.toString(onmsRegistration.getProvidedInterfaces()));
+            }
+            return;
+        }
 
         final Class<?>[] providerInterfaces = onmsRegistration.getProvidedInterfaces();
         final String[] serviceClasses = new String[providerInterfaces.length];
@@ -114,7 +128,12 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
         props.put(REGISTRATION_SOURCE, ONMS_SOURCE);
 
         final BundleContext bundleContext = m_bundleContext.get();
-        if (bundleContext != null) {
+        if (bundleContext == null) {
+            LOG.warn("No BundleContext found, skipping OSGi registration of services: {}", String.join(",", serviceClasses));
+        } else {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Registering OSGi service: {}", String.join(",", serviceClasses));
+            }
             ServiceRegistration<?> osgiRegistration = bundleContext.registerService(serviceClasses, onmsRegistration.getProvider(), props);
             m_onmsRegistration2osgiRegistrationMap.put(onmsRegistration, osgiRegistration);
         }
@@ -148,20 +167,29 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
     }
 
     private void registerWithOnmsRegistry(final ServiceReference<?> reference) {
-        LOG.debug("registerWithOnmsRegistry: {}", reference.getBundle());
+        LOG.debug("registerWithOnmsRegistry: {}: {}", reference.getBundle(), reference.getClass().getName());
 
         // skip this service if this should not be exported
-        if (!isOnmsExported(reference)) return;
+        if (!isOnmsExported(reference)) {
+            LOG.debug("OSGi service registration not marked for onmsgi export: {}", reference);
+            return;
+        }
 
         // skip this service if its came from the opennms registry originally
-        if (isOnmsSource(reference)) return;
+        if (isOnmsSource(reference)) {
+            LOG.debug("Skipping onmsgi service registration for service with 'onms' source: {}", reference);
+            return;
+        }
 
         // if this service is already registered then skip it
-        if (m_osgiReference2onmsRegistrationMap.containsKey(reference)) return;
+        if (m_osgiReference2onmsRegistrationMap.containsKey(reference)) {
+            LOG.debug("Skipping onmsgi service registration for service already in map: {}", reference);
+            return;
+        }
 
         final BundleContext bundleContext = m_bundleContext.get();
         if (bundleContext == null) {
-            LOG.warn("No BundleContext found, skipping registration of services: {}", reference);
+            LOG.warn("No BundleContext found, skipping onmsgi registration of services: {}", reference);
             return;
         }
 
@@ -199,15 +227,15 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
         }
     }
 
-    private boolean isOnmsExported(final ServiceReference<?> reference) {
+    private static boolean isOnmsExported(final ServiceReference<?> reference) {
         return Arrays.asList(reference.getPropertyKeys()).contains(REGISTRATION_EXPORT);
     }
 
-    private boolean isOnmsSource(final ServiceReference<?> reference) {
+    private static boolean isOnmsSource(final ServiceReference<?> reference) {
         return ONMS_SOURCE.equals(reference.getProperty(REGISTRATION_SOURCE));
     }
 
-    private Class<?>[] findClasses(final String[] classNames) throws ClassNotFoundException {
+    private static Class<?>[] findClasses(final String[] classNames) throws ClassNotFoundException {
         final Class<?>[] providerInterfaces = new Class<?>[classNames.length];
 
         for(int i = 0; i < classNames.length; i++) {
