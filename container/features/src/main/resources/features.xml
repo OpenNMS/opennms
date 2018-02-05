@@ -98,14 +98,14 @@
       <feature>postgresql</feature>
 
       <!-- Add all possible JDBC drivers to the c3p0 import list so that it can classload them -->
-      <bundle>wrap:mvn:com.mchange/c3p0/${c3p0Version}$Bundle-SymbolicName=c3p0&amp;Bundle-Version=${c3p0Version}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql,org.w3c.dom</bundle>
+      <bundle>wrap:mvn:com.mchange/c3p0/${c3p0Version}$Bundle-SymbolicName=c3p0&amp;Bundle-Version=${c3p0Version}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql;resolution:=optional,org.w3c.dom</bundle>
     </feature>
 
     <feature name="hikari-cp" description="HikariCP" version="${hikaricpVersion}">
       <feature>postgresql</feature>
 
-      <!-- Add all possible JDBC drivers to the HikariCP import list so that it can classload them -->
-      <bundle>wrap:mvn:com.zaxxer/HikariCP/${hikaricpVersion}$Bundle-SymbolicName=HikariCP&amp;Bundle-Version=${hikaricpVersion}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql,org.w3c.dom</bundle>
+      <!-- HikariCP uses DynamicImport-Package=* so it can load any JDBC drivers -->
+      <bundle>mvn:com.zaxxer/HikariCP/${hikaricpVersion}</bundle>
     </feature>
 
     <feature name="commons-beanutils" description="Apache :: commons-beanutils" version="${commonsBeanutilsVersion}">
