@@ -177,6 +177,31 @@
           </execution>
         </executions>
       </plugin> 
+      <!--
+        This creates a filtered copy of the etc directory from opennms-base-assembly
+        so that we can bootstrap Karaf inside KarafGeminiTestCase
+      -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources-gemini</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/gemini/etc</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>../opennms-base-assembly/src/main/filtered/etc</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
