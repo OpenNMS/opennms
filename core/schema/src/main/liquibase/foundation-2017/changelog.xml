@@ -83,4 +83,27 @@
 
   </changeSet>
 
+  <changeSet author="ranger" id="NMS-9855-asset-unique-nodeid">
+    <!-- delete all but one asset entry for each node ID -->
+    <sql>
+      DELETE FROM assets
+      WHERE id IN (
+        SELECT id
+        FROM (
+          SELECT id, nodeid, ROW_NUMBER() OVER (PARTITION BY nodeid ORDER BY nodeid) AS rnum
+          FROM assets
+          WHERE nodeid IS NOT NULL
+        ) t
+        WHERE t.rnum > 1
+      );
+    </sql>
+    <createIndex tableName="assets" indexName="assets_unique_nodeid_idx" unique="true">
+      <column name="nodeid" />
+    </createIndex>
+
+    <rollback>
+      <dropIndex tableName="assets" indexName="assets_unique_nodeid_idx" />
+    </rollback>
+  </changeSet>
+
 </databaseChangeLog>
