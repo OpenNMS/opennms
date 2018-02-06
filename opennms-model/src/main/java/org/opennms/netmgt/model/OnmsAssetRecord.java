@@ -437,7 +437,7 @@ public class OnmsAssetRecord implements Serializable {
      */
     @XmlIDREF
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nodeId")
+    @JoinColumn(name = "nodeId", unique = true)
     @JsonBackReference
     public OnmsNode getNode() {
         return m_node;
