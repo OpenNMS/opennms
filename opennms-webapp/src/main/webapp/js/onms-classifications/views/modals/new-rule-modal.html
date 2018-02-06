@@ -1,47 +1,49 @@
-<div class="modal-header">
-  <h4 class="modal-title" ng-show="classification.id === undefined">Create Classification Rule</h4>
-  <h4 class="modal-title" ng-show="classification.id !== undefined">Edit Classification Rule</h4>
-</div>
-<div class="modal-body">
-  <form name="ruleForm" novalidate>
-    <div class="form-group">
-      <div class="form-group" ng-class="{ 'has-error' : error.entity }">
-        <p ng-show="error.entity" class="help-block">{{error.entity}}</p>
+<div id="ruleModal">
+  <div class="modal-header">
+    <h4 class="modal-title" ng-show="classification.id === undefined">Create Classification Rule</h4>
+    <h4 class="modal-title" ng-show="classification.id !== undefined">Edit Classification Rule</h4>
+  </div>
+  <div class="modal-body">
+    <form name="ruleForm" novalidate>
+      <div class="form-group">
+        <div class="form-group" ng-class="{ 'has-error' : error.entity }">
+          <p ng-show="error.entity" class="help-block">{{error.entity}}</p>
+        </div>
+        <div class="form-group" ng-class="{ 'has-error' : ruleForm.name.$invalid || error.name }">
+          <label class="control-label" for="rule.name">Application Name</label>
+          <input class="form-control" type="text" id="rule.name" name="name" placeholder="HTTP" ng-model="classification.name" required/>
+          <p ng-show="ruleForm.name.$invalid" class="help-block">The name is required.</p>
+          <p ng-show="error.name" class="help-block">{{error.name}}</p>
+        </div>
+        <div class="form-group" ng-class="{ 'has-error' : ruleForm.ipAddress.$invalid || error.ipaddress }">
+          <label class="control-label" for="rule.ipAddress">IP Address</label>
+          <input class="form-control" type="text" id="rule.ipAddress" name="ipAddress" placeholder="127.0.0.1" ng-model="classification.ipAddress"/>
+          <p ng-show="error.ipaddress" class="help-block">{{error.ipaddress}}</p>
+        </div>
+        <div class="form-group" ng-class="{ 'has-error' : ruleForm.port.$invalid || error.port }">
+          <label class="control-label" for="rule.port">Port</label>
+          <input class="form-control" type="text" id="rule.port" name="port" placeholder="80,8080" ng-model="classification.port"/>
+          <p class="help-block">{{error.port}}</p>
+        </div>
+        <div class="form-group" ng-class="{ 'has-error' : ruleForm.protocol.$invalid || error.protocol }">
+          <label class="control-label" for="rule.protocol">IP Protocol</label>
+          <input class="form-control" type="text"
+                 id="rule.protocol"
+                 name="protocol"
+                 ng-model="currentSelection"
+                 placeholder="tcp"
+                 typeahead-on-select="insertProtocol($item)"
+                 typeahead-min-length="0"
+                 uib-typeahead="protocol.keyword for protocol in protocols | filter:$viewValue"
+                 typeahead-editable="false"/>
+          <span ng-repeat="protocol in selectedProtocols" class="label label-default" style="margin-right: 5px">{{protocol.keyword | uppercase}} <a name="remove-protocol" ng-click="removeProtocol(protocol)" class="text-danger"><i class="fa fa-remove" title="remove protocol"></i></a></span>
+          <p ng-show="error.protocol" class="help-block">{{error.protocol}}</p>
+        </div>
       </div>
-      <div class="form-group" ng-class="{ 'has-error' : ruleForm.name.$invalid || error.name }">
-        <label class="control-label" for="name">Application Name</label>
-        <input class="form-control" type="text" id="name" name="name" placeholder="HTTP" ng-model="classification.name" required/>
-        <p ng-show="ruleForm.name.$invalid" class="help-block">The name is required.</p>
-        <p ng-show="error.name" class="help-block">{{error.name}}</p>
-      </div>
-      <div class="form-group" ng-class="{ 'has-error' : ruleForm.ipAddress.$invalid || error.ipaddress }">
-        <label class="control-label" for="ipAddress">IP Address</label>
-        <input class="form-control" type="text" id="ipAddress" name="ipAddress" placeholder="127.0.0.1" ng-model="classification.ipAddress"/>
-        <p ng-show="error.ipaddress" class="help-block">{{error.ipaddress}}</p>
-      </div>
-      <div class="form-group" ng-class="{ 'has-error' : ruleForm.port.$invalid || error.port }">
-        <label class="control-label" for="port">Port</label>
-        <input class="form-control" type="text" id="port" name="port" placeholder="80,8080" ng-model="classification.port"/>
-        <p class="help-block">{{error.port}}</p>
-      </div>
-      <div class="form-group" ng-class="{ 'has-error' : ruleForm.protocol.$invalid || error.protocol }">
-        <label class="control-label" for="protocol">IP Protocol</label>
-        <input class="form-control" type="text"
-               id="protocol"
-               name="protocol"
-               ng-model="currentSelection"
-               placeholder="tcp"
-               typeahead-on-select="insertProtocol($item)"
-               typeahead-min-length="0"
-               uib-typeahead="protocol.keyword for protocol in protocols | filter:$viewValue"
-               typeahead-editable="false"/>
-        <span ng-repeat="protocol in selectedProtocols" class="label label-default" style="margin-right: 5px">{{protocol.keyword | uppercase}} <a ng-click="removeProtocol(protocol)" class="text-danger"><i class="fa fa-remove" title="remove protocol"></i></a></span>
-        <p ng-show="error.protocol" class="help-block">{{error.protocol}}</p>
-      </div>
-    </div>
-  </form>
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" id="save-classification" ng-click="save()" ng-disabled="ruleForm.$invalid">{{buttonName}}</button>
-  <button type="button" class="btn btn-default" id="cancel-classification" ng-click="cancel()" >Cancel</button>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" id="save-rule" ng-click="save()" ng-disabled="ruleForm.$invalid">{{buttonName}}</button>
+    <button type="button" class="btn btn-default" id="cancel-rule" ng-click="cancel()" >Cancel</button>
+  </div>
 </div>

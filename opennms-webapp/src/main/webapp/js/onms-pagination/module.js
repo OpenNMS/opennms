@@ -19,10 +19,10 @@
                     if (scope.model.totalItems == undefined) throw new Error("No attribute model.totalItems defined");
                     if (scope.model.limit == undefined) throw new Error("No attribute model.limit defined");
 
-                    var currentPage = scope.page;
+                    var currentPage = scope.model.page;
                     scope.onChange = function() {
-                        if (currentPage !== scope.page) {
-                            currentPage = scope.page;
+                        if (currentPage !== scope.model.page) {
+                            currentPage = scope.model.page;
                             if (scope.onChangeCallback) {
                                 scope.onChangeCallback();
                             }
