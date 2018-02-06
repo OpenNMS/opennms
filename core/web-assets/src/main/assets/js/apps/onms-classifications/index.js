@@ -236,6 +236,9 @@ const importModalTemplate  = require('./views/modals/import-modal.html');
                 modalInstance.result.then(function () {
                     $scope.refreshTabs();
                     $scope.refresh();
+                }, function() {
+                    // modal was dismissed
+                    $scope.refresh();
                 });
             };
 
@@ -387,12 +390,12 @@ const importModalTemplate  = require('./views/modals/import-modal.html');
             };
 
             $scope.cancel = function() {
-                $uibModalInstance.dismiss('cancel');
+                $uibModalInstance.dismiss('Cancelled by User');
             };
 
             $scope.insertProtocol = function(item) {
                 if (item && $scope.selectedProtocols.indexOf(item) === -1) {
-                    $scope.currentSelection = undefined;
+                    $scope.currentSelection = '';
                     $scope.selectedProtocols.push(item);
                 }
             };

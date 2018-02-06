@@ -1,14 +1,13 @@
 <div>
     <div class="col" ng-class="{'col-md-12': isClassificationCollapsed, 'col-md-9': !isClassificationCollapsed}">
-        <ul class="nav nav-tabs">
+        <ul id="tabs" class="nav nav-tabs">
             <li role="presentation" ui-sref-active="active">
-                <a ui-sref="classifications.config">Settings</a>
+                <a ui-sref="classifications.config" data-name="settings">Settings</a>
             </li>
 
             <li role="presentation" ui-sref-active="active" ng-repeat="group in groups">
-                <a ui-sref="classifications.group({'id': group.id, 'group': group})" title="{{group.description}}">
-                    {{group.name | capitalize}} Rules
-                    <span class="badge badge-primary" title="{{group.ruleCount}} defined rules">{{group.ruleCount}}</span>
+                <a ui-sref="classifications.group({'id': group.id, 'group': group})" title="{{group.description}}" data-name={{group.name}}>
+                    {{group.name | capitalize}} Rules <span class="badge badge-primary" title="{{group.ruleCount}} defined rules">{{group.ruleCount}}</span>
                 </a>
             </li>
         </ul>
@@ -16,14 +15,14 @@
         </div>
     </div>
 
-    <button class="btn btn-default"
+    <button id="action.classification.toggle" class="btn btn-default"
             style="position: absolute; right: 30px; z-index: 1000"
             ng-click="isClassificationCollapsed = !isClassificationCollapsed"
             title="{{isClassificationCollapsed ? 'Test classification' : 'Collapse classification panel'}}">
         <i class="fa" ng-class="{'fa-magic': isClassificationCollapsed, 'fa-caret-right': !isClassificationCollapsed}"/>
     </button>
 
-    <div class="col-md-3" class="collapse" uib-collapse="isClassificationCollapsed">
+    <div id="classification-tab" class="col-md-3" class="collapse" uib-collapse="isClassificationCollapsed">
         <div>
             <ul class="nav nav-tabs">
                 <li role="presentation" class="active">
@@ -63,8 +62,8 @@
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <span class="alert alert-danger" ng-show="error">{{error}}</span>
-                                <span ng-show="classificationResponse" title="Based on the current set of rules, the given flow would be mapped to" class="badge">{{classificationResponse}}</span>
-                                <button type="submit" class="btn btn-primary pull-right" id="classify" ng-click="classify(classificationRequest)" ng-disabled="classifyForm.$invalid || !fullyDefined()">Classify</button>
+                                <span id="classification-response" ng-show="classificationResponse" title="Based on the current set of rules, the given flow would be mapped to" class="badge">{{classificationResponse}}</span>
+                                <button type="submit" class="btn btn-primary pull-right" id="classification-submit" ng-click="classify(classificationRequest)" ng-disabled="classifyForm.$invalid || !fullyDefined()">Classify</button>
                             </div>
                         </div>
                     </form>
