@@ -32,45 +32,21 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * <p>This command implements the Apache Karaf 3 and Apache Karaf 4 shell APIs.
- * Once the Karaf 4 commands work, the deprecated Karaf 3 annotations should 
- * be removed:</p>
- * <ul>
- * <li>{@link org.apache.karaf.shell.commands.Command}</li>
- * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
- * </ul>
- */
 @Command(scope = "asset-topology", name = "regenerateall", description="Uses Best Effort to regenerate all asset topologies.")
-@org.apache.karaf.shell.commands.Command(scope = "asset-topology", name = "regenerateall", description="Uses Best Effort to regenerate all asset topologies.")
 @Service
-public class RegenerateAllAssetTopologiesCommand extends OsgiCommandSupport implements Action {
-	private static final Logger LOG = LoggerFactory.getLogger(RegenerateAllAssetTopologiesCommand.class);
+public class RegenerateAllAssetTopologiesCommand implements Action {
 
 	@Reference
 	public AssetGraphMLProvider assetGraphMLProvider;
 
 	@Override
-	public Object execute() throws Exception {
+	public Object execute() {
 		System.out.println("Trying to regenerate all asset topologies");
 		assetGraphMLProvider.regenerateAllAssetTopologies();
 		System.out.println("Regenerated all asset topologies");
 		return null;
 	}
 
-	@Override
-	@Deprecated
-	protected Object doExecute() throws Exception {
-		return execute();
-	}
-
-	@Deprecated
-	public void setAssetGraphMLProvider(AssetGraphMLProvider assetGraphMLProvider) {
-		this.assetGraphMLProvider = assetGraphMLProvider;
-	}
 }
