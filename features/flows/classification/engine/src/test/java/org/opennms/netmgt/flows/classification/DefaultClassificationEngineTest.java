@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.classification;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
@@ -86,6 +87,14 @@ public class DefaultClassificationEngineTest {
 
         final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 80, "192.168.2.1", ProtocolType.TCP);
         assertEquals("XXX", engine.classify(classificationRequest));
+    }
+
+    @Test
+    public void verifyAllPortsToEnsureEngineIsProperlyInitialized() {
+        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> new ArrayList<>(), true);
+        for (int i=0; i<65536; i++) {
+            classificationEngine.classify(new ClassificationRequest("Default", i, "127.0.0.1", ProtocolType.TCP));
+        }
     }
 
     @Test

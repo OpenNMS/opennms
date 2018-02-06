@@ -31,9 +31,7 @@ package org.opennms.netmgt.flows.classification;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,8 +47,9 @@ import com.google.common.base.Strings;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
+    private final List<List<Classifier>> classifierPortList = new ArrayList<>();
+    private final ClassificationSorter classificationSorter = new ClassificationSorter();
     private final ClassificationRuleProvider ruleProvider;
-    private final Map<Integer, List<Classifier>> classifierPortMap = new HashMap<>();
     private final boolean useStaticRules;
 
     // This can be a DAO or similar in the future
@@ -97,31 +96,39 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     }
 
     private void createClassifiers(final List<Rule> rules) {
-        classifierPortMap.clear();
-        classifierPortMap.put(null, new ArrayList<>()); // Values for ANY port
+        classifierPortList.clear();
+
+        // Initialize each element
+        for (int i=0; i<65536; i++) {
+            classifierPortList.add(new ArrayList<>());
+        }
 
         // Create classifiers and bind them to a port
+        final List<Classifier> anyPortClassifier = new ArrayList<>();
         for (Rule eachRule : rules) {
             final Classifier classifier = new CombinedClassifier(eachRule);
             if (!Strings.isNullOrEmpty(eachRule.getPort())) {
                 for (Integer eachPort : new PortValue(eachRule.getPort()).getPorts()) {
-                    classifierPortMap.putIfAbsent(eachPort, new ArrayList<>());
-                    classifierPortMap.get(eachPort).add(classifier);
+                    classifierPortList.get(eachPort).add(classifier);
                 }
             } else {
-                classifierPortMap.get(null).add(classifier);
+                anyPortClassifier.add(classifier);
             }
+        }
+
+        // Bind classifiers to ANY port
+        for (final List<Classifier> classifiers : classifierPortList) {
+            classifiers.addAll(anyPortClassifier);
+        }
+
+        // Finally sort
+        for (int i=0; i<classifierPortList.size(); i++) {
+            final List<Classifier> classifiers = classifierPortList.get(i);
+            Collections.sort(classifiers, classificationSorter);
         }
     }
 
     private List<Classifier> getClassifiers(ClassificationRequest request) {
-        // Get classifiers for the given port
-        final List<Classifier> classifiers = classifierPortMap.getOrDefault(request.getPort(), new ArrayList<>());
-        // Add all classifiers, which match to ANY port
-        classifiers.addAll(classifierPortMap.getOrDefault(null, new ArrayList<>()));
-        if (classifiers.size() > 1) {
-            Collections.sort(classifiers, new ClassificationSorter());
-        }
-        return classifiers;
+        return classifierPortList.get(request.getPort());
     }
 }
