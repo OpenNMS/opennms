@@ -89,6 +89,15 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
     List<OnmsNode> findByLabel(String label);
     
     /**
+     * <p>findByLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param location a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
+    List<OnmsNode> findByLabelForLocation(String label, String location);
+    
+    /**
      * <p>getHierarchy</p>
      *
      * @param id a {@link java.lang.Integer} object.
@@ -188,6 +197,24 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     OnmsNode findByForeignId(String foreignSource, String foreignId);
+    
+    /**
+     * <p>findByForeignId</p>
+     *
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    List<OnmsNode> findByForeignId(String foreignId);
+    
+    /**
+     * <p>findByForeignIdForLocation</p>
+     *
+     * @param foreignId a {@link java.lang.String} object.
+     * @param location a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    List<OnmsNode> findByForeignIdForLocation(String foreignId, String location);
+    
 
     List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName);
 
