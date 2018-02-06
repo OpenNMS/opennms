@@ -31,6 +31,9 @@
                 </comp-attrib>
             </mbean>
 
+            <mbean name="kafka ingestion rate" resource-type="kafkaIngestionRate" objectname="kafka.producer:type=producer-topic-metrics,*">
+                <attrib name="record-send-rate" alias="recordSendRate" type="gauge"/>
+            </mbean>
 
             <!-- Route stats for syslogListen -->
             <mbean name="Syslog Listener" objectname="org.apache.camel:context=syslogdListenerCamelNettyContext,type=routes,name=&quot;syslogListen&quot;">
