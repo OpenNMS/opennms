@@ -39,7 +39,8 @@ public class ClassificationException extends RuntimeException {
     private final Error error;
 
     public ClassificationException(Error error, Object... arguments) {
-        this.error = Objects.requireNonNull(error);
+        Objects.requireNonNull(error);
+        this.error = new Error(error);
         if (arguments != null && arguments.length > 0) {
             this.error.setArguments(arguments);
         }

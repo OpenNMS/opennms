@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.classification.error;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Objects;
 
 // Generic error object to handle user friendly error messages
@@ -51,6 +52,10 @@ public class Error {
         this.context = errorContext;
         this.message = Objects.requireNonNull(errorMessage);
         this.arguments = arguments;
+    }
+
+    public Error(Error error) {
+        this(error.getContext(), error.getKey(), error.getMessage(), Arrays.copyOf(error.getArguments(), error.getArguments().length));
     }
 
     public String getContext() {
