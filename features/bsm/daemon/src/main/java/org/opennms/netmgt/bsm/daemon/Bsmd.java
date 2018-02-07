@@ -108,7 +108,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     private boolean m_verifyReductionKeys = true;
 
-    final ScheduledExecutorService alarmPoller = Executors.newScheduledThreadPool(1);
+    private boolean m_hasBusinessServicesDefined = false;
+
+    private ScheduledExecutorService m_alarmPoller;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -126,12 +128,12 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         Objects.requireNonNull(m_eventConfDao, "eventConfDao cannot be null");
 
         handleConfigurationChanged();
-        startAlarmPolling();
     }
 
     private void startAlarmPolling() {
         final long pollInterval = getPollInterval();
-        alarmPoller.scheduleWithFixedDelay(new Runnable() {
+        m_alarmPoller = Executors.newScheduledThreadPool(1);
+        m_alarmPoller.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -156,7 +158,17 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                 }
             }
         }, pollInterval, pollInterval, TimeUnit.SECONDS);
+    }
 
+    private void stopAlarmPolling() {
+        if (m_alarmPoller != null) {
+            m_alarmPoller.shutdown();
+            m_alarmPoller = null;
+        }
+    }
+
+    protected boolean isAlarmPolling() {
+        return m_alarmPoller != null;
     }
 
     protected long getPollInterval() {
@@ -193,10 +205,19 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 final List<BusinessService> businessServices = m_manager.getAllBusinessServices();
+                m_hasBusinessServicesDefined = businessServices.size() > 0;
                 LOG.debug("Adding {} business services to the state machine.", businessServices.size());
                 m_stateMachine.setBusinessServices(businessServices);
             }
         });
+
+        // Enable/disable polling for alarms based on whether or not
+        // we have any business services
+        if (m_hasBusinessServicesDefined && !isAlarmPolling()) {
+            startAlarmPolling();
+        } else if (!m_hasBusinessServicesDefined && isAlarmPolling()) {
+            stopAlarmPolling();
+        }
     }
 
     private void verifyReductionKey(String uei, String expectedReductionKey) {
@@ -228,7 +249,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         EventConstants.ALARM_DELETED_EVENT_UEI
     })
     public void handleAlarmLifecycleEvents(Event e) {
-        if (e == null) {
+        if (e == null || !m_hasBusinessServicesDefined) {
+            // Return quick if we weren't given an event, or if there are no business rules defined
+            // in which case we don't need to perform any further handling
             return;
         }
 
@@ -345,7 +368,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     @Override
     public void destroy() throws Exception {
         LOG.info("Stopping bsmd...");
-        alarmPoller.shutdown();
+        stopAlarmPolling();
     }
 
     public void setAlarmDao(AlarmDao alarmDao) {
