@@ -1,3 +1,18 @@
+<style>
+  .protocol {
+    margin-right: 5px;
+    font-size: 90%;
+    font-weight: normal;
+  }
+  .protocol a {
+    color: white;
+  }
+
+  .protocol a:hover {
+    color: green;
+    cursor: pointer;
+  }
+</style>
 <div id="ruleModal">
   <div class="modal-header">
     <h4 class="modal-title" ng-show="classification.id === undefined">Create Classification Rule</h4>
@@ -36,7 +51,9 @@
                  typeahead-min-length="0"
                  uib-typeahead="protocol.keyword for protocol in protocols | filter:$viewValue"
                  typeahead-editable="false"/>
-          <span ng-repeat="protocol in selectedProtocols" class="label label-default" style="margin-right: 5px">{{protocol.keyword | uppercase}} <a name="remove-protocol" ng-click="removeProtocol(protocol)" class="text-danger"><i class="fa fa-remove" title="remove protocol"></i></a></span>
+          <span ng-repeat="protocol in selectedProtocols" class="label label-default protocol">
+            {{protocol.keyword | uppercase}} <a name="remove-protocol" ng-click="removeProtocol(protocol)"><i class="fa fa-remove" title="remove protocol"></i></a>
+          </span>
           <p ng-show="error.protocol" class="help-block">{{error.protocol}}</p>
         </div>
       </div>

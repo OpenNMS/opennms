@@ -218,11 +218,10 @@ const importModalTemplate  = require('./views/modals/import-modal.html');
 
             var openModal = function(classification) {
                 return $uibModal.open({
-                    // backdrop: 'static',
-                    // keyboard: false,
+                    backdrop: false,
                     controller: 'ClassificationModalController',
                     templateUrl: newRuleModalTemplate,
-                    size: 'lg',
+                    size: 'md',
                     resolve: {
                         classification: function() {
                             return classification;
@@ -252,6 +251,7 @@ const importModalTemplate  = require('./views/modals/import-modal.html');
 
             $scope.importRules = function() {
                 var modalInstance = $uibModal.open({
+                    backdrop: false,
                     controller: 'ClassificationImportController',
                     templateUrl: importModalTemplate,
                     resolve: {
@@ -335,8 +335,9 @@ const importModalTemplate  = require('./views/modals/import-modal.html');
                                 // Persist locally
                                 var errorKeys = Object.getOwnPropertyNames(response.errors);
                                 for (var i = 0; i<errorKeys.length; i++) {
-                                    var rowIndex = errorKeys[i];
-                                    $scope.errors.push({index: rowIndex, message: response.errors[rowIndex].message});
+                                    var index = errorKeys[i];
+                                    var rowIndex = $scope.containsHeader ? parseInt(index, 10) + 1 : index; // increase row index if csv contains header
+                                    $scope.errors.push({index: rowIndex, message: response.errors[index].message});
                                 }
                                 // Update pagination settings
                                 $scope.pagination.totalItems = $scope.errors.length;
