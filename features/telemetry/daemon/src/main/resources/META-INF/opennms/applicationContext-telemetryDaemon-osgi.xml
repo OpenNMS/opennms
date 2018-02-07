@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:osgi="http://www.springframework.org/schema/osgi"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+">
+
+  <!-- Import the ServiceRegistry service into Spring -->
+  <osgi:reference id="serviceRegistry" interface="org.opennms.core.soa.ServiceRegistry"/>
+
+  <!-- Import applicationContext-eventDaemon.xml beans -->
+  <!-- <osgi:reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/> -->
+  <!-- Use a dummy event service instead of a full-blown Eventd -->
+  <bean id="eventSubscriptionService" class="org.opennms.netmgt.events.api.support.NullEventSubscriptionService"/>
+
+  <!-- Import applicationContext-dao.xml beans -->
+  <osgi:reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+
+  <!-- Import applicationContext-ipc-sink-server-*.xml beans -->
+  <osgi:reference id="messageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager"/>
+  <osgi:reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
+
+  <!-- Import applicationContext-telemetryRegistry.xml beans -->
+  <osgi:reference id="telemetryAdapterRegistry" interface="org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry"/>
+
+  <!-- Start the Telemetryd daemon --> 
+  <bean class="org.springframework.beans.factory.config.MethodInvokingBean">
+    <property name="targetObject" ref="daemon"/>
+    <property name="targetMethod" value="start"/>
+  </bean>
+
+</beans>

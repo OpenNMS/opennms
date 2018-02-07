@@ -21,6 +21,16 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>
+              org.springframework.transaction.annotation;version="[4.2,4.3)",
+              <!-- Import the telemetry adapter packages so that we can create them -->
+              org.opennms.netmgt.telemetry.adapters.*,
+              *
+            </Import-Package>
+            <Spring-Context>
+              META-INF/opennms/applicationContext-telemetryDaemon.xml,
+              META-INF/opennms/applicationContext-telemetryDaemon-osgi.xml
+            </Spring-Context>
           </instructions>
         </configuration>
       </plugin>
@@ -30,11 +40,6 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
-    </dependency>
-    <dependency>
-      <!-- Required for the DefaultCollectionAgentFactory implementation -->
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.telemetry</groupId>
