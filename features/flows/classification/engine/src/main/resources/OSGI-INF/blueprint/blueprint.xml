@@ -28,8 +28,13 @@
         <argument ref="classificationRuleProvider" />
         <argument ref="useStaticRules"/>
     </bean>
-    <bean id="cachingClassificationEngine" class="org.opennms.netmgt.flows.classification.CachingClassificationEngine">
+    <bean id="timingClassificationEngine" class="org.opennms.netmgt.flows.classification.TimingClassificationEngine">
+        <argument ref="classificationMetricRegistry"/>
         <argument ref="defaultClassificationEngine" />
+    </bean>
+    <bean id="cachingClassificationEngine" class="org.opennms.netmgt.flows.classification.CachingClassificationEngine">
+        <argument ref="classificationMetricRegistry" />
+        <argument ref="timingClassificationEngine" />
     </bean>
     <bean id="threadSafeClassificationEngine" class="org.opennms.netmgt.flows.classification.ThreadSafeClassificationEngine">
         <argument ref="defaultClassificationEngine" />
@@ -37,5 +42,19 @@
 
     <!-- Expose Classification Engine -->
     <service interface="org.opennms.netmgt.flows.classification.ClassificationEngine" ref="threadSafeClassificationEngine"/>
+
+    <!-- Metrics -->
+    <bean id="classificationMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <bean id="classificationMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+        <argument ref="classificationMetricRegistry"/>
+    </bean>
+    <bean id="classificationMetricRegistryDomainedJmxReporterBuilder" factory-ref="classificationMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <argument value="org.opennms.netmgt.flows.classifications"/>
+    </bean>
+    <bean id="classificationMetricRegistryJmxReporter"
+          factory-ref="classificationMetricRegistryDomainedJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
 
 </blueprint>

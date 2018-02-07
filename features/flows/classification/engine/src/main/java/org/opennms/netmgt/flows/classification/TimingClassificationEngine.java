@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.matcher;
+package org.opennms.netmgt.flows.classification;
 
+import java.util.Objects;
 
-import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.value.PortValue;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
-public class PortMatcher implements Matcher {
+public class TimingClassificationEngine implements ClassificationEngine {
 
-    private final PortValue value;
+    private final ClassificationEngine delegate;
+    private final Timer classifyTimer;
+    private final Timer reloadTimer;
 
-    public PortMatcher(String ports) {
-        this.value = new PortValue(ports);
+    public TimingClassificationEngine(MetricRegistry metricRegistry, ClassificationEngine delegate) {
+        this.delegate = Objects.requireNonNull(delegate);
+        this.classifyTimer = metricRegistry.timer("classify");
+        this.reloadTimer = metricRegistry.timer("reload");
+    }
+    
+    @Override
+    public String classify(ClassificationRequest classificationRequest) {
+        try (final Timer.Context ctx = classifyTimer.time()) {
+            return delegate.classify(classificationRequest);
+        }
     }
 
     @Override
-    public boolean matches(ClassificationRequest request) {
-        return this.value.getPorts().contains(request.getPort());
+    public void reload() {
+        try (final Timer.Context ctx = reloadTimer.time()) {
+            delegate.reload();
+        }
     }
 }

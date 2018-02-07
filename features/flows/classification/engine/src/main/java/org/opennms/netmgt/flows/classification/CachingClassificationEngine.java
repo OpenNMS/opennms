@@ -33,6 +33,8 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -44,17 +46,27 @@ public class CachingClassificationEngine implements ClassificationEngine {
     private final ClassificationEngine delegate;
 
     public CachingClassificationEngine(ClassificationEngine delegate) {
+        this(null, delegate);
+    }
+
+    public CachingClassificationEngine(MetricRegistry registry, ClassificationEngine delegate) {
         this.delegate = Objects.requireNonNull(delegate);
         this.cache = CacheBuilder.newBuilder()
-            .maximumSize(Integer.getInteger("org.opennms.features.flows.classification.caching.maxSize", 5000))
-            .expireAfterAccess(Long.getLong("org.opennms.features.flows.classification.caching.expireTime", 60 * 1000), TimeUnit.MILLISECONDS)
-            .build(
-                new CacheLoader<ClassificationRequest, Optional<String>>() {
-                    @Override
-                    public Optional<String> load(ClassificationRequest key) {
-                        return Optional.ofNullable(delegate.classify(key));
-                    }
-                });
+                .maximumSize(Integer.getInteger("org.opennms.features.flows.classification.caching.maxSize", 5000))
+                .expireAfterAccess(Long.getLong("org.opennms.features.flows.classification.caching.expireTime", 60 * 1000), TimeUnit.MILLISECONDS)
+                .recordStats()
+                .build(
+                        new CacheLoader<ClassificationRequest, Optional<String>>() {
+                            @Override
+                            public Optional<String> load(ClassificationRequest key) {
+                                return Optional.ofNullable(delegate.classify(key));
+                            }
+                        });
+        if (registry != null) {
+            registry.register(MetricRegistry.name("cache.classification.evictionCount"),       (Gauge) () -> cache.stats().evictionCount());
+            registry.register(MetricRegistry.name("cache.classification.hitRate"),             (Gauge) () -> cache.stats().hitRate());
+            registry.register(MetricRegistry.name("cache.classification.loadExceptionCount"),  (Gauge) () -> cache.stats().loadExceptionCount());
+        }
     }
 
     @Override

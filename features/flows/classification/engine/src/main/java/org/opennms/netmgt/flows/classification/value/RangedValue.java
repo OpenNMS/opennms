@@ -56,4 +56,12 @@ public class RangedValue {
     public boolean isInRange(int value) {
         return value >= start && value <= end;
     }
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return end;
+    }
 }
