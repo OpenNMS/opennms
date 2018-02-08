@@ -31,19 +31,17 @@ package org.opennms.netmgt.flows.classification.exception;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.classification.error.Error;
+import org.opennms.netmgt.flows.classification.error.ErrorTemplate;
 
-// Generic ClassficationException
+// Generic Exception related to classifications
 public class ClassificationException extends RuntimeException {
 
     // The user-friendly error message
     private final Error error;
 
-    public ClassificationException(Error error, Object... arguments) {
-        Objects.requireNonNull(error);
-        this.error = new Error(error);
-        if (arguments != null && arguments.length > 0) {
-            this.error.setArguments(arguments);
-        }
+    public ClassificationException(ErrorTemplate errorTemplate, Object... arguments) {
+        Objects.requireNonNull(errorTemplate);
+        this.error = new Error(errorTemplate, arguments);
     }
 
     public Error getError() {

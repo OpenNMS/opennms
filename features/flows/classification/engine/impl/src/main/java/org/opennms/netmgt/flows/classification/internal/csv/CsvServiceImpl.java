@@ -40,9 +40,9 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.opennms.netmgt.flows.classification.csv.CsvImportResult;
 import org.opennms.netmgt.flows.classification.csv.CsvService;
-import org.opennms.netmgt.flows.classification.exception.CSVImportException;
 import org.opennms.netmgt.flows.classification.error.Error;
 import org.opennms.netmgt.flows.classification.error.Errors;
+import org.opennms.netmgt.flows.classification.exception.CSVImportException;
 import org.opennms.netmgt.flows.classification.exception.InvalidRuleException;
 import org.opennms.netmgt.flows.classification.internal.validation.RuleValidator;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
@@ -67,7 +67,7 @@ public class CsvServiceImpl implements CsvService {
             final CSVParser parser = csvFormat.parse(new InputStreamReader(inputStream));
             for (CSVRecord record : parser.getRecords()) {
                 if (record.size() < EXPECTED_COLUMNS) {
-                    result.markError(record.getRecordNumber(), createError(Errors.CSV_TOO_FEW_COLUMNS, record.getRecordNumber(), record.toString(), EXPECTED_COLUMNS, record.size()));
+                    result.markError(record.getRecordNumber(), new Error(Errors.CSV_TOO_FEW_COLUMNS, record.getRecordNumber(), record.toString(), EXPECTED_COLUMNS, record.size()));
                     continue;
                 }
                 // Read Values
@@ -95,7 +95,7 @@ public class CsvServiceImpl implements CsvService {
                 }
             }
         } catch (IOException ex) {
-            result.setError(createError(Errors.CSV_IMPORT_FAILED, ex.getMessage()));
+            result.setError(new Error(Errors.CSV_IMPORT_FAILED, ex.getMessage()));
         }
         return result;
     }
@@ -115,8 +115,4 @@ public class CsvServiceImpl implements CsvService {
         return body.toString();
     }
 
-    private static Error createError(Error error, Object... arguments) {
-        error.setArguments(arguments);
-        return error;
-    }
 }

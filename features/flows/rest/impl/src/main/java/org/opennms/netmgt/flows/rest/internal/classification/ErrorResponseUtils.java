@@ -61,9 +61,9 @@ public class ErrorResponseUtils {
 
     private static ErrorDTO convert(Error error) {
         final ErrorDTO errorDTO = new ErrorDTO();
-        errorDTO.setKey(error.getKey());
+        errorDTO.setKey(error.getTemplate().getKey());
+        errorDTO.setContext(error.getTemplate().getContext());
         errorDTO.setMessage(error.getFormattedMessage());
-        errorDTO.setContext(error.getContext());
         return errorDTO;
     }
 

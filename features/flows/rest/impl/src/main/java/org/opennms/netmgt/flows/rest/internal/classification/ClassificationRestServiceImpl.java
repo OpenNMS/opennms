@@ -49,16 +49,17 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.error.ErrorContext;
+import org.opennms.netmgt.flows.classification.error.ErrorTemplate;
 import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.exception.ClassificationException;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
 import org.opennms.netmgt.flows.rest.classification.ClassificationResponseDTO;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRestService;
 import org.opennms.netmgt.flows.rest.classification.GroupDTO;
+import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.web.utils.CriteriaBuilderUtils;
 import org.opennms.web.utils.QueryParameters;
 import org.opennms.web.utils.QueryParametersBuilder;
@@ -308,7 +309,9 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
             int port = Integer.parseInt(requestDTO.getPort());
             if (port < 0 || port > 65535) throw new ClassificationException(Errors.RULE_PORT_VALUE_NOT_IN_RANGE, 0, 65535);
         } catch (NumberFormatException ex) {
-            throw new ClassificationException(new org.opennms.netmgt.flows.classification.error.Error(ErrorContext.Port, null, "The provided port {0} is not a valid number.", requestDTO.getPort()));
+            throw new ClassificationException(
+                new ErrorTemplate(ErrorContext.Port, null, "The provided port {0} is not a valid number."),
+                    requestDTO.getPort());
         }
 
         // Verify Protocol

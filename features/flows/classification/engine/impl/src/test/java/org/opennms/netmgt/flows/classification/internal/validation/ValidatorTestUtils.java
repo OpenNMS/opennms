@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import org.opennms.netmgt.flows.classification.error.Error;
+import org.opennms.netmgt.flows.classification.error.ErrorTemplate;
 import org.opennms.netmgt.flows.classification.exception.ClassificationException;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
@@ -49,18 +49,19 @@ public class ValidatorTestUtils {
         verify(block, null);
     }
 
-    protected static void verify(final Rule rule, final Error expectedError) {
-        verify(() -> new RuleValidator().validate(rule), expectedError);
+    protected static void verify(final Rule rule, final ErrorTemplate expectedErrorTemplate) {
+        verify(() -> new RuleValidator().validate(rule), expectedErrorTemplate);
     }
 
-    protected static void verify(final Block block, final Error expectedError) {
+    protected static void verify(final Block block, final ErrorTemplate expectedErrorTemplate) {
         try {
             block.execute();
-            if (expectedError != null) {
+            if (expectedErrorTemplate != null) {
                 fail("Expected validation to fail, but succeeded");
             }
         } catch (ClassificationException ex) {
-            assertThat(ex.getError(), is(expectedError));
+            // Arguments may vary, so just verify the template
+            assertThat(ex.getError().getTemplate(), is(expectedErrorTemplate));
         }
     }
 }

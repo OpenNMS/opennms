@@ -28,46 +28,49 @@
 
 package org.opennms.netmgt.flows.classification.error;
 
-import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Objects;
 
-// Generic error object to handle user friendly error messages
-public class Error {
+public class ErrorTemplate {
 
-    private final ErrorTemplate template;
+    // Additional (optional) context of the error (e.g. an attribute name)
+    private final String context;
 
-    // Arguments to be used in the message format.
-    private final Object[] arguments;
+    // A unique error key
+    private final String key;
 
-    public Error(ErrorTemplate errorTemplate, Object... arguments) {
-        this.template = Objects.requireNonNull(errorTemplate);
-        this.arguments = arguments;
+    // The error message. May use Message Format syntax.
+    private final String message;
+
+    public ErrorTemplate(String errorContext, String errorKey, String errorMessage) {
+        this.key = errorKey;
+        this.context = errorContext;
+        this.message = Objects.requireNonNull(errorMessage);
     }
 
-    private Object[] getArguments() {
-        return arguments;
+    public String getContext() {
+        return context;
     }
 
-    public String getFormattedMessage() {
-        return new MessageFormat(template.getMessage()).format(getArguments());
+    public String getKey() {
+        return key;
     }
 
-    public ErrorTemplate getTemplate() {
-        return template;
+    public String getMessage() {
+        return message;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final Error error = (Error) o;
-        return Objects.equals(template, error.template)
-                && Arrays.equals(arguments, error.arguments);
+        final ErrorTemplate that = (ErrorTemplate) o;
+        return Objects.equals(context, that.context)
+                && Objects.equals(key, that.key)
+                && Objects.equals(message, that.message);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(template, arguments);
+        return Objects.hash(context, key, message);
     }
 }
