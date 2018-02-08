@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.bytes;
+
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
@@ -81,7 +82,7 @@ public class UndeclaredValue extends Value<byte[]> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-                return new UndeclaredValue(enterpriseNumber, informationElementId, BufferUtils.bytes(buffer, buffer.remaining()));
+                return new UndeclaredValue(enterpriseNumber, informationElementId, bytes(buffer, buffer.remaining()));
             }
 
             @Override

@@ -26,62 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
-public final class DataRecord implements Record {
+public final class OptionsTemplateSet extends Set<OptionsTemplateRecord> {
 
-    /*
-     +--------------------------------------------------+
-     | Field Value                                      |
-     +--------------------------------------------------+
-     | Field Value                                      |
-     +--------------------------------------------------+
-      ...
-     +--------------------------------------------------+
-     | Field Value                                      |
-     +--------------------------------------------------+
-    */
+    public final List<OptionsTemplateRecord> records;
 
-    public final DataSet set;  // Enclosing set
+    public OptionsTemplateSet(final Packet packet,
+                              final SetHeader header,
+                              final ByteBuffer buffer) throws InvalidPacketException {
+        super(packet, header);
 
-    public final Template template;
-    public final List<FieldValue> fields;
-
-    public DataRecord(final DataSet set,
-                      final TemplateManager.TemplateResolver templateResolver,
-                      final Template template,
-                      final ByteBuffer buffer) throws InvalidPacketException {
-        this.set = Objects.requireNonNull(set);
-
-        this.template = Objects.requireNonNull(template);
-
-        final List<FieldValue> fields = new ArrayList<>(this.template.count());
-        for (final Field templateField : this.template) {
-            fields.add(new FieldValue(templateResolver, templateField, buffer));
+        final List<OptionsTemplateRecord> records = new LinkedList();
+        while (buffer.remaining() >= OptionsTemplateRecordHeader.SIZE) {
+            final OptionsTemplateRecordHeader recordHeader = new OptionsTemplateRecordHeader(buffer);
+            records.add(new OptionsTemplateRecord(this, recordHeader, buffer));
         }
 
-        this.fields = Collections.unmodifiableList(fields);
+        if (records.size() == 0) {
+            throw new InvalidPacketException(buffer, "Empty set");
+        }
+
+        this.records = Collections.unmodifiableList(records);
+    }
+
+    @Override
+    public Iterator<OptionsTemplateRecord> iterator() {
+        return this.records.iterator();
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("fields", fields)
+                .add("header", header)
+                .add("records", records)
                 .toString();
     }
-
-
 }

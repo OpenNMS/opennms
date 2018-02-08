@@ -81,7 +81,7 @@ public class TcpPacketDecoder extends ByteToMessageDecoder {
         }
 
         final ByteBuffer payloadBuffer = in.readSlice(header.length - Header.SIZE).nioBuffer();
-        final Packet packet = new Packet(this.templateManager, header, payloadBuffer);
+        final Packet packet = new Packet(this.templateManager, this.senderAddress, header, payloadBuffer);
 
         return new DefaultAddressedEnvelope<>(packet, this.recipientAddress, this.senderAddress);
     }

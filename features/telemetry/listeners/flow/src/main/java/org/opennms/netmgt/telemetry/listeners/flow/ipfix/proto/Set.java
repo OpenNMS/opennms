@@ -28,24 +28,11 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
-import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
-import com.google.common.base.MoreObjects;
-
-public final class Set<R extends Record> implements Iterable<R> {
-
-    public interface RecordParser<R extends Record> {
-        R parse(final ByteBuffer buffer) throws InvalidPacketException;
-
-        int getMinimumRecordLength();
-    }
+public abstract class Set<R extends Record> implements Iterable<R> {
 
     /*
      +--------------------------------------------------+
@@ -63,35 +50,13 @@ public final class Set<R extends Record> implements Iterable<R> {
      +--------------------------------------------------+
     */
 
+    public final Packet packet; // Enclosing packet
+
     public final SetHeader header;
-    public final List<R> records;
 
-    public Set(final SetHeader header,
-               final RecordParser<R> parser,
-               final ByteBuffer buffer) throws InvalidPacketException {
+    public Set(final Packet packet,
+               final SetHeader header) throws InvalidPacketException {
+        this.packet = Objects.requireNonNull(packet);
         this.header = Objects.requireNonNull(header);
-
-        final List<R> records = new LinkedList<>();
-        while (buffer.remaining() >= parser.getMinimumRecordLength()) {
-            records.add(parser.parse(buffer));
-        }
-
-        this.records = Collections.unmodifiableList(records);
-        if (this.records.size() == 0) {
-            throw new InvalidPacketException(buffer, "Empty set");
-        }
-    }
-
-    @Override
-    public Iterator<R> iterator() {
-        return this.records.iterator();
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("header", header)
-                .add("records", records)
-                .toString();
     }
 }

@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
@@ -43,40 +45,48 @@ public final class Template implements Iterable<Field> {
         OPTIONS_TEMPLATE,
     }
 
-    public final Type type;
+    public final int id; //uint16
 
+    public final List<Field> scopes;
     public final List<Field> fields;
-    public final int scopeFieldsCount;
 
-    private Template(final Type type,
-                     final List<Field> fields,
-                     final int scopeFieldsCount) {
-        this.type = Objects.requireNonNull(type);
+    private Template(final int id,
+                     final List<Field> scopes,
+                     final List<Field> fields) {
+        this.id = id;
+        this.scopes = Objects.requireNonNull(scopes);
         this.fields = Objects.requireNonNull(fields);
-        this.scopeFieldsCount = scopeFieldsCount;
+    }
+
+    public Type type() {
+        return this.scopes.isEmpty() ? Type.TEMPLATE : Type.OPTIONS_TEMPLATE;
     }
 
     public int count() {
-        return this.fields.size();
+        return this.scopes.size() + this.fields.size();
     }
 
     @Override
     public Iterator<Field> iterator() {
-        return Iterators.concat(this.fields.iterator());
+        return Iterators.concat(this.scopes.iterator(), this.fields.iterator());
+    }
+
+    public Stream<Field> stream() {
+        return StreamSupport.stream(this.spliterator(), false);
     }
 
     public static class Builder {
-        private Type type;
+        private final int id;
 
+        private List<Field> scopeFields = new LinkedList<>();
         private List<Field> fields = new LinkedList<>();
 
-        private int scopeFieldsCount = 0;
-
-        private Builder() {
+        private Builder(final int id) {
+            this.id = id;
         }
 
-        public Builder withType(final Type type) {
-            this.type = type;
+        public Builder withScopeFields(final List<Field> scopeFields) {
+            this.scopeFields = scopeFields;
             return this;
         }
 
@@ -85,25 +95,15 @@ public final class Template implements Iterable<Field> {
             return this;
         }
 
-        public Builder withScopeFieldsCount(final int scopeFieldsCount) {
-            this.scopeFieldsCount = scopeFieldsCount;
-            return this;
-        }
-
         public Template build() {
-            Preconditions.checkNotNull(this.type);
+            Preconditions.checkNotNull(this.scopeFields);
             Preconditions.checkNotNull(this.fields);
-            Preconditions.checkPositionIndex(this.scopeFieldsCount, this.fields.size());
 
-            return new Template(
-                    this.type,
-                    this.fields,
-                    this.scopeFieldsCount
-            );
+            return new Template(this.id, this.scopeFields, this.fields);
         }
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static Builder builder(final int id) {
+        return new Builder(id);
     }
 }

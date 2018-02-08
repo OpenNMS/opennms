@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,47 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public final class TemplateRecord implements Record {
+public class TemplateSet extends Set<TemplateRecord> {
+    public final List<TemplateRecord> records;
 
-    public final TemplateSet set;  // Enclosing set
+    public TemplateSet(final Packet packet,
+                       final SetHeader header,
+                       final ByteBuffer buffer) throws InvalidPacketException {
+        super(packet, header);
 
-    public final TemplateRecordHeader header;
-
-    public final List<FieldSpecifier> fields;
-
-    public TemplateRecord(final TemplateSet set,
-                          final TemplateRecordHeader header,
-                          final ByteBuffer buffer) throws InvalidPacketException {
-        this.set = Objects.requireNonNull(set);
-
-        this.header = Objects.requireNonNull(header);
-
-        final List<FieldSpecifier> fields = new LinkedList<>();
-        for (int i = 0; i < this.header.fieldCount; i++) {
-            final FieldSpecifier field = new FieldSpecifier(buffer);
-            fields.add(field);
+        final List<TemplateRecord> records = new LinkedList();
+        while (buffer.remaining() >= TemplateRecordHeader.SIZE) {
+            final TemplateRecordHeader recordHeader = new TemplateRecordHeader(buffer);
+            records.add(new TemplateRecord(recordHeader, buffer));
         }
 
-        this.fields = Collections.unmodifiableList(fields);
+        if (records.size() == 0) {
+            throw new InvalidPacketException(buffer, "Empty set");
+        }
+
+        this.records = Collections.unmodifiableList(records);
+    }
+
+    @Override
+    public Iterator<TemplateRecord> iterator() {
+        return this.records.iterator();
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", header)
-                .add("fields", fields)
+                .add("records", records)
                 .toString();
     }
 }

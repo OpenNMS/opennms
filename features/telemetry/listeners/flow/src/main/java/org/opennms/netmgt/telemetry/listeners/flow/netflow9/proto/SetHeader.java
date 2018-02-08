@@ -36,7 +36,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public final class FlowSetHeader {
+public final class SetHeader {
 
     /*
      0                   1                   2                   3
@@ -57,22 +57,22 @@ public final class FlowSetHeader {
 
     public static final int SIZE = 4;
 
-    public final int flowSetId; // uint16
+    public final int setId; // uint16
     public final int length; // uint16
 
-    public FlowSetHeader(final ByteBuffer buffer) throws InvalidPacketException {
-        this.flowSetId = uint16(buffer);
-        if (this.flowSetId < 256 && this.flowSetId != TEMPLATE_SET_ID && this.flowSetId != OPTIONS_TEMPLATE_SET_ID) {
-            throw new InvalidPacketException(buffer, "Invalid set ID: %d", this.flowSetId);
+    public SetHeader(final ByteBuffer buffer) throws InvalidPacketException {
+        this.setId = uint16(buffer);
+        if (this.setId < 256 && this.setId != TEMPLATE_SET_ID && this.setId != OPTIONS_TEMPLATE_SET_ID) {
+            throw new InvalidPacketException(buffer, "Invalid set ID: %d", this.setId);
         }
 
         this.length = uint16(buffer);
     }
 
     public Type getType() {
-        if (this.flowSetId == TEMPLATE_SET_ID) return Type.TEMPLATE_FLOWSET;
-        if (this.flowSetId == OPTIONS_TEMPLATE_SET_ID) return Type.OPTIONS_TEMPLATE_FLOWSET;
-        if (this.flowSetId >= 256) return Type.DATA_FLOWSET;
+        if (this.setId == TEMPLATE_SET_ID) return Type.TEMPLATE_FLOWSET;
+        if (this.setId == OPTIONS_TEMPLATE_SET_ID) return Type.OPTIONS_TEMPLATE_FLOWSET;
+        if (this.setId >= 256) return Type.DATA_FLOWSET;
 
         return null;
     }
@@ -80,7 +80,7 @@ public final class FlowSetHeader {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("flowSetId", flowSetId)
+                .add("flowSetId", setId)
                 .add("length", length)
                 .toString();
     }

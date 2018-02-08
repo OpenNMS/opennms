@@ -36,38 +36,45 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
-public final class FlowSet<R extends Record> implements Iterable<R> {
+public final class DataSet extends Set<DataRecord> {
+    private final TemplateManager.TemplateResolver templateResolver;
 
-    public interface RecordParser<R extends Record> {
-        R parse(final ByteBuffer buffer) throws InvalidPacketException;
+    public final Template template;
 
-        int getMinimumRecordLength();
-    }
+    public final List<DataRecord> records;
 
-    public final FlowSetHeader header;
-    public final List<R> records;
-
-    public FlowSet(final FlowSetHeader header,
-                   final RecordParser<R> parser,
+    public DataSet(final Packet packet,
+                   final SetHeader header,
+                   final TemplateManager.TemplateResolver templateResolver,
                    final ByteBuffer buffer) throws InvalidPacketException {
-        this.header = Objects.requireNonNull(header);
+        super(packet, header);
 
-        final List<R> records = new LinkedList<>();
-        while (buffer.remaining() >= parser.getMinimumRecordLength()) {
-            records.add(parser.parse(buffer));
+        this.templateResolver = Objects.requireNonNull(templateResolver);
+        this.template = this.templateResolver.lookup(this.header.setId)
+                .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", this.header.setId));
+
+        final int minimumRecordLength = template.stream()
+                .mapToInt(f -> f.length()).sum();
+
+        final List<DataRecord> records = new LinkedList();
+        while (buffer.remaining() >= minimumRecordLength) {
+            records.add(new DataRecord(this, templateResolver, template, buffer));
+        }
+
+        if (records.size() == 0) {
+            throw new InvalidPacketException(buffer, "Empty set");
         }
 
         this.records = Collections.unmodifiableList(records);
-        if (this.records.size() == 0) {
-            throw new InvalidPacketException(buffer, "Empty set");
-        }
     }
 
     @Override
-    public Iterator<R> iterator() {
+    public Iterator<DataRecord> iterator() {
         return this.records.iterator();
     }
 

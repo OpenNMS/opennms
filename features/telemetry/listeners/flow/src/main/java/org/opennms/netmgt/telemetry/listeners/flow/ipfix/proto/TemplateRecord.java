@@ -64,20 +64,4 @@ public final class TemplateRecord implements Record {
                 .add("fields", fields)
                 .toString();
     }
-
-    public static Set.RecordParser<TemplateRecord> parser() {
-        return new Set.RecordParser<TemplateRecord>() {
-            @Override
-            public TemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
-                final TemplateRecordHeader header = new TemplateRecordHeader(buffer);
-
-                return new TemplateRecord(header, buffer);
-            }
-
-            @Override
-            public int getMinimumRecordLength() {
-                return TemplateRecordHeader.SIZE;
-            }
-        };
-    }
 }

@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint;
+
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
@@ -61,7 +62,7 @@ public class FloatValue extends Value<Double> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new FloatValue(name, semantics, Float.intBitsToFloat(BufferUtils.uint(buffer, buffer.remaining()).intValue()));
+                return new FloatValue(name, semantics, Float.intBitsToFloat(uint(buffer, buffer.remaining()).intValue()));
             }
 
             @Override
@@ -85,7 +86,7 @@ public class FloatValue extends Value<Double> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new FloatValue(name, semantics, Double.longBitsToDouble(BufferUtils.uint(buffer, buffer.remaining()).longValue()));
+                return new FloatValue(name, semantics, Double.longBitsToDouble(uint(buffer, buffer.remaining()).longValue()));
             }
 
             @Override

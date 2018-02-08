@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
+
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Iterator;
@@ -36,7 +39,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
@@ -63,29 +65,34 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
      +----------------------------------------------------+
     */
 
+    public final InetSocketAddress sender;
+
     public final Header header;
 
-    public final List<Set<TemplateRecord>> templateSets;
-    public final List<Set<OptionsTemplateRecord>> optionTemplateSets;
-    public final List<Set<DataRecord>> dataSets;
+    public final List<TemplateSet> templateSets;
+    public final List<OptionsTemplateSet> optionTemplateSets;
+    public final List<DataSet> dataSets;
 
     public Packet(final TemplateManager templateManager,
+                  final InetSocketAddress sender,
                   final Header header,
                   final ByteBuffer buffer) throws InvalidPacketException {
+        this.sender = Objects.requireNonNull(sender);
+
         this.header = Objects.requireNonNull(header);
 
-        final List<Set<TemplateRecord>> templateSets = new LinkedList<>();
-        final List<Set<OptionsTemplateRecord>> optionTemplateSets = new LinkedList<>();
-        final List<Set<DataRecord>> dataSets = new LinkedList<>();
+        final List<TemplateSet> templateSets = new LinkedList();
+        final List<OptionsTemplateSet> optionTemplateSets = new LinkedList();
+        final List<DataSet> dataSets = new LinkedList();
 
         while (buffer.hasRemaining()) {
-            final ByteBuffer headerBuffer = BufferUtils.slice(buffer, SetHeader.SIZE);
+            final ByteBuffer headerBuffer = slice(buffer, SetHeader.SIZE);
             final SetHeader setHeader = new SetHeader(headerBuffer);
 
-            final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, setHeader.length - SetHeader.SIZE);
+            final ByteBuffer payloadBuffer = slice(buffer, setHeader.length - SetHeader.SIZE);
             switch (setHeader.getType()) {
                 case TEMPLATE_SET: {
-                    final Set<TemplateRecord> templateSet = new Set<>(setHeader, TemplateRecord.parser(), payloadBuffer);
+                    final TemplateSet templateSet = new TemplateSet(this, setHeader, payloadBuffer);
 
                     for (final TemplateRecord record : templateSet) {
                         if (record.header.fieldCount == 0) {
@@ -101,9 +108,7 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
 
                         } else {
                             templateManager.add(this.header.observationDomainId,
-                                    record.header.templateId,
-                                    Template.builder()
-                                            .withType(Template.Type.TEMPLATE)
+                                    Template.builder(record.header.templateId)
                                             .withFields(Lists.transform(record.fields, f -> f.specifier))
                                             .build());
                         }
@@ -114,7 +119,7 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                 }
 
                 case OPTIONS_TEMPLATE_SET: {
-                    final Set<OptionsTemplateRecord> optionsTemplateSet = new Set<>(setHeader, OptionsTemplateRecord.parser(), payloadBuffer);
+                    final OptionsTemplateSet optionsTemplateSet = new OptionsTemplateSet(this, setHeader, payloadBuffer);
 
                     for (final OptionsTemplateRecord record : optionsTemplateSet) {
                         if (record.header.fieldCount == 0) {
@@ -130,10 +135,8 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
 
                         } else {
                             templateManager.add(this.header.observationDomainId,
-                                    record.header.templateId,
-                                    Template.builder()
-                                            .withType(Template.Type.OPTIONS_TEMPLATE)
-                                            .withScopeFieldsCount(record.header.scopeFieldCount)
+                                    Template.builder(record.header.templateId)
+                                            .withScopeFields(Lists.transform(record.scopes, f -> f.specifier))
                                             .withFields(Lists.transform(record.fields, f -> f.specifier))
                                             .build());
                         }
@@ -145,10 +148,7 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
 
                 case DATA_SET: {
                     final TemplateManager.TemplateResolver templateResolver = templateManager.getResolver(header.observationDomainId);
-                    final Template template = templateResolver.lookup(setHeader.setId)
-                                .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", setHeader.setId));
-
-                    final Set<DataRecord> dataSet = new Set<>(setHeader, DataRecord.parser(template, templateResolver), payloadBuffer);
+                    final DataSet dataSet = new DataSet(this, setHeader, templateResolver, payloadBuffer);
 
                     dataSets.add(dataSet);
                     break;
@@ -183,7 +183,7 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                 .map(r -> new RecordProvider.Record(
                         this.header.observationDomainId,
                         this.header.exportTime,
-                        r.template.scopeFieldsCount,
+                        r.template.scopes.size(),
                         recordCount,
                         this.header.sequenceNumber,
                         Iterables.transform(r.fields, f -> f.value)

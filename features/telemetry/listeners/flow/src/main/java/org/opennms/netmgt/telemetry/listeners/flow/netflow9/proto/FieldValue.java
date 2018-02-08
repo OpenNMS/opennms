@@ -49,7 +49,9 @@ public class FieldValue {
 
     public final Value value;
 
-    public FieldValue(final TemplateManager.TemplateResolver templateResolver, final Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
-        value = templateField.parse(templateResolver, slice(buffer, templateField.length));
+    public FieldValue(final TemplateManager.TemplateResolver templateResolver,
+                      final Field templateField,
+                      final ByteBuffer buffer) throws InvalidPacketException {
+        value = templateField.parse(templateResolver, slice(buffer, templateField.length()));
     }
 }

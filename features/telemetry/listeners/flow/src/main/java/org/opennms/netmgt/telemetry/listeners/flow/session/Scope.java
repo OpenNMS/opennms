@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,21 +28,7 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.session;
 
-import java.util.Optional;
+import java.util.function.Predicate;
 
-public interface TemplateManager {
-
-    @FunctionalInterface
-    interface TemplateResolver {
-        Optional<Template> lookup(final int templateId);
-    }
-
-    void add(final long observationDomainId, final Template template);
-
-    void remove(final long observationDomainId, final int templateId);
-
-    void removeAll(final long observationDomainId, final Template.Type type);
-
-    TemplateResolver getResolver(final long observationDomainId);
-
+public interface Scope<R> extends Predicate<R> {
 }

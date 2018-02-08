@@ -28,29 +28,27 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldSpecifier;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Set;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.SetHeader;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
-
-import com.google.common.collect.Lists;
 
 public class ListValue extends Value<List<List<Value<?>>>> {
 
@@ -162,8 +160,11 @@ public class ListValue extends Value<List<List<Value<?>>>> {
 
                 final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
-                    final DataRecord record = new DataRecord(templateResolver, template, buffer);
-                    values.add(Lists.transform(record.fields, f -> f.value));
+                    final List<Value<?>> record = new ArrayList(template.count());
+                    for (final Field templateField : template) {
+                        record.add(new FieldValue(templateResolver, templateField, buffer).value);
+                    }
+                    values.add(record);
                 }
 
                 return new ListValue(name, semantics, semantic, values);
@@ -239,7 +240,7 @@ public class ListValue extends Value<List<List<Value<?>>>> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-                final Semantic semantic = Semantic.parse(buffer, BufferUtils.uint8(buffer));
+                final Semantic semantic = Semantic.parse(buffer, uint8(buffer));
 
                 final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
@@ -248,12 +249,17 @@ public class ListValue extends Value<List<List<Value<?>>>> {
                         throw new InvalidPacketException(buffer, "Invalid template ID: %d", header.setId);
                     }
 
-                    final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, header.length - SetHeader.SIZE);
+                    final ByteBuffer payloadBuffer = slice(buffer, header.length - SetHeader.SIZE);
                     final Template template = templateResolver.lookup(header.setId)
                             .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", header.setId));
-                    final Set<DataRecord> dataSet = new Set<>(header, DataRecord.parser(template, templateResolver), payloadBuffer);
 
-                    values.addAll(Lists.transform(dataSet.records, r -> Lists.transform(r.fields, f -> f.value)));
+                    while (payloadBuffer.hasRemaining()) {
+                        final List<Value<?>> record = new ArrayList(template.count());
+                        for (final Field templateField : template) {
+                            record.add(new FieldValue(templateResolver, templateField, buffer).value);
+                        }
+                        values.add(record);
+                    }
                 }
 
                 return new ListValue(name, semantics, semantic, values);

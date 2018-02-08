@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,59 +29,61 @@
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
-public final class DataRecord implements Record {
-
-    /*
-     +--------------------------------------------------+
-     | Field Value                                      |
-     +--------------------------------------------------+
-     | Field Value                                      |
-     +--------------------------------------------------+
-      ...
-     +--------------------------------------------------+
-     | Field Value                                      |
-     +--------------------------------------------------+
-    */
-
-    public final DataSet set;  // Enclosing set
+public class DataSet extends Set<DataRecord> {
+    private final TemplateManager.TemplateResolver templateResolver;
 
     public final Template template;
-    public final List<FieldValue> fields;
 
-    public DataRecord(final DataSet set,
-                      final TemplateManager.TemplateResolver templateResolver,
-                      final Template template,
-                      final ByteBuffer buffer) throws InvalidPacketException {
-        this.set = Objects.requireNonNull(set);
+    public final List<DataRecord> records;
 
-        this.template = Objects.requireNonNull(template);
+    public DataSet(final Packet packet,
+                   final SetHeader header,
+                   final TemplateManager.TemplateResolver templateResolver,
+                   final ByteBuffer buffer) throws InvalidPacketException {
+        super(packet, header);
 
-        final List<FieldValue> fields = new ArrayList<>(this.template.count());
-        for (final Field templateField : this.template) {
-            fields.add(new FieldValue(templateResolver, templateField, buffer));
+        this.templateResolver = Objects.requireNonNull(templateResolver);
+        this.template = this.templateResolver.lookup(this.header.setId)
+                .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", this.header.setId));
+
+        // For variable length fields we assume at least the length value (1 byte) to be present
+        final int minimumRecordLength = this.template.stream()
+                .mapToInt(f -> f.length() != FieldValue.VARIABLE_SIZED ? f.length() : 1).sum();
+
+        final List<DataRecord> records = new LinkedList();
+        while (buffer.remaining() >= minimumRecordLength) {
+            records.add(new DataRecord(this, this.templateResolver, this.template, buffer));
         }
 
-        this.fields = Collections.unmodifiableList(fields);
+        if (records.size() == 0) {
+            throw new InvalidPacketException(buffer, "Empty set");
+        }
+
+        this.records = Collections.unmodifiableList(records);
+    }
+
+    @Override
+    public Iterator<DataRecord> iterator() {
+        return this.records.iterator();
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("fields", fields)
+                .add("header", header)
+                .add("records", records)
                 .toString();
     }
-
-
 }

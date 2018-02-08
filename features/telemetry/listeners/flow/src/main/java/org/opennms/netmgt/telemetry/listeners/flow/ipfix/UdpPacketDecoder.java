@@ -60,7 +60,7 @@ public class UdpPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
         final Header header = new Header(headerBuffer);
 
         final ByteBuffer payloadBuffer = buf.readSlice(header.length - Header.SIZE).nioBuffer();
-        final Packet packet = new Packet(templateManager, header, payloadBuffer);
+        final Packet packet = new Packet(templateManager, msg.sender(), header, payloadBuffer);
 
         out.add(new DefaultAddressedEnvelope<>(packet, msg.recipient(), msg.sender()));
     }

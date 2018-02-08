@@ -28,14 +28,43 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.session;
 
-import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
-import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
-public interface Field {
-    int length();
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
-    Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
-                   final ByteBuffer buffer) throws InvalidPacketException;
+public class OptionStore<P> {
+
+    private final class Entry {
+        private final Scope<P> scope;
+        private final List<Value<?>> values;
+
+        private Entry(final Scope<P> scope,
+                      final List<Value<?>> values) {
+            this.scope = Objects.requireNonNull(scope);
+            this.values = Objects.requireNonNull(values);
+        }
+    }
+
+    private final Map<Template, Set<Entry>> store;
+
+    public OptionStore() {
+        this.store = Maps.newHashMap();
+    }
+
+    public void retractTemplate(final Template template) {
+        this.store.remove(template);
+    }
+
+    public void insert(final Template template,
+                       final Scope<P> scope,
+                       final List<Value<?>> values) {
+        final Set<Entry> entries = this.store.computeIfAbsent(template, (t) -> Sets.newHashSet());
+        entries.add(new Entry(scope, values));
+    }
 }

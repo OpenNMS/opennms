@@ -98,8 +98,8 @@ public class UdpSession {
     public TemplateManager getTemplateManager(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new TemplateManager() {
             @Override
-            public void add(final long observationDomainId, final int templateId, final Template template) {
-                UdpSession.this.templates.put(new Key(remoteAddress, localAddress, observationDomainId, templateId), new Value(template));
+            public void add(final long observationDomainId, final Template template) {
+                UdpSession.this.templates.put(new Key(remoteAddress, localAddress, observationDomainId, template.id), new Value(template));
             }
 
             @Override
@@ -109,7 +109,7 @@ public class UdpSession {
 
             @Override
             public void removeAll(final long observationDomainId, final Template.Type type) {
-                UdpSession.this.templates.entrySet().removeIf(e -> e.getKey().observationDomainId == observationDomainId && e.getValue().template.type == type);
+                UdpSession.this.templates.entrySet().removeIf(e -> e.getKey().observationDomainId == observationDomainId && e.getValue().template.type() == type);
             }
 
             @Override

@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.bytes;
+
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
@@ -61,7 +62,7 @@ public class MacAddressValue extends Value<byte[]> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new MacAddressValue(name, semantics, BufferUtils.bytes(buffer, 6));
+                return new MacAddressValue(name, semantics, bytes(buffer, 6));
             }
 
             @Override

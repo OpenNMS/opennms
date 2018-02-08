@@ -64,8 +64,10 @@ public class FieldValue {
 
     public final Value value;
 
-    public FieldValue(final TemplateManager.TemplateResolver templateResolver, final Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
-        int length = templateField.length;
+    public FieldValue(final TemplateManager.TemplateResolver templateResolver,
+                      final Field templateField,
+                      final ByteBuffer buffer) throws InvalidPacketException {
+        int length = templateField.length();
         if (length == VARIABLE_SIZED) {
             length = uint8(buffer);
             if (length == VARIABLE_SIZED_EXTENDED) {

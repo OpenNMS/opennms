@@ -28,16 +28,18 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint32;
+
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UndeclaredValue;
-import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,18 +63,18 @@ public final class FieldSpecifier {
 
     public final Optional<Long> enterpriseNumber; // uint32
 
-    public final Field specifier;
+    public final InformationElementField specifier;
 
     public FieldSpecifier(final ByteBuffer buffer) throws InvalidPacketException {
-        final int elementId = BufferUtils.uint16(buffer);
+        final int elementId = uint16(buffer);
 
         this.informationElementId = elementId & 0x7FFF;
-        this.fieldLength = BufferUtils.uint16(buffer);
+        this.fieldLength = uint16(buffer);
 
         if ((elementId & 0x8000) == 0) {
             this.enterpriseNumber = Optional.empty();
         } else {
-            long enterpriseNumber = BufferUtils.uint32(buffer);
+            long enterpriseNumber = uint32(buffer);
             this.enterpriseNumber = Optional.of(enterpriseNumber);
         }
 
@@ -90,7 +92,7 @@ public final class FieldSpecifier {
                     informationElement.getMaximumFieldLength());
         }
 
-        this.specifier = new Field(this.fieldLength, informationElement);
+        this.specifier = new InformationElementField(this.fieldLength, informationElement);
     }
 
     @Override

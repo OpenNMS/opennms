@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,21 +28,20 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.session;
 
-import java.util.Optional;
+import java.util.Objects;
+import java.util.Set;
 
-public interface TemplateManager {
+import com.google.common.collect.Iterables;
 
-    @FunctionalInterface
-    interface TemplateResolver {
-        Optional<Template> lookup(final int templateId);
+public class CombinedScope<R> implements Scope<R> {
+    private final Set<Scope<R>> scopes;
+
+    public CombinedScope(final Set<Scope<R>> scopes) {
+        this.scopes = Objects.requireNonNull(scopes);
     }
 
-    void add(final long observationDomainId, final Template template);
-
-    void remove(final long observationDomainId, final int templateId);
-
-    void removeAll(final long observationDomainId, final Template.Type type);
-
-    TemplateResolver getResolver(final long observationDomainId);
-
+    @Override
+    public boolean test(final R record) {
+        return Iterables.all(this.scopes, s -> s.test(record));
+    }
 }

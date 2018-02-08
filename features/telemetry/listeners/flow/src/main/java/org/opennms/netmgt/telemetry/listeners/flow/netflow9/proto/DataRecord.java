@@ -55,12 +55,17 @@ public final class DataRecord implements Record {
      +--------------------------------------------------+
     */
 
+    public final DataSet set;  // Enclosing set
+
     public final Template template;
     public final List<FieldValue> fields;
 
-    public DataRecord(final TemplateManager.TemplateResolver templateResolver,
+    public DataRecord(final DataSet set,
+                      final TemplateManager.TemplateResolver templateResolver,
                       final Template template,
                       final ByteBuffer buffer) throws InvalidPacketException {
+        this.set = Objects.requireNonNull(set);
+
         this.template = Objects.requireNonNull(template);
 
         final List<FieldValue> values = new ArrayList<>(template.count());
@@ -76,20 +81,5 @@ public final class DataRecord implements Record {
         return MoreObjects.toStringHelper(this)
                 .add("fields", fields)
                 .toString();
-    }
-
-    public static FlowSet.RecordParser<DataRecord> parser(final Template template, final TemplateManager.TemplateResolver templateResolver) throws InvalidPacketException {
-        return new FlowSet.RecordParser<DataRecord>() {
-            @Override
-            public DataRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
-                return new DataRecord(templateResolver, template, buffer);
-            }
-
-            @Override
-            public int getMinimumRecordLength() {
-                return template.fields.stream()
-                        .mapToInt(f -> f.length).sum();
-            }
-        };
     }
 }

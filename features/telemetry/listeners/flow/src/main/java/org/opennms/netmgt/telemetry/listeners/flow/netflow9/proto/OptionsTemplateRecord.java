@@ -40,26 +40,33 @@ import com.google.common.base.MoreObjects;
 
 public final class OptionsTemplateRecord implements Record {
 
+    public final OptionsTemplateSet set;  // Enclosing set
+
     public final OptionsTemplateRecordHeader header;
 
+    public final List<ScopeFieldSpecifier> scopeFields;
     public final List<FieldSpecifier> fields;
 
-    public OptionsTemplateRecord(final OptionsTemplateRecordHeader header,
+    public OptionsTemplateRecord(final OptionsTemplateSet set,
+                                 final OptionsTemplateRecordHeader header,
                                  final ByteBuffer buffer) throws InvalidPacketException {
+        this.set = Objects.requireNonNull(set);
+
         this.header = Objects.requireNonNull(header);
 
+        final List<ScopeFieldSpecifier> scopeFields = new LinkedList<>();
+        for (int i = 0; i < this.header.optionScopeLength; i += ScopeFieldSpecifier.SIZE) {
+            final ScopeFieldSpecifier scopeField = new ScopeFieldSpecifier(buffer);
+            scopeFields.add(scopeField);
+        }
+
         final List<FieldSpecifier> fields = new LinkedList<>();
-
-        for (int i = 0; i < this.header.optionScopeLength / FieldSpecifier.SIZE; i++) {
+        for (int i = 0; i < this.header.optionLength; i += FieldSpecifier.SIZE) {
             final FieldSpecifier field = new FieldSpecifier(buffer);
             fields.add(field);
         }
 
-        for (int i = 0; i < this.header.optionLength / FieldSpecifier.SIZE; i++) {
-            final FieldSpecifier field = new FieldSpecifier(buffer);
-            fields.add(field);
-        }
-
+        this.scopeFields = Collections.unmodifiableList(scopeFields);
         this.fields = Collections.unmodifiableList(fields);
     }
 
@@ -67,23 +74,8 @@ public final class OptionsTemplateRecord implements Record {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", header)
+                .add("scopeFields", scopeFields)
                 .add("fields", fields)
                 .toString();
-    }
-
-    public static FlowSet.RecordParser<OptionsTemplateRecord> parser() {
-        return new FlowSet.RecordParser<OptionsTemplateRecord>() {
-            @Override
-            public OptionsTemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
-                final OptionsTemplateRecordHeader header = new OptionsTemplateRecordHeader(buffer);
-
-                return new OptionsTemplateRecord(header, buffer);
-            }
-
-            @Override
-            public int getMinimumRecordLength() {
-                return TemplateRecordHeader.SIZE;
-            }
-        };
     }
 }

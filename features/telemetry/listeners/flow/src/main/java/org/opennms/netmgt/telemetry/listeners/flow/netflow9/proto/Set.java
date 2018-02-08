@@ -28,45 +28,18 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
-import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
-import com.google.common.base.MoreObjects;
+public abstract class Set<R extends Record> implements Iterable<R> {
+    public final Packet packet; // Enclosing packet
 
-public final class TemplateRecord implements Record {
+    public final SetHeader header;
 
-    public final TemplateSet set;  // Enclosing set
-
-    public final TemplateRecordHeader header;
-
-    public final List<FieldSpecifier> fields;
-
-    public TemplateRecord(final TemplateSet set,
-                          final TemplateRecordHeader header,
-                          final ByteBuffer buffer) throws InvalidPacketException {
-        this.set = Objects.requireNonNull(set);
-
+    public Set(final Packet packet,
+               final SetHeader header) throws InvalidPacketException {
+        this.packet = Objects.requireNonNull(packet);
         this.header = Objects.requireNonNull(header);
-
-        final List<FieldSpecifier> fields = new LinkedList<>();
-        for (int i = 0; i < this.header.fieldCount; i++) {
-            final FieldSpecifier field = new FieldSpecifier(buffer);
-            fields.add(field);
-        }
-
-        this.fields = Collections.unmodifiableList(fields);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("header", header)
-                .add("fields", fields)
-                .toString();
     }
 }

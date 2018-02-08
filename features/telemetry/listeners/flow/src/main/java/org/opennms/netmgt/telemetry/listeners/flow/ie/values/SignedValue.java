@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.sint;
+
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
@@ -61,7 +62,7 @@ public class SignedValue extends Value<Long> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, semantics, BufferUtils.sint(buffer, 1));
+                return new SignedValue(name, semantics, sint(buffer, 1));
             }
 
             @Override
@@ -85,7 +86,7 @@ public class SignedValue extends Value<Long> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, semantics, BufferUtils.sint(buffer, buffer.remaining()));
+                return new SignedValue(name, semantics, sint(buffer, buffer.remaining()));
             }
 
             @Override
@@ -109,7 +110,7 @@ public class SignedValue extends Value<Long> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, semantics, BufferUtils.sint(buffer, buffer.remaining()));
+                return new SignedValue(name, semantics, sint(buffer, buffer.remaining()));
             }
 
             @Override
@@ -133,7 +134,7 @@ public class SignedValue extends Value<Long> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, semantics, BufferUtils.sint(buffer, buffer.remaining()));
+                return new SignedValue(name, semantics, sint(buffer, buffer.remaining()));
             }
 
             @Override

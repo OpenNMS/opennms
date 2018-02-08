@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.bytes;
+
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
@@ -65,7 +66,7 @@ public class IPv4AddressValue extends Value<Inet4Address> {
             @Override
             public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
                 try {
-                    return new IPv4AddressValue(name, semantics, (Inet4Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 4)));
+                    return new IPv4AddressValue(name, semantics, (Inet4Address) Inet4Address.getByAddress(bytes(buffer, 4)));
                 } catch (final UnknownHostException e) {
                     throw new InvalidPacketException(buffer, "Error parsing IPv4 value", e);
                 }

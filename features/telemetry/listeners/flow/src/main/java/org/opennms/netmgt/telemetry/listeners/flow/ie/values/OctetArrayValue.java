@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.bytes;
+
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
@@ -67,7 +68,7 @@ public class OctetArrayValue extends Value<byte[]> {
         return (name, semantics) -> new InformationElement() {
             @Override
             public Value<?> parse(TemplateManager.TemplateResolver templateResolver, ByteBuffer buffer) throws InvalidPacketException {
-                return new OctetArrayValue(name, semantics, BufferUtils.bytes(buffer, buffer.remaining()));
+                return new OctetArrayValue(name, semantics, bytes(buffer, buffer.remaining()));
             }
 
             @Override

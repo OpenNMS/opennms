@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.flow.netflow9;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -42,7 +43,6 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;
@@ -95,7 +95,7 @@ public class BlackboxTest {
                 buffer.flip();
 
                 do {
-                    final Header header = new Header(BufferUtils.slice(buffer, Header.SIZE));
+                    final Header header = new Header(slice(buffer, Header.SIZE));
                     final Packet packet = new Packet(templateManager, header, buffer);
                     assertThat(packet.header.versionNumber, is(0x0009));
                 } while (buffer.hasRemaining());

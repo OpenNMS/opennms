@@ -26,47 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
-import com.google.common.base.MoreObjects;
+public class InformationElementField implements Field {
+    public final int length;
+    public final InformationElement informationElement;
 
-public final class TemplateRecord implements Record {
-
-    public final TemplateSet set;  // Enclosing set
-
-    public final TemplateRecordHeader header;
-
-    public final List<FieldSpecifier> fields;
-
-    public TemplateRecord(final TemplateSet set,
-                          final TemplateRecordHeader header,
-                          final ByteBuffer buffer) throws InvalidPacketException {
-        this.set = Objects.requireNonNull(set);
-
-        this.header = Objects.requireNonNull(header);
-
-        final List<FieldSpecifier> fields = new LinkedList<>();
-        for (int i = 0; i < this.header.fieldCount; i++) {
-            final FieldSpecifier field = new FieldSpecifier(buffer);
-            fields.add(field);
-        }
-
-        this.fields = Collections.unmodifiableList(fields);
+    public InformationElementField(final int length,
+                                   final InformationElement informationElement) {
+        this.length = length;
+        this.informationElement = Objects.requireNonNull(informationElement);
     }
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("header", header)
-                .add("fields", fields)
-                .toString();
+    public int length() {
+        return this.length;
+    }
+
+    @Override
+    public Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
+                          final ByteBuffer buffer) throws InvalidPacketException {
+        return this.informationElement.parse(templateResolver, buffer);
     }
 }

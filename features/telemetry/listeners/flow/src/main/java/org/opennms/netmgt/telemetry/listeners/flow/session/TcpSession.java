@@ -68,8 +68,8 @@ public class TcpSession implements TemplateManager {
     }
 
     @Override
-    public void add(final long observationDomainId, final int templateId, final Template template) {
-        this.templates.put(new Key(observationDomainId, templateId), template);
+    public void add(final long observationDomainId, final Template template) {
+        this.templates.put(new Key(observationDomainId, template.id), template);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class TcpSession implements TemplateManager {
 
     @Override
     public void removeAll(final long observationDomainId, final Template.Type type) {
-        this.templates.entrySet().removeIf(e -> e.getKey().observationDomainId == observationDomainId && e.getValue().type == type);
+        this.templates.entrySet().removeIf(e -> e.getKey().observationDomainId == observationDomainId && e.getValue().type() == type);
     }
 
     @Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,23 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.session;
+package org.opennms.netmgt.telemetry.listeners.flow.ipfix.scope;
 
-import java.util.Optional;
+import java.util.function.Predicate;
 
-public interface TemplateManager {
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
 
-    @FunctionalInterface
-    interface TemplateResolver {
-        Optional<Template> lookup(final int templateId);
+public class TemplateIdScope implements Predicate<DataRecord> {
+    private final long templateId;
+
+    public TemplateIdScope(final long templateId) {
+        this.templateId = templateId;
     }
 
-    void add(final long observationDomainId, final Template template);
-
-    void remove(final long observationDomainId, final int templateId);
-
-    void removeAll(final long observationDomainId, final Template.Type type);
-
-    TemplateResolver getResolver(final long observationDomainId);
-
+    @Override
+    public boolean test(final DataRecord record) {
+        return record.set.header.setId == this.templateId;
+    }
 }
