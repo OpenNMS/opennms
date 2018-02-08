@@ -10,6 +10,7 @@
   const quickAddNodeStandaloneView = require('../lib/views/quick-add-node-standalone.html');
 
   angular.module('onms-requisitions', [
+    'onms.http',
     'ngRoute',
     'ngAnimate',
     'ui.bootstrap',

@@ -7,6 +7,7 @@ const BASE_REST_URL = 'api/v2';
 const MODULE_NAME = 'onms.restResources';
 
 const angular = require('vendor/angular-js');
+require('lib/onms-http');
 
 /**
  * Function used to append an extra transformer to the default $http transforms.
@@ -44,7 +45,7 @@ const arrayify = (data, headers, status, key) => {
 };
 
 // REST $resource module
-angular.module(MODULE_NAME, [ 'ngResource' ])
+angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 
 // OnmsAlarm REST $resource
 .factory('alarmFactory', function($resource, $log, $http, $location) {

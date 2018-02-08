@@ -14,6 +14,7 @@ const nodeView = require('../lib/views/node.html');
 const nodePanelsView = require('../lib/views/node-panels.html');
 
 angular.module('onms-requisitions', [
+  'onms.http',
   'ngRoute',
   'ngCookies',
   'ngAnimate',
