@@ -51,6 +51,9 @@ import com.google.common.base.Strings;
 @Entity
 public class Rule {
 
+    public static final int MIN_PORT_VALUE = 0;
+    public static final int MAX_PORT_VALUE = 65536;
+
     @Id
     @SequenceGenerator(name="ruleSequence", sequenceName="ruleNxtId")
     @GeneratedValue(generator="ruleSequence")

@@ -143,11 +143,11 @@ public class RuleValidator {
         }
     }
 
-    // Validate each port to be between 0 - 65536
+    // Validate each port to be between 0 - 5536
     private static void verifyPortValue(String input) throws InvalidRuleException {
         int value = Integer.parseInt(input);
-        if (value < 0 || value > 65536) {
-            throw new InvalidRuleException(Errors.RULE_PORT_VALUE_NOT_IN_RANGE, 0, 65536);
+        if (value < Rule.MIN_PORT_VALUE || value > Rule.MAX_PORT_VALUE) {
+            throw new InvalidRuleException(Errors.RULE_PORT_VALUE_NOT_IN_RANGE, Rule.MIN_PORT_VALUE, Rule.MAX_PORT_VALUE);
         }
     }
 }

@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
@@ -45,7 +44,6 @@ import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
 import com.google.common.collect.Lists;
 
-@Ignore
 public class DefaultClassificationEngineTest {
 
     @Test
@@ -93,8 +91,13 @@ public class DefaultClassificationEngineTest {
     @Test
     public void verifyAllPortsToEnsureEngineIsProperlyInitialized() {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> new ArrayList<>());
-        for (int i=0; i<65536; i++) {
+        for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
             classificationEngine.classify(new ClassificationRequest("Default", i, "127.0.0.1", ProtocolType.TCP));
         }
+    }
+
+    @Test(timeout=5000)
+    public void verifyInitializesQuickly() {
+        new DefaultClassificationEngine(() -> Lists.newArrayList(new Rule("Test", "0-10000")));
     }
 }

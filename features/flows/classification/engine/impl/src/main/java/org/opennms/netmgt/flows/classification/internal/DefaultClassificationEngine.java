@@ -43,11 +43,12 @@ import org.opennms.netmgt.flows.classification.internal.classifier.Classifier;
 import org.opennms.netmgt.flows.classification.internal.classifier.CombinedClassifier;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleComparator;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
-    private final List<List<Classifier>> classifierPortList = new ArrayList<>();
+    private final List<List<Classifier>> classifierPortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
     private final Comparator<Rule> ruleComparator = new RuleComparator();
     private final ClassificationRuleProvider ruleProvider;
 
@@ -58,31 +59,17 @@ public class DefaultClassificationEngine implements ClassificationEngine {
 
     @Override
     public void reload() {
-        final List<Rule> rules = new ArrayList<>();
-        rules.addAll(ruleProvider.getRules());
-        createClassifiers(rules);
-    }
+        // Reset existing data
+        classifierPortList.clear();
 
-    @Override
-    public String classify(ClassificationRequest classificationRequest) {
-        final List<Classifier> filteredClassifiers = getClassifiers(classificationRequest);
-        final Optional<String> first = filteredClassifiers.stream()
-                .map(classifier -> classifier.classify(classificationRequest))
-                .filter(classifier -> classifier != null)
-                .findFirst();
-
-        // We return null instead of 'Undefined', to let the caller (e.g. rest service, or ui) decide
-        // what an unmapped definition should be named.
-        // This prevents a collision with an existing rule, which may map to 'Undefined'
-        return first.orElse(null);
-    }
-
-    private void createClassifiers(final List<Rule> rules) {
-        final List<List<Rule>> rulePortList = new ArrayList<>();
+        // Load rules
+        final List<Rule> rules = ruleProvider.getRules();
+        final List<List<Rule>> rulePortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
 
         // Initialize each element
-        for (int i=0; i<65536; i++) {
+        for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
             rulePortList.add(new ArrayList<>());
+            classifierPortList.add(new ArrayList<>());
         }
 
         // Bind each rule to a port
@@ -102,20 +89,45 @@ public class DefaultClassificationEngine implements ClassificationEngine {
             theRules.addAll(anyPortRule);
         }
 
-        // Sort rules
+        // Sort rules by priority
         for (int i=0; i<rulePortList.size(); i++) {
             final List<Rule> portRules = rulePortList.get(i);
             Collections.sort(portRules, ruleComparator);
         }
 
         // Finally create classifiers
-        classifierPortList.clear();
         for (int i=0; i<rulePortList.size(); i++) {
-            final List<Rule> portRules = rulePortList.get(i);
-            final List<Classifier> classifiers = portRules.stream().map(CombinedClassifier::new).collect(Collectors.toList());
-            classifierPortList.set(i, classifiers);
+            final int port = i;
+            final List<Rule> portRules = rulePortList.get(port);
+
+            // Convert rule to classifier
+            final List<Classifier> classifiers = portRules.stream().map(rule -> {
+                final Rule portRule = new RuleBuilder()
+                        .withName(rule.getName())
+                        .withProtocol(rule.getProtocol())
+                        .withPort(port)
+                        .withIpAddress(rule.getIpAddress())
+                        .build();
+                return new CombinedClassifier(portRule);
+            }).collect(Collectors.toList());
+            classifierPortList.set(port, classifiers);
         }
     }
+
+    @Override
+    public String classify(ClassificationRequest classificationRequest) {
+        final List<Classifier> filteredClassifiers = getClassifiers(classificationRequest);
+        final Optional<String> first = filteredClassifiers.stream()
+                .map(classifier -> classifier.classify(classificationRequest))
+                .filter(classifier -> classifier != null)
+                .findFirst();
+
+        // We return null instead of 'Undefined', to let the caller (e.g. rest service, or ui) decide
+        // what an unmapped definition should be named.
+        // This prevents a collision with an existing rule, which may map to 'Undefined'
+        return first.orElse(null);
+    }
+
 
     private List<Classifier> getClassifiers(ClassificationRequest request) {
         return classifierPortList.get(request.getPort());

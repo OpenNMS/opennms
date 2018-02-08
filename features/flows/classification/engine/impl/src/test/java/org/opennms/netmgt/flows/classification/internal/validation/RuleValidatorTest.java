@@ -113,7 +113,7 @@ public class RuleValidatorTest {
         verify(() -> RuleValidator.validatePort("80"));
         verify(() -> RuleValidator.validatePort("80,8080"));
         verify(() -> RuleValidator.validatePort("80-8080"));
-        verify(() -> RuleValidator.validatePort("0-65536"));
+        verify(() -> RuleValidator.validatePort(String.format("%d-%d", Rule.MIN_PORT_VALUE, Rule.MAX_PORT_VALUE)));
     }
 
     @Test
