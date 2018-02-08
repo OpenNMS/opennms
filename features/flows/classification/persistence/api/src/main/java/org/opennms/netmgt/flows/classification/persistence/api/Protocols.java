@@ -56,7 +56,7 @@ public final class Protocols {
         protocols.add(new Protocol( 10, "BBN-RCC-MON", "BBN RCC Monitoring"));
         protocols.add(new Protocol( 11, "NVP-II", "Network Voice Protocol"));
         protocols.add(new Protocol( 12, "PUP", "PUP"));
-        protocols.add(new Protocol( 13, "ARGUS (deprecated)", "ARGUS"));
+        protocols.add(new Protocol( 13, "ARGUS", "ARGUS (deprecated)"));
         protocols.add(new Protocol( 14, "EMCON", "EMCON"));
         protocols.add(new Protocol( 15, "XNET", "Cross Net Debugger"));
         protocols.add(new Protocol( 16, "CHAOS", "Chaos"));
@@ -96,7 +96,7 @@ public final class Protocols {
         protocols.add(new Protocol( 50, "ESP", "Encap Security Payload"));
         protocols.add(new Protocol( 51, "AH", "Authentication Header"));
         protocols.add(new Protocol( 52, "I-NLSP", "Integrated Net Layer Security  TUBA"));
-        protocols.add(new Protocol( 53, "SWIPE (deprecated)", "IP with Encryption"));
+        protocols.add(new Protocol( 53, "SWIPE", "IP with Encryption (deprecated)"));
         protocols.add(new Protocol( 54, "NARP", "NBMA Address Resolution Protocol"));
         protocols.add(new Protocol( 55, "MOBILE", "IP Mobility"));
         protocols.add(new Protocol( 56, "TLSP", "Transport Layer Security Protocol"));
@@ -139,7 +139,7 @@ public final class Protocols {
         protocols.add(new Protocol( 92, "MTP", "Multicast Transport Protocol"));
         protocols.add(new Protocol( 93, "AX.25", "AX.25 Frames"));
         protocols.add(new Protocol( 94, "IPIP", "IP-within-IP Encapsulation Protocol"));
-        protocols.add(new Protocol( 95, "MICP (deprecated)", "Mobile Internetworking Control Pro."));
+        protocols.add(new Protocol( 95, "MICP", "Mobile Internetworking Control Pro. (deprecated)"));
         protocols.add(new Protocol( 96, "SCC-SP", "Semaphore Communications Sec. Pro."));
         protocols.add(new Protocol( 97, "ETHERIP", "Ethernet-within-IP Encapsulation"));
         protocols.add(new Protocol( 98, "ENCAP", "Encapsulation Header"));
@@ -166,7 +166,7 @@ public final class Protocols {
         protocols.add(new Protocol(119, "SRP", "SpectraLink Radio Protocol"));
         protocols.add(new Protocol(120, "UTI", "UTI"));
         protocols.add(new Protocol(121, "SMP", "Simple Message Protocol"));
-        protocols.add(new Protocol(122, "SM (deprecated)", "Simple Multicast Protocol"));
+        protocols.add(new Protocol(122, "SM", "Simple Multicast Protocol (deprecated)"));
         protocols.add(new Protocol(123, "PTP", "Performance Transparency Protocol"));
         protocols.add(new Protocol(124, "ISIS over IPv4", ""));
         protocols.add(new Protocol(125, "FIRE", ""));

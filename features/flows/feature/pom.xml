@@ -17,6 +17,9 @@
           <groupId>org.opennms.maven.plugins</groupId>
           <artifactId>features-maven-plugin</artifactId>
           <configuration>
+            <bundles>
+              <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+            </bundles>
             <features>
               <feature>opennms-jest</feature>
             </features>
@@ -41,8 +44,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.flows.classification</groupId>
-      <artifactId>org.opennms.features.flows.classification.engine</artifactId>
+      <groupId>org.opennms.features.flows.classification.engine</groupId>
+      <artifactId>org.opennms.features.flows.classification.engine.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.flows.classification.engine</groupId>
+      <artifactId>org.opennms.features.flows.classification.engine.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -60,6 +68,12 @@
       <artifactId>opennms-jest</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>${commonsCsvVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

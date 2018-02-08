@@ -64,6 +64,11 @@ public class RuleBuilder {
         return this;
     }
 
+    public RuleBuilder withGroup(Group group) {
+        group.addRule(rule);
+        return this;
+    }
+
     public Rule build() {
         if (Strings.isNullOrEmpty(rule.getName())) {
             throw new IllegalStateException("Cannot build rule, because required field 'name' is null or empty");

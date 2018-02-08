@@ -34,4 +34,5 @@ public interface ProtocolType {
     Protocol TCP = Protocols.getProtocol("tcp");
     Protocol UDP = Protocols.getProtocol("udp");
     Protocol DDP = Protocols.getProtocol("ddp");
+    Protocol SCTP = Protocols.getProtocol("sctp");
 }
