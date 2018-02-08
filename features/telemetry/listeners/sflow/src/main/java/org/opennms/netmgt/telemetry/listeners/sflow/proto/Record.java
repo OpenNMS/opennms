@@ -27,7 +27,6 @@
  *******************************************************************************/
 
 
-
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
@@ -65,9 +64,9 @@ public class Record<T> {
         }
 
         public DataFormat(final ByteBuffer buffer) throws InvalidPacketException {
-            final int dataFormat = BufferUtils.uint32(buffer).intValue();
-            this.enterpriseNumber = (dataFormat >> 12 & (2<<20)-1);
-            this.formatNumber = (dataFormat & (2<<12)-1);
+            final int dataFormat = (int) BufferUtils.uint32(buffer);
+            this.enterpriseNumber = (dataFormat >> 12 & (2 << 20) - 1);
+            this.formatNumber = (dataFormat & (2 << 12) - 1);
         }
 
         @Override

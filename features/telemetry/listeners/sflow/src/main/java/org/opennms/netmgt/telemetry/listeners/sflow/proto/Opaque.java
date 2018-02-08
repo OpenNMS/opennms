@@ -49,7 +49,7 @@ public class Opaque<T> {
     public Opaque(final ByteBuffer buffer,
                   final Optional<Integer> length,
                   final Parser<T> parser) throws InvalidPacketException {
-        this.length = length.orElseGet(() -> BufferUtils.uint32(buffer).intValue());
+        this.length = length.orElseGet(() -> (int) BufferUtils.uint32(buffer));
         this.value = parser.parse(BufferUtils.slice(buffer, this.length));
 
         // Skip over optional padding

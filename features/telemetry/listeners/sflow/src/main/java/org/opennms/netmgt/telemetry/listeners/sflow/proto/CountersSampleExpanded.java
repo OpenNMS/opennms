@@ -35,7 +35,6 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.primitives.UnsignedInteger;
 
 /* Format of a single expanded counter sample */
 /* opaque = sample_data; enterprise = 0; format = 4 */
@@ -57,7 +56,7 @@ import com.google.common.primitives.UnsignedInteger;
 
 public class CountersSampleExpanded implements SampleData {
 
-    private final UnsignedInteger sequenceNumber;
+    private final long sequenceNumber;
     private final DataSourceExpanded sourceId;
 
     private final Array<CounterRecord> counters;

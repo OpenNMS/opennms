@@ -35,7 +35,6 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.primitives.UnsignedInteger;
 
 /* Format of a single expanded flow sample */
 /* opaque = sample_data; enterprise = 0; format = 3 */
@@ -75,13 +74,13 @@ import com.google.common.primitives.UnsignedInteger;
 
 public class FlowSampleExpanded implements SampleData {
 
-    private final UnsignedInteger sequenceNumber;
+    private final long sequenceNumber;
     private final DataSourceExpanded sourceId;
 
-    private final UnsignedInteger samplingRate;
-    private final UnsignedInteger samplePool;
+    private final long samplingRate;
+    private final long samplePool;
 
-    private final UnsignedInteger drops;
+    private final long drops;
 
     private final InterfaceExpanded input;
     private final InterfaceExpanded output;

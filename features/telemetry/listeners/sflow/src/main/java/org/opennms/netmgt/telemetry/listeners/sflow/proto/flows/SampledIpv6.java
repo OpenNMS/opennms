@@ -1,15 +1,37 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Optional;
-
-import com.google.common.primitives.UnsignedInteger;
-import com.google.common.primitives.UnsignedLong;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
 
 // struct sampled_ipv6 {
 //    unsigned int length;     /* The length of the IP packet excluding
@@ -24,24 +46,24 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
 //    unsigned int priority;   /* IP priority */
 // };
 
-public class SampledIpv6  {
-  public final UnsignedInteger length;
-  public final UnsignedInteger protocol;
-  public final IpV6 src_ip;
-  public final IpV6 dst_ip;
-  public final UnsignedInteger src_port;
-  public final UnsignedInteger dst_port;
-  public final UnsignedInteger tcp_flags;
-  public final UnsignedInteger priority;
+public class SampledIpv6 {
+    public final long length;
+    public final long protocol;
+    public final IpV6 src_ip;
+    public final IpV6 dst_ip;
+    public final long src_port;
+    public final long dst_port;
+    public final long tcp_flags;
+    public final long priority;
 
-  public SampledIpv6 (final ByteBuffer buffer) throws InvalidPacketException {
-    this.length = BufferUtils.uint32(buffer);
-    this.protocol = BufferUtils.uint32(buffer);
-    this.src_ip = new IpV6(buffer);
-    this.dst_ip = new IpV6(buffer);
-    this.src_port = BufferUtils.uint32(buffer);
-    this.dst_port = BufferUtils.uint32(buffer);
-    this.tcp_flags = BufferUtils.uint32(buffer);
-    this.priority = BufferUtils.uint32(buffer);
-  }
+    public SampledIpv6(final ByteBuffer buffer) throws InvalidPacketException {
+        this.length = BufferUtils.uint32(buffer);
+        this.protocol = BufferUtils.uint32(buffer);
+        this.src_ip = new IpV6(buffer);
+        this.dst_ip = new IpV6(buffer);
+        this.src_port = BufferUtils.uint32(buffer);
+        this.dst_port = BufferUtils.uint32(buffer);
+        this.tcp_flags = BufferUtils.uint32(buffer);
+        this.priority = BufferUtils.uint32(buffer);
+    }
 }

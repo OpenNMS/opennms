@@ -34,11 +34,10 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.primitives.UnsignedInteger;
 
 public class DataSourceExpanded {
-    public final UnsignedInteger sourceIdType;
-    public final UnsignedInteger sourceIdIndex;
+    public final long sourceIdType;
+    public final long sourceIdIndex;
 
     public DataSourceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
         this.sourceIdType = BufferUtils.uint32(buffer);

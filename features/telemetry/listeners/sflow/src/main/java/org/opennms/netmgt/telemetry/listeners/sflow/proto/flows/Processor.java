@@ -1,15 +1,39 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Optional;
-
-import com.google.common.primitives.UnsignedInteger;
-import com.google.common.primitives.UnsignedLong;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
+
+import com.google.common.primitives.UnsignedLong;
 
 // struct processor {
 //    percentage cpu_5s;           /* 5 second average CPU utilization */
@@ -19,18 +43,18 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
 //    unsigned hyper free_memory;  /* free memory (in bytes) */
 // };
 
-public class Processor  {
-  public final Percentage cpu_5s;
-  public final Percentage cpu_1m;
-  public final Percentage cpu_5m;
-  public final UnsignedLong total_memory;
-  public final UnsignedLong free_memory;
+public class Processor {
+    public final Percentage cpu_5s;
+    public final Percentage cpu_1m;
+    public final Percentage cpu_5m;
+    public final UnsignedLong total_memory;
+    public final UnsignedLong free_memory;
 
-  public Processor (final ByteBuffer buffer) throws InvalidPacketException {
-    this.cpu_5s = new Percentage(buffer);
-    this.cpu_1m = new Percentage(buffer);
-    this.cpu_5m = new Percentage(buffer);
-    this.total_memory = BufferUtils.uint64(buffer);
-    this.free_memory = BufferUtils.uint64(buffer);
-  }
+    public Processor(final ByteBuffer buffer) throws InvalidPacketException {
+        this.cpu_5s = new Percentage(buffer);
+        this.cpu_1m = new Percentage(buffer);
+        this.cpu_5m = new Percentage(buffer);
+        this.total_memory = BufferUtils.uint64(buffer);
+        this.free_memory = BufferUtils.uint64(buffer);
+    }
 }

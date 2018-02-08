@@ -35,7 +35,6 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.primitives.UnsignedInteger;
 
 // struct flow_sample {
 //   unsigned int sequence_number;  /* Incremented with each flow sample
@@ -72,13 +71,13 @@ import com.google.common.primitives.UnsignedInteger;
 
 public class FlowSample implements SampleData {
 
-    private final UnsignedInteger sequenceNumber;
+    private final long sequenceNumber;
     private final DataSource sourceId;
 
-    private final UnsignedInteger samplingRate;
-    private final UnsignedInteger samplePool;
+    private final long samplingRate;
+    private final long samplePool;
 
-    private final UnsignedInteger drops;
+    private final long drops;
 
     private final Interface input;
     private final Interface output;

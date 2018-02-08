@@ -1,15 +1,37 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Optional;
-
-import com.google.common.primitives.UnsignedInteger;
-import com.google.common.primitives.UnsignedLong;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
 
 // struct tokenring_counters {
 //   unsigned int dot5StatsLineErrors;
@@ -32,44 +54,44 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
 //   unsigned int dot5StatsFreqErrors;
 // };
 
-public class TokenringCounters  {
-  public final UnsignedInteger dot5StatsLineErrors;
-  public final UnsignedInteger dot5StatsBurstErrors;
-  public final UnsignedInteger dot5StatsACErrors;
-  public final UnsignedInteger dot5StatsAbortTransErrors;
-  public final UnsignedInteger dot5StatsInternalErrors;
-  public final UnsignedInteger dot5StatsLostFrameErrors;
-  public final UnsignedInteger dot5StatsReceiveCongestions;
-  public final UnsignedInteger dot5StatsFrameCopiedErrors;
-  public final UnsignedInteger dot5StatsTokenErrors;
-  public final UnsignedInteger dot5StatsSoftErrors;
-  public final UnsignedInteger dot5StatsHardErrors;
-  public final UnsignedInteger dot5StatsSignalLoss;
-  public final UnsignedInteger dot5StatsTransmitBeacons;
-  public final UnsignedInteger dot5StatsRecoverys;
-  public final UnsignedInteger dot5StatsLobeWires;
-  public final UnsignedInteger dot5StatsRemoves;
-  public final UnsignedInteger dot5StatsSingles;
-  public final UnsignedInteger dot5StatsFreqErrors;
+public class TokenringCounters {
+    public final long dot5StatsLineErrors;
+    public final long dot5StatsBurstErrors;
+    public final long dot5StatsACErrors;
+    public final long dot5StatsAbortTransErrors;
+    public final long dot5StatsInternalErrors;
+    public final long dot5StatsLostFrameErrors;
+    public final long dot5StatsReceiveCongestions;
+    public final long dot5StatsFrameCopiedErrors;
+    public final long dot5StatsTokenErrors;
+    public final long dot5StatsSoftErrors;
+    public final long dot5StatsHardErrors;
+    public final long dot5StatsSignalLoss;
+    public final long dot5StatsTransmitBeacons;
+    public final long dot5StatsRecoverys;
+    public final long dot5StatsLobeWires;
+    public final long dot5StatsRemoves;
+    public final long dot5StatsSingles;
+    public final long dot5StatsFreqErrors;
 
-  public TokenringCounters (final ByteBuffer buffer) throws InvalidPacketException {
-    this.dot5StatsLineErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsBurstErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsACErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsAbortTransErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsInternalErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsLostFrameErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsReceiveCongestions = BufferUtils.uint32(buffer);
-    this.dot5StatsFrameCopiedErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsTokenErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsSoftErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsHardErrors = BufferUtils.uint32(buffer);
-    this.dot5StatsSignalLoss = BufferUtils.uint32(buffer);
-    this.dot5StatsTransmitBeacons = BufferUtils.uint32(buffer);
-    this.dot5StatsRecoverys = BufferUtils.uint32(buffer);
-    this.dot5StatsLobeWires = BufferUtils.uint32(buffer);
-    this.dot5StatsRemoves = BufferUtils.uint32(buffer);
-    this.dot5StatsSingles = BufferUtils.uint32(buffer);
-    this.dot5StatsFreqErrors = BufferUtils.uint32(buffer);
-  }
+    public TokenringCounters(final ByteBuffer buffer) throws InvalidPacketException {
+        this.dot5StatsLineErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsBurstErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsACErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsAbortTransErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsInternalErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsLostFrameErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsReceiveCongestions = BufferUtils.uint32(buffer);
+        this.dot5StatsFrameCopiedErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsTokenErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsSoftErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsHardErrors = BufferUtils.uint32(buffer);
+        this.dot5StatsSignalLoss = BufferUtils.uint32(buffer);
+        this.dot5StatsTransmitBeacons = BufferUtils.uint32(buffer);
+        this.dot5StatsRecoverys = BufferUtils.uint32(buffer);
+        this.dot5StatsLobeWires = BufferUtils.uint32(buffer);
+        this.dot5StatsRemoves = BufferUtils.uint32(buffer);
+        this.dot5StatsSingles = BufferUtils.uint32(buffer);
+        this.dot5StatsFreqErrors = BufferUtils.uint32(buffer);
+    }
 }

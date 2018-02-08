@@ -1,15 +1,37 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Optional;
-
-import com.google.common.primitives.UnsignedInteger;
-import com.google.common.primitives.UnsignedLong;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
 
 // struct ethernet_counters {
 //    unsigned int dot3StatsAlignmentErrors;
@@ -27,34 +49,34 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
 //    unsigned int dot3StatsSymbolErrors;
 // };
 
-public class EthernetCounters  {
-  public final UnsignedInteger dot3StatsAlignmentErrors;
-  public final UnsignedInteger dot3StatsFCSErrors;
-  public final UnsignedInteger dot3StatsSingleCollisionFrames;
-  public final UnsignedInteger dot3StatsMultipleCollisionFrames;
-  public final UnsignedInteger dot3StatsSQETestErrors;
-  public final UnsignedInteger dot3StatsDeferredTransmissions;
-  public final UnsignedInteger dot3StatsLateCollisions;
-  public final UnsignedInteger dot3StatsExcessiveCollisions;
-  public final UnsignedInteger dot3StatsInternalMacTransmitErrors;
-  public final UnsignedInteger dot3StatsCarrierSenseErrors;
-  public final UnsignedInteger dot3StatsFrameTooLongs;
-  public final UnsignedInteger dot3StatsInternalMacReceiveErrors;
-  public final UnsignedInteger dot3StatsSymbolErrors;
+public class EthernetCounters {
+    public final long dot3StatsAlignmentErrors;
+    public final long dot3StatsFCSErrors;
+    public final long dot3StatsSingleCollisionFrames;
+    public final long dot3StatsMultipleCollisionFrames;
+    public final long dot3StatsSQETestErrors;
+    public final long dot3StatsDeferredTransmissions;
+    public final long dot3StatsLateCollisions;
+    public final long dot3StatsExcessiveCollisions;
+    public final long dot3StatsInternalMacTransmitErrors;
+    public final long dot3StatsCarrierSenseErrors;
+    public final long dot3StatsFrameTooLongs;
+    public final long dot3StatsInternalMacReceiveErrors;
+    public final long dot3StatsSymbolErrors;
 
-  public EthernetCounters (final ByteBuffer buffer) throws InvalidPacketException {
-    this.dot3StatsAlignmentErrors = BufferUtils.uint32(buffer);
-    this.dot3StatsFCSErrors = BufferUtils.uint32(buffer);
-    this.dot3StatsSingleCollisionFrames = BufferUtils.uint32(buffer);
-    this.dot3StatsMultipleCollisionFrames = BufferUtils.uint32(buffer);
-    this.dot3StatsSQETestErrors = BufferUtils.uint32(buffer);
-    this.dot3StatsDeferredTransmissions = BufferUtils.uint32(buffer);
-    this.dot3StatsLateCollisions = BufferUtils.uint32(buffer);
-    this.dot3StatsExcessiveCollisions = BufferUtils.uint32(buffer);
-    this.dot3StatsInternalMacTransmitErrors = BufferUtils.uint32(buffer);
-    this.dot3StatsCarrierSenseErrors = BufferUtils.uint32(buffer);
-    this.dot3StatsFrameTooLongs = BufferUtils.uint32(buffer);
-    this.dot3StatsInternalMacReceiveErrors = BufferUtils.uint32(buffer);
-    this.dot3StatsSymbolErrors = BufferUtils.uint32(buffer);
-  }
+    public EthernetCounters(final ByteBuffer buffer) throws InvalidPacketException {
+        this.dot3StatsAlignmentErrors = BufferUtils.uint32(buffer);
+        this.dot3StatsFCSErrors = BufferUtils.uint32(buffer);
+        this.dot3StatsSingleCollisionFrames = BufferUtils.uint32(buffer);
+        this.dot3StatsMultipleCollisionFrames = BufferUtils.uint32(buffer);
+        this.dot3StatsSQETestErrors = BufferUtils.uint32(buffer);
+        this.dot3StatsDeferredTransmissions = BufferUtils.uint32(buffer);
+        this.dot3StatsLateCollisions = BufferUtils.uint32(buffer);
+        this.dot3StatsExcessiveCollisions = BufferUtils.uint32(buffer);
+        this.dot3StatsInternalMacTransmitErrors = BufferUtils.uint32(buffer);
+        this.dot3StatsCarrierSenseErrors = BufferUtils.uint32(buffer);
+        this.dot3StatsFrameTooLongs = BufferUtils.uint32(buffer);
+        this.dot3StatsInternalMacReceiveErrors = BufferUtils.uint32(buffer);
+        this.dot3StatsSymbolErrors = BufferUtils.uint32(buffer);
+    }
 }

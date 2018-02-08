@@ -32,7 +32,6 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import com.google.common.base.Preconditions;
-import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
 
 public class BufferUtils {
@@ -83,9 +82,37 @@ public class BufferUtils {
         return result;
     }
 
-    public static UnsignedInteger uint8(final ByteBuffer buffer) {
-        return UnsignedInteger.fromIntBits(
-                (buffer.get() & 0xFF) << 0);
+    public static int uint8(final ByteBuffer buffer) {
+        return buffer.get() & 0xFF;
+    }
+
+    public static int uint16(final ByteBuffer buffer) {
+        return ((buffer.get() & 0xFF) << 8)
+                | ((buffer.get() & 0xFF) << 0);
+    }
+
+    public static int uint24(final ByteBuffer buffer) {
+        return ((buffer.get() & 0xFF) << 16)
+                | ((buffer.get() & 0xFF) << 8)
+                | ((buffer.get() & 0xFF) << 0);
+    }
+
+    public static long uint32(final ByteBuffer buffer) {
+        return ((buffer.get() & 0xFFL) << 24)
+                | ((buffer.get() & 0xFFL) << 16)
+                | ((buffer.get() & 0xFFL) << 8)
+                | ((buffer.get() & 0xFFL) << 0);
+    }
+
+    public static UnsignedLong uint64(final ByteBuffer buffer) {
+        return UnsignedLong.fromLongBits(((buffer.get() & 0xFFL) << 56)
+                | ((buffer.get() & 0xFFL) << 48)
+                | ((buffer.get() & 0xFFL) << 40)
+                | ((buffer.get() & 0xFFL) << 32)
+                | ((buffer.get() & 0xFFL) << 24)
+                | ((buffer.get() & 0xFFL) << 16)
+                | ((buffer.get() & 0xFFL) << 8)
+                | ((buffer.get() & 0xFFL) << 0));
     }
 
     public static Integer sint8(final ByteBuffer buffer) {
@@ -93,23 +120,10 @@ public class BufferUtils {
                 (buffer.get() & 0xFF) << 0);
     }
 
-    public static UnsignedInteger uint16(final ByteBuffer buffer) {
-        return UnsignedInteger.fromIntBits(
-                ((buffer.get() & 0xFF) << 8) |
-                ((buffer.get() & 0xFF) << 0));
-    }
-
     public static Integer sint16(final ByteBuffer buffer) {
         return Integer.valueOf(
                 ((buffer.get() & 0xFF) << 8) |
                         ((buffer.get() & 0xFF) << 0));
-    }
-
-    public static UnsignedInteger uint24(final ByteBuffer buffer) {
-        return UnsignedInteger.fromIntBits(
-                ((buffer.get() & 0xFF) << 16) |
-                ((buffer.get() & 0xFF) << 8) |
-                ((buffer.get() & 0xFF) << 0));
     }
 
     public static Integer sint24(final ByteBuffer buffer) {
@@ -119,32 +133,12 @@ public class BufferUtils {
                         ((buffer.get() & 0xFF) << 0));
     }
 
-    public static UnsignedInteger uint32(final ByteBuffer buffer) {
-        return UnsignedInteger.fromIntBits(
-                ((buffer.get() & 0xFF) << 24) |
-                ((buffer.get() & 0xFF) << 16) |
-                ((buffer.get() & 0xFF) << 8)  |
-                ((buffer.get() & 0xFF) << 0));
-    }
-
     public static Integer sint32(final ByteBuffer buffer) {
         return Integer.valueOf(
                 ((buffer.get() & 0xFF) << 24) |
                         ((buffer.get() & 0xFF) << 16) |
-                        ((buffer.get() & 0xFF) << 8)  |
+                        ((buffer.get() & 0xFF) << 8) |
                         ((buffer.get() & 0xFF) << 0));
-    }
-
-    public static UnsignedLong uint64(final ByteBuffer buffer) {
-        return UnsignedLong.fromLongBits(
-                ((buffer.get() & 0xFFL) << 56) |
-                ((buffer.get() & 0xFFL) << 48) |
-                ((buffer.get() & 0xFFL) << 40) |
-                ((buffer.get() & 0xFFL) << 32) |
-                ((buffer.get() & 0xFFL) << 24) |
-                ((buffer.get() & 0xFFL) << 16) |
-                ((buffer.get() & 0xFFL) << 8)  |
-                ((buffer.get() & 0xFFL) << 0));
     }
 
     public static Long sint64(final ByteBuffer buffer) {
@@ -155,7 +149,7 @@ public class BufferUtils {
                         ((buffer.get() & 0xFFL) << 32) |
                         ((buffer.get() & 0xFFL) << 24) |
                         ((buffer.get() & 0xFFL) << 16) |
-                        ((buffer.get() & 0xFFL) << 8)  |
+                        ((buffer.get() & 0xFFL) << 8) |
                         ((buffer.get() & 0xFFL) << 0));
     }
 

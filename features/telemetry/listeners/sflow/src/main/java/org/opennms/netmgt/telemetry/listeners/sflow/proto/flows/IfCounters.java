@@ -1,15 +1,39 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Optional;
-
-import com.google.common.primitives.UnsignedInteger;
-import com.google.common.primitives.UnsignedLong;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
+
+import com.google.common.primitives.UnsignedLong;
 
 // struct if_counters {
 //    unsigned int ifIndex;
@@ -37,46 +61,46 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.*;
 //    unsigned int ifPromiscuousMode;
 // };
 
-public class IfCounters  {
-  public final UnsignedInteger ifIndex;
-  public final UnsignedInteger ifType;
-  public final UnsignedLong ifSpeed;
-  public final UnsignedInteger ifDirection;
-  public final UnsignedInteger ifStatus;
-  public final UnsignedLong ifInOctets;
-  public final UnsignedInteger ifInUcastPkts;
-  public final UnsignedInteger ifInMulticastPkts;
-  public final UnsignedInteger ifInBroadcastPkts;
-  public final UnsignedInteger ifInDiscards;
-  public final UnsignedInteger ifInErrors;
-  public final UnsignedInteger ifInUnknownProtos;
-  public final UnsignedLong ifOutOctets;
-  public final UnsignedInteger ifOutUcastPkts;
-  public final UnsignedInteger ifOutMulticastPkts;
-  public final UnsignedInteger ifOutBroadcastPkts;
-  public final UnsignedInteger ifOutDiscards;
-  public final UnsignedInteger ifOutErrors;
-  public final UnsignedInteger ifPromiscuousMode;
+public class IfCounters {
+    public final long ifIndex;
+    public final long ifType;
+    public final UnsignedLong ifSpeed;
+    public final long ifDirection;
+    public final long ifStatus;
+    public final UnsignedLong ifInOctets;
+    public final long ifInUcastPkts;
+    public final long ifInMulticastPkts;
+    public final long ifInBroadcastPkts;
+    public final long ifInDiscards;
+    public final long ifInErrors;
+    public final long ifInUnknownProtos;
+    public final UnsignedLong ifOutOctets;
+    public final long ifOutUcastPkts;
+    public final long ifOutMulticastPkts;
+    public final long ifOutBroadcastPkts;
+    public final long ifOutDiscards;
+    public final long ifOutErrors;
+    public final long ifPromiscuousMode;
 
-  public IfCounters (final ByteBuffer buffer) throws InvalidPacketException {
-    this.ifIndex = BufferUtils.uint32(buffer);
-    this.ifType = BufferUtils.uint32(buffer);
-    this.ifSpeed = BufferUtils.uint64(buffer);
-    this.ifDirection = BufferUtils.uint32(buffer);
-    this.ifStatus = BufferUtils.uint32(buffer);
-    this.ifInOctets = BufferUtils.uint64(buffer);
-    this.ifInUcastPkts = BufferUtils.uint32(buffer);
-    this.ifInMulticastPkts = BufferUtils.uint32(buffer);
-    this.ifInBroadcastPkts = BufferUtils.uint32(buffer);
-    this.ifInDiscards = BufferUtils.uint32(buffer);
-    this.ifInErrors = BufferUtils.uint32(buffer);
-    this.ifInUnknownProtos = BufferUtils.uint32(buffer);
-    this.ifOutOctets = BufferUtils.uint64(buffer);
-    this.ifOutUcastPkts = BufferUtils.uint32(buffer);
-    this.ifOutMulticastPkts = BufferUtils.uint32(buffer);
-    this.ifOutBroadcastPkts = BufferUtils.uint32(buffer);
-    this.ifOutDiscards = BufferUtils.uint32(buffer);
-    this.ifOutErrors = BufferUtils.uint32(buffer);
-    this.ifPromiscuousMode = BufferUtils.uint32(buffer);
-  }
+    public IfCounters(final ByteBuffer buffer) throws InvalidPacketException {
+        this.ifIndex = BufferUtils.uint32(buffer);
+        this.ifType = BufferUtils.uint32(buffer);
+        this.ifSpeed = BufferUtils.uint64(buffer);
+        this.ifDirection = BufferUtils.uint32(buffer);
+        this.ifStatus = BufferUtils.uint32(buffer);
+        this.ifInOctets = BufferUtils.uint64(buffer);
+        this.ifInUcastPkts = BufferUtils.uint32(buffer);
+        this.ifInMulticastPkts = BufferUtils.uint32(buffer);
+        this.ifInBroadcastPkts = BufferUtils.uint32(buffer);
+        this.ifInDiscards = BufferUtils.uint32(buffer);
+        this.ifInErrors = BufferUtils.uint32(buffer);
+        this.ifInUnknownProtos = BufferUtils.uint32(buffer);
+        this.ifOutOctets = BufferUtils.uint64(buffer);
+        this.ifOutUcastPkts = BufferUtils.uint32(buffer);
+        this.ifOutMulticastPkts = BufferUtils.uint32(buffer);
+        this.ifOutBroadcastPkts = BufferUtils.uint32(buffer);
+        this.ifOutDiscards = BufferUtils.uint32(buffer);
+        this.ifOutErrors = BufferUtils.uint32(buffer);
+        this.ifPromiscuousMode = BufferUtils.uint32(buffer);
+    }
 }

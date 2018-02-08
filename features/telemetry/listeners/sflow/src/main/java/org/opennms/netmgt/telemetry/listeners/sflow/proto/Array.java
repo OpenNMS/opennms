@@ -52,7 +52,7 @@ public class Array<T> {
                  final Optional<Integer> size,
                  final Array.Parser<? extends T> parser) throws InvalidPacketException {
 
-        this.size = size.orElseGet(() ->  BufferUtils.uint32(buffer).intValue());
+        this.size = size.orElseGet(() -> (int) BufferUtils.uint32(buffer));
 
         final List<T> values = new ArrayList<>(this.size);
         for (int i = 0; i < this.size; i++) {

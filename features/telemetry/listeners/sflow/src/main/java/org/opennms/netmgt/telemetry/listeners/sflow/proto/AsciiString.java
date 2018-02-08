@@ -29,12 +29,11 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
-
-import com.google.common.base.Charsets;
 
 public class AsciiString {
     public final int length;
@@ -42,12 +41,12 @@ public class AsciiString {
 
     public AsciiString(final ByteBuffer buffer,
                        final Optional<Integer> maxLength) throws InvalidPacketException {
-        this.length = BufferUtils.uint32(buffer).intValue();
+        this.length = (int) BufferUtils.uint32(buffer);
         if (maxLength.isPresent() && this.length > maxLength.get()) {
             throw new InvalidPacketException(buffer, "String to long: {} > {}", length, maxLength.get());
         }
 
-        this.value = new String(BufferUtils.bytes(buffer, this.length), Charsets.US_ASCII);
+        this.value = new String(BufferUtils.bytes(buffer, this.length), StandardCharsets.US_ASCII);
 
         // Skip over optional padding
         BufferUtils.skip(buffer, this.length % 4);
