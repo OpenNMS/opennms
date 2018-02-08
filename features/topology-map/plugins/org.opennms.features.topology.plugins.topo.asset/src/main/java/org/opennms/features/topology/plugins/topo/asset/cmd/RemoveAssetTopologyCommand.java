@@ -33,27 +33,12 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * <p>This command implements the Apache Karaf 3 and Apache Karaf 4 shell APIs.
- * Once the Karaf 4 commands work, the deprecated Karaf 3 annotations should 
- * be removed:</p>
- * <ul>
- * <li>{@link org.apache.karaf.shell.commands.Command}</li>
- * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
- * </ul>
- */
 @Command(scope = "asset-topology", name = "remove", description="Removes Asset Topology. Uses default config if options not supplied")
-@org.apache.karaf.shell.commands.Command(scope = "asset-topology", name = "remove", description="Removes Asset Topology. Uses default config if options not supplied")
 @Service
-public class RemoveAssetTopologyCommand extends OsgiCommandSupport implements Action {
-
-	private static final Logger LOG = LoggerFactory.getLogger(RemoveAssetTopologyCommand.class);
+public class RemoveAssetTopologyCommand implements Action {
 
 	@Reference
 	public AssetGraphMLProvider assetGraphMLProvider;
@@ -62,7 +47,7 @@ public class RemoveAssetTopologyCommand extends OsgiCommandSupport implements Ac
 	String providerId = new GeneratorConfig().getProviderId();
 
 	@Override
-	public Object execute() throws Exception {
+	public Object execute() {
 		if( providerId == null || providerId.trim().isEmpty()){
 			providerId = new GeneratorConfig().getProviderId();
 		}
@@ -72,14 +57,4 @@ public class RemoveAssetTopologyCommand extends OsgiCommandSupport implements Ac
 		return null;
 	}
 
-	@Override
-	@Deprecated
-	protected Object doExecute() throws Exception {
-		return execute();
-	}
-
-	@Deprecated
-	public void setAssetGraphMLProvider(AssetGraphMLProvider assetGraphMLProvider) {
-		this.assetGraphMLProvider = assetGraphMLProvider;
-	}
 }
