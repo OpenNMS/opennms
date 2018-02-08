@@ -97,6 +97,10 @@ public class NxosGpbParserTest {
                 0.001d);
         assertEquals(NxosGpbParserUtil.getValueAsDoubleRelativeToField(telemetryMsg, "field2", "load_avg"), 18d,
                 0.001d);
+
+        // Same metric but under different field structure, get as String
+        assertEquals(NxosGpbParserUtil.getValueAsStringRelativeToField(telemetryMsg, "field1", "load_avg"), "23");
+        assertEquals(NxosGpbParserUtil.getValueAsStringRelativeToField(telemetryMsg, "field2", "load_avg"), "18");
     }
 
 }
