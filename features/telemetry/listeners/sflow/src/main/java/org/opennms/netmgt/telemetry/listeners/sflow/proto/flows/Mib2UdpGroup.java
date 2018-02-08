@@ -1,0 +1,64 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
+
+import java.nio.ByteBuffer;
+
+import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+
+// struct mib2_udp_group {
+//   unsigned int udpInDatagrams;
+//   unsigned int udpNoPorts;
+//   unsigned int udpInErrors;
+//   unsigned int udpOutDatagrams;
+//   unsigned int udpRcvbufErrors;
+//   unsigned int udpSndbufErrors;
+//   unsigned int udpInCsumErrors;
+// };
+
+public class Mib2UdpGroup {
+    public final long udpInDatagrams;
+    public final long udpNoPorts;
+    public final long udpInErrors;
+    public final long udpOutDatagrams;
+    public final long udpRcvbufErrors;
+    public final long udpSndbufErrors;
+    public final long udpInCsumErrors;
+
+    public Mib2UdpGroup(final ByteBuffer buffer) throws InvalidPacketException {
+        this.udpInDatagrams = BufferUtils.uint32(buffer);
+        this.udpNoPorts = BufferUtils.uint32(buffer);
+        this.udpInErrors = BufferUtils.uint32(buffer);
+        this.udpOutDatagrams = BufferUtils.uint32(buffer);
+        this.udpRcvbufErrors = BufferUtils.uint32(buffer);
+        this.udpSndbufErrors = BufferUtils.uint32(buffer);
+        this.udpInCsumErrors = BufferUtils.uint32(buffer);
+    }
+}

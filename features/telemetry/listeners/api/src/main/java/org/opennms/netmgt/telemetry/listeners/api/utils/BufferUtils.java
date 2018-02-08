@@ -52,6 +52,10 @@ public class BufferUtils {
         return result;
     }
 
+    public static float sfloat(final ByteBuffer buffer) {
+        return Float.intBitsToFloat(buffer.get() ^ buffer.get() << 8 ^ buffer.get() << 16 ^ buffer.get() << 24);
+    }
+
     public static UnsignedLong uint(final ByteBuffer buffer, final int octets) {
         Preconditions.checkArgument(0 <= octets && octets <= 8);
 
