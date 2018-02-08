@@ -44,7 +44,7 @@
     <intercept-url pattern="/rest/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
 
-    <http-basic />
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
@@ -84,7 +84,7 @@
     <intercept-url pattern="/api/v2/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/api/v2/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
 
-    <http-basic />
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
@@ -149,7 +149,7 @@
     <intercept-url pattern="/amq/*" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
 
     <!--Commented out for custom authentication filter<form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" />-->
-    <http-basic />
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
     <logout logout-success-url="/" />
 
       <!-- added for custom authentication filter -->
@@ -255,6 +255,10 @@
   <!--  this is used to send events on login success and failure -->
   <beans:bean class="org.opennms.web.springframework.security.SecurityAuthenticationEventOnmsEventBuilder">
     <beans:property name="eventProxy" ref="eventProxy"/>
+  </beans:bean>
+
+  <beans:bean id="xRequestedWithAwareBasicAuthEntryPoint" class="org.opennms.web.springframework.security.XRequestedWithAwareBasicAuthEntryPoint">
+    <beans:property name="realmName" value="OpenNMS Realm" />
   </beans:bean>
 
 </beans:beans>

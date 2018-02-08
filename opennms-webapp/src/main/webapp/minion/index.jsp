@@ -38,6 +38,8 @@
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 
+	<jsp:param name="script" value='<script type="text/javascript" src="js/onms-http/module.js"></script>' />
+
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-minion.js"></script>' />

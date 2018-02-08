@@ -40,6 +40,8 @@
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
 
+	<jsp:param name="script" value='<script type="text/javascript" src="js/onms-http/module.js"></script>' />
+
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-outage.js"></script>' />

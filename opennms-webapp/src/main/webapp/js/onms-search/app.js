@@ -6,6 +6,7 @@
 'use strict';
 
 angular.module('onms-search', [
+  'onms.http',
   'ui.bootstrap'
 ])
 

@@ -44,7 +44,7 @@
 	}
 
 	// REST $resource module
-	angular.module(MODULE_NAME, [ 'ngResource' ])
+	angular.module(MODULE_NAME, [ 'ngResource', 'onms.http'])
 
 	// OnmsAlarm REST $resource
 	.factory('alarmFactory', function($resource, $log, $http, $location) {

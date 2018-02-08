@@ -6,6 +6,7 @@
 'use strict';
 
 angular.module('onms-resources', [
+  'onms.http',
   'ui.bootstrap',
   'angular-growl'
 ])

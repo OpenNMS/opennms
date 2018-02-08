@@ -6,6 +6,7 @@
 'use strict';
 
 angular.module('onms-ksc-wizard', [
+  'onms.http',
   'ui.bootstrap',
   'angular-growl'
 ])

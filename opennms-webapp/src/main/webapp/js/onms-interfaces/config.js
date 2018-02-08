@@ -6,6 +6,7 @@
 'use strict';
 
 angular.module('onms-interfaces-config', [
+  'onms.http',
   'ui.bootstrap',
   'angular-growl'
 ])

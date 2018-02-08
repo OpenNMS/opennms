@@ -13,7 +13,7 @@
 	}
 
 	// $filters that can be used to create human-readable versions of filter values
-	angular.module('outageListFilters', [ 'onmsListFilters' ])
+	angular.module('outageListFilters', [ 'onmsListFilters', 'onms.http' ])
 	.filter('property', function() {
 		return function(input, searchProperties) {
 			var property = getSearchProperty(searchProperties, input);
