@@ -117,7 +117,7 @@ public class NxosGpbAdapter extends AbstractPersistingAdapter {
 
         CollectionAgent agent = null;
         try {
-            LOG.debug(" node id from nxos buffer = {}", msg.getNodeIdStr());
+            LOG.debug(" Telemetry message content : {} ", msg);
             final InetAddress inetAddress = InetAddress.getByName(msg.getNodeIdStr());
             final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), inetAddress);
             if (nodeId.isPresent()) {
