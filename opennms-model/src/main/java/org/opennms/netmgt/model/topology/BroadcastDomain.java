@@ -100,7 +100,7 @@ public class BroadcastDomain implements BridgeTopology {
                 bft.put(bridgeport, new HashSet<String>());
             }
             bft.get(bridgeport).addAll(macs);
-            links.addAll(segment.getForwarders(bridgeId));
+            links.addAll(domain.getForwarders(bridgeId));
        }
             
         for (Integer bridgePort: bft.keySet()) {
@@ -267,7 +267,6 @@ public class BroadcastDomain implements BridgeTopology {
         List<SharedSegment> topology = new ArrayList<SharedSegment>();
  
         for (SharedSegment segment: domain.getSharedSegments()) {
-            segment.getForwarding().remove(bridge.getNodeId());
             if (segment.getBridgeIdsOnSegment().contains(bridge.getNodeId())) { 
                 for (BridgePort port: segment.getBridgePortsOnSegment()) {
                     if ( port.getNodeId().intValue() == bridge.getNodeId().intValue()) {
@@ -281,6 +280,7 @@ public class BroadcastDomain implements BridgeTopology {
             }
         }
         domain.m_topology = topology;
+        domain.getForwarding().remove(bridge.getNodeId());
         bridge.setRootPort(null);
     }
 
@@ -313,16 +313,56 @@ public class BroadcastDomain implements BridgeTopology {
     }
 
     
-    volatile Set<Bridge> m_bridges = new HashSet<Bridge>();
+    private volatile Set<Bridge> m_bridges = new HashSet<Bridge>();
+    private volatile List<SharedSegment> m_topology = new ArrayList<SharedSegment>();    
+    private Map<Integer,Set<BridgeForwardingTableEntry>> m_forwarding = new HashMap<Integer,Set<BridgeForwardingTableEntry>>();
 
-    volatile List<SharedSegment> m_topology = new ArrayList<SharedSegment>();    
-        
-    public Set<BridgeForwardingTableEntry> getForwarders(Integer bridgeId) {
-        Set<BridgeForwardingTableEntry>  forwarders = new HashSet<BridgeForwardingTableEntry>();
-        for (SharedSegment segment: m_topology) {
-            forwarders.addAll(segment.getForwarders(bridgeId));
+    public void cleanForwarders(Set<String> macs) {
+        Map<Integer, Set<BridgeForwardingTableEntry>> forwardingMap=new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
+        for (Integer bridgeId: m_forwarding.keySet()) {
+            Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
+            for (BridgeForwardingTableEntry forward: m_forwarding.get(bridgeId)) {
+                if (macs.contains(forward.getMacAddress())) {
+                    continue;
+                }
+                forwarders.add(forward);
+            }
+            if (forwarders.isEmpty()) {
+                continue;
+            }
+            forwardingMap.put(bridgeId, forwarders);
         }
-        return forwarders;
+        m_forwarding = forwardingMap;
+    }
+
+    public void addForwarding(BridgeForwardingTableEntry forward) {
+        Integer bridgeid = forward.getNodeId();
+        if (bridgeid == null) {
+            return;
+        }
+        if (!m_forwarding.containsKey(bridgeid)) {
+            m_forwarding.put(bridgeid, new HashSet<BridgeForwardingTableEntry>());
+        }
+        m_forwarding.get(bridgeid).add(forward);
+    }
+    
+    public void setForwarding(Map<Integer,Set<BridgeForwardingTableEntry>> forwarding) {
+        m_forwarding = forwarding;
+    }
+    
+    public void setForwarders(Integer bridgeid, Set<BridgeForwardingTableEntry> forwarders) {
+        m_forwarding.put(bridgeid, forwarders);
+    }
+
+    public Map<Integer,Set<BridgeForwardingTableEntry>> getForwarding() {
+        return m_forwarding;
+    }
+
+    public Set<BridgeForwardingTableEntry> getForwarders(Integer bridgeId) {
+        if (m_forwarding.containsKey(bridgeId)) {
+            return m_forwarding.get(bridgeId);
+        }
+        return new HashSet<BridgeForwardingTableEntry>();
     }
         
     public void clearTopology() {
@@ -429,6 +469,13 @@ public class BroadcastDomain implements BridgeTopology {
     	        strbfr.append(shared.printTopology());
     	    }
     	}
+        for (Set<BridgeForwardingTableEntry> bfteset: m_forwarding.values()) {
+            for (BridgeForwardingTableEntry bfte:bfteset) {
+                strbfr.append("\n");
+                strbfr.append("        -> forwarder: ");
+                strbfr.append(bfte.printTopology());
+            }
+        }
         strbfr.append("\n");
         strbfr.append("------broadcast domain-----");
     	return strbfr.toString();

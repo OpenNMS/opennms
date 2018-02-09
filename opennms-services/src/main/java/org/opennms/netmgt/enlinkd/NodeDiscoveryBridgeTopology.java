@@ -437,20 +437,23 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         
         Set<Integer> nodetobeparsed = new HashSet<Integer>(m_notYetParsedBFTMap.keySet());
         for (Integer xBridgeId: nodetobeparsed) {
+            if (LOG.isInfoEnabled()) {
+                LOG.info("calculate: bridge[{}] find topology", 
+                     xBridgeId);
+            }
+            BridgeForwardingTable bridgeft = null;
             try {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("calculate: bridge[{}] find topology", 
-                         xBridgeId);
-                }
-                goDown(rootft, BridgeForwardingTable.create(m_domain.getBridge(xBridgeId), 
-                                   new HashSet<BridgeForwardingTableEntry>(m_notYetParsedBFTMap.remove(xBridgeId))));
-                parsed.add(xBridgeId);
+                bridgeft = BridgeForwardingTable.create(m_domain.getBridge(xBridgeId), 
+                    new HashSet<BridgeForwardingTableEntry>(m_notYetParsedBFTMap.remove(xBridgeId)));
             } catch (BridgeTopologyException e) {
                 LOG.warn("calculate: {}, topology:\n{}", 
                           e.getMessage(),
                           e.printTopology(),
                           e);
                 continue;
+            }
+            if (goDown(rootft, bridgeft)) {
+                parsed.add(xBridgeId);
             }
         }        
         if (LOG.isInfoEnabled()) {
@@ -532,17 +535,17 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                           level, upsimpleconn.getSecond().getNodeId(),
                           curbridge.printTopology());
             }
-            BridgeSimpleConnection bridgesimpleconn;
+            BridgeForwardingTable curBridgeFT = null;
             try {
-                bridgesimpleconn = new BridgeSimpleConnection(
-                                                              BridgeForwardingTable.create(curbridge,
-                                                                                           calculateBFT(m_domain,curbridge)),
-                                                              upsimpleconn.getSecond());
+                curBridgeFT = BridgeForwardingTable.create(curbridge,calculateBFT(m_domain,curbridge));
             } catch (BridgeTopologyException e) {
                 LOG.warn("goDown: level: {}. {} topology:\n{}", level,
                          e.getMessage(), e.printTopology(), e);
                 return false;
             }
+            BridgeSimpleConnection bridgesimpleconn = 
+                    new BridgeSimpleConnection(curBridgeFT,
+                                       upsimpleconn.getSecond());
             if (!bridgesimpleconn.findSimpleConnection()) {
                 LOG.warn("goDown: level: {}, no simple connection:[{}<-->{}]",
                          level, upsimpleconn.getSecond().getNodeId(),

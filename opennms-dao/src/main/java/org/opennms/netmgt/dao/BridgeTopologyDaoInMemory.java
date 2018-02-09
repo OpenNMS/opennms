@@ -352,8 +352,7 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
             for (BroadcastDomain domain: domains) {
                 Bridge bridge = domain.getBridge(forwarder.getNode().getId());
                 if (bridge != null) {
-                    BridgePort bp = BridgePort.getFromBridgeMacLink(forwarder);
-                    domain.getSharedSegment(bp).addForwarding(BridgeForwardingTableEntry.getFromBridgeMacLink(forwarder));
+                    domain.addForwarding(BridgeForwardingTableEntry.getFromBridgeMacLink(forwarder));
                     break;
                 }
             }

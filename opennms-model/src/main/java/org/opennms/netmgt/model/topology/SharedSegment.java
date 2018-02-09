@@ -110,7 +110,7 @@ public class SharedSegment implements BridgeTopology{
                 }
                updated.add(forward);
             }
-            upSegment.setForwarders(port.getNodeId(), updated);
+            domain.setForwarders(port.getNodeId(), updated);
         }
 
         //Add macs from forwarders
@@ -137,7 +137,7 @@ public class SharedSegment implements BridgeTopology{
                 }
                 updated.add(forward);
             }
-            upSegment.setForwarders(port.getNodeId(), updated);
+            domain.setForwarders(port.getNodeId(), updated);
         }
         for (String mac: forfpmacs.keySet()) {
             if (forfpmacs.get(mac).intValue() >= upSegment.getBridgePortsOnSegment().size()) {
@@ -153,7 +153,7 @@ public class SharedSegment implements BridgeTopology{
         domain.getSharedSegments().add(segment);
         //add forwarders
         for (BridgeForwardingTableEntry forward: forwarders) {
-            segment.addForwarding(forward);
+            domain.addForwarding(forward);
         }
         return segment;
     }
@@ -164,7 +164,7 @@ public class SharedSegment implements BridgeTopology{
         segment.getBridgePortsOnSegment().addAll(ports);
         segment.getMacsOnSegment().retainAll(macs);
         for (BridgeForwardingTableEntry forward: forwarders) {
-            segment.addForwarding(forward);
+            domain.addForwarding(forward);
         }
     }
 
@@ -174,9 +174,7 @@ public class SharedSegment implements BridgeTopology{
         segment.getMacsOnSegment().addAll(macs);
         segment.setDesignatedBridge(port.getNodeId());
         domain.getSharedSegments().add(segment);
-        for (SharedSegment dsegment: domain.getSharedSegments()) {
-            dsegment.cleanForwarders(macs);
-        }        
+        domain.cleanForwarders(macs);
         return segment;
     }
         
@@ -188,55 +186,7 @@ public class SharedSegment implements BridgeTopology{
     private Integer m_designatedBridgeId;
     private Set<String> m_macsOnSegment = new HashSet<String>();
     private Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
-    private Map<Integer,Set<BridgeForwardingTableEntry>> m_forwarding = new HashMap<Integer,Set<BridgeForwardingTableEntry>>();
 
-    public void cleanForwarders(Set<String> macs) {
-        Map<Integer, Set<BridgeForwardingTableEntry>> forwardingMap=new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
-        for (Integer bridgeId: m_forwarding.keySet()) {
-            Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
-            for (BridgeForwardingTableEntry forward: m_forwarding.get(bridgeId)) {
-                if (macs.contains(forward.getMacAddress())) {
-                    continue;
-                }
-                forwarders.add(forward);
-            }
-            if (forwarders.isEmpty()) {
-                continue;
-            }
-            forwardingMap.put(bridgeId, forwarders);
-        }
-        m_forwarding = forwardingMap;
-    }
-
-    public void addForwarding(BridgeForwardingTableEntry forward) {
-        Integer bridgeid = forward.getNodeId();
-        if (bridgeid == null) {
-            return;
-        }
-        if (!m_forwarding.containsKey(bridgeid)) {
-            m_forwarding.put(bridgeid, new HashSet<BridgeForwardingTableEntry>());
-        }
-        m_forwarding.get(bridgeid).add(forward);
-    }
-    
-    public void setForwarding(Map<Integer,Set<BridgeForwardingTableEntry>> forwarding) {
-        m_forwarding = forwarding;
-    }
-    
-    public void setForwarders(Integer bridgeid, Set<BridgeForwardingTableEntry> forwarders) {
-        m_forwarding.put(bridgeid, forwarders);
-    }
-
-    public Map<Integer,Set<BridgeForwardingTableEntry>> getForwarding() {
-        return m_forwarding;
-    }
-
-    public Set<BridgeForwardingTableEntry> getForwarders(Integer bridgeId) {
-        if (m_forwarding.containsKey(bridgeId)) {
-            return m_forwarding.get(bridgeId);
-        }
-        return new HashSet<BridgeForwardingTableEntry>();
-    }
 
     public boolean setDesignatedBridge(Integer designatedBridge) {
         m_designatedBridgeId = designatedBridge;
@@ -328,14 +278,6 @@ public class SharedSegment implements BridgeTopology{
         }
         strbfr.append("        -> macs:");
         strbfr.append(getMacsOnSegment());
-        for (Set<BridgeForwardingTableEntry> bfteset: m_forwarding.values()) {
-            for (BridgeForwardingTableEntry bfte:bfteset) {
-                strbfr.append("\n");
-                strbfr.append("        -> forwarder: ");
-                strbfr.append(bfte.printTopology());
-            }
-        }
-
         return strbfr.toString();    	
     }
 
