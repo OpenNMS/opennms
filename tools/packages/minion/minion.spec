@@ -218,7 +218,11 @@ ROOT_INST="${RPM_INSTALL_PREFIX0}"
 [ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
 
 # Clean out the data directory
-rm -rf "${ROOT_INST}/data"
+if [ -d "${ROOT_INST}/data" ]; then
+    find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print0 | xargs -0 rm -rf
+    find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+fi
+
 # Generate an SSH key if necessary
 if [ ! -f "${ROOT_INST}/etc/host.key" ]; then
     /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
