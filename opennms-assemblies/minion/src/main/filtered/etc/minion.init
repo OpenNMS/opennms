@@ -136,6 +136,9 @@ case "$COMMAND" in
 		fi
 
 		validate_icmp
+		if [ ! -d "${MINION_HOME}/data/tmp" ]; then
+			mkdir -p "${MINION_HOME}/data/tmp"
+		fi
 		"$MINION_HOME"/bin/start
 		exit $?
 		;;
