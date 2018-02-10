@@ -79,7 +79,7 @@ public class RestClientFactory {
 	 */
 	private static final int DEFAULT_MAX_TOTAL_CONNECTION = DEFAULT_MAX_TOTAL_CONNECTION_PER_ROUTE * 3;
 
-	private HttpClientConfig.Builder clientConfigBuilder;
+	private final HttpClientConfig.Builder clientConfigBuilder;
 	private int m_timeout = 0;
 	private int m_retries = 0;
 	private JestClient client;

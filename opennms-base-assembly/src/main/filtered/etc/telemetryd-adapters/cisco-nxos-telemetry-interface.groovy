@@ -59,8 +59,10 @@ import groovy.util.logging.Slf4j
 import java.util.List
 
 import org.opennms.netmgt.collection.api.AttributeType
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource
 import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis
+import org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbParserUtil
 import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis.TelemetryField
 
 @Slf4j
@@ -69,30 +71,14 @@ class CollectionSetGenerator {
         log.debug("Generating collection set for message: {}", telemetryMsg)
         // build the node-level resource
         NodeLevelResource nodeLevelResource = new NodeLevelResource(agent.getNodeId())
-        Double load_avg_1min = null;
-        String load_avg_str= null;
-        Long collectionId = null;
-        if (!telemetryMsg.getDataGpbkvList().isEmpty()) {
-            if (!telemetryMsg.getDataGpbkvList().get(0).getFieldsList().isEmpty()
-                    && telemetryMsg.getDataGpbkvList().get(0).getFieldsList().size() >= 2) {
-                if (!telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().isEmpty()) {
-                    if (!telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().get(0).getFieldsList()
-                            .isEmpty()) {
-                        if (telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().get(0).getFieldsList()
-                                .get(0).getName().equals("load_avg_1min")) {
-                            load_avg_str = telemetryMsg.getDataGpbkvList().get(0).getFieldsList().get(1).getFieldsList().get(0)
-                                    .getFieldsList().get(0).getStringValue();
-                            load_avg_1min = Double.valueOf(load_avg_str);
-                        }
-                    }
-                }
-            }
-        }
-        if (load_avg_1min == null) {
-            collectionId = telemetryMsg.getCollectionId();
-            builder.withStringAttribute(nodeLevelResource, "stats", "collectionId", collectionId.toString());
-        } else {
-            builder.withNumericAttribute(nodeLevelResource, "stats", "load_avg_1min", load_avg_1min, AttributeType.GAUGE);
+        builder.withNumericAttribute(nodeLevelResource, "stats", "load_avg_1min",
+                NxosGpbParserUtil.getValueAsDouble(telemetryMsg, "load_avg_1min"), AttributeType.GAUGE)
+        
+        for(TelemetryBis.TelemetryField row : NxosGpbParserUtil.getRowsFromTable(telemetryMsg, "cpu_usage")) {
+            String cpuId = NxosGpbParserUtil.getValueFromRowAsString(row, "cpuid");
+            DeferredGenericTypeResource genericTypeResource = new DeferredGenericTypeResource(nodeLevelResource, "nxosCpu", cpuId);
+            builder.withNumericAttribute(genericTypeResource, "stats", "kernel",
+                    NxosGpbParserUtil.getValueFromRowAsDouble(row, "kernel"), AttributeType.GAUGE)
         }
     }
 }
