@@ -35,6 +35,7 @@ import java.io.IOException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
+import org.opennms.core.resource.Vault;
 
 /**
  * Simple checks to verify the REST endpoints provided
@@ -72,5 +73,22 @@ public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
     @Test
     public void canAccessPluginDiagnostics() throws ClientProtocolException, IOException, InterruptedException {
         assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/pluginmgr/diagnostics/plugin-mgr-rest-diagnostics.html")));
+    }
+    
+    @Test
+    public void canUnInstallAndUnInstallPlugin() throws ClientProtocolException, IOException, InterruptedException {
+        // install repository
+       	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() 
+       			+ "/opennms/pluginmgr/rest/v1-0/features-addrepositoryurl?uri=mvn:org.opennms.karaf/opennms/"
+       			+ Vault.getProperty("version.display")+"/xml/features")));
+        	
+    	// install alarm-change-notifier plugin
+    	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() 
+    			+ "/opennms/pluginmgr/rest/v1-0/features-install?name=alarm-change-notifier&version="+Vault.getProperty("version.display"))));
+
+    	// uninstall alarm-change-notifier plugin
+    	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() 
+    			+ "/opennms/pluginmgr/rest/v1-0/features-uninstall?name=alarm-change-notifier&version="+Vault.getProperty("version.display"))));
+
     }
 }
