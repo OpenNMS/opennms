@@ -36,6 +36,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple checks to verify the REST endpoints provided
@@ -44,6 +46,8 @@ import org.opennms.core.resource.Vault;
  * @author jwhite
  */
 public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(OSGIPluginManagerIT.class);
+
 
     @Test
     public void canListProducts() throws ClientProtocolException, IOException, InterruptedException {
@@ -77,18 +81,25 @@ public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
     
     @Test
     public void canUnInstallAndUnInstallPlugin() throws ClientProtocolException, IOException, InterruptedException {
+    	
         // install repository
-       	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() 
+    	String repository = getBaseUrl() 
        			+ "/opennms/pluginmgr/rest/v1-0/features-addrepositoryurl?uri=mvn:org.opennms.karaf/opennms/"
-       			+ Vault.getProperty("version.display")+"/xml/features")));
+       			+ Vault.getProperty("version.display")+"/xml/features";
+    	LOG.info("Smoke Test loading repository from "+repository);
+       	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(repository)));
         	
     	// install alarm-change-notifier plugin
-    	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() 
-    			+ "/opennms/pluginmgr/rest/v1-0/features-install?name=alarm-change-notifier&version="+Vault.getProperty("version.display"))));
+       	String install = getBaseUrl() 
+    			+ "/opennms/pluginmgr/rest/v1-0/features-install?name=alarm-change-notifier&version="+Vault.getProperty("version.display");
+       	LOG.info("Smoke Test installing plugin from "+repository);
+    	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(install)));
 
     	// uninstall alarm-change-notifier plugin
-    	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() 
-    			+ "/opennms/pluginmgr/rest/v1-0/features-uninstall?name=alarm-change-notifier&version="+Vault.getProperty("version.display"))));
+    	String uninstall = getBaseUrl() 
+    			+ "/opennms/pluginmgr/rest/v1-0/features-uninstall?name=alarm-change-notifier&version="+Vault.getProperty("version.display");
+    	LOG.info("Smoke Test uninstalling plugin from "+repository);
+    	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(uninstall)));
 
     }
 }
