@@ -54,6 +54,8 @@
     <jsp:param name="script" value='<script type="text/javascript" src="lib/ip-address/dist/ip-address-globals.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/bootbox/bootbox.js"></script>' />
 
+    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-http/module.js"></script>' />
+
     <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/app-quickaddnode.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/RequisitionInterface.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/RequisitionNode.js"></script>' />

@@ -53,6 +53,7 @@
     <c:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
     <c:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
     <c:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
+    <c:param name="script" value='<script type="text/javascript" src="js/onms-http/module.js"></script>' />
     <c:param name="script" value='<script type="text/javascript" src="js/onms-ksc/add-to-ksc.js"></script>' />
 </c:import>
 

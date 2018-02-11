@@ -6,6 +6,7 @@
 'use strict';
 
 angular.module('onms-interfaces', [
+  'onms.http',
   'ui.bootstrap'
 ])
 

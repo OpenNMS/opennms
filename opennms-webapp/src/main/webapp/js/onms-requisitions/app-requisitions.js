@@ -8,6 +8,7 @@
   'use strict';
 
   angular.module('onms-requisitions', [
+    'onms.http',
     'ngRoute',
     'ngCookies',
     'ngAnimate',
