@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -31,6 +31,7 @@
             <value>framework-${karafVersion}</value>
             <value>enterprise-${karafVersion}</value>
             <value>spring-${karafVersion}</value>
+            <value>spring-legacy-${karafVersion}</value>
             <value>standard-${karafVersion}</value>
 
             <!-- Apache CXF -->
@@ -60,11 +61,16 @@
             <!-- <descriptor>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</descriptor> -->
 
             <!-- OpenNMS-modified Karaf base features -->
-            <!-- <repository>mvn:org.opennms.container/org.opennms.container.karaf/${project.version}/xml/features</repository> -->
+            <!-- <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/standard</repository> -->
+            <!-- <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</repository> -->
+            <!-- <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository> -->
 
 
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
+
+            <!-- OpenNMS OSGI Core feature bundle -->
+            <repository>mvn:org.opennms.osgi/opennms-osgi-core-rest/${project.version}/xml/features</repository>
 
             <!-- JAAS Login Module -->
             <repository>mvn:org.opennms.container/org.opennms.container.jaas-login-module/${project.version}/xml/features</repository>
@@ -156,7 +162,6 @@
             <feature>framework</feature>
 
             <!-- Karaf standard features -->
-            <feature>aries-annotation</feature>
             <feature>aries-blueprint</feature>
             <feature>aries-proxy</feature>
             <feature>blueprint-web</feature>
@@ -167,14 +172,16 @@
             <feature>eventadmin</feature>
             <feature>feature</feature>
             <feature>framework-security</feature>
+            <feature>httplite</feature>
             <feature>http</feature>
             <feature>http-whiteboard</feature>
             <feature>instance</feature>
             <feature>jaas-boot</feature>
             <feature>jaas</feature>
             <feature>jasypt-encryption</feature>
-            <!-- TODO: Figure out how to import 2 versions of Jetty? -->
-            <feature>jetty</feature>
+            <!-- TODO: Should we import both versions of Jetty? -->
+            <feature>jetty/8.1.14.v20131031</feature>
+            <feature>jetty/9.3.9.v20160517</feature>
             <feature>jolokia</feature>
             <feature>kar</feature>
             <feature>log</feature>
@@ -182,6 +189,8 @@
             <feature>minimal</feature>
             <feature>obr</feature>
             <feature>package</feature>
+            <!-- Replaced by opennms-bridge-http-service -->
+            <!-- <feature>pax-http-service</feature> -->
             <feature>profile</feature>
             <feature>scheduler</feature>
             <feature>scr</feature>
@@ -220,6 +229,7 @@
             <feature>dnsjava</feature>
             <feature>dropwizard-metrics</feature>
             <feature>fop</feature>
+            <feature>guava17</feature>
             <feature>guava</feature>
             <feature>hibernate36</feature>
             <feature>hibernate-validator41</feature>
@@ -229,14 +239,9 @@
             <feature>jrobin</feature>
             <feature>json-lib</feature>
             <feature>lmax-disruptor</feature>
-            <!--
-            <feature>opennms-activemq-config</feature>
-            <feature>opennms-activemq</feature>
-            <feature>opennms-activemq-dispatcher-config</feature>
-            <feature>opennms-activemq-dispatcher</feature>
-            <feature>opennms-activemq-event-forwarder</feature>
-            <feature>opennms-activemq-event-receiver</feature>
-            -->
+            <feature>opennms-activemq-pool</feature>
+            <feature>opennms-bootstrap</feature>
+            <feature>opennms-bundle-refresher</feature>
             <feature>opennms-collection-api</feature>
             <feature>opennms-collection-commands</feature>
             <feature>opennms-collection-persistence-rrd</feature>
@@ -250,9 +255,7 @@
             <feature>opennms-core-web</feature>
             <feature>opennms-dao-api</feature>
             <feature>opennms-dao</feature>
-            <feature>opennms-discovery</feature>
             <feature>opennms-events-api</feature>
-            <feature>opennms-events-daemon</feature>
             <feature>opennms-events-commands</feature>
             <feature>opennms-icmp-api</feature>
             <feature>opennms-icmp-jna</feature>
@@ -267,7 +270,6 @@
             <feature>opennms-provisioning</feature>
             <feature>opennms-provisioning-detectors</feature>
             <feature>opennms-provisioning-shell</feature>
-            <feature>opennms-reporting</feature>
             <feature>opennms-rrd-api</feature>
             <feature>opennms-rrd-jrobin</feature>
             <feature>opennms-snmp</feature>
@@ -276,17 +278,20 @@
             <feature>opennms-syslogd-listener-javanet</feature>
             <feature>opennms-syslogd-listener-camel-netty</feature>
             <feature>opennms-trapd</feature>
-            <!-- <feature>opennms-webapp</feature> -->
+
+            <!-- OSGI Rest -->
+            <feature>jax-rs-connector</feature>
+            <feature>jax-rs-shell-commands</feature>
+            <feature>opennms-osgi-core-rest</feature>
 
             <feature>org.json</feature>
             <feature>postgresql</feature>
-            <feature>qpid</feature>
+            <feature>smack</feature>
             <feature>spring-security32</feature>
             <feature>spring-webflow</feature>
+            <feature>twitter4j</feature>
 
             <!-- Features from other OpenNMS repositories -->
-            <feature>opennms-core</feature>
-            <feature>opennms-core-web</feature>
             <feature>opennms-jaas-login-module</feature>
             <feature>dashlet-alarms</feature>
             <feature>dashlet-bsm</feature>
@@ -327,6 +332,10 @@
             <feature>tsrm-troubleticketer</feature>
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
+            <feature>opennms-telemetry-collection</feature>
+            <feature>opennms-telemetry-daemon</feature>
+            <feature>opennms-telemetry-jti</feature>
+            <feature>opennms-telemetry-nxos</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
@@ -351,7 +360,7 @@
           </features>
         </configuration>
       </plugin>
-      <!-- Filter the features.xml file -->
+      <!-- Filter the features.xml files -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -389,9 +398,29 @@
             <configuration>
               <artifacts>
                 <artifact>
+                  <file>${project.build.outputDirectory}/features-experimental.xml</file>
+                  <type>xml</type>
+                  <classifier>experimental</classifier>
+                </artifact>
+                <artifact>
                   <file>${project.build.outputDirectory}/features-minion.xml</file>
                   <type>xml</type>
                   <classifier>minion</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/karaf/standard.xml</file>
+                  <type>xml</type>
+                  <classifier>standard</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/karaf/spring.xml</file>
+                  <type>xml</type>
+                  <classifier>spring</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/karaf/spring-legacy.xml</file>
+                  <type>xml</type>
+                  <classifier>spring-legacy</classifier>
                 </artifact>
               </artifacts>
             </configuration>
@@ -402,10 +431,9 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.container</groupId>
-      <artifactId>org.opennms.container.karaf</artifactId>
+      <groupId>org.opennms.osgi</groupId>
+      <artifactId>opennms-osgi-core-rest</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -781,4 +809,22 @@
     </dependency>
     
   </dependencies>
+
+  <!-- Required for com.eclipsesource.jaxrs/* -->
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+  </repositories>
 </project>
