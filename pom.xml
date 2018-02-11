@@ -1224,11 +1224,7 @@
 
     <runMailTests>true</runMailTests>
     <poller.logfile>/tmp/remote-poller.log</poller.logfile>
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> develop
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>
     <rpm.build.executable>rpmbuild</rpm.build.executable>
@@ -1381,11 +1377,10 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- moved here from opennms-pluginmanger -->
-<<<<<<< HEAD
-    <pluginmanagerVersion>1.1.0-SNAPSHOT</pluginmanagerVersion>
-    <licencemanagerVersion>1.1.0-SNAPSHOT</licencemanagerVersion>
-    <featuremanagerVersion>1.1.0-SNAPSHOT</featuremanagerVersion>
-    
+    <pluginmanagerVersion>1.0.6</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.6</licencemanagerVersion>
+    <featuremanagerVersion>1.0.6</featuremanagerVersion>
+
     <!-- subscription properties -->
     <!-- These default subscription properties will be replaced by the properties in productkeys.properties -->
     <!-- Subscription name, version and groupId for generated subscription artifacts -->
@@ -1399,11 +1394,6 @@
     <!-- Set this false once you have a permanent licence generated and deployed -->
     <defaultRegenerateSubscription>true</defaultRegenerateSubscription>
 
-=======
-    <pluginmanagerVersion>1.0.5</pluginmanagerVersion>
-    <licencemanagerVersion>1.0.5</licencemanagerVersion>
-    <featuremanagerVersion>1.0.5</featuremanagerVersion>
->>>>>>> develop
   </properties>
 
   <profiles>
@@ -3735,21 +3725,13 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
-<<<<<<< HEAD
 	    <version>${mockitoVersion}</version>
-=======
-	<version>${mockitoVersion}</version>
->>>>>>> develop
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-<<<<<<< HEAD
-	    <version>${mockitoVersion}</version>
-=======
-	<version>${mockitoVersion}</version>
->>>>>>> develop
+        <version>${mockitoVersion}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

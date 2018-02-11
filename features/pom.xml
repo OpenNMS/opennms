@@ -70,10 +70,6 @@
     <module>osgi-jsr223</module>
     <module>opennms-osgi-core-rest</module>
 
-    <!-- OSGi Script Engine -->
-    <module>osgi-jsr223</module>
-    <module>opennms-osgi-core-rest</module>
-
     <!-- JMX config generator -->
     <module>jmx-config-generator</module>
     <module>vaadin-jmxconfiggenerator</module>
@@ -150,7 +146,7 @@
 
     <!-- Subscription Checker -->
     <module>subscription</module>
-    
+
     <!-- Internal Plugins Descriptor -->
     <module>internal-plugins-descriptor</module>
 
