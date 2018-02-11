@@ -50,6 +50,9 @@ public class EchoRequest implements RpcRequest {
     @XmlAttribute(name="location")
     private String location;
 
+    @XmlAttribute(name="system-id")
+    private String systemId;
+
     @XmlAttribute(name="delay")
     private Long delay;
 
@@ -89,6 +92,15 @@ public class EchoRequest implements RpcRequest {
         return location;
     }
 
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
+    }
+
     public void setTimeToLiveMs(Long timeToLiveMs) {
         this.timeToLiveMs = timeToLiveMs;
     }
@@ -116,7 +128,8 @@ public class EchoRequest implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, message, location, delay, shouldThrow);
+        return Objects.hash(id, message, location, delay,
+                shouldThrow, systemId);
     }
 
     @Override
@@ -132,12 +145,13 @@ public class EchoRequest implements RpcRequest {
                 Objects.equals(this.message, other.message) &&
                 Objects.equals(this.location, other.location) &&
                 Objects.equals(this.delay, other.delay) &&
-                Objects.equals(this.shouldThrow, other.shouldThrow);
+                Objects.equals(this.shouldThrow, other.shouldThrow) &&
+                Objects.equals(this.systemId, other.systemId);
     }
 
     @Override
     public String toString() {
-        return String.format("EchoRequest[id=%d, message=%s, location=%s, delay=%s, shouldThrow=%s]",
-                id, message, location, delay, shouldThrow);
+        return String.format("EchoRequest[id=%d, message=%s, location=%s, systemId=%s, delay=%s, shouldThrow=%s]",
+                id, message, location, systemId, delay, shouldThrow);
     }
 }

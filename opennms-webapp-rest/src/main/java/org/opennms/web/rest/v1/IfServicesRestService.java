@@ -135,7 +135,7 @@ public class IfServicesRestService extends OnmsRestService {
             throw getException(Status.BAD_REQUEST, "Parameter status must be specified. Possible values: A (Managed), F (Forced Unmanaged), R (Rescan to Resume), S (Rescan to Suspend)");
         }
         final String services_csv = params.getFirst("services");
-        final List<String> serviceList = new ArrayList<String>();
+        final List<String> serviceList = new ArrayList<>();
         if (services_csv != null) {
             for (String s : services_csv.split(",")) {
                 serviceList.add(s);

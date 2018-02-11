@@ -67,6 +67,6 @@ public interface Northbounder {
     /**
      * Reloads configuration.
      */
-    public void reloadConfig();
+    public void reloadConfig() throws NorthbounderException;
 
 }

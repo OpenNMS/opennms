@@ -34,6 +34,7 @@ import java.util.Map;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.dao.api.MinionDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
@@ -79,6 +80,6 @@ public class MinionHeartbeatMonitor extends AbstractServiceMonitor {
     @Override
     public String getEffectiveLocation(String location) {
         // Always run in the OpenNMS JVM
-        return null;
+        return MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
     }
 }

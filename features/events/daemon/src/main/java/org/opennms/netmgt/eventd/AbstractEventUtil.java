@@ -366,7 +366,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 		String delimEscStr = "%" + String.valueOf(delim);
 
 		// the buffer to return
-		StringBuffer outBuffer = new StringBuffer(inStr);
+		final StringBuilder outBuffer = new StringBuilder(inStr);
 
 		int index = 0;
 		int delimIndex = inStr.indexOf(delimchar, index);
@@ -454,7 +454,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 		if (event.getParmCollection().size() < 1) {
 			retParmVal = null;
 		} else {
-			StringBuffer ret = new StringBuffer();
+			final StringBuilder ret = new StringBuilder();
 
 			for (Parm evParm : event.getParmCollection()) {
 				Value parmValue = evParm.getValue();
@@ -484,7 +484,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 		if (event.getParmCollection().size() <= 0) {
 			return null;
 		} else {
-			StringBuffer ret = new StringBuffer();
+			final StringBuilder ret = new StringBuilder();
 
 			for (Parm evParm : event.getParmCollection()) {
 				String parmName = evParm.getParmName();
@@ -511,7 +511,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 		if (event.getParmCollection().size() < 1) {
 			return null;
 		} else {
-			final StringBuffer ret = new StringBuffer();
+			final StringBuilder ret = new StringBuilder();
 
 			for (final Parm evParm : event.getParmCollection()) {
 				final String parmName = evParm.getParmName();
@@ -625,7 +625,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 			endIndex = startIndex - 1 + rangeLen;
 		}
 		
-		StringBuffer retVal = new StringBuffer();
+		final StringBuilder retVal = new StringBuilder();
 		for (int i = startIndex; i <= endIndex; i++) {
 			retVal.append(components[i]);
 			if (i < endIndex) {

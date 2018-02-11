@@ -28,20 +28,14 @@
 
 package org.opennms.netmgt.model;
 
-import org.springframework.util.Assert;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.springframework.util.Assert;
 
 /**
  * <p>OnmsResource class.</p>
@@ -298,18 +292,6 @@ public class OnmsResource implements Comparable<OnmsResource> {
         }
 
         return properties;
-    }
-
-    private static String encode(String string) {
-        if (string == null) {
-            return null;
-        }
-        try {
-            return URLEncoder.encode(string, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            // UTF-8 should *never* throw this
-            throw new UndeclaredThrowableException(e);
-        }
     }
 
     /**

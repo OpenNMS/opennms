@@ -81,7 +81,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     private VertexRef getVertex(GraphMLNode node) {
         return graphsByNamespace.values().stream()
                 .map(g -> g.getVertex(g.getNamespace(), node.getId()))
-                .filter(v -> v != null)
+                .filter(Objects::nonNull)
                 .findFirst().orElse(null);
     }
 
@@ -89,7 +89,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     public String getId() {
         return getGraphProviders().stream()
                 .sorted(Comparator.comparing(GraphProvider::getNamespace))
-                .map(g -> g.getNamespace())
+                .map(GraphProvider::getNamespace)
                 .collect(Collectors.joining(":"));
     }
 

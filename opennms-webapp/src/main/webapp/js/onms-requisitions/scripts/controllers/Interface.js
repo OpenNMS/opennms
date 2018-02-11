@@ -77,7 +77,7 @@
     $scope.snmpPrimaryFields = [
       { id: 'P', title: 'Primary' },
       { id: 'S', title: 'Secondary' },
-      { id: 'N', title: 'Not Elegible'}
+      { id: 'N', title: 'Not Eligible'}
     ];
 
     /**

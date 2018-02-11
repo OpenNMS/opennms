@@ -227,7 +227,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
     
     private List<InetAddress> getIpList(final Package pkg) {
-        final StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
+        final StringBuilder filterRules = new StringBuilder(pkg.getFilter().getContent());
         if (m_verifyServer) {
             filterRules.append(" & (serverName == ");
             filterRules.append('\"');

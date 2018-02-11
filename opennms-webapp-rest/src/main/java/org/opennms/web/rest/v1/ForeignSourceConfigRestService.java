@@ -146,7 +146,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         /** The parameters. */
         @XmlElement(name="parameter")
         @XmlElementWrapper(name="parameters")
-        public List<SimplePluginParameter> parameters = new ArrayList<SimplePluginParameter>();
+        public List<SimplePluginParameter> parameters = new ArrayList<>();
 
         /**
          * Instantiates a new simple plugin configuration.
@@ -183,7 +183,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         /** The options. */
         @XmlElement(name="option")
         @XmlElementWrapper(name="options")
-        public List<String> options = new ArrayList<String>();
+        public List<String> options = new ArrayList<>();
 
         /**
          * Instantiates a new simple plugin parameter.
@@ -367,8 +367,8 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
             }
             final String pluginName = typesMap.get(pluginClass);
             SimplePluginConfig cfg = new SimplePluginConfig(pluginName, pluginClass);
-            List<SimplePluginParameter> requiredParams = new ArrayList<SimplePluginParameter>();
-            List<SimplePluginParameter> optionalParams = new ArrayList<SimplePluginParameter>();
+            List<SimplePluginParameter> requiredParams = new ArrayList<>();
+            List<SimplePluginParameter> optionalParams = new ArrayList<>();
             for (Map.Entry<String,Boolean> paramEntry : wrapper.getRequired().entrySet()) {
                 final Boolean required = paramEntry.getValue();
                 final String paramName = paramEntry.getKey();

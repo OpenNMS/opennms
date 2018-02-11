@@ -105,6 +105,81 @@ public class EventUtilHibernateIT {
         assertEquals("testUei:2:node2:RDU", string2);
     }
 
+    /**
+     * <p>Requirements:</p>
+     * <ul>
+     * <li>'%%' will expand to a single percent sign in output.</li>
+     * <li>If whitespace is found before the expansion parameter is closed
+     *   (ie. %event uei%) then it is an invalid expansion parameter. The
+     *   leading percent sign is reproduced in the output and parsing
+     *   continues after its position.</li>
+     * <li>Percent signs that are unpaired by the time the end of input
+     *   is reached will be reproduced in the output.</li>
+     * </ul>
+     */
+    @Test
+    public void testExpansionStringWithPercentSign() {
+        // Escaped percent sign '%%'
+        String testString = "This string for %uei% has a %% sign in it.";
+        Event event1 = new EventBuilder("testUei", "testSource").getEvent();
+        String string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("This string for testUei has a % sign in it.", string1);
+
+        // Escaped percent sign '%%' with trailing percent sign
+        testString = "This string for %uei% has a %%uei% sign in it.";
+        event1 = new EventBuilder("testUei", "testSource").getEvent();
+        string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("This string for testUei has a %uei% sign in it.", string1);
+
+        // No whitespace with several escaped percent signs and trailing percent
+        testString = "%%uei%%%uei%%%%%uei%%%";
+        event1 = new EventBuilder("testUei", "testSource").getEvent();
+        string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("%uei%testUei%%uei%%", string1);
+
+        // Single percent
+        testString = "%";
+        event1 = new EventBuilder("testUei", "testSource").getEvent();
+        string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("%", string1);
+
+        // Parameter expansion with leading and trailing single percents
+        testString = "%This string for %uei% is 100% awesome.";
+        event1 = new EventBuilder("testUei", "testSource").getEvent();
+        string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("%This string for testUei is 100% awesome.", string1);
+
+        // Parameter expansion with trailing single percent
+        testString = "This string for %uei% is 100% awesome.";
+        event1 = new EventBuilder("testUei", "testSource").getEvent();
+        string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("This string for testUei is 100% awesome.", string1);
+
+        // No parameter expansion, 1 percent
+        testString = "This string is 100% awesome.";
+        event1 = new EventBuilder("testUei", "testSource").getEvent();
+        string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("This string is 100% awesome.", string1);
+
+        // No parameter expansion, 2 percents with whitespace in between
+        testString = "This string is 100% awesome and 100% lame.";
+        event1 = new EventBuilder("testUei", "testSource").getEvent();
+        string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("This string is 100% awesome and 100% lame.", string1);
+
+        // Parameter expansion with interstitial percent
+        testString = "This string for %uei% is 100% awesome even though it is %uei%.";
+        event1 = new EventBuilder("testUei", "testSource").getEvent();
+        string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("This string for testUei is 100% awesome even though it is testUei.", string1);
+
+        // Percent sign at end of string without trailing whitespace
+        testString = "This string for %uei% is 100%awesomeAndCool";
+        event1 = new EventBuilder("testUei", "testSource").getEvent();
+        string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("This string for testUei is 100%awesomeAndCool", string1);
+    }
+
     @Test
     public void testGetNodeLabel() {
     	String label = eventUtilDaoImpl.getNodeLabel(m_populator.getNode3().getId());

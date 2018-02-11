@@ -15,7 +15,7 @@ Different parsers can be used to convert the syslog message fields into {opennms
 
 [options="header, autowidth"]
 |===
-| Parser  | Description 
+| Parser  | Description
 | `org.opennms.netmgt.syslogd.CustomSyslogParser`    | Default parser that uses a regex statement to parse the syslog header.
 | `org.opennms.netmgt.syslogd.RadixTreeSyslogParser` | Parser that uses an internal list of _grok_-style statements to parse the syslog header.
 | `org.opennms.netmgt.syslogd.SyslogNGParser`        | Parser that strictly parses messages in the default pattern of syslog-ng.
@@ -37,7 +37,7 @@ The patterns should be arranged in the file from most specific to least specific
 
 [options="header, autowidth"]
 |===
-| Pattern   | Description 
+| Pattern   | Description
 | `INT`     | Positive integer.
 | `MONTH`   | 3-character English month abbreviation.
 | `NOSPACE` | String that contains no whitespace.
@@ -46,7 +46,7 @@ The patterns should be arranged in the file from most specific to least specific
 
 [options="header, autowidth"]
 |===
-| Semantic Token | Description 
+| Semantic Token | Description
 | `day` | 2-digit day of month (1-31).
 | `facilityPriority` | Facility-priority integer.
 | `hostname` | String hostname (unqualified or FQDN), IPv4 address, or IPv6 address.

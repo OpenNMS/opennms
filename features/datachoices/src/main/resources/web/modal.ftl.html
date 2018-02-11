@@ -34,7 +34,7 @@
 (function(){
     $(document).ready(function() {
     	$('#datachoices-preview').on('show.bs.collapse', function () {
-    		$.get('datachoices')
+    		$.get('rest/datachoices')
     		  .done(function(data) {
     			  $('#datachoices-preview-content').html("<pre>" + JSON.stringify(data, null, 2) + "</pre>");
     		  })
@@ -50,10 +50,10 @@
    			$('#datachoices-enable').focus();
  		});
     	$('#datachoices-enable').click(function() {
-    		$.post('datachoices?action=enable');
+    		$.post('rest/datachoices?action=enable');
     	});
     	$('#datachoices-disable').click(function() {
-    		$.post('datachoices?action=disable');
+    		$.post('rest/datachoices?action=disable');
     	});
     	<#if showOnLoad>
     	$('#datachoices-modal').modal({

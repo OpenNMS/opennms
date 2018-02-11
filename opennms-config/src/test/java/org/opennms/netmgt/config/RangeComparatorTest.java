@@ -77,7 +77,7 @@ public class RangeComparatorTest {
 
     @Test
     public void testCompare() {
-        List<Range> ranges = new ArrayList<Range>();
+        List<Range> ranges = new ArrayList<>();
 
         Range addMe = new Range();
         addMe.setBegin("192.168.101.1");

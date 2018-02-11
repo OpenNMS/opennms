@@ -453,7 +453,7 @@ public class FilterParserTest {
 	 * @return
 	 */
 	public static List<OnmsNode> getMockNodeList(){
-		List<OnmsNode> nodeList= new ArrayList<OnmsNode>();
+		List<OnmsNode> nodeList= new ArrayList<>();
 
 		for( int id = 0;id<5;id++){
 			OnmsNode n =createNode(id);
@@ -514,7 +514,7 @@ public class FilterParserTest {
 		node.setSysLocation("node-nodeLocation_"+id);
 		node.setOperatingSystem("node-operatingsystem_"+id);
 
-		Set<OnmsCategory> categories=new LinkedHashSet<OnmsCategory>();
+		Set<OnmsCategory> categories=new LinkedHashSet<>();
 		node.setCategories(categories);
 
 		// categories used for multi value tests
@@ -547,10 +547,8 @@ public class FilterParserTest {
 		gl.setCity("asset-city_"+id);
 		gl.setZip	("asset-zip_"+id);
 		gl.setState("asset-state_"+id); 
-		Float lat= Float.valueOf("0");
-		gl.setLatitude(lat);
-		Float lng= Float.valueOf("0");
-		gl.setLongitude(lng);
+		gl.setLatitude(0d);
+		gl.setLongitude(0d);
 
 		//assetRecord
 		assetRecord.setRegion("asset-region_"+id);
@@ -582,7 +580,7 @@ public class FilterParserTest {
 	}
 
 	public static String nodelistToString(List<OnmsNode> nodelist){
-		StringBuilder sb= new StringBuilder("nodeList:{ ");
+		final StringBuilder sb= new StringBuilder("nodeList:{ ");
 		for (OnmsNode node:nodelist){
 			sb.append("["+node.getId()+"] ");
 		}

@@ -145,7 +145,7 @@ public class GWTBounds {
      */
     @Override
     public String toString() {
-        StringBuilder bldr = new StringBuilder();
+        final StringBuilder bldr = new StringBuilder();
         bldr.append("((");
         bldr.append(m_southWestCorner.getCoordinates());
         bldr.append("), (");

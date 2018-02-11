@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.ticketer.jira.commands;
 
-
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.netmgt.ticketer.jira.Config;
@@ -39,7 +39,16 @@ import org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.google.common.base.Strings;
 
-public abstract class AbstractJiraCommand extends OsgiCommandSupport {
+/**
+ * <p>This command implements the Apache Karaf 3 and Apache Karaf 4 shell APIs.
+ * Once the Karaf 4 commands work, the deprecated Karaf 3 annotations should 
+ * be removed:</p>
+ * <ul>
+ * <li>{@link org.apache.karaf.shell.commands.Command}</li>
+ * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
+ * </ul>
+ */
+public abstract class AbstractJiraCommand extends OsgiCommandSupport implements Action {
 
     protected static final String LINE = "------------------------------";
 
@@ -70,7 +79,7 @@ public abstract class AbstractJiraCommand extends OsgiCommandSupport {
     }
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         JiraRestClient jiraClient = createJiraClient();
         try {
             doExecute(jiraClient);
@@ -78,6 +87,12 @@ public abstract class AbstractJiraCommand extends OsgiCommandSupport {
             jiraClient.close();
         }
         return null;
+    }
+
+    @Override
+    @Deprecated
+    protected final Object doExecute() throws Exception {
+        return execute();
     }
 
     protected Config getConfig() {

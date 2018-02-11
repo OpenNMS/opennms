@@ -40,6 +40,7 @@ public enum Aliases {
     category,
     distPoller,
     event,
+    eventParameter,
     ipInterface,
     location,
     memo,
@@ -52,7 +53,7 @@ public enum Aliases {
     snmpInterface;
 
     public String prop(String propertyName) {
-        return new StringBuffer(this.toString())
+        return new StringBuilder(this.toString())
             .append(".")
             .append(propertyName)
             .toString(); 

@@ -97,7 +97,7 @@ public class AlarmStatusProvider implements StatusProvider {
         // calculate status for groups and nodes which are neither group nor node
         for (VertexRef eachRef : otherRefs) {
             if (isGroup(eachRef)) {
-                List<AlarmSummary> alarmSummariesForGroup = new ArrayList<AlarmSummary>();
+                List<AlarmSummary> alarmSummariesForGroup = new ArrayList<>();
                 List<Vertex> children = vertexProvider.getChildren(eachRef, criteria);
                 for (Vertex eachChildren : children) {
                     AlarmSummary eachChildrenAlarmSummary = nodeIdToAlarmSummaryMap.get(eachChildren.getNodeID());
@@ -151,7 +151,7 @@ public class AlarmStatusProvider implements StatusProvider {
     }
 
     private static List<VertexRef> getNodeVertexRefs(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
-        List<VertexRef> returnList = new ArrayList<VertexRef>();
+        List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
             if ("nodes".equals(eachRef.getNamespace())) {
                 if(isGroup(eachRef)) {
@@ -167,7 +167,7 @@ public class AlarmStatusProvider implements StatusProvider {
     }
 
     private static List<VertexRef> getOtherVertexRefs(Collection<VertexRef> vertices) {
-        List<VertexRef> returnList = new ArrayList<VertexRef>();
+        List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
             if (!"nodes".equals(eachRef.getNamespace())) {
                 returnList.add(eachRef); // we do not need to check for groups, because a group would have a namespace "nodes"

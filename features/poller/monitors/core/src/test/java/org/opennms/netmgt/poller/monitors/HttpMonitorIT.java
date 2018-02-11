@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -125,6 +126,7 @@ public class HttpMonitorIT {
     @Test
     @JUnitHttpServer(port=0)
     public void testResponseRangeIPv6() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         callTestResponseRange(true);
     }
 
@@ -194,6 +196,7 @@ public class HttpMonitorIT {
      */
     @Test
     public void testTimeoutIPv6() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         callTestTimeout(true);
     }
 
@@ -228,6 +231,7 @@ public class HttpMonitorIT {
     @Test
     @JUnitHttpServer()
     public void testMatchingTextInResponseIPv6() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         callTestMatchingTextInResponse(true);
     }
 
@@ -299,6 +303,7 @@ public class HttpMonitorIT {
     @Test
     @JUnitHttpServer(basicAuth=true)
     public void testBasicAuthenticationIPv6() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         callTestBasicAuthentication(true);
     }
 
@@ -350,6 +355,7 @@ public class HttpMonitorIT {
     @Test
     @JUnitHttpServer(https=true, basicAuth=true)
     public void testBasicAuthenticationWithHttpsIPv6() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         callTestBasicAuthenticationWithHttps(true);
     }
 
@@ -398,6 +404,7 @@ public class HttpMonitorIT {
     @Test
     @JUnitHttpServer()
     public void testWithUrlIPv6() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         callTestWithUrl(true);
     }
 
@@ -440,6 +447,7 @@ public class HttpMonitorIT {
     @Test
     @JUnitHttpServer()
     public void testWithInvalidNodelabelHostNameIPv6() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         callTestWithInvalidNodelabelHostName(true);
     }
 
@@ -482,6 +490,7 @@ public class HttpMonitorIT {
     @Test
     @JUnitHttpServer(vhosts={"opennms.com"})
     public void testPollInInvalidVirtualDomainIPv6() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         callTestPollInInvalidVirtualDomain(true);
     }
 
@@ -519,6 +528,7 @@ public class HttpMonitorIT {
     @Test
     @JUnitHttpServer(vhosts={"www.opennms.org"})
     public void testPollValidVirtualDomainIPv6() throws UnknownHostException {
+        assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
         callTestPollValidVirtualDomain(true);
     }
 

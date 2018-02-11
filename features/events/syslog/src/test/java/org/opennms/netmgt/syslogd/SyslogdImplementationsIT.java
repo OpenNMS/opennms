@@ -161,7 +161,7 @@ public class SyslogdImplementationsIT implements InitializingBean {
 
         final int eventCount = 100;
         
-        List<Integer> foos = new ArrayList<Integer>();
+        List<Integer> foos = new ArrayList<>();
 
         for (int i = 0; i < eventCount; i++) {
             int eventNum = Double.valueOf(Math.random() * 10000).intValue();

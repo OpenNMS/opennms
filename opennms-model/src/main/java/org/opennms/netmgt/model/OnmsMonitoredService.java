@@ -106,13 +106,13 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
      * be a model change were one service can be represented
      * by more than one outage.
      */
-    private Set<OnmsOutage> m_currentOutages = new LinkedHashSet<OnmsOutage>();
+    private Set<OnmsOutage> m_currentOutages = new LinkedHashSet<>();
 
-    private Set<OnmsApplication> m_applications = new LinkedHashSet<OnmsApplication>();
+    private Set<OnmsApplication> m_applications = new LinkedHashSet<>();
 
-	private static final Map<String, String> STATUS_MAP;
-	
-	static {
+    public static final Map<String, String> STATUS_MAP;
+
+    static {
         STATUS_MAP = new HashMap<String, String>();
         STATUS_MAP.put("A", "Managed");
         STATUS_MAP.put("U", "Unmanaged");

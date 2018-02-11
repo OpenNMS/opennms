@@ -105,7 +105,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
         m_nodeChennai.setId(14);
 
 
-        m_edges = new ArrayList<LinkdEdge>();
+        m_edges = new ArrayList<>();
         Vertex sourceCloud = new AbstractVertex("nodes", "1", "source");
         // Cloud is identified by the designated bridge and designated port
         Vertex cloud = new AbstractVertex("nodes", "1:48", "cloud");
@@ -389,7 +389,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
 
 
     private List<EdgeRef> getEdgeRefs() {
-        List<EdgeRef> edgerefs = new ArrayList<EdgeRef>();
+        List<EdgeRef> edgerefs = new ArrayList<>();
         for (LinkdEdge edge: m_edges)
             edgerefs.add((EdgeRef)edge);
         return edgerefs;
@@ -408,7 +408,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
     }
 
     private List<OnmsAlarm> createChennaiDownAlarm(){
-        List<OnmsAlarm> alarms = new ArrayList<OnmsAlarm>();
+        List<OnmsAlarm> alarms = new ArrayList<>();
 
         OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(m_nodeChennai);
@@ -420,7 +420,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
     }
 
     private List<OnmsAlarm> createCdpDownAlarm(){
-        List<OnmsAlarm> alarms = new ArrayList<OnmsAlarm>();
+        List<OnmsAlarm> alarms = new ArrayList<>();
 
         OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(m_node5);
@@ -432,7 +432,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
     }
 
     private List<OnmsAlarm> createIsIsDownAlarm(){
-        List<OnmsAlarm> alarms = new ArrayList<OnmsAlarm>();
+        List<OnmsAlarm> alarms = new ArrayList<>();
 
         OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(m_node5);
@@ -444,7 +444,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
     }
 
     private List<OnmsAlarm> createOspfDownAlarm(){
-        List<OnmsAlarm> alarms = new ArrayList<OnmsAlarm>();
+        List<OnmsAlarm> alarms = new ArrayList<>();
 
         OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(m_node4);
@@ -456,7 +456,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
     }
 
     private List<OnmsAlarm> createLldpDownAlarm(){
-        List<OnmsAlarm> alarms = new ArrayList<OnmsAlarm>();
+        List<OnmsAlarm> alarms = new ArrayList<>();
 
         OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(m_node4);

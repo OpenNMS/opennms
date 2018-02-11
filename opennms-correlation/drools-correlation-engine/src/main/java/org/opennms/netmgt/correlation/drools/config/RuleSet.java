@@ -733,21 +733,25 @@ public class RuleSet implements Serializable {
     public CorrelationEngine constructEngine(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager, MetricRegistry metricRegistry) {
         final ApplicationContext configContext = new ConfigFileApplicationContext(basePath, getConfigLocation(), appContext);
 
-        final DroolsCorrelationEngine engine = new DroolsCorrelationEngine(getName(), metricRegistry);
-        engine.setAssertBehaviour(getAssertBehaviour());
-        engine.setEventProcessingMode(getEventProcessingMode());
-        engine.setPersistState(getPersistState());
+        final DroolsCorrelationEngine engine = new DroolsCorrelationEngine(getName(), metricRegistry, basePath, configContext);
         engine.setEventIpcManager(eventIpcManager);
-        engine.setScheduler(new ScheduledThreadPoolExecutor(1));
-        engine.setInterestingEvents(getInterestingEvents());
-        engine.setRulesResources(getRuleResources(configContext));
-        engine.setGlobals(getGlobals(configContext));
+        updateEngine(engine);
         try {
             engine.initialize();
             return engine;
         } catch (final Throwable e) {
             throw new RuntimeException("Unable to initialize Drools engine " + getName(), e);
         }
+    }
+
+    public void updateEngine(DroolsCorrelationEngine engine) {
+        engine.setAssertBehaviour(getAssertBehaviour());
+        engine.setEventProcessingMode(getEventProcessingMode());
+        engine.setPersistState(getPersistState());
+        engine.setScheduler(new ScheduledThreadPoolExecutor(1));
+        engine.setInterestingEvents(getInterestingEvents());
+        engine.setRulesResources(getRuleResources(engine.getConfigContext()));
+        engine.setGlobals(getGlobals(engine.getConfigContext()));
     }
 
     public Map<String, Object> getGlobals(final ApplicationContext context) {
@@ -781,4 +785,8 @@ public class RuleSet implements Serializable {
         return PropertiesUtils.substitute(getAppContext(), System.getProperties());
     }
 
+    @Override
+    public String toString() {
+        return "RuleSet[" + getName() + "]";
+    }
 }

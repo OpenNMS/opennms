@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>opennms-es-rest.parent</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
 
   <!-- Feature Definition -->
@@ -209,8 +209,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.4</version>
-      <!-- <version>3.4</version> opennms 3.3.2 -->
       <scope>provided</scope>
     </dependency>
 

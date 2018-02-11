@@ -65,6 +65,10 @@
 
     <!-- OpenNMS OSGI Core -->
     <module>opennms-osgi-core</module>
+    
+    <!-- OSGi Script Engine -->
+    <module>osgi-jsr223</module>
+    <module>opennms-osgi-core-rest</module>
 
     <!-- OSGi Script Engine -->
     <module>osgi-jsr223</module>

@@ -286,9 +286,9 @@ public class BridgeMacLink {
 	}
 
 
-	@Transient
-	public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+    @Transient
+    public String printTopology() {
+        final StringBuilder strbfr = new StringBuilder();
 
         strbfr.append("mac link:[");
         strbfr.append(getMacAddress());

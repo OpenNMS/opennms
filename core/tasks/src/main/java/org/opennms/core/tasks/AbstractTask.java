@@ -65,8 +65,8 @@ public abstract class AbstractTask implements Task {
     private final CountDownLatch m_latch = new CountDownLatch(1);
     
     private final AtomicInteger m_pendingPrereqs = new AtomicInteger(0);
-    private final Set<AbstractTask> m_dependents = new CopyOnWriteArraySet<AbstractTask>();
-    private final Set<AbstractTask> m_prerequisites = new CopyOnWriteArraySet<AbstractTask>();
+    private final Set<AbstractTask> m_dependents = new CopyOnWriteArraySet<>();
+    private final Set<AbstractTask> m_prerequisites = new CopyOnWriteArraySet<>();
     
     private final TaskMonitor m_monitor;
     

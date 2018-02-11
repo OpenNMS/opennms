@@ -55,8 +55,6 @@ import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
@@ -311,7 +309,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
         private String m_currentLine;
         private int m_serviceStatus;
         private String m_reason;
-        private final StringBuffer m_html = new StringBuffer();
+        private final StringBuilder m_html = new StringBuilder();
         private int m_serverResponseCode;
         private TimeoutTracker m_timeoutTracker;
         private int m_currentPort;
@@ -472,7 +470,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                         m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     } else {
                         m_serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
-                        final StringBuffer sb = new StringBuffer();
+                        final StringBuilder sb = new StringBuilder();
                         sb.append("HTTP response value: ");
                         sb.append(serverResponseValue);
                         sb.append(". Expecting: ");
@@ -607,7 +605,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 //
                 // Build port string
                 //
-                final StringBuffer testedPorts = new StringBuffer();
+                final StringBuilder testedPorts = new StringBuilder();
                 for (int i = 0; i < determinePorts(getParameters()).length; i++) {
                     if (i == 0) {
                         testedPorts.append(determinePorts(getParameters())[0]);

@@ -189,7 +189,7 @@ public class NrtController {
     public String getMeasurementSetsForDestination(String nrtCollectionTaskId) {
         List<MeasurementSet> measurementSets = m_nrtBroker.receiveMeasurementSets(nrtCollectionTaskId);
 
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         for (MeasurementSet measurementSet : measurementSets) {
             if (buffer.length() > 0) {

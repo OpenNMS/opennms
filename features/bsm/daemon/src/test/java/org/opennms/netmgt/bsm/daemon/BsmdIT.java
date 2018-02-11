@@ -30,9 +30,15 @@ package org.opennms.netmgt.bsm.daemon;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
 import java.util.ArrayList;
@@ -45,6 +51,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opennms.core.profiler.Timer;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -229,9 +236,7 @@ public class BsmdIT {
         // verify reload of business services works when event is send
         BusinessServiceEntity businessService2 = createBusinessService("service2");
         Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
-        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
-        m_eventMgr.sendNow(ebldr.getEvent());
+        reloadBsmd();
         Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
     }
 
@@ -284,10 +289,10 @@ public class BsmdIT {
     public void verifyStartupTime() throws Exception {
         // generate test hierarchy
         GenerateHierarchiesShellCommand shellCommand = new GenerateHierarchiesShellCommand();
-        shellCommand.setBusinessServiceManager(businessServiceManager);
+        shellCommand.businessServiceManager = businessServiceManager;
         shellCommand.setNumServices(200 * 100); // 200 hierarchies
         shellCommand.setDepth(100); // 100 services each
-        shellCommand.execute(null);
+        shellCommand.execute();
         m_businessServiceDao.flush();
 
         // Measure startup time
@@ -353,11 +358,57 @@ public class BsmdIT {
         m_bsmd.start();
     }
 
+    @Test
+    public void verifyNoDaoLookupsWhenNoRulesAreDefined() throws Exception {
+        // Mock the DAO
+        AlarmDao alarmDao = mock(AlarmDao.class);
+        m_bsmd.setAlarmDao(alarmDao);
+
+        // Start up without any business services
+        m_bsmd.start();
+        assertThat("Alarm polling should be disabled where there are no services.",
+                m_bsmd.isAlarmPolling(), equalTo(false));
+
+        // Create the alarm
+        OnmsAlarm alarm = createAlarm();
+        m_alarmDao.save(alarm);
+
+        // Send alarm created event
+        EventBuilder ebldr = new EventBuilder(EventConstants.ALARM_CREATED_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
+        m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
+
+        // The AlarmDAO should not have any lookups
+        verify(alarmDao, never()).get(anyObject());
+
+        // Now let's add a rule
+        createBusinessService("svc");
+
+        // Reload the daemon
+        reloadBsmd();
+        assertThat("Alarm polling should be enabled when there are 1+ services.",
+                m_bsmd.isAlarmPolling(), equalTo(true));
+
+        // Send alarm updated event
+        ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
+        m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
+
+        // The AlarmDAO should have a single lookup
+        verify(alarmDao, times(1)).get(anyObject());
+
+        // Clear all of the BSs and reload
+        deleteAllBusinessServices();
+        reloadBsmd();
+        assertThat("Alarm polling should be disabled where there are no services.",
+                m_bsmd.isAlarmPolling(), equalTo(false));
+    }
+
     private OnmsAlarm createAlarm() {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
         alarm.setSeverity(OnmsSeverity.CRITICAL);
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setCounter(1);
         alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setReductionKey(String.format("%s::1:192.168.1.1:ICMP", EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
@@ -381,6 +432,17 @@ public class BsmdIT {
         m_businessServiceDao.flush();
 
         return bs;
+    }
+
+    private void deleteAllBusinessServices() {
+        m_businessServiceDao.findAll().forEach(bs -> m_businessServiceDao.delete(bs));
+        m_businessServiceDao.flush();
+    }
+
+    private void reloadBsmd() {
+        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+        m_eventMgr.sendNow(ebldr.getEvent());
     }
 
     private BusinessServiceEntity createSimpleBusinessService() {

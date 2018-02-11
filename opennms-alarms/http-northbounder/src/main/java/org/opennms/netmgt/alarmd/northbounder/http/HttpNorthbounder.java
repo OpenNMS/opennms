@@ -142,7 +142,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
             HttpPost postMethod = new HttpPost(uri);
 
             //TODO: need to configure these
-            List<NameValuePair> postParms = new ArrayList<NameValuePair>();
+            List<NameValuePair> postParms = new ArrayList<>();
 
             //FIXME:do this for now
             NameValuePair p = new BasicNameValuePair("foo", "bar");

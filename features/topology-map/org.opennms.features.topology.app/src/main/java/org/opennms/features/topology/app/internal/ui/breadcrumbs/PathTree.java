@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal.ui.breadcrumbs;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -80,7 +81,7 @@ public class PathTree {
 
     public int getNumberOfPaths() {
         List<Node> leafs = getLeafs();
-        return leafs.stream().map(eachLeaf -> eachLeaf.getParent()).collect(Collectors.toSet()).size();
+        return leafs.stream().map(Node::getParent).collect(Collectors.toSet()).size();
     }
 
     public List<Breadcrumb> toBreadcrumbs() {
@@ -91,8 +92,8 @@ public class PathTree {
         while (!work.isEmpty() && !work.get(0).isRoot()) {
             // All working nodes must be on the same layer (resulting in the same namespace)
             String targetNamespace = work.get(0).getVertexRef().getNamespace();
-            Set<Node> parentNodes = work.stream().map(eachLeaf -> eachLeaf.getParent()).filter(node -> node != null).collect(Collectors.toSet());
-            breadcrumbList.add(0, new Breadcrumb(targetNamespace, parentNodes.stream().map(p -> p.getVertexRef()).filter(v -> v != null).collect(Collectors.toList())));
+            Set<Node> parentNodes = work.stream().map(Node::getParent).filter(Objects::nonNull).collect(Collectors.toSet());
+            breadcrumbList.add(0, new Breadcrumb(targetNamespace, parentNodes.stream().map(Node::getVertexRef).filter(Objects::nonNull).collect(Collectors.toList())));
             work = Lists.newArrayList(parentNodes);
         }
         return breadcrumbList;

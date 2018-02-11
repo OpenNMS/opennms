@@ -88,7 +88,7 @@ public class DefaultSelectionContext implements SelectionContext {
 
 	@Override
 	public boolean selectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		Set<VertexRef> oldSet = new HashSet<VertexRef>();
+		Set<VertexRef> oldSet = new HashSet<>();
 		oldSet.addAll(getSelectedVertexRefs());
 
 		for (VertexRef vertexRef : vertexRefs) {
@@ -104,7 +104,7 @@ public class DefaultSelectionContext implements SelectionContext {
 
 	@Override
 	public boolean deselectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		Set<VertexRef> oldSet = new HashSet<VertexRef>();
+		Set<VertexRef> oldSet = new HashSet<>();
 		oldSet.addAll(getSelectedVertexRefs());
 
 		for (VertexRef vertexRef : vertexRefs) {
@@ -130,7 +130,7 @@ public class DefaultSelectionContext implements SelectionContext {
 
 	@Override
 	public boolean setSelectedVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		Set<VertexRef> oldSet = new HashSet<VertexRef>();
+		Set<VertexRef> oldSet = new HashSet<>();
 		oldSet.addAll(getSelectedVertexRefs());
 
 		doDeselectAll();
@@ -146,7 +146,7 @@ public class DefaultSelectionContext implements SelectionContext {
 
 	@Override
 	public boolean setSelectedEdgeRefs(Collection<? extends EdgeRef> edgeRefs) {
-		Set<EdgeRef> oldSet = new HashSet<EdgeRef>();
+		Set<EdgeRef> oldSet = new HashSet<>();
 		oldSet.addAll(getSelectedEdgeRefs());
 
 		doDeselectAll();

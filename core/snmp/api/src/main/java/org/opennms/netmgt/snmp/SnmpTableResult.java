@@ -34,10 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author brozow
  */
 public class SnmpTableResult implements RowResultFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpTableResult.class);
 
     private final RowCallback m_callback;
     private final SnmpObjId[] m_columns;
@@ -56,7 +60,7 @@ public class SnmpTableResult implements RowResultFactory {
         m_columns = columns;
         m_rowResultFactory = (rowResultFactory == null ? this : rowResultFactory);
 
-        m_finishedColumns = new ArrayList<SnmpObjId>();
+        m_finishedColumns = new ArrayList<>();
         m_pendingData = new TreeMap<SnmpInstId,SnmpRowResult>();
     }
     
@@ -95,8 +99,13 @@ public class SnmpTableResult implements RowResultFactory {
         if (lastInstance != null || isFinished()) {
             Iterator<SnmpInstId> i = m_pendingData.keySet().iterator();
             while (i.hasNext()) {
-                SnmpInstId key = i.next();
-                m_callback.rowCompleted(m_pendingData.get(key));
+                final SnmpInstId key = i.next();
+                final SnmpRowResult pendingData = m_pendingData.get(key);
+                try {
+                    m_callback.rowCompleted(pendingData);
+                } catch (final Exception e) {
+                    LOG.warn("Failed to handle completed SNMP table row {}: {}", key, pendingData, e);
+                }
                 i.remove();
                 if (key.equals(lastInstance)) {
                     break;

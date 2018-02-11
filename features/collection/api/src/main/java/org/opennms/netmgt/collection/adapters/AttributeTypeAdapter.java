@@ -39,7 +39,7 @@ public class AttributeTypeAdapter extends XmlAdapter<String,AttributeType> {
     public AttributeTypeAdapter() {
         // Build a string with the list of supported types
         // that can be used in exception messages
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("Supported types include: ");
         for (AttributeType knownType : AttributeType.values()) {
             if (sb.length() > 0) {

@@ -36,6 +36,8 @@
 
 package org.opennms.xmlns.xsd.event;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -77,8 +79,11 @@ import javax.xml.bind.annotation.XmlType;
 public class AlarmData {
 
     @XmlAttribute(name = "reduction-key", required = true)
+    @NotNull
     protected String reductionKey;
     @XmlAttribute(name = "alarm-type", required = true)
+    @NotNull
+    @Min(1)
     protected int alarmType;
     @XmlAttribute(name = "clear-key")
     protected String clearKey;

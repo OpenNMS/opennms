@@ -116,7 +116,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                 ")", application);
 
         
-//    	final Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+//    	final Collection<OnmsLocationMonitor> monitors = new HashSet<>();
 //    	for (final OnmsLocationSpecificStatus status : getAllMostRecentStatusChanges()) {
 //    		if (status.getMonitoredService().getApplications() != null
 //    				&& status.getMonitoredService().getApplications().contains(application)) {
@@ -314,7 +314,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                         nodeId
                         );
         
-    	final HashSet<LocationMonitorIpInterface> ret = new HashSet<LocationMonitorIpInterface>();
+    	final HashSet<LocationMonitorIpInterface> ret = new HashSet<>();
         for (Object[] tuple : l) {
             OnmsLocationMonitor mon = (OnmsLocationMonitor) tuple[0];
             OnmsIpInterface ip = (OnmsIpInterface) tuple[1];

@@ -109,7 +109,7 @@ abstract public class AbstractSimpleServer {
     
     private ServerSocket m_serverSocket = null;
     private int m_timeout;
-    private List<Exchange> m_conversation = new ArrayList<Exchange>();
+    private List<Exchange> m_conversation = new ArrayList<>();
     
     /**
      * <p>getTimeout</p>

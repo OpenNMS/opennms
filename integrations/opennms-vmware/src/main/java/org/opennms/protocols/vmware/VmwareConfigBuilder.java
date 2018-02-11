@@ -286,7 +286,7 @@ public class VmwareConfigBuilder {
 
         System.out.println("Generating configuration files for '" + serviceInstance.getAboutInfo().getFullName() + "' using rrdRepository '" + rrdRepository + "'...");
 
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("Configuration file generated for:\n\n");
         buffer.append("Full name.......: " + serviceInstance.getAboutInfo().getFullName() + "\n");
         buffer.append("API type........: " + serviceInstance.getAboutInfo().getApiType() + "\n");
@@ -344,8 +344,8 @@ public class VmwareConfigBuilder {
     }
 
     private void saveVMwareGraphProperties() {
-        StringBuffer buffer = new StringBuffer();
-        StringBuffer include = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
+        final StringBuilder include = new StringBuilder();
         HashMap<String, Boolean> generatedGraphs = new HashMap<String, Boolean>();
 
         for (String collectionName : collections.keySet()) {
@@ -380,7 +380,7 @@ public class VmwareConfigBuilder {
     }
 
     private void saveVMwareDatacollectionInclude() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("<?xml version=\"1.0\"?>\n");
 
@@ -412,7 +412,7 @@ public class VmwareConfigBuilder {
     }
 
     private void saveVMwareDatacollectionConfig(String rrdRepository) {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("<?xml version=\"1.0\"?>\n");
 
         buffer.append("\n<!--\n");

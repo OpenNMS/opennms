@@ -76,7 +76,7 @@ public class EventsAlarmsWindow extends Window {
 	 * @param height Height of main window
 	 * @throws MalformedURLException
 	 */
-	public EventsAlarmsWindow(final Node node, final URL eventsURL, final URL alarmsURL) throws MalformedURLException {
+	public EventsAlarmsWindow(final Node node, final URL eventsURL, final URL alarmsURL) {
 		super("Events & Alarms" + makeLabel(node));
 		eventsBrowser = new Embedded("", new ExternalResource(eventsURL));
         eventsBrowser.setSizeFull();

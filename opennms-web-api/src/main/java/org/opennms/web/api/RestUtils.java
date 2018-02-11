@@ -96,7 +96,7 @@ public abstract class RestUtils {
 	 * @return the name using "camel case"
 	 */
 	public static String convertNameToPropertyName(String name) {
-	    StringBuffer result = new StringBuffer();
+	    final StringBuilder result = new StringBuilder();
 	    boolean nextIsUpper = false;
 	    if (name != null && name.length() > 0) {
 	        if (name.length() > 1 && (name.substring(1, 2).equals("_") || (name.substring(1, 2).equals("-")))) {

@@ -185,7 +185,7 @@ public class WmiClient implements IWmiClient {
     public static Object convertToNativeType(final JIVariant type) throws WmiException {
         try {
             if (type.isArray()) {
-                final ArrayList<Object> objs = new ArrayList<Object>();
+                final ArrayList<Object> objs = new ArrayList<>();
                 final Object [] array = (Object[])type.getObjectAsArray().getArrayInstance();
 
                 for (final Object element : array) {

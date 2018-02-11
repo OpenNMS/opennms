@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.bsm</groupId>
     <artifactId>org.opennms.features.bsm.rest</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features.bsm.rest.api</artifactId>
@@ -52,8 +52,8 @@
     <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.rest-commons</artifactId>
+      <groupId>org.opennms.features.rest</groupId>
+      <artifactId>org.opennms.features.rest.common</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

@@ -35,6 +35,8 @@ public interface CollectorRequestBuilder {
 
     CollectorRequestBuilder withAgent(CollectionAgent agent);
 
+    CollectorRequestBuilder withSystemId(String systemId);
+
     CollectorRequestBuilder withCollector(ServiceCollector collector);
 
     CollectorRequestBuilder withCollectorClassName(String className);

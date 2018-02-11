@@ -159,7 +159,7 @@ public class OnmsRestEventsClient {
 
 	public List<Event> getEvents(Integer limit, Integer offset){
 
-		List<Event> retrievedEvents= new ArrayList<Event>();
+		List<Event> retrievedEvents= new ArrayList<>();
 		
 		CloseableHttpClient httpclient=getNewClient();
 
@@ -273,7 +273,7 @@ public class OnmsRestEventsClient {
 		if (onmsEvent.getEventDescr() !=null ) event.setDescr(onmsEvent.getEventDescr());
 		if (onmsEvent.getEventHost()!=null ) event.setHost(onmsEvent.getEventHost());
 		
-		List<Parm> parmColl=new ArrayList<Parm>();
+		List<Parm> parmColl=new ArrayList<>();
 		if (onmsEvent.getEventParameters()!=null) {
 			List<OnmsEventParameter> params = onmsEvent.getEventParameters();
 			

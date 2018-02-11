@@ -246,7 +246,7 @@ public class BridgeBridgeLink {
 
 	@Transient
 	public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+    	final StringBuilder strbfr = new StringBuilder();
 
     	strbfr.append("bridge link:[nodeid:["); 
     	strbfr.append(getNode().getId());

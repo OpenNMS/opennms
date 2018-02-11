@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +41,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -152,6 +155,56 @@ public class EventConfDaoReloadTest {
         // Reload
         eventConfDao.reload();
         assertEquals(5, eventConfDao.getAllEvents().size());
+    }
+
+    /**
+     * Verify that the order of the includes is maintained
+     * when new event configuration files are added, and reloaded.
+     */
+    @Test
+    public void canMaintainOrderOnReload() throws Exception {
+        // Copy the resources to the file system
+        File eventconfXml = copyEventConfig("order/eventconf.empty.xml", "eventconf.xml");
+
+        // Load
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+        eventConfDao.setConfigResource(new FileSystemResource(eventconfXml));
+        eventConfDao.afterPropertiesSet();
+        assertEquals(0, eventConfDao.getAllEvents().size());
+
+        EventBuilder eb = new EventBuilder("uei.opennms.org/test/order", "JUnit");
+        Event event = eventConfDao.findByEvent(eb.getEvent());
+        assertNull("no event should match", event);
+
+        // Replace the eventconf.xml with one that references 1
+        Thread.sleep(1000);
+        copyEventConfig("order/eventconf.1.xml", "eventconf.xml");
+        copyEventConfig("order/1.events.xml", "1.events.xml");
+
+        // Reload
+        eventConfDao.reload();
+        assertEquals(1, eventConfDao.getAllEvents().size());
+
+        event = eventConfDao.findByEvent(eb.getEvent());
+        assertEquals("Critical", event.getSeverity());
+
+        // Replace the eventconf.xml with one that references 2 and then 1
+        Thread.sleep(1000);
+        copyEventConfig("order/eventconf.21.xml", "eventconf.xml");
+        copyEventConfig("order/2.events.xml", "2.events.xml");
+
+        // Reload
+        eventConfDao.reload();
+        assertEquals(2, eventConfDao.getAllEvents().size());
+
+        event = eventConfDao.findByEvent(eb.getEvent());
+        assertEquals("Major", event.getSeverity());
+    }
+
+    private File copyEventConfig(String from, String to) throws IOException {
+        final File dest = new File(tempFolder.getRoot(), to);
+        FileUtils.copyInputStreamToFile(getResourceForRelativePath(from).getInputStream(), dest);
+        return dest;
     }
 
     private Resource getResourceForRelativePath(String resourceSuffix) {

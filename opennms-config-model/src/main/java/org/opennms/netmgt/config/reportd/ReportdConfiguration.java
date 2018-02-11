@@ -80,7 +80,7 @@ public class ReportdConfiguration implements Serializable {
      *  
      */
     @XmlElement(name = "report")
-    private List<Report> m_reports = new ArrayList<Report>();
+    private List<Report> m_reports = new ArrayList<>();
 
     public void addReport(final Report report) {
         m_reports.add(report);

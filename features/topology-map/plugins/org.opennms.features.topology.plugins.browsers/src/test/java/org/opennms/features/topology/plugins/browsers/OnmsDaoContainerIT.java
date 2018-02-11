@@ -127,7 +127,7 @@ public class OnmsDaoContainerIT {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_databasePopulator.getNode1());
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");

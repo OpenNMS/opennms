@@ -46,16 +46,21 @@ public class SnmpGetter extends TableTracker {
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
     private SnmpAgentConfig m_agentConfig;
+    private Integer m_nodeid;
     private LocationAwareSnmpClient m_client;
     private String m_location;
     private static final Logger LOG = LoggerFactory.getLogger(SnmpGetter.class);
 
-    public SnmpGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location) {
+    public SnmpGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location, Integer nodeid) {
         m_agentConfig = peer;
         m_client = client;
         m_location = location;
+        m_nodeid=nodeid;
     }
 
+   public Integer getNodeId() {
+       return m_nodeid;
+   }
     
    public SnmpValue get(SnmpObjId entryoid,Integer index) {
        SnmpObjId instance = SnmpObjId.get(new int[] {index});
@@ -81,16 +86,18 @@ public class SnmpGetter extends TableTracker {
        try {
            val = m_client.get(m_agentConfig, oids).withLocation(m_location).execute().get();
        } catch (InterruptedException e) {
-           LOG.error("Exception while snmp get", e);
+           LOG.error("run: node [{}]: InterruptedException: snmp GET {}: {}", 
+                    getNodeId(), oids, e.getMessage());
            return null;
        } catch (ExecutionException e) {
-           LOG.error("Exception while snmp get", e);
+           LOG.error("run: node [{}]: ExecutionException: snmp GET {}: {}", 
+                    getNodeId(), oids,e.getMessage());
            return null;
        }
-      LOG.info("get: oid '{}' found value '{}'", oids, val);
-      if (val == null || val.size() != oids.size()) 
+       LOG.debug("get: oid '{}' found value '{}'", oids, val);
+       if (val == null || val.size() != oids.size()) 
           return null;
-      return val;
+       return val;
    }
 
 }

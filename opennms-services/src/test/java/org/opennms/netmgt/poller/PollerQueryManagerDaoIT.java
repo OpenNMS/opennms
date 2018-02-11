@@ -148,8 +148,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	@Before
 	public void setUp() throws Exception {
 
-		// System.setProperty("mock.logLevel", "DEBUG");
-		// System.setProperty("mock.debug", "true");
 		MockUtil.println("------------ Begin Test  --------------------------");
 		MockLogAppender.setupLogging();
 
@@ -1091,7 +1089,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         MockInterface iface = m_network.addInterface(nodeid, ipAddr);
 		m_db.writeInterface(iface);
 		
-		List<MockService> services = new ArrayList<MockService>();
+		List<MockService> services = new ArrayList<>();
 		for(String svcName : svcNames) {
 		    MockService svc = m_network.addService(nodeid, ipAddr, svcName);
 		    m_db.writeService(svc);
@@ -1116,15 +1114,15 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
 		anticipator.anticipateAllServices(svc1);
 
-        StringBuffer didNotOccur = new StringBuffer();
+		final StringBuilder didNotOccur = new StringBuilder();
 		for (MockService service : anticipator.waitForAnticipated(10000)) {
-		    didNotOccur.append(service.toString());
+			didNotOccur.append(service.toString());
 		}
-        StringBuffer unanticipatedStuff = new StringBuffer();
-        for (MockService service : anticipator.unanticipatedPolls()) {
-            unanticipatedStuff.append(service.toString());
-        }
-		
+		final StringBuilder unanticipatedStuff = new StringBuilder();
+		for (MockService service : anticipator.unanticipatedPolls()) {
+			unanticipatedStuff.append(service.toString());
+		}
+
 		assertEquals(unanticipatedStuff.toString(), "", didNotOccur.toString());
 
 		anticipateDown(svc1);

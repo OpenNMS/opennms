@@ -72,8 +72,8 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     private volatile EventSubscriptionService m_subscriptionService;
 
     private final Map<String, Method> m_ueiToHandlerMap = new HashMap<String, Method>();
-    private final List<Method> m_eventPreProcessors = new LinkedList<Method>();
-    private final List<Method> m_eventPostProcessors = new LinkedList<Method>();
+    private final List<Method> m_eventPreProcessors = new LinkedList<>();
+    private final List<Method> m_eventPostProcessors = new LinkedList<>();
     private final SortedSet<Method> m_exceptionHandlers = new TreeSet<Method>(createExceptionHandlerComparator());
     
     /**
@@ -342,7 +342,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
 
     private Comparator<Method> createExceptionHandlerComparator() {
-        final ClassComparator<Throwable> classComparator = new ClassComparator<Throwable>();
+        final ClassComparator<Throwable> classComparator = new ClassComparator<>();
         
         Comparator<Method> comparator = new Comparator<Method>() {
 

@@ -76,8 +76,8 @@ public class ThresholdingSet {
     private boolean m_initialized = false;
     private boolean m_hasThresholds = false;
 
-    protected final List<ThresholdGroup> m_thresholdGroups = new LinkedList<ThresholdGroup>();
-    protected final List<String> m_scheduledOutages = new ArrayList<String>();
+    protected final List<ThresholdGroup> m_thresholdGroups = new LinkedList<>();
+    protected final List<String> m_scheduledOutages = new ArrayList<>();
 
     /**
      * <p>Constructor for ThresholdingSet.</p>
@@ -161,7 +161,7 @@ public class ThresholdingSet {
                     }
                 }
             }
-            List<ThresholdGroup> newThresholdGroupList = new LinkedList<ThresholdGroup>();
+            List<ThresholdGroup> newThresholdGroupList = new LinkedList<>();
             for (String groupName : groupNameList) {
                 // Check if group exist on current configured list
                 ThresholdGroup foundGroup = null;
@@ -261,7 +261,7 @@ public class ThresholdingSet {
      * @return a {@link java.util.List} object.
      */
     protected final List<Event> applyThresholds(CollectionResourceWrapper resourceWrapper, Map<String, CollectionAttribute> attributesMap) {
-        List<Event> eventsList = new LinkedList<Event>();
+        List<Event> eventsList = new LinkedList<>();
         if (attributesMap == null || attributesMap.size() == 0) {
             LOG.debug("applyThresholds: Ignoring resource {} because required attributes map is empty.", resourceWrapper);
             return eventsList;
@@ -399,7 +399,7 @@ public class ThresholdingSet {
     private static final List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) {
         ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
 
-        List<String> groupNameList = new LinkedList<String>();
+        List<String> groupNameList = new LinkedList<>();
         for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackages()) {
 
             // Make certain the the current service is in the package and enabled!

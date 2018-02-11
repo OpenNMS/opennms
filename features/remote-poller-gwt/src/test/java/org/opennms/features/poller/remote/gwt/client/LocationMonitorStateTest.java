@@ -43,7 +43,7 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testAllMonitorsStarted() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
 			monitors.add(getMonitor("STARTED"));
 		}
@@ -61,7 +61,7 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testAtLeastOneMonitorStarted() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
 			monitors.add(getMonitor("DISCONNECTED"));
 		}
@@ -76,7 +76,7 @@ public class LocationMonitorStateTest {
 	
 	@Test
 	public void testAllButOneMonitorsDisconnected() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
 			monitors.add(getMonitor("DISCONNECTED"));
 		}
@@ -94,8 +94,8 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testMarkerStatusGreen() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
-		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
+		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<>();
 		for (int i = 0; i< 5; i++) {
 			GWTLocationMonitor monitor = getMonitor("STARTED");
 			monitors.add(monitor);
@@ -121,8 +121,8 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testMarkerStatusAllButOneNonStoppedDisconnected() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
-		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
+		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<>();
 
 		GWTLocationMonitor monitor = getMonitor("STARTED");
 		monitors.add(monitor);
@@ -143,8 +143,8 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testMarkerStatusSomeReportDownStatus() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
-		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
+		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<>();
 		
 		int httpServiceId = ++count;
 		int ftpServiceId = ++count;
@@ -189,8 +189,8 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testMarkerStatusOneOfTwoServicesDown() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
-		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
+		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<>();
 		for (int i = 0; i< 5; i++) {
 			GWTLocationMonitor monitor = getMonitor("STARTED");
 			monitors.add(monitor);
@@ -216,8 +216,8 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testMarkerStatusOneServiceDown() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
-		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
+		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<>();
 		for (int i = 0; i< 5; i++) {
 			GWTLocationMonitor monitor = getMonitor("STARTED");
 			monitors.add(monitor);
@@ -236,8 +236,8 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testMarkerStatusTwoOfTwoServicesDown() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
-		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
+		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<>();
 		for (int i = 0; i< 5; i++) {
 			GWTLocationMonitor monitor = getMonitor("STARTED");
 			monitors.add(monitor);
@@ -263,7 +263,7 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testMarkerStatusAllNonStoppedMonitorsDisconnected() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
 		monitors.add(getMonitor("STOPPED"));
 		monitors.add(getMonitor("STOPPED"));
 		monitors.add(getMonitor("DISCONNECTED"));
@@ -276,7 +276,7 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testMarkerStatusAllRegisteredMonitorsDisconnected() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
 		monitors.add(getMonitor("DISCONNECTED"));
 		monitors.add(getMonitor("DISCONNECTED"));
 		monitors.add(getMonitor("DISCONNECTED"));
@@ -287,7 +287,7 @@ public class LocationMonitorStateTest {
 
 	@Test
 	public void testMarkerStatusOnlyOneRegisteredMonitorIsStopped() {
-		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
+		Collection<GWTLocationMonitor> monitors = new ArrayList<>();
 		monitors.add(getMonitor("STOPPED"));
 		
 		LocationMonitorState lms = new LocationMonitorState(monitors, null);

@@ -94,7 +94,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     private JdbcTemplate jdbcTemplate; // this does not have a m_ per our naming conventions to make it similar to Spring.
 
-    private static Set<TemporaryDatabasePostgreSQL> s_toDestroy = new HashSet<TemporaryDatabasePostgreSQL>();
+    private static Set<TemporaryDatabasePostgreSQL> s_toDestroy = new HashSet<>();
 
     private static boolean s_shutdownHookInstalled = false;
 
@@ -127,7 +127,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     }
 
     public TemporaryDatabasePostgreSQL(String testDatabase, String driver, String url,
-                             String adminUser, String adminPassword, boolean useExisting) throws Exception {
+                             String adminUser, String adminPassword, boolean useExisting) {
         // Append the current object's hashcode to make this value truly unique
         m_testDatabase = testDatabase != null ? testDatabase : getDatabaseName(this);
         m_driver = driver;

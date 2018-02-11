@@ -143,7 +143,7 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
             
             for (TriggerKey key : getScheduler().getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(JOB_GROUP))) {
                 CronTrigger t = (CronTrigger)getScheduler().getTrigger(key);
-                StringBuilder sb = new StringBuilder("trigger: ");
+                final StringBuilder sb = new StringBuilder("trigger: ");
                 sb.append(key.getName());
                 sb.append(", calendar name: ");
                 sb.append(t.getCalendarName());

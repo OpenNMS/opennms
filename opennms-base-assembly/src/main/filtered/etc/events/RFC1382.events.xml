@@ -1,78 +1,72 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: RFC1382-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.10.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rfc1382/traps/x25Restart</uei>
-	<event-label>RFC1382-MIB defined trap event: x25Restart</event-label>
-	<descr>
-&lt;p&gt;This trap means the X.25 PLE sent or
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.10.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc1382/traps/x25Restart</uei>
+      <event-label>RFC1382-MIB defined trap event: x25Restart</event-label>
+      <descr>&lt;p>This trap means the X.25 PLE sent or
 received a restart packet.  The restart that
 brings up the link should not send a
 x25Restart trap so the interface should send
 a linkUp trap.  Sending this trap means the
 agent does not send a linkDown and linkUp
-trap.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+trap.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	x25OperIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	x25OperIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			x25Restart trap received 
-			x25OperIndex=%parm[#1]%&lt;/p&gt;
+			x25OperIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.10.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rfc1382/traps/x25Reset</uei>
-	<event-label>RFC1382-MIB defined trap event: x25Reset</event-label>
-	<descr>
-&lt;p&gt;If the PLE sends or receives a reset, the
-agent should send an x25Reset trap.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.10.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc1382/traps/x25Reset</uei>
+      <event-label>RFC1382-MIB defined trap event: x25Reset</event-label>
+      <descr>&lt;p>If the PLE sends or receives a reset, the
+agent should send an x25Reset trap.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	x25CircuitIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	x25CircuitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	x25CircuitChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	x25CircuitChannel&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			x25Reset trap received 
 			x25CircuitIndex=%parm[#1]% 
-			x25CircuitChannel=%parm[#2]%&lt;/p&gt;
+			x25CircuitChannel=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
-</event>
-<!-- End of auto generated data from MIB: RFC1382-MIB -->
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
+   </event>
 </events>

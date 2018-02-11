@@ -158,7 +158,7 @@ public class UpsertIT implements InitializingBean {
         private final int m_nodeId;
         private final int m_ifIndex;
         private final String m_ifName;
-        private AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>();
+        private AtomicReference<Throwable> m_throwable = new AtomicReference<>();
         
         public Inserter(UpsertService upsertService, int nodeId, int ifIndex, String ifName) {
             m_upsertService = upsertService;

@@ -57,7 +57,7 @@ public class EmailDestination implements Destination {
 
     /** The filters. */
     @XmlElement(name = "filter", required = false)
-    private List<EmailFilter> m_filters = new ArrayList<EmailFilter>();
+    private List<EmailFilter> m_filters = new ArrayList<>();
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.alarmd.api.Destination#isFirstOccurrenceOnly()

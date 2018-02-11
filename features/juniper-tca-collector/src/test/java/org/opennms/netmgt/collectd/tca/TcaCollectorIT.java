@@ -52,7 +52,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
-import org.opennms.netmgt.collectd.DefaultCollectionAgent;
+import org.opennms.netmgt.collectd.DefaultSnmpCollectionAgent;
 import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.tca.config.TcaDataCollection;
 import org.opennms.netmgt.collectd.tca.config.TcaDataCollectionConfig;
@@ -198,7 +198,7 @@ public class TcaCollectorIT implements InitializingBean {
 
 		SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
-		m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+		m_collectionAgent = DefaultSnmpCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
 		
 		TcaRrd rrd = new TcaRrd();
 		rrd.addRra("RRA:AVERAGE:0.5:1:3600");
@@ -282,7 +282,7 @@ public class TcaCollectorIT implements InitializingBean {
 		collectionSet.visit(persister);
 
 		// Generate new SNMP Data
-		StringBuffer sb = new StringBuffer("|25|");
+		final StringBuilder sb = new StringBuilder("|25|");
 		long ts = 1327451787l;
 		for (int i = 0; i < 25; i++) {
 			sb.append(ts++);

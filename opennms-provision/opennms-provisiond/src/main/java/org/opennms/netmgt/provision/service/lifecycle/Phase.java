@@ -136,7 +136,7 @@ public class Phase extends BatchTask {
 //    }
 //    
 //    private PhaseMethod[] findPhaseMethods(Object provider) {
-//        List<PhaseMethod> methods = new ArrayList<PhaseMethod>();
+//        List<PhaseMethod> methods = new ArrayList<>();
 //        for(Method method : provider.getClass().getMethods()) {
 //            if (isPhaseMethod(method)) {
 //                methods.add(new PhaseMethod(this, provider, method));

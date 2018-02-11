@@ -346,12 +346,7 @@ public class ZonedDateTimeBuilder {
      * @return
      */
     public static ZoneId parseZoneId(String value) {
-        try {
-            return ZoneId.of(value, TIME_ZONE_MAPPINGS);
-        } catch (DateTimeException e) {
-            LOG.warn("Could not parse time zone: {}", value);
-            return null;
-        }
+        return ZoneId.of(value, TIME_ZONE_MAPPINGS);
     }
 
     private Integer m_year;

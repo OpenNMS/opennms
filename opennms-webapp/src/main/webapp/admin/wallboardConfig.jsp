@@ -43,5 +43,5 @@
     <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 
-<iframe src="osgi/wallboard-config" style="height:100%; width:100%;"></iframe>
+<iframe src="admin/wallboard-config" style="height:100%; width:100%;"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

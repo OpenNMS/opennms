@@ -99,7 +99,7 @@ public class GraphAlgorithms {
             return Collections.emptySet();
         } else {
             return reducedStatus.get().getIndices().stream()
-                .map(idx -> childEdges.get(idx))
+                .map(childEdges::get)
                 .collect(Collectors.toSet());
         }
     }

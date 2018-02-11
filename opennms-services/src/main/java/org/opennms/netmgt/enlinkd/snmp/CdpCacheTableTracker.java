@@ -227,7 +227,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		}
 
 		public CdpLink getLink() {
-            LOG.info("processCdpCacheRow: row index: cdpCacheIfindex: {} cdpCacheDeviceIndex: {}",  
+            LOG.debug("processCdpCacheRow: row index: cdpCacheIfindex: {} cdpCacheDeviceIndex: {}",  
                      getCdpCacheIfIndex(), getCdpCacheDeviceIndex());
             CdpLink link = new CdpLink();
             

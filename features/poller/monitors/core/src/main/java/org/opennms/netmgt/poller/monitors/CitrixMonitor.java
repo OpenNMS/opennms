@@ -130,7 +130,7 @@ final public class CitrixMonitor extends AbstractServiceMonitor {
                 //
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                StringBuffer buffer = new StringBuffer();
+                final StringBuilder buffer = new StringBuilder();
 
                 // Not an infinite loop...socket timeout will break this out
                 // of the loop if "ICA" string is never read.

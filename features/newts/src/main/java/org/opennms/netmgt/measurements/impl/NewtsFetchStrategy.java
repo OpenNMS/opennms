@@ -92,11 +92,11 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsFetchStrategy.class);
 
-    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 5*60*1000);
+    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 5L * 60L * 1000L);
 
     public static final int INTERVAL_DIVIDER = Integer.getInteger("org.opennms.newts.query.interval_divider", 2);
 
-    public static final long DEFAULT_HEARTBEAT_MS = Long.getLong("org.opennms.newts.query.heartbeat", 450*1000);
+    public static final long DEFAULT_HEARTBEAT_MS = Long.getLong("org.opennms.newts.query.heartbeat", 450L * 1000L);
 
     public static final int PARALLELISM = Integer.getInteger("org.opennms.newts.query.parallelism", Runtime.getRuntime().availableProcessors());
 

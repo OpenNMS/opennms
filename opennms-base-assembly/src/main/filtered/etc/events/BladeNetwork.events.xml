@@ -1,2763 +1,2537 @@
-<!-- Start of auto generated data from MIB: BNT-GbESM-10Ub-RS-MIB -->
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwDefGwUp</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwDefGwUp</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwDefGwUp trap signifies that the default gateway is alive. 
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwDefGwUp</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwDefGwUp</event-label>
+      <descr>&lt;p>A altSwDefGwUp trap signifies that the default gateway is alive. 
 ipCurCfgGwIndex is the index of the Gateway in ipCurCfgGwTable.
 The range for ipCurCfgGwIndex is from 1 to ipGatewayTableMax.
-ipCurCfgGwAddr is the IP address of the default gateway.</p><table>
-	<tr><td><b>
+ipCurCfgGwAddr is the IP address of the default gateway.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipCurCfgGwIndex</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	ipCurCfgGwIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipCurCfgGwAddr</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	ipCurCfgGwAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#6]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwDefGwUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			ipCurCfgGwIndex=%parm[#2]% 
 			ipCurCfgGwAddr=%parm[#3]% 
 			sysName=%parm[#4]% 
 			sysLocation=%parm[#5]% 
-			sysContact=%parm[#6]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwDefGwDown</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwDefGwDown</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwDefGwDown trap signifies that the default gateway is down.
+			sysContact=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwDefGwDown</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwDefGwDown</event-label>
+      <descr>&lt;p>A altSwDefGwDown trap signifies that the default gateway is down.
 ipCurCfgGwIndex is the index of the Gateway in ipCurCfgGwTable. 
 The range for ipCurCfgGwIndex is from 1 to ipGatewayTableMax.
-ipCurCfgGwAddr is the IP address of the default gateway.</p><table>
-	<tr><td><b>
+ipCurCfgGwAddr is the IP address of the default gateway.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipCurCfgGwIndex</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	ipCurCfgGwIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipCurCfgGwAddr</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	ipCurCfgGwAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#6]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwDefGwDown trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			ipCurCfgGwIndex=%parm[#2]% 
 			ipCurCfgGwAddr=%parm[#3]% 
 			sysName=%parm[#4]% 
 			sysLocation=%parm[#5]% 
-			sysContact=%parm[#6]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwDefGwInService</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwDefGwInService</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwDefGwInService trap signifies that the default gateway is
+			sysContact=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwDefGwInService</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwDefGwInService</event-label>
+      <descr>&lt;p>A altSwDefGwInService trap signifies that the default gateway is
 up and in service. 
 ipCurCfgGwIndex is the index of the Gateway in ipCurCfgGwTable. 
 The range for ipCurCfgGwIndex is from 1 to ipGatewayTableMax. 
-ipCurCfgGwAddr is the IP address of the default gateway.</p><table>
-	<tr><td><b>
+ipCurCfgGwAddr is the IP address of the default gateway.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipCurCfgGwIndex</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	ipCurCfgGwIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipCurCfgGwAddr</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	ipCurCfgGwAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#6]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwDefGwInService trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			ipCurCfgGwIndex=%parm[#2]% 
 			ipCurCfgGwAddr=%parm[#3]% 
 			sysName=%parm[#4]% 
 			sysLocation=%parm[#5]% 
-			sysContact=%parm[#6]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwDefGwNotInService</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwDefGwNotInService</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwDefGwNotInService trap signifies that the default gateway 
+			sysContact=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwDefGwNotInService</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwDefGwNotInService</event-label>
+      <descr>&lt;p>A altSwDefGwNotInService trap signifies that the default gateway 
 is alive but not in service. 
 ipCurCfgGwIndex is the index of the Gateway in ipCurCfgGwTable. 
 The range for ipCurCfgGwIndex is from 1 to ipGatewayTableMax. 
-ipCurCfgGwAddr is the IP address of the default gateway.</p><table>
-	<tr><td><b>
+ipCurCfgGwAddr is the IP address of the default gateway.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipCurCfgGwIndex</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	ipCurCfgGwIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ipCurCfgGwAddr</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	ipCurCfgGwAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#6]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwDefGwNotInService trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			ipCurCfgGwIndex=%parm[#2]% 
 			ipCurCfgGwAddr=%parm[#3]% 
 			sysName=%parm[#4]% 
 			sysLocation=%parm[#5]% 
-			sysContact=%parm[#6]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>16</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwVrrpNewMaster</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwVrrpNewMaster</event-label>
-	<descr>
-<![CDATA[
-<p>The altSwVrrpNewMaster trap indicates that the sending agent has 
+			sysContact=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwVrrpNewMaster</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwVrrpNewMaster</event-label>
+      <descr>&lt;p>The altSwVrrpNewMaster trap indicates that the sending agent has 
 transitioned to 'Master' state.
 vrrpCurCfgVirtRtrIndx is the VRRP virtual router table index 
 referenced in vrrpCurCfgVirtRtrTable. The range is from 1 to 
 vrrpVirtRtrTableMaxSize.
-vrrpCurCfgVirtRtrAddr is the VRRP virtual router IP address.</p><table>
-	<tr><td><b>
+vrrpCurCfgVirtRtrAddr is the VRRP virtual router IP address.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	vrrpCurCfgVirtRtrIndx</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	vrrpCurCfgVirtRtrIndx&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	vrrpCurCfgVirtRtrAddr</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	vrrpCurCfgVirtRtrAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#6]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwVrrpNewMaster trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			vrrpCurCfgVirtRtrIndx=%parm[#2]% 
 			vrrpCurCfgVirtRtrAddr=%parm[#3]% 
 			sysName=%parm[#4]% 
 			sysLocation=%parm[#5]% 
-			sysContact=%parm[#6]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>17</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwVrrpNewBackup</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwVrrpNewBackup</event-label>
-	<descr>
-<![CDATA[
-<p>The altSwVrrpNewBackup trap indicates that the sending agent has 
+			sysContact=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwVrrpNewBackup</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwVrrpNewBackup</event-label>
+      <descr>&lt;p>The altSwVrrpNewBackup trap indicates that the sending agent has 
 transitioned to 'Backup' state.
 vrrpCurCfgVirtRtrIndx is the VRRP virtual router table index 
 referenced in vrrpCurCfgVirtRtrTable. The range is from 1 to 
 vrrpVirtRtrTableMaxSize.
-vrrpCurCfgVirtRtrAddr is the VRRP virtual router IP address.</p><table>
-	<tr><td><b>
+vrrpCurCfgVirtRtrAddr is the VRRP virtual router IP address.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	vrrpCurCfgVirtRtrIndx</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	vrrpCurCfgVirtRtrIndx&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	vrrpCurCfgVirtRtrAddr</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	vrrpCurCfgVirtRtrAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#6]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwVrrpNewBackup trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			vrrpCurCfgVirtRtrIndx=%parm[#2]% 
 			vrrpCurCfgVirtRtrAddr=%parm[#3]% 
 			sysName=%parm[#4]% 
 			sysLocation=%parm[#5]% 
-			sysContact=%parm[#6]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>18</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwVrrpAuthFailure</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwVrrpAuthFailure</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwVrrpAuthFailure trap signifies that a packet has been received
+			sysContact=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwVrrpAuthFailure</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwVrrpAuthFailure</event-label>
+      <descr>&lt;p>A altSwVrrpAuthFailure trap signifies that a packet has been received
 from a router whose authentication key or authentication type 
 conflicts with this router's authentication key or authentication 
 type. Implementation of this trap is optional.
 vrrpCurCfgIfIndx is the VRRP interface index. This is equivalent to 
 ifIndex in RFC 1213 mib. The range is from 1 to vrrpIfTableMaxSize.
 vrrpCurCfgIfPasswd is the password for authentication. It is a
-DisplayString of 0 to 7 characters.</p><table>
-	<tr><td><b>
+DisplayString of 0 to 7 characters.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	vrrpCurCfgIfIndx</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	vrrpCurCfgIfIndx&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	vrrpCurCfgIfPasswd</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	vrrpCurCfgIfPasswd&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#6]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwVrrpAuthFailure trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			vrrpCurCfgIfIndx=%parm[#2]% 
 			vrrpCurCfgIfPasswd=%parm[#3]% 
 			sysName=%parm[#4]% 
 			sysLocation=%parm[#5]% 
-			sysContact=%parm[#6]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>19</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwLoginFailure</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwLoginFailure</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwLoginFailure trap signifies that someone failed to enter a 
+			sysContact=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwLoginFailure</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwLoginFailure</event-label>
+      <descr>&lt;p>A altSwLoginFailure trap signifies that someone failed to enter a 
 valid username/password combination. 
 altSwTrapDisplayString specifies whether the login attempt was from 
 CONSOLE or TELNET. In case of TELNET login it also specifies the IP 
-address of the host from which the attempt was made.</p><table>
-	<tr><td><b>
+address of the host from which the attempt was made.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwLoginFailure trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>22</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwTempExceedThreshold</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwTempExceedThreshold</event-label>
-	<descr>
-<![CDATA[
-<p>An altSwTempExceedThreshold trap signifies that the
-switch temperature has exceeded maximum safety limits.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwTempExceedThreshold</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwTempExceedThreshold</event-label>
+      <descr>&lt;p>An altSwTempExceedThreshold trap signifies that the
+switch temperature has exceeded maximum safety limits.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwTempExceedThreshold trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>25</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwValidLogin</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwValidLogin</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwValidLogin trap signifies that a user login has occured.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwValidLogin</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwValidLogin</event-label>
+      <descr>&lt;p>A altSwValidLogin trap signifies that a user login has occured.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwValidLogin trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>27</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwApplyComplete</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwApplyComplete</event-label>
-	<descr>
-<![CDATA[
-<p>A swApplyComplete signifies that new configuration
-has been applied.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>27</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwApplyComplete</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwApplyComplete</event-label>
+      <descr>&lt;p>A swApplyComplete signifies that new configuration
+has been applied.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwApplyComplete trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>28</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwSaveComplete</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwSaveComplete</event-label>
-	<descr>
-<![CDATA[
-<p>A swApplyComplete signifies that new configuration
-has been saved.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>28</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwSaveComplete</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwSaveComplete</event-label>
+      <descr>&lt;p>A swApplyComplete signifies that new configuration
+has been saved.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwSaveComplete trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>29</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwFwDownloadSucess</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwFwDownloadSucess</event-label>
-	<descr>
-<![CDATA[
-<p>A swFwDownloadSuccess signifies that firmware
-has been downloaded to [image1|image2|boot image].</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>29</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwFwDownloadSucess</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwFwDownloadSucess</event-label>
+      <descr>&lt;p>A swFwDownloadSuccess signifies that firmware
+has been downloaded to [image1|image2|boot image].&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwFwDownloadSucess trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>30</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwFwDownloadFailure</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwFwDownloadFailure</event-label>
-	<descr>
-<![CDATA[
-<p>A swFwDownloadFailure signifies that firmware 
-downloaded failed to [image1|image2|boot image].</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>30</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwFwDownloadFailure</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwFwDownloadFailure</event-label>
+      <descr>&lt;p>A swFwDownloadFailure signifies that firmware 
+downloaded failed to [image1|image2|boot image].&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwFwDownloadFailure trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>42</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStgNewRoot</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStgNewRoot</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStgNewRoot trap signifies that the bridge has become the new root of the STG.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>42</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStgNewRoot</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStgNewRoot</event-label>
+      <descr>&lt;p>A altSwStgNewRoot trap signifies that the bridge has become the new root of the STG.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	stgCurCfgIndex</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	stgCurCfgIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStgNewRoot trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			stgCurCfgIndex=%parm[#2]% 
 			sysName=%parm[#3]% 
 			sysLocation=%parm[#4]% 
-			sysContact=%parm[#5]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>43</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwCistNewRoot</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwCistNewRoot</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwCistNewRoot trap signifies that the bridge has become the new root of the CIST.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>43</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwCistNewRoot</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwCistNewRoot</event-label>
+      <descr>&lt;p>A altSwCistNewRoot trap signifies that the bridge has become the new root of the CIST.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwCistNewRoot trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>44</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStgTopologyChanged</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStgTopologyChanged</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStgTopologyChanged trap signifies that there was a STG topology change.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>44</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStgTopologyChanged</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStgTopologyChanged</event-label>
+      <descr>&lt;p>A altSwStgTopologyChanged trap signifies that there was a STG topology change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	stgCurCfgIndex</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	stgCurCfgIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStgTopologyChanged trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			stgCurCfgIndex=%parm[#2]% 
 			sysName=%parm[#3]% 
 			sysLocation=%parm[#4]% 
-			sysContact=%parm[#5]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>45</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwCistTopologyChanged</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwCistTopologyChanged</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwCistTopologyChanged trap signifies that there was a CIST topology change.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>45</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwCistTopologyChanged</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwCistTopologyChanged</event-label>
+      <descr>&lt;p>A altSwCistTopologyChanged trap signifies that there was a CIST topology change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwCistTopologyChanged trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>46</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksMasterUp</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksMasterUp</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwHotlinksMasterUp trap signifies that the Master interface is active.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>46</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksMasterUp</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksMasterUp</event-label>
+      <descr>&lt;p>A altSwHotlinksMasterUp trap signifies that the Master interface is active.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwHotlinksMasterUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>47</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksMasterDn</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksMasterDn</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwHotlinksMasterDn trap signifies that the Master interface is not active.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>47</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksMasterDn</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksMasterDn</event-label>
+      <descr>&lt;p>A altSwHotlinksMasterDn trap signifies that the Master interface is not active.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwHotlinksMasterDn trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>48</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksBackupUp</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksBackupUp</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwHotlinksBackupUp trap signifies that the Backup interface is active.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>48</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksBackupUp</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksBackupUp</event-label>
+      <descr>&lt;p>A altSwHotlinksBackupUp trap signifies that the Backup interface is active.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwHotlinksBackupUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>49</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksBackupDn</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksBackupDn</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwHotlinksBackupDn trap signifies that the Backup interface is not active.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>49</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksBackupDn</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksBackupDn</event-label>
+      <descr>&lt;p>A altSwHotlinksBackupDn trap signifies that the Backup interface is not active.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwHotlinksBackupDn trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>50</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksNone</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksNone</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwHotlinksNone trap signifies that there are no active interfaces.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>50</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwHotlinksNone</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwHotlinksNone</event-label>
+      <descr>&lt;p>A altSwHotlinksNone trap signifies that there are no active interfaces.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwHotlinksNone trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>61</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwNtpNotServer</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwNtpNotServer</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwNtpNotServer trap is sent when cannot contact primary or secondary Ntp server.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>61</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwNtpNotServer</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwNtpNotServer</event-label>
+      <descr>&lt;p>A altSwNtpNotServer trap is sent when cannot contact primary or secondary Ntp server.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwNtpNotServer trap received 
 			sysName=%parm[#1]% 
 			sysLocation=%parm[#2]% 
-			sysContact=%parm[#3]%</p>
-]]>		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>62</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwNtpUpdateClock</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwNtpUpdateClock</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwNtpUpdateClock trap is sent when received Ntp update.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>62</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwNtpUpdateClock</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwNtpUpdateClock</event-label>
+      <descr>&lt;p>A altSwNtpUpdateClock trap is sent when received Ntp update.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwNtpUpdateClock trap received 
 			sysName=%parm[#1]% 
 			sysLocation=%parm[#2]% 
-			sysContact=%parm[#3]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>63</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwValidLogout</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwValidLogout</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwValidLogout trap signifies that a user logout has occured.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>63</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwValidLogout</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwValidLogout</event-label>
+      <descr>&lt;p>A altSwValidLogout trap signifies that a user logout has occured.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwValidLogout trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>64</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStgBlockingState</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStgBlockingState</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStgBlockingState trap is sent when port state is changed in blocking state.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>64</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStgBlockingState</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStgBlockingState</event-label>
+      <descr>&lt;p>A altSwStgBlockingState trap is sent when port state is changed in blocking state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStgBlockingState trap received 
 			sysName=%parm[#1]% 
 			sysLocation=%parm[#2]% 
-			sysContact=%parm[#3]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>65</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwECMPGatewayUp</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwECMPGatewayUp</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwECMPGatewayUp trap signifies that the ECMP gateway is up.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>65</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwECMPGatewayUp</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwECMPGatewayUp</event-label>
+      <descr>&lt;p>A altSwECMPGatewayUp trap signifies that the ECMP gateway is up.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwECMPGatewayUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>66</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwECMPGatewayDown</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwECMPGatewayDown</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwECMPGatewayDown trap signifies that the ECMP gateway is down.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>66</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwECMPGatewayDown</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwECMPGatewayDown</event-label>
+      <descr>&lt;p>A altSwECMPGatewayDown trap signifies that the ECMP gateway is down.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwECMPGatewayDown trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>71</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwLACPPortBlocked</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwLACPPortBlocked</event-label>
-	<descr>
-<![CDATA[
-<p>An altSwLACPPortBlocked trap signifies that LACP is operationally down on a port, and traffic is blocked on the port.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>71</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwLACPPortBlocked</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwLACPPortBlocked</event-label>
+      <descr>&lt;p>An altSwLACPPortBlocked trap signifies that LACP is operationally down on a port, and traffic is blocked on the port.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwLACPPortBlocked trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>72</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwLACPPortUnblocked</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwLACPPortUnblocked</event-label>
-	<descr>
-<![CDATA[
-<p>An altSwLACPPortUnblocked trap signifies that LACP is operationally up on a port, and traffic is no longer blocked on the port.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>72</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwLACPPortUnblocked</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwLACPPortUnblocked</event-label>
+      <descr>&lt;p>An altSwLACPPortUnblocked trap signifies that LACP is operationally up on a port, and traffic is no longer blocked on the port.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwLACPPortUnblocked trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>73</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackSwitchAttached</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackSwitchAttached</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackSwitchAttached trap signifies that a new switch has attached to the stack.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>73</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackSwitchAttached</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackSwitchAttached</event-label>
+      <descr>&lt;p>A altSwStackSwitchAttached trap signifies that a new switch has attached to the stack.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackSwitchAttached trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>74</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackSwitchDettached</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackSwitchDettached</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackSwitchDettached trap signifies that a new switch has dettached from the stack.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>74</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackSwitchDettached</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackSwitchDettached</event-label>
+      <descr>&lt;p>A altSwStackSwitchDettached trap signifies that a new switch has dettached from the stack.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackSwitchDettached trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>75</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackBackupPresent</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackBackupPresent</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackBackupPresent trap signifies that a new backup has been set.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>75</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackBackupPresent</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackBackupPresent</event-label>
+      <descr>&lt;p>A altSwStackBackupPresent trap signifies that a new backup has been set.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackBackupPresent trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>76</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackBackupGone</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackBackupGone</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackBackupGone trap signifies that the backup switch has been made unavailable.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>76</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackBackupGone</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackBackupGone</event-label>
+      <descr>&lt;p>A altSwStackBackupGone trap signifies that the backup switch has been made unavailable.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackBackupGone trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>77</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altVMGroupVMotion</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altVMGroupVMotion</event-label>
-	<descr>
-<![CDATA[
-<p>A altVMGroupVMotion trap signifies that a virtual machine has moved from a port to another.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>77</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altVMGroupVMotion</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altVMGroupVMotion</event-label>
+      <descr>&lt;p>A altVMGroupVMotion trap signifies that a virtual machine has moved from a port to another.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altVMGroupVMotion trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>78</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altVMGroupVMOnline</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altVMGroupVMOnline</event-label>
-	<descr>
-<![CDATA[
-<p>A altVMGroupVMOnline trap signifies that a advance provisioned virtual machine has came online.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>78</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altVMGroupVMOnline</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altVMGroupVMOnline</event-label>
+      <descr>&lt;p>A altVMGroupVMOnline trap signifies that a advance provisioned virtual machine has came online.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altVMGroupVMOnline trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>79</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altVMGroupVMVlanChange</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altVMGroupVMVlanChange</event-label>
-	<descr>
-<![CDATA[
-<p>A altVMGroupVMVlanChange trap signifies that a virtual machine has entered into a vlan, or changed the vlan.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>79</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altVMGroupVMVlanChange</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altVMGroupVMVlanChange</event-label>
+      <descr>&lt;p>A altVMGroupVMVlanChange trap signifies that a virtual machine has entered into a vlan, or changed the vlan.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altVMGroupVMVlanChange trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>80</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackMasterAfterInit</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackMasterAfterInit</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackMasterAfterInit trap signifies that the switch 
-has become master after init</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>80</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackMasterAfterInit</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackMasterAfterInit</event-label>
+      <descr>&lt;p>A altSwStackMasterAfterInit trap signifies that the switch 
+has become master after init&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackMasterAfterInit trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>81</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackMasterFromBackup</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackMasterFromBackup</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackMasterFromBackup trap signifies that the switch 
-has become master from backup.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>81</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackMasterFromBackup</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackMasterFromBackup</event-label>
+      <descr>&lt;p>A altSwStackMasterFromBackup trap signifies that the switch 
+has become master from backup.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackMasterFromBackup trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>82</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackDuplicateJoinAttempt</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackDuplicateJoinAttempt</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackDuplicateJoinAttempt trap signifies that a new switch 
-with duplicate UUID/bay has tried to join the stack.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>82</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackDuplicateJoinAttempt</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackDuplicateJoinAttempt</event-label>
+      <descr>&lt;p>A altSwStackDuplicateJoinAttempt trap signifies that a new switch 
+with duplicate UUID/bay has tried to join the stack.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackDuplicateJoinAttempt trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>83</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackLinkUp</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackLinkUp</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackLinkUp signifies that a stack link has become up.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>83</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackLinkUp</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackLinkUp</event-label>
+      <descr>&lt;p>A altSwStackLinkUp signifies that a stack link has become up.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackLinkUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>84</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackLinkDown</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackLinkDown</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackLinkDown trap signifies that a stack link 
-has become down.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>84</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackLinkDown</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackLinkDown</event-label>
+      <descr>&lt;p>A altSwStackLinkDown trap signifies that a stack link 
+has become down.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackLinkDown trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>85</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackXferError</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackXferError</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackXferError trap signifies that a transfer between 
-the master and a member has terminated with error.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>85</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackXferError</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackXferError</event-label>
+      <descr>&lt;p>A altSwStackXferError trap signifies that a transfer between 
+the master and a member has terminated with error.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackXferError trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>86</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackXferSuccess</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackXferSuccess</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackXferSuccess trap signifies that a transfer between 
-the master and a member has terminated with no errors.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>86</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackXferSuccess</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackXferSuccess</event-label>
+      <descr>&lt;p>A altSwStackXferSuccess trap signifies that a transfer between 
+the master and a member has terminated with no errors.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackXferSuccess trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>87</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackSwitchTypeMismatch</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackSwitchTypeMismatch</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackSwitchTypeMismatch trap signifies that a new switch 
-of different type has attempted to join the stack.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>87</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackSwitchTypeMismatch</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackSwitchTypeMismatch</event-label>
+      <descr>&lt;p>A altSwStackSwitchTypeMismatch trap signifies that a new switch 
+of different type has attempted to join the stack.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackSwitchTypeMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>88</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackImageSlotMismatch</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackImageSlotMismatch</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackImageSlotMismatch trap signifies that the slot of the boot 
-image of a newly attached switch does not match that of the master.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>88</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackImageSlotMismatch</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackImageSlotMismatch</event-label>
+      <descr>&lt;p>A altSwStackImageSlotMismatch trap signifies that the slot of the boot 
+image of a newly attached switch does not match that of the master.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackImageSlotMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>89</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackImageVersMismatch</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackImageVersMismatch</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackImageVersMismatch trap signifies that the version 
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>89</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackImageVersMismatch</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackImageVersMismatch</event-label>
+      <descr>&lt;p>A altSwStackImageVersMismatch trap signifies that the version 
 of the boot image of a newly attached switch does not match 
-that of the master.</p><table>
-	<tr><td><b>
+that of the master.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackImageVersMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>90</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackChassisTypeMismatch</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackChassisTypeMismatch</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackChassisTypeMismatch trap signifies 
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>90</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackChassisTypeMismatch</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackChassisTypeMismatch</event-label>
+      <descr>&lt;p>A altSwStackChassisTypeMismatch trap signifies 
 that a new switch in a chassis of different and incompatible  
-type has attempted to join the stack.</p><table>
-	<tr><td><b>
+type has attempted to join the stack.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackChassisTypeMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>91</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackBcsBayMismatch</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackBcsBayMismatch</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackBcsBayMismatch trap signifies that a new switch 
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>91</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackBcsBayMismatch</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackBcsBayMismatch</event-label>
+      <descr>&lt;p>A altSwStackBcsBayMismatch trap signifies that a new switch 
 in a BCS chassis in bay with different and incompatible port mapping 
-has attempted to join the stack.</p><table>
-	<tr><td><b>
+has attempted to join the stack.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackBcsBayMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>92</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackBootCfgMismatch</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackBootCfgMismatch</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackBootCfgMismatch trap signifies that the booted config 
-of a newly attached switch does not match that of the master.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>92</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackBootCfgMismatch</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackBootCfgMismatch</event-label>
+      <descr>&lt;p>A altSwStackBootCfgMismatch trap signifies that the booted config 
+of a newly attached switch does not match that of the master.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackBootCfgMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>93</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackNvramMasterJoin</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackNvramMasterJoin</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackNvramMasterJoin trap signifies that a switch which was 
-configured as a master in NVRAM has attached to the stack.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>93</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackNvramMasterJoin</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackNvramMasterJoin</event-label>
+      <descr>&lt;p>A altSwStackNvramMasterJoin trap signifies that a switch which was 
+configured as a master in NVRAM has attached to the stack.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackNvramMasterJoin trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>94</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwStackForceDetach</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackForceDetach</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwStackForceDetach trap signifies that the master has sent 
-a FORCE DETACH message to a member.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>94</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwStackForceDetach</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwStackForceDetach</event-label>
+      <descr>&lt;p>A altSwStackForceDetach trap signifies that the master has sent 
+a FORCE DETACH message to a member.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwStackForceDetach trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>95</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwTempReturnThreshold</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwTempReturnThreshold</event-label>
-	<descr>
-<![CDATA[
-<p>An  altSwTempReturnThreshold trap signifies that the
-switch temperature has returned below maximum safety limits.</p><table>
-	<tr><td><b>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>95</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwTempReturnThreshold</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwTempReturnThreshold</event-label>
+      <descr>&lt;p>An  altSwTempReturnThreshold trap signifies that the
+switch temperature has returned below maximum safety limits.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwTempReturnThreshold trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>96</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwAmpTopologyUp</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwAmpTopologyUp</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwAmpTopologyUp trap signifies that active multi-path is
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>96</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwAmpTopologyUp</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwAmpTopologyUp</event-label>
+      <descr>&lt;p>A altSwAmpTopologyUp trap signifies that active multi-path is
 operational in the topology of the AMP group identified in
-the trap message.</p><table>
-	<tr><td><b>
+the trap message.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwAmpTopologyUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>97</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/BladeNetwork/altSwAmpTopologyDown</uei>
-	<event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwAmpTopologyDown</event-label>
-	<descr>
-<![CDATA[
-<p>A altSwAmpTopologyDown trap signifies that active multi-path is
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.26543.2.5.7</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>97</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BladeNetwork/altSwAmpTopologyDown</uei>
+      <event-label>BNT-GbESM-10Ub-RS-MIB defined trap event: altSwAmpTopologyDown</event-label>
+      <descr>&lt;p>A altSwAmpTopologyDown trap signifies that active multi-path is
 not operational in the topology of the AMP group identified
-in the trap message.</p><table>
-	<tr><td><b>
+in the trap message.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	altSwTrapDisplayString</b></td><td>
-	%parm[#1]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	altSwTrapDisplayString&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysName</b></td><td>
-	%parm[#2]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysLocation</b></td><td>
-	%parm[#3]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	sysLocation&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysContact</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	sysContact&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			altSwAmpTopologyDown trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
 			sysLocation=%parm[#3]% 
-			sysContact=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Minor</severity>
-</event>
+			sysContact=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+   </event>
 </events>
-<!-- End of auto generated data from MIB: BNT-GbESM-10Ub-RS-MIB -->

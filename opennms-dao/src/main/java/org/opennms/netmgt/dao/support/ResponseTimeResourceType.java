@@ -33,10 +33,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.collections.LazySet;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LazySet;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -144,7 +143,7 @@ public final class ResponseTimeResourceType implements OnmsResourceType {
         final String locationName = MonitoringLocationUtils.getLocationNameOrNullIfDefault(node);
 
         // Verify the existence of the individual interfaces
-        final LinkedList<OnmsResource> resources = new LinkedList<OnmsResource>();
+        final LinkedList<OnmsResource> resources = new LinkedList<>();
         for (final OnmsIpInterface i : node.getIpInterfaces()) {
             String ipAddr = InetAddressUtils.str(i.getIpAddress());
 

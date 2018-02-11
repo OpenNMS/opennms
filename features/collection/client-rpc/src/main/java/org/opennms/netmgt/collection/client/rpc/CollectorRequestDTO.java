@@ -56,6 +56,9 @@ public class CollectorRequestDTO implements RpcRequest {
     @XmlAttribute(name = "location")
     private String location;
 
+    @XmlAttribute(name="system-id")
+    private String systemId;
+
     @XmlAttribute(name = "class-name")
     private String className;
 
@@ -82,6 +85,15 @@ public class CollectorRequestDTO implements RpcRequest {
     @Override
     public String getLocation() {
         return location;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
     }
 
     public void setClassName(String className) {
@@ -139,7 +151,7 @@ public class CollectorRequestDTO implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(agent, location, className, timeToLiveMs, attributesNeedUnmarshaling);
+        return Objects.hash(agent, location, systemId, className, timeToLiveMs, attributesNeedUnmarshaling);
     }
 
     @Override
@@ -154,6 +166,7 @@ public class CollectorRequestDTO implements RpcRequest {
         CollectorRequestDTO other = (CollectorRequestDTO) obj;
         return Objects.equals(this.agent, other.agent)
                 && Objects.equals(this.location, other.location)
+                && Objects.equals(this.systemId, other.systemId)
                 && Objects.equals(this.className, other.className)
                 && Objects.equals(this.timeToLiveMs, other.timeToLiveMs)
                 && Objects.equals(this.attributes, other.attributes)

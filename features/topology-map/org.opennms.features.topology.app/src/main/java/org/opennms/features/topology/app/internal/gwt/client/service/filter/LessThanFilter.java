@@ -48,7 +48,7 @@ public class LessThanFilter extends AttributeComparisonFilter {
     
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         buf.append("(").append(getAttribute()).append("<=").append(m_value).append(")");
         return buf.toString();
     }

@@ -134,9 +134,12 @@
     <intercept-url pattern="/graph/graph.png" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/dashboard/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/coreweb/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+<<<<<<< HEAD
     
     <!-- ReST URL's for OSGi plugin manger to allow all users to test if subscription authenticated -->
     <intercept-url pattern="/licencemgr/rest/v1-0/licence-mgr/isauthenticated*" access="ROLE_USER,ROLE_DASHBOARD,ROLE_REST,ROLE_ADMIN"/>
+=======
+>>>>>>> develop
     
     <!-- ReST URL's for OSGi plugin manger restricted to admin and ReST users-->
     <intercept-url pattern="/licencemgr/**" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
@@ -150,7 +153,11 @@
     
     <!-- NrtCollection -->
     <intercept-url pattern="/amq/*" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> develop
     <!--Commented out for custom authentication filter<form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" />-->
     <http-basic />
     <logout logout-success-url="/" />

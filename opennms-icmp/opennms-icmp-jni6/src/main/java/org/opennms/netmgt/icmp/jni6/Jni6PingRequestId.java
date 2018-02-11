@@ -131,7 +131,7 @@ public class Jni6PingRequestId {
      */
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         buf.append(getClass().getSimpleName());
         buf.append('[');
         buf.append("addr = ").append(m_addr);

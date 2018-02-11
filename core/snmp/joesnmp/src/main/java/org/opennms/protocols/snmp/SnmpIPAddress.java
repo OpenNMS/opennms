@@ -319,7 +319,7 @@ public class SnmpIPAddress extends SnmpOctetString {
     public String toString() {
         byte[] data = getString();
 
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         buf.append((int) (data[0] < 0 ? 256 + data[0] : data[0])).append('.');
         buf.append((int) (data[1] < 0 ? 256 + data[1] : data[1])).append('.');
         buf.append((int) (data[2] < 0 ? 256 + data[2] : data[2])).append('.');

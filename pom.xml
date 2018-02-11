@@ -1224,7 +1224,11 @@
 
     <runMailTests>true</runMailTests>
     <poller.logfile>/tmp/remote-poller.log</poller.logfile>
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> develop
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>
     <rpm.build.executable>rpmbuild</rpm.build.executable>
@@ -1313,21 +1317,26 @@
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
+    <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
+    <jnaVersion>4.4.0</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
-    <karafVersion>4.0.8</karafVersion>
+    <karafVersion>4.1.2</karafVersion>
     <felixVersion>3.0.0</felixVersion>
     <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.8.2</log4j2Version>
-    <minaVersion>2.0.13</minaVersion>
-    <minionKarafVersion>${karafVersion}</minionKarafVersion>
-    <netty4Version>4.0.45.Final</netty4Version>
+    <mapstructVersion>1.2.0.CR1</mapstructVersion>
+    <minaVersion>2.0.16</minaVersion>
+    <minionKarafVersion>4.0.5</minionKarafVersion>
+    <mockitoVersion>1.10.19</mockitoVersion>
+    <netty4Version>4.1.9.Final</netty4Version>
     <newtsVersion>1.4.3</newtsVersion>
-    <paxExamVersion>4.9.2</paxExamVersion>
+    <paxExamVersion>4.11.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
+    <paxWebVersion>4.3.0</paxWebVersion>
     <protobufVersion>2.6.1</protobufVersion>
     <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
@@ -1372,6 +1381,7 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- moved here from opennms-pluginmanger -->
+<<<<<<< HEAD
     <pluginmanagerVersion>1.1.0-SNAPSHOT</pluginmanagerVersion>
     <licencemanagerVersion>1.1.0-SNAPSHOT</licencemanagerVersion>
     <featuremanagerVersion>1.1.0-SNAPSHOT</featuremanagerVersion>
@@ -1389,6 +1399,11 @@
     <!-- Set this false once you have a permanent licence generated and deployed -->
     <defaultRegenerateSubscription>true</defaultRegenerateSubscription>
 
+=======
+    <pluginmanagerVersion>1.0.5</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.5</licencemanagerVersion>
+    <featuremanagerVersion>1.0.5</featuremanagerVersion>
+>>>>>>> develop
   </properties>
 
   <profiles>
@@ -3720,13 +3735,21 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
+<<<<<<< HEAD
 	    <version>${mockitoVersion}</version>
+=======
+	<version>${mockitoVersion}</version>
+>>>>>>> develop
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
+<<<<<<< HEAD
 	    <version>${mockitoVersion}</version>
+=======
+	<version>${mockitoVersion}</version>
+>>>>>>> develop
         <scope>test</scope>
       </dependency>
       <dependency>

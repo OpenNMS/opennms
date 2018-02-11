@@ -63,7 +63,7 @@ class SnmpUtil extends Object {
     // syntax object into.
     //
     static {
-        m_syntaxArray = new ArrayList<SnmpSyntax>();
+        m_syntaxArray = new ArrayList<>();
     }
 
     /**

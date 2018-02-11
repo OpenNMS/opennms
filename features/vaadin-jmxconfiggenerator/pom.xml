@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>21.0.0-SNAPSHOT</version>
+        <version>22.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-jmxconfiggenerator</artifactId>
@@ -24,7 +24,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-                        <Include-Resource>{maven-resources}</Include-Resource>
+                        <Vaadin-Package-Version>1</Vaadin-Package-Version>
                     </instructions>
                 </configuration>
             </plugin>

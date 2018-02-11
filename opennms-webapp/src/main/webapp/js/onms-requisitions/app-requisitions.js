@@ -13,11 +13,12 @@
     'ngAnimate',
     'ui.bootstrap',
     'angular-growl',
-    'angular-loading-bar'
+    'angular-loading-bar',
+    'ngSanitize'
   ])
 
   .constant("Configuration", {
-    'baseHref': 'admin/ng-requisitions/index.jsp'
+    'baseHref': getBaseHref() + 'admin/ng-requisitions/index.jsp'
   })
 
   .config(['$routeProvider', function ($routeProvider) {

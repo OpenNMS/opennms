@@ -1,4 +1,4 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
     <bean id="dashletSelector" class="org.opennms.features.vaadin.dashboard.config.DashletSelector" scope="singleton"/>
 
@@ -42,7 +42,7 @@
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="wallboardConfigUIFactory">
         <service-properties>
-            <entry key="alias" value="/wallboard-config"/>
+            <entry key="alias" value="/admin/wallboard-config"/>
         </service-properties>
     </service>
 

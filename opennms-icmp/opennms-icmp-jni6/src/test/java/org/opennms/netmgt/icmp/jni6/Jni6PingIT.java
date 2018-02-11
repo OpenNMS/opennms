@@ -236,7 +236,7 @@ public class Jni6PingIT {
             average = new Double(average.doubleValue() / 1000.0);
         }
 
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append("response times = ").append(items);
         sb.append("\n");
         

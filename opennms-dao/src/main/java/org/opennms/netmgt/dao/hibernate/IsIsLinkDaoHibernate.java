@@ -128,7 +128,7 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
                 "order by distinct_id;";
 	
 	private List<IsisTopologyLink> convertObjectToTopologyLink(List<Object[]> list) {
-	        List<IsisTopologyLink> topoLinks = new ArrayList<IsisTopologyLink>();
+	        List<IsisTopologyLink> topoLinks = new ArrayList<>();
 	        for (Object[] objs : list) {
 	            Integer targetId = (Integer)objs[8];
 	            Integer targetNodeId =(Integer)objs[9];

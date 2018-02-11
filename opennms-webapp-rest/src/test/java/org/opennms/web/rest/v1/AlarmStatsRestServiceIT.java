@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,6 +60,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -70,6 +71,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -249,10 +252,9 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_databasePopulator.getNode1());
         alarm.setDescription("This is a test alarm");
-        alarm.setEventParms(event.getEventParms());
         alarm.setLogMsg("this is a test alarm log message");
         alarm.setCounter(1);
         alarm.setIpAddr(InetAddressUtils.UNPINGABLE_ADDRESS);
@@ -292,7 +294,7 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventLog("Y");
         event.setEventHost("es-with-the-most-es");
         event.setEventLogMsg("Test event " + m_eventCount + " (log)");
-        event.setEventParms("test=parm(string,text)");
+        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter(event, "test", "parm", "string")));
         event.setEventSeverity(OnmsSeverity.MAJOR.getId());
         event.setEventSource("AlarmStatsRestServiceTest");
         event.setIpAddr(InetAddressUtils.UNPINGABLE_ADDRESS);

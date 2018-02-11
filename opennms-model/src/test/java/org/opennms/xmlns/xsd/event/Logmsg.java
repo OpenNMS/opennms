@@ -36,6 +36,8 @@
 
 package org.opennms.xmlns.xsd.event;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -76,10 +78,12 @@ import javax.xml.bind.annotation.XmlValue;
 public class Logmsg {
 
     @XmlValue
+    @NotNull
     protected String value;
     @XmlAttribute(name = "notify")
     protected Boolean notify;
     @XmlAttribute(name = "dest")
+    @Pattern(regexp="(logndisplay|displayonly|logonly|suppress|donotpersist)")
     protected String dest;
 
     /**

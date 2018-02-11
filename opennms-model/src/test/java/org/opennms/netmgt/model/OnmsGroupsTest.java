@@ -60,11 +60,11 @@ public class OnmsGroupsTest extends XmlTestNoCastor<OnmsGroupList> {
         return Arrays.asList(new Object[][] {
             {
                 new OnmsGroupList(),
-                "<groups></groups>"
+                "<groups offset=\"0\"></groups>"
             },
             {
                 groupList,
-                "<groups count=\"2\" totalCount=\"2\">"
+                "<groups count=\"2\" totalCount=\"2\" offset=\"0\">"
                 + "<group>"
                 + "  <name>Admin</name>"
                 + "  <user>admin</user>"

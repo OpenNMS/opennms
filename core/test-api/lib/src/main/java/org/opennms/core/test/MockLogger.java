@@ -129,8 +129,10 @@ public class MockLogger extends MarkerIgnoringBase {
         loadProperties();
 
         String defaultLogLevelString = getStringProperty(DEFAULT_LOG_LEVEL_KEY, null);
-        if (defaultLogLevelString != null)
+        if (defaultLogLevelString != null) {
+            //System.err.println("Changing default log level to: " + defaultLogLevelString);
             DEFAULT_LOG_LEVEL = stringToLevel(defaultLogLevelString);
+        }
 
         SHOW_LOG_NAME = getBooleanProperty(SHOW_LOG_NAME_KEY, SHOW_LOG_NAME);
         SHOW_SHORT_LOG_NAME = getBooleanProperty(SHOW_SHORT_LOG_NAME_KEY, SHOW_SHORT_LOG_NAME);
@@ -254,7 +256,7 @@ public class MockLogger extends MarkerIgnoringBase {
 
         MockLogAppender.addEvent(new LoggingEvent(getName(), level, message));
 
-        StringBuffer buf = new StringBuffer(32);
+        final StringBuilder buf = new StringBuilder(32);
 
         // Append date-time if so configured
         if (SHOW_DATE_TIME) {
@@ -294,7 +296,7 @@ public class MockLogger extends MarkerIgnoringBase {
 
     }
 
-    void write(StringBuffer buf, Throwable t) {
+    void write(StringBuilder buf, Throwable t) {
         TARGET_STREAM.println(buf.toString());
         if (t != null) {
             t.printStackTrace(TARGET_STREAM);

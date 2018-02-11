@@ -99,7 +99,7 @@ public class Collector {
     public static boolean getDurationsMs() {
         return s_durationsMs;   
     }
-    private Set<String> m_threads = new HashSet<String>();
+    private Set<String> m_threads = new HashSet<>();
 
     private LogMessage m_firstMessage;
     private LogMessage m_lastMessage;
@@ -372,7 +372,7 @@ public class Collector {
             return "0s";
         }
         boolean force = false;
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         if (force || millis >= (1000*3600*24)) {
             long d = millis/(1000*3600*24);
             buf.append(d);

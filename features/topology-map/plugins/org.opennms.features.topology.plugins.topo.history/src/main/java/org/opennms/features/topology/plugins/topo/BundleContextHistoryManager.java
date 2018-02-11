@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,16 +33,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.HistoryOperation;
@@ -110,17 +105,17 @@ public class BundleContextHistoryManager implements HistoryManager {
 
 	@Override
 	public synchronized SavedHistory getHistoryByFragment(String fragment) {
-        if(fragment != null){
-            Properties props = loadProperties(m_bundleContext);
-            String xml = props.getProperty(fragment);
-            if (xml == null || "".equals(xml)) {
-                // There is no stored history for this fragment ID
-                return null;
-            } else {
-                return JAXB.unmarshal(new StringReader(xml), SavedHistory.class);
+            if(fragment != null){
+                Properties props = loadProperties(m_bundleContext);
+                String xml = props.getProperty(fragment);
+                if (xml == null || "".equals(xml)) {
+                    // There is no stored history for this fragment ID
+                    return null;
+                } else {
+                    return JaxbUtils.unmarshal(SavedHistory.class, new StringReader(xml));
+                }
             }
-        }
-        return null;
+            return null;
 	}
 
 	@Override
@@ -174,17 +169,7 @@ public class BundleContextHistoryManager implements HistoryManager {
 	}
 
 	private String toXML(SavedHistory hist) {
-		StringWriter writer = new StringWriter();
-		Marshaller marshaller;
-		try {
-			JAXBContext context = JAXBContext.newInstance(SavedHistory.class);
-			marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
-			marshaller.marshal(hist, writer);
-		} catch (JAXBException e) {
-			LoggerFactory.getLogger(getClass()).error("Could not marshall SavedHistory object to String", e);
-		}
-		return writer.toString();
+		return JaxbUtils.marshal(hist);
 	}
 	
 	private static Properties loadProperties(BundleContext context) {

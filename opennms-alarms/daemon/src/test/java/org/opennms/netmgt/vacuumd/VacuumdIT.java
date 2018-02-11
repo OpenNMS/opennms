@@ -318,7 +318,7 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
             conn = DataSourceFactory.getInstance().getConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select * from events");
-            Collection<String> columns = new ArrayList<String>();
+            Collection<String> columns = new ArrayList<>();
             AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
             assertTrue(ap.getAction().resultSetHasRequiredActionColumns(rs, columns));
         } finally {

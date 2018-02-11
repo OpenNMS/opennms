@@ -55,7 +55,7 @@ public class RRA extends AbstractRRA {
     private CFType consolidationFunction;
 
     /** The CDP Data. */
-    private List<RRADS> dataSources = new ArrayList<RRADS>();
+    private List<RRADS> dataSources = new ArrayList<>();
 
     /** The XFF. */
     private Double xff = 0.5;

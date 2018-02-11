@@ -456,7 +456,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public List<InetAddress> getIpList(final Package pkg) {
         try {
             getReadLock().lock();
-            final StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
+            final StringBuilder filterRules = new StringBuilder(pkg.getFilter().getContent());
             if (m_verifyServer) {
                 filterRules.append(" & (serverName == ");
                 filterRules.append('\"');

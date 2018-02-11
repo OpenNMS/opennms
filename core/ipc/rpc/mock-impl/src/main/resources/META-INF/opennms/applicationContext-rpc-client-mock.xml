@@ -9,6 +9,8 @@
 
   <context:annotation-config />
 
+  <import resource="classpath:/META-INF/opennms/applicationContext-rpc-utils.xml" />
+
   <bean id="mockRpcClientFactory" class="org.opennms.core.rpc.mock.MockRpcClientFactory" />
 
 </beans>

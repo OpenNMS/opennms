@@ -121,7 +121,7 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 
 	@Override
 	public String toString() {
-		StringBuffer retval = new StringBuffer();
+		final StringBuilder retval = new StringBuilder();
 		retval.append("Edge:").append(getNamespace()).append(":").append(getId());
 		retval.append("[");
 		retval.append("label=").append(getLabel());

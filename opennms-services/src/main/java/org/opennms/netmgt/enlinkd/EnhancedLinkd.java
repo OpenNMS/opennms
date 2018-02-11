@@ -32,7 +32,6 @@ package org.opennms.netmgt.enlinkd;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -97,7 +96,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
-    private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<Integer>();
+    private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<>();
     /**
      * <p>
      * Constructor for EnhancedLinkd.
@@ -164,7 +163,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * @param nodeid
      */
     public List<NodeDiscovery> getSnmpCollections(Node node) {
-        List<NodeDiscovery> snmpcolls = new ArrayList<NodeDiscovery>();
+        List<NodeDiscovery> snmpcolls = new ArrayList<>();
         
         if (m_linkdConfig.useLldpDiscovery()) {
             LOG.info("getSnmpCollections: adding Lldp Discovery: {}",
@@ -234,7 +233,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     protected synchronized void onStop() {
 
         LOG.info("stop: persisting forwarders");
-        m_queryMgr.persistForwarders();
+        try {
+            m_queryMgr.persistForwarders();
+        } catch (Exception e) {
+            LOG.warn("Failed to persist one or more forwarders. The resulting bridge topoplogy may be inconsistent.", e);
+        }
         LOG.info("stop: persisted forwarders");
               // Stop the scheduler
         LOG.info("stop: Stopping enhanced linkd scheduler");
@@ -376,20 +379,18 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
 
-        Date now = new Date();
         BroadcastDomain domain = m_queryMgr.getBroadcastDomain(nodeid);
         LOG.debug("deleteNode: {}, found broadcast domain: nodes {}, macs {}", nodeid, domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
         // must be calculated the topology for nodeid...
-        domain.getLock(this);
-        LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
-        domain.clearTopologyForBridge(nodeid);
-        LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
-        LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
-        m_queryMgr.store(domain,now);
-        LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
-        domain.removeBridge(nodeid);
-        domain.releaseLock(this);
-        
+        synchronized (domain) {
+            LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
+            domain.clearTopologyForBridge(nodeid);
+            LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
+            LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
+            m_queryMgr.store(domain);
+            LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
+            domain.removeBridge(nodeid);
+        }
         Node node = removeNode(nodeid);
 
         if (node == null) {
@@ -614,7 +615,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     	return m_linkdConfig.getMaxBft();
     }
     
-    public boolean collectBft(int nodeid) {
+    public synchronized boolean collectBft(int nodeid) {
     	if (getQueryManager().getUpdateBftMap().size()+m_bridgecollectionsscheduled.size() >= m_linkdConfig.getMaxBft() )
     		return false;
     	synchronized (m_bridgecollectionsscheduled) {

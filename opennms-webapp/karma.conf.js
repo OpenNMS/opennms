@@ -29,6 +29,8 @@ module.exports = function(config) {
       'src/main/webapp/lib/angular-bootstrap/ui-bootstrap-tpls.js',
       'src/main/webapp/lib/angular-loading-bar/build/loading-bar.js',
       'src/main/webapp/lib/angular-growl-v2/build/angular-growl.js',
+      // Global Variables/Methods
+      'src/test/javascript/global.js',
       // OpenNMS applications (expected to be subdirectories inside 'js')
       'src/main/webapp/js/**/*.js',
       // OpenNMS tests (expected to be subdirectories)

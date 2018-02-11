@@ -30,21 +30,18 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
 import org.opennms.core.utils.DefaultSocketWrapper;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutSocketFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.snmp.InetAddrUtils;

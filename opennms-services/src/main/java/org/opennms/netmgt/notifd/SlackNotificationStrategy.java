@@ -28,14 +28,6 @@
 
 package org.opennms.netmgt.notifd;
 
-import java.util.List;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.opennms.netmgt.config.NotificationManager;
-import org.opennms.netmgt.model.notifd.Argument;
-
 /**
  * <p>SlackNotificationStrategy class.</p>
  *
@@ -54,7 +46,7 @@ public class SlackNotificationStrategy extends AbstractSlackCompatibleNotificati
     	if ("".equals(subject)) {
     		return "";
     	}
-    	StringBuilder bldr = new StringBuilder("*");
+    	final StringBuilder bldr = new StringBuilder("*");
     	bldr.append(subject).append("*").append("\n");
     	return bldr.toString();
     }
@@ -85,7 +77,7 @@ public class SlackNotificationStrategy extends AbstractSlackCompatibleNotificati
 
     @Override
 	protected String formatWebhookErrorResponse(int statusCode, String contents) {
-    	StringBuilder bldr = new StringBuilder("Response code: ");
+    	final StringBuilder bldr = new StringBuilder("Response code: ");
     	bldr.append(statusCode).append("; ");
     	bldr.append(" Message: ").append(contents);
     	return bldr.toString();

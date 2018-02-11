@@ -31,8 +31,6 @@ package org.opennms.netmgt.collection.persistence.rrd;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -218,7 +216,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
 
     private String getValues() {
         boolean first = true;
-        StringBuffer values = new StringBuffer();
+        final StringBuilder values = new StringBuilder();
         for (Iterator<CollectionAttributeType> iter = m_declarations.keySet().iterator(); iter.hasNext();) {
         	CollectionAttributeType attrDef = iter.next();
             Number value = m_declarations.get(attrDef);

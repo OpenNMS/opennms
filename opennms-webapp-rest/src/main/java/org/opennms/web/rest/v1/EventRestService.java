@@ -30,7 +30,12 @@ package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -56,6 +61,8 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,8 +70,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("eventRestService")
 @Path("events")
 public class EventRestService extends OnmsRestService {
+    private static final Logger LOG = LoggerFactory.getLogger(EventRestService.class);
     private static final DateTimeFormatter ISO8601_FORMATTER_MILLIS = ISODateTimeFormat.dateTime();
     private static final DateTimeFormatter ISO8601_FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
+    private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
     @Autowired
     private EventDao m_eventDao;
@@ -277,8 +286,23 @@ public class EventRestService extends OnmsRestService {
         if (event.getTime() == null) {
             event.setTime(new Date());
         }
-        m_eventForwarder.sendNow(event);
-        return Response.noContent().build();
+        try {
+            final Validator validator = factory.getValidator();
+            final Set<ConstraintViolation<org.opennms.netmgt.xml.event.Event>> errors = validator.validate(event);
+            LOG.debug("got errors: {}", errors);
+            if (errors.size() > 0) {
+                final StringBuilder sb = new StringBuilder("Error validating event:\n");
+                for (final ConstraintViolation<?> error : errors) {
+                    sb.append(error.toString()).append("\n");
+                }
+                LOG.debug(sb.toString());
+                throw getException(Status.BAD_REQUEST, errors.size() + " errors found while validating event.");
+            }
+            m_eventForwarder.sendNow(event);
+            return Response.accepted().build();
+        } catch (final Exception e) {
+            throw getException(Status.BAD_REQUEST, e.getMessage());
+        }
     }
 
     private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
@@ -294,3 +318,4 @@ public class EventRestService extends OnmsRestService {
     }
 
 }
+

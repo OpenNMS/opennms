@@ -51,6 +51,9 @@ public class RequisitionRequestDTO implements RpcRequest {
     @XmlAttribute(name = "location")
     private String location;
 
+    @XmlAttribute(name="system-id")
+    private String systemId;
+
     @XmlValue
     @XmlCDATA
     private String marshaledProviderRequest;
@@ -74,6 +77,15 @@ public class RequisitionRequestDTO implements RpcRequest {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
     }
 
     @Override
@@ -107,6 +119,7 @@ public class RequisitionRequestDTO implements RpcRequest {
         }
         RequisitionRequestDTO castOther = (RequisitionRequestDTO) other;
         return Objects.equals(location, castOther.location)
+                && Objects.equals(systemId, castOther.systemId)
                 && Objects.equals(timeToLiveMs, castOther.timeToLiveMs)
                 && Objects.equals(type, castOther.type)
                 && Objects.equals(providerRequest, castOther.providerRequest)
@@ -115,7 +128,8 @@ public class RequisitionRequestDTO implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, timeToLiveMs, type, providerRequest, marshaledProviderRequest);
+        return Objects.hash(location, systemId, timeToLiveMs, type,
+                providerRequest, marshaledProviderRequest);
     }
 
 }

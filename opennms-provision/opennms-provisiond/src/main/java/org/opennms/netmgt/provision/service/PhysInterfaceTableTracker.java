@@ -191,6 +191,9 @@ public class PhysInterfaceTableTracker extends TableTracker {
         
         private String getPhysAddr() {
             final SnmpValue value = getValue(IF_PHYS_ADDR);
+            if (value == null || value.isError()) {
+                return null;
+            }
             String hexString = value == null ? null : value.toHexString();
             String displayString = value == null ? null : value.toDisplayString();
             // See ifTableEntry: NMS-4902 (revision cee964fe979e6465aeb4e2efd4772e50ebc54831)

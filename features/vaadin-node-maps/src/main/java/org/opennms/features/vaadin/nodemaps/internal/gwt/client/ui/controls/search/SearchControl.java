@@ -99,7 +99,7 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
     private CellList<NodeMarker> m_autoComplete;
     private SearchStateManager m_stateManager;
     private SingleSelectionModel<NodeMarker> m_selectionModel;
-    private Set<Widget> m_updated = new HashSet<Widget>();
+    private Set<Widget> m_updated = new HashSet<>();
 
     private final OpenNMSEventManager m_eventManager;
     private final ComponentTracker m_componentTracker;
@@ -112,7 +112,7 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
         m_componentTracker = componentTracker;
 
         m_markerContainer = markerContainer;
-        m_selectionModel = new SingleSelectionModel<NodeMarker>();
+        m_selectionModel = new SingleSelectionModel<>();
         m_historyWrapper = new HistoryWrapper();
 
         initializeContainerWidget();

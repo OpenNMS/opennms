@@ -50,7 +50,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     private Thread m_thread;
     protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
     private volatile boolean m_stopped = false;
-    private final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
+    private final List<PingReplyListener> m_listeners = new ArrayList<>();
 
     protected AbstractPinger(int pingerId, NativeDatagramSocket pingSocket) {
         m_pingerId = pingerId;

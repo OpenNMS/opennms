@@ -28,7 +28,6 @@
 
 package org.opennms.protocols.json.collector;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;

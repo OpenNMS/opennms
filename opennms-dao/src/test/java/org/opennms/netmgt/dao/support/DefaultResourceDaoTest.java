@@ -320,7 +320,7 @@ public class DefaultResourceDaoTest {
 
     @Test
     public void testFindNodeResourcesWithResponseTime() throws Exception {
-        List<OnmsNode> nodes = new LinkedList<OnmsNode>();
+        List<OnmsNode> nodes = new LinkedList<>();
         OnmsNode node = createNode();
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
@@ -344,7 +344,7 @@ public class DefaultResourceDaoTest {
 
     @Test
     public void testFindNodeResourcesWithDistributedResponseTime() throws Exception {
-        List<OnmsNode> nodes = new LinkedList<OnmsNode>();
+        List<OnmsNode> nodes = new LinkedList<>();
         OnmsNode node = createNode();
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
@@ -379,7 +379,7 @@ public class DefaultResourceDaoTest {
 
     @Test
     public void testFindNodeResourcesWithNodeSnmp() throws Exception {
-        List<OnmsNode> nodes = new LinkedList<OnmsNode>();
+        List<OnmsNode> nodes = new LinkedList<>();
         OnmsNode node = createNode();
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
@@ -403,7 +403,7 @@ public class DefaultResourceDaoTest {
 
     @Test
     public void testFindNodeResourcesWithNodeInterface() throws Exception {
-        List<OnmsNode> nodes = new LinkedList<OnmsNode>();
+        List<OnmsNode> nodes = new LinkedList<>();
         OnmsNode node = createNode();
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
@@ -470,7 +470,7 @@ public class DefaultResourceDaoTest {
         File ipDir = m_fileAnticipator.tempDir(locMonDir, InetAddressUtils.str(ip.getIpAddress()));
         m_fileAnticipator.tempFile(ipDir, "http" + m_rrdFileExtension);
 
-        ArrayList<LocationMonitorIpInterface> locationMonitorInterfaces = new ArrayList<LocationMonitorIpInterface>();
+        ArrayList<LocationMonitorIpInterface> locationMonitorInterfaces = new ArrayList<>();
         locationMonitorInterfaces.add(new LocationMonitorIpInterface(locMon, ip));
 
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(ip.getNode().getId())).andReturn(locationMonitorInterfaces);

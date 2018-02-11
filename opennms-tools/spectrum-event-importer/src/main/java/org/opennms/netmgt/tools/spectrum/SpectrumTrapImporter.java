@@ -181,7 +181,7 @@ public class SpectrumTrapImporter {
         }
         LOG.info("Loaded {} event-formats from files in [{}]", formats.size(), csEvFormatDirName);
         if (unformattedEvents.keySet().size() > 0) {
-            StringBuilder uelBuilder = new StringBuilder("");
+            final StringBuilder uelBuilder = new StringBuilder("");
             for (String ec : unformattedEvents.keySet()) {
                 if (uelBuilder.length() > 0) {
                     uelBuilder.append(" ");
@@ -322,13 +322,13 @@ public class SpectrumTrapImporter {
     }
     
     public String makeUei(String eventCode) {
-        StringBuilder ueiBuilder = new StringBuilder(m_baseUei);
+        final StringBuilder ueiBuilder = new StringBuilder(m_baseUei);
         ueiBuilder.append("/").append(eventCode);
         return ueiBuilder.toString();
     }
     
     public String makeEventLabel(AlertMapping mapping) {
-        StringBuilder labelBuilder = new StringBuilder("Spectrum imported event: ");
+        final StringBuilder labelBuilder = new StringBuilder("Spectrum imported event: ");
         String shortName = mapping.getEventCode();
         if (m_eventFormats.containsKey(mapping.getEventCode())) {
             Matcher m = Pattern.compile("(?s).*An? \"(.*?)\" event has occurred.*").matcher(m_eventFormats.get(mapping.getEventCode()).getContents());
@@ -341,7 +341,7 @@ public class SpectrumTrapImporter {
     }
     
     public String makeDescr(AlertMapping mapping) {
-        StringBuilder descrBuilder = new StringBuilder("<p>");
+        final StringBuilder descrBuilder = new StringBuilder("<p>");
         if (m_eventFormats.containsKey(mapping.getEventCode())) {
             String theDescr = m_utils.translateAllSubstTokens(m_eventFormats.get(mapping.getEventCode()));
             theDescr = theDescr.replaceAll("\n", "<br/>\n");
@@ -386,7 +386,7 @@ public class SpectrumTrapImporter {
         }
         
         // Set the reduction key to include standard node stuff plus any discriminators
-        StringBuilder rkBuilder = new StringBuilder("%uei%:");
+        final StringBuilder rkBuilder = new StringBuilder("%uei%:");
         rkBuilder.append(m_reductionKeyBody);
         for (int discriminator : dispo.getDiscriminators()) {
             rkBuilder.append(":%parm[#").append(discriminator).append("]%");
@@ -399,7 +399,7 @@ public class SpectrumTrapImporter {
         
         // If it's a clear-alarm, set the clear-key appropriately
         if (dispo.isClearAlarm()) {
-            StringBuilder ckBuilder = new StringBuilder(makeUei(dispo.getClearAlarmCause()));
+            final StringBuilder ckBuilder = new StringBuilder(makeUei(dispo.getClearAlarmCause()));
             ckBuilder.append(":").append(m_reductionKeyBody);
             for (int discriminator : dispo.getDiscriminators()) {
                 ckBuilder.append(":%parm[#").append(discriminator).append("]%");
@@ -415,13 +415,13 @@ public class SpectrumTrapImporter {
             EventFormat fmt = m_eventFormats.get(mapping.getEventCode());
             return m_utils.translateAllEventTables(fmt, m_customEventsDir.getFile().getPath() + File.separator + "CsEvFormat" + File.separator + "EventTables");
         } else {
-            return new ArrayList<Varbindsdecode>();
+            return new ArrayList<>();
         }
     }
     
     public boolean shouldDiscardEvent(EventDisposition dispo) {
         boolean discard = false;
-        StringBuilder eventKeyBldr = new StringBuilder(dispo.getEventCode());
+        final StringBuilder eventKeyBldr = new StringBuilder(dispo.getEventCode());
         for (int d : dispo.getDiscriminators()) {
             eventKeyBldr.append(",").append(d);
         }

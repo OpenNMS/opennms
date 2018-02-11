@@ -69,7 +69,7 @@ public class ParserStageSequenceBuilder {
 	private static class ParserStageState {
 		public final ByteBuffer buffer;
 
-		private StringBuffer accumulatedValue = null;
+		private StringBuilder accumulatedValue = null;
 		private AtomicInteger accumulatedSize = null;
 
 		// Only used by MatchMonth
@@ -88,9 +88,9 @@ public class ParserStageSequenceBuilder {
 			return accessAccumulatedSize().get();
 		}
 
-		private final StringBuffer accessAccumulatedValue() {
+		private final StringBuilder accessAccumulatedValue() {
 			if (accumulatedValue == null) {
-				accumulatedValue = new StringBuffer();
+				accumulatedValue = new StringBuilder();
 			}
 			return accumulatedValue;
 		}
@@ -221,7 +221,7 @@ public class ParserStageSequenceBuilder {
 
 		private boolean m_optional = false;
 		private boolean m_terminal = false;
-		private final BiConsumer<ParserState, R> m_resultConsumer;
+		protected final BiConsumer<ParserState, R> m_resultConsumer;
 
 		/**
 		 * Create an {@link AbstractParserStage} with no consumer.
@@ -313,7 +313,13 @@ public class ParserStageSequenceBuilder {
 						continue;
 					case COMPLETE_AFTER_CONSUMING:
 						if (m_resultConsumer != null) {
-							m_resultConsumer.accept(state, getValue(stageState));
+							try {
+								m_resultConsumer.accept(state, getValue(stageState));
+							} catch (Exception e) {
+								// Conversion to value failed
+								LOG.trace("Parse failed on result consumer: {}", stageState, e);
+								return null;
+							}
 						}
 
 //						// Reset any local state if necessary
@@ -322,7 +328,13 @@ public class ParserStageSequenceBuilder {
 						return new ParserState(stageState.buffer, state.message);
 					case COMPLETE_WITHOUT_CONSUMING:
 						if (m_resultConsumer != null) {
-							m_resultConsumer.accept(state, getValue(stageState));
+							try {
+								m_resultConsumer.accept(state, getValue(stageState));
+							} catch (Exception e) {
+								// Conversion to value failed
+								LOG.trace("Parse failed on result consumer: {}", stageState, e);
+								return null;
+							}
 						}
 
 						// Reset any local state if necessary
@@ -342,7 +354,7 @@ public class ParserStageSequenceBuilder {
 							return new ParserState(stageState.buffer, state.message);
 						} else {
 							// Match failed
-							LOG.trace("Parse failed: " + this);
+							LOG.trace("Parse failed: {}", this);
 							return null;
 						}
 				}
@@ -362,7 +374,7 @@ public class ParserStageSequenceBuilder {
 		}
 
 		protected static String getAccumulatedValue(ParserStageState state) {
-			StringBuffer accumulatedValue = state.accumulatedValue;
+			final StringBuilder accumulatedValue = state.accumulatedValue;
 			if (accumulatedValue == null) {
 				return null;
 			} else {
@@ -394,8 +406,8 @@ public class ParserStageSequenceBuilder {
 			if (o == null) return false;
 			if (o == this) return true;
 			if (!(o instanceof MatchWhitespace)) return false;
-			// TODO: Compare consumers?
-			return true;
+			MatchWhitespace other = (MatchWhitespace)o;
+			return Objects.equals(m_resultConsumer, other.m_resultConsumer);
 		}
 
 		@Override
@@ -434,7 +446,8 @@ public class ParserStageSequenceBuilder {
 			if (o == this) return true;
 			if (!(o instanceof MatchChar)) return false;
 			MatchChar other = (MatchChar)o;
-			return Objects.equals(m_char, other.getChar());
+			return Objects.equals(m_char, other.getChar()) &&
+					Objects.equals(m_resultConsumer, other.m_resultConsumer);
 		}
 
 		@Override
@@ -565,8 +578,8 @@ public class ParserStageSequenceBuilder {
 			if (o == null) return false;
 			if (o == this) return true;
 			if (!(o instanceof MatchMonth)) return false;
-			// TODO: Compare consumers?
-			return true;
+			MatchMonth other = (MatchMonth)o;
+			return Objects.equals(m_resultConsumer, other.m_resultConsumer);
 		}
 
 		@Override
@@ -631,7 +644,8 @@ public class ParserStageSequenceBuilder {
 			if (o == this) return true;
 			if (!(o instanceof MatchAny)) return false;
 			MatchAny other = (MatchAny)o;
-			return Objects.equals(m_length, other.getLength());
+			return Objects.equals(m_length, other.getLength()) &&
+					Objects.equals(m_resultConsumer, other.m_resultConsumer);
 		}
 	}
 
@@ -694,9 +708,10 @@ public class ParserStageSequenceBuilder {
 			if (o == this) return true;
 			if (!(o instanceof MatchUntil)) return false;
 			MatchUntil<?> other = (MatchUntil<?>)o;
-			// TODO: Compare consumers?
 			return Arrays.equals(m_end, other.getEnd()) &&
-					Objects.equals(m_endOnwhitespace, other.isEndOnWhitespace());
+					Objects.equals(m_endOnwhitespace, other.isEndOnWhitespace() &&
+					Objects.equals(m_resultConsumer, other.m_resultConsumer)
+			);
 		}
 	}
 
@@ -719,7 +734,6 @@ public class ParserStageSequenceBuilder {
 			if (o == null) return false;
 			if (o == this) return true;
 			if (!(o instanceof MatchStringUntil)) return false;
-			// TODO: Compare consumers?
 			return super.equals(o);
 		}
 	}
@@ -755,7 +769,6 @@ public class ParserStageSequenceBuilder {
 			if (o == null) return false;
 			if (o == this) return true;
 			if (!(o instanceof MatchIntegerUntil)) return false;
-			// TODO: Compare consumers?
 			return super.equals(o);
 		}
 	}
@@ -815,8 +828,7 @@ public class ParserStageSequenceBuilder {
 			if (o == this) return true;
 			if (!(o instanceof MatchInteger)) return false;
 			MatchInteger other = (MatchInteger)o;
-			// TODO: Compare consumers?
-			return true;
+			return Objects.equals(m_resultConsumer, other.m_resultConsumer);
 		}
 
 		@Override

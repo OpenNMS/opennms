@@ -57,9 +57,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/empty-context.xml"})
 @TestExecutionListeners(JUnitDNSServerExecutionListener.class)
 @JUnitDNSServer(port=9153, zones={
-        @DNSZone(name="google.com.", entries={
-                @DNSEntry(hostname="www", address="72.14.204.99")
-        })
+    @DNSZone(name = "google.com.", entries = {
+        @DNSEntry(hostname = "www", data = "72.14.204.99")
+    })
 })
 public class DnsDetectorTest {
 
@@ -75,7 +75,7 @@ public class DnsDetectorTest {
         //m_socket = new DatagramSocket(4445);
         //m_serverThread = createThread();
         //m_serverThread.start();
-    } 
+    }
 
     @After
     public void tearDown() {

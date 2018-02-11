@@ -55,7 +55,7 @@ public class EventWindow extends Window {
      * @param logger the logger object
      * @throws Exception the exception
      */
-    public EventWindow(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) throws Exception {
+    public EventWindow(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) {
         super(eventFile.getAbsolutePath()); // Using fileName for as the window's name.
         setModal(false);
         setClosable(false);

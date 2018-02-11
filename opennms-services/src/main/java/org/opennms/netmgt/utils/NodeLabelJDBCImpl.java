@@ -445,8 +445,8 @@ public class NodeLabelJDBCImpl implements NodeLabel {
             method = DEFAULT_SELECT_METHOD;
         }
 
-        List<InetAddress> ipv4AddrList = new ArrayList<InetAddress>();
-        List<String> ipHostNameList = new ArrayList<String>();
+        List<InetAddress> ipv4AddrList = new ArrayList<>();
+        List<String> ipHostNameList = new ArrayList<>();
 
         // Issue SQL query to retrieve all managed interface IP addresses from 'ipinterface' table
         try {
@@ -641,7 +641,7 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         // Build the buffer
         buffer.append(m_nodeLabel);

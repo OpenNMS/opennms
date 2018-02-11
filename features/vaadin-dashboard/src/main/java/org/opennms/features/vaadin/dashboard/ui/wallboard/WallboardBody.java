@@ -39,7 +39,7 @@ import java.util.*;
 
 public class WallboardBody extends VerticalLayout {
     private final CssLayout contentLayout;
-    private List<DashletSpec> dashletSpecs = new LinkedList<DashletSpec>();
+    private List<DashletSpec> dashletSpecs = new LinkedList<>();
     private Map<Integer, Dashlet> dashlets = new HashMap<Integer, Dashlet>();
     private Map<Integer, Integer> priorityMap = new HashMap<Integer, Integer>();
     private Map<Integer, Integer> durationMap = new HashMap<Integer, Integer>();

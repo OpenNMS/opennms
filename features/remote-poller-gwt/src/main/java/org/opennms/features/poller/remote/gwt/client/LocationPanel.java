@@ -71,7 +71,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 
 	private static final Binder BINDER = GWT.create(Binder.class);
 	private transient HandlerManager m_eventBus;
-	private transient List<HandlerRegistration> eventRegistrations = new ArrayList<HandlerRegistration>();
+	private transient List<HandlerRegistration> eventRegistrations = new ArrayList<>();
 	
 	@UiField FlowPanel locationPanel;
 	@UiField PageableLocationList locationList;

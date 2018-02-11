@@ -28,11 +28,8 @@
 
 package org.opennms.features.topology.plugins.ncs.support;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -42,7 +39,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 public class NCSPathRouteUtil {
 
@@ -55,7 +51,7 @@ public class NCSPathRouteUtil {
         m_nodeDao = nodeDao;
     }
     
-    public void getServiceName(@JuniperXPath(value="//juniper:ServiceType") String data, Exchange exchange) throws ParserConfigurationException, SAXException, IOException {
+    public void getServiceName(@JuniperXPath(value="//juniper:ServiceType") String data, Exchange exchange) {
         Message in = exchange.getIn();
         LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil [getServiceName] received message: " + in.toString());
         Map<String, Object> header = new HashMap<String, Object>();

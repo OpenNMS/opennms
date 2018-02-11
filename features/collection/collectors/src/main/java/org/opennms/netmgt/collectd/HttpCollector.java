@@ -316,7 +316,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
             LOG.debug("processResponse: found matching attributes: {}", matches);
             final List<Attrib> attribDefs = collectorAgent.getUriDef().getAttributes();
 
-            final List<Locale> locales = new ArrayList<Locale>();
+            final List<Locale> locales = new ArrayList<>();
             if (responseLocale != null) {
                 locales.add(responseLocale);
             }
@@ -389,7 +389,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
 
         @Override
         public String toString() {
-            StringBuffer buffer = new StringBuffer();
+            final StringBuilder buffer = new StringBuilder();
             buffer.append(super.toString());
             buffer.append(": client URL: ");
             return buffer.toString();
@@ -474,7 +474,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
         URI uriWithQueryString = null;
         List<NameValuePair> queryParams = buildRequestParameters(collectorAgent);
         try {
-            StringBuffer query = new StringBuffer();
+            final StringBuilder query = new StringBuilder();
             query.append(URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8));
             if (uri.getQuery() != null && !uri.getQuery().trim().isEmpty()) {
                 if (query.length() > 0) {
@@ -498,7 +498,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
     }
 
     private static List<NameValuePair> buildRequestParameters(final HttpCollectorAgent collectorAgent) {
-        List<NameValuePair> retval = new ArrayList<NameValuePair>();
+        List<NameValuePair> retval = new ArrayList<>();
         if (collectorAgent.getUriDef().getUrl().getParameters() == null) {
             return retval;
         }
@@ -520,8 +520,10 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
         ub.setPath(substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getPath(), "getURL"));
 
         final String query = substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getQuery().orElse(null), "getQuery");
-        final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
-        ub.setParameters(params);
+        if (query != null) {
+            final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
+            ub.setParameters(params);
+        }
 
         ub.setFragment(substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getFragment().orElse(null), "getFragment"));
         return ub.build();

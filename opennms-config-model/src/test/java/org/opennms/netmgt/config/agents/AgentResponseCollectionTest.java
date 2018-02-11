@@ -66,7 +66,7 @@ public class AgentResponseCollectionTest extends XmlTestNoCastor<AgentResponseCo
 
         return Arrays.asList(new Object[][] { {
                 responses,
-                "<agents count=\"1\" totalCount=\"1\">" + 
+                "<agents count=\"1\" totalCount=\"1\" offset=\"0\">" + 
                 "<agent>" +
                 "    <address>" + ipAddr + "</address>" +
                 "    <port>161</port>" +

@@ -58,6 +58,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -122,7 +123,6 @@ public class DefaultAckServiceIT implements InitializingBean {
         alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setDescription(event.getEventDescr());
         alarm.setDistPoller(event.getDistPoller());
-        alarm.setEventParms(event.getEventParms());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setIfIndex(event.getIfIndex());
         alarm.setIpAddr(event.getIpAddr());
@@ -179,7 +179,7 @@ public class DefaultAckServiceIT implements InitializingBean {
         OnmsUserNotification un = new OnmsUserNotification();
         un.setUserId("admin");
         un.setNotification(notif);
-        Set<OnmsUserNotification> usersNotified = new HashSet<OnmsUserNotification>();
+        Set<OnmsUserNotification> usersNotified = new HashSet<>();
         usersNotified.add(un);
         notif.setUsersNotified(usersNotified);
         m_notifDao.save(notif);
@@ -209,7 +209,7 @@ public class DefaultAckServiceIT implements InitializingBean {
         event.setEventTime(new Date());
         event.setEventSource("test");
         event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setNode(node);

@@ -32,7 +32,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.xml.NumberAdapter;
 import org.opennms.netmgt.collection.support.builder.NumericAttribute;
 
 @XmlRootElement(name = "numeric-attribute")
@@ -40,6 +42,7 @@ import org.opennms.netmgt.collection.support.builder.NumericAttribute;
 public class NumericAttributeDTO extends AttributeDTO {
 
     @XmlAttribute(name="value")
+    @XmlJavaTypeAdapter(NumberAdapter.class)
     private Number value;
 
     public NumericAttributeDTO() { }

@@ -59,7 +59,7 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
     
     //private static final Executor m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     //private static final IoProcessor<NioSession> m_processor = new SimpleIoProcessorPool<NioSession>(NioProcessor.class, m_executor);
-    private ThreadLocal<Integer> m_port = new ThreadLocal<Integer>();
+    private ThreadLocal<Integer> m_port = new ThreadLocal<>();
     private final Object m_portMutex = new Object();
 
     /**

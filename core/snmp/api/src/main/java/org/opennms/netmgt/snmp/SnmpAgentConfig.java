@@ -76,7 +76,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
         final JSONObject protocolConfig = new JSONObject(new JSONTokener(protocolConfigString)).optJSONObject("snmp");
         if (protocolConfig == null) {
-            throw new IllegalArgumentException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp object" + protocolConfigString);
+            throw new IllegalStateException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp object" + protocolConfigString);
         }
 
         Map<String, String> attributes = new HashMap<>();
@@ -109,7 +109,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
      */
     @Override
     public String toString() {
-        StringBuffer buff = new StringBuffer("SnmpAgentConfig[");
+        final StringBuilder buff = new StringBuilder("SnmpAgentConfig[");
         buff.append("Address: " + InetAddrUtils.str(m_address));
         buff.append(", ProxyForAddress: " + InetAddrUtils.str(m_proxyFor));
         buff.append(", Port: " + getPort());

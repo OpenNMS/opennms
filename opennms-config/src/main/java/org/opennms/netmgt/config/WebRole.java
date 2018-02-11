@@ -49,7 +49,7 @@ public abstract class WebRole {
     private String m_description;
     private WebUser m_defaultUser;
     private WebGroup m_membershipGroup;
-    private final List<WebSchedEntry> m_newEntries = new ArrayList<WebSchedEntry>();
+    private final List<WebSchedEntry> m_newEntries = new ArrayList<>();
     
     
     /**

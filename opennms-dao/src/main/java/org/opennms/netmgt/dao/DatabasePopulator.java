@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -77,6 +78,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
+
+import com.google.common.collect.Lists;
 
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
@@ -160,7 +163,7 @@ public class DatabasePopulator {
     
     private boolean m_populateInSeparateTransaction = true;
     private boolean m_resetInSeperateTransaction = true;
-    private final List<Extension> extensions = new ArrayList<Extension>();
+    private final List<Extension> extensions = new ArrayList<>();
     
     private Map<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>> daoRegistry = new HashMap<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>>();
     
@@ -554,8 +557,8 @@ public class DatabasePopulator {
         event.setEventHost("127.0.0.1"); // TODO: Figure out exactly what this field is storing
         event.setEventLog("Y");
         event.setEventLogMsg("Test Event Log Message");
-        event.setEventParms("testParm=HelloWorld(string,text)");
-        event.setEventSeverity(1);
+        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter(event, "testParm", "HelloWorld", "string")));
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("test");
         event.setEventTime(new Date(1437061537105L));
         event.setEventUei("uei.opennms.org/test");
@@ -595,7 +598,7 @@ public class DatabasePopulator {
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
-        alarm.setAlarmType(1);
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_node1);
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");
@@ -604,7 +607,6 @@ public class DatabasePopulator {
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
-        alarm.setEventParms(event.getEventParms());
         alarm.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return alarm;
     }

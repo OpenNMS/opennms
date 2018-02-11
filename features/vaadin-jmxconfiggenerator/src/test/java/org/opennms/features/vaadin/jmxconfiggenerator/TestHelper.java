@@ -28,14 +28,14 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator;
 
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.NameProvider;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-
 import java.util.Collections;
 import java.util.Map;
+
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.NameProvider;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
 public class TestHelper {
 
@@ -70,7 +70,7 @@ public class TestHelper {
         CompAttrib compAttrib = new CompAttrib();
         compAttrib.setName(name);
         for (CompMember eachMember : compMember) {
-            compAttrib.getCompMember().add(eachMember);
+            compAttrib.addCompMember(eachMember);
         }
         return compAttrib;
     }

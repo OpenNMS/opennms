@@ -33,7 +33,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
@@ -164,8 +165,7 @@ public class NotificationModel extends Object {
      * @throws java.sql.SQLException if any.
      */
     protected static Notification[] rs2NotifyBean(Connection conn, ResultSet rs) throws SQLException {
-        Notification[] notices = null;
-        Vector<Notification> vector = new Vector<Notification>();
+        List<Notification> vector = new ArrayList<>();
 
         try {
 
@@ -188,19 +188,13 @@ public class NotificationModel extends Object {
                 nbean.m_serviceId = rs.getInt(SERVICE);
                 nbean.m_eventId = rs.getInt(EVENTID);
                 nbean.m_serviceName = getServiceName(conn, nbean.m_serviceId);
-                vector.addElement(nbean);
+                vector.add(nbean);
             }
         } catch (SQLException e) {
             LOG.error("Error occurred in rs2NotifyBean: {}", e, e);
             throw e;
         }
 
-        notices = new Notification[vector.size()];
-
-        for (int i = 0; i < notices.length; i++) {
-            notices[i] = vector.elementAt(i);
-        }
-
-        return notices;
+        return vector.toArray(new Notification[vector.size()]);
     }
 }

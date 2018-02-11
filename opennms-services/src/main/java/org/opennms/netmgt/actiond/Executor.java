@@ -284,7 +284,7 @@ final class Executor implements Runnable, PausableFiber {
 
         // get the processing elements.
         //
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         List<String> args = new ArrayList<String>(5);
         char[] chars = cmd.toCharArray();
 
@@ -327,7 +327,6 @@ final class Executor implements Runnable, PausableFiber {
         if (buf.length() > 0) {
             args.add(buf.toString());
         }
-        buf = null;
 
         // Convert to string array
         //

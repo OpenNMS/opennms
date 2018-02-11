@@ -35,13 +35,9 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.XMLHand
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayInteger;
-import com.google.gwt.core.client.JsArrayMixed;
 import com.google.gwt.core.client.JsArrayNumber;
-import com.google.gwt.dom.builder.shared.ElementBuilderBase;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style;
-import com.vaadin.annotations.JavaScript;
 
 public class D3 extends JavaScriptObject {
     

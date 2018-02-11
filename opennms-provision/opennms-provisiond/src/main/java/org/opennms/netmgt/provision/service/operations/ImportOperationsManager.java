@@ -64,8 +64,8 @@ public class ImportOperationsManager {
      * {@link OnmsNode} objects in these lists. Our goal is to handle 50,000+ nodes per 
      * import operation.
      */
-    private final List<ImportOperation> m_inserts = new LinkedList<ImportOperation>();
-    private final List<ImportOperation> m_updates = new LinkedList<ImportOperation>();
+    private final List<ImportOperation> m_inserts = new LinkedList<>();
+    private final List<ImportOperation> m_updates = new LinkedList<>();
     
     private final ProvisionService m_provisionService;
     private final Map<String, Integer> m_foreignIdToNodeMap;

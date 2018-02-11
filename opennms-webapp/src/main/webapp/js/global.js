@@ -24,8 +24,8 @@ if (typeof requirejs === "function") {
       holder: '../js/holder.min',
       jquery: 'jquery/dist/jquery',
       'jquery-ui' : 'jquery-ui/jquery-ui',
-      'jquery-ui-treemap' : '../js/jquery.ui.treemap',
-      'jquery-sparkline' : '../js/jquery.sparkline.min',
+      'jquery-ui-treemap' : 'jquery-ui-treemap/js/jquery.ui.treemap',
+      'jquery-sparkline' : 'jquery-sparkline/dist/jquery.sparkline',
       'leaflet' : 'leaflet/dist/leaflet-src',
       'markercluster' : 'leaflet.markercluster/dist/leaflet.markercluster-src'
     },

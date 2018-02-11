@@ -78,8 +78,8 @@ public class DefaultSnmpHwInventoryAdapterConfigDao extends AbstractJaxbConfigDa
      */
     @Override
     protected HwInventoryAdapterConfiguration translateConfig(HwInventoryAdapterConfiguration config) {
-        final Set<String> oids = new HashSet<String>();
-        final Set<String> names = new HashSet<String>();
+        final Set<String> oids = new HashSet<>();
+        final Set<String> names = new HashSet<>();
 
         for (HwExtension ext : config.getExtensions()) {
             for (Iterator<MibObj> it = ext.getMibObjects().iterator(); it.hasNext();) {

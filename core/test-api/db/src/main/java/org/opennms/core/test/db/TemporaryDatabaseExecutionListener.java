@@ -307,7 +307,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         if (methodName != null) {
             retval.setMethodName(methodName);
         }
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
         if (jtd.useExistingDatabase() != null && !"".equals(jtd.useExistingDatabase())) {
             b.append("use existing database: " + jtd.useExistingDatabase() + " ");
         }

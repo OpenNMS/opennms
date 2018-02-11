@@ -111,7 +111,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
      */
     @Override
     public void destroy() throws Exception {
-        m_registrations.values().forEach(r -> r.unregister());
+        m_registrations.values().forEach(Registration::unregister);
     }
 
     /**
@@ -167,7 +167,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
             m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
             registerNorthnounders();
         } catch (Exception e) {
-            LOG.error("Can't reload the SNMP trap northbound configuration", e);
+            throw new NorthbounderException("Can't reload the SNMP trap northbound configuration", e);
         }
     }
 

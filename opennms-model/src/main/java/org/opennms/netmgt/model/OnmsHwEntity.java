@@ -137,13 +137,13 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     private OnmsNode m_node;
 
     /** The custom hardware attributes. */
-    private SortedSet<OnmsHwEntityAttribute> m_hwAttributes = new TreeSet<OnmsHwEntityAttribute>();
+    private SortedSet<OnmsHwEntityAttribute> m_hwAttributes = new TreeSet<>();
 
     /** The entity's parent. */
     private OnmsHwEntity m_parent;
 
     /** The entity's children. */
-    private SortedSet<OnmsHwEntity> m_children = new TreeSet<OnmsHwEntity>();
+    private SortedSet<OnmsHwEntity> m_children = new TreeSet<>();
 
     /**
      * The Constructor.

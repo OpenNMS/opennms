@@ -65,4 +65,9 @@ public interface CorrelationEngine {
 	 * <p>tearDown</p>
 	 */
 	void tearDown();
+
+	/**
+         * <p>reloadConfig</p>
+         */
+	void reloadConfig();
 }

@@ -33,6 +33,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -83,6 +85,34 @@ public class HibernateEventWriterIT {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Test
+    public void testWriteEventWithParameters() throws Exception {
+        final EventBuilder builder = new EventBuilder("testUei", "testSource");
+        builder.setLogDest(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
+        builder.addParam("param1", "value1");
+        builder.addParam("param2", 1337);
+        builder.addParam("param3", true);
+        builder.addParam("param4", 23.42);
+        builder.addParam("param4", 42.23); // Test for duplicated values - last should win
+
+        m_eventWriter.process(builder.getLog());
+
+        final List<Map<String, Object>> parameters = jdbcTemplate.queryForList("SELECT name, value FROM event_parameters WHERE eventID = " + builder.getEvent().getDbid() + " ORDER BY name");
+        assertEquals(4, parameters.size());
+
+        assertEquals("param1", parameters.get(0).get("name"));
+        assertEquals("value1", parameters.get(0).get("value"));
+
+        assertEquals("param2", parameters.get(1).get("name"));
+        assertEquals("1337", parameters.get(1).get("value"));
+
+        assertEquals("param3", parameters.get(2).get("name"));
+        assertEquals("true", parameters.get(2).get("value"));
+
+        assertEquals("param4", parameters.get(3).get("name"));
+        assertEquals("42.23", parameters.get(3).get("value"));
+    }
+
     /**
      * Tests writing nulls to postgres db and the db encoding.
      * @throws SQLException
@@ -113,8 +143,17 @@ public class HibernateEventWriterIT {
         m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
-        final String parms = jdbcTemplate.queryForObject("SELECT eventParms FROM events LIMIT 1", String.class);
-        assertEquals("test=testVal(string,text);test2=valWith%0Null%0(string,text);test3=" + snmpVal.toString() + "(string,text);test=B9cECgEXBgArAAA%61(string,text)", parms);
+        final List<Map<String, Object>> parameters = jdbcTemplate.queryForList("SELECT name, value FROM event_parameters WHERE eventID = " + event.getDbid() + " ORDER BY name");
+        assertEquals(3, parameters.size());
+
+        assertEquals("test", parameters.get(0).get("name"));
+        assertEquals("B9cECgEXBgArAAA%61", parameters.get(0).get("value"));
+
+        assertEquals("test2", parameters.get(1).get("name"));
+        assertEquals("valWith%0Null%0", parameters.get(1).get("value"));
+
+        assertEquals("test3", parameters.get(2).get("name"));
+        assertEquals(snmpVal.toString(), parameters.get(2).get("value"));
     }
 
     /**

@@ -113,7 +113,7 @@ angular.module('onms-interfaces', [
   };
 
   $scope.openIpPage = function(intf) {
-    $window.location.href = "element/interface.jsp?ipinterfaceid=" + intf.id;
+    $window.location.href = getBaseHref() + "element/interface.jsp?ipinterfaceid=" + intf.id;
   };
 
   $scope.$watch('filters.ipInterface', function() {
@@ -159,7 +159,7 @@ angular.module('onms-interfaces', [
   };
 
   $scope.openSnmpPage = function(intf) {
-    $window.location.href = "element/snmpinterface.jsp?node=" + $scope.nodeId + "&ifindex=" + intf.ifIndex;
+    $window.location.href = getBaseHref() + "element/snmpinterface.jsp?node=" + $scope.nodeId + "&ifindex=" + intf.ifIndex;
   };
 
   $scope.$watch('filters.snmpInterface', function() {

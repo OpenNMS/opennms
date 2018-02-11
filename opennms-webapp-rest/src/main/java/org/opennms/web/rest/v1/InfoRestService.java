@@ -28,15 +28,7 @@
 
 package org.opennms.web.rest.v1;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -44,10 +36,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.json.JSONObject;
+import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.SystemInfoUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.web.rest.v1.config.TicketerConfig;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,16 +46,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("info")
 @Transactional
 public class InfoRestService extends OnmsRestService {
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getInfo() throws ParseException {
         final SystemInfoUtils sysInfoUtils = new SystemInfoUtils();
-        final Map<String,String> info = new TreeMap<String,String>();
-        info.put("displayVersion", sysInfoUtils.getDisplayVersion());
-        info.put("version", sysInfoUtils.getVersion());
-        info.put("packageName", sysInfoUtils.getPackageName());
-        info.put("packageDescription", sysInfoUtils.getPackageDescription());
-        final JSONObject jo = new JSONObject(info);
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+
+        final InfoDTO info = new InfoDTO();
+        info.setDisplayVersion(sysInfoUtils.getDisplayVersion());
+        info.setVersion(sysInfoUtils.getVersion());
+        info.setPackageName(sysInfoUtils.getPackageName());
+        info.setPackageDescription(sysInfoUtils.getPackageDescription());
+        info.setTicketerConfig(getTicketerConfig());
+
+        return Response.ok().entity(info).build();
+    }
+
+    private TicketerConfig getTicketerConfig() {
+        final TicketerConfig ticketerConfig = new TicketerConfig();
+        ticketerConfig.setEnabled("true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled")));
+        if (ticketerConfig.isEnabled()) {
+            ticketerConfig.setPlugin(System.getProperty("opennms.ticketer.plugin"));
+        }
+        return ticketerConfig;
     }
 }

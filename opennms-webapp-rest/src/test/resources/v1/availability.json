@@ -96,7 +96,7 @@
                     }
                 ], 
                 "count": 7, 
-                "offset": null, 
+                "offset": 0, 
                 "totalCount": 7
             }, 
             "name": "Categories"
@@ -119,7 +119,7 @@
                     }
                 ], 
                 "count": 1, 
-                "offset": null, 
+                "offset": 0, 
                 "totalCount": 1
             }, 
             "name": "Total"

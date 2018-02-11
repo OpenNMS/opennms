@@ -52,7 +52,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
     protected final Metric m_metric = new Metric();
     private volatile boolean m_stopped = false;
-    private final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
+    private final List<PingReplyListener> m_listeners = new ArrayList<>();
 
     protected AbstractPinger(NativeDatagramSocket pingSocket) {
         m_pingSocket = pingSocket;

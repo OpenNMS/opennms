@@ -648,7 +648,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         final OnmsNode node = nodeReq.constructOnmsNodeFromRequisition();
 
         // fill in real database categories
-        final HashSet<OnmsCategory> dbCategories = new HashSet<OnmsCategory>();
+        final HashSet<OnmsCategory> dbCategories = new HashSet<>();
         for(final OnmsCategory category : node.getCategories()) {
             dbCategories.add(createCategoryIfNecessary(category.getName()));
         }
@@ -858,7 +858,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         Assert.notNull(m_nodeDao, "Node DAO is null and is not supposed to be");
         final List<OnmsNode> nodes = isDiscoveryEnabled() ? m_nodeDao.findAll() : m_nodeDao.findAllProvisionedNodes();
 
-        final List<NodeScanSchedule> scheduledNodes = new ArrayList<NodeScanSchedule>();
+        final List<NodeScanSchedule> scheduledNodes = new ArrayList<>();
         for(final OnmsNode node : nodes) {
             final NodeScanSchedule nodeScanSchedule = createScheduleForNode(node, false);
             if (nodeScanSchedule != null) {
@@ -1058,7 +1058,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Transactional
     private OnmsNode saveOrUpdate(final OnmsNode node) {
-        final Set<OnmsCategory> updatedCategories = new HashSet<OnmsCategory>();
+        final Set<OnmsCategory> updatedCategories = new HashSet<>();
         for(final Iterator<OnmsCategory> it = node.getCategories().iterator(); it.hasNext(); ) {
             final OnmsCategory category = it.next();
             if (category.getId() == null) {

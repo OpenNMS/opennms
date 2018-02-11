@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.opennms.web.api.Util" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -76,24 +77,24 @@
         }
     }
 
-    url += mode + "/" + heatmap + "/";
+    url += Util.encode(mode) + "/" + Util.encode(heatmap) + "/";
 
     if ("nodesByForeignSource".equals(heatmap)) {
         foreignSource = request.getParameter("foreignSource");
-        url += foreignSource;
+        url += Util.encode(foreignSource);
         title += " (Nodes by ForeignSource '" + foreignSource + "')";
     }
 
     if ("nodesByCategory".equals(heatmap)) {
         category = request.getParameter("category");
-        url += category;
+        url += Util.encode(category);
         title += " (Nodes by Category '" + category + "')";
     }
 
     if ("nodesByMonitoredService".equals(heatmap)) {
         monitoredService = request.getParameter("monitoredService");
-        url += monitoredService;
-        title += " (Nodes by Service '" +monitoredService + "')";
+        url += Util.encode(monitoredService);
+        title += " (Nodes by Service '" + monitoredService + "')";
     }
 
     if ("foreignSources".equals(heatmap)) {
@@ -128,7 +129,7 @@
 
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=mode%>&amp;heatmap=<%=heatmap%>&amp;foreignSource=<%=foreignSource%>&amp;category=<%=category%>&amp;monitoredService=<%=monitoredService%>"><%=title%>
+        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=Util.encode(mode)%>&amp;heatmap=<%=Util.encode(heatmap)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>"><%=WebSecurityUtils.sanitizeString(title)%>
         </a></h3>
     </div>
 
@@ -202,25 +203,25 @@
                     <%
                       if ("foreignSources".equals(heatmap)) {
                     %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByForeignSource&foreignSource=" + nodes[0].id;
+                    location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByForeignSource&foreignSource=" + encodeURIComponent(nodes[0].id);
                     <%
                       }
 
                       if ("categories".equals(heatmap)) {
                     %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByCategory&category=" + nodes[0].id;
+                    location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByCategory&category=" + encodeURIComponent(nodes[0].id);
                     <%
                       }
 
                       if ("monitoredServices".equals(heatmap)) {
                     %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByMonitoredService&monitoredService=" + nodes[0].id;
+                    location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByMonitoredService&monitoredService=" + encodeURIComponent(nodes[0].id);
                     <%
                       }
 
                       if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
                     %>
-                    location.href = "/opennms/element/node.jsp?node=" + nodes[0].elementId
+                    location.href = "/opennms/element/node.jsp?node=" + encodeURIComponent(nodes[0].elementId);
                     <%
                       }
                     %>
@@ -254,7 +255,7 @@
                         ],
                         "labelsEnabled": true,
                         "nodeData": {
-                            "id": "<%=heatmap%>",
+                            "id": "<%=Util.encode(heatmap)%>",
                             "children": children
                         }
                     }).bind('treemapmousemove', mousemoveHandler)
@@ -283,11 +284,11 @@
                     <%
                         if ("outages".equals(mode)) {
                     %>
-                    <a href="<%=request.getRequestURI()%>?mode=alarms&amp;heatmap=<%=heatmap%>&amp;category=<%=category%>&amp;foreignSource=<%=foreignSource%>&amp;monitoredService=<%=monitoredService%>">Alarms</a> / <b>Outages</b>
+                    <a href="<%=request.getRequestURI()%>?mode=alarms&amp;heatmap=<%=Util.encode(heatmap)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>">Alarms</a> / <b>Outages</b>
                     <%
                     } else {
                     %>
-                    <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&amp;heatmap=<%=heatmap%>&amp;category=<%=category%>&amp;foreignSource=<%=foreignSource%>&amp;monitoredService=<%=monitoredService%>">Outages</a>
+                    <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&amp;heatmap=<%=Util.encode(heatmap)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>">Outages</a>
                     <%
                         }
                     %>
@@ -298,16 +299,16 @@
                     <%
                         if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
                     %>
-                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=categories">Categories</a> / <b>Foreign Sources</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=monitoredServices">Services</a>
+                    <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=categories">Categories</a> / <b>Foreign Sources</b> / <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=monitoredServices">Services</a>
                     <%
                     } else {
                         if ("categories".equals(heatmap) ||"nodesByCategory".equals(heatmap)) {
                     %>
-                    <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=foreignSources">Foreign Sources</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=monitoredServices">Services</a>
+                    <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=foreignSources">Foreign Sources</a> / <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=monitoredServices">Services</a>
                     <%
                     } else {
                     %>
-                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=categories">Categories</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=foreignSources">Foreign Sources</a> / <b>Services</b>
+                    <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=categories">Categories</a> / <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=foreignSources">Foreign Sources</a> / <b>Services</b>
                     <%
                             }
                         }

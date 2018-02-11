@@ -46,6 +46,7 @@ public class ConfigFileApplicationContext extends AbstractXmlApplicationContext 
         super(parent);
         m_resource = basePath;
         m_configFileLocation = configFileLocation;
+        LOG.debug("ConfigFileApplicationContext: initializing using basePath={}, configFileLocation={}", m_resource, m_configFileLocation);
         refresh();
     }
     

@@ -48,7 +48,7 @@ public class Col implements java.io.Serializable {
     private java.util.List<String> colTitleList;
 
     public Col() {
-        this.colTitleList = new java.util.ArrayList<String>();
+        this.colTitleList = new java.util.ArrayList<>();
     }
 
     /**

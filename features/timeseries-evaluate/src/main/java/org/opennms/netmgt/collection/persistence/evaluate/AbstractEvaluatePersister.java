@@ -78,7 +78,7 @@ public abstract class AbstractEvaluatePersister extends AbstractPersister {
      * @return the resource id
      */
     protected String getResourceId(CollectionResource resource) {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append(resource.getParent());
         sb.append('/').append(resource.getResourceTypeName());
         if (!CollectionResource.RESOURCE_TYPE_NODE.equals(resource.getResourceTypeName())) {

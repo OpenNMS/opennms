@@ -50,6 +50,7 @@ import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -402,7 +403,7 @@ public class Provisioner implements SpringServiceDaemon {
      * <p>importModelFromResource</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
-     * @param rescanExisting TODO
+     * @param rescanExisting a {@link java.lang.String} object - Valid values are "true", "false" and "dbonly".
      * @throws java.lang.Exception if any.
      */
     protected void importModelFromResource(final Resource resource, final String rescanExisting) throws Exception {
@@ -413,7 +414,7 @@ public class Provisioner implements SpringServiceDaemon {
      * <p>importModelFromResource</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
-     * @param rescanExisting TODO
+     * @param rescanExisting a {@link java.lang.String} object - Valid values are "true", "false" and "dbonly".
      * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object.
      * @throws java.lang.Exception if any.
      */
@@ -604,7 +605,7 @@ public class Provisioner implements SpringServiceDaemon {
             @Override
             public void run() {
                 try {
-                    InetAddress addr = addr(ip);
+                    final InetAddress addr = addr(ip);
                     if (addr == null) {
                     	LOG.error("Unable to convert {} to an InetAddress.", ip);
                     	return;
@@ -613,11 +614,16 @@ public class Provisioner implements SpringServiceDaemon {
                     final String location;
                     if (paramMap.containsKey("location")) {
                         location = paramMap.get("location");
-                    } else {
+                    } else if (event.getDistPoller() != null) {
                         location = monitoringSystemDao.get(event.getDistPoller()).getLocation();
+                    } else {
+                        location = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
                     }
 
-                    NewSuspectScan scan = createNewSuspectScan(addr, paramMap.get("foreignSource"), location);
+                    final String foreignSource = paramMap.get("foreignSource");
+                    LOG.debug("Triggering new suspect scan for: {} at location: {} with foreign source: {}.",
+                            addr, location, foreignSource);
+                    final NewSuspectScan scan = createNewSuspectScan(addr, foreignSource, location);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();

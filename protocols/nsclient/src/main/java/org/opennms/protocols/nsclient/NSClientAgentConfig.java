@@ -104,7 +104,7 @@ public class NSClientAgentConfig {
      */
     @Override
     public String toString() {
-        StringBuffer buff = new StringBuffer("AgentConfig[");
+        final StringBuilder buff = new StringBuilder("AgentConfig[");
         buff.append("Address: "+m_address);
         buff.append(", Port: "+m_port);
         buff.append(", Password: "+String.valueOf(m_password)); //use valueOf to handle null values of m_password

@@ -199,7 +199,12 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         // We must have at least one resource for every known type
         for (OnmsResourceType type : m_resourceDao.getResourceTypes()) {
             // Ignore this type for now #needstoomanydbojects
-            if (type.getName() == DistributedStatusResourceType.TYPE_NAME) {
+            if (DistributedStatusResourceType.TYPE_NAME.equals(type.getName())) {
+                continue;
+            }
+            // Ignore the interfaceSnmpByIfIndex since it functions as a pure alias
+            // and should never be returned when enumerating resources
+            if (InterfaceSnmpByIfIndexResourceType.TYPE_NAME.equals(type.getName())) {
                 continue;
             }
             assertTrue("No resources of type: " + type.getLabel(), visitor.resourceTypes.contains(type));
@@ -219,7 +224,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         String[] expectedResults = loadExpectedResults();
         for (Entry<ResourceId, OnmsResource> entry : visitor.resourcesById.entrySet()) {
             // Convert the attributes to strings and order them lexicographically
-            Set<String> attributeNames = new TreeSet<String>();
+            Set<String> attributeNames = new TreeSet<>();
             for (OnmsAttribute attribute : entry.getValue().getAttributes()) {
                 attributeNames.add(attribute.toString());
             }
@@ -240,7 +245,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     private static class ResourceCollector implements ResourceVisitor {
         private Map<ResourceId, OnmsResource> resourcesById = new TreeMap<>();
 
-        private Set<OnmsResourceType> resourceTypes = new HashSet<OnmsResourceType>();
+        private Set<OnmsResourceType> resourceTypes = new HashSet<>();
 
         @Override
         public void visit(OnmsResource resource) {

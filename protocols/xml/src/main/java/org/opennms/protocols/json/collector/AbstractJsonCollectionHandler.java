@@ -39,11 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
-import net.sf.json.util.JSONUtils;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathException;
@@ -121,7 +118,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
     private String getResourceName(JXPathContext context, XmlGroup group) {
         // Processing multiple-key resource name.
         if (group.hasMultipleResourceKey()) {
-            List<String> keys = new ArrayList<String>();
+            List<String> keys = new ArrayList<>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
                 LOG.debug("getResourceName: getting key for resource's name using {}", key);
                 String keyName = (String)context.getValue(key);

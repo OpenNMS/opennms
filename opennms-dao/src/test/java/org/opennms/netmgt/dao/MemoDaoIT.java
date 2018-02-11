@@ -46,6 +46,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +110,7 @@ public class MemoDaoIT implements InitializingBean {
         event.setEventCreateTime(new Date());
         event.setDistPoller(m_distPollerDao.whoami());
         event.setEventTime(new Date());
-        event.setEventSeverity(new Integer(7));
+        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
         event.setEventSource("test");
         m_eventDao.save(event);

@@ -295,7 +295,7 @@ public class DefaultCollectionJob implements CollectionJob {
     }
 
     private String getDestinationString(Set<String> destinationSet) {
-        StringBuilder destinationStringBuilder = new StringBuilder();
+        final StringBuilder destinationStringBuilder = new StringBuilder();
         for (String destination : destinationSet) {
             destinationStringBuilder.append(destination);
             destinationStringBuilder.append(", ");

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>core-parent</artifactId>
-        <version>21.0.0-SNAPSHOT</version>
+        <version>22.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core-repository</artifactId>
@@ -26,8 +26,9 @@
                         <configuration>
                             <descriptors>
                                 <!-- Default repositories -->
-                                <descriptor>mvn:org.apache.karaf.features/standard/${minionKarafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring/${minionKarafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor>
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.features.minion/core-features/${project.version}/xml</descriptor>
                             </descriptors>
@@ -36,6 +37,7 @@
                             <features>
                                 <!-- Minion Core Features -->
                                 <feature>minion-core</feature>
+                                <feature>minion-jms</feature>
                                 <feature>minion-core-shell</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>

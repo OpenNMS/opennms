@@ -1,3 +1,63 @@
+opennms (21.0.3-1) stable; urgency=low
+
+  * New minor stable release.  It contains mostly small bug fixes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/21.0.3/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 18 Jan 2018 13:30:00 -0500
+
+opennms (21.0.2-1) stable; urgency=high
+
+  * New minor stable release.  It contains some UI security fixes, other bug fixes,
+    and a few small enhancements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/21.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Dec 2017 10:00:00 -0500
+
+opennms (21.0.1-1) stable; urgency=medium
+
+  * New minor stable release.  It contains a few enhancements but is primarily a
+    bugfix release, including a fix for the rendering issue in the topology UI
+    and other Vaadin-based UI elements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/21.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 16 Nov 2017 10:00:00 -0500
+
+opennms (21.0.0-1) stable; urgency=low
+
+  * New major stable release.  This release contains a few new features and a
+    lot of under-the-hood cleanups.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/21.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 19 Oct 2017 10:00:00 -0500
+
+opennms (20.1.0-1) stable; urgency=low
+
+  * New stable release.  This release contains plenty of bug fixes and some
+    new APIs.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/20.1.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Sep 2017 11:31:00 -0500
+
+opennms (20.0.2-1) stable; urgency=medium
+
+  * New stable release.  This release contains a number of important bug fixes
+    as well as a few small enhancements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/20.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 17 Aug 2017 10:20:00 -0500
+
 opennms (20.0.1-1) stable; urgency=high
 
   * New stable release.  This release contains a number of important bug fixes
@@ -1081,9 +1141,9 @@ opennms (1.1.3-2) unstable; urgency=low
 opennms (1.1.3-1) unstable; urgency=low
 
   * New upstream release
-  * Updated opennms-db post-install to accomodate the new java-based 
+  * Updated opennms-db post-install to accommodate the new java-based 
     installer.
-  * Updated opennms-webapp post-install to accomodate the new java-based
+  * Updated opennms-webapp post-install to accommodate the new java-based
     installer.
   * Added libgetopt-mixed-perl as a dependency for common, removed it as
     a dependency for contrib, (it was backward before, this is how it 

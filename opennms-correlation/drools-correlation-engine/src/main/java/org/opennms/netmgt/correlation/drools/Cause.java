@@ -54,7 +54,7 @@ public class Cause implements Serializable {
     private Long m_cause;
     private Event m_symptom;
     private Integer m_timerId;
-    private final Set<Cause> m_impacted = new HashSet<Cause>();
+    private final Set<Cause> m_impacted = new HashSet<>();
 
     /**
      * <p>Constructor for Cause.</p>

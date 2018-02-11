@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -253,6 +253,11 @@
     </dependency>
 
     <!-- test dependencies -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>

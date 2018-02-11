@@ -85,14 +85,6 @@ public class MockCollectionAgent implements CollectionAgent {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.NetworkInterface#getType()
-     */
-    @Override
-    public int getType() {
-        return 0;
-    }
-
-    /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.NetworkInterface#getAddress()
      */
     @Override
@@ -137,13 +129,6 @@ public class MockCollectionAgent implements CollectionAgent {
     @Override
     public String getHostAddress() {
         return ipAddress.getHostAddress();
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collection.api.CollectionAgent#setSavedIfCount(int)
-     */
-    @Override
-    public void setSavedIfCount(int ifCount) {
     }
 
     /* (non-Javadoc)
@@ -196,14 +181,6 @@ public class MockCollectionAgent implements CollectionAgent {
         } else {
             return new ResourcePath(Integer.toString(nodeId));
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collection.api.CollectionAgent#getSysObjectId()
-     */
-    @Override
-    public String getSysObjectId() {
-        return null;
     }
 
     /* (non-Javadoc)

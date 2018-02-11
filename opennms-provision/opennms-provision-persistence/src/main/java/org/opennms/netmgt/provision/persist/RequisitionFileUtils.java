@@ -123,7 +123,7 @@ public abstract class RequisitionFileUtils {
     }
 
     public static List<File> findSnapshots(final ForeignSourceRepository repository, final String foreignSource) {
-        final List<File> files = new ArrayList<File>();
+        final List<File> files = new ArrayList<>();
 
         URL url = null;
         try {

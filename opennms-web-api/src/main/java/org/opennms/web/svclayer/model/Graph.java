@@ -170,7 +170,7 @@ public class Graph implements Comparable<Graph> {
      */
     public Collection<RrdGraphAttribute> getRequiredRrGraphdAttributes() {
         Map<String, RrdGraphAttribute> available = m_resource.getRrdGraphAttributes();
-        Set<RrdGraphAttribute> reqAttrs = new LinkedHashSet<RrdGraphAttribute>();
+        Set<RrdGraphAttribute> reqAttrs = new LinkedHashSet<>();
         for(String attrName : m_graph.getColumns()) {
             RrdGraphAttribute attr = available.get(attrName);
             if (attr != null) {

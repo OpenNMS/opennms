@@ -44,9 +44,9 @@ import org.opennms.core.criteria.restrictions.Restriction;
 public class BeanWrapperCriteriaVisitor implements CriteriaVisitor {
     // private static final Logger LOG = LoggerFactory.getLogger(BeanWrapperCriteriaVisitor.class);
 
-    private List<Order> m_orders = new ArrayList<Order>();
-    private List<Alias> m_aliases = new ArrayList<Alias>();
-    private List<Fetch> m_fetches = new ArrayList<Fetch>();
+    private List<Order> m_orders = new ArrayList<>();
+    private List<Alias> m_aliases = new ArrayList<>();
+    private List<Fetch> m_fetches = new ArrayList<>();
     private boolean m_distinct = false;
     private Integer m_limit = 0;
     private Integer m_offset = 0;
@@ -69,7 +69,7 @@ public class BeanWrapperCriteriaVisitor implements CriteriaVisitor {
 
     @Override
     public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
-        final List<Object> matching = new ArrayList<Object>();
+        final List<Object> matching = new ArrayList<>();
         for (final Object o : m_matching) {
             if (o.getClass().isAssignableFrom(clazz)) {
                 matching.add(o);
@@ -115,7 +115,7 @@ public class BeanWrapperCriteriaVisitor implements CriteriaVisitor {
 
     @Override
     public void visitRestriction(final Restriction restriction) {
-        final List<Object> matching = new ArrayList<Object>();
+        final List<Object> matching = new ArrayList<>();
         for (final Object entity : m_matching) {
             final BeanWrapperRestrictionVisitor visitor = new BeanWrapperRestrictionVisitor(entity, m_aliases);
             restriction.visit(visitor);

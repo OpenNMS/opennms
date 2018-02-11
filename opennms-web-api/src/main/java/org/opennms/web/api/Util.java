@@ -132,9 +132,9 @@ public abstract class Util extends Object {
             request.getContextPath()                    // %c
         };
 
-    	final StringBuffer out = new StringBuffer(48);
+        final StringBuilder out = new StringBuilder(48);
         for (int i = 0; i < tmpl.length();) {
-        	final char c = tmpl.charAt(i++);
+            final char c = tmpl.charAt(i++);
             if (c == '%' && i < tmpl.length()) {
                 final char d = tmpl.charAt(i++);
                 for (int key = 0; key < substKeywords.length; ++key) {
@@ -298,7 +298,7 @@ public abstract class Util extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         final List<String> ignoreList = Arrays.asList(ignores);
 
@@ -423,7 +423,7 @@ public abstract class Util extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         final List<String> ignoreList = Arrays.asList(ignores);
 

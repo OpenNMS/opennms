@@ -124,7 +124,7 @@ public class EventRegistry {
 
     // Returns a list of all methods which have a annotation "EventConsumer"
     private List<Method> getEventConsumerMethods(Class<?> clazz) {
-        List<Method> eventConsumerMethods = new ArrayList<Method>();
+        List<Method> eventConsumerMethods = new ArrayList<>();
         for (Method eachMethod : clazz.getMethods()) {
             if (eachMethod.getAnnotation(EventConsumer.class) != null) {
                 eventConsumerMethods.add(eachMethod);

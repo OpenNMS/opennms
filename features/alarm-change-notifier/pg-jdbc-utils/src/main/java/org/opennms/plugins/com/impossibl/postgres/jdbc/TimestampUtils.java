@@ -69,7 +69,7 @@ public class TimestampUtils {
     if (calCache != null && calCacheZone == rawOffset)
       return calCache;
 
-    StringBuilder zoneID = new StringBuilder("GMT");
+    final StringBuilder zoneID = new StringBuilder("GMT");
     zoneID.append(sign < 0 ? '-' : '+');
     if (hr < 10) zoneID.append('0');
     zoneID.append(hr);
@@ -447,7 +447,7 @@ public class TimestampUtils {
     Calendar cal = getLocalCalendar(calParameter);
     cal.setTime(x);
 
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
 
     if (x.equals(FutureInfiniteInstant.INSTANCE.toTimestamp())) {
       sb.append("infinity");
@@ -485,7 +485,7 @@ public class TimestampUtils {
 
     cal.setTime(x);
 
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
 
     if (x.equals(FutureInfiniteInstant.INSTANCE.toDate())) {
       sb.append("infinity");
@@ -511,7 +511,7 @@ public class TimestampUtils {
   public String toString(Calendar calParameter, Time x) {
     Calendar cal = getLocalCalendar(calParameter);
 
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
 
     appendTime(sb, cal, cal.get(Calendar.MILLISECOND) * 1000000);
 

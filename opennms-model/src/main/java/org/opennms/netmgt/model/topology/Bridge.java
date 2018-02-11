@@ -37,7 +37,7 @@ public class Bridge {
     final Integer m_id;
     Integer m_rootPort;
     boolean m_isRootBridge=false;
-    List<BridgeElement> m_elements = new ArrayList<BridgeElement>();
+    List<BridgeElement> m_elements = new ArrayList<>();
 
     public Bridge(Integer id) {
         super();
@@ -90,7 +90,7 @@ public class Bridge {
     }
     
     public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+        final StringBuilder strbfr = new StringBuilder();
         strbfr.append("bridge:[");
         strbfr.append(m_id);
         strbfr.append("], isrootbridge:");

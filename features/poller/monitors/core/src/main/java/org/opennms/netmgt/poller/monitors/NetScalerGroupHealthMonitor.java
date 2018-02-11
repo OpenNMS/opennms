@@ -37,7 +37,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -78,7 +77,7 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
         }
 
         int snLength = groupName.length();
-        StringBuffer serviceOidBuf = new StringBuffer(SVC_GRP_MEMBER_STATE);
+        final StringBuilder serviceOidBuf = new StringBuilder(SVC_GRP_MEMBER_STATE);
         serviceOidBuf.append(".").append(Integer.toString(snLength));
         for (byte thisByte : groupName.getBytes()) {
             serviceOidBuf.append(".").append(Byte.toString(thisByte));

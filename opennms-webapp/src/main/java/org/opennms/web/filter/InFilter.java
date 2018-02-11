@@ -63,7 +63,7 @@ public abstract class InFilter<T> extends MultiArgFilter<T> {
     /** {@inheritDoc} */
     @Override
     public String getSQLTemplate() {
-        StringBuilder buf = new StringBuilder(" ");
+        final StringBuilder buf = new StringBuilder(" ");
         buf.append(getSQLFieldName());
         buf.append(" IN (");
         T[] values = getValues();

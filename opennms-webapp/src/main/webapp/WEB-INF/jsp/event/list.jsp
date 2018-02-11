@@ -374,7 +374,8 @@
           <th width="18%"><%=this.makeSortLink(callback, parms, SortStyle.NODE,          SortStyle.REVERSE_NODE,          "node",         "Node"                , favorite)%></th>
           <th width="05%"><%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node&nbsp;Location"  , favorite)%></th>
           <th width="14%"><%=this.makeSortLink(callback, parms, SortStyle.INTERFACE,     SortStyle.REVERSE_INTERFACE,     "interface",    "Interface"           , favorite)%></th>
-          <th width="13%"><%=this.makeSortLink(callback, parms, SortStyle.SERVICE,       SortStyle.REVERSE_SERVICE,       "service",      "Service"             , favorite)%></th>
+          <th width="8%"><%=this.makeSortLink(callback, parms, SortStyle.SERVICE,       SortStyle.REVERSE_SERVICE,       "service",      "Service"              , favorite)%></th>
+          <th width="5%"><%=this.makeSortLink(callback, parms, SortStyle.ALARMID,       SortStyle.REVERSE_ALARMID,       "alarm",      "Alarm ID"                  , favorite)%></th>
         </tr>
         </thead>     
       <% for( int i=0; i < events.length; i++ ) {
@@ -518,11 +519,17 @@
               &nbsp;
             <% } %>
           </td>
-          
+          <td>
+            <% if (events[i].getAlarmId() != null && events[i].getAlarmId().intValue() != 0) { %>
+              <a href="alarm/detail.htm?id=<%=events[i].getAlarmId()%>"><%=events[i].getAlarmId()%></a>
+            <% } else { %>
+              &nbsp;
+            <% }  %>
+          </td>
         </tr>
         
         <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="7">
+          <td colspan="8">
             <% if(events[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(events[i].getUei()); %>
                 <%=events[i].getUei()%>
@@ -542,7 +549,7 @@
         </tr>
        
         <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="7"><%=WebSecurityUtils.sanitizeString(events[i].getLogMessage(), true)%></td>
+          <td colspan="8"><%=WebSecurityUtils.sanitizeString(events[i].getLogMessage(), true)%></td>
         </tr>
        
       <% } /*end for*/%>

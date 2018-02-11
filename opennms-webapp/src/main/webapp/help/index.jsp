@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,25 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<%@page language="java" contentType="text/html" session="true"  %>
+<%@page language="java"
+        contentType="text/html"
+        session="true"
+%>
 
-<c:redirect url="/support/index.htm" />
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+    <jsp:param name="title" value="Help"/>
+    <jsp:param name="headTitle" value="Help"/>
+    <jsp:param name="breadcrumb" value="Help"/>
+</jsp:include>
+
+<div class="col-md-4">
+    <jsp:include page="/includes/help-documentation.jsp" flush="false" />
+</div>
+<div class="col-md-4">
+    <jsp:include page="/includes/help-contact.jsp" flush="false" />
+</div>
+<div class="col-md-4">
+    <jsp:include page="/includes/help-software-management.jsp" flush="false" />
+</div>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

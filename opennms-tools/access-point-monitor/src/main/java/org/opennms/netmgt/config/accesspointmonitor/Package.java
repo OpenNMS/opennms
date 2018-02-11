@@ -68,13 +68,13 @@ public class Package implements Serializable, Comparable<Package> {
     private String m_filter;
 
     @XmlElement(name = "specific")
-    private List<String> m_specifics = new ArrayList<String>();
+    private List<String> m_specifics = new ArrayList<>();
 
     @XmlElement(name = "include-range")
-    private List<IpRange> m_includeRanges = new ArrayList<IpRange>();
+    private List<IpRange> m_includeRanges = new ArrayList<>();
 
     @XmlElement(name = "exclude-range")
-    private List<IpRange> m_excludeRanges = new ArrayList<IpRange>();
+    private List<IpRange> m_excludeRanges = new ArrayList<>();
 
     @XmlElement(name = "service", required = true)
     private Service m_service;

@@ -1,93 +1,86 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- event definitions for traps from Sensaphone IMS-4000 environmental monitors -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.8338</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Sensaphone/traps/environment-alarm-trap</uei>
-	<event-label>SENSAPHONE-MIB defined trap event: environment-alarm-trap</event-label>
-	<descr>
-&lt;p&gt;Description of environmental input alarm&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8338</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Sensaphone/traps/environment-alarm-trap</uei>
+      <event-label>SENSAPHONE-MIB defined trap event: environment-alarm-trap</event-label>
+      <descr>&lt;p>Description of environmental input alarm&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	ims-trap-string&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	ims-trap-string&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Sensaphone Event: environment-alarm-trap trap received 
-			ims-trap-string=%parm[#1]%&lt;/p&gt;
+			ims-trap-string=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.8338</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Sensaphone/traps/ip-alarm-trap</uei>
-	<event-label>SENSAPHONE-MIB defined trap event: ip-alarm-trap</event-label>
-	<descr>
-&lt;p&gt;Description of IP alarm&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8338</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Sensaphone/traps/ip-alarm-trap</uei>
+      <event-label>SENSAPHONE-MIB defined trap event: ip-alarm-trap</event-label>
+      <descr>&lt;p>Description of IP alarm&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	ims-trap-string&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	ims-trap-string&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Sensaphone Event: ip-alarm-trap trap received 
-			ims-trap-string=%parm[#1]%&lt;/p&gt;
+			ims-trap-string=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.8338</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Sensaphone/traps/diagnostic-alarm-trap</uei>
-	<event-label>SENSAPHONE-MIB defined trap event: diagnostic-alarm-trap</event-label>
-	<descr>
-&lt;p&gt;Description of diagnostic alarm&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8338</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Sensaphone/traps/diagnostic-alarm-trap</uei>
+      <event-label>SENSAPHONE-MIB defined trap event: diagnostic-alarm-trap</event-label>
+      <descr>&lt;p>Description of diagnostic alarm&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	ims-trap-string&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	ims-trap-string&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Sensaphone Event: diagnostic-alarm-trap trap received 
-			ims-trap-string=%parm[#1]%&lt;/p&gt;
+			ims-trap-string=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
+      <severity>Warning</severity>
+   </event>
 </events>

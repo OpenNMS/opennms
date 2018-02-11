@@ -37,12 +37,10 @@ import java.util.List;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.svclayer.AdminCategoryService;
@@ -115,7 +113,7 @@ public class DefaultAdminCategoryService implements
 
         OnmsCategory category = findCategory(categoryIdString);
         
-        final List<OnmsNode> memberNodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> memberNodes = new ArrayList<>();
         for (final OnmsNode node : getNodeDao().findByCategory(category)) {
         	if (!OnmsNode.NodeType.DELETED.equals(node.getType())) {
         		memberNodes.add(node);
@@ -157,7 +155,7 @@ public class DefaultAdminCategoryService implements
      */
     @Override
     public List<OnmsNode> findAllNodes() {
-    	final List<OnmsNode> list = new ArrayList<OnmsNode>();
+    	final List<OnmsNode> list = new ArrayList<>();
     	for (final OnmsNode node : getNodeDao().findAll()) {
     		if (!OnmsNode.NodeType.DELETED.equals(node.getType())) {
     			list.add(node);

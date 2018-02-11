@@ -37,7 +37,7 @@ import java.util.ListIterator;
 
 public class IPAddressRangeSet implements Iterable<IPAddressRange> {
     // The ranges are kept in order and non-overlapping
-    List<IPAddressRange> m_ranges = new LinkedList<IPAddressRange>();
+    List<IPAddressRange> m_ranges = new LinkedList<>();
     
     public void add(IPAddressRange range) {
         IPAddressRange working = range;
@@ -97,7 +97,7 @@ public class IPAddressRangeSet implements Iterable<IPAddressRange> {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
 
         buf.append("[");
         boolean first = true;

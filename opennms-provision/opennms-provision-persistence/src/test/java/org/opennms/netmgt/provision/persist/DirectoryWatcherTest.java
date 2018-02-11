@@ -130,7 +130,7 @@ public class DirectoryWatcherTest {
 	
 	
 	private static Set<String> set(String... items) {
-		Set<String> set = new LinkedHashSet<String>();
+		Set<String> set = new LinkedHashSet<>();
 		Collections.addAll(set, items);
 		return set;
 	}

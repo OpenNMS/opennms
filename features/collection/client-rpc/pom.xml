@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.collection</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.collection</groupId>
@@ -24,6 +24,7 @@
             <Import-Package>
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              org.opennms.core.xml,
               org.opennms.netmgt.collection.adapters,
               org.opennms.core.network,
               *
@@ -45,6 +46,10 @@
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>

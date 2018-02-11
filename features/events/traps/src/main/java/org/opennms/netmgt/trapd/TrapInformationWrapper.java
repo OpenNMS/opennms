@@ -31,6 +31,7 @@ package org.opennms.netmgt.trapd;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.TrapInformation;
 
 /**
@@ -42,7 +43,7 @@ public class TrapInformationWrapper implements Message {
 
     private final TrapInformation trapInformation;
 
-    public TrapInformationWrapper(TrapInformation trapInformation) throws IllegalArgumentException {
+    public TrapInformationWrapper(TrapInformation trapInformation) throws SnmpException {
         this.trapInformation = Objects.requireNonNull(trapInformation);
         trapInformation.validate(); // Before this was at ProcessQueueProcessor which does not exist anymore
     }

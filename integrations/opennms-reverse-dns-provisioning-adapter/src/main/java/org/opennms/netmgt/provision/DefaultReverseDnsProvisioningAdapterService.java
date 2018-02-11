@@ -93,7 +93,7 @@ public class DefaultReverseDnsProvisioningAdapterService implements
     
     @Override
     public List<ReverseDnsRecord> get(final Integer nodeid) {
-        final List<ReverseDnsRecord> records = new ArrayList<ReverseDnsRecord>();
+        final List<ReverseDnsRecord> records = new ArrayList<>();
         m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus arg0) {

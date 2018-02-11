@@ -77,7 +77,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
     /**
      * The list of variable bindings for the trap.
      */
-    private List<SnmpVarBind> m_variables = new ArrayList<SnmpVarBind>();
+    private List<SnmpVarBind> m_variables = new ArrayList<>();
 
     /**
      * The ASN.1 type for the SNMPv1 Trap.
@@ -129,7 +129,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
         m_generic = 0;
         m_specific = 0;
         m_tstamp = 0L;
-        m_variables = new ArrayList<SnmpVarBind>();
+        m_variables = new ArrayList<>();
     }
 
     /**

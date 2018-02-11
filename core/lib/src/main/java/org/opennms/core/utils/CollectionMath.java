@@ -182,7 +182,7 @@ public abstract class CollectionMath {
 	 * @return a {@link List} of {@link BigDecimal} values
 	 */
 	private static List<BigDecimal> convertNumberToBigDecimal(List<? extends Number> c) {
-		List<BigDecimal> bd = new ArrayList<BigDecimal>();
+		List<BigDecimal> bd = new ArrayList<>();
 		for (Number entry : c) {
 		    if (entry != null) {
 		        bd.add(new BigDecimal(entry.doubleValue()));
@@ -199,7 +199,7 @@ public abstract class CollectionMath {
 	 * @return an {@link ArrayList} of not-null values (if any)
 	 */
 	private static List<BigDecimal> getNotNullEntries(List<BigDecimal> list) {
-		List<BigDecimal> s = new ArrayList<BigDecimal>();
+		List<BigDecimal> s = new ArrayList<>();
 		for (BigDecimal entry : list) {
 			if (entry != null) {
 				s.add(entry);

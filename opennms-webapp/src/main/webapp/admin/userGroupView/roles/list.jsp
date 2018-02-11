@@ -60,6 +60,7 @@
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="On-Call Role Configuration" />
@@ -118,9 +119,9 @@
 	 	  
 	 	  <c:otherwise>
 			<c:forEach var="role" items="${roleManager.roles}">
-				<c:set var="deleteUrl" value="javascript:doDelete('${role.name}')" />
-				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />
-				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${role.name}?')"/>
+				<c:set var="deleteUrl" value="javascript:doDelete('${e:forJavaScript(role.name)}')" />
+				<c:set var="viewUrl" value="javascript:doView('${e:forJavaScript(role.name)}')" />
+				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${e:forJavaScript(role.name)}?')"/>
 				
 				<tr>
 				<td><a href="${deleteUrl}" onclick="${confirmScript}"><i class="fa fa-trash-o fa-2x"></i></a></td>
@@ -138,7 +139,7 @@
 					</c:forEach>	
 				</td>
 				<td>${role.membershipGroup}</td>
-				<td>${role.description}</td>
+				<td><c:out value="${role.description}"/></td>
 				</tr>
 			</c:forEach>
 	 	  </c:otherwise>

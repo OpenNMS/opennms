@@ -50,10 +50,10 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
-import org.opennms.features.vaadin.surveillanceviews.model.Category;
-import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.surveillanceViews.Category;
+import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.GraphDao;
@@ -83,6 +83,7 @@ import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+
 
 /**
  * Service class that encapsulate helper methods for surveillance views.
@@ -270,7 +271,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * @return the SQL query string
      */
     private static String createQuery(final String nodeIdProperty, final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
-        StringBuffer stringBuffer = new StringBuffer();
+        final StringBuilder stringBuffer = new StringBuilder();
 
         stringBuffer.append(nodeIdProperty + " in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
 

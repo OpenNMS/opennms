@@ -36,6 +36,8 @@ public interface DetectorRequestBuilder {
 
     DetectorRequestBuilder withLocation(String location);
 
+    DetectorRequestBuilder withSystemId(String systemId);
+
     DetectorRequestBuilder withServiceName(String serviceName);
 
     DetectorRequestBuilder withClassName(String className);

@@ -71,7 +71,7 @@ public class InterfaceOutagesController extends AbstractController implements In
 
         if (nodeIdString != null && ipAddr != null) {
         	nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-            List<Filter> filters = new ArrayList<Filter>();
+            List<Filter> filters = new ArrayList<>();
 
             filters.add(new InterfaceFilter(ipAddr));
             filters.add(new NodeFilter(nodeId, getServletContext()));

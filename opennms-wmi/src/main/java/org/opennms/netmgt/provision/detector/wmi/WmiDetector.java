@@ -161,7 +161,7 @@ public class WmiDetector extends AgentBasedSyncAbstractDetector<WmiAgentConfig> 
 
                 isAServer = true;
             } catch (WmiException e) {
-                StringBuffer message = new StringBuffer();
+                final StringBuilder message = new StringBuilder();
                 message.append("WmiPlugin: Check failed... : ");
                 message.append(e.getMessage());
                 message.append(" : ");

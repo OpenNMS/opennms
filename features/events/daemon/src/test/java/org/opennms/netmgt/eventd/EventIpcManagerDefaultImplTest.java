@@ -704,7 +704,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
 
     public class MockEventListener implements EventListener {
-        private List<Event> m_events = new ArrayList<Event>();
+        private List<Event> m_events = new ArrayList<>();
         
         @Override
         public String getName() {

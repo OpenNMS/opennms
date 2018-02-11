@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.ws.rs.Consumes;
@@ -63,13 +64,17 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.web.rest.mapper.v2.AlarmMapper;
+import org.opennms.web.rest.model.v2.AlarmCollectionDTO;
+import org.opennms.web.rest.model.v2.AlarmDTO;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SearchProperties;
+import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.support.SecurityHelper;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +89,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("alarms")
 @Transactional
-public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBean,Integer,Integer> {
+public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,AlarmDTO,SearchBean,Integer,Integer> {
 
     @Autowired
     private AlarmDao m_dao;
@@ -97,6 +102,9 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
 
     @Autowired
     private TroubleTicketProxy m_troubleTicketProxy;
+
+    @Autowired
+    private AlarmMapper m_alarmMapper;
 
     @Override
     protected AlarmDao getDao() {
@@ -139,31 +147,41 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
     }
 
     @Override
-    protected JaxbListWrapper<OnmsAlarm> createListWrapper(Collection<OnmsAlarm> list) {
-        return new OnmsAlarmCollection(list);
+    protected JaxbListWrapper<AlarmDTO> createListWrapper(Collection<AlarmDTO> list) {
+        return new AlarmCollectionDTO(list);
+    }
+
+    @Override
+    protected Set<SearchProperty> getQueryProperties() {
+        return SearchProperties.ALARM_SERVICE_PROPERTIES;
     }
 
     @Override
     protected Map<String, CriteriaBehavior<?>> getCriteriaBehaviors() {
         final Map<String, CriteriaBehavior<?>> map = new HashMap<>();
+
         // Root alias
         map.putAll(CriteriaBehaviors.ALARM_BEHAVIORS);
+        // Allow iplike queries on ipAddr
+        map.put("ipAddr", new IpLikeCriteriaBehavior("ipAddr"));
+
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.alarm, CriteriaBehaviors.ALARM_BEHAVIORS));
+        // Allow iplike queries on alarm.ipAddr
+        map.put(Aliases.alarm.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
 
         // 1st level JOINs
-        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.distPoller, CriteriaBehaviors.DIST_POLLER_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix("lastEvent", CriteriaBehaviors.EVENT_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.node, CriteriaBehaviors.NODE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.serviceType, CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS));
 
         // 2nd level JOINs
-        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
-
-        // Allow iplike queries on alarm.ipAddr
-        map.put("ipAddr", new IpLikeCriteriaBehavior("ipAddr"));
-        map.put(Aliases.alarm.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.eventParameter, CriteriaBehaviors.ALARM_LASTEVENT_PARAMETER_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.ipInterface, CriteriaBehaviors.IP_INTERFACE_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.location, CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.snmpInterface, CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS));
 
         return map;
     }
@@ -174,7 +192,7 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
     }
 
     @Override
-    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsAlarm alarm, MultivaluedMapImpl params) {
+    protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsAlarm alarm, MultivaluedMapImpl params) {
         boolean isProcessAck = true;
 
         final String ackValue = params.getFirst("ack");
@@ -309,5 +327,15 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
 
     private boolean isTicketerPluginEnabled() {
         return "true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"));
+    }
+
+    @Override
+    public AlarmDTO mapEntityToDTO(OnmsAlarm alarm) {
+        return m_alarmMapper.alarmToAlarmDTO(alarm);
+    }
+
+    @Override
+    public OnmsAlarm mapDTOToEntity(AlarmDTO dto) {
+        return m_alarmMapper.alarmDTOToAlarm(dto);
     }
 }

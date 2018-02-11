@@ -28,14 +28,13 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxCollection;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbeans;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Rrd;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.config.collectd.jmx.Rrd;
 
 /**
  * Simple Helper to clone any member of <code>JmxDatacollectionConfig</code> or
@@ -55,8 +54,8 @@ public abstract class JmxCollectionCloner {
 	public static JmxDatacollectionConfig clone(JmxDatacollectionConfig input) {
 		JmxDatacollectionConfig output = new JmxDatacollectionConfig();
 		output.setRrdRepository(input.getRrdRepository());
-		for (JmxCollection jmxCollection : input.getJmxCollection()) {
-			output.getJmxCollection().add(clone(jmxCollection));
+		for (JmxCollection jmxCollection : input.getJmxCollectionList()) {
+			output.addJmxCollection(clone(jmxCollection));
 		}
 		return output;
 	}
@@ -72,7 +71,9 @@ public abstract class JmxCollectionCloner {
 		output.setMaxVarsPerPdu(input.getMaxVarsPerPdu());
 		output.setName(input.getName());
 		output.setRrd(clone(input.getRrd()));
-		output.setMbeans(clone(input.getMbeans()));
+		for (final Mbean mbean : input.getMbeans()) {
+		    output.addMbean(clone(mbean));
+		}
 		return output;
 	}
 
@@ -85,20 +86,8 @@ public abstract class JmxCollectionCloner {
 	private static Rrd clone(Rrd input) {
 		Rrd output = new Rrd();
 		output.setStep(input.getStep());
-		output.getRra().addAll(input.getRra());
-		return output;
-	}
-
-	/**
-	 * Clones a Mbeans object. Makes a deep copy!
-	 * 
-	 * @param input
-	 * @return
-	 */
-	private static Mbeans clone(Mbeans input) {
-		Mbeans output = new Mbeans();
-		for (Mbean inputBean : input.getMbean()) {
-			output.getMbean().add(clone(inputBean));
+		for (final String rra : input.getRraCollection()) {
+		    output.addRra(rra);
 		}
 		return output;
 	}
@@ -116,12 +105,12 @@ public abstract class JmxCollectionCloner {
 		output.setKeyfield(input.getKeyfield());
 		output.setName(input.getName());
 		output.setObjectname(input.getObjectname());
-		output.getIncludeMbean().addAll(input.getIncludeMbean());
-		for (Attrib inputAttrib : input.getAttrib()) {
-			output.getAttrib().add(clone(inputAttrib));
+		output.getIncludeMbeanCollection().addAll(input.getIncludeMbeanCollection());
+		for (Attrib inputAttrib : input.getAttribList()) {
+			output.addAttrib(clone(inputAttrib));
 		}
-		for (CompAttrib inputCombAttrib : input.getCompAttrib()) {
-			output.getCompAttrib().add(clone(inputCombAttrib));
+		for (CompAttrib inputCompAttrib : input.getCompAttribList()) {
+			output.addCompAttrib(clone(inputCompAttrib));
 		}
 		return output;
 	}
@@ -153,8 +142,8 @@ public abstract class JmxCollectionCloner {
 		output.setAlias(input.getAlias());
 		output.setName(input.getName());
 		output.setType(input.getType());
-		for (CompMember inputMember : input.getCompMember()) {
-			output.getCompMember().add(clone(inputMember));
+		for (CompMember inputMember : input.getCompMemberList()) {
+			output.addCompMember(clone(inputMember));
 		}
 		return output;
 	}

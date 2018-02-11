@@ -239,7 +239,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 public void refresh() {
                     List<OnmsAlarm> alarms = getAlarms();
 
-                    List<Integer> alarmIds = new LinkedList<Integer>();
+                    List<Integer> alarmIds = new LinkedList<>();
 
                     if (alarms.size() > 0) {
                         for (OnmsAlarm onmsAlarm : alarms) {
@@ -249,7 +249,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                         alarmIds.add(0);
                     }
 
-                    List<Restriction> restrictions = new LinkedList<Restriction>();
+                    List<Restriction> restrictions = new LinkedList<>();
                     restrictions.add(new InRestriction("id", alarmIds));
 
                     ((OnmsVaadinContainer<?, ?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
@@ -328,7 +328,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
             label.addStyleName("alert-details-noalarms-font");
             component.addComponent(label);
         } else {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
 
             sb.append("<table class='alert-details-dashlet onms-table'>");
             sb.append("<thead>");

@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
 import java.util.Collections;
@@ -45,6 +44,7 @@ import javax.naming.NameNotFoundException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.impl.connection.connectors.Jsr160ConnectionFactory;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectResults;
 import org.opennms.netmgt.provision.support.DetectResultsImpl;
@@ -52,14 +52,10 @@ import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Maps;
 
-/**
- * <p>Abstract JMXDetector class.</p>
- *
- * @author ranger, fooker
- * @version $Id: $
- */
-public abstract class JMXDetector extends SyncAbstractDetector {
+
+public class JMXDetector extends SyncAbstractDetector {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMXDetector.class);
 
@@ -67,6 +63,15 @@ public abstract class JMXDetector extends SyncAbstractDetector {
      * The object name to check for, or {@code null} if no check should be performed.
      */
     private String m_object = null;
+
+    private String m_factory = "STANDARD";
+    private String m_friendlyName = "jsr160";
+    private String m_protocol = "rmi";
+    private String m_type = "default";
+    private String m_urlPath = "/jmxrmi";
+    private String m_username = "opennms";
+    private String m_password = "OPENNMS";
+    private String m_url;
 
     /**
      * <p>Constructor for JMXDetector.</p>
@@ -89,8 +94,6 @@ public abstract class JMXDetector extends SyncAbstractDetector {
     protected JMXDetector(String serviceName, int port, int timeout, int retries) {
         super(serviceName, port, timeout, retries);
     }
-
-    abstract protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout, final Map<String, String> runtimeAttributes) throws ConnectException, IOException, MalformedURLException;
 
     @Override
     public DetectResults detect(DetectRequest request) {
@@ -192,11 +195,6 @@ public abstract class JMXDetector extends SyncAbstractDetector {
     }
 
     @Override
-    protected void onInit() {
-        // Do nothing by default
-    }
-
-    @Override
     public void dispose(){
         // Do nothing by default
     }
@@ -207,5 +205,163 @@ public abstract class JMXDetector extends SyncAbstractDetector {
 
     public void setObject(final String object) {
         this.m_object = object;
+    }
+
+    /**
+     * <p>setFactory</p>
+     *
+     * @param factory a {@link java.lang.String} object.
+     */
+    public void setFactory(String factory) {
+        m_factory = factory;
+    }
+
+    /**
+     * <p>getFactory</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getFactory() {
+        return m_factory;
+    }
+
+    /**
+     * <p>setFriendlyName</p>
+     *
+     * @param friendlyName a {@link java.lang.String} object.
+     */
+    public void setFriendlyName(String friendlyName) {
+        m_friendlyName = friendlyName;
+    }
+
+    /**
+     * <p>getFriendlyName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getFriendlyName() {
+        return m_friendlyName;
+    }
+
+    /**
+     * <p>setProtocol</p>
+     *
+     * @param protocol a {@link java.lang.String} object.
+     */
+    public void setProtocol(String protocol) {
+        m_protocol = protocol;
+    }
+
+    /**
+     * <p>getProtocol</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getProtocol() {
+        return m_protocol;
+    }
+
+    /**
+     * <p>setType</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     */
+    public void setType(String type) {
+        m_type = type;
+    }
+
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getType() {
+        return m_type;
+    }
+
+    /**
+     * <p>setUrlPath</p>
+     *
+     * @param urlPath a {@link java.lang.String} object.
+     */
+    public void setUrlPath(String urlPath) {
+        m_urlPath = urlPath;
+    }
+
+    /**
+     * <p>getUrlPath</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getUrlPath() {
+        return m_urlPath;
+    }
+
+    /**
+     * <p>setUsername</p>
+     *
+     * @param username a {@link java.lang.String} object.
+     */
+    public void setUsername(String username) {
+        m_username = username;
+    }
+
+    /**
+     * <p>getUsername</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getUsername() {
+        return m_username;
+    }
+
+    /**
+     * <p>setPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
+    public void setPassword(String password) {
+        m_password = password;
+    }
+
+    /**
+     * <p>getPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getPassword() {
+        return m_password;
+    }
+
+    public String getUrl() {
+        return m_url;
+    }
+
+    public void setUrl(String url) {
+        m_url = url;
+    }
+
+    @Override
+    protected void onInit() {
+        // Do nothing by default
+    }
+
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout, final Map<String, String> runtimeAttributes) throws IOException {
+
+        Map<String, String> props = Maps.newHashMap();
+        props.put("port", String.valueOf(port));
+        props.put("timeout", String.valueOf(timeout));
+        props.put("factory", getFactory());
+        props.put("friendlyname", getFriendlyName());
+        props.put("username", getUsername());
+        props.put("password", getPassword());
+        props.put("urlPath", getUrlPath());
+        props.put("type", getType());
+        props.put("protocol", getProtocol());
+        props.put("url", getUrl());
+        // The runtime attributes contain the agent details pull from the JmxConfigDao
+        props.putAll(runtimeAttributes);
+
+        return Jsr160ConnectionFactory.getMBeanServerConnection(props, address);
     }
 }

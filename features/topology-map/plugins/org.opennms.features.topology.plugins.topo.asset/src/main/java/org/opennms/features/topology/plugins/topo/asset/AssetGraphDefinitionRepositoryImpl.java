@@ -30,11 +30,14 @@ package org.opennms.features.topology.plugins.topo.asset;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-import javax.xml.bind.JAXB;
+import org.opennms.core.xml.JaxbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Persists Asset Graph Definitions in a local (xml) configuration file.
@@ -44,6 +47,7 @@ import javax.xml.bind.JAXB;
 public class AssetGraphDefinitionRepositoryImpl implements AssetGraphDefinitionRepository {
 
 	private static final String FILE_NAME = "org.opennms.features.topology.plugins.topo.asset.xml";
+	private static final Logger LOG = LoggerFactory.getLogger(AssetGraphDefinitionRepositoryImpl.class);
 
 	@Override
 	public GeneratorConfig getConfigDefinition(String providerId) {
@@ -77,13 +81,19 @@ public class AssetGraphDefinitionRepositoryImpl implements AssetGraphDefinitionR
 	private GeneratorConfigList readGeneratorConfigList() {
 		File configFile = getConfigFile();
 		if (configFile.exists()) {
-			return JAXB.unmarshal(configFile, GeneratorConfigList.class);
+			return JaxbUtils.unmarshal(GeneratorConfigList.class, configFile);
 		}
 		return new GeneratorConfigList();
 	}
 
 	private void persist(GeneratorConfigList generatorConfigList) {
-		JAXB.marshal(generatorConfigList, getConfigFile());
+		final File configFile = getConfigFile();
+		try {
+			JaxbUtils.marshal(generatorConfigList, configFile);
+		} catch (final IOException e) {
+			LOG.error("Unable to write graph definition to {}", configFile, e);
+			throw new IllegalStateException("Failed to write graph definition to " + configFile, e);
+		}
 	}
 
 	private File getConfigFile() {

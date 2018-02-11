@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,9 +30,11 @@ package org.opennms.features.topology.plugins.topo.asset;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -46,7 +48,9 @@ public class GeneratorConfigBuilder {
 	private String breadcrumbStrategy;
 	private String providerId;
 	private String preferredLayout;
-	private String hierarchy;
+	private String hierarchy = String.join(",", NodeParamLabels.ASSET_REGION,
+	            NodeParamLabels.ASSET_BUILDING,
+	            NodeParamLabels.ASSET_RACK);
 	private String filter;
 
 	public GeneratorConfigBuilder withLabel(String label) {
@@ -95,16 +99,18 @@ public class GeneratorConfigBuilder {
 		}
 		if (hierarchy != null && !hierarchy.trim().isEmpty()) {
 			final List<String> layers = Arrays.asList(hierarchy.split(",")).stream()
-					.filter(h -> h != null && !h.trim().isEmpty())
-					.map(h -> h.trim())
+					.filter(Objects::nonNull)
+					.map(String::trim)
+					.filter(h -> !h.isEmpty())
 					.collect(Collectors.toList());
 			config.setLayerHierarchies(layers);
 		}
 
 		if(filter != null && !filter.trim().isEmpty()) {
 			final List<String> filters = Arrays.asList(filter.split(";")).stream()
-					.filter(h -> h != null && !h.trim().isEmpty())
-					.map(h -> h.trim())
+					.filter(Objects::nonNull)
+					.map(String::trim)
+					.filter(h -> !h.isEmpty())
 					.collect(Collectors.toList());
 			config.setFilters(filters);
 		}

@@ -81,7 +81,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @SuppressWarnings("serial")
     public static class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
         private Double m_scale;
-        private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<Property.ValueChangeListener>();
+        private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<>();
         
         public ScaleProperty(double scale) {
             m_scale = scale;
@@ -161,7 +161,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private MapViewManager m_viewManager = new DefaultMapViewManager();
     private VaadinApplicationContext applicationContext;
     private BundleContext m_bundleContext;
-    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
+    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<>();
     private AutoRefreshSupport m_autoRefreshSupport;
     private TopologyService m_topologyService;
     private Graph m_graph;
@@ -358,7 +358,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         return m_graph;
     }
 
-    private final Set<Criteria> m_criteria = new LinkedHashSet<Criteria>();
+    private final Set<Criteria> m_criteria = new LinkedHashSet<>();
 
     @Override
     public void clearCriteria() {
@@ -473,7 +473,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 	@Override
 	public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
-		Set<VertexRef> processed = new LinkedHashSet<VertexRef>();
+		Set<VertexRef> processed = new LinkedHashSet<>();
 		for(VertexRef vertexRef : vertexRefs) {
 			addRefTreeToSet(getTopologyServiceClient(), vertexRef, processed, getCriteria());
 		}

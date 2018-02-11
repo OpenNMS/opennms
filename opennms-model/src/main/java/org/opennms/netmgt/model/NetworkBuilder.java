@@ -199,6 +199,15 @@ public class NetworkBuilder {
             m_iface = iface;
         }
 
+        public InterfaceBuilder setNetMask(final InetAddress mask) {
+            m_iface.setNetMask(mask);
+            return this;
+        }
+
+        public InterfaceBuilder setNetMask(final String mask) {
+            return this.setNetMask(addr(mask));
+        }
+
         public InterfaceBuilder setIsManaged(final String managed) {
             m_iface.setIsManaged(managed);
             return this;

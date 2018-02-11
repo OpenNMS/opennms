@@ -261,7 +261,7 @@ public class SummaryDashlet extends AbstractDashlet {
         int globalTrend = (int) Math.max(0, Math.min(4, Math.round(((double) overallSum) / ((double) severitySum))));
 
         Image image = new Image(null, new ThemeResource("img/a" + globalTrend + ".png"));
-        image.setWidth(width * 8, Sizeable.Unit.PIXELS);
+        image.setWidth(width * 8f, Sizeable.Unit.PIXELS);
 
         VerticalLayout globalTrendLayout = new VerticalLayout();
         globalTrendLayout.setSpacing(true);
@@ -364,7 +364,7 @@ public class SummaryDashlet extends AbstractDashlet {
         int globalTrend = (int) Math.max(0, Math.min(4, Math.round(((double) overallSum) / ((double) severitySum))));
 
         Image image = new Image(null, new ThemeResource("img/a" + globalTrend + ".png"));
-        image.setWidth(width * 8, Sizeable.Unit.PIXELS);
+        image.setWidth(width * 8f, Sizeable.Unit.PIXELS);
 
         VerticalLayout globalTrendLayout = new VerticalLayout();
         globalTrendLayout.setSpacing(true);

@@ -223,7 +223,7 @@ public class NewtsFetchStrategyTest {
         Set<OnmsAttribute> attributes = resource.getAttributes();
         attributes.add(new RrdGraphAttribute(attr, "", newtsResourceId));
 
-        Results<Measurement> results = new Results<Measurement>();
+        Results<Measurement> results = new Results<>();
         Resource res = new Resource(newtsResourceId);
         Row<Measurement> row = new Row<Measurement>(Timestamp.fromEpochSeconds(0), res);
         Measurement measurement = new Measurement(Timestamp.fromEpochSeconds(0), res, label, 0.0d);

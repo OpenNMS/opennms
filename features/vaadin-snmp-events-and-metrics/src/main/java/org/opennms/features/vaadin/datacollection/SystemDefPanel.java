@@ -88,7 +88,7 @@ public class SystemDefPanel extends Panel {
         addStyleName("light");
 
         // Adding all systemDefs already defined on this source
-        final List<String> groupNames = new ArrayList<String>();
+        final List<String> groupNames = new ArrayList<>();
         for (Group group : source.getGroups()) {
             groupNames.add(group.getName());
         }
@@ -226,7 +226,7 @@ public class SystemDefPanel extends Panel {
      * @return the parent collections.
      */
     private Set<String> getParentCollections(final DataCollectionConfigDao dataCollectionConfigDao, String systemDefName) {
-        Set<String> collectionMap = new TreeSet<String>();
+        Set<String> collectionMap = new TreeSet<>();
         for (final SnmpCollection collection : dataCollectionConfigDao.getRootDataCollection().getSnmpCollections()) {
             for (final SystemDef systemDef : collection.getSystems().getSystemDefs()) {
                 if (systemDefName.equals(systemDef.getName())) {

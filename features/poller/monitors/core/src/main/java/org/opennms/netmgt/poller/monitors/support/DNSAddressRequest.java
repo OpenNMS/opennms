@@ -241,7 +241,7 @@ public class DNSAddressRequest {
         //
         // Imitate the original behavior of only a ServFail being fatal
         //
-        m_fatalResponseCodes = new ArrayList<Integer>();
+        m_fatalResponseCodes = new ArrayList<>();
         m_fatalResponseCodes.add(2);
         
         //
@@ -272,7 +272,7 @@ public class DNSAddressRequest {
             globalID = m_reqID + 1; // prevents negative numbers.
         }
 
-        m_answers = new ArrayList<DNSAddressRR>();
+        m_answers = new ArrayList<>();
     }
 
     /**

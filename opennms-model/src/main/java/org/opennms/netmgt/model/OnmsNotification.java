@@ -108,7 +108,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     private OnmsNode m_node;
 
     /** persistent field */
-    private Set<OnmsUserNotification> m_usersNotified = new HashSet<OnmsUserNotification>();
+    private Set<OnmsUserNotification> m_usersNotified = new HashSet<>();
 
 	private InetAddress m_ipAddress;
     

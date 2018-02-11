@@ -95,7 +95,7 @@ public class DestinationWizardServlet extends HttpServlet {
         }
         String sourcePage = request.getParameter("sourcePage");
         HttpSession user = request.getSession(true);
-        StringBuffer redirectString = new StringBuffer();
+        final StringBuilder redirectString = new StringBuilder();
 
         if (sourcePage.equals(SOURCE_PAGE_PATHS)) {
             String action = request.getParameter("userAction");
@@ -384,7 +384,7 @@ public class DestinationWizardServlet extends HttpServlet {
     }
 
     private static String makeQueryString(Map<String,String> map) {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         String separator = "?";
 
         Iterator<String> i = map.keySet().iterator();

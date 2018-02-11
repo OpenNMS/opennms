@@ -37,7 +37,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.Executor;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
@@ -60,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * notificationCommands.xml by:
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  */
-public class NotificationTask extends Thread {
+public class NotificationTask implements Runnable {
     
     private static final Logger LOG = LoggerFactory.getLogger(NotificationTask.class);
     
@@ -98,6 +101,8 @@ public class NotificationTask extends Thread {
 
     private final UserManager m_userManager;
 
+    private final Executor m_executor;
+
     /**
      * Constructor, initializes some information
      *
@@ -109,13 +114,13 @@ public class NotificationTask extends Thread {
      * @param siblings a {@link java.util.List} object.
      * @param autoNotify a {@link java.lang.String} object.
      */
-    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List<NotificationTask> siblings, String autoNotify) {
+    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List<NotificationTask> siblings, String autoNotify, Executor executor) {
         m_notificationManager = notificationManager;
         m_userManager = userManager;
         m_sendTime = sendTime;
         m_params = new HashMap<String, String>(someParams);
         m_autoNotify = autoNotify;
-
+        m_executor = Objects.requireNonNull(executor);
     }
 
     /**
@@ -125,7 +130,7 @@ public class NotificationTask extends Thread {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer("Send ");
+        final StringBuilder buffer = new StringBuilder("Send ");
 
         if (m_commands == null) {
             buffer.append("Null Commands");
@@ -225,6 +230,8 @@ public class NotificationTask extends Thread {
      */
     @Override
     public void run() {
+        Logging.putPrefix(Notifd.getLoggingCategory());
+
         boolean outstanding = false;
         try {
             outstanding = getNotificationManager().noticeOutstanding(m_notifyId);
@@ -239,6 +246,7 @@ public class NotificationTask extends Thread {
 
                     // send the notice
                     ExecutorStrategy strategy = null;
+                    boolean isBinary = false;
                     String cntct = "";
 
                     for (Command command : m_commands) {
@@ -250,30 +258,33 @@ public class NotificationTask extends Thread {
                                 LOG.error("Could not insert notice info into database, aborting send notice", e);
                                 continue;
                             }
-                            Boolean binaryCommand = command.getBinary();
-                            if (binaryCommand) {
+
+                            isBinary = command.getBinary();
+                            if (command.getServiceRegistry()) {
+                                strategy = new ServiceRegistryExecutor();
+                            } else if (isBinary) {
                                 strategy = new CommandExecutor();
                             } else {
                                 strategy = new ClassExecutor();
                             }
                             LOG.debug("Class created is: {}", command.getClass());
 
-                            getNotificationManager().incrementAttempted(strategy instanceof CommandExecutor);
+                            getNotificationManager().incrementAttempted(isBinary);
                             
                             int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
                             LOG.debug("command {} return code = {}", command.getName(), returnCode);
                             
                             if (returnCode == 0) {
-                                getNotificationManager().incrementSucceeded(strategy instanceof CommandExecutor);
+                                getNotificationManager().incrementSucceeded(isBinary);
                             } else {
-                                getNotificationManager().incrementFailed(strategy instanceof CommandExecutor);
+                                getNotificationManager().incrementFailed(isBinary);
                             }
                         } catch (Throwable e) {
                             LOG.warn("Notification command failed: {}", command.getName(), e);
                             if (strategy == null) {
                                 getNotificationManager().incrementUnknownInterrupted();
                             } else {
-                                getNotificationManager().incrementInterrupted(strategy instanceof CommandExecutor);
+                                getNotificationManager().incrementInterrupted(isBinary);
                             }
                         }
                     }
@@ -311,7 +322,7 @@ public class NotificationTask extends Thread {
      */
     private List<org.opennms.netmgt.model.notifd.Argument> getArgumentList(Command command) {
         Collection<Argument> notifArgs = getArgumentsForCommand(command);
-        List<org.opennms.netmgt.model.notifd.Argument> commandArgs = new ArrayList<org.opennms.netmgt.model.notifd.Argument>();
+        List<org.opennms.netmgt.model.notifd.Argument> commandArgs = new ArrayList<>();
 
         for (Argument curArg : notifArgs) {
             LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), curArg.getStreamed());
@@ -388,10 +399,12 @@ public class NotificationTask extends Thread {
     /**
      * <p>start</p>
      */
-    @Override
     public synchronized void start() {
+        if (m_started) {
+            throw new IllegalArgumentException("Notification was already started!");
+        }
         m_started = true;
-        super.start();
+        m_executor.execute(this);
     }
 
     /**

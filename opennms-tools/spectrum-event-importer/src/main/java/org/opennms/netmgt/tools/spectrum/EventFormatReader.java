@@ -73,7 +73,7 @@ public class EventFormatReader {
         }
         
         EventFormat ef = new EventFormat(eventCode);
-        StringBuilder contents = new StringBuilder("");
+        final StringBuilder contents = new StringBuilder("");
         String thisLine;
         
         while ((thisLine = m_reader.readLine()) != null) {

@@ -53,7 +53,7 @@ public class RrdDatabase extends BaseRrdDataSource {
     }
 
     private SortedSet<RrdArchive> initializeArchives() throws IOException {
-        final SortedSet<RrdArchive> archives = new TreeSet<RrdArchive>();
+        final SortedSet<RrdArchive> archives = new TreeSet<>();
         for (int i = 0; i < m_rrd.getArcCount(); i++) {
             final RrdArchive archive = new RrdArchive(m_rrd.getArchive(i), getDsNames());
             if (archive.isAverage()) {

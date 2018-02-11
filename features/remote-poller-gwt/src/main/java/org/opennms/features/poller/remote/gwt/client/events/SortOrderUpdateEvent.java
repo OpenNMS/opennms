@@ -40,7 +40,7 @@ import com.google.gwt.event.shared.GwtEvent;
 public class SortOrderUpdateEvent extends GwtEvent<SortOrderUpdateHandler> {
     
     /** Constant <code>TYPE</code> */
-    public static Type<SortOrderUpdateHandler> TYPE = new Type<SortOrderUpdateHandler>();
+    public static Type<SortOrderUpdateHandler> TYPE = new Type<>();
     private String m_sortOrder;
     
     /**

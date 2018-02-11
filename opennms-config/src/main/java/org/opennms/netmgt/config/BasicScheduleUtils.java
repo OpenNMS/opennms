@@ -557,7 +557,7 @@ public abstract class BasicScheduleUtils {
 		final BasicSchedule schedule = new BasicSchedule();
 		schedule.setName(out.getName());
 		schedule.setType(out.getType());
-		final Collection<Time> times = new ArrayList<Time>();
+		final Collection<Time> times = new ArrayList<>();
 		for (final org.opennms.netmgt.config.poller.outages.Time time : out.getTimes()) {
 			times.add(new Time(time.getId().orElse(null), time.getDay().orElse(null), time.getBegins(), time.getEnds()));
 		}
@@ -572,7 +572,7 @@ public abstract class BasicScheduleUtils {
 		final BasicSchedule basicSchedule = new BasicSchedule();
 		basicSchedule.setName(schedule.getName());
 		basicSchedule.setType(schedule.getType());
-		final Collection<Time> times = new ArrayList<Time>();
+		final Collection<Time> times = new ArrayList<>();
 		for (final org.opennms.netmgt.config.groups.Time time : schedule.getTimes()) {
 			times.add(new Time(time.getId().orElse(null), time.getDay().orElse(null), time.getBegins(), time.getEnds()));
 		}
@@ -587,7 +587,7 @@ public abstract class BasicScheduleUtils {
 		final BasicSchedule basicSchedule = new BasicSchedule();
 		basicSchedule.setName(schedule.getName());
 		basicSchedule.setType(schedule.getType());
-		final Collection<Time> times = new ArrayList<Time>();
+		final Collection<Time> times = new ArrayList<>();
 		for (final org.opennms.netmgt.config.rancid.adapter.Time time : schedule.getTimes()) {
 			times.add(new Time(time.getId().orElse(null), time.getDay().orElse(null), time.getBegins(), time.getEnds()));
 		}

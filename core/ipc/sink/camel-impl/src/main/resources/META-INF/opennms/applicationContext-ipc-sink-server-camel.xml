@@ -11,7 +11,7 @@
   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
-  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.14.4.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.19.1.xsd
 ">
 
   <context:annotation-config />
@@ -30,7 +30,11 @@
     <constructor-arg ref="sinkServer"/>
   </bean>
 
+  <onmsgi:service ref="camelMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
+
   <bean id="camelLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.camel.CamelLocalMessageDispatcherFactory" />
+
+  <onmsgi:service ref="camelLocalMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
 
   <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
   <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">

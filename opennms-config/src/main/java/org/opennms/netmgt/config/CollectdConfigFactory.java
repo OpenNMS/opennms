@@ -309,7 +309,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
     }
 
     private static String getFilterRule(String filter, String localServer, boolean verifyServer) {
-        StringBuffer filterRules = new StringBuffer(filter);
+        final StringBuilder filterRules = new StringBuilder(filter);
     
         if (verifyServer) {
             filterRules.append(" & (serverName == ");

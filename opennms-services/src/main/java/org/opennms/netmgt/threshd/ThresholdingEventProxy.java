@@ -56,7 +56,7 @@ public class ThresholdingEventProxy implements EventProxy {
      * <p>Constructor for ThresholdingEventProxy.</p>
      */
     public ThresholdingEventProxy() {
-        m_events = new LinkedList<Event>();
+        m_events = new LinkedList<>();
     }
     
     /** {@inheritDoc} */

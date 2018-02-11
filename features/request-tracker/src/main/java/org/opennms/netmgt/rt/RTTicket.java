@@ -49,13 +49,13 @@ public class RTTicket implements Serializable {
     private String m_status;
     private String m_queue;
     private String m_created;
-    private List<String> m_requestors = new ArrayList<String>();
+    private List<String> m_requestors = new ArrayList<>();
     private String m_subject;
     private String m_text;
     private List<CustomField> m_customFields;
 
     public RTTicket() {
-        m_customFields = new ArrayList<CustomField>();
+        m_customFields = new ArrayList<>();
     }
 
     public RTTicket(final String queue, final String requestor, final String subject, final String text, final List<CustomField> customFields) {
@@ -165,7 +165,7 @@ public class RTTicket implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder customFields = new StringBuilder();
+        final StringBuilder customFields = new StringBuilder();
         for (CustomField cf : m_customFields) {
             customFields.append(cf.toString())
             .append("\n");

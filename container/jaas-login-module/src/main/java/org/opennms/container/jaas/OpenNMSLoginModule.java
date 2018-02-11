@@ -110,7 +110,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Open
     @Override
     public Set<Principal> createPrincipals(final GrantedAuthority authority) {
         final String role = authority.getAuthority().replaceFirst("^[Rr][Oo][Ll][Ee]_", "");
-        final Set<Principal> principals = new HashSet<Principal>();
+        final Set<Principal> principals = new HashSet<>();
         principals.add(new RolePrincipal(role));
         principals.add(new RolePrincipal(role.toLowerCase()));
         principals.add(new RolePrincipal(authority.getAuthority()));

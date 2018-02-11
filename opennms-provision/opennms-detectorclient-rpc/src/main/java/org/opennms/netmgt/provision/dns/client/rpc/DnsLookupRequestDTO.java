@@ -44,6 +44,9 @@ public class DnsLookupRequestDTO implements RpcRequest {
     @XmlAttribute(name = "location")
     private String location;
 
+    @XmlAttribute(name="system-id")
+    private String systemId;
+
     @XmlAttribute(name = "host-request")
     private String hostRequest;
 
@@ -53,6 +56,15 @@ public class DnsLookupRequestDTO implements RpcRequest {
     @Override
     public String getLocation() {
         return location;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
     }
 
     @Override
@@ -82,7 +94,7 @@ public class DnsLookupRequestDTO implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, hostRequest, queryType);
+        return Objects.hash(location, systemId, hostRequest, queryType);
     }
 
     @Override
@@ -95,6 +107,7 @@ public class DnsLookupRequestDTO implements RpcRequest {
             return false;
         DnsLookupRequestDTO other = (DnsLookupRequestDTO) obj;
         return Objects.equals(this.location, other.location)
+                && Objects.equals(this.systemId, other.systemId)
                 && Objects.equals(this.hostRequest, other.hostRequest)
                 && Objects.equals(this.queryType, other.queryType);
     }

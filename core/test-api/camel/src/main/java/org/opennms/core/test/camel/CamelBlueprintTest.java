@@ -77,7 +77,7 @@ public class CamelBlueprintTest extends CamelBlueprintTestSupport {
         return "*";
     }
 
-    protected static final int getAvailablePort(final AtomicInteger current, final int max) {
+    public static final int getAvailablePort(final AtomicInteger current, final int max) {
         while (current.get() < max) {
             try (final ServerSocket socket = new ServerSocket(current.get())) {
                 return socket.getLocalPort();

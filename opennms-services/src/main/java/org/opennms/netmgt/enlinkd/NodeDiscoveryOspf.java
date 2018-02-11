@@ -78,7 +78,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
         final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(peer,
                                                                                   m_linkd.getLocationAwareSnmpClient(),
-                                                                                  getLocation());
+                                                                                  getLocation(),getNodeId());
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
         try {
             m_linkd.getLocationAwareSnmpClient().walk(peer, ospfGeneralGroup).
@@ -87,38 +87,37 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: Agent error while scanning the ospfGeneralGroup table", e);
+           LOG.info("run: node [{}]: ExecutionException: ospfGeneralGroup: {}", 
+                    getNodeId(), e.getMessage());
            return;
        } catch (final InterruptedException e) {
-           LOG.error( "run: Ospf Linkd node collection interrupted, exiting",e);
+           LOG.info("run: node [{}]: InterruptedException: ospfGeneralGroup: {}", 
+                    getNodeId(), e.getMessage());
            return;
        }
 
         
         if (ospfGeneralGroup.getOspfRouterId() == null ) {
-    		LOG.info( "run: node[{}]: address {}. ospf mib not supported",
-    				getNodeId(),
-    				getPrimaryIpAddressString());
+    		LOG.info( "run: node[{}]: ospf mib not supported",
+    				getNodeId());
             return;
         } 
 
         if (ospfGeneralGroup.getOspfRouterId().equals(InetAddressUtils.addr("0.0.0.0"))) {
-    		LOG.info( "run: node[{}]: address {}. ospf identifier 0.0.0.0 is not valid",
-    				getNodeId(),
-    				getPrimaryIpAddressString());
+    		LOG.info( "run: node[{}]: not valid ospf identifier 0.0.0.0",
+    				getNodeId());
             return;
         }
 
         if (Status.get(ospfGeneralGroup.getOspfAdminStat()) == Status.disabled) {
-    		LOG.info( "run: node[{}]: address {}. ospf status: disabled",
-    				getNodeId(),
-    				getPrimaryIpAddressString());
+    		LOG.info( "run: node[{}]: ospf status: disabled",
+    				getNodeId());
             return;
         }
 
         m_linkd.getQueryManager().store(getNodeId(), ipAddrTableGetter.get(ospfGeneralGroup.getOspfElement()));
 
-        final List<OspfLink> links = new ArrayList<OspfLink>();
+        final List<OspfLink> links = new ArrayList<>();
         OspfNbrTableTracker ospfNbrTableTracker = new OspfNbrTableTracker() {
     
             public void processOspfNbrRow(final OspfNbrRow row) {
@@ -133,14 +132,16 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.error("run: collection execution failed, exiting",e);
+           LOG.info("run: node [{}]: ExecutionException: ospfNbrTable: {}", 
+                    getNodeId(), e.getMessage());
            return;
        } catch (final InterruptedException e) {
-            LOG.error( "run: collection interrupted, exiting",e);
+           LOG.info("run: node [{}]: InterruptedException: ospfNbrTable: {}", 
+                     getNodeId(), e.getMessage());
             return;
        }
 
-        List<OspfLink> localOspfPorts =  new ArrayList<OspfLink>();
+        List<OspfLink> localOspfPorts =  new ArrayList<>();
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
             public void processOspfIfRow(final OspfIfRow row) {
                 localOspfPorts.add(row.getOspfLink());
@@ -154,21 +155,34 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.error("run: collection execution failed, exiting",e);
+           LOG.info("run: node [{}]: ExecutionException: ospfIfTable: {}", 
+                    getNodeId(), e.getMessage());
            return;
        } catch (final InterruptedException e) {
-            LOG.error("run: collection interrupted, exiting",e);
+           LOG.info("run: node [{}]: InterruptedException: ospfIfTable: {}", 
+                    getNodeId(), e.getMessage());
             return;
        }
 
         for (OspfLink link : links) {
             for (OspfLink localospfport: localOspfPorts) {
+                if (localospfport.getOspfAddressLessIndex() != 0 && link.getOspfRemAddressLessIndex() != 0) {
+                    link.setOspfIpAddr(localospfport.getOspfIpAddr());
+                    link.setOspfAddressLessIndex(localospfport.getOspfAddressLessIndex());
+                    link.setOspfIfIndex(localospfport.getOspfAddressLessIndex());
+                    break;
+                }
+                if (localospfport.getOspfAddressLessIndex() == 0 && link.getOspfRemAddressLessIndex() != 0)
+                    continue;
+                if (localospfport.getOspfAddressLessIndex() != 0 && link.getOspfRemAddressLessIndex() == 0)
+                    continue;
                 localospfport = ipAddrTableGetter.get(localospfport);
                 if (InetAddressUtils.inSameNetwork(localospfport.getOspfIpAddr(),link.getOspfRemIpAddr(),localospfport.getOspfIpMask())) {
                     link.setOspfIpAddr(localospfport.getOspfIpAddr());
                     link.setOspfAddressLessIndex(localospfport.getOspfAddressLessIndex());
                     link.setOspfIpMask(localospfport.getOspfIpMask());
                     link.setOspfIfIndex(localospfport.getOspfIfIndex());
+                    break;
                 }
             }
             m_linkd.getQueryManager().store(getNodeId(),link);

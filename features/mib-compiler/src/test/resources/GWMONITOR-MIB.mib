@@ -1,0 +1,173 @@
+-- GWMONTR MIB
+-- Novell GroupWise Monitor Information Base (MIB)
+-- Copyright (C) 1994, 1995, 1997, 1999 Novell Inc.,  All Rights Reserved
+-- Naming Tree: 1.3.6.1.4.1.23
+--      iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) novell(23)
+-- Date: May 3, 1999
+
+GWMONITOR-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+        Counter, TimeTicks, Gauge, enterprises  FROM RFC1155-SMI
+        DisplayString                           FROM RFC1213-MIB
+        TRAP-TYPE                               FROM RFC-1215
+        OBJECT-TYPE                             FROM SNMPv2-SMI;
+
+novell         OBJECT IDENTIFIER   ::= { enterprises 23 }
+mibDoc         OBJECT IDENTIFIER   ::= { novell       2 }
+gwmontr        OBJECT IDENTIFIER   ::= { mibDoc      40 }
+gwmonserver    OBJECT IDENTIFIER   ::= { gwmontr      5 }
+gwmonTrapInfo  OBJECT IDENTIFIER   ::= { gwmonserver  1 }
+gwmonTraps     OBJECT IDENTIFIER   ::= { gwmonserver  2 }
+
+
+-- ================================================== gwmonTrapInfo =========
+-- The gwmonTrapInfo group
+-- These objects are used only in traps produced by GroupWise Monitor
+
+gwmonTrapTime OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  not-accessible
+	STATUS  mandatory
+	DESCRIPTION "The time the trap occurred. Seconds since Jan 1, 1970 (GMT)"
+	::= { gwmonTrapInfo 1 }
+
+gwmonAgentName OBJECT-TYPE
+       SYNTAX  DisplayString (SIZE (0..255))
+       ACCESS  not-accessible
+       STATUS  mandatory
+       DESCRIPTION "Affected agent's name."
+   ::= { gwmonTrapInfo 2 }
+
+gwmonAgentType OBJECT-TYPE
+       SYNTAX  DisplayString (SIZE (0..255))
+       ACCESS  not-accessible
+       STATUS  mandatory
+       DESCRIPTION "Affected agent's type."
+   ::= { gwmonTrapInfo 3 }
+
+gwmonStatus OBJECT-TYPE
+       SYNTAX  DisplayString (SIZE (0..255))
+       ACCESS  not-accessible
+       STATUS  mandatory
+       DESCRIPTION "Status of the affected agent."
+   ::= { gwmonTrapInfo 4 }
+
+gwmonStatusDuration OBJECT-TYPE
+       SYNTAX  TimeTicks
+       ACCESS  not-accessible
+       STATUS  mandatory
+       DESCRIPTION "Duration of affected agent's current status."
+   ::= { gwmonTrapInfo 5 }
+
+gwmonThreshold OBJECT-TYPE
+       SYNTAX  DisplayString (SIZE (0..255))
+       ACCESS  not-accessible
+       STATUS  mandatory
+       DESCRIPTION "The threshold expression that has failed."
+   ::= { gwmonTrapInfo 6 }
+
+gwmonThresholdValues OBJECT-TYPE
+       SYNTAX  DisplayString (SIZE (0..255))
+       ACCESS  not-accessible
+       STATUS  mandatory
+       DESCRIPTION "The values used to determine the failure. For a threshold failure, these will be the threshold values at the time the threshold was evaluated."
+   ::= { gwmonTrapInfo 7 }
+   
+gwmonThresholdSeverity OBJECT-TYPE
+       SYNTAX  DisplayString (SIZE (0..255))
+       ACCESS  not-accessible
+       STATUS  mandatory
+       DESCRIPTION "The severity of the exceeded threshold. It will be one of the following values: Unknown, Normal, Informational, Marginal, Warning, Minor, Major, Critical"
+   ::= { gwmonTrapInfo 8 }
+   
+gwmonServerName OBJECT-TYPE
+       SYNTAX  DisplayString (SIZE (0..255))
+       ACCESS  not-accessible
+       STATUS  mandatory
+       DESCRIPTION "Affected agent's server name."
+   ::= { gwmonTrapInfo 9 }
+
+gwmonServerIPAddress OBJECT-TYPE
+       SYNTAX  DisplayString (SIZE (0..255))
+       ACCESS  not-accessible
+       STATUS  mandatory
+       DESCRIPTION "Affected agent's server IP Address."
+   ::= { gwmonTrapInfo 10 }
+
+-- ====================================== GroupWise Monitor Traps =========
+
+gwmonThresholdExceededTrap TRAP-TYPE
+		ENTERPRISE    gwmonTraps
+		VARIABLES     {gwmonTrapTime, gwmonAgentType, gwmonAgentName, gwmonServerName, gwmonServerIPAddress, gwmonThresholdValues, gwmonThresholdSeverity }
+		DESCRIPTION   "GroupWise Monitor detects a threshold has been exceeded"
+		--ManageWise Trap annotation
+		--#TYPE       "GroupWise threshold exceeded."
+		--#SUMMARY    "GroupWise Monitor detects a threshold has been exceeded for %s. Threshold: [%s]"
+		--#ARGUMENTS  { 3,6 }
+		--#SEVERITY   MAJOR
+		--#TIMEINDEX  0
+		--#STATE      DEGRADED
+		::= 1
+
+gwmonThresholdRecoveredTrap TRAP-TYPE
+		ENTERPRISE    gwmonTraps
+		VARIABLES     {gwmonTrapTime, gwmonAgentType, gwmonAgentName, gwmonServerName, gwmonServerIPAddress }
+		--ManageWise Trap annotation
+		--#TYPE       "GroupWise threshold recovered."
+		--#SUMMARY    "GroupWise Monitor detects a threshold has recovered for %s."
+		--#ARGUMENTS  { 3 }
+		--#SEVERITY   INFORMATIONAL
+		--#TIMEINDEX  0
+		--#STATE      OPERATIONAL
+		::= 2
+
+gwmonAgentDownTrap TRAP-TYPE
+		ENTERPRISE    gwmonTraps
+		VARIABLES     {gwmonTrapTime, gwmonAgentType, gwmonAgentName,  gwmonServerName, gwmonServerIPAddress }
+		--ManageWise Trap annotation
+		--#TYPE       "GroupWise agent down."
+		--#SUMMARY    "GroupWise Monitor detects the agent running for %s is down."
+		--#ARGUMENTS  { 3 }
+		--#SEVERITY   CRITICAL
+		--#TIMEINDEX  0
+		--#STATE      NONOPERATIONAL
+		::= 3
+
+gwmonAgentUpTrap TRAP-TYPE
+		ENTERPRISE    gwmonTraps
+		VARIABLES     {gwmonTrapTime, gwmonAgentType, gwmonAgentName,  gwmonServerName, gwmonServerIPAddress }
+		--ManageWise Trap annotation
+		--#TYPE       "GroupWise agent up."
+		--#SUMMARY    "GroupWise Monitor detects the agent running for %s is up."
+		--#ARGUMENTS  { 3 }
+		--#SEVERITY   INFORMATIONAL
+		--#TIMEINDEX  0
+		--#STATE      OPERATIONAL
+		::= 4
+
+gwmonTestTrap TRAP-TYPE
+		ENTERPRISE    gwmonTraps
+		VARIABLES     {gwmonTrapTime }
+		--ManageWise Trap annotation
+		--#TYPE       "GroupWise Monitor trap test."
+		--#SUMMARY    "GroupWise Monitor trap test."
+		--#ARGUMENTS  { }
+		--#SEVERITY   INFORMATIONAL
+		--#TIMEINDEX  0
+		--#STATE      OPERATIONAL
+		::= 5
+
+gwmonPeriodicTrap TRAP-TYPE
+		ENTERPRISE    gwmonTraps
+		VARIABLES     {gwmonTrapTime }
+		--ManageWise Trap annotation
+		--#TYPE       "GroupWise Monitor periodic trap."
+		--#SUMMARY    "GroupWise Monitor periodic trap."
+		--#ARGUMENTS  { }
+		--#SEVERITY   INFORMATIONAL
+		--#TIMEINDEX  0
+		--#STATE      OPERATIONAL
+		::= 6
+		
+END

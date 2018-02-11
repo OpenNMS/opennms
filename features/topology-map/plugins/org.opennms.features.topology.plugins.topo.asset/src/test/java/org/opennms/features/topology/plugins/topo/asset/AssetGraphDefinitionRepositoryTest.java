@@ -30,12 +30,10 @@ package org.opennms.features.topology.plugins.topo.asset;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.StringWriter;
 import java.nio.file.Paths;
 
-import javax.xml.bind.JAXB;
-
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,10 +83,8 @@ public class AssetGraphDefinitionRepositoryTest {
 
 		assertEquals(2, configDefinitions.size());
 
-		final StringWriter writer = new StringWriter();
-		JAXB.marshal(configDefinitions, writer);
 		LOG.debug("List of installed asset topology definitions");
-		LOG.debug("{}", writer);
+		LOG.debug("{}", JaxbUtils.marshal(configDefinitions));
 		LOG.debug("End of {}", getClass().getSimpleName());
 
         configFile.delete(); // let's leave it clean, too

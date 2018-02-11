@@ -69,7 +69,7 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
         final List<Vertex> vertices = new ArrayList<>(container.getGraph().getDisplayVertices());
         final Set<Integer> nodeIds = vertices.stream()
                 .filter(v -> v.getNodeID() != null)
-                .map(v -> v.getNodeID())
+                .map(Vertex::getNodeID)
                 .collect(Collectors.toSet());
         if (nodeIds.isEmpty()) {
             return Collections.emptyList();
@@ -112,7 +112,7 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
     }
 
     private String createTooltip(Vertex vertex, AddressInfo addressInfo) {
-        StringBuilder tooltip = new StringBuilder();
+        final StringBuilder tooltip = new StringBuilder();
         tooltip.append(String.format("<b>%s</b>", vertex.getLabel()));
 
         if (addressInfo != null) {

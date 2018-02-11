@@ -252,7 +252,7 @@ public class JMXDataSource implements Cloneable {
      */
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
 
         // Build the buffer
         buffer.append("\n   oid:       ").append(m_oid);

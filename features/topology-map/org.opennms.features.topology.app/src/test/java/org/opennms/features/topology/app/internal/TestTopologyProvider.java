@@ -67,7 +67,7 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
         clearEdges();
         clearVertices();
 
-        List<TestVertex> vertices = new ArrayList<TestVertex>();
+        List<TestVertex> vertices = new ArrayList<>();
 
         String vId1 = getNextVertexId();
         TestVertex v1 = new TestVertex(vId1, 0, 0);

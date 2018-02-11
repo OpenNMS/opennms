@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.LazyList;
+import org.opennms.core.collections.LazyList;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -56,9 +56,9 @@ public class LazyChildResourceLoader implements LazyList.Loader<OnmsResource> {
         Preconditions.checkNotNull(m_parent, "parent attribute");
         // Gather the lists of children from all the available resource types and merge them
         // into a single list
-        List<OnmsResource> children = getAvailableResourceTypes().parallelStream()
+        List<OnmsResource> children = getAvailableResourceTypes().stream()
                 .map(t -> t.getResourcesForParent(m_parent))
-                .flatMap(rs -> rs.stream())
+                .flatMap(List::stream)
                 .collect(Collectors.toList());
 
         // Set the parent field on all of the resources
@@ -67,7 +67,7 @@ public class LazyChildResourceLoader implements LazyList.Loader<OnmsResource> {
     }
 
     private Collection<OnmsResourceType> getAvailableResourceTypes() {
-        return m_resourceDao.getResourceTypes().parallelStream()
+        return m_resourceDao.getResourceTypes().stream()
                 .filter(t -> t.isResourceTypeOnParent(m_parent))
                 .collect(Collectors.toList());
     }

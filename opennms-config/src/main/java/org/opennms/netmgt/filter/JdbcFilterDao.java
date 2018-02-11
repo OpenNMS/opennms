@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -255,6 +256,14 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     	return getIPAddressList(rule, true);
     }
 
+    protected InetAddress getActiveIPAddress(final String rule, final String address) {
+        final List<InetAddress> ipAddressList = getIPAddressList(rule, true, address);
+        if (ipAddressList.isEmpty()) {
+            return null;
+        }
+        return ipAddressList.get(0);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -264,7 +273,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     private List<InetAddress> getIPAddressList(final String rule, final boolean filterDeleted) throws FilterParseException {
-    	final List<InetAddress> resultList = new ArrayList<InetAddress>();
+        return getIPAddressList(rule, filterDeleted, null);
+
+    }
+
+    private List<InetAddress> getIPAddressList(final String rule, final boolean filterDeleted, final String address) throws FilterParseException {
+    	final List<InetAddress> resultList = new ArrayList<>();
+    	final boolean filterByAddress = address != null && address.length() > 0;
         String sqlString;
 
         LOG.debug("Filter.getIPAddressList({})", rule);
@@ -281,6 +296,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             		sqlString += " AND (ipInterface.isManaged != 'D' or ipInterface.isManaged IS NULL)";
             	}
             }
+            if (filterByAddress) {
+                sqlString += " AND ipInterface.ipaddr = ?";
+            }
 
             conn = getDataSource().getConnection();
             d.watch(conn);
@@ -288,9 +306,17 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             LOG.debug("Filter.getIPAddressList({}): SQL statement: {}", rule, sqlString);
 
             // execute query and return the list of ip addresses
-            final Statement stmt = conn.createStatement();
-            d.watch(stmt);
-            final ResultSet rset = stmt.executeQuery(sqlString);
+            final ResultSet rset;
+            if (filterByAddress) {
+                final PreparedStatement preparedStatement = conn.prepareStatement(sqlString);
+                preparedStatement.setString(1, address);
+                d.watch(preparedStatement);
+                rset = preparedStatement.executeQuery();
+            } else {
+                final Statement stmt = conn.createStatement();
+                d.watch(stmt);
+                rset = stmt.executeQuery(sqlString);
+            }
             d.watch(rset);
 
             // fill up the array list if the result set has values
@@ -331,11 +357,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         if (rule.length() == 0) {
             return true;
         } else {
-            /*
-             * see if the ip address is contained in the list that the
-             * rule returns
-             */
-            return getActiveIPAddressList(rule).contains(addr(addr));
+            return getActiveIPAddress(rule, addr) != null;
         }
     }
 
@@ -401,9 +423,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     public String getNodeMappingStatement(final String rule) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+        final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+        final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "nodeID"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "nodeLabel"));
 
@@ -421,9 +443,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     public String getIPServiceMappingStatement(final String rule) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+    	final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+    	final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "serviceName"));
 
@@ -441,9 +463,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     public String getInterfaceWithServiceStatement(final String rule) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+    	final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+    	final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "serviceName"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "nodeID"));
@@ -463,9 +485,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     protected String getSQLStatement(final String rule) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+        final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+        final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
 
         final String where = parseRule(tables, rule);
@@ -494,9 +516,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
     protected String getSQLStatement(final String rule, final long nodeId, final String ipaddr, final String service) throws FilterParseException {
-    	final List<Table> tables = new ArrayList<Table>();
+        final List<Table> tables = new ArrayList<>();
 
-    	final StringBuffer columns = new StringBuffer();
+        final StringBuilder columns = new StringBuilder();
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
 
         final StringBuffer where = new StringBuffer(parseRule(tables, rule));
@@ -563,7 +585,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      */
     private String parseRule(final List<Table> tables, final String rule) throws FilterParseException {
         if (rule != null && rule.length() > 0) {
-        	final List<String> extractedStrings = new ArrayList<String>();
+        	final List<String> extractedStrings = new ArrayList<>();
         	
         	String sqlRule = rule;
 

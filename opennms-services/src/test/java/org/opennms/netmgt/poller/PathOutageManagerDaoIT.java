@@ -102,8 +102,6 @@ public class PathOutageManagerDaoIT implements TemporaryDatabaseAware<MockDataba
 	@Before
 	public void setUp() throws Exception {
 
-		// System.setProperty("mock.logLevel", "DEBUG");
-		// System.setProperty("mock.debug", "true");
 		MockUtil.println("------------ Begin Test  --------------------------");
 		MockLogAppender.setupLogging();
 

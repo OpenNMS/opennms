@@ -84,7 +84,7 @@ public class SyslogEventForwarderTest {
     class StringOutputStream extends OutputStream {
 
         /** The string buffer. */
-        StringBuilder m_buf = new StringBuilder(MESSAGE_LENGTH);
+        final StringBuilder m_buf = new StringBuilder(MESSAGE_LENGTH);
 
         /* (non-Javadoc)
          * @see java.io.OutputStream#write(int)
@@ -206,7 +206,7 @@ public class SyslogEventForwarderTest {
 
         BufferedReader r = new BufferedReader(new StringReader(m_logStream.readStream()));
 
-        List<String> messages = new LinkedList<String>();
+        List<String> messages = new LinkedList<>();
         String line = null;
 
         while ((line = r.readLine()) != null) {

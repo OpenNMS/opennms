@@ -127,7 +127,7 @@ public class NodeRestService extends OnmsRestService {
 
         if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
             // we've been specifically asked for a list of nodes by ID
-            final List<Integer> nodeIds = new ArrayList<Integer>();
+            final List<Integer> nodeIds = new ArrayList<>();
             for (final String id : params.getFirst("nodeId").split(",")) {
                 nodeIds.add(Integer.valueOf(id));
             }

@@ -46,7 +46,7 @@ public class EasyMockUtils {
      * <p>Constructor for EasyMockUtils.</p>
      */
     public EasyMockUtils() {
-        m_mocks = new LinkedList<Object>();
+        m_mocks = new LinkedList<>();
     }
 
     /**

@@ -112,7 +112,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -241,7 +240,7 @@ public class ThresholdingVisitorIT {
         EventIpcManagerFactory.setIpcManager(eventdIpcMgr);
         
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        final StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<outages>");
         sb.append("<outage name=\"junit outage\" type=\"specific\">");
         sb.append("<time begins=\"");
@@ -259,7 +258,7 @@ public class ThresholdingVisitorIT {
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
         initFactories("/threshd-configuration.xml","/test-thresholds.xml");
-        m_anticipatedEvents = new ArrayList<Event>();
+        m_anticipatedEvents = new ArrayList<>();
     };
     
     private void initFactories(String threshd, String thresholds) throws Exception {
@@ -596,7 +595,7 @@ public class ThresholdingVisitorIT {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
         ServiceParameters svcParams = new ServiceParameters(params);
-        List<ThresholdingVisitor> visitors = new ArrayList<ThresholdingVisitor>();
+        List<ThresholdingVisitor> visitors = new ArrayList<>();
         for (int i=1; i<=5; i++) {
             String ipAddress = baseIpAddress + i;
             ThresholdingVisitor visitor = ThresholdingVisitor.create(i, ipAddress, "SNMP", getRepository(), svcParams, m_resourceStorageDao);
@@ -1073,7 +1072,7 @@ public class ThresholdingVisitorIT {
         runTestForBug3554();
         
         // Validate FavoriteFilterDao Calls
-        HashSet<String> filters = new HashSet<String>();
+        HashSet<String> filters = new HashSet<>();
         for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
             filters.add(pkg.getFilter().getContent().orElse(null));
         }
@@ -1140,7 +1139,7 @@ public class ThresholdingVisitorIT {
     }
 
     private void runTestForBug3554() throws Exception {
-        MockLogAppender.resetEvents();
+        MockLogAppender.resetState();
         System.err.println("----------------------------------------------------------------------------------- begin test");
 
         String baseIpAddress = "10.0.0.";
@@ -1791,7 +1790,6 @@ public class ThresholdingVisitorIT {
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
         EasyMock.expect(agent.getAttributeNames()).andReturn(Collections.emptySet()).anyTimes();
-        EasyMock.expect(agent.getType()).andReturn(NetworkInterface.TYPE_INET).anyTimes();
         EasyMock.expect(agent.getAddress()).andReturn(InetAddrUtils.getLocalHostAddress()).anyTimes();
         EasyMock.expect(agent.isStoreByForeignSource()).andReturn(false).anyTimes();
         EasyMock.expect(agent.getNodeLabel()).andReturn("test").anyTimes();

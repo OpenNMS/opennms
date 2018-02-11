@@ -73,7 +73,7 @@ final class PollerEventProcessor implements EventListener {
     private void createMessageSelectorAndSubscribe() {
         // Create the selector for the UEIs this service is interested in
         //
-        List<String> ueiList = new ArrayList<String>();
+        List<String> ueiList = new ArrayList<>();
 
         // nodeGainedService
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);

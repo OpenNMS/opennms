@@ -1,411 +1,376 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of Microsoft Traps -->
-<!-- Start of Microsoft MIB: LanMgr-Alerts-II-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/bytesAvailAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: bytesAvailAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Bytes Available Alert.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Bytes Available Alert.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>2</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/netIOErrorsAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: netIOErrorsAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying high network Input/Output errors.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- networkId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- numNetIOErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Network I/O Errors Alert.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/serverErrorsAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: serverErrorsAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying high server errors.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- serverErrorsData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Server Errors Alert.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/pwViolationsAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: pwViolationsAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying invalid password attempts.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- numPWViolations&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Password Alert.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>5</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/accessViolationsAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: accessViolationsAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying invalid access attempts.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- accessViolationsAlert&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Access Alert.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/auditLogFullAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: auditLogFullAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying that the audit log is full..&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Audit Log Alert.&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>7</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/auditLog80Alert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: auditLog80Alert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying that the audit log is 80% full..&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Audit Log 80% Full Alert.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>8</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/upsPowerOutWarnAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: upsPowerOutWarnAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying that the power supply is at a warning state..&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Power Supply Warning.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>9</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/upsPowerOutShutdownAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: upsPowerOutShutdownAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying that the power supply is at a shutdown state..&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Power Supply Shutdown Warning.&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>10</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/upsPowerRestoredAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: upsPowerRestoredAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying that the power supply is now normal..&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Power Supply Normal.&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>11</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/logonPrimaryDCFailureAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: logonPrimaryDCFailureAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying a logon primary DC Failure.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- primaryDCName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Logon Primary DC Failure.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>12</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/replMasterFailure</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: replMasterFailure</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying a Replication Master Failure.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- replMasterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Replication Master Failure.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>13</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/diskHotFix</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: diskHotFix</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying a Disk Hot Fix alert.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- diskDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Disk Hot Fix Alert.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>14</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/diskHardErrorAlert</uei>
- <event-label>LanMgr-Alerts-II-MIB defined trap event: diskHardErrorAlert</event-label>
- <descr>&lt;p&gt;A Lan Manager Alert signifying a Disk Hardware Error alert.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- diskDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Disk Hardware Error Alert.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-<!-- End of Microsoft MIB: LanMgr-Alerts-II-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.77.%</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/EnterpriseDefault</uei>
- <event-label>OpenNMS-defined trap event: Microsoft EnterpriseDefault</event-label>
- <descr>
- &lt;p&gt;This is the default event format used when an
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/bytesAvailAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: bytesAvailAlert</event-label>
+      <descr>&lt;p>A Lan Manager Bytes Available Alert.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Bytes Available Alert.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/netIOErrorsAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: netIOErrorsAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying high network Input/Output errors.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ networkId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;tr>&lt;td>&lt;b>
+ numNetIOErrors&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Network I/O Errors Alert.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/serverErrorsAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: serverErrorsAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying high server errors.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ serverErrorsData&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Server Errors Alert.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/pwViolationsAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: pwViolationsAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying invalid password attempts.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ numPWViolations&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Password Alert.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/accessViolationsAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: accessViolationsAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying invalid access attempts.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ accessViolationsAlert&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Access Alert.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/auditLogFullAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: auditLogFullAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying that the audit log is full..&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Audit Log Alert.&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/auditLog80Alert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: auditLog80Alert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying that the audit log is 80% full..&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Audit Log 80% Full Alert.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/upsPowerOutWarnAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: upsPowerOutWarnAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying that the power supply is at a warning state..&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Power Supply Warning.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/upsPowerOutShutdownAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: upsPowerOutShutdownAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying that the power supply is at a shutdown state..&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Power Supply Shutdown Warning.&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/upsPowerRestoredAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: upsPowerRestoredAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying that the power supply is now normal..&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Power Supply Normal.&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/logonPrimaryDCFailureAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: logonPrimaryDCFailureAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying a logon primary DC Failure.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ primaryDCName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Logon Primary DC Failure.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/replMasterFailure</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: replMasterFailure</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying a Replication Master Failure.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ replMasterName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Replication Master Failure.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/diskHotFix</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: diskHotFix</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying a Disk Hot Fix alert.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ diskDrive&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Disk Hot Fix Alert.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/diskHardErrorAlert</uei>
+      <event-label>LanMgr-Alerts-II-MIB defined trap event: diskHardErrorAlert</event-label>
+      <descr>&lt;p>A Lan Manager Alert signifying a Disk Hardware Error alert.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ diskDrive&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Disk Hardware Error Alert.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.77.%</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/EnterpriseDefault</uei>
+      <event-label>OpenNMS-defined trap event: Microsoft EnterpriseDefault</event-label>
+      <descr>&lt;p>This is the default event format used when an
  enterprise specific event (trap) is received from a Microsoft device for which no
  format has been configured (i.e. no event definition
- exists).&lt;/p&gt;
- </descr>
- <logmsg dest='logndisplay'>
+ exists).&lt;/p></descr>
+      <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%
  </logmsg>
- <severity>Indeterminate</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.311.%</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Microsoft/traps/EnterpriseDefault</uei>
- <event-label>OpenNMS-defined trap event: Microsoft EnterpriseDefault</event-label>
- <descr>
- &lt;p&gt;This is the default event format used when an
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.311.%</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Microsoft/traps/EnterpriseDefault</uei>
+      <event-label>OpenNMS-defined trap event: Microsoft EnterpriseDefault</event-label>
+      <descr>&lt;p>This is the default event format used when an
  enterprise specific event (trap) is received from a Microsoft device for which no
  format has been configured (i.e. no event definition
- exists).&lt;/p&gt;
- </descr>
- <logmsg dest='logndisplay'>
+ exists).&lt;/p></descr>
+      <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%
  </logmsg>
- <severity>Indeterminate</severity>
-</event>
-<!-- End of Microsoft Traps -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

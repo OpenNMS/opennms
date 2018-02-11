@@ -201,7 +201,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
         } catch (RancidApiException e) {
             LOG.error("getGroups: has given exception {}. Skipped", e.getMessage());
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
     
     private List<String> getDeviceListOnGroup(String groupName) {
@@ -210,7 +210,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
         } catch (RancidApiException e) {
             LOG.error("getDeviceListOnGroup: group [{}]. Skipped", groupName); 
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
     
     private List<String> getVersionListOnDevice(String deviceName, String groupName) {
@@ -220,7 +220,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
             LOG.error("getVersionListOnDevice:  device has no inventory [{}]. {}", deviceName, e.getLocalizedMessage()); 
         }
 
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
     
     private RancidNode getFullNode(String groupName, String deviceName) {

@@ -32,6 +32,7 @@ import java.util.Objects;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
+import org.opennms.core.rpc.utils.RpcTargetHelper;
 import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
@@ -45,6 +46,9 @@ public class LocationAwareCollectorClientImpl implements LocationAwareCollectorC
 
     @Autowired
     private RpcClientFactory rpcClientFactory;
+
+    @Autowired
+    private RpcTargetHelper rpcTargetHelper;
 
     private RpcClient<CollectorRequestDTO, CollectorResponseDTO> delegate;
 
@@ -75,5 +79,13 @@ public class LocationAwareCollectorClientImpl implements LocationAwareCollectorC
 
     public ServiceCollectorRegistry getRegistry() {
         return rpcModule.getServiceCollectorRegistry();
+    }
+
+    public RpcTargetHelper getRpcTargetHelper() {
+        return rpcTargetHelper;
+    }
+
+    public void setRpcTargetHelper(RpcTargetHelper rpcTargetHelper) {
+        this.rpcTargetHelper = rpcTargetHelper;
     }
 }

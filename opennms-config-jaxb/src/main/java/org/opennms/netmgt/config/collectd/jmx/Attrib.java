@@ -28,20 +28,27 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.collection.api.AttributeType;
-
-import java.util.Objects;
 
 @XmlRootElement(name="attrib")
 @XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("all")
-public class Attrib implements java.io.Serializable {
+public class Attrib implements Serializable, Comparable<Attrib> {
+    private static final Comparator<Attrib> COMPARATOR = new Comparator<Attrib>() {
+        @Override
+        public int compare(final Attrib o1, final Attrib o2) {
+            return o1.getName().compareTo(o2.getName());
+        }
+    };
 
     @XmlAttribute(name="name", required=true)
     private String _name;
@@ -118,5 +125,10 @@ public class Attrib implements java.io.Serializable {
 
     public void setType(final AttributeType type) {
         this._type = type;
+    }
+
+    @Override
+    public int compareTo(final Attrib o) {
+        return Objects.compare(this, o, COMPARATOR);
     }
 }

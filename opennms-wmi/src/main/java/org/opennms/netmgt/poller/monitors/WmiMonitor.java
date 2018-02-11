@@ -196,7 +196,7 @@ public class WmiMonitor extends AbstractServiceMonitor {
 
 				final List<Object> wmiObjects = response.getResponse();
 
-				final StringBuffer reasonBuffer = new StringBuffer();
+				final StringBuilder reasonBuffer = new StringBuilder();
 				reasonBuffer.append("Constraint '").append(matchType).append(" ").append(clientParams.getCompareOperation()).append(" ").append(clientParams.getCompareValue()).append("' failed for value of ");
 				// If there's no WQL string then use the class\object name as the result message
 				if (DEFAULT_WMI_WQL.equals(wmiWqlStr)) {

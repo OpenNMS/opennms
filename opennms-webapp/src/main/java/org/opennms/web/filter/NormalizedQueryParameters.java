@@ -50,7 +50,7 @@ public class NormalizedQueryParameters implements QueryParameters {
     }
 
     public NormalizedQueryParameters() {
-        filters = new ArrayList<Filter>();
+        filters = new ArrayList<>();
     }
 
     @Override

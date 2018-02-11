@@ -36,7 +36,7 @@ angular.module('onms-resources', [
   $scope.hasResources = false;
 
   $scope.goTo = function(id) {
-    $window.location.href = 'graph/chooseresource.jsp?reports=all&parentResourceId=' + id + '&endUrl=' + $scope.endUrl;
+    $window.location.href = getBaseHref() + 'graph/chooseresource.jsp?reports=all&parentResourceId=' + id + '&endUrl=' + $scope.endUrl;
   };
 
   $scope.update = function() {
@@ -128,7 +128,7 @@ angular.module('onms-resources', [
 
   $scope.doGraph = function(selected) {
     if (selected.length > 0) {
-      $window.location.href = $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
+      $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
     } else {
       growl.error('Please select at least one resource.');
     }

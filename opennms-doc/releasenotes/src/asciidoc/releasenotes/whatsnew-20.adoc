@@ -46,6 +46,10 @@
   * The HTTP, JDBC, JMX, NSClient, TCA, WMI, WS-Man, and XML collectors now work on the Minion.
   * VMware provisioning, collection, and monitoring all work on the Minion now.
   * Collectors can all be run remotely on Minions manually from the OpenNMS Karaf shell.
+* *ReST Updates*: A new experimental ReST API (`/opennms/api/v2`) has been enabled which supports https://commons.apache.org/proper/commons-jexl/[JEXL]. (new in 20.1)
+  This API is still subject to change but is being used by a number of internal projects including Helm.
+* The topology UI now supports link:http://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html#gd-topology-graphml-vertex-status-provider[scriptable vertex status]. (new in 20.1)
+* There are link:https://issues.opennms.org/browse/NMS-9513[new alarm northbounders] for running arbitrary BSF scripts or forwarding to Drools. (new in 20.1)
 
 === Retired Features
 

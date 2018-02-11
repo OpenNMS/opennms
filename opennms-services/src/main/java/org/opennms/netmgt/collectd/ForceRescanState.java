@@ -78,7 +78,7 @@ public class ForceRescanState {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public Event createForceResanEvent() {
+    public Event createForceRescanEvent() {
         // create the event to be sent
         EventBuilder bldr = new EventBuilder(EventConstants.FORCE_RESCAN_EVENT_UEI, "SnmpCollector");
         
@@ -117,7 +117,7 @@ public class ForceRescanState {
     
     	// Send event via EventProxy
     	try {
-            getEventProxy().send(createForceResanEvent());
+            getEventProxy().send(createForceRescanEvent());
     	} catch (EventProxyException e) {
 		LOG.error("generateForceRescanEvent: Unable to send forceRescan event.", e);
     	}

@@ -265,7 +265,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 
         @Override
         public String toString() {
-            StringBuilder bldr = new StringBuilder(map.size()*50);
+            final StringBuilder bldr = new StringBuilder(map.size()*50);
             for (OpStats opStat : map.values()) {
                 bldr.append(opStat);
                 bldr.append('\n');

@@ -103,4 +103,9 @@ public class GeneratorConfigList {
     public int hashCode() {
         return Objects.hashCode(configs);
     }
+
+    @Override
+    public String toString() {
+        return "GeneratorConfigList [configs=" + configs + "]";
+    }
 }

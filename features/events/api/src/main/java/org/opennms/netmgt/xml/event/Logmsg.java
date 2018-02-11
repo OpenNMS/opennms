@@ -34,6 +34,8 @@ package org.opennms.netmgt.xml.event;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -70,6 +72,7 @@ public class Logmsg implements Serializable {
      * internal content storage
      */
 	@XmlValue
+	@NotNull
     private java.lang.String _content = "";
 
     /**
@@ -82,6 +85,7 @@ public class Logmsg implements Serializable {
      * Field _dest.
      */
     @XmlAttribute(name="dest")
+    @Pattern(regexp="(logndisplay|displayonly|logonly|suppress|donotpersist)")
     private java.lang.String _dest = "logndisplay";
 
 

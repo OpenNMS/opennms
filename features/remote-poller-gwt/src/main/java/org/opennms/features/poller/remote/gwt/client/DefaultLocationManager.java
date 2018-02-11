@@ -308,7 +308,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         final List<LocationInfo> visibleLocations = m_dataManager.getMatchingLocations(m_selectedVisibleFilter);
         
         GWTBounds mapBounds = m_view.getMapBounds();
-        final ArrayList<LocationInfo> inBounds = new ArrayList<LocationInfo>();
+        final ArrayList<LocationInfo> inBounds = new ArrayList<>();
         for (final LocationInfo location : visibleLocations) {
             final GWTMarkerState markerState = location.getMarkerState();
             
@@ -656,7 +656,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         int servicesWithOutages = state.getServicesDown().size();
         int monitorsWithOutages = state.getMonitorsWithServicesDown().size();
 
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         sb.append("<div id=\"locationStatus\">");
         sb.append("<dl class=\"statusContents\">\n");

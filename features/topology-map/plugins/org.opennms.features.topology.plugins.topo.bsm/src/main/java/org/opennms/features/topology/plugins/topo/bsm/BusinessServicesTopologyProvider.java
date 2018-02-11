@@ -161,8 +161,8 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
             case Alarm:
                 // show alarms with reduction keys associated with the current selection.
                 final Set<String> reductionKeys = filteredSet.stream()
-                        .map(vertex -> vertex.getReductionKeys())
-                        .flatMap(rkSet -> rkSet.stream())
+                        .map(AbstractBusinessServiceVertex::getReductionKeys)
+                        .flatMap(Set::stream)
                         .collect(Collectors.toSet());
                 return () -> {
                     if (reductionKeys != null && !reductionKeys.isEmpty()) {

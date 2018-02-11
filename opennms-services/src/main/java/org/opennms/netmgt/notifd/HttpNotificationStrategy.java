@@ -29,7 +29,6 @@
 package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -151,7 +150,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
 
     private List<NameValuePair> getPostArguments() {
         List<Argument> args = getArgsByPrefix("post-");
-        List<NameValuePair> retval = new ArrayList<NameValuePair>();
+        List<NameValuePair> retval = new ArrayList<>();
         for (Argument arg : args) {
             String argSwitch = arg.getSwitch().substring("post-".length());
             if (arg.getValue() == null) {
@@ -217,7 +216,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
     }
 
     private List<Argument> getArgsByPrefix(String argPrefix) {
-        List<Argument> args = new ArrayList<Argument>();
+        List<Argument> args = new ArrayList<>();
         for (Iterator<Argument> it = m_arguments.iterator(); it.hasNext();) {
             Argument arg = it.next();
             if (arg.getSwitch().startsWith(argPrefix)) {

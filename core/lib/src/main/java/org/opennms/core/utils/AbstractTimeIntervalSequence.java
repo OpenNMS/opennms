@@ -388,7 +388,7 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
      */
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer("[");
+        final StringBuilder buf = new StringBuilder("[");
         boolean first = true;
         for (Iterator<? extends TimeInterval> it = this.iterator(); it.hasNext();) {
             TimeInterval interval = (TimeInterval) it.next();

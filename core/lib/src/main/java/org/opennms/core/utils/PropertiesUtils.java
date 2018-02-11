@@ -147,7 +147,7 @@ public abstract class PropertiesUtils {
             String placeholderSuffix, List<String> list) {
         if (initialString == null) return null;
         
-        StringBuffer result = new StringBuffer(initialString);
+        final StringBuilder result = new StringBuilder(initialString);
         
         int startIndex = 0;
         

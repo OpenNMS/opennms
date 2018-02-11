@@ -130,7 +130,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     }
 
     @Override
-    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsIpInterface targetObject, MultivaluedMapImpl params) {
+    protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsIpInterface targetObject, MultivaluedMapImpl params) {
         if (params.getFirst("ipAddress") != null) {
             throw getException(Status.BAD_REQUEST, "Cannot change the IP address.");
         }

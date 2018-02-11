@@ -79,7 +79,7 @@ public class SnmpTrapMapping {
 
     /** The varbind mappings. */
     @XmlElement(name = "varbind", required = true)
-    private List<VarbindMapping> m_varbindMappings = new ArrayList<VarbindMapping>();
+    private List<VarbindMapping> m_varbindMappings = new ArrayList<>();
 
     /**
      * Gets the name.
@@ -216,7 +216,7 @@ public class SnmpTrapMapping {
      * @return the parameters
      */
     public List<Parm> getParams(NorthboundAlarm alarm) {
-        List<Parm> parms = new ArrayList<Parm>();
+        List<Parm> parms = new ArrayList<>();
         for (VarbindMapping vb : getVarbindMappings()) {
             Parm p = vb.getParameter(alarm);
             parms.add(p);

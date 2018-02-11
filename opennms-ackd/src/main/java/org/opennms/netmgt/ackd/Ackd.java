@@ -133,7 +133,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         for (AckReader reader : m_ackReaders) {
             
             LOG.debug("startReaders: starting reader: {}", reader.getName());
-            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            List<AckReaderState> allowedStates = new ArrayList<>();
             allowedStates.add(AckReaderState.STOPPED);
             
             try {
@@ -155,7 +155,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         LOG.info("stopReaders: stopping {} readers...", m_ackReaders.size());
         for (AckReader reader : m_ackReaders) {
             LOG.debug("stopReaders: stopping reader: {}", reader.getName());
-            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            List<AckReaderState> allowedStates = new ArrayList<>();
             allowedStates.add(AckReaderState.PAUSE_PENDING);
             allowedStates.add(AckReaderState.PAUSED);
             allowedStates.add(AckReaderState.RESUME_PENDING);
@@ -180,7 +180,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
      */
     protected void pauseReaders() {
         for (AckReader reader : m_ackReaders) {
-            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            List<AckReaderState> allowedStates = new ArrayList<>();
             allowedStates.add(AckReaderState.STARTED);
             allowedStates.add(AckReaderState.RESUMED);
             
@@ -197,7 +197,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
      */
     protected void resumeReaders() {
         for (AckReader reader : m_ackReaders) {
-            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            List<AckReaderState> allowedStates = new ArrayList<>();
             allowedStates.add(AckReaderState.PAUSED);
             
             try {

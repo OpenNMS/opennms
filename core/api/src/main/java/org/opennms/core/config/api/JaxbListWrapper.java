@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -68,9 +69,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
     private static final long serialVersionUID = 1L;
 
-    private List<T> m_objects = new ArrayList<T>();
+    private List<T> m_objects = new ArrayList<>();
     private Integer m_totalCount;
-    private Integer m_offset;
+    private Integer m_offset = 0;
 
     public List<T> getObjects() {
         return m_objects;
@@ -123,7 +124,7 @@ public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
 
     @XmlAttribute(name="offset")
     public Integer getOffset() {
-        return m_offset;
+        return m_offset == null? 0 : m_offset;
     }
 
     public void setOffset(final Integer offset) {
@@ -132,12 +133,9 @@ public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_objects == null) ? 0 : m_objects.hashCode());
-        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
-        return result;
+        return Objects.hash(m_objects, m_offset, m_totalCount);
     }
+
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -150,22 +148,10 @@ public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
             return false;
         }
         @SuppressWarnings("unchecked")
-        final JaxbListWrapper<T> other = (JaxbListWrapper<T>) obj;
-        if (m_objects == null) {
-            if (other.m_objects != null) {
-                return false;
-            }
-        } else if (!m_objects.equals(other.m_objects)) {
-            return false;
-        }
-        if (getTotalCount() == null) {
-            if (other.getTotalCount() != null) {
-                return false;
-            }
-        } else if (!getTotalCount().equals(other.getTotalCount())) {
-            return false;
-        }
-        return true;
+        final JaxbListWrapper<T> that = (JaxbListWrapper<T>) obj;
+        return Objects.equals(this.m_objects, that.m_objects)
+                && Objects.equals(this.getOffset(), that.getOffset())
+                && Objects.equals(this.getTotalCount(), that.getTotalCount());
     }
 
     public void add(final int index, final T obj) {
@@ -250,5 +236,10 @@ public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
     @SuppressWarnings("hiding")
     public <T> T[] toArray(final T[] type) {
         return m_objects.toArray(type);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getName() + " [offset=" + getOffset() + ", count=" + getCount() + ", totalCount=" + getTotalCount() + ", objects=" + m_objects + "]";
     }
 }

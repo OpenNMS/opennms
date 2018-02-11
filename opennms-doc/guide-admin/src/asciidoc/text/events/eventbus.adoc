@@ -11,3 +11,10 @@ This publish-subscribe model enables components to use events as a mechanism to 
 For example, the provisioning subsystem of {opennms-product-name} publishes a _node-added_ event whenever a new node is added to the system.
 Other subsystems with an interest in new nodes subscribe to the _node-added_ event and automatically receive these events, so they know to start monitoring and managing the new node if their configuration dictates.
 The publisher and subscriber components do not need to have any knowledge of each other, allowing for a clean division of labor and lessening the programming burden to add entirely new {opennms-product-name} subsystems or modify the behavior of existing ones.
+
+==== Associate an Event to a given node
+
+There are 2 ways to associate an existing node to a given event prior sending it to the Event Bus:
+
+* Set the *nodeId* of the node in question to the event.
+* For requisitioned nodes, set the *_foreignSource* and *_foreignId* as parameters to the event. Then, any incoming event without a *nodeId* and these 2 parameters will trigger a lookup on the DB; if a node is found, the *nodeId* attribute will be dynamically set into the event, regardless which method has been used to send it to the *Event Bus*.

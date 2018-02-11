@@ -104,7 +104,7 @@ public class HeaderPanel extends Panel implements View {
 		final String selected = "<a href=\"#!%s\">%d. %s</a>";
 		final String notSelected = "%d. %s";
 
-		StringBuilder labelString = new StringBuilder(100);
+		final StringBuilder labelString = new StringBuilder(100);
 		int i = 1;
 		for (UiState eachState : UiState.values()) {
 			if (eachState.hasUi()) {

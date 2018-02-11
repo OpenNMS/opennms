@@ -171,7 +171,7 @@ public class DefaultBusinessServiceStateMachineIT {
         for (String eachKey : uniqueReductionKeys) {
             final OnmsAlarm alarm = new OnmsAlarm();
             alarm.setUei("custom");
-            alarm.setAlarmType(1);
+            alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setDescription("dummy");
             alarm.setLogMsg("dummy");
             alarm.setSeverity(OnmsSeverity.WARNING);

@@ -146,7 +146,7 @@ public class SyslogClient {
         int pricode = makePriorityCode(facility, priority);
         Integer priObj = Integer.valueOf(pricode);
 
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
 
         sb.append("<").append(Integer.toString(priObj.intValue())).append(">");
         sb.append(ident).append(": ").append(msg).append("\0");

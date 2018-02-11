@@ -87,10 +87,10 @@ public class MockSnmpValue extends AbstractSnmpValue {
             return new String(results);
         }
 
-                @Override
+        @Override
         public String toHexString() {
-        	final byte[] data = getBytes();
-            final StringBuffer b = new StringBuffer();
+            final byte[] data = getBytes();
+            final StringBuilder b = new StringBuilder();
             for (int i = 0; i < data.length; ++i) {
                 final int x = (int) data[i] & 0xff;
                 if (x < 16) b.append("0");
@@ -300,7 +300,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
         	/*
             long millis = toLong()*10L;
             
-            StringBuilder buf = new StringBuilder();
+            final StringBuilder buf = new StringBuilder();
 
             boolean first = true;
             for(UnitOfTime unit : UnitOfTime.values()) {
@@ -350,7 +350,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
 
         @Override
         public String toHexString() {
-            StringBuffer buff = new StringBuffer();
+            final StringBuilder buff = new StringBuilder();
 
             for (byte b : toString().getBytes()) {
                 buff.append(Integer.toHexString(b));

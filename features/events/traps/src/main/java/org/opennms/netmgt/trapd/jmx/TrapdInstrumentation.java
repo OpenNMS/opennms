@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,65 +31,67 @@ package org.opennms.netmgt.trapd.jmx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class TrapdInstrumentation {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrapdInstrumentation.class);
 
-    private long trapsReceived = 0;
-    private long v1TrapsReceived = 0;
-    private long v2cTrapsReceived = 0;
-    private long v3TrapsReceived = 0;
-    private long vUnknownTrapsReceived = 0;
-    private long trapsDiscarded = 0;
-    private long trapsErrored = 0;
+    private final AtomicLong trapsReceived = new AtomicLong();
+    private final AtomicLong v1TrapsReceived = new AtomicLong();
+    private final AtomicLong v2cTrapsReceived = new AtomicLong();
+    private final AtomicLong v3TrapsReceived = new AtomicLong();
+    private final AtomicLong vUnknownTrapsReceived = new AtomicLong();
+    private final AtomicLong trapsDiscarded = new AtomicLong();
+    private final AtomicLong trapsErrored = new AtomicLong();
 
-    synchronized public void incTrapsReceivedCount(String version) {
-        trapsReceived++;
+    public void incTrapsReceivedCount(String version) {
+        trapsReceived.incrementAndGet();
         if ("v1".equals(version)) {
-            v1TrapsReceived++;
+            v1TrapsReceived.incrementAndGet();
         } else if ("v2c".equals(version) || "v2".equals(version)) {
-            v2cTrapsReceived++;
+            v2cTrapsReceived.incrementAndGet();
         } else if ("v3".equals(version)) {
-            v3TrapsReceived++;
+            v3TrapsReceived.incrementAndGet();
         } else {
-            vUnknownTrapsReceived++;
-            LOG.warn("Received a trap with an unknown SNMP protocol version '{}'", version);
+            vUnknownTrapsReceived.incrementAndGet();
+            LOG.warn("Received a trap with an unknown SNMP protocol version '{}'.", version);
         }
     }
 
-    synchronized public void incDiscardCount() {
-        trapsDiscarded++;
+    public void incDiscardCount() {
+        trapsDiscarded.incrementAndGet();
     }
 
-    synchronized public void incErrorCount() {
-        trapsErrored++;
+    public void incErrorCount() {
+        trapsErrored.incrementAndGet();
     }
 
     public long getV1TrapsReceived() {
-        return v1TrapsReceived;
+        return v1TrapsReceived.get();
     }
 
     public long getV2cTrapsReceived() {
-        return v2cTrapsReceived;
+        return v2cTrapsReceived.get();
     }
 
     public long getV3TrapsReceived() {
-        return v3TrapsReceived;
+        return v3TrapsReceived.get();
     }
 
     public long getVUnknownTrapsReceived() {
-        return vUnknownTrapsReceived;
+        return vUnknownTrapsReceived.get();
     }
 
     public long getTrapsDiscarded() {
-        return trapsDiscarded;
+        return trapsDiscarded.get();
     }
 
     public long getTrapsErrored() {
-        return trapsErrored;
+        return trapsErrored.get();
     }
 
     public long getTrapsReceived() {
-        return trapsReceived;
+        return trapsReceived.get();
     }
 }

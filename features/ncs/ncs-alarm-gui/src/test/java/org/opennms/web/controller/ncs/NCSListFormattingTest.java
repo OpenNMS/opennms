@@ -186,7 +186,7 @@ public class NCSListFormattingTest {
     
     
     private String getComponentHTML(NCSComponent component) {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("<li>");
         buffer.append(component.getName());
         

@@ -52,6 +52,8 @@ public class PollableInterface {
     
     private String m_ipaddress;
     
+    private String m_netMask;
+
     private PollableNetwork m_parent;
     
     private Map<String, PollableSnmpInterface> m_pollablesnmpinterface;
@@ -115,6 +117,14 @@ public class PollableInterface {
      */
     public void setIpaddress(String ipaddress) {
         m_ipaddress = ipaddress;
+    }
+
+    public String getNetMask() {
+        return m_netMask;
+    }
+
+    public void setNetMask(final String netMask) {
+        m_netMask = netMask;
     }
 
     /**

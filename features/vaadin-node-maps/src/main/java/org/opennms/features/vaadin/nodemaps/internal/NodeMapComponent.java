@@ -92,7 +92,7 @@ public class NodeMapComponent extends AbstractComponent implements GeoAssetProvi
 
     @Override
     public Collection<VertexRef> getNodesWithCoordinates() {
-        final List<VertexRef> nodes = new ArrayList<VertexRef>();
+        final List<VertexRef> nodes = new ArrayList<>();
         for (final Map.Entry<Integer,MapNode> entry : m_activeNodes.entrySet()) {
             nodes.add(new AbstractVertex("nodes", entry.getKey().toString(), entry.getValue().getNodeLabel()));
         }
@@ -116,7 +116,7 @@ public class NodeMapComponent extends AbstractComponent implements GeoAssetProvi
 
         // Convert
         m_activeNodes = locations.stream()
-                .map(l -> createMapNode(l))
+                .map(NodeMapComponent::createMapNode)
                 .collect(Collectors.toMap(l -> Integer.valueOf(l.getNodeId()), Function.identity()));
         showNodes(m_activeNodes);
     }
@@ -148,6 +148,14 @@ public class NodeMapComponent extends AbstractComponent implements GeoAssetProvi
 
     public void showNodes(final Map<Integer, MapNode> nodeEntries) {
         LOG.info("Updating map node list: {} entries.", nodeEntries.size());
+        final List<MapNode> nodeEntryList = new ArrayList<>(nodeEntries.values());
+        if (getState().nodes != null &&
+                nodeEntryList.containsAll(getState().nodes) &&
+                getState().nodes.containsAll(nodeEntryList)) {
+            LOG.info("Skipping update. Map node list is unchanged.");
+            return;
+        }
+
         getState().nodes = new ArrayList<>(nodeEntries.values());
         LOG.info("Finished updating map node list.");
     }

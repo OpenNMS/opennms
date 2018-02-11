@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -310,7 +311,7 @@ public class OutageDaoIT implements InitializingBean {
         event.setEventUei("foo!");
         event.setEventTime(new Date());
         event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventSource("your mom");
         event.setEventLog("Y");
         event.setEventDisplay("Y");

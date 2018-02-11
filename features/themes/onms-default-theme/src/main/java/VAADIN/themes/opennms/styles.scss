@@ -65,7 +65,7 @@ $icon-font-path: "bootstrap/dist/fonts/" !default;
 .v-table-row-alarm-minor .v-table-cell-content-bright,
 .v-table-row-alarm-minor-noack .v-table-cell-content-bright
 {
-  background-image: url(../../../images/bgMinor.png);
+  background-image: url(/opennms/images/bgMinor.png);
 }
 
 .v-table-row-alarm-critical,
@@ -86,7 +86,7 @@ $icon-font-path: "bootstrap/dist/fonts/" !default;
 .v-table-row-alarm-critical .v-table-cell-content-bright,
 .v-table-row-alarm-critical-noack .v-table-cell-content-bright
 {
-  background-image: url(../../../images/bgCritical.png);
+  background-image: url(/opennms/images/bgCritical.png);
 }
 
 .v-table-row-alarm-major,
@@ -107,7 +107,7 @@ $icon-font-path: "bootstrap/dist/fonts/" !default;
 .v-table-row-alarm-major .v-table-cell-content-bright,
 .v-table-row-alarm-major-noack .v-table-cell-content-bright
 {
-  background-image: url(../../../images/bgMajor.png);
+  background-image: url(/opennms/images/bgMajor.png);
 }
 
 .v-table-row-alarm-warning,
@@ -128,7 +128,7 @@ $icon-font-path: "bootstrap/dist/fonts/" !default;
 .v-table-row-alarm-warning .v-table-cell-content-bright,
 .v-table-row-alarm-warning-noack .v-table-cell-content-bright
 {
-  background-image: url(../../../images/bgWarning.png);
+  background-image: url(/opennms/images/bgWarning.png);
 }
 
 .v-table-row-alarm-indeterminate,
@@ -149,7 +149,7 @@ $icon-font-path: "bootstrap/dist/fonts/" !default;
 .v-table-row-alarm-indeterminate .v-table-cell-content-bright,
 .v-table-row-alarm-indeterminate-noack .v-table-cell-content-bright
 {
-  background-image: url(../../../images/bgIndeterminate.png);
+  background-image: url(/opennms/images/bgIndeterminate.png);
 }
 
 .v-table-row-alarm-normal,
@@ -170,7 +170,7 @@ $icon-font-path: "bootstrap/dist/fonts/" !default;
 .v-table-row-alarm-normal .v-table-cell-content-bright,
 .v-table-row-alarm-normal-noack .v-table-cell-content-bright
 {
-  background-image: url(../../../images/bgNormal.png);
+  background-image: url(/opennms/images/bgNormal.png);
 }
 
 .v-table-row-alarm-cleared,
@@ -191,7 +191,7 @@ $icon-font-path: "bootstrap/dist/fonts/" !default;
 .v-table-row-alarm-cleared .v-table-cell-content-bright,
 .v-table-row-alarm-cleared-noack .v-table-cell-content-bright
 {
-  background-image: url(../../../images/bgCleared.png);
+  background-image: url(/opennms/images/bgCleared.png);
 }
 
 .v-loading-indicator, .v-loading-indicator-delay, .v-loading-indicator-wait {
@@ -225,15 +225,15 @@ td.v-table-cell-content.v-table-cell-content-marked {
 
 /*
 .v-table-cell-content-marked {
-  background: #57a7ed;
+  background: $color_opennms_lighter;
   color: #fff;
   padding: 0px 0px 0px 0px;
 }
 */
 
 .v-caption-surveillance-view {
-  background-color: #4d9c29;
-  border-color: #4d9c29 !important;
+  background-color: $color_opennms;
+  border-color: $color_opennms !important;
   border-bottom: 1px solid transparent;
   padding: 6px;
   color: white !important;
@@ -285,7 +285,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #f5cdcd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgCritical.png);
+  background-image: url(/opennms/images/bgCritical.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: normal;
@@ -298,7 +298,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #ffd7cd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgMajor.png);
+  background-image: url(/opennms/images/bgMajor.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: normal;
@@ -311,7 +311,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: blanchedalmond;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgMinor.png);
+  background-image: url(/opennms/images/bgMinor.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: normal;
@@ -324,7 +324,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #fff5cd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgWarning.png);
+  background-image: url(/opennms/images/bgWarning.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: normal;
@@ -337,7 +337,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #ebebcd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgIndeterminate.png);
+  background-image: url(/opennms/images/bgIndeterminate.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: normal;
@@ -350,7 +350,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #d7e1cd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgNormal.png);
+  background-image: url(/opennms/images/bgNormal.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: normal;
@@ -363,7 +363,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #eeeeee;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgCleared.png);
+  background-image: url(/opennms/images/bgCleared.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: normal;
@@ -460,7 +460,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #f5cdcd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgCritical.png);
+  background-image: url(/opennms/images/bgCritical.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
@@ -474,7 +474,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #ffd7cd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgMajor.png);
+  background-image: url(/opennms/images/bgMajor.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
@@ -488,7 +488,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: blanchedalmond;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgMinor.png);
+  background-image: url(/opennms/images/bgMinor.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
@@ -502,7 +502,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #fff5cd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgWarning.png);
+  background-image: url(/opennms/images/bgWarning.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
@@ -516,7 +516,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #ebebcd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgIndeterminate.png);
+  background-image: url(/opennms/images/bgIndeterminate.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
@@ -530,7 +530,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #d7e1cd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgNormal.png);
+  background-image: url(/opennms/images/bgNormal.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
@@ -544,7 +544,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #eeeeee;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgCleared.png);
+  background-image: url(/opennms/images/bgCleared.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
@@ -569,7 +569,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #d7e1cd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgNormal.png);
+  background-image: url(/opennms/images/bgNormal.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
@@ -581,7 +581,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: black;
   background-color: #f5cdcd;
   border-top: 1px solid #999999;
-  background-image: url(../../../../images/bgCritical.png);
+  background-image: url(/opennms/images/bgCritical.png);
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
@@ -593,7 +593,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   padding-left: 2px;
   padding-right: 4px;
   cursor: pointer;
-  color: #366903;
+  color: $color_opennms_darker;
 }
 
 .v-select-select{
@@ -601,7 +601,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
 }
 
 .surveillance-view .link {
-  color: #366903;
+  color: $color_opennms_darker;
   cursor: pointer;
   opacity: 1.0;
 }

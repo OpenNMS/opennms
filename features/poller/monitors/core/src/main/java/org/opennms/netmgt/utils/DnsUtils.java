@@ -75,7 +75,7 @@ public abstract class DnsUtils {
             //
             // InetAddress[] addresses = InetAddress.getAllByName(hostname);
             //
-            List<InetAddress> v4Addresses = new ArrayList<InetAddress>();
+            List<InetAddress> v4Addresses = new ArrayList<>();
             try {
                 Record[] aRecs = new Lookup(hostname, Type.A).run();
                 if (aRecs != null) {
@@ -99,7 +99,7 @@ public abstract class DnsUtils {
                 throw ex;
             }
 
-            final List<InetAddress> v6Addresses = new ArrayList<InetAddress>();
+            final List<InetAddress> v6Addresses = new ArrayList<>();
             try {
                 final Record[] quadARecs = new Lookup(hostname, Type.AAAA).run();
                 if (quadARecs != null) {
@@ -121,7 +121,7 @@ public abstract class DnsUtils {
                 throw ex;
             }
 
-            final List<InetAddress> addresses = new ArrayList<InetAddress>();
+            final List<InetAddress> addresses = new ArrayList<>();
             if (preferInet6Address) {
                 addresses.addAll(v6Addresses);
                 addresses.addAll(v4Addresses);

@@ -106,7 +106,7 @@ public class HWForecast implements Filter {
         long stepInMs = (long)(table.get(limits.lastRowWithValues, TIMESTAMP_COLUMN_NAME) - table.get(limits.lastRowWithValues-1, Filter.TIMESTAMP_COLUMN_NAME));
 
         // Calculate the number of samples per period
-        int numSamplesPerPeriod = (int)Math.floor(m_periodInSeconds * 1000 / stepInMs);
+        int numSamplesPerPeriod = (int)Math.floor(m_periodInSeconds * 1000d / stepInMs);
         numSamplesPerPeriod = Math.max(1, numSamplesPerPeriod);
 
         // Calculate the number of steps to forecast

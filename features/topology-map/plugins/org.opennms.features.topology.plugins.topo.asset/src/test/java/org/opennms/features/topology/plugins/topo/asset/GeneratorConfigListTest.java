@@ -30,22 +30,21 @@ package org.opennms.features.topology.plugins.topo.asset;
 
 import java.io.File;
 
-import javax.xml.bind.JAXB;
-
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 
 public class GeneratorConfigListTest {
 
     @Test
-    public void testMarshalAndUnmarshal() {
+    public void testMarshalAndUnmarshal() throws Exception {
         GeneratorConfig config = new GeneratorConfigBuilder().build();
         GeneratorConfigList list = new GeneratorConfigList();
         list.addConfig(config);
 
-        JAXB.marshal(list, new File("target/test-config.xml"));
+        JaxbUtils.marshal(list, new File("target/test-config.xml"));
 
-        GeneratorConfigList after = JAXB.unmarshal(new File("target/test-config.xml"), GeneratorConfigList.class);
+        GeneratorConfigList after = JaxbUtils.unmarshal(GeneratorConfigList.class, new File("target/test-config.xml"));
 
         Assert.assertEquals(list, after);
     }

@@ -37,6 +37,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.protocols.radius.utils.RadiusUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +45,14 @@ import net.jradius.client.RadiusClient;
 import net.jradius.client.auth.CHAPAuthenticator;
 import net.jradius.client.auth.EAPMD5Authenticator;
 import net.jradius.client.auth.EAPMSCHAPv2Authenticator;
+import net.jradius.client.auth.EAPTLSAuthenticator;
+import net.jradius.client.auth.EAPTTLSAuthenticator;
 import net.jradius.client.auth.MSCHAPv1Authenticator;
 import net.jradius.client.auth.MSCHAPv2Authenticator;
 import net.jradius.client.auth.PAPAuthenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
 import net.jradius.dictionary.Attr_NASIdentifier;
+import net.jradius.dictionary.Attr_Password;
 import net.jradius.dictionary.Attr_UserName;
 import net.jradius.dictionary.Attr_UserPassword;
 import net.jradius.packet.AccessAccept;
@@ -120,6 +124,16 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
     public static final String DEFAULT_NASID ="opennms";
 
     /**
+     * Default inner user identity (ttls / peap)
+     */
+    public static final String DEFAULT_INNER_USER= "Inner-OpenNMS";
+
+    /**
+     * Default Inner Auth Type (ttls)
+     */
+    public static final String DEFAULT_TTLS_INNER_AUTH_TYPE= "pap";
+
+    /**
      * Class constructor.
      *
      * @throws java.lang.ClassNotFoundException if any.
@@ -168,6 +182,9 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
         String secret = ParameterMap.getKeyedString(parameters, "secret", DEFAULT_SECRET);
         String authType = ParameterMap.getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
         String nasid = ParameterMap.getKeyedString(parameters, "nasid", DEFAULT_NASID);
+        String innerProtocol = ParameterMap.getKeyedString(parameters, "inner-protocol", DEFAULT_TTLS_INNER_AUTH_TYPE);
+        String innerUser = ParameterMap.getKeyedString(parameters, "inner-user", DEFAULT_INNER_USER);
+        String certFile = ParameterMap.getKeyedString(parameters, "certificate", null);
         InetAddress addr = svc.getAddress();
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
@@ -195,7 +212,38 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
                     auth = new EAPMD5Authenticator();
                 } else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
                     auth = new EAPMSCHAPv2Authenticator();
-                } else {
+                } else if (RadiusUtils.isTunneling(authType)) { 
+                    if (innerUser == null){
+                        String reason = "TLS AAA type requested but no inner user defined. Authtype: '" + authType + "'";
+                        RadiusAuthMonitor.LOG.debug(reason);
+                        return PollStatus.unavailable(reason);
+                    }
+                    EAPTLSAuthenticator tlsAuth = null;
+                    if (RadiusUtils.isEAPTTLS(authType)){
+                        tlsAuth = new EAPTTLSAuthenticator();
+                        final EAPTTLSAuthenticator ttlsAuth = (EAPTTLSAuthenticator) tlsAuth;
+                        if (innerProtocol != DEFAULT_TTLS_INNER_AUTH_TYPE){
+                            String reason = "RadiusMonitor can only use 'pap' as inner auth protocol, not " + innerProtocol;
+                            LOG.debug(reason);
+                            return PollStatus.unavailable(reason);
+                        } else {
+                            ttlsAuth.setInnerProtocol(innerProtocol);
+                        }
+                        AttributeList attrs = new AttributeList();
+                        attrs.add(new Attr_UserName(innerUser));
+                        attrs.add(new Attr_Password(password));
+                        ttlsAuth.setTunneledAttributes(attrs);
+                    } else if (authType.equalsIgnoreCase("peap")){
+                        String reason = "Support for eap peap is not ready yet";
+                        LOG.debug(reason);
+                        return PollStatus.unavailable(reason);
+                    }
+                    /* Cert. processing is common to EAPTLS protocols */
+                    /* We trust any certificate for now */
+                    LOG.warn("Server certificate will be trusted");
+                    if (certFile==null) tlsAuth.setTrustAll(true);
+                    auth = tlsAuth;
+                } else{
                     String reason = "Unknown authenticator type '" + authType + "'";
                     RadiusAuthMonitor.LOG.debug(reason);
                     return PollStatus.unavailable(reason);

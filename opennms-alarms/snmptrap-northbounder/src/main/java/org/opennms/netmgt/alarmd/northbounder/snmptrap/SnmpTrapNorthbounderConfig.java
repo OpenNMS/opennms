@@ -67,7 +67,7 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
 
     /** The SNMP trap sinks. */
     @XmlElement(name = "snmp-trap-sink")
-    private List<SnmpTrapSink> m_snmpTrapSinks = new ArrayList<SnmpTrapSink>();
+    private List<SnmpTrapSink> m_snmpTrapSinks = new ArrayList<>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)

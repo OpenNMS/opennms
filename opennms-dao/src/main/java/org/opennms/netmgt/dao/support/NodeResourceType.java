@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.LazyList;
+import org.opennms.core.collections.LazyList;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -106,7 +106,7 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
         return m_nodeDao.findAll().stream()
                 // Only return non-deleted nodes - see NMS-2977
                 .filter(node -> node.getType() == null || !node.getType().equals("D"))
-                .map(node -> createResourceForNode(node))
+                .map(this::createResourceForNode)
                 .collect(Collectors.toList());
     }
 

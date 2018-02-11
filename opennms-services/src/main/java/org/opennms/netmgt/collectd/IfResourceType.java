@@ -83,7 +83,7 @@ public class IfResourceType extends ResourceType {
     /** {@inheritDoc} */
     @Override
     public SnmpInstId[] getCollectionInstances() {
-        List<SnmpInstId> instances = new ArrayList<SnmpInstId>();
+        List<SnmpInstId> instances = new ArrayList<>();
         for (IfInfo ifInfo : m_ifMap.values()) {
             if (ifInfo.isCollectionEnabled()) {
                 instances.add(new SnmpInstId(ifInfo.getIndex()));

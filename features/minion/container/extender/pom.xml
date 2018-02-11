@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>container-parent</artifactId>
-        <version>21.0.0-SNAPSHOT</version>
+        <version>22.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.minion.container</groupId>
@@ -39,12 +39,12 @@
         <dependency>
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>org.apache.karaf.features.core</artifactId>
-            <version>${minionKarafVersion}</version>
+            <version>${karafVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.config</groupId>
             <artifactId>org.apache.karaf.config.core</artifactId>
-            <version>${minionKarafVersion}</version>
+            <version>${karafVersion}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +109,7 @@ public class NotificationDaoIT implements InitializingBean {
         event.setEventDisplay("Y");
         event.setEventLogGroup("event dao test log group");
         event.setEventLogMsg("event dao test log msg");
-        event.setEventSeverity(7);
+        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
         event.setEventSource("EventDaoTest");
         event.setEventTime(new Date());
         event.setEventUei("uei://org/opennms/test/NotificationDaoTest");

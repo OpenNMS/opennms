@@ -124,7 +124,7 @@ public class NodeMapConnector extends AbstractComponentConnector implements HasH
     private void updateNodes() {
         final List<MapNode> nodes = getState().nodes;
         LOG.info("NodeMapConnector.onStateChanged(): nodes list is now: " + nodes);
-        final List<JSNodeMarker> featureCollection = new ArrayList<JSNodeMarker>();
+        final List<JSNodeMarker> featureCollection = new ArrayList<>();
 
         if (nodes.isEmpty()) {
             getWidget().setMarkers(featureCollection);

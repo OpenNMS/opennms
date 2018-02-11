@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -50,6 +50,7 @@ public class GroupsTest extends XmlTestNoCastor<Groupinfo> {
         admin.setName("Admin");
         admin.setComments("The administrators");
         admin.addUser("admin");
+        admin.addDutySchedule("\n    MoTuWeThFrSaSu800-2300\n    "); // make sure duty schedules get trimmed properly
         gi.addGroup(admin);
 
         final Group remoting = new Group();
@@ -57,6 +58,12 @@ public class GroupsTest extends XmlTestNoCastor<Groupinfo> {
         remoting.setComments("Users with access for submitting remote poller management data.");
         remoting.addUser("remoting");
         gi.addGroup(remoting);
+
+        final Groupinfo gi2 = new Groupinfo();
+        gi2.setHeader(gi.getHeader());
+        final Group admin2 = new Group("Admin", "admin");
+        admin2.setDutySchedules(Arrays.asList(" \n MoSa1300-1500 \n "));
+        gi2.addGroup(admin2);
 
         return Arrays.asList(new Object[][] {
             {
@@ -72,6 +79,7 @@ public class GroupsTest extends XmlTestNoCastor<Groupinfo> {
                 "                        <name>Admin</name>\n" + 
                 "                        <comments>The administrators</comments>\n" + 
                 "                        <user>admin</user>\n" + 
+                "                        <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" +
                 "                </group>\n" + 
                 "                <group>\n" + 
                 "                        <name>Remoting Users</name>\n" + 
@@ -79,6 +87,23 @@ public class GroupsTest extends XmlTestNoCastor<Groupinfo> {
                 "                        <user>remoting</user>\n" + 
                 "                </group>\n" + 
                 "        </groups>\n" + 
+                "</groupinfo>"
+            },
+            {
+                gi2,
+                "<groupinfo  xmlns=\"http://xmlns.opennms.org/xsd/groups\">\n" +
+                "        <header>\n" +
+                "                <rev>1.3</rev>\n" +
+                "                <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" +
+                "                <mstation>dhcp-219.internal.opennms.org</mstation>\n" +
+                "        </header>\n" +
+                "        <groups>\n" +
+                "                <group>\n" +
+                "                        <name>Admin</name>\n" +
+                "                        <user>admin</user>\n" +
+                "                        <duty-schedule>MoSa1300-1500</duty-schedule>\n" +
+                "                </group>\n" +
+                "        </groups>\n" +
                 "</groupinfo>"
             }
         });

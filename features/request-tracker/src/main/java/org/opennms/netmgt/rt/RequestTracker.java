@@ -95,7 +95,7 @@ public class RequestTracker {
     public Long postEdit(final HttpPost post, final String content, final Pattern pattern) throws RequestTrackerException {
         String rtTicketNumber = null;
 
-        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        final List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("user", m_user));
         params.add(new BasicNameValuePair("pass", m_password));
         params.add(new BasicNameValuePair("content", content));
@@ -231,14 +231,14 @@ public class RequestTracker {
     public List<RTTicket> getTicketsForQueue(final String queueName, long limit) {
         getSession();
 
-        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        final List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("query", "Queue='" + queueName + "' AND Status='open'"));
         params.add(new BasicNameValuePair("format", "i"));
         params.add(new BasicNameValuePair("orderby", "-id"));
         final HttpGet get = new HttpGet(m_baseURL + "/REST/1.0/search/ticket?" + URLEncodedUtils.format(params, StandardCharsets.UTF_8));
 
-        final List<RTTicket> tickets = new ArrayList<RTTicket>();
-        final List<Long> ticketIds = new ArrayList<Long>();
+        final List<RTTicket> tickets = new ArrayList<>();
+        final List<Long> ticketIds = new ArrayList<>();
 
         CloseableHttpResponse response = null;
         try {
@@ -311,7 +311,7 @@ public class RequestTracker {
 
         getSession();
 
-        final List<RTQueue> queues = new ArrayList<RTQueue>();
+        final List<RTQueue> queues = new ArrayList<>();
 
         long id = 1;
         RTQueue queue = null;
@@ -466,7 +466,7 @@ public class RequestTracker {
                     .dontReuseConnections();
 
             final HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/user/" + m_user);
-            final List<NameValuePair> params = new ArrayList<NameValuePair>();
+            final List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("user", m_user));
             params.add(new BasicNameValuePair("pass", m_password));
             CloseableHttpResponse response = null;
