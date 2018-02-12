@@ -1,0 +1,321 @@
+==== Flow Classification API
+
+The _Flow Classification API_ can be used to update, create or delete flow classification rules.
+
+NOTE: If not otherwise specified the `Content-Type` of the response is `application/json`.
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource
+| Description
+
+| `/classifications`
+| Retrieve a list of all enabled rules.
+  The request is limited to `10` items by default.
+  Setting `limit` to `0` returns ALL enabled rules.
+
+| `/classifications/{id}`
+| Retrieve the rule identified by `{id}`.
+
+| `/classifications/groups`
+| Retrieve all existing groups.
+  The request is limited to `10` items by default.
+  Setting `limit` to `0` returns ALL enabled rules.
+
+| `/classifications/groups/{id}`
+| Retrieve the group identified by `{id}``
+  Supports downloading all rules of the given group in CSV format.
+  For this, set the accept header: `Accept: text/comma-separated-values`.
+
+| `/classifications/protocols`
+| Retrieve all supported tcp protocols.
+
+|===
+
+
+The `/classifications` endpoint supports the following url parameters:
+
+NOTE: The given filters are combined using a logical `AND`.
+ There is no support for using `OR` logic, or combinations thereof.
+
+[options="header", cols="5,10"]
+|===
+| name
+| default
+| comment
+
+| groupFilter
+| (none)
+| The group to filter the rules by. Should be the `id` retrieved by `/classifications/groups`.
+  It is not possible to retrieve the rules for a disabled group.
+
+| query
+| (none)
+| A `string` to query a rule by `port` OR `ipAddress` or `name` or `protocol`.
+  Must not contain `%` or `*` to perform a like query.
+
+|===
+
+
+====== Examples
+
+
+.Retrieve all enabled rules
+[source,bash]
+----
+curl -X GET -u admin:admin http://localhost:8980/opennms/rest/classifications
+----
+
+.Response
+[source,javascript]
+----
+[
+    {
+        "group": {
+            "description": "Classification rules defined by the user",
+            "enabled": true,
+            "id": 2,
+            "name": "user-defined",
+            "priority": 10,
+            "readOnly": false,
+            "ruleCount": 1
+        },
+        "id": 1,
+        "ipAddress": null,
+        "name": "http",
+        "port": "80",
+        "position": 0,
+        "protocols": [
+            "TCP"
+        ]
+    }
+]
+----
+
+.Retrieve all groups
+[source,bash]
+----
+curl -X GET -u admin:admin http://localhost:8980/opennms/rest/classifications/groups
+----
+
+.Response
+[source,javascript]
+----
+[
+    {
+        "description": "Classification rules defined by OpenNMS",
+        "enabled": false,
+        "id": 1,
+        "name": "pre-defined",
+        "priority": 0,
+        "readOnly": true,
+        "ruleCount": 6248
+    },
+    {
+        "description": "Classification rules defined by the user",
+        "enabled": true,
+        "id": 2,
+        "name": "user-defined",
+        "priority": 10,
+        "readOnly": false,
+        "ruleCount": 1
+    }
+]
+----
+
+.Retrieve specific rule
+[source,bash]
+----
+curl -X GET -u admin:admin http://localhost:8980/opennms/rest/classifications/1
+----
+
+.Response
+[source,javascript]
+----
+{
+    "group": {
+        "description": "Classification rules defined by the user",
+        "enabled": true,
+        "id": 2,
+        "name": "user-defined",
+        "priority": 10,
+        "readOnly": false,
+        "ruleCount": 1
+    },
+    "id": 1,
+    "ipAddress": null,
+    "name": "http",
+    "port": "80",
+    "position": 0,
+    "protocols": [
+        "TCP"
+    ]
+}
+----
+
+.Retrieve specific group
+[source,bash]
+----
+curl -X GET -H "Accept: application/json"  -u admin:admin http://localhost:8980/opennms/rest/classifications/groups/1
+----
+
+.Response
+[source,javascript]
+----
+{
+    "description": "Classification rules defined by OpenNMS",
+    "enabled": false,
+    "id": 1,
+    "name": "pre-defined",
+    "priority": 0,
+    "readOnly": true,
+    "ruleCount": 6248
+}
+----
+
+.Retrieve group as CSV
+[source,bash]
+----
+curl -X GET -H "Accept: text/comma-separated-values" -u admin:admin http://localhost:8980/opennms/rest/classifications/groups/2
+----
+
+.Response
+[source,text]
+----
+name;ipAddress;port;protocol
+http;;80;TCP
+----
+
+===== POSTs (Creating Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource
+| Description
+
+| `/classifications`
+| Post a new rule or import rules from CSV.
+  If multiple rules are imported (to user-defined group) from a CSV file all existing rules are deleted.
+
+| `/classifications/classify`
+| Classify the given request based on all enabled rules.
+|===
+
+
+====== Examples
+
+.Create a single rule
+[source,bash]
+----
+curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"name": "http", "port":"80,8080", "protocols":["tcp", "udp"]}' http://localhost:8980/opennms/rest/classifications
+----
+
+.Response
+[source,text]
+----
+HTTP/1.1 201 Created
+Date: Thu, 08 Feb 2018 14:44:27 GMT
+Location: http://localhost:8980/opennms/rest/classifications/6616
+----
+
+.Verify classification engine (rule exists)
+[source,bash]
+----
+curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "ipAddress": "192.168.0.1", "port" :"80"}' http://localhost:8980/opennms/rest/classifications/classify
+----
+
+.Response
+[source,javascript]
+----
+{
+  "classification":"http"
+}
+----
+
+.Verify classification engine (no rule exists)
+[source,bash]
+----
+curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "ipAddress": "192.168.0.1", "port" :"8980"}' http://localhost:8980/opennms/rest/classifications/classify
+----
+
+.Response
+[source,bash]
+----
+HTTP/1.1 204 No Content
+----
+
+
+.Import rules from CSV
+[source,bash]
+----
+curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'name;ipAddress;port;protocol\nOpenNMS;;8980;tcp,udp\n' http://localhost:8980/opennms/rest/classifications\?hasHeader\=true
+----
+
+.Response
+[source,javascript]
+----
+HTTP/1.1 204 No Content
+----
+
+.Import rules from CSV (data with errors)
+[source,bash]
+----
+curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'OpenNMS;;INCORRECT;tcp,udp\nhttp;;80,8080;ULF' http://localhost:8980/opennms/rest/classifications\?hasHeader\=false
+----
+
+.Response
+[source,javascript]
+----
+{
+    "errors": {
+        "1": {
+            "context": "port",
+            "key": "rule.port.definition.invalid",
+            "message": "Please provide a valid port definition. Allowed values are numbers between 0 and 65536. A range can be provided, e.g. \"4000-5000\", multiple values are allowed, e.g. \"80,8080\""
+        },
+        "2": {
+            "context": "protocol",
+            "key": "rule.protocol.doesnotexist",
+            "message": "The defined protocol 'ULF' does not exist"
+        }
+    },
+    "success": false
+}
+----
+
+===== PUTs (Updating Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource
+| Description
+
+| `/classifications/{id}`
+| Update a rule identified by `{id}`.
+  The id of the rule cannot be changed.
+
+| `/groups/{id}`
+| Retrieve the rule identified by `{id}`.
+
+| `/classifications/groups`
+| Update a group.
+  At the moment, only the enabled property can be changed
+|===
+
+
+===== DELETEs (Deleting Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource
+| Description
+
+| `/classifications?groupId={groupId}`
+| Deletes all rules of a given group.
+
+| `/groups/{id}`
+| Delete the given group and all it's containing rules.
+
+|===
