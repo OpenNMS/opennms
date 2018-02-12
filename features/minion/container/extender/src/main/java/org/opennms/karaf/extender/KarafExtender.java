@@ -55,6 +55,9 @@ import org.apache.karaf.features.FeaturesService.Option;
 import org.ops4j.pax.url.mvn.MavenResolver;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +69,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
+@Component
 public class KarafExtender {
     private static final Logger LOG = LoggerFactory.getLogger(KarafExtender.class);
     private static final String PAX_MVN_PID = "org.ops4j.pax.url.mvn";
@@ -84,6 +88,7 @@ public class KarafExtender {
     private MavenResolver m_mavenResolver;
     private FeaturesService m_featuresService;
 
+    @Activate
     public void init() throws InterruptedException {
         Objects.requireNonNull(m_configurationAdmin, "configurationAdmin");
         Objects.requireNonNull(m_mavenResolver, "mavenResolver");
@@ -335,14 +340,17 @@ public class KarafExtender {
             .collect(Collectors.toList());
     }
 
+    @Reference
     public void setConfigurationAdmin(ConfigurationAdmin configurationAdmin) {
         m_configurationAdmin = configurationAdmin;
     }
 
+    @Reference
     public void setMavenResolver(MavenResolver mavenResolver) {
         m_mavenResolver = mavenResolver;
     }
 
+    @Reference
     public void setFeaturesService(FeaturesService featuresService) {
         m_featuresService = featuresService;
     }

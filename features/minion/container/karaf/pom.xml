@@ -72,6 +72,9 @@
                         <feature>service</feature>
                         <feature>system</feature>
 
+                        <!-- OPENNMS: karaf-extender relies on scr -->
+                        <feature>scr</feature>
+
                         <!-- OPENNMS: Add our enhancements to the container -->
                         <feature>karaf-extender</feature>
                         <feature>scv</feature>

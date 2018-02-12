@@ -18,6 +18,12 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <!-- Use OSGI Declarative Services -->
+                        <Service-Component>*</Service-Component>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
