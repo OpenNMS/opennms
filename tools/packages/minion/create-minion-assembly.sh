@@ -5,7 +5,7 @@ export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
 export OPTS_SKIP_TARBALL="-Dbuild.skip.tarball=true"
 export OPTS_ASSEMBLIES="-Passemblies"
 export OPTS_PROFILES="-Prun-expensive-tasks"
-export COMPILE_PROJECTS="org.opennms.features.minion.container:karaf,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository,org.opennms.features.minion:container-parent,org.opennms.features.minion:core-parent,org.opennms.features.minion:org.opennms.features.minion.heartbeat,org.opennms.features.minion:repository,org.opennms.features.minion:shell"
+export COMPILE_PROJECTS="org.opennms.features.minion.container:karaf,org.opennms.features.minion:core-repository,org.opennms.features.minion:container-parent,org.opennms.features.minion:core-parent,org.opennms.features.minion:org.opennms.features.minion.heartbeat,org.opennms.features.minion:repository,org.opennms.features.minion:shell"
 export ASSEMBLY_PROJECTS=":org.opennms.assemblies.minion"
 
 OPTS_ENABLE_SNAPSHOTS=""
