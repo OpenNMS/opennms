@@ -141,7 +141,7 @@
             };
             $scope.refresh();
         }])
-        .controller('ClassificationGroupController', ['$scope', '$stateParams', '$uibModal', '$log', 'ClassificationRuleService', 'ClassificationGroupService', function($scope, $stateParams, $uibModal, $log, ClassificationRuleService, ClassificationGroupService) {
+        .controller('ClassificationGroupController', ['$scope', '$stateParams', '$uibModal', '$log', '$http', '$window','ClassificationRuleService', 'ClassificationGroupService', function($scope, $stateParams, $uibModal, $log, $http, $window,ClassificationRuleService, ClassificationGroupService) {
             // Defaults
             $scope.rules = [];
             $scope.query = {
@@ -156,8 +156,19 @@
             $scope.findGroup = function(groupId) {
                 return ClassificationGroupService.get({id: groupId}, function(response) {
                     $scope.group = response;
-                    $scope.csv_link = 'rest/classifications/groups/' + $scope.group.id;
                     $scope.refresh();
+                });
+            };
+            $scope.download = function() {
+                return $http({
+                    method: 'GET',
+                    url: 'rest/classifications/groups/' + $scope.group.id,
+                    headers: {
+                        'Accept': 'text/comma-separated-values'
+                    }
+                }).then(function(response) {
+                    var uri = 'data:text/csv;charset=UTF-8,' + encodeURIComponent(response.data);
+                    $window.location = uri;
                 });
             };
 
