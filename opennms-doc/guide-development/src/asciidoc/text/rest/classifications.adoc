@@ -1,6 +1,6 @@
-==== Classification API
+==== Flow Classification API
 
-The _Classification API_ can be used to update, create or delete classification rules.
+The _Flow Classification API_ can be used to update, create or delete flow classification rules.
 
 NOTE: If not otherwise specified the `Content-Type` of the response is `application/json`.
 
