@@ -455,6 +455,11 @@
       <!-- Missing dependency of activemq-client -->
       <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
 
+      <conditional>
+        <condition>gemini-blueprint</condition>
+        <feature>opennms-icmp-best</feature>
+      </conditional>
+
       <bundle>mvn:org.opennms.core/org.opennms.core.daemon/${project.version}</bundle>
     </feature>
 

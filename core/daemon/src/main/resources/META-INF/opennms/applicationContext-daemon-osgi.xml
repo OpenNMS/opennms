@@ -10,4 +10,7 @@
   <!-- Import the ServiceRegistry service into Spring -->
   <osgi:reference id="serviceRegistry" interface="org.opennms.core.soa.ServiceRegistry"/>
 
+  <bean id="pingerFactory" class="org.opennms.netmgt.icmp.best.BestMatchPingerFactory" />
+  <osgi:service interface="org.opennms.netmgt.icmp.PingerFactory" ref="pingerFactory" />
+
 </beans>
