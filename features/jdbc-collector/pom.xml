@@ -28,6 +28,7 @@
               org.opennms.netmgt.collection.adapters,
               *
             </Import-Package>
+            <DynamicImport-Package>*</DynamicImport-Package>
           </instructions>
         </configuration>
       </plugin>
