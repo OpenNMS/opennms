@@ -67,6 +67,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opennms.features.minion.container</groupId>
+            <artifactId>features</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.minion</groupId>
             <artifactId>core-impl</artifactId>
             <version>${project.version}</version>

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features name="minion-core-features" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 
+    <!-- Minion container features -->
+    <repository>mvn:org.opennms.features.minion.container/features/${project.version}/xml/features</repository>
+
     <!-- Apache ActiveMQ features -->
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
 
@@ -28,6 +31,7 @@
     </feature>
 
     <feature name="minion-jms" description="Minion :: Core :: JMS" version="${project.version}">
+        <feature>scv</feature>
         <feature>minion-core</feature>
         <feature>geronimo-jms-api</feature>
 
