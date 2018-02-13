@@ -117,6 +117,11 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 
     }
 
+    @Override
+    public boolean isReady() {
+        return getConfig().isEnabled();
+    }
+
     private ServiceAlarmNotification toServiceAlarms(List<NorthboundAlarm> alarms) {
 
         List<ServiceAlarm> serviceAlarms = new ArrayList<ServiceAlarm>(alarms.size());

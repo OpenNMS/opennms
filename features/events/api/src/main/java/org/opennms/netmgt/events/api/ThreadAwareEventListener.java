@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.events.api.annotations;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
+package org.opennms.netmgt.events.api;
 
 /**
- * Annotation that is used to denote methods on a class that act as event listener callbacks.
- * The {@link AnnotationBasedEventListenerAdapter} is used inside a Spring context to activate
- * classes that are {@link EventListener}-annotated by using its 
- * {@link AnnotationBasedEventListenerAdapter#setAnnotatedListener(Object)} method.
+ * Optional interface which can be implemented by event listeners (and
+ * annotated event listeners) in order to request the event callbacks
+ * to be invoked using multiple threads.
  *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
+ * If this interface is not present (and not threads are set in the case
+ * of an annotated listener), then the callbacks will be performed using
+ * a single thread.
+ *
+ * @author jwhite
  */
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface EventListener {
+public interface ThreadAwareEventListener {
 
-    String name();
-
-    String logPrefix() default "";
-
-    int threads() default 1;
+    int getNumThreads();
 
 }

@@ -18,7 +18,6 @@
 
   <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" >
     <property name="persister" ref="alarmPersister" />
-    <property name="northboundInterfaces" ref="northbounderList" />
   </bean>
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
