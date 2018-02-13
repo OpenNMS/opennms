@@ -46,6 +46,11 @@ public class RuleDTOBuilder {
         return this;
     }
 
+    public RuleDTOBuilder withIpAddress(String ipAddress) {
+        this.ruleDTO.setIpAddress(ipAddress);
+        return this;
+    }
+
     public RuleDTO build() {
         return ruleDTO;
     }
