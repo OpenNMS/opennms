@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
     http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd
 ">
 
@@ -138,7 +136,13 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karafVersion}</version>
+        <!-- Using 4.1.4 version because of bug in current opennms karaf 4.1.2 -->
+        <!-- KARAF-5311 NPE in karaf-maven-plugin 4.1.2 when specifying descriptor by file url -->
+        <version>4.1.4</version>
+
+        <!-- TODO reinstate ${karafVersion} when opennms moved to karaf 4.1.4 + -->
+        <!-- <version>${karafVersion}</version> -->
+
         <executions>
 
           <!-- generates repo which we can traverse to find product descriptor files -->
@@ -162,6 +166,7 @@
 
                 <!-- this descriptor is generated locally to include product descriptors where we don't want to parse the full feature -->
                 <descriptor>file:${project.build.directory}/temp-features/features.xml</descriptor>
+
               </descriptors>
               <features>
                 <!-- features you want to include -->
