@@ -1,0 +1,19 @@
+<div>
+
+<br/>
+<div class="form-group">
+  <label class="control-label" for="parentForeignSource">Parent Foreign Source</label>
+  <input class="form-control" type="text" id="parentForeignSource" name="parentForeignSource" placeholder="Parent Foreign Source (leave it blank to use the current requisition)" ng-model="node.parentForeignSource"/>
+</div>
+<div class="form-group" ng-show="node.parentNodeLabel == null || node.parentNodeLabel == ''">
+  <label class="control-label" for="parentForeignId">Parent Foreign ID</label>
+  <input class="form-control" type="text" id="parentForeignId" name="parentForeignId"
+         placeholder="Parent Foreign ID (use either this or Parent Node Label)" ng-model="node.parentForeignId"/>
+</div>
+<div class="form-group" ng-show="node.parentForeignId == null || node.parentForeignId == ''">
+  <label class="control-label" for="parentNodeLabel">Parent Node Label</label>
+  <input class="form-control" type="text" id="parentNodeLabel" name="parentNodeLabel"
+         placeholder="Parent Node Label (use either this or Parent Foreign ID)" ng-model="node.parentNodeLabel"/>
+</div>
+
+</div>

@@ -35,21 +35,6 @@
 	import="org.opennms.web.alarm.AlarmUtil"
 %>
 
-<script type="text/javascript">
-<!--
-function Blank_TextField_Validator()
-{
-  if(document.alarm_search.msgmatchany.value == "" && document.alarm_search.relativetime.value == 0)
-     {
-     alert("Please enter an alarm text query.");
-     document.alarm_search.msgmatchany.focus();
-     return false;
-     }
-  return true;
-}
--->
-</script>
-
 <form class="form-inline" name="alarm_search" action="alarm/query" method="get" onsubmit="return Blank_TextField_Validator()">
 	<div class="form-group">
 		<label for="msgmatchany">Alarm Text:&nbsp;</label><input class="form-control" type="text" id="msgmatchany" name="msgmatchany" />

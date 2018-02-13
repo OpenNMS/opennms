@@ -87,10 +87,9 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
     <jsp:param name="quiet" value="true" />
 </jsp:include>
 
-<script type='text/javascript' src='js/ipv6/ipv6.js'></script>
-<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>
-<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>
-<script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="ipaddress-js" />
+</jsp:include>
 
 <script type="text/javascript">
 function doAddSpecific(){

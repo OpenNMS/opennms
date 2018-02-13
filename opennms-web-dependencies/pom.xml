@@ -81,6 +81,10 @@
       <artifactId>opennms-web-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web-assets</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>

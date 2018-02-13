@@ -37,18 +37,13 @@
     <jsp:param name="title" value="<%= title %>" />
     <jsp:param name="headTitle" value="<%= title %>" />
     <jsp:param name="breadcrumb" value="<%= title %>" />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-route/angular-route.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap-checkbox/angular-bootstrap-checkbox.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="status/js/angular-status.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-loading-bar/build/loading-bar.js"></script>' />
 </jsp:include>
 
-<link rel='stylesheet' type='text/css' href='lib/angular-loading-bar/build/loading-bar.css' />
-<link rel="stylesheet" type="text/css" href="status/css/style.css" />
-<ng-include src="'status/views/<%= type %>.html'"></ng-include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="angular-status" />
+  <jsp:param name="asset-type" value="js" />
+</jsp:include>
+
+<onms-status-list type="<%= type %>"></onms-status-list>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

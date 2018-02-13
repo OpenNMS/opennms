@@ -51,11 +51,12 @@
 	}
 %>
 <%
-
+  final String baseHref = org.opennms.web.api.Util.calculateUrlBase(request);
   String mapImplementation = System.getProperty("gwt.maptype", "");
   String openlayersUrl = System.getProperty("gwt.openlayers.url", "");
   String openlayersAttribution = System.getProperty("gwt.openlayers.options.attribution", "");
   String apiKey = System.getProperty("gwt.apikey", "");
+  String linkSuffix = "?v=" + System.getProperty("version.display", "0.0.0");
 
 	if (openlayersAttribution != null) {
     	openlayersAttribution = StringEscapeUtils.escapeJavaScript(openlayersAttribution);
@@ -68,26 +69,7 @@
 <html>
 	<head>
 		<title>OpenNMS - Remote Monitor</title>
-		<link rel="stylesheet" type="text/css" href="styles.css" />
-		<script type="text/javascript">
-			window.mapImplementation = "<%= mapImplementation %>";
-			window.openlayersUrl = "<%= openlayersUrl %>";
-			window.openlayersAttribution = "<%= openlayersAttribution %>";
-		</script>
-		<% if (mapImplementation.equalsIgnoreCase("googlemaps")) { %>
-			<script src="<%= URLEncoder.encode("http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x" + apiKey, "UTF-8") %>"></script>
-		<% } else if (mapImplementation.equalsIgnoreCase("mapquest")) { %>
-			<script type="text/javascript" src="<%= URLEncoder.encode("http://btilelog.access.mapquest.com/tilelog/transaction?transaction=script&itk=true&v=5.3.s&ipkg=controls1" + apiKey, "UTF-8") %>"></script>
-			<script type="text/javascript" src="mapquest/debug/mqutils.js"></script>
-			<script type="text/javascript" src="mapquest/debug/mqobjects.js"></script>
-		<% } else if (mapImplementation.equalsIgnoreCase("openlayers")) { %>
-			<script type="text/javascript" src="opennms-openlayers.js"></script>
-			<script type="text/javascript" src="openlayers/OpenLayers.js"></script>
-		<% } %>
-		<%
-		if(isValidConfiguration()) { %>
-			<script type="text/javascript" language="javascript" src="RemotePollerMap.nocache.js"></script>
-		<%}%>
+
 	</head>
 	<body>
 		<% if(isValidConfiguration()) { %>
@@ -108,5 +90,29 @@
 				Please define the above properties in opennms.properties.<br/>
 			</div>
 		<% } %>
+
+		<script src="<%= baseHref %>assets/manifest.min.js<%= linkSuffix %>"></script>
+		<script src="<%= baseHref %>assets/remote-poller-gwt.min.js<%= linkSuffix %>"></script>
+		<link rel="stylesheet" type="text/css" href="<%= baseHref %>assets/remote-poller-gwt.css<%= linkSuffix %>">
+
+		<!-- <link rel="stylesheet" type="text/css" href="<%= baseHref %>assets/styles.css<%= linkSuffix %>" /> -->
+		<script type="text/javascript">
+			window.mapImplementation = "<%= mapImplementation %>";
+			window.openlayersUrl = "<%= openlayersUrl %>";
+			window.openlayersAttribution = "<%= openlayersAttribution %>";
+		</script>
+		<% if (mapImplementation.equalsIgnoreCase("googlemaps")) { %>
+			<script src="<%= URLEncoder.encode("http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x" + apiKey, "UTF-8") %>"></script>
+		<% } else if (mapImplementation.equalsIgnoreCase("mapquest")) { %>
+			<script type="text/javascript" src="<%= URLEncoder.encode("http://btilelog.access.mapquest.com/tilelog/transaction?transaction=script&itk=true&v=5.3.s&ipkg=controls1" + apiKey, "UTF-8") %>"></script>
+			<script type="text/javascript" src="mapquest/debug/mqutils.js"></script>
+			<script type="text/javascript" src="mapquest/debug/mqobjects.js"></script>
+		<% } else if (mapImplementation.equalsIgnoreCase("openlayers")) { %>
+			<script type="text/javascript" src="<%= baseHref %>assets/legacy/openlayers-2.10/OpenLayers.js"></script>
+		<% } %>
+		<%
+		if(isValidConfiguration()) { %>
+			<script type="text/javascript" language="javascript" src="RemotePollerMap.nocache.js"></script>
+		<%}%>
 	</body>
 </html>

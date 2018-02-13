@@ -32,7 +32,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/opennms-trendline.css" />
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="opennms-trendline" />
+</jsp:include>
 
 <div class="alert alert-trend" role="alert">
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -71,8 +73,5 @@
 </div>
 
 <script type="text/javascript">
-    require(['jquery', 'jquery-sparkline'], function( $ ) {
-        $('.sparkline-${trendDefinition.name}').sparkline('html', { enableTagOptions: true });
-    });
+    $('.sparkline-${trendDefinition.name}').sparkline('html', { enableTagOptions: true });
 </script>
-

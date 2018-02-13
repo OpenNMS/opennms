@@ -3,10 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
         >
 
@@ -682,4 +684,16 @@
            <property name="successView" value="processed" />
          </bean>
      -->
+
+    <mvc:default-servlet-handler />
+
+    <mvc:resources mapping="/assets/**" location="/assets/">
+        <mvc:resource-chain resource-cache="true">
+            <mvc:resolvers>
+                <ref bean="assetLocator" />
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+
+    <mvc:annotation-driven/>
 </beans>

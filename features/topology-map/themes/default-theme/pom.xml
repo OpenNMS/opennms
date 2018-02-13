@@ -20,68 +20,30 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/java</directory>
+                <directory>src/main/filtered</directory>
+		<filtering>true</filtering>
             </resource>
         </resources>
         
         <plugins>
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-d3</id>
-                        <phase>validate</phase>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>create</goal>
                         </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/javascript/VAADIN/themes/topo_default/js</outputDirectory>
-                             <resources>
-                                 <resource>
-                                     <directory>../../../../opennms-webapp/src/main/webapp/lib/d3</directory>
-                                     <includes>
-                                        <include>d3.js</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-leaflet</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/javascript/VAADIN/themes/topo_default/leaflet</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>../../../../opennms-webapp/src/main/webapp/lib/leaflet/dist</directory>
-                                    <includes>
-                                        <include>leaflet-src.js</include>
-                                        <include>leaflet.css</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-ionicons</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/javascript/VAADIN/themes/topo_default/ionicons</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>../../../../opennms-webapp/src/main/webapp/lib/ionicons</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <scmDirectory>../../../..</scmDirectory>
+                    <shortRevisionLength>8</shortRevisionLength>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                    <revisionOnScmFailure>0</revisionOnScmFailure>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -95,8 +57,7 @@
                         <Fragment-Host>com.vaadin.themes;bundle-version=${vaadinVersion}</Fragment-Host>
                         <Include-Resource>
                           {maven-resources},
-                          {maven-dependencies},
-                          target/javascript
+                          {maven-dependencies}
                         </Include-Resource>
                     </instructions>
                 </configuration>

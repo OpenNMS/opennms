@@ -48,13 +48,11 @@
     <c:param name="scrollSpy" value="#results-sidebar" />
     <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
     <c:param name="renderGraphs" value="true" />
-
-    <c:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
-    <c:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-    <c:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-    <c:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-    <c:param name="script" value='<script type="text/javascript" src="js/onms-ksc/add-to-ksc.js"></script>' />
 </c:import>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="add-to-ksc" />
+</jsp:include>
 
 <div id="graph-results">
 
@@ -340,10 +338,9 @@
         }
     </script>
 
-    <script src="graph/cropper/lib/prototype.js" type="text/javascript"></script>      
-    <script src="graph/cropper/lib/scriptaculous.js" type="text/javascript"></script>
-    <script src="graph/cropper/cropper.js" type="text/javascript"></script>
-    <script src="graph/cropper/zoom.js" type="text/javascript"></script>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+        <jsp:param name="asset" value="cropper-js" />
+    </jsp:include>
 
     <script type="text/javascript">
     var myCropper; // zoom.js expects this global

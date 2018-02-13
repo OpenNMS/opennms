@@ -1,0 +1,4 @@
+node_modules/*
+target/*
+src/main/assets/js/lib/3rdparty/*
+src/test/*
