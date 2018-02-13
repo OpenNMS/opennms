@@ -1,3 +1,4 @@
+<%@page language="java" contentType="text/html" session="true"  %>
 <%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
@@ -27,11 +28,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
-
-<%@page language="java" contentType="text/html" session="true"  %>
-
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
+--%><jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
 	<jsp:param name="useionicons" value="true" />
 </jsp:include>

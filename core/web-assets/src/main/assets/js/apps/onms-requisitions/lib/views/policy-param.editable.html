@@ -1,0 +1,23 @@
+<div>
+
+<div class="form-group" ng-class="{ 'has-error' : paramForm.paramName.$invalid }">
+  <input required class="form-control" type="text" name="paramName"
+          placeholder="Parameter Name (hit space bar to see the options, and choose one)"
+          ng-model="parameter.key"
+          typeahead-min-length="0" typeahead-editable="false"
+          uib-typeahead="param for param in getOptionalParameters() | filter:$viewValue"></input>
+  <p ng-show="paramForm.paramName.$invalid" class="help-block">Parameter name is required.</p>
+</div>
+<div class="form-group" ng-class="{ 'has-error' : paramForm.paramValue.$invalid }">
+  <div class="input-group">
+    <input class="form-control" type="text" name="paramValue" placeholder="Parameter Value" ng-model="parameter.value" required></input>
+    <span class="input-group-btn">
+      <button ctype="button" lass="btn btn-default" ng-click="removeParameter($index)">
+        <span class="glyphicon glyphicon-trash"></span>
+      </button>
+    </span>
+  </div>
+  <p ng-show="paramForm.paramValue.$invalid" class="help-block">Parameter value is required.</p>
+</div>
+
+</div>

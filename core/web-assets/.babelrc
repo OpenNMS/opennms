@@ -1,0 +1,34 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "browsers": [ "last 2 versions", "safari >= 7", "> 5%" ]
+      },
+      "exclude": ["transform-es2015-modules-commonjs"],
+      "modules": "umd"
+    }]
+  ],
+  "plugins": [
+    "angularjs-annotate",
+    ["resolver", {
+      "resolveDirs": [
+        "src/main/assets/modules",
+        "src/main/assets/js",
+        "src/main/assets/style",
+        "node_modules"
+      ]
+      }],
+    ["transform-runtime", {
+      helpers: false,
+      polyfill: false,
+      regenerator: true
+      }],
+    "transform-class-properties",
+    "transform-class-properties",
+    "transform-es2015-destructuring",
+    "transform-es2015-for-of",
+    "transform-object-rest-spread",
+    "transform-regenerator",
+    "syntax-async-functions",
+  ]
+}

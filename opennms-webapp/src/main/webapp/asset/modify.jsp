@@ -33,18 +33,21 @@
 <% pageContext.setAttribute("nodeId", request.getParameter("node")); %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="norequirejs" value="true" />
   <jsp:param name="title" value="Modify Asset" />
   <jsp:param name="headTitle" value="Modify" />
   <jsp:param name="headTitle" value="Asset" />
   <jsp:param name="breadcrumb" value="<a href ='asset/index.jsp'>Assets</a>" />
   <jsp:param name="breadcrumb" value="Modify" />
-  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/bootbox/bootbox.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/onms-assets/app.js"></script>' />
+</jsp:include>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="jquery-ui-js" />
+</jsp:include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="bootbox-js" />
+</jsp:include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="onms-assets" />
 </jsp:include>
 
 <%
@@ -98,7 +101,7 @@
                         <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"></textarea>
                         <%-- Date fields with Popup Picker --%>
                         <p class="input-group" ng-if="field.type=='date'">
-                          <input type="date" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open" ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}" />
+                          <input type="text" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open" ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}" />
                           <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="field.open=true"><i class="glyphicon glyphicon-calendar"></i></button>
                           </span>

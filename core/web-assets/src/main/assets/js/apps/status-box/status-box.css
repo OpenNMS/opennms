@@ -1,0 +1,21 @@
+@import "~c3/c3.css";
+
+#chart-content {
+}
+
+.c3 .c3-chart-arc path {
+    stroke-width: 0px;
+}
+
+.row-centered {
+    text-align:center;
+}
+
+.col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}

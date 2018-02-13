@@ -27,12 +27,6 @@
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>org/opennms/features/vaadin/surveillanceviews/internal/gwt/public/**</include>
-                </includes>
-            </resource>
         </resources>
         <plugins>
 
