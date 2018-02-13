@@ -103,6 +103,16 @@ The following configuration properties can be set:
 | optional
 | `500`
 
+| _connTimeout_
+| Defines the connection timeout in ms.
+| optional
+| `5000`
+
+| _readTimeout_
+| Defines the read timeout in ms.
+| optional
+| `30000`
+
 | _settings.index.number_of_shards_
 | The number of primary shards that an index should have. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
 | optional
