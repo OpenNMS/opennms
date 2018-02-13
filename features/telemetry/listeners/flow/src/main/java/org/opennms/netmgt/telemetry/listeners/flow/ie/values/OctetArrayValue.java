@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 import com.google.common.base.MoreObjects;
 
@@ -67,7 +67,7 @@ public class OctetArrayValue extends Value<byte[]> {
     public static InformationElementDatabase.ValueParserFactory parserWithLimits(final int minimum, final int maximum) {
         return (name, semantics) -> new InformationElement() {
             @Override
-            public Value<?> parse(TemplateManager.TemplateResolver templateResolver, ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(Session.Resolver resolver, ByteBuffer buffer) throws InvalidPacketException {
                 return new OctetArrayValue(name, semantics, bytes(buffer, buffer.remaining()));
             }
 

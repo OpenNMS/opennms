@@ -28,13 +28,64 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.session;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
 
-public class TcpSession implements TemplateManager {
+public class TcpSession implements Session {
+    private final class Resolver implements Session.Resolver {
+        private final long observationDomainId;
+
+        private Resolver(final long observationDomainId) {
+            this.observationDomainId = observationDomainId;
+        }
+
+        @Override
+        public Optional<Template> lookupTemplate(final int templateId) {
+            final Key key = new Key(this.observationDomainId, templateId);
+            return Optional.ofNullable(TcpSession.this.templates.get(key));
+        }
+
+        @Override
+        public List<Value<?>> lookupOptions(final List<Value<?>> values) {
+            final LinkedHashMap<String, Value<?>> options = new LinkedHashMap();
+
+            final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
+
+            for (final Map.Entry<Key, Map<Set<Value<?>>, List<Value<?>>>> e : TcpSession.this.options.entrySet()) {
+                final Template template = this.lookupTemplate(e.getKey().templateId).get();
+
+                final Set<String> scopes = template.scopes.stream().map(Scope::getName).collect(Collectors.toSet());
+
+                if (scoped.containsAll(scopes)) {
+                    // Found option template where scoped fields is subset of actual data fields
+
+                    final Set<Value<?>> scopeValues = values.stream()
+                            .filter(s -> scopes.contains(s.getName()))
+                            .collect(Collectors.toSet());
+
+                    for (final Value<?> value : e.getValue().getOrDefault(scopeValues, Collections.emptyList())) {
+                        options.put(value.getName(), value);
+                    }
+                }
+            }
+
+            return new ArrayList(options.values());
+        }
+    }
 
     private final static class Key {
         public final long observationDomainId;
@@ -62,28 +113,42 @@ public class TcpSession implements TemplateManager {
         }
     }
 
-    private final Map<Key, Template> templates = new HashMap<>();
+    private final Map<Key, Template> templates = Maps.newHashMap();
+    private final Map<Key, Map<Set<Value<?>>, List<Value<?>>>> options = Maps.newHashMap();
 
     public TcpSession() {
     }
 
     @Override
-    public void add(final long observationDomainId, final Template template) {
+    public void addTemplate(final long observationDomainId, final Template template) {
         this.templates.put(new Key(observationDomainId, template.id), template);
     }
 
     @Override
-    public void remove(final long observationDomainId, final int templateId) {
+    public void removeTemplate(final long observationDomainId, final int templateId) {
         this.templates.remove(new Key(observationDomainId, templateId));
     }
 
     @Override
-    public void removeAll(final long observationDomainId, final Template.Type type) {
-        this.templates.entrySet().removeIf(e -> e.getKey().observationDomainId == observationDomainId && e.getValue().type() == type);
+    public void removeAllTemplate(final long observationDomainId, final Template.Type type) {
+        this.templates.entrySet().removeIf(e -> e.getKey().observationDomainId == observationDomainId && e.getValue().type == type);
     }
 
     @Override
-    public TemplateResolver getResolver(final long observationDomainId) {
-        return templateId -> Optional.ofNullable(this.templates.get(new Key(observationDomainId, templateId)));
+    public void addOptions(final long observationDomainId,
+                           final int templateId,
+                           final Collection<Value<?>> scopes,
+                           final List<Value<?>> values) {
+        if (scopes.isEmpty()) {
+            return;
+        }
+
+        final Key key = new Key(observationDomainId, templateId);
+        this.options.computeIfAbsent(key, (k) -> new HashMap()).put(new HashSet(scopes), values);
+    }
+
+    @Override
+    public Session.Resolver getResolver(final long observationDomainId) {
+        return new Resolver(observationDomainId);
     }
 }

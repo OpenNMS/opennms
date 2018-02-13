@@ -35,16 +35,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
-public final class OptionsTemplateSet extends Set<OptionsTemplateRecord> {
+public final class OptionsTemplateSet extends FlowSet<OptionsTemplateRecord> {
 
     public final List<OptionsTemplateRecord> records;
 
     public OptionsTemplateSet(final Packet packet,
-                              final SetHeader header,
+                              final FlowSetHeader header,
                               final ByteBuffer buffer) throws InvalidPacketException {
         super(packet, header);
 

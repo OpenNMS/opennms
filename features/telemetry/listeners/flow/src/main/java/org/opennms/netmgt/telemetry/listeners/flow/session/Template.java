@@ -36,7 +36,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
 
 public final class Template implements Iterable<Field> {
 
@@ -46,20 +45,19 @@ public final class Template implements Iterable<Field> {
     }
 
     public final int id; //uint16
+    public final Type type;
 
-    public final List<Field> scopes;
+    public final List<Scope> scopes;
     public final List<Field> fields;
 
     private Template(final int id,
-                     final List<Field> scopes,
+                     final Type type,
+                     final List<Scope> scopes,
                      final List<Field> fields) {
         this.id = id;
+        this.type = Objects.requireNonNull(type);
         this.scopes = Objects.requireNonNull(scopes);
         this.fields = Objects.requireNonNull(fields);
-    }
-
-    public Type type() {
-        return this.scopes.isEmpty() ? Type.TEMPLATE : Type.OPTIONS_TEMPLATE;
     }
 
     public int count() {
@@ -68,7 +66,7 @@ public final class Template implements Iterable<Field> {
 
     @Override
     public Iterator<Field> iterator() {
-        return Iterators.concat(this.scopes.iterator(), this.fields.iterator());
+        return this.fields.iterator();
     }
 
     public Stream<Field> stream() {
@@ -77,33 +75,38 @@ public final class Template implements Iterable<Field> {
 
     public static class Builder {
         private final int id;
+        private final Type type;
 
-        private List<Field> scopeFields = new LinkedList<>();
-        private List<Field> fields = new LinkedList<>();
+        private List<Scope> scopes = new LinkedList();
+        private List<Field> fields = new LinkedList();
 
-        private Builder(final int id) {
+        private Builder(final int id,
+                        final Type type) {
             this.id = id;
+            this.type = Objects.requireNonNull(type);
         }
 
-        public Builder withScopeFields(final List<Field> scopeFields) {
-            this.scopeFields = scopeFields;
+        public Builder withScopes(final List<? extends Scope> scopes) {
+            assert this.type == Type.OPTIONS_TEMPLATE;
+
+            this.scopes.addAll(scopes);
             return this;
         }
 
-        public Builder withFields(final List<Field> fields) {
-            this.fields = fields;
+        public Builder withFields(final List<? extends Field> fields) {
+            this.fields.addAll(fields);
             return this;
         }
 
         public Template build() {
-            Preconditions.checkNotNull(this.scopeFields);
+            Preconditions.checkNotNull(this.scopes);
             Preconditions.checkNotNull(this.fields);
 
-            return new Template(this.id, this.scopeFields, this.fields);
+            return new Template(this.id, this.type, this.scopes, this.fields);
         }
     }
 
-    public static Builder builder(final int id) {
-        return new Builder(id);
+    public static Builder builder(final int id, final Type type) {
+        return new Builder(id, type);
     }
 }

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.session;
 
-import java.util.function.Predicate;
-
-public interface Scope<R> extends Predicate<R> {
+public interface Scope extends Field {
+    String getName();
 }

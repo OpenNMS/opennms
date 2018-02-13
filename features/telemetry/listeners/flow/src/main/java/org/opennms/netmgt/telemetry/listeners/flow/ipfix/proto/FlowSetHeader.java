@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
 import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
 
@@ -36,23 +36,23 @@ import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public final class SetHeader {
+public final class FlowSetHeader {
 
     /*
-     0                   1                   2                   3
-     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |       FlowSet ID = 1          |          Length               |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |          Set ID               |          Length               |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
 
-    public static final int TEMPLATE_SET_ID = 0;
-    public static final int OPTIONS_TEMPLATE_SET_ID = 1;
+    public static final int TEMPLATE_SET_ID = 2;
+    public static final int OPTIONS_TEMPLATE_SET_ID = 3;
 
     public enum Type {
-        TEMPLATE_FLOWSET,
-        OPTIONS_TEMPLATE_FLOWSET,
-        DATA_FLOWSET
+        TEMPLATE_SET,
+        OPTIONS_TEMPLATE_SET,
+        DATA_SET
     }
 
     public static final int SIZE = 4;
@@ -60,9 +60,11 @@ public final class SetHeader {
     public final int setId; // uint16
     public final int length; // uint16
 
-    public SetHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public FlowSetHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.setId = uint16(buffer);
         if (this.setId < 256 && this.setId != TEMPLATE_SET_ID && this.setId != OPTIONS_TEMPLATE_SET_ID) {
+            // The Set ID values of 0 and 1 are not used, for historical reasons [RFC3954], values from 4 to 255 are
+            // reserved for future use.
             throw new InvalidPacketException(buffer, "Invalid set ID: %d", this.setId);
         }
 
@@ -70,9 +72,9 @@ public final class SetHeader {
     }
 
     public Type getType() {
-        if (this.setId == TEMPLATE_SET_ID) return Type.TEMPLATE_FLOWSET;
-        if (this.setId == OPTIONS_TEMPLATE_SET_ID) return Type.OPTIONS_TEMPLATE_FLOWSET;
-        if (this.setId >= 256) return Type.DATA_FLOWSET;
+        if (this.setId == TEMPLATE_SET_ID) return Type.TEMPLATE_SET;
+        if (this.setId == OPTIONS_TEMPLATE_SET_ID) return Type.OPTIONS_TEMPLATE_SET;
+        if (this.setId >= 256) return Type.DATA_SET;
 
         return null;
     }
@@ -80,7 +82,7 @@ public final class SetHeader {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("flowSetId", setId)
+                .add("setId", setId)
                 .add("length", length)
                 .toString();
     }

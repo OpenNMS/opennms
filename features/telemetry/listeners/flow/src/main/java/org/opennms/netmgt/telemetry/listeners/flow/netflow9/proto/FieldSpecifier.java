@@ -37,15 +37,16 @@ import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UndeclaredValue;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementField;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 
-public final class FieldSpecifier {
+public final class FieldSpecifier implements Field {
     private static final Logger LOG = LoggerFactory.getLogger(FieldSpecifier.class);
 
     /*
@@ -61,27 +62,35 @@ public final class FieldSpecifier {
     public final int fieldType; // uint16
     public final int fieldLength; // uint16
 
-    public final Field specifier;
+    public final InformationElement informationElement;
 
     public FieldSpecifier(final ByteBuffer buffer) throws InvalidPacketException {
         this.fieldType = uint16(buffer);
         this.fieldLength = uint16(buffer);
 
-        final InformationElement informationElement = InformationElementDatabase.instance
+        this.informationElement = InformationElementDatabase.instance
                 .lookup(Protocol.NETFLOW9, this.fieldType).orElseGet(() -> {
                     LOG.warn("Undeclared field type: {}", UndeclaredValue.nameFor(Optional.empty(), this.fieldType));
                     return UndeclaredValue.parser(this.fieldType);
                 });
 
-        if (this.fieldLength > informationElement.getMaximumFieldLength() || this.fieldLength < informationElement.getMinimumFieldLength()) {
+        if (this.fieldLength > this.informationElement.getMaximumFieldLength() || this.fieldLength < this.informationElement.getMinimumFieldLength()) {
             throw new InvalidPacketException(buffer, "Template field '%s' has illegal size: %d (min=%d, max=%d)",
-                    informationElement.getName(),
+                    this.informationElement.getName(),
                     this.fieldLength,
-                    informationElement.getMinimumFieldLength(),
-                    informationElement.getMaximumFieldLength());
+                    this.informationElement.getMinimumFieldLength(),
+                    this.informationElement.getMaximumFieldLength());
         }
+    }
 
-        this.specifier = new InformationElementField(this.fieldLength, informationElement);
+    @Override
+    public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException {
+        return this.informationElement.parse(resolver, buffer);
+    }
+
+    @Override
+    public int length() {
+        return this.fieldLength;
     }
 
     @Override

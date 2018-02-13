@@ -38,11 +38,11 @@ import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public class OptionsTemplateSet extends Set<OptionsTemplateRecord> {
+public class OptionsTemplateSet extends FlowSet<OptionsTemplateRecord> {
     public final List<OptionsTemplateRecord> records;
 
     public OptionsTemplateSet(final Packet packet,
-                              final SetHeader header,
+                              final FlowSetHeader header,
                               final ByteBuffer buffer) throws InvalidPacketException {
         super(packet, header);
 

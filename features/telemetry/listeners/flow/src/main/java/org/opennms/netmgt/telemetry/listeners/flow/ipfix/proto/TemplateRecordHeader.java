@@ -53,7 +53,7 @@ public final class TemplateRecordHeader {
 
     public TemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.templateId = uint16(buffer);
-        if (this.templateId <= 255 && this.templateId != SetHeader.TEMPLATE_SET_ID) {
+        if (this.templateId <= 255 && this.templateId != FlowSetHeader.TEMPLATE_SET_ID) {
             // Since Template IDs are used as Set IDs in the Sets they describe
             throw new InvalidPacketException(buffer, "Invalid template ID: %d", this.templateId);
         }

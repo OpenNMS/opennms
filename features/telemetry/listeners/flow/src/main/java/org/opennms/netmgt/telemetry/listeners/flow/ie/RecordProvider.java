@@ -40,14 +40,14 @@ public interface RecordProvider {
         public final int recordCount;
         public final long sequenceNumber;
 
-        public final Iterable<Value> values;
+        public final Iterable<Value<?>> values;
 
         public Record(final long observationDomainId,
                       final long exportTime,
                       final int scopeFieldCount,
                       final int recordCount,
                       final long sequenceNumber,
-                      final Iterable<Value> values) {
+                      final Iterable<Value<?>> values) {
             this.observationDomainId = observationDomainId;
             this.exportTime = exportTime;
             this.scopeFieldCount = scopeFieldCount;

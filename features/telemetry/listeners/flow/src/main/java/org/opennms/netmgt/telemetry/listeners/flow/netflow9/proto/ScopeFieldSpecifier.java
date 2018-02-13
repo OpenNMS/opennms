@@ -31,7 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
@@ -39,64 +39,52 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Scope;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.primitives.UnsignedLong;
 
-public final class ScopeFieldSpecifier {
-    public enum ScopeFieldType {
-        SYSTEM(UnsignedValue.parserWith64Bit("SCOPE:SYSTEM", Optional.empty())),
-        INTERFACE(UnsignedValue.parserWith64Bit("SCOPE:INTERFACE", Optional.empty())),
-        LINE_CARD(UnsignedValue.parserWith64Bit("SCOPE:LINE_CARD", Optional.empty())),
-        CACHE(UnsignedValue.parserWith64Bit("SCOPE:CACHE", Optional.empty())),
-        TEMPLATE(UnsignedValue.parserWith64Bit("SCOPE:TEMPLATE", Optional.empty()));
+public final class ScopeFieldSpecifier implements Field, Scope {
 
-        public final InformationElement parser;
+    public static final String SCOPE_SYSTEM = "SCOPE:SYSTEM";
+    public static final String SCOPE_INTERFACE = "SCOPE:INTERFACE";
+    public static final String SCOPE_LINE_CARD = "SCOPE:LINE_CARD";
+    public static final String SCOPE_CACHE = "SCOPE:CACHE";
+    public static final String SCOPE_TEMPLATE = "SCOPE:TEMPLATE";
 
-        ScopeFieldType(final InformationElement parser) {
-            this.parser = parser;
-        }
-
-        public static ScopeFieldType from(final ByteBuffer buffer) throws InvalidPacketException {
-            final int type = uint16(buffer);
-            switch (type) {
-                case 0x0001:
-                    return ScopeFieldType.SYSTEM;
-                case 0x0002:
-                    return ScopeFieldType.INTERFACE;
-                case 0x0003:
-                    return ScopeFieldType.LINE_CARD;
-                case 0x0004:
-                    return ScopeFieldType.CACHE;
-                case 0x0005:
-                    return ScopeFieldType.TEMPLATE;
-                default:
-                    throw new InvalidPacketException(buffer, "Invalid scope field type: 0x%04X", type);
-            }
-        }
-    }
-
-    private static class ScopedField implements Field {
-        public final int length;
-        public final ScopeFieldType type;
-
-        private ScopedField(final int length,
-                            final ScopeFieldType type) {
-            this.length = length;
-            this.type = Objects.requireNonNull(type);
-        }
-
-        @Override
-        public int length() {
-            return this.length;
-        }
-
-        @Override
-        public Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
-                              final ByteBuffer buffer) throws InvalidPacketException {
-            return this.type.parser.parse(templateResolver, buffer);
-        }
-    }
+//    public enum ScopeFieldType {
+//        SYSTEM(UnsignedValue.parserWith64Bit(SCOPE_SYSTEM, Optional.empty())),
+//        INTERFACE(UnsignedValue.parserWith64Bit(SCOPE_INTERFACE, Optional.empty())),
+//        LINE_CARD(UnsignedValue.parserWith64Bit(SCOPE_LINE_CARD, Optional.empty())),
+//        CACHE(UnsignedValue.parserWith64Bit(SCOPE_CACHE, Optional.empty())),
+//        TEMPLATE(UnsignedValue.parserWith64Bit(SCOPE_TEMPLATE, Optional.empty()));
+//
+//        public final InformationElement parser;
+//
+//        ScopeFieldType(final InformationElement parser) {
+//            this.parser = parser;
+//        }
+//
+//        public static ScopeFieldType from(final ByteBuffer buffer) throws InvalidPacketException {
+//            final int type = uint16(buffer);
+//            switch (type) {
+//                case 0x0001:
+//                    return ScopeFieldType.SYSTEM;
+//                case 0x0002:
+//                    return ScopeFieldType.INTERFACE;
+//                case 0x0003:
+//                    return ScopeFieldType.LINE_CARD;
+//                case 0x0004:
+//                    return ScopeFieldType.CACHE;
+//                case 0x0005:
+//                    return ScopeFieldType.TEMPLATE;
+//                default:
+//                    throw new InvalidPacketException(buffer, "Invalid scope field type: 0x%04X", type);
+//            }
+//        }
+//    }
 
     /*
       0                   1                   2                   3
@@ -108,31 +96,73 @@ public final class ScopeFieldSpecifier {
 
     public final static int SIZE = 4;
 
-    public final ScopeFieldType scopeFieldType;
-    public final int scopeFieldLength; // uint16
+    public final int fieldType; // uint16
+    public final int fieldLength; // uint16
 
-    public final Field specifier;
+    public final InformationElement field;
 
     public ScopeFieldSpecifier(final ByteBuffer buffer) throws InvalidPacketException {
-        this.scopeFieldType = ScopeFieldType.from(buffer);
-        this.scopeFieldLength = uint16(buffer);
+        this.fieldType = uint16(buffer);
+        this.fieldLength = uint16(buffer);
 
-        if (this.scopeFieldLength > this.scopeFieldType.parser.getMaximumFieldLength() || this.scopeFieldLength < this.scopeFieldType.parser.getMinimumFieldLength()) {
+        this.field = from(this.fieldType)
+                .orElseThrow(() -> new InvalidPacketException(buffer, "Invalid scope field type: 0x%04X", this.fieldType));
+
+        if (this.fieldLength > this.field.getMaximumFieldLength() || this.fieldLength < this.field.getMinimumFieldLength()) {
             throw new InvalidPacketException(buffer, "Template scope field '%s' has illegal size: %d (min=%d, max=%d)",
-                    this.scopeFieldType.parser.getName(),
-                    this.scopeFieldLength,
-                    this.scopeFieldType.parser.getMinimumFieldLength(),
-                    this.scopeFieldType.parser.getMaximumFieldLength());
+                    this.field.getName(),
+                    this.fieldLength,
+                    this.field.getMinimumFieldLength(),
+                    this.field.getMaximumFieldLength());
         }
+    }
 
-        this.specifier = new ScopedField(this.scopeFieldLength, this.scopeFieldType);
+    @Override
+    public Value<?> parse(Session.Resolver resolver, ByteBuffer buffer) throws InvalidPacketException {
+        return this.field.parse(resolver, buffer);
+    }
+
+    @Override
+    public int length() {
+        return this.fieldLength;
+    }
+
+    @Override
+    public String getName() {
+        return this.field.getName();
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("scopeFieldType", this.scopeFieldType)
-                .add("scopeFieldLength", this.scopeFieldLength)
+                .add("scopeFieldType", this.fieldType)
+                .add("scopeFieldLength", this.fieldLength)
                 .toString();
+    }
+
+    private static Optional<InformationElement> from(final int fieldType) {
+        switch (fieldType) {
+            case 0x0001:
+                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_SYSTEM, Optional.empty()));
+            case 0x0002:
+                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_INTERFACE, Optional.empty()));
+            case 0x0003:
+                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_LINE_CARD, Optional.empty()));
+            case 0x0004:
+                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_CACHE, Optional.empty()));
+            case 0x0005:
+                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_TEMPLATE, Optional.empty()));
+            default:
+                return Optional.empty();
+        }
+    }
+
+    public static List<Value<?>> buildScopeValues(final DataRecord record) {
+        final ImmutableList.Builder<Value<?>> values = ImmutableList.builder();
+
+        values.add(new UnsignedValue(ScopeFieldSpecifier.SCOPE_SYSTEM, Optional.empty(), UnsignedLong.fromLongBits(record.set.packet.header.sourceId)));
+        values.add(new UnsignedValue(ScopeFieldSpecifier.SCOPE_TEMPLATE, Optional.empty(), UnsignedLong.fromLongBits(record.set.template.id)));
+
+        return values.build();
     }
 }

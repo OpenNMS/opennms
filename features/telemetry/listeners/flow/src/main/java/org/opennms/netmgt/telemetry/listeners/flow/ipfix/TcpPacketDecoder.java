@@ -36,7 +36,7 @@ import java.util.Objects;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Packet;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -46,14 +46,14 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 public class TcpPacketDecoder extends ByteToMessageDecoder {
     private final InetSocketAddress senderAddress;
     private final InetSocketAddress recipientAddress;
-    private final TemplateManager templateManager;
+    private final Session session;
 
     public TcpPacketDecoder(final InetSocketAddress senderAddress,
                             final InetSocketAddress recipientAddress,
-                            final TemplateManager templateManager) {
+                            final Session session) {
         this.senderAddress = Objects.requireNonNull(senderAddress);
         this.recipientAddress = Objects.requireNonNull(recipientAddress);
-        this.templateManager = Objects.requireNonNull(templateManager);
+        this.session = Objects.requireNonNull(session);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class TcpPacketDecoder extends ByteToMessageDecoder {
         }
 
         final ByteBuffer payloadBuffer = in.readSlice(header.length - Header.SIZE).nioBuffer();
-        final Packet packet = new Packet(this.templateManager, this.senderAddress, header, payloadBuffer);
+        final Packet packet = new Packet(this.session, this.senderAddress, header, payloadBuffer);
 
         return new DefaultAddressedEnvelope<>(packet, this.recipientAddress, this.senderAddress);
     }

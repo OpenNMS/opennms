@@ -36,6 +36,6 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 public interface Field {
     int length();
 
-    Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
+    Value<?> parse(final Session.Resolver resolver,
                    final ByteBuffer buffer) throws InvalidPacketException;
 }

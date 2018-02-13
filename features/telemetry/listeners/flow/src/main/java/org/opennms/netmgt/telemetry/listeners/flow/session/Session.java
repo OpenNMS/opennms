@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.scope;
+package org.opennms.netmgt.telemetry.listeners.flow.session;
 
-import java.util.function.Predicate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
-public class MeteringProcessIdScope implements Predicate<DataRecord> {
-    private static final Logger LOG = LoggerFactory.getLogger(MeteringProcessIdScope.class);
+public interface Session {
 
-    private final long meteringProcessId;
-
-    public MeteringProcessIdScope(final long meteringProcessId) {
-        this.meteringProcessId = meteringProcessId;
+    interface Resolver {
+        Optional<Template> lookupTemplate(final int templateId);
+        List<Value<?>> lookupOptions(final List<Value<?>> values);
     }
 
-    @Override
-    public boolean test(final DataRecord record) {
-        LOG.warn("Don't know how to handle scope: meteringProcessId - {}", this.meteringProcessId);
+    void addTemplate(final long observationDomainId, final Template template);
 
-        // TODO fooker: Implement
+    void removeTemplate(final long observationDomainId, final int templateId);
 
-        return true;
-    }
+    void removeAllTemplate(final long observationDomainId, final Template.Type type);
+
+    void addOptions(final long observationDomainId,
+                    final int templateId,
+                    final Collection<Value<?>> scopes,
+                    final List<Value<?>> values);
+
+    Resolver getResolver(final long observationDomainId);
+
 }

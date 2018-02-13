@@ -46,7 +46,7 @@ import org.junit.runners.Parameterized;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest {
@@ -86,7 +86,7 @@ public class BlackboxTest {
 
     @Test
     public void testFiles() throws Exception {
-        final TemplateManager templateManager = new TcpSession();
+        final Session session = new TcpSession();
 
         for (final String file : this.files) {
             try (final FileChannel channel = FileChannel.open(FOLDER.resolve(file))) {
@@ -96,7 +96,7 @@ public class BlackboxTest {
 
                 do {
                     final Header header = new Header(slice(buffer, Header.SIZE));
-                    final Packet packet = new Packet(templateManager, header, buffer);
+                    final Packet packet = new Packet(session, header, buffer);
                     assertThat(packet.header.versionNumber, is(0x0009));
                 } while (buffer.hasRemaining());
             }

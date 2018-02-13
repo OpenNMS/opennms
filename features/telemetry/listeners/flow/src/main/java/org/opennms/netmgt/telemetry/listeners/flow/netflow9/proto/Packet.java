@@ -40,15 +40,13 @@ import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 
-public final class Packet implements Iterable<Set<?>>, RecordProvider {
+public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
 
     /*
      +--------+-------------------------------------------+
@@ -66,7 +64,7 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
     public final List<OptionsTemplateSet> optionTemplateSets;
     public final List<DataSet> dataSets;
 
-    public Packet(final TemplateManager templateManager,
+    public Packet(final Session session,
                   final Header header,
                   final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
@@ -74,13 +72,13 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
         final List<TemplateSet> templateSets = new LinkedList<>();
         final List<OptionsTemplateSet> optionTemplateSets = new LinkedList<>();
         final List<DataSet> dataSets = new LinkedList<>();
-        while(buffer.hasRemaining()) {
+        while (buffer.hasRemaining()) {
             // We ignore header.counter here, because different exporters interpret it as flowset count or record count
 
-            final ByteBuffer headerBuffer = slice(buffer, org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.SetHeader.SIZE);
-            final SetHeader setHeader = new SetHeader(headerBuffer);
+            final ByteBuffer headerBuffer = slice(buffer, org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FlowSetHeader.SIZE);
+            final FlowSetHeader setHeader = new FlowSetHeader(headerBuffer);
 
-            final ByteBuffer payloadBuffer = slice(buffer, setHeader.length - SetHeader.SIZE);
+            final ByteBuffer payloadBuffer = slice(buffer, setHeader.length - FlowSetHeader.SIZE);
             switch (setHeader.getType()) {
                 case TEMPLATE_FLOWSET: {
                     final TemplateSet templateSet = new TemplateSet(this, setHeader, payloadBuffer);
@@ -88,19 +86,19 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                     for (final TemplateRecord record : templateSet) {
                         if (record.header.fieldCount == 0) {
                             // Empty template means revocation
-                            if (record.header.templateId == SetHeader.TEMPLATE_SET_ID) {
+                            if (record.header.templateId == FlowSetHeader.TEMPLATE_SET_ID) {
                                 // Remove all templates
-                                templateManager.removeAll(this.header.sourceId, Template.Type.TEMPLATE);
+                                session.removeAllTemplate(this.header.sourceId, Template.Type.TEMPLATE);
 
                             } else if (record.header.fieldCount == 0) {
                                 // Empty template means revocation
-                                templateManager.remove(this.header.sourceId, record.header.templateId);
+                                session.removeTemplate(this.header.sourceId, record.header.templateId);
                             }
 
                         } else {
-                            templateManager.add(this.header.sourceId,
-                                    Template.builder(record.header.templateId)
-                                            .withFields(Lists.transform(record.fields, f -> f.specifier))
+                            session.addTemplate(this.header.sourceId,
+                                    Template.builder(record.header.templateId, Template.Type.TEMPLATE)
+                                            .withFields(record.fields)
                                             .build());
                         }
                     }
@@ -113,10 +111,10 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                     final OptionsTemplateSet optionsTemplateSet = new OptionsTemplateSet(this, setHeader, payloadBuffer);
 
                     for (final OptionsTemplateRecord record : optionsTemplateSet) {
-                        templateManager.add(this.header.sourceId,
-                                Template.builder(record.header.templateId)
-                                        .withScopeFields(Lists.transform(record.scopeFields, f -> f.specifier))
-                                        .withFields(Lists.transform(record.fields, f -> f.specifier))
+                        session.addTemplate(this.header.sourceId,
+                                Template.builder(record.header.templateId, Template.Type.OPTIONS_TEMPLATE)
+                                        .withScopes(record.scopes)
+                                        .withFields(record.fields)
                                         .build());
                     }
 
@@ -125,8 +123,14 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                 }
 
                 case DATA_FLOWSET: {
-                    final TemplateManager.TemplateResolver templateResolver = templateManager.getResolver(header.sourceId);
-                    final DataSet dataSet = new DataSet(this, setHeader, templateResolver, payloadBuffer);
+                    final Session.Resolver resolver = session.getResolver(header.sourceId);
+                    final DataSet dataSet = new DataSet(this, setHeader, resolver, payloadBuffer);
+
+                    if (dataSet.template.type == Template.Type.OPTIONS_TEMPLATE) {
+                        for (final DataRecord record : dataSet) {
+                            session.addOptions(this.header.sourceId, dataSet.template.id, record.scopes, record.fields);
+                        }
+                    }
 
                     dataSets.add(dataSet);
                     break;
@@ -144,10 +148,10 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
     }
 
     @Override
-    public Iterator<Set<?>> iterator() {
+    public Iterator<FlowSet<?>> iterator() {
         return Iterators.concat(this.templateSets.iterator(),
-                                this.optionTemplateSets.iterator(),
-                                this.dataSets.iterator());
+                this.optionTemplateSets.iterator(),
+                this.dataSets.iterator());
     }
 
     @Override
@@ -164,7 +168,7 @@ public final class Packet implements Iterable<Set<?>>, RecordProvider {
                         r.template.scopes.size(),
                         recordCount,
                         this.header.sequenceNumber,
-                        Iterables.transform(r.fields, f -> f.value)
+                        r.fields
                 ));
     }
 

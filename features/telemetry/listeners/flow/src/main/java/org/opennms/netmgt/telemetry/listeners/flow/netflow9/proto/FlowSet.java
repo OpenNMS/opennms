@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix.scope;
+package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
-import java.util.function.Predicate;
+import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
-public class ExportingProcessIdScope implements Predicate<DataRecord> {
-    private static final Logger LOG = LoggerFactory.getLogger(ExportingProcessIdScope.class);
+public abstract class FlowSet<R extends Record> implements Iterable<R> {
+    public final Packet packet; // Enclosing packet
 
-    private final long exportingProcessId;
+    public final FlowSetHeader header;
 
-    public ExportingProcessIdScope(final long exportingProcessId) {
-        this.exportingProcessId = exportingProcessId;
-    }
-
-    @Override
-    public boolean test(final DataRecord record) {
-        LOG.warn("Don't know how to handle scope: exportingProcessId - {}", this.exportingProcessId);
-
-        // TODO fooker: Implement
-
-        return true;
+    public FlowSet(final Packet packet,
+                   final FlowSetHeader header) throws InvalidPacketException {
+        this.packet = Objects.requireNonNull(packet);
+        this.header = Objects.requireNonNull(header);
     }
 }

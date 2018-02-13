@@ -37,34 +37,34 @@ import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 import com.google.common.base.MoreObjects;
 
-public class DataSet extends Set<DataRecord> {
-    private final TemplateManager.TemplateResolver templateResolver;
+public class DataSet extends FlowSet<DataRecord> {
+    private final Session.Resolver resolver;
 
     public final Template template;
 
     public final List<DataRecord> records;
 
     public DataSet(final Packet packet,
-                   final SetHeader header,
-                   final TemplateManager.TemplateResolver templateResolver,
+                   final FlowSetHeader header,
+                   final Session.Resolver resolver,
                    final ByteBuffer buffer) throws InvalidPacketException {
         super(packet, header);
 
-        this.templateResolver = Objects.requireNonNull(templateResolver);
-        this.template = this.templateResolver.lookup(this.header.setId)
+        this.resolver = Objects.requireNonNull(resolver);
+        this.template = this.resolver.lookupTemplate(this.header.setId)
                 .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", this.header.setId));
 
         // For variable length fields we assume at least the length value (1 byte) to be present
         final int minimumRecordLength = this.template.stream()
-                .mapToInt(f -> f.length() != FieldValue.VARIABLE_SIZED ? f.length() : 1).sum();
+                .mapToInt(f -> f.length() != DataRecord.VARIABLE_SIZED ? f.length() : 1).sum();
 
         final List<DataRecord> records = new LinkedList();
         while (buffer.remaining() >= minimumRecordLength) {
-            records.add(new DataRecord(this, this.templateResolver, this.template, buffer));
+            records.add(new DataRecord(this, this.resolver, this.template, buffer));
         }
 
         if (records.size() == 0) {

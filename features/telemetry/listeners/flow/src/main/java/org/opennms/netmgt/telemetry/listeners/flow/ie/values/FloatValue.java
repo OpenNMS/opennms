@@ -36,7 +36,7 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 import com.google.common.base.MoreObjects;
 
@@ -61,7 +61,7 @@ public class FloatValue extends Value<Double> {
     public static InformationElement parserWith32Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
                 return new FloatValue(name, semantics, Float.intBitsToFloat(uint(buffer, buffer.remaining()).intValue()));
             }
 
@@ -85,7 +85,7 @@ public class FloatValue extends Value<Double> {
     public static InformationElement parserWith64Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
                 return new FloatValue(name, semantics, Double.longBitsToDouble(uint(buffer, buffer.remaining()).longValue()));
             }
 

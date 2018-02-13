@@ -26,33 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ie;
+package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
-public class InformationElementField implements Field {
-    public final int length;
-    public final InformationElement informationElement;
+public abstract class FlowSet<R extends Record> implements Iterable<R> {
 
-    public InformationElementField(final int length,
-                                   final InformationElement informationElement) {
-        this.length = length;
-        this.informationElement = Objects.requireNonNull(informationElement);
-    }
+    /*
+     +--------------------------------------------------+
+     | Set Header                                       |
+     +--------------------------------------------------+
+     | record                                           |
+     +--------------------------------------------------+
+     | record                                           |
+     +--------------------------------------------------+
+      ...
+     +--------------------------------------------------+
+     | record                                           |
+     +--------------------------------------------------+
+     | Padding (opt.)                                   |
+     +--------------------------------------------------+
+    */
 
-    @Override
-    public int length() {
-        return this.length;
-    }
+    public final Packet packet; // Enclosing packet
 
-    @Override
-    public Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
-                          final ByteBuffer buffer) throws InvalidPacketException {
-        return this.informationElement.parse(templateResolver, buffer);
+    public final FlowSetHeader header;
+
+    public FlowSet(final Packet packet,
+                   final FlowSetHeader header) throws InvalidPacketException {
+        this.packet = Objects.requireNonNull(packet);
+        this.header = Objects.requireNonNull(header);
     }
 }

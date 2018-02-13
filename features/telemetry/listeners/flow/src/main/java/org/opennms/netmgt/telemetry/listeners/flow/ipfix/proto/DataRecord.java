@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint8;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,9 +39,10 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
 import com.google.common.base.MoreObjects;
 
@@ -55,25 +60,59 @@ public final class DataRecord implements Record {
      +--------------------------------------------------+
     */
 
+    /*
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     | Length (< 255)|          Information Field                  |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                      ... continuing as needed                 |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      255      |      Length (0 to 65535)      |       IE      |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                      ... continuing as needed                 |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    */
+
+    public static final int VARIABLE_SIZED = 0xFFFF;
+    public static final int VARIABLE_SIZED_EXTENDED = 0xFF;
+
     public final DataSet set;  // Enclosing set
 
     public final Template template;
-    public final List<FieldValue> fields;
+
+    public final List<Value<?>> scopes;
+    public final List<Value<?>> fields;
+    public final List<Value<?>> options;
 
     public DataRecord(final DataSet set,
-                      final TemplateManager.TemplateResolver templateResolver,
+                      final Session.Resolver resolver,
                       final Template template,
                       final ByteBuffer buffer) throws InvalidPacketException {
         this.set = Objects.requireNonNull(set);
 
         this.template = Objects.requireNonNull(template);
 
-        final List<FieldValue> fields = new ArrayList<>(this.template.count());
-        for (final Field templateField : this.template) {
-            fields.add(new FieldValue(templateResolver, templateField, buffer));
+        final List<Value<?>> scopes = new ArrayList(this.template.scopes.size());
+        for (final Field scope : this.template.scopes) {
+            scopes.add(parseField(scope, resolver, buffer));
         }
 
+        final List<Value<?>> fields = new ArrayList(this.template.fields.size());
+        for (final Field field : this.template.fields) {
+            fields.add(parseField(field, resolver, buffer));
+        }
+
+        this.scopes = Collections.unmodifiableList(scopes);
         this.fields = Collections.unmodifiableList(fields);
+
+        // Expand the data record by appending values from
+        // TODO fooker: extend fields with packet metadata
+        this.options = resolver.lookupOptions(this.fields);
     }
 
     @Override
@@ -83,5 +122,17 @@ public final class DataRecord implements Record {
                 .toString();
     }
 
+    public static Value<?> parseField(final Field field,
+                                      final Session.Resolver resolver,
+                                      final ByteBuffer buffer) throws InvalidPacketException {
+        int length = field.length();
+        if (length == VARIABLE_SIZED) {
+            length = uint8(buffer);
+            if (length == VARIABLE_SIZED_EXTENDED) {
+                length = uint16(buffer);
+            }
+        }
 
+        return field.parse(resolver, slice(buffer, length));
+    }
 }

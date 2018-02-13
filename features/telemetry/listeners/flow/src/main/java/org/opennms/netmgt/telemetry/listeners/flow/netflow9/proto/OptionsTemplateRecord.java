@@ -44,7 +44,7 @@ public final class OptionsTemplateRecord implements Record {
 
     public final OptionsTemplateRecordHeader header;
 
-    public final List<ScopeFieldSpecifier> scopeFields;
+    public final List<ScopeFieldSpecifier> scopes;
     public final List<FieldSpecifier> fields;
 
     public OptionsTemplateRecord(final OptionsTemplateSet set,
@@ -66,7 +66,7 @@ public final class OptionsTemplateRecord implements Record {
             fields.add(field);
         }
 
-        this.scopeFields = Collections.unmodifiableList(scopeFields);
+        this.scopes = Collections.unmodifiableList(scopeFields);
         this.fields = Collections.unmodifiableList(fields);
     }
 
@@ -74,7 +74,7 @@ public final class OptionsTemplateRecord implements Record {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", header)
-                .add("scopeFields", scopeFields)
+                .add("scopeFields", scopes)
                 .add("fields", fields)
                 .toString();
     }

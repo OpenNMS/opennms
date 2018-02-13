@@ -38,11 +38,11 @@ import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public class TemplateSet extends Set<TemplateRecord> {
+public class TemplateSet extends FlowSet<TemplateRecord> {
     public final List<TemplateRecord> records;
 
     public TemplateSet(final Packet packet,
-                       final SetHeader header,
+                       final FlowSetHeader header,
                        final ByteBuffer buffer) throws InvalidPacketException {
         super(packet, header);
 

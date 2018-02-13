@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.flow.netflow9;
 
 import org.opennms.netmgt.telemetry.listeners.flow.AbstractUdpListener;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
-import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
+import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSessionManager;
 
 import io.netty.channel.ChannelHandler;
 
@@ -41,7 +41,7 @@ public class UdpListener extends AbstractUdpListener {
     }
 
     @Override
-    protected ChannelHandler buildDecoder(UdpSession session) {
-        return new UdpPacketDecoder(session);
+    protected ChannelHandler buildDecoder(UdpSessionManager sessionManager) {
+        return new UdpPacketDecoder(sessionManager);
     }
 }
