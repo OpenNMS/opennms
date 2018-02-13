@@ -21,6 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <DynamicImport-Package>*</DynamicImport-Package>
             <Export-Package>org.opennms.netmgt.provision.detector.jdbc.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
