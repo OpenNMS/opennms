@@ -1377,10 +1377,10 @@
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
 
-    <!-- moved here from opennms-pluginmanger -->
-    <pluginmanagerVersion>1.0.5</pluginmanagerVersion>
-    <licencemanagerVersion>1.0.5</licencemanagerVersion>
-    <featuremanagerVersion>1.0.5</featuremanagerVersion>
+    <!-- change to match which version of opennms-pluginmanger you want to run -->
+    <pluginmanagerVersion>1.0.6</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.6</licencemanagerVersion>
+    <featuremanagerVersion>1.0.6</featuremanagerVersion>
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.6</frontendPluginVersion>
