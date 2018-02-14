@@ -263,7 +263,6 @@
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
   <jsp:param name="breadcrumb" value="Availability" />
-  <jsp:param name="enableExtJS" value="false"/>
 </jsp:include>
 
 <div class="onms">

@@ -177,7 +177,6 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>cxf-dependencies</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
       <scope>${onmsLibScope}</scope>
     </dependency>
@@ -237,7 +236,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
-      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
 
@@ -321,7 +319,6 @@
     <dependency>
       <groupId>org.skyscreamer</groupId>
       <artifactId>jsonassert</artifactId>
-      <version>1.2.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>

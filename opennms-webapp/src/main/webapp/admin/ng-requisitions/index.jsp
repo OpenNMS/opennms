@@ -31,54 +31,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="norequirejs" value="true" />
     <jsp:param name="nobreadcrumbs" value="true" />
     <jsp:param name="ngapp" value="onms-requisitions" />
     <jsp:param name="title" value="Manage Provisioning Requisitions" />
     <jsp:param name="headTitle" value="Provisioning Requisitions" />
     <jsp:param name="headTitle" value="Admin" />
     <jsp:param name="location" value="admin" />
-
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-loading-bar/build/loading-bar.css" />' />
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
-
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-cookies/angular-cookies.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-route/angular-route.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-animate/angular-animate.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-loading-bar/build/loading-bar.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/ip-address/dist/ip-address-globals.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/bootbox/bootbox.js"></script>' />
-
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/app-requisitions.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/RequisitionInterface.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/RequisitionNode.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/Requisition.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/RequisitionsData.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/QuickNode.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/services/Requisitions.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/services/Synchronize.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/filters/startFrom.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/directives/requisitionConstraints.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/Move.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/QuickAddNode.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/QuickAddNodeModal.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/CloneForeignSource.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/Detector.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/Policy.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/ForeignSource.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/Asset.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/Interface.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/Node.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/Requisition.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/controllers/Requisitions.js"></script>' />
 </jsp:include>
 
 <div ng-view></div>
 <div growl></div>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="requisitions" />
+</jsp:include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

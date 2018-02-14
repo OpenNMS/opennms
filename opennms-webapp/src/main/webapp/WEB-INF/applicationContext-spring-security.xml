@@ -114,9 +114,9 @@
     <intercept-url pattern="/accessDenied.jsp*" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/css/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/svg/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
-    <intercept-url pattern="/js/global.js" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/lib/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/images/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
 
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/rest/snmpConfig/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
