@@ -299,7 +299,8 @@ public class ElasticFlowRepository implements FlowRepository {
             });
         }
 
-        return seriesFuture.thenApply(ignored -> builder.build());
+        // Sort the table to ensure that the rows as in the same order as the Top N
+        return seriesFuture.thenApply(ignored -> TableUtils.sortTableByRowKeys(builder.build(), topN));
     }
 
     private static void toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResult res) {
