@@ -143,7 +143,7 @@ deleteOldThreadDumps() {
 
 writeThreadDump() {
     dump_file="${output_dir}/${base_filename}.`date +${date_pattern}`"
-    "${java_home_actual}/bin/jstack" -l ${opennms_pid} > "${dump_file}"
+    "${java_home_actual}/bin/jstack" -l ${opennms_pid} > "${dump_file}" || die "FATAL: Failed to write thread dump. Exiting with no cleanup."
     chmod 0666 ${dump_file}
 }
 
@@ -170,5 +170,5 @@ fi
 
 find_jstack_bin
 find_opennms_pid
-deleteOldThreadDumps
 writeThreadDump
+deleteOldThreadDumps
